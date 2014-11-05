@@ -80,4 +80,8 @@ Import and convert the PyPI package for PACKAGE-NAME.\n"))
                            (reverse opts))))
     (match args
       ((package-name)
-       (pypi->guix-package package-name)))))
+       (let ((sexp (pypi->guix-package package-name)))
+         (unless sexp
+           (leave (_ "failed to download meta-data for package '~a'~%")
+                  package-name))
+         sexp)))))

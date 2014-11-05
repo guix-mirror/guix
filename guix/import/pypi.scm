@@ -89,12 +89,12 @@ recursively apply the procedure to the sub-list."
    (_ #f)))
 
 (define (url-fetch url file-name)
-  "Save the contents of URL to FILE-NAME."
+  "Save the contents of URL to FILE-NAME.  Return #f on failure."
   (parameterize ((current-output-port (current-error-port)))
     (build:url-fetch url file-name)))
 
 (define (json-fetch url)
-  "Return an alist representation of the JSON resource URL."
+  "Return an alist representation of the JSON resource URL, or #f on failure."
   (call-with-temporary-output-file
    (lambda (temp port)
      (and (url-fetch url temp)
@@ -102,7 +102,8 @@ recursively apply the procedure to the sub-list."
            (call-with-input-file temp json->scm))))))
 
 (define (pypi-fetch name)
-  "Return an alist representation of the PyPI metadata for the package NAME."
+  "Return an alist representation of the PyPI metadata for the package NAME,
+or #f on failure."
   (json-fetch (string-append "https://pypi.python.org/pypi/" name "/json")))
 
 (define (latest-source-release pypi-package)
@@ -160,14 +161,15 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
 
 (define (pypi->guix-package package-name)
   "Fetch the metadata for PACKAGE-NAME from pypi.python.org, and return the
-`package' s-expression corresponding to that package."
+`package' s-expression corresponding to that package, or #f on failure."
   (let ((package (pypi-fetch package-name)))
-    (let ((name (assoc-ref* package "info" "name"))
-          (version (assoc-ref* package "info" "version"))
-          (release (assoc-ref (latest-source-release package) "url"))
-          (synopsis (assoc-ref* package "info" "summary"))
-          (description (assoc-ref* package "info" "summary"))
-          (home-page (assoc-ref* package "info" "home_page"))
-          (license (string->license (assoc-ref* package "info" "license"))))
-      (make-pypi-sexp name version release home-page synopsis
-                      description license))))
+    (and package
+         (let ((name (assoc-ref* package "info" "name"))
+               (version (assoc-ref* package "info" "version"))
+               (release (assoc-ref (latest-source-release package) "url"))
+               (synopsis (assoc-ref* package "info" "summary"))
+               (description (assoc-ref* package "info" "summary"))
+               (home-page (assoc-ref* package "info" "home_page"))
+               (license (string->license (assoc-ref* package "info" "license"))))
+           (make-pypi-sexp name version release home-page synopsis
+                           description license)))))
