@@ -262,7 +262,7 @@ many readers as needed).")
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
-     "GNU Guile-Ncurses provides Guile language bindings for the ncurses
+     "guile-ncurses provides Guile language bindings for the ncurses
 library.")
     (license lgpl3+)))
 

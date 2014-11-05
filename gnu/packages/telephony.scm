@@ -44,7 +44,7 @@
             (("^// TODO sc.*") "#include <sys/types.h>\n#include <sys/stat.h>\n")))
         %standard-phases)))
    (build-system gnu-build-system)
-   (synopsis "Common C++ framework for threaded applications")
+   (synopsis "(u)Common C++ framework for threaded applications")
    (description "GNU Common C++ is an portable, optimized class framework for
 threaded applications, supporting concurrent synchronization, inter-process
 communications via sockets, and various methods for data handling, such as

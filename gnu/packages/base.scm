@@ -75,7 +75,7 @@ command-line arguments, multiple languages, and so on.")
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
-    "Grep is a tool for finding text inside files.  Text is found by
+     "grep is a tool for finding text inside files.  Text is found by
 matching a pattern provided by the user in one or many files.  The pattern
 may be provided as a basic or extended regular expression, or as fixed
 strings.  By default, the matching text is simply printed to the screen,

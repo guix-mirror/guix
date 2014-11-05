@@ -36,9 +36,12 @@
         "005588vfrwx8ghsdv9p7zczj9lbc9a3r4m5aphcaqv8gif4siaka"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/miscfiles/")
-    (synopsis "Collection of miscellaneous text files")
-    (description "Miscfiles is a collection of files not of crucial importance
-for system administration or operation, but which have come to be common on
-various systems over the years. It includes data files for country codes,
-airport codes, currency information, and so on.")
+    (synopsis
+     "Data files for airport codes, zip codes, a dictionary, and more")
+    (description
+     "GNU Miscfiles is a collection of common data files.  They include, for
+example, country abbreviations, names and capital cities; currency
+abbreviations and names; a Best Current Practices index; a map of the ASCII
+character set; a list of three-letter airport codes; and an English word
+list.")
     (license gpl2+)))
