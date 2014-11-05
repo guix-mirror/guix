@@ -202,9 +202,9 @@ the last one."
 (define-lift lift6 (a b c d e f))
 (define-lift lift7 (a b c d e f g))
 
-(define (lift nargs proc monad)
-  "Lift PROC, a procedure that accepts NARGS arguments, to MONAD---i.e.,
-return a monadic function in MONAD."
+(define (lift proc monad)
+  "Lift PROC, a procedure that accepts an arbitrary number of arguments, to
+MONAD---i.e., return a monadic function in MONAD."
   (lambda args
     (with-monad monad
       (return (apply proc args)))))
