@@ -150,7 +150,7 @@ names such as device-mapping services."
   ;; the system.  Typical example is user-space file systems.
   "/etc/dmd/do-not-kill")
 
-(define* (user-processes-service requirements #:key (grace-delay 2))
+(define* (user-processes-service requirements #:key (grace-delay 5))
   "Return the service that is responsible for terminating all the processes so
 that the root file system can be re-mounted read-only, just before
 rebooting/halting.  Processes still running GRACE-DELAY seconds after SIGTERM
