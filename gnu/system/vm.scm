@@ -368,6 +368,10 @@ environment with the store shared with the host."
                      #:virtio? #t
                      #:qemu-networking? #t
                      rest)))
+
+    ;; Disable swap.
+    (swap-devices '())
+
     (file-systems (cons* (file-system
                            (mount-point "/")
                            (device "/dev/vda1")
