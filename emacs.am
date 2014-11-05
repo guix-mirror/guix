@@ -24,6 +24,7 @@ ELFILES =					\
   emacs/guix-history.el				\
   emacs/guix-info.el				\
   emacs/guix-list.el				\
+  emacs/guix-messages.el			\
   emacs/guix-utils.el				\
   emacs/guix.el
 
