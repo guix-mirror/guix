@@ -19,6 +19,7 @@
 (define-module (gnu packages ntp)
   #:use-module (gnu packages)
   #:use-module (gnu packages which)
+  #:use-module (gnu packages linux)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -39,11 +40,18 @@
 	     (base32
 	      "077r69a41hasl8zf5c44km7cqgfhrkaj6a4jnr75j7nkz5qq7ayn"))))
    (native-inputs `(("which" ,which)))
+   (inputs
+    ;; Build with POSIX capabilities support on GNU/Linux.  This allows 'ntpd'
+    ;; to run as non-root (when invoked with '-u'.)
+    (if (string-suffix? "-linux"
+                        (or (%current-target-system) (%current-system)))
+        `(("libcap" ,libcap))
+        '()))
    (build-system gnu-build-system)
    (synopsis "Real time clock synchonization system")
    (description "NTP is a system designed to synchronize the clocks of
 computers over a network.")
-   (license (x11-style 
+   (license (x11-style
              "http://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
              "A non-copyleft free licence from the University of Delaware"))
    (home-page "http://www.ntp.org")))
