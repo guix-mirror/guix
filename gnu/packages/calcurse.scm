@@ -27,7 +27,7 @@
 (define-public calcurse
   (package
     (name "calcurse")
-    (version "3.1.4")
+    (version "3.2.1")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +35,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qwhffwhfg7bjxrviwlcrhnfw0976d39da8kfspq6dgd9nqv68a1"))))
+        "0g92c4x02iv2wi3c1sm3nz1ay96bi2m7klxq3qyyx3pr11l53m85"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.calcurse.org")
