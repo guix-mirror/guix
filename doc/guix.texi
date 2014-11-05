@@ -3845,6 +3845,17 @@ Return a service that starts @var{interface} with address @var{ip}.  If
 gateway.
 @end deffn
 
+@deffn {Monadic Procedure} ntp-service [#:ntp @var{ntp}] @
+  [#:name-service @var{%ntp-servers}]
+Return a service that runs the daemon from @var{ntp}, the
+@uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
+keep the system clock synchronized with that of @var{servers}.
+@end deffn
+
+@defvr {Scheme Variable} %ntp-servers
+List of host names used as the default NTP servers.
+@end defvr
+
 @deffn {Monadic Procedure} tor-service [#:tor tor]
 Return a service to run the @uref{https://torproject.org,Tor} daemon.
 

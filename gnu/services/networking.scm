@@ -23,11 +23,15 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
+  #:use-module (gnu packages ntp)
   #:use-module (guix gexp)
   #:use-module (guix monads)
+  #:use-module (srfi srfi-26)
   #:export (%facebook-host-aliases
             static-networking-service
             dhcp-client-service
+            %ntp-servers
+            ntp-service
             tor-service
             bitlbee-service))
 
@@ -170,6 +174,54 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                           (and (zero? (cdr (waitpid pid)))
                                (call-with-input-file #$pid-file read)))))
              (stop #~(make-kill-destructor))))))
+
+(define %ntp-servers
+  ;; Default set of NTP servers.
+  '("0.pool.ntp.org"
+    "1.pool.ntp.org"
+    "2.pool.ntp.org"))
+
+(define* (ntp-service #:key (ntp ntp)
+                      (servers %ntp-servers))
+  "Return a service that runs the daemon from @var{ntp}, the
+@uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
+keep the system clock synchronized with that of @var{servers}."
+  ;; TODO: Add authentication support.
+
+  (define config
+    (string-append "driftfile /var/run/ntp.drift\n"
+                   (string-join (map (cut string-append "server " <>)
+                                     servers)
+                                "\n")
+                   "
+# Disable status queries as a workaround for CVE-2013-5211:
+# <http://support.ntp.org/bin/view/Main/SecurityNotice#DRDoS_Amplification_Attack_using>.
+restrict default kod nomodify notrap nopeer noquery
+restrict -6 default kod nomodify notrap nopeer noquery
+
+# Yet, allow use of the local 'ntpq'.
+restrict 127.0.0.1
+restrict -6 ::1\n"))
+
+  (mlet %store-monad ((ntpd.conf (text-file "ntpd.conf" config)))
+    (return
+     (service
+      (provision '(ntpd))
+      (documentation "Run the Network Time Protocol (NTP) daemon.")
+      (requirement '(user-processes networking))
+      (start #~(make-forkexec-constructor
+                (list (string-append #$ntp "/bin/ntpd") "-n"
+                      "-c" #$ntpd.conf
+                      "-u" "ntpd")))
+      (stop #~(make-kill-destructor))
+      (user-accounts (list (user-account
+                            (name "ntpd")
+                            (group "nogroup")
+                            (system? #t)
+                            (comment "NTP daemon user")
+                            (home-directory "/var/empty")
+                            (shell
+                             "/run/current-system/profile/sbin/nologin"))))))))
 
 (define* (tor-service #:key (tor tor))
   "Return a service to run the @uref{https://torproject.org,Tor} daemon.
