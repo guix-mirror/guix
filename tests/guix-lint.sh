@@ -40,7 +40,7 @@ cat > "$module_dir/foo.scm"<<EOF
     (description "dummy package. Only used for testing purposes.")))
 EOF
 
-export GUIX_PACKAGE_PATH=$module_dir
+GUIX_PACKAGE_PATH="$module_dir"
 export GUIX_PACKAGE_PATH
 
 grep_warning ()
