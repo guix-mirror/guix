@@ -391,6 +391,17 @@ with the host."
                 #:register-closures? #f
                 #:copy-inputs? #f)))
 
+(define* (common-qemu-options image)
+  "Return the a string-value gexp with the common QEMU options to boot IMAGE."
+#~(string-append
+     " -enable-kvm -no-reboot -net nic,model=virtio \
+  -virtfs local,path=" #$(%store-prefix) ",security_model=none,mount_tag=store \
+  -net user \
+  -serial stdio \
+  -drive file=" #$image
+  ",if=virtio,cache=writeback,werror=report,readonly \
+  -m 256\n"))
+
 (define* (system-qemu-image/shared-store-script
           os
           #:key
@@ -408,18 +419,11 @@ OS that shares its store with the host."
             (display
              (string-append "#!" #$bash "/bin/sh
 exec " #$qemu "/bin/" #$(qemu-command (%current-system))
-" -enable-kvm -no-reboot -net nic,model=virtio \
-  -virtfs local,path=" #$(%store-prefix) ",security_model=none,mount_tag=store \
-  -net user \
-  -kernel " #$(operating-system-kernel os) "/bzImage \
+" -kernel " #$(operating-system-kernel os) "/bzImage \
   -initrd " #$os-drv "/initrd \
--append \"" #$(if graphic? "" "console=ttyS0 ")
-  "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" \
-  -serial stdio \
-  -drive file=" #$image
-  ",if=virtio,cache=writeback,werror=report,readonly \
-  -m 256
-\n")
+  -append \"" #$(if graphic? "" "console=ttyS0 ")
+  "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "
+  #$(common-qemu-options image))
              port)
             (chmod port #o555))))
 
