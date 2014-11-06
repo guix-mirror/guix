@@ -67,7 +67,7 @@ Section \"Files\"
 EndSection
 
 Section \"ServerFlags\"
-  Option \"AllowMouseOpenFail\" \"on""
+  Option \"AllowMouseOpenFail\" \"on\"
 EndSection
 "))
 
