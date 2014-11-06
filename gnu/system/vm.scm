@@ -66,26 +66,6 @@
 ;;;
 ;;; Code:
 
-(define* (input->name+output tuple #:key (system (%current-system)))
-  "Return as a monadic value a name/file-name pair corresponding to TUPLE, an
-input tuple.  The output file name is when building for SYSTEM."
-  (with-monad %store-monad
-    (match tuple
-      ((input (? package? package))
-       (mlet %store-monad ((out (package-file package #:system system)))
-         (return `(,input . ,out))))
-      ((input (? package? package) sub-drv)
-       (mlet %store-monad ((out (package-file package
-                                              #:output sub-drv
-                                              #:system system)))
-         (return `(,input . ,out))))
-      ((input (? derivation? drv))
-       (return `(,input . ,(derivation->output-path drv))))
-      ((input (? derivation? drv) sub-drv)
-       (return `(,input . ,(derivation->output-path drv sub-drv))))
-      ((input (and (? string?) (? store-path?) file))
-       (return `(,input . ,file))))))
-
 (define %linux-vm-file-systems
   ;; File systems mounted for 'derivation-in-linux-vm'.  The store and /xchg
   ;; directory are shared with the host over 9p.
