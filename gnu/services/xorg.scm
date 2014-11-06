@@ -31,6 +31,9 @@
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (guix derivations)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:export (xorg-start-command
             slim-service))
 
@@ -43,19 +46,38 @@
 (define* (xorg-start-command #:key
                              (guile (canonical-package guile-2.0))
                              (xorg-server xorg-server)
-                             (drivers '()))
+                             (drivers '()) (resolutions '()))
   "Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  Usually the X server is started by a login manager.
 
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{(\"modesetting\" \"vesa\")}."
+this order---e.g., @code{(\"modesetting\" \"vesa\")}.
+
+Likewise, when @var{resolutions} is the empty list, Xorg chooses an
+appropriate screen resolution; otherwise, it must be a list of
+resolutions---e.g., @code{((1024 768) (640 480))}."
 
   (define (device-section driver)
     (string-append "
 Section \"Device\"
   Identifier \"device-" driver "\"
   Driver \"" driver "\"
+EndSection"))
+
+  (define (screen-section driver resolutions)
+    (string-append "
+Section \"Screen\"
+  Identifier \"screen-" driver "\"
+  Device \"device-" driver "\"
+  SubSection \"Display\"
+    Modes "
+  (string-join (map (match-lambda
+                     ((x y)
+                      (string-append "\"" (number->string x)
+                                     "x" (number->string y) "\"")))
+                    resolutions)) "
+  EndSubSection
 EndSection"))
 
   (define (xserver.conf)
@@ -82,7 +104,10 @@ Section \"ServerFlags\"
   Option \"AllowMouseOpenFail\" \"on\"
 EndSection
 "
-  (string-join (map device-section drivers) "\n")))
+  (string-join (map device-section drivers) "\n")
+  (string-join (map (cut screen-section <> resolutions)
+                    drivers)
+               "\n")))
 
   (mlet %store-monad ((config (xserver.conf)))
     (define script
