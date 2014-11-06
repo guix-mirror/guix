@@ -42,9 +42,21 @@
 
 (define* (xorg-start-command #:key
                              (guile (canonical-package guile-2.0))
-                             (xorg-server xorg-server))
-  "Return a derivation that builds a GUILE script to start the X server from
-XORG-SERVER.  Usually the X server is started by a login manager."
+                             (xorg-server xorg-server)
+                             (drivers '()))
+  "Return a derivation that builds a @var{guile} script to start the X server
+from @var{xorg-server}.  Usually the X server is started by a login manager.
+
+@var{drivers} must be either the empty list, in which case Xorg chooses a
+graphics driver automatically, or a list of driver names that will be tried in
+this order---e.g., @code{(\"modesetting\" \"vesa\")}."
+
+  (define (device-section driver)
+    (string-append "
+Section \"Device\"
+  Identifier \"device-" driver "\"
+  Driver \"" driver "\"
+EndSection"))
 
   (define (xserver.conf)
     (text-file* "xserver.conf" "
@@ -69,7 +81,8 @@ EndSection
 Section \"ServerFlags\"
   Option \"AllowMouseOpenFail\" \"on\"
 EndSection
-"))
+"
+  (string-join (map device-section drivers) "\n")))
 
   (mlet %store-monad ((config (xserver.conf)))
     (define script
