@@ -47,7 +47,19 @@
     (arguments
      ;; With '-jN', the rule to build the 'ots' command can be triggered
      ;; before libots-1.la has been built.
-     '(#:parallel-build? #f))
+     '(#:parallel-build? #f
+
+       #:phases (alist-cons-after
+                 'configure 'set-shared-lib-extension
+                 (lambda _
+                   ;; For some reason, the 'libtool' script (from Libtool
+                   ;; 1.5.2, Debian variant) sets 'shrext_cmds' instead of
+                   ;; 'shrext' for the shared library file name extension.
+                   ;; This leads to the creation of 'libots-1' instead of
+                   ;; 'libots-1.so'.  Fix that.
+                   (substitute* "libtool"
+                     (("shrext_cmds") "shrext")))
+                 %standard-phases)))
     (inputs
       `(("glib" ,glib)
         ("popt" ,popt)
