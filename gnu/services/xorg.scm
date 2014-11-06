@@ -52,6 +52,8 @@ Section \"Files\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-fbdev "/lib/xorg/modules/drivers\"
+# FIXME: Commented out due to libdrm incompatibility.
+#  ModulePath \"" xf86-video-modesetting "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-cirrus "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-intel "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-mach64 "/lib/xorg/modules/drivers\"

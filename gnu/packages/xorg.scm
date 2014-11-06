@@ -2731,6 +2731,34 @@ autotools system.")
     (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
+(define-public xf86-video-modesetting
+  (package
+    (name "xf86-video-modesetting")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "mirror://xorg/individual/driver/xf86-video-modesetting-"
+              version ".tar.bz2"))
+        (sha256
+         (base32
+           "0p6pjn5bnd2wr3lmas4b12zcq12d9ilvssga93fzlg90fdahikwh"))))
+    (build-system gnu-build-system)
+    (inputs `(;; FIXME: This is a libdrm version incompatible with that of
+              ;; MESA, which xorg-server uses.  Therefore, using this driver
+              ;; leads to "unresolved symbol drmModeSetCursor2".
+              ("libdrm" ,libdrm)
+              ("xf86driproto" ,xf86driproto)
+              ("libx11" ,libx11)
+              ("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "\"Modesetting\" graphics driver for the Xorg server")
+    (description
+     "This is a generic \"modesetting\" video driver, that relies on the Linux
+kernel mode setting (KMS).")
+    (license license:x11)))
 
 (define-public xf86-video-neomagic
   (package
