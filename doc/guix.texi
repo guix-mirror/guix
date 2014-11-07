@@ -4151,6 +4151,10 @@ Build a virtual machine that contain the operating system declared in
 
 The VM shares its store with the host system.
 
+On GNU/Linux, the default is to boot directly to the kernel.  The
+@code{--full-boot} option forces a complete boot sequence, starting with
+the bootloader.
+
 @item vm-image
 @itemx disk-image
 Return a virtual machine or disk image of the operating system declared

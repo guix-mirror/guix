@@ -250,7 +250,7 @@ it atomically, and then run OS's activation script."
 ;;;
 
 (define* (system-derivation-for-action os action
-                                       #:key image-size)
+                                       #:key image-size full-boot?)
   "Return as a monadic value the derivation for OS according to ACTION."
   (case action
     ((build init reconfigure)
@@ -258,7 +258,7 @@ it atomically, and then run OS's activation script."
     ((vm-image)
      (system-qemu-image os #:disk-image-size image-size))
     ((vm)
-     (system-qemu-image/shared-store-script os))
+     (system-qemu-image/shared-store-script os #:full-boot? full-boot?))
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
@@ -282,14 +282,16 @@ true."
 (define* (perform-action action os
                          #:key grub? dry-run?
                          use-substitutes? device target
-                         image-size)
+                         image-size full-boot?)
   "Perform ACTION for OS.  GRUB? specifies whether to install GRUB; DEVICE is
 the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
 is the size of the image to be built, for the 'vm-image' and 'disk-image'
-actions."
+actions.  FULL-BOOT? is used for the 'vm' action; it determines whether to
+boot directly to the kernel or to the bootloader."
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
-                                                #:image-size image-size))
+                                                #:image-size image-size
+                                                #:full-boot? full-boot?))
        (grub      (package->derivation grub))
        (grub.cfg  (grub.cfg os))
        (drvs   -> (if (and grub? (memq action '(init reconfigure)))
@@ -361,6 +363,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (_ "
       --no-grub          for 'init', do not install GRUB"))
+  (display (_ "
+      --full-boot        for 'vm', make a full boot sequence"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -385,6 +389,9 @@ Build the operating system declared in FILE according to ACTION.\n"))
          (option '("no-grub") #f #f
                  (lambda (opt name arg result)
                    (alist-delete 'install-grub? result)))
+         (option '("full-boot") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'full-boot? #t result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -478,6 +485,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                         #:dry-run? dry?
                         #:use-substitutes? (assoc-ref opts 'substitutes?)
                         #:image-size (assoc-ref opts 'image-size)
+                        #:full-boot? (assoc-ref opts 'full-boot?)
                         #:grub? grub?
                         #:target target #:device device)
         #:system system))))

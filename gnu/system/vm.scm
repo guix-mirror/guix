@@ -402,13 +402,15 @@ with the host."
   ",if=virtio,cache=writeback,werror=report,readonly \
   -m 256\n"))
 
-(define* (system-qemu-image/shared-store-script
-          os
-          #:key
-          (qemu qemu)
-          (graphic? #t))
+(define* (system-qemu-image/shared-store-script os
+                                                #:key
+                                                (qemu qemu)
+                                                (graphic? #t)
+                                                full-boot?)
   "Return a derivation that builds a script to run a virtual machine image of
-OS that shares its store with the host."
+OS that shares its store with the host.  When FULL-BOOT? is true, the returned
+script runs everything starting from the bootloader; otherwise it directly
+starts the operating system kernel."
   (mlet* %store-monad
       ((os ->  (virtualized-operating-system os))
        (os-drv (operating-system-derivation os))
@@ -419,11 +421,14 @@ OS that shares its store with the host."
             (display
              (string-append "#!" #$bash "/bin/sh
 exec " #$qemu "/bin/" #$(qemu-command (%current-system))
-" -kernel " #$(operating-system-kernel os) "/bzImage \
-  -initrd " #$os-drv "/initrd \
-  -append \"" #$(if graphic? "" "console=ttyS0 ")
-  "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "
-  #$(common-qemu-options image))
+
+#$@(if full-boot?
+       #~()
+       #~(" -kernel " #$(operating-system-kernel os) "/bzImage \
+            -initrd " #$os-drv "/initrd \
+            -append \"" #$(if graphic? "" "console=ttyS0 ")
+            "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "))
+#$(common-qemu-options image))
              port)
             (chmod port #o555))))
 
