@@ -610,7 +610,10 @@ procedure or dependencies.  Guix also goes beyond this obvious set of
 features.
 
 This chapter describes the main features of Guix, as well as the package
-management tools it provides.
+management tools it provides.  Two user interfaces are provided for
+routine package management tasks: a command-line interface
+(@pxref{Invoking guix package, @code{guix package}}), and a visual user
+interface in Emacs (@pxref{Emacs Interface}).
 
 @menu
 * Features::                    How Guix will make your life brighter.
