@@ -64,22 +64,20 @@
                     "description should start with an upper-case letter")))
 
 (test-assert "description: may start with a digit"
-  (not
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (description "2-component library."))))
-                          (check-description-style pkg))))
-                    "description should start with an upper-case letter")))
+  (string-null?
+   (call-with-warnings
+    (lambda ()
+      (let ((pkg (dummy-package "x"
+                                (description "2-component library."))))
+        (check-description-style pkg))))))
 
 (test-assert "description: may start with lower-case package name"
-  (not
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (description "x is a dummy package."))))
-                          (check-description-style pkg))))
-                    "description should start with an upper-case letter")))
+  (string-null?
+   (call-with-warnings
+    (lambda ()
+      (let ((pkg (dummy-package "x"
+                   (description "x is a dummy package."))))
+        (check-description-style pkg))))))
 
 (test-assert "description: two spaces after end of sentence"
   (->bool
@@ -91,14 +89,13 @@
                     "sentences in description should be followed by two spaces")))
 
 (test-assert "description: end-of-sentence detection with abbreviations"
-  (not
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (description
-                                      "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
-                          (check-description-style pkg))))
-                    "sentences in description should be followed by two spaces")))
+  (string-null?
+   (call-with-warnings
+    (lambda ()
+      (let ((pkg (dummy-package "x"
+                   (description
+                    "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
+        (check-description-style pkg))))))
 
 (test-assert "synopsis: not empty"
   (->bool
@@ -119,13 +116,12 @@
                     "synopsis should start with an upper-case letter")))
 
 (test-assert "synopsis: may start with a digit"
-  (not
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "5-dimensional frobnicator"))))
-                          (check-synopsis-style pkg))))
-                    "synopsis should start with an upper-case letter")))
+  (string-null?
+   (call-with-warnings
+    (lambda ()
+      (let ((pkg (dummy-package "x"
+                   (synopsis "5-dimensional frobnicator"))))
+        (check-synopsis-style pkg))))))
 
 (test-assert "synopsis: ends with a period"
   (->bool
@@ -137,12 +133,11 @@
                     "no period allowed at the end of the synopsis")))
 
 (test-assert "synopsis: ends with 'etc.'"
-  (->bool
-   (string-null? (call-with-warnings
-                   (lambda ()
-                     (let ((pkg (dummy-package "x"
-                                  (synopsis "Foo, bar, etc."))))
-                       (check-synopsis-style pkg)))))))
+  (string-null? (call-with-warnings
+                 (lambda ()
+                   (let ((pkg (dummy-package "x"
+                                (synopsis "Foo, bar, etc."))))
+                     (check-synopsis-style pkg))))))
 
 (test-assert "synopsis: starts with 'A'"
   (->bool
