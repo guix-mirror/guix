@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +57,17 @@
     ;; The manual fails to build with Texinfo 5.x.
     (native-inputs (alist-delete "texinfo" (package-native-inputs qemu)))))
 
+(define unifont
+  ;; GNU Unifont, <http://gnu.org/s/unifont>.
+  ;; GRUB needs it for its graphical terminal, gfxterm.
+  (origin
+    (method url-fetch)
+    (uri
+     "http://unifoundry.com/pub/unifont-7.0.06/font-builds/unifont-7.0.06.bdf.gz")
+    (sha256
+     (base32
+      "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
+
 (define-public grub
   (package
     (name "grub")
@@ -74,9 +85,13 @@
      '(#:configure-flags '("--disable-werror")
        #:phases (alist-cons-before
                  'patch-source-shebangs 'patch-stuff
-                 (lambda _
+                 (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "grub-core/Makefile.in"
                      (("/bin/sh") (which "sh")))
+
+                   ;; Make the font visible.
+                   (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
+                   (system* "gunzip" "unifont.bdf.gz")
 
                    ;; TODO: Re-enable this test when we have Parted.
                    (substitute* "tests/partmap_test.in"
@@ -89,7 +104,8 @@
        ;; ("libusb" ,libusb)
        ("ncurses" ,ncurses)))
     (native-inputs
-     `(("bison" ,bison)
+     `(("unifont" ,unifont)
+       ("bison" ,bison)
        ("flex" ,flex)
 
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
