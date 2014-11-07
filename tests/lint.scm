@@ -202,6 +202,16 @@
                    (synopsis "Arbitrary precision"))))
         (check-synopsis-style pkg))))))
 
+(test-assert "synopsis: start with abbreviation"
+  (string-null?
+   (call-with-warnings
+    (lambda ()
+      (let ((pkg (dummy-package "uucp"
+                   ;; Same problem with "APL interpreter", etc.
+                   (synopsis "UUCP implementation")
+                   (description "Imagine this is Taylor UUCP."))))
+        (check-synopsis-style pkg))))))
+
 (test-assert "inputs: pkg-config is probably a native input"
   (->bool
    (string-contains

@@ -80,6 +80,10 @@
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'[:upper:][:digit:]]" s))
 
+(define (starts-with-abbreviation? s)
+  "Return #t if S starts with what looks like an abbreviation or acronym."
+  (string-match "^[A-Z][A-Z0-9]+\\>" s))
+
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
   (define (check-not-empty description)
@@ -180,7 +184,8 @@ line."
                     'synopsis)))
 
   (define (check-start-with-package-name synopsis)
-    (when (regexp-exec (package-name-regexp package) synopsis)
+    (when (and (regexp-exec (package-name-regexp package) synopsis)
+               (not (starts-with-abbreviation? synopsis)))
       (emit-warning package
                     "synopsis should not start with the package name"
                     'synopsis)))
