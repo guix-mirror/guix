@@ -21,8 +21,9 @@
 (define-module (gnu packages acl)
   #:use-module (guix licenses)
   #:use-module (gnu packages attr)
-  #:use-module (gnu packages perl)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -42,15 +43,23 @@
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f   ; FIXME: Investigate test suite failures
+       #:test-target "tests"
        #:phases
-        (alist-replace
-         'install
+        (alist-cons-after
+         'build 'patch-exec-bin-sh
          (lambda _
-           (zero? (system* "make" "install" "install-lib" "install-dev")))
-         %standard-phases)))
+           (substitute* "test/run"
+             (("/bin/sh") (which "sh"))))
+         (alist-replace
+          'install
+          (lambda _
+            (zero? (system* "make" "install" "install-lib" "install-dev")))
+          %standard-phases))))
     (inputs `(("attr" ,attr)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gnu-gettext)
+       ("perl" ,perl)
+       ("sed" ,sed)))
 
     (home-page
      "http://savannah.nongnu.org/projects/acl")
