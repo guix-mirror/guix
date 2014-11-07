@@ -271,8 +271,8 @@ Kate stream.")
              ("libkate" ,libkate)
              ("libogg" ,libogg)
              ("libvorbis" ,libvorbis)
-             ("pkg-config" ,pkg-config)
              ("speex" ,speex)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (synopsis "Ogg vorbis tools")
    (description
     "Ogg vorbis is a non-proprietary, patent-and-royalty-free,

@@ -75,6 +75,7 @@
                    (copy "mips64el")
                    #t)
                  %standard-phases)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      (let ((boot-guile (lambda (arch hash)
                          (origin
@@ -90,7 +91,6 @@
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
          ("guile" ,guile-2.0)
-         ("pkg-config" ,pkg-config)
 
          ("boot-guile/i686"
           ,(boot-guile "i686"

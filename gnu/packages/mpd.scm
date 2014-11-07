@@ -94,10 +94,10 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("libsndfile" ,libsndfile)
               ("libvorbis" ,libvorbis)
               ("opus" ,opus)
-              ("pkg-config" ,pkg-config)
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     ;; Missing optional inputs:
     ;;   libyajl
     ;;   libcdio_paranoia
