@@ -2670,7 +2670,7 @@ autotools system.")
           (base32
             "1g742szymajh88a5dw08sxcr45bmxgc4w3m6hddv9qscn5hks4rj"))))
     (build-system gnu-build-system)
-    (inputs `(("libdrm" ,libdrm)
+    (inputs `(("mesa" ,mesa)
               ("libx11" ,libx11)
               ("xorg-server" ,xorg-server)))
     (native-inputs
