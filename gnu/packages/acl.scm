@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,15 +43,11 @@
     (arguments
      `(#:tests? #f   ; FIXME: Investigate test suite failures
        #:phases
-       (alist-cons-after
-        'configure 'patch-makefile-SHELL
-        (lambda _
-          (patch-makefile-SHELL "include/buildmacros"))
         (alist-replace
          'install
          (lambda _
-           (zero? (system* "make" "install" "install-lib")))
-         %standard-phases))))
+           (zero? (system* "make" "install" "install-lib" "install-dev")))
+         %standard-phases)))
     (inputs `(("attr" ,attr)))
     (native-inputs
      `(("gettext" ,gnu-gettext)))
