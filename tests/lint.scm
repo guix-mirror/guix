@@ -194,6 +194,14 @@
                           (check-synopsis-style pkg))))
                     "synopsis should not start with the package name")))
 
+(test-assert "synopsis: start with package name prefix"
+  (string-null?
+   (call-with-warnings
+    (lambda ()
+      (let ((pkg (dummy-package "arb"
+                   (synopsis "Arbitrary precision"))))
+        (check-synopsis-style pkg))))))
+
 (test-assert "inputs: pkg-config is probably a native input"
   (->bool
    (string-contains

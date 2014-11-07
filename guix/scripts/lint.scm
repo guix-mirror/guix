@@ -131,6 +131,12 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
                       "pkg-config should probably be a native input"
                       'inputs))))))
 
+(define (package-name-regexp package)
+  "Return a regexp that matches PACKAGE's name as a word at the beginning of a
+line."
+  (make-regexp (string-append "^" (regexp-quote (package-name package))
+                              "\\>")
+               regexp/icase))
 
 (define (check-synopsis-style package)
   ;; Emit a warning if stylistic issues are found in the synopsis of PACKAGE.
@@ -168,7 +174,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
                     'synopsis)))
 
   (define (check-start-with-package-name synopsis)
-    (when (string-prefix-ci? (package-name package) synopsis)
+    (when (regexp-exec (package-name-regexp package) synopsis)
       (emit-warning package
                     "synopsis should not start with the package name"
                     'synopsis)))
