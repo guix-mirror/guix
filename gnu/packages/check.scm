@@ -64,7 +64,7 @@ source code editors and IDEs.")
     (home-page "http://sourceforge.net/projects/cppunit/")
     (synopsis "Unit testing framework for C++")
     (description "CppUnit is the C++ port of the famous JUnit framework for
-unit testing. Test output is in XML for automatic testing and GUI based for
+unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
 
