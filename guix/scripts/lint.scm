@@ -77,7 +77,7 @@
   (exit 0))
 
 (define (properly-starts-sentence? s)
-  (string-match "^[[:upper:][:digit:]]" s))
+  (string-match "^[(\"'[:upper:][:digit:]]" s))
 
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
