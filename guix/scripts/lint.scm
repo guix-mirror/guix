@@ -23,6 +23,7 @@
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix gnu-maintenance)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -154,12 +155,17 @@ line."
                     "no period allowed at the end of the synopsis"
                     'synopsis)))
 
-  (define (check-start-article synopsis)
-    (when (or (string-prefix-ci? "A " synopsis)
-              (string-prefix-ci? "An " synopsis))
-      (emit-warning package
-                    "no article allowed at the beginning of the synopsis"
-                    'synopsis)))
+  (define check-start-article
+    ;; Skip this check for GNU packages, as suggested by Karl Berry's reply to
+    ;; <http://lists.gnu.org/archive/html/bug-womb/2014-11/msg00000.html>.
+    (if (false-if-exception (gnu-package? package))
+        (const #t)
+        (lambda (synopsis)
+          (when (or (string-prefix-ci? "A " synopsis)
+                    (string-prefix-ci? "An " synopsis))
+            (emit-warning package
+                          "no article allowed at the beginning of the synopsis"
+                          'synopsis)))))
 
   (define (check-synopsis-length synopsis)
     (when (>= (string-length synopsis) 80)
