@@ -290,6 +290,9 @@ emacs, The GNU Emacs Manual}) which can be used to:
 
 @end itemize
 
+It is also possible to copy a button label (a link to an URL or a file)
+by pressing @kbd{c} on a button.
+
 
 @node Emacs Configuration
 @subsection Configuration
@@ -396,6 +399,9 @@ Keymap with specific keys for ``output-info'' buffers.
 
 @item guix-generation-info-mode-map
 Keymap with specific keys for ``generation-info'' buffers.
+
+@item guix-info-button-map
+Keymap with keys available when a point is placed on a button.
 
 @end table
 

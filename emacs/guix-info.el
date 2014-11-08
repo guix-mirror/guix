@@ -313,7 +313,15 @@ VAL is a list, call the function on each element of this list."
 
 ;;; Buttons
 
+(defvar guix-info-button-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map button-map)
+    (define-key map (kbd "c") 'guix-info-button-copy-label)
+    map)
+  "Keymap for buttons in info buffers.")
+
 (define-button-type 'guix
+  'keymap guix-info-button-map
   'follow-link t)
 
 (define-button-type 'guix-action
@@ -349,6 +357,14 @@ VAL is a list, call the function on each element of this list."
   'action (lambda (btn)
             (guix-get-show-entries guix-profile 'info guix-package-info-type
                                    'name (button-label btn))))
+
+(defun guix-info-button-copy-label (&optional pos)
+  "Copy a label of the button at POS into kill ring.
+If POS is nil, use the current point position."
+  (interactive)
+  (let ((button (button-at (or pos (point)))))
+    (when button
+      (kill-new (button-label button)))))
 
 (defun guix-info-insert-action-button (label action &optional message
                                              &rest properties)
