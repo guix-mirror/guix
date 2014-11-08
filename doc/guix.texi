@@ -4148,6 +4148,7 @@ This command also installs GRUB on the device specified in
 @cindex virtual machine
 Build a virtual machine that contain the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
+Arguments given to the script are passed as is to QEMU.
 
 The VM shares its store with the host system.
 

@@ -411,7 +411,7 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
   -serial stdio \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly \
-  -m 256\n"))
+  -m 256"))
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
@@ -447,7 +447,8 @@ exec " #$qemu "/bin/" #$(qemu-command (%current-system))
             -initrd " #$os-drv "/initrd \
             -append \"" #$(if graphic? "" "console=ttyS0 ")
             "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "))
-#$(common-qemu-options image))
+#$(common-qemu-options image)
+" \"$@\"\n")
              port)
             (chmod port #o555))))
 
