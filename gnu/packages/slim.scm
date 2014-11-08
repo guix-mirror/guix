@@ -38,10 +38,10 @@
     (version "1.3.6")
     (source (origin
 	     (method url-fetch)
-             ;; Used to be available from
-             ;; mirror://sourceforge/project/slim.berlios/.
-	     (uri (string-append "http://download.berlios.de/slim/slim-"
-				  version ".tar.gz"))
+             ;; Used to be available from download.berlios.de.
+	     (uri (string-append
+                   "mirror://sourceforge/project/slim.berlios/slim-"
+                   version ".tar.gz"))
 	     (sha256
 	      (base32 "1pqhk22jb4aja4hkrm7rjgbgzjyh7i4zswdgf5nw862l2znzxpi1"))
              (patches (map search-patch
@@ -77,7 +77,9 @@
        #:configure-flags '("-DUSE_PAM=yes"
                            "-DUSE_CONSOLEKIT=no")
        #:tests? #f))
-    (home-page "http://slim.berlios.de/")
+
+    ;; This used to be at <http://slim.berlios.de/>.
+    (home-page "http://sourceforge.net/projects/slim.berlios/")
     (synopsis "Desktop-independent graphical login manager for X11")
     (description
      "SLiM is a Desktop-independent graphical login manager for X11, derived
