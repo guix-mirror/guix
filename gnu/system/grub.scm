@@ -96,7 +96,7 @@
   ;; Default theme contributed by Felipe López.
   (grub-theme
    (images (list %background-image))
-   (color-highlight '((fg . white) (bg . black))) ;XXX: fg should be #x3bb7f5
+   (color-highlight '((fg . cyan) (bg . black)))  ;XXX: fg should be #x3bb7f5
    (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
 
 (define-record-type* <grub-configuration>
