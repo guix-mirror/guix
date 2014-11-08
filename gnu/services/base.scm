@@ -542,8 +542,11 @@ item of @var{packages}."
                         (call-with-output-file
                             (string-append rules.d "/90-kvm.rules")
                           (lambda (port)
+                            ;; FIXME: As a workaround for
+                            ;; <http://bugs.gnu.org/18994>, make /dev/kvm 666
+                            ;; instead of 660.
                             (display "\
-KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n" port))))
+KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0666\"\n" port))))
                     #:modules '((guix build utils))))
 
 (define* (udev-service #:key (udev eudev) (rules '()))
