@@ -21,11 +21,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages perl)
   #:use-module ((gnu packages base) #:select (tzdata)))
 
 (define-public libexif
@@ -119,3 +121,36 @@ MTP, and much more.")
 
     ;; Files are typically under LGPLv2+, but 'COPYING' says GPLv2+.
     (license gpl2+)))
+
+(define-public perl-image-exiftool
+  (package
+    (name "perl-image-exiftool")
+    (version "9.70")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/E/EX/EXIFTOOL/Image-ExifTool-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "074yxjgy50iacnjakdvac37wvrzrqmabkn0nzk0n70y3hssli7d5"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Make sure the 'exiftool' commands finds the library.
+                   ;; XXX: Shouldn't it be handled by PERL-BUILD-SYSTEM?
+                   (let* ((out (assoc-ref outputs "out"))
+                          (pm  (find-files out "^ExifTool\\.pm$"))
+                          (lib (dirname (dirname (car pm)))))
+                     (wrap-program (string-append out "/bin/exiftool")
+                                   `("PERL5LIB" prefix (,lib)))))
+                 %standard-phases)))
+    (home-page
+     "http://search.cpan.org/~exiftool/Image-ExifTool-9.70/lib/Image/ExifTool.pod")
+    (synopsis "Program and Perl library to manipulate EXIF tags")
+    (description
+     "This package provides the 'exiftool' command and the 'Image::ExifTool'
+Perl library to manipulate EXIF tags of digital images.")
+    (license (package-license perl))))
