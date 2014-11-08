@@ -4151,9 +4151,15 @@ Build a virtual machine that contain the operating system declared in
 
 The VM shares its store with the host system.
 
-On GNU/Linux, the default is to boot directly to the kernel.  The
-@code{--full-boot} option forces a complete boot sequence, starting with
-the bootloader.
+On GNU/Linux, the default is to boot directly to the kernel; this has
+the advantage of requiring only a very tiny root disk image since the
+host's store can then be mounted.
+
+The @code{--full-boot} option forces a complete boot sequence, starting
+with the bootloader.  This requires more disk space since a root image
+containing at least the kernel, initrd, and bootloader data files must
+be created.  The @code{--image-size} option can be used to specify the
+image's size.
 
 @item vm-image
 @itemx disk-image

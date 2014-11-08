@@ -376,20 +376,31 @@ environment with the store shared with the host."
 
 (define* (system-qemu-image/shared-store
           os
-          #:key (disk-image-size (* 15 (expt 2 20))))
+          #:key
+          full-boot?
+          (disk-image-size (* (if full-boot? 500 15) (expt 2 20))))
   "Return a derivation that builds a QEMU image of OS that shares its store
-with the host."
-  (mlet* %store-monad
-      ((os-drv      (operating-system-derivation os))
-       (grub.cfg    (operating-system-grub.cfg os)))
+with the host.
+
+When FULL-BOOT? is true, return an image that does a complete boot sequence,
+bootloaded included; thus, make a disk image that contains everything the
+bootloader refers to: OS kernel, initrd, bootloader data, etc."
+  (mlet* %store-monad ((os-drv   (operating-system-derivation os))
+                       (grub.cfg (operating-system-grub.cfg os)))
+    ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
+    ;; GRUB.CFG and all its dependencies, including the output of OS-DRV.
+    ;; This is more than needed (we only need the kernel, initrd, GRUB for its
+    ;; font, and the background image), but it's hard to filter that.
     (qemu-image #:os-derivation os-drv
                 #:grub-configuration grub.cfg
                 #:disk-image-size disk-image-size
-                #:inputs `(("system" ,os-drv))
+                #:inputs (if full-boot?
+                             `(("grub.cfg" ,grub.cfg))
+                             '())
 
                 ;; XXX: Passing #t here is too slow, so let it off by default.
                 #:register-closures? #f
-                #:copy-inputs? #f)))
+                #:copy-inputs? full-boot?)))
 
 (define* (common-qemu-options image)
   "Return the a string-value gexp with the common QEMU options to boot IMAGE."
@@ -406,15 +417,23 @@ with the host."
                                                 #:key
                                                 (qemu qemu)
                                                 (graphic? #t)
-                                                full-boot?)
+                                                full-boot?
+                                                (disk-image-size
+                                                 (* (if full-boot? 500 15)
+                                                    (expt 2 20))))
   "Return a derivation that builds a script to run a virtual machine image of
-OS that shares its store with the host.  When FULL-BOOT? is true, the returned
-script runs everything starting from the bootloader; otherwise it directly
-starts the operating system kernel."
-  (mlet* %store-monad
-      ((os ->  (virtualized-operating-system os))
-       (os-drv (operating-system-derivation os))
-       (image  (system-qemu-image/shared-store os)))
+OS that shares its store with the host.
+
+When FULL-BOOT? is true, the returned script runs everything starting from the
+bootloader; otherwise it directly starts the operating system kernel.  The
+DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
+it is mostly useful when FULL-BOOT?  is true."
+  (mlet* %store-monad ((os ->  (virtualized-operating-system os))
+                       (os-drv (operating-system-derivation os))
+                       (image  (system-qemu-image/shared-store
+                                os
+                                #:full-boot? full-boot?
+                                #:disk-image-size disk-image-size)))
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)

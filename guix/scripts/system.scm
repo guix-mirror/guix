@@ -258,7 +258,9 @@ it atomically, and then run OS's activation script."
     ((vm-image)
      (system-qemu-image os #:disk-image-size image-size))
     ((vm)
-     (system-qemu-image/shared-store-script os #:full-boot? full-boot?))
+     (system-qemu-image/shared-store-script os
+                                            #:full-boot? full-boot?
+                                            #:disk-image-size image-size))
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
