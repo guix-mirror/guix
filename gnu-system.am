@@ -206,6 +206,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/photo.scm			\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
+  gnu/packages/polkit.scm			\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
