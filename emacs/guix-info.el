@@ -1,4 +1,4 @@
-;;; guix-info.el --- Info buffers for displaying entries
+;;; guix-info.el --- Info buffers for displaying entries   -*- lexical-binding: t -*-
 
 ;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 
@@ -24,7 +24,6 @@
 
 ;;; Code:
 
-(require 'guix-history)
 (require 'guix-base)
 (require 'guix-utils)
 
@@ -107,6 +106,8 @@ number of characters, it will be split into several lines.")
                         guix-info-insert-title-simple)
      (outputs           guix-package-info-insert-outputs
                         guix-info-insert-title-simple)
+     (source            guix-package-info-insert-source
+                        guix-info-insert-title-simple)
      (home-url          guix-info-insert-url)
      (inputs            guix-package-info-insert-inputs)
      (native-inputs     guix-package-info-insert-native-inputs)
@@ -121,6 +122,8 @@ number of characters, it will be split into several lines.")
      (name              guix-package-info-name)
      (version           guix-output-info-insert-version)
      (output            guix-output-info-insert-output)
+     (source            guix-package-info-insert-source
+                        guix-info-insert-title-simple)
      (path              guix-package-info-insert-output-path
                         guix-info-insert-title-simple)
      (dependencies      guix-package-info-insert-output-dependencies
@@ -157,10 +160,11 @@ is a function, this function is called with parameter title as
 argument.")
 
 (defvar guix-info-displayed-params
-  '((package name version synopsis outputs location home-url
+  '((package name version synopsis outputs source location home-url
              license inputs native-inputs propagated-inputs description)
-    (output name version output synopsis path dependencies location home-url
-            license inputs native-inputs propagated-inputs description)
+    (output name version output synopsis source path dependencies location
+            home-url license inputs native-inputs propagated-inputs
+            description)
     (installed path dependencies)
     (generation number prev-number current time path))
   "List of displayed entry parameters.
@@ -650,6 +654,122 @@ ENTRY is an alist with package info."
 
 (defalias 'guix-package-info-insert-output-dependencies
   'guix-package-info-insert-output-path)
+
+
+;;; Inserting a source
+
+(defface guix-package-info-source
+  '((t :inherit link :underline nil))
+  "Face used for a source URL of a package."
+  :group 'guix-package-info)
+
+(defcustom guix-package-info-auto-find-source nil
+  "If non-nil, find a source file after pressing a \"Show\" button.
+If nil, just display the source file path without finding."
+  :type 'boolean
+  :group 'guix-package-info)
+
+(defcustom guix-package-info-auto-download-source t
+  "If nil, do not automatically download a source file if it doesn't exist.
+After pressing a \"Show\" button, a derivation of the package
+source is calculated and a store file path is displayed.  If this
+variable is non-nil and the source file does not exist in the
+store, it will be automatically downloaded (with a possible
+prompt depending on `guix-operation-confirm' variable)."
+  :type 'boolean
+  :group 'guix-package-info)
+
+(defvar guix-package-info-download-buffer nil
+  "Buffer from which a current download operation was performed.")
+
+(define-button-type 'guix-package-source
+  :supertype 'guix
+  'face 'guix-package-info-source
+  'help-echo ""
+  'action (lambda (_)
+            ;; As a source may not be a real URL (e.g., "mirror://..."),
+            ;; no action is bound to a source button.
+            (message "Yes, this is the source URL. What did you expect?")))
+
+(defun guix-package-info-insert-source-url (url &optional _)
+  "Make button from source URL and insert it at point."
+  (guix-insert-button url 'guix-package-source))
+
+(defun guix-package-info-show-source (entry-id package-id)
+  "Show file name of a package source in the current info buffer.
+Find the file if needed (see `guix-package-info-auto-find-source').
+ENTRY-ID is an ID of the current entry (package or output).
+PACKAGE-ID is an ID of the package which source to show."
+  (let* ((entry (guix-get-entry-by-id entry-id guix-entries))
+         (file  (guix-package-source-path package-id)))
+    (or file
+        (error "Couldn't define file path of the package source"))
+    (let* ((new-entry (cons (cons 'source-file file)
+                            entry))
+           (entries (cl-substitute-if
+                     new-entry
+                     (lambda (entry)
+                       (equal (guix-get-key-val entry 'id)
+                              entry-id))
+                     guix-entries
+                     :count 1)))
+      (guix-redisplay-buffer :entries entries)
+      (if (file-exists-p file)
+          (if guix-package-info-auto-find-source
+              (guix-find-file file)
+            (message "The source store path is displayed."))
+        (if guix-package-info-auto-download-source
+            (guix-package-info-download-source package-id)
+          (message "The source does not exist in the store."))))))
+
+(defun guix-package-info-download-source (package-id)
+  "Download a source of the package PACKAGE-ID."
+  (setq guix-package-info-download-buffer (current-buffer))
+  (guix-package-source-build-derivation
+   package-id
+   "The source does not exist in the store. Download it?"))
+
+(defun guix-package-info-insert-source (source entry)
+  "Insert SOURCE from package ENTRY at point.
+SOURCE is a list of URLs."
+  (guix-info-insert-indent)
+  (if (null source)
+      (guix-format-insert nil)
+    (let* ((source-file (guix-get-key-val entry 'source-file))
+           (entry-id    (guix-get-key-val entry 'id))
+           (package-id  (or (guix-get-key-val entry 'package-id)
+                            entry-id)))
+      (if (null source-file)
+          (guix-info-insert-action-button
+           "Show"
+           (lambda (btn)
+             (guix-package-info-show-source (button-get btn 'entry-id)
+                                            (button-get btn 'package-id)))
+           "Show the source store path of the current package"
+           'entry-id entry-id
+           'package-id package-id)
+        (unless (file-exists-p source-file)
+          (guix-info-insert-action-button
+           "Download"
+           (lambda (btn)
+             (guix-package-info-download-source
+              (button-get btn 'package-id)))
+           "Download the source into the store"
+           'package-id package-id))
+        (guix-info-insert-val-simple source-file
+                                     #'guix-info-insert-file-path))
+      (guix-info-insert-val-simple source
+                                   #'guix-package-info-insert-source-url))))
+
+(defun guix-package-info-redisplay-after-download ()
+  "Redisplay an 'info' buffer after downloading the package source.
+This function is used to hide a \"Download\" button if needed."
+  (when (buffer-live-p guix-package-info-download-buffer)
+    (guix-redisplay-buffer :buffer guix-package-info-download-buffer)
+    (setq guix-package-info-download-buffer nil)))
+
+(add-hook 'guix-after-source-download-hook
+          'guix-package-info-redisplay-after-download)
 
 
 ;;; Displaying outputs

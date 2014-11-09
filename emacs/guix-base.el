@@ -82,6 +82,7 @@ Interactively, prompt for PATH.  With prefix, use
      (id                . "ID")
      (name              . "Name")
      (version           . "Version")
+     (source            . "Source")
      (license           . "License")
      (synopsis          . "Synopsis")
      (description       . "Description")
@@ -100,6 +101,7 @@ Interactively, prompt for PATH.  With prefix, use
      (id                . "ID")
      (name              . "Name")
      (version           . "Version")
+     (source            . "Source")
      (license           . "License")
      (synopsis          . "Synopsis")
      (description       . "Description")
@@ -954,13 +956,14 @@ ENTRIES is a list of package entries to get info about packages."
           strings)
     (insert "\n")))
 
-(defun guix-operation-prompt ()
+(defun guix-operation-prompt (&optional prompt)
   "Prompt a user for continuing the current operation.
-Return non-nil, if the operation should be continued; nil otherwise."
+Return non-nil, if the operation should be continued; nil otherwise.
+Ask a user with PROMPT for continuing an operation."
   (let* ((option-keys (mapcar #'guix-operation-option-key
                               guix-operation-options))
          (keys (append '(?y ?n) option-keys))
-         (prompt (concat (propertize "Continue operation?"
+         (prompt (concat (propertize (or prompt "Continue operation?")
                                      'face 'minibuffer-prompt)
                          " ("
                          (mapconcat
@@ -1034,6 +1037,30 @@ Each element from GENERATIONS is a generation number."
      (guix-make-guile-expression
       'switch-to-generation profile generation)
      operation-buffer)))
+
+(defun guix-package-source-path (package-id)
+  "Return a store file path to a source of a package PACKAGE-ID."
+  (message "Calculating the source derivation ...")
+  (guix-eval-read
+   (guix-make-guile-expression
+    'package-source-path package-id)))
+
+(defvar guix-after-source-download-hook nil
+  "Hook run after successful performing a 'source-download' operation.")
+
+(defun guix-package-source-build-derivation (package-id &optional prompt)
+  "Build source derivation of a package PACKAGE-ID.
+Ask a user with PROMPT for continuing an operation."
+  (when (or (not guix-operation-confirm)
+            (guix-operation-prompt (or prompt
+                                       "Build the source derivation?")))
+    (guix-eval-in-repl
+     (guix-make-guile-expression
+      'package-source-build-derivation
+      package-id
+      :use-substitutes? (or guix-use-substitutes 'f)
+      :dry-run? (or guix-dry-run 'f))
+     nil 'source-download)))
 
 
 ;;; Pull

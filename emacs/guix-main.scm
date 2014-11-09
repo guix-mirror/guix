@@ -46,10 +46,12 @@
  (ice-9 vlist)
  (ice-9 match)
  (srfi srfi-1)
+ (srfi srfi-2)
  (srfi srfi-11)
  (srfi srfi-19)
  (srfi srfi-26)
  (guix)
+ (guix git-download)
  (guix packages)
  (guix profiles)
  (guix licenses)
@@ -252,6 +254,18 @@ Example:
                      (license-name license)))
               (list-maybe (package-license package))))
 
+(define (package-source-names package)
+  "Return a list of source names (URLs) of the PACKAGE."
+  (let ((source (package-source package)))
+    (and (origin? source)
+         (filter-map (lambda (uri)
+                       (cond ((string? uri)
+                              uri)
+                             ((git-reference? uri)
+                              (git-reference-url uri))
+                             (else "Unknown source type")))
+                     (list-maybe (origin-uri source))))))
+
 (define (package-unique? package)
   "Return #t if PACKAGE is a single package with such name/version."
   (null? (cdr (packages-by-name (package-name package)
@@ -263,6 +277,7 @@ Example:
     (name              . ,package-name)
     (version           . ,package-version)
     (license           . ,package-license-names)
+    (source            . ,package-source-names)
     (synopsis          . ,package-synopsis)
     (description       . ,package-description)
     (home-url          . ,package-home-page)
@@ -867,3 +882,37 @@ OUTPUTS is a list of package outputs (may be an empty list)."
 GENERATIONS is a list of generation numbers."
   (with-store store
     (delete-generations store profile generations)))
+
+(define (package-source-derivation->store-path derivation)
+  "Return a store path of the package source DERIVATION."
+  (match (derivation-outputs derivation)
+    ;; Source derivation is always (("out" . derivation)).
+    (((_ . output-drv))
+     (derivation-output-path output-drv))
+    (_ #f)))
+
+(define (package-source-path package-id)
+  "Return a store file path to a source of a package PACKAGE-ID."
+  (and-let* ((package (package-by-id package-id))
+             (source  (package-source package)))
+    (with-store store
+      (package-source-derivation->store-path
+       (package-source-derivation store source)))))
+
+(define* (package-source-build-derivation package-id #:key dry-run?
+                                          (use-substitutes? #t))
+  "Build source derivation of a package PACKAGE-ID."
+  (and-let* ((package (package-by-id package-id))
+             (source  (package-source package)))
+    (with-store store
+      (let* ((derivation  (package-source-derivation store source))
+             (derivations (list derivation)))
+        (set-build-options store
+                           #:use-substitutes? use-substitutes?)
+        (show-what-to-build store derivations
+                            #:use-substitutes? use-substitutes?
+                            #:dry-run? dry-run?)
+        (unless dry-run?
+          (build-derivations store derivations))
+        (format #t "The source store path: ~a~%"
+                (package-source-derivation->store-path derivation))))))
