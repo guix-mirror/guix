@@ -21,8 +21,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml))
 
 (define-public mozjs
   (package
@@ -95,3 +100,36 @@ in C/C++.")
 platform-neutral API for system level and libc-like functions.  It is used
 in the Mozilla clients.")
     (license mpl2.0)))
+
+(define-public polkit
+  (package
+    (name "polkit")
+    (version "0.112")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.freedesktop.org/software/polkit/releases/"
+                   name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1xkary7yirdcjdva950nqyhmsz48qhrdsr78zciahj27p8yg95fn"))
+             (patches (list (search-patch "polkit-drop-test.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("expat" ,expat)
+        ("glib" ,glib)
+        ("glib:bin" ,glib "bin") ; for glib-mkenums
+        ("intltool" ,intltool)
+        ("linux-pam" ,linux-pam)
+        ("mozjs" ,mozjs)
+        ("nspr" ,nspr)))
+    (native-inputs
+      `(("pkg-config", pkg-config)))
+    (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
+    (synopsis "Authorization API for privilege management")
+    (description "Polkit is an application-level toolkit for defining and
+handling the policy that allows unprivileged processes to speak to
+privileged processes.  It is a framework for centralizing the decision
+making process with respect to granting access to privileged operations
+for unprivileged applications.")
+    (license lgpl2.0+)))

@@ -1,0 +1,18 @@
+Drop test failing with the following message:
+FAIL: polkitbackendjsauthoritytest
+==================================
+/PolkitBackendJsAuthority/get_admin_identities: Error getting system bus: Could not connect: No such file or directoryError loading /var/run/ConsoleKit/database: Error statting file /var/run/ConsoleKit/database: No such file or directory
+
+
+diff -ru polkit-0.112.old/test/Makefile.in polkit-0.112/test/Makefile.in
+--- polkit-0.112.old/test/Makefile.in	2013-07-08 22:52:13.000000000 +0200
++++ polkit-0.112/test/Makefile.in	2014-11-09 18:43:47.000000000 +0100
+@@ -388,7 +388,7 @@
+ top_build_prefix = @top_build_prefix@
+ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+-SUBDIRS = mocklibc . polkit polkitbackend
++SUBDIRS = mocklibc . polkit
+ AM_CFLAGS = $(GLIB_CFLAGS)
+ noinst_LTLIBRARIES = libpolkit-test-helper.la
+ libpolkit_test_helper_la_SOURCES = polkittesthelper.c polkittesthelper.h
