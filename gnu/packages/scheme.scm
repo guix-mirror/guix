@@ -123,7 +123,7 @@
     (supported-systems (delete "mips64el-linux" %supported-systems))
 
     (home-page "http://www.gnu.org/software/mit-scheme/")
-    (synopsis "Scheme implementation with integrated editor and debugger")
+    (synopsis "A Scheme implementation with integrated editor and debugger")
     (description
      "GNU/MIT Scheme is an implementation of the Scheme programming
 language.  It provides an interpreter, a compiler and a debugger.  It also
