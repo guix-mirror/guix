@@ -4329,10 +4329,10 @@ the load.  To check whether a package has a @code{debug} output, use
 @node Security Updates
 @section Security Updates
 
-@indentedblock
-Note: As of version @value{VERSION}, the feature described in this
-section is experimental.
-@end indentedblock
+@quotation Note
+As of version @value{VERSION}, the feature described in this section is
+experimental.
+@end quotation
 
 @cindex security updates
 Occasionally, important security vulnerabilities are discovered in core
