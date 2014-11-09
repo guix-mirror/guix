@@ -126,6 +126,7 @@ corresponding derivation."
                            hash hash-algo recursive?
                            (env-vars '())
                            (modules '())
+                           (module-path %load-path)
                            (guile-for-build (%guile-for-build))
                            references-graphs
                            local-build?)
@@ -134,7 +135,7 @@ derivation) on SYSTEM.  When TARGET is true, it is used as the
 cross-compilation target triplet for packages referred to by EXP.
 
 Make MODULES available in the evaluation context of EXP; MODULES is a list of
-names of Guile modules from the current search path to be copied in the store,
+names of Guile modules searched in MODULE-PATH to be copied in the store,
 compiled, and made available in the load path during the execution of
 EXP---e.g., '((guix build utils) (guix build gnu-build-system)).
 
@@ -194,11 +195,13 @@ The other arguments are as for 'derivation'."
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules
                                                        #:system system
+                                                       #:module-path module-path
                                                        #:guile guile-for-build)
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
                                                        #:system system
+                                                       #:module-path module-path
                                                        #:guile guile-for-build)
                                      (return #f)))
                        (graphs   (if references-graphs
