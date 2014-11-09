@@ -62,3 +62,36 @@
     (description "SpiderMonkey is Mozilla's JavaScript engine written
 in C/C++.")
     (license mpl2.0))) ; and others for some files
+
+(define-public nspr
+  (package
+    (name "nspr")
+    (version "4.10.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v"
+                   version "/src/nspr-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0f1ri51yzjikigf6z31g03cdv6sgi9gw2c3vvv39psk3m37zb6iq"))))
+    (build-system gnu-build-system)
+    (native-inputs
+      `(("perl", perl)))
+    (arguments
+      `(#:tests? #f ; no check target
+        #:configure-flags
+        `("--enable-64bit")
+        #:phases
+          (alist-cons-before
+           'configure 'chdir
+           (lambda _
+             (chdir "nspr"))
+            %standard-phases)))
+    (home-page
+     "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
+    (synopsis "Netscape API for system level and libc-like functions")
+    (description "Netscape Portable Runtime (NSPR) provides a
+platform-neutral API for system level and libc-like functions.  It is used
+in the Mozilla clients.")
+    (license mpl2.0)))
