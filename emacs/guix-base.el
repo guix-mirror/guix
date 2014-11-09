@@ -928,7 +928,7 @@ ENTRIES is a list of package entries to get info about packages."
     (insert "\n")))
 
 (defun guix-operation-prompt ()
-  "Prompt a user for continuing the current package operation.
+  "Prompt a user for continuing the current operation.
 Return non-nil, if the operation should be continued; nil otherwise."
   (let* ((option-keys (mapcar #'guix-operation-option-key
                               guix-operation-options))
@@ -943,9 +943,11 @@ Return non-nil, if the operation should be continued; nil otherwise."
                           keys
                           ", ")
                          ") ")))
-    (prog1 (guix-operation-prompt-1 prompt keys)
-      ;; Clear the minibuffer after prompting.
-      (message ""))))
+    (let ((mode-line mode-line-format))
+      (prog1 (guix-operation-prompt-1 prompt keys)
+        (setq mode-line-format mode-line)
+        ;; Clear the minibuffer after prompting.
+        (message "")))))
 
 (defun guix-operation-prompt-1 (prompt keys)
   "This function is internal for `guix-operation-prompt'."
