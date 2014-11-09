@@ -99,76 +99,64 @@ the continuation.  Raise an error if one of the processes exit with non-zero."
                        (lambda ()
                          (loop lst running completed)))))))))
 
-(define* (build-guix out tarball
-                     #:key tar gzip gcrypt
+(define* (build-guix out source
+                     #:key gcrypt
                      (debug-port (%make-void-port "w")))
-  "Build and install Guix in directory OUT using source from TARBALL.  Write
-any debugging output to DEBUG-PORT."
+  "Build and install Guix in directory OUT using SOURCE, a directory
+containing the source code.  Write any debugging output to DEBUG-PORT."
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
-  (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
+  (with-directory-excursion source
+    (format #t "copying and compiling to '~a'...~%" out)
 
-  (format debug-port "extracting '~a'...~%" tarball)
-  (system* "tar" "xf" tarball)
+    ;; Copy everything under guix/ and gnu/ plus {guix,gnu}.scm.
+    (copy-recursively "guix" (string-append out "/guix")
+                      #:log debug-port)
+    (copy-recursively "gnu" (string-append out "/gnu")
+                      #:log debug-port)
+    (copy-file "guix.scm" (string-append out "/guix.scm"))
+    (copy-file "gnu.scm" (string-append out "/gnu.scm"))
 
-  (match (scandir "." (lambda (name)
-                        (and (not (member name '("." "..")))
-                             (file-is-directory? name))))
-    ((dir)
-     (chdir dir))
-    (x
-     (error "tarball did not produce a single source directory" x)))
+    ;; Add a fake (guix config) module to allow the other modules to be
+    ;; compiled.  The user's (guix config) is the one that will be used.
+    (copy-file "guix/config.scm.in"
+               (string-append out "/guix/config.scm"))
+    (substitute* (string-append out "/guix/config.scm")
+      (("@LIBGCRYPT@")
+       (string-append gcrypt "/lib/libgcrypt")))
 
-  (format #t "copying and compiling to '~a'...~%" out)
+    ;; Augment the search path so Scheme code can be compiled.
+    (set! %load-path (cons out %load-path))
+    (set! %load-compiled-path (cons out %load-compiled-path))
 
-  ;; Copy everything under guix/ and gnu/ plus {guix,gnu}.scm.
-  (copy-recursively "guix" (string-append out "/guix")
-                    #:log debug-port)
-  (copy-recursively "gnu" (string-append out "/gnu")
-                    #:log debug-port)
-  (copy-file "guix.scm" (string-append out "/guix.scm"))
-  (copy-file "gnu.scm" (string-append out "/gnu.scm"))
+    ;; Compile the .scm files.  Do that in independent processes, à la
+    ;; 'make -j', to work around <http://bugs.gnu.org/15602> (FIXME).
+    ;; This ensures correctness, but is overly conservative and slow.
+    ;; The solution initially implemented (and described in the bug
+    ;; above) was slightly faster but consumed memory proportional to the
+    ;; number of modules, which quickly became unacceptable.
+    (p-for-each (lambda (file)
+                  (let ((go (string-append (string-drop-right file 4)
+                                           ".go")))
+                    (format debug-port "~%compiling '~a'...~%" file)
+                    (parameterize ((current-warning-port debug-port))
+                      (compile-file file
+                                    #:output-file go
+                                    #:opts
+                                    %auto-compilation-options))))
 
-  ;; Add a fake (guix config) module to allow the other modules to be
-  ;; compiled.  The user's (guix config) is the one that will be used.
-  (copy-file "guix/config.scm.in"
-             (string-append out "/guix/config.scm"))
-  (substitute* (string-append out "/guix/config.scm")
-    (("@LIBGCRYPT@")
-     (string-append gcrypt "/lib/libgcrypt")))
+                (filter (cut string-suffix? ".scm" <>)
 
-  ;; Augment the search path so Scheme code can be compiled.
-  (set! %load-path (cons out %load-path))
-  (set! %load-compiled-path (cons out %load-compiled-path))
-
-  ;; Compile the .scm files.  Do that in independent processes, à la
-  ;; 'make -j', to work around <http://bugs.gnu.org/15602> (FIXME).
-  ;; This ensures correctness, but is overly conservative and slow.
-  ;; The solution initially implemented (and described in the bug
-  ;; above) was slightly faster but consumed memory proportional to the
-  ;; number of modules, which quickly became unacceptable.
-  (p-for-each (lambda (file)
-                (let ((go (string-append (string-drop-right file 4)
-                                         ".go")))
-                  (format debug-port "~%compiling '~a'...~%" file)
-                  (parameterize ((current-warning-port debug-port))
-                    (compile-file file
-                                  #:output-file go
-                                  #:opts
-                                  %auto-compilation-options))))
-
-              (filter (cut string-suffix? ".scm" <>)
-
-                      ;; Build guix/*.scm before gnu/*.scm to speed
-                      ;; things up.
-                      (sort (find-files out "\\.scm")
-                            (let ((guix (string-append out "/guix"))
-                                  (gnu  (string-append out "/gnu")))
-                              (lambda (a b)
-                                (or (and (string-prefix? guix a)
-                                         (string-prefix? gnu b))
-                                    (string<? a b)))))))
+                        ;; Build guix/*.scm before gnu/*.scm to speed
+                        ;; things up.
+                        (sort (find-files out "\\.scm")
+                              (let ((guix (string-append out "/guix"))
+                                    (gnu  (string-append out "/gnu")))
+                                (lambda (a b)
+                                  (or (and (string-prefix? guix a)
+                                           (string-prefix? gnu b))
+                                      (string<? a b))))))))
 
   ;; Remove the "fake" (guix config).
   (delete-file (string-append out "/guix/config.scm"))

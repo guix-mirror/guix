@@ -223,6 +223,7 @@ EXTRA_DIST =						\
   ROADMAP						\
   TODO							\
   .dir-locals.el					\
+  build-aux/build-self.scm				\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/demo-os.scm				\
   build-aux/hydra/guix.scm				\
