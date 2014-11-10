@@ -3260,6 +3260,7 @@ instance to support new system services.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
+* GRUB Configuration::          Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
 * Defining Services::           Adding new service definitions.
 @end menu
@@ -3370,8 +3371,7 @@ only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
 @item @code{bootloader}
-The system bootloader configuration object.
-@c FIXME: Add xref to bootloader section.
+The system bootloader configuration object.  @xref{GRUB Configuration}.
 
 @item @code{initrd} (default: @code{base-initrd})
 A two-argument monadic procedure that returns an initial RAM disk for
@@ -4092,6 +4092,83 @@ automatically copied to the initrd.
 @var{modules} is a list of Guile module names to be embedded in the
 initrd.
 @end deffn
+
+@node GRUB Configuration
+@subsection GRUB Configuration
+
+@cindex GRUB
+@cindex boot loader
+
+The operating system uses GNU@tie{}GRUB as its boot loader
+(@pxref{Overview, overview of GRUB,, grub, GNU GRUB Manual}).  It is
+configured using @code{grub-configuration} declarations.  This data type
+is exported by the @code{(gnu system grub)} module, and described below.
+
+@deftp {Data Type} grub-configuration
+The type of a GRUB configuration declaration.
+
+@table @asis
+
+@item @code{device}
+This is a string denoting the boot device.  It must be a device name
+understood by the @command{grub-install} command, such as
+@code{/dev/sda} or @code{(hd0)} (@pxref{Invoking grub-install,,, grub,
+GNU GRUB Manual}).
+
+@item @code{menu-entries} (default: @code{()})
+A possibly empty list of @code{menu-entry} objects (see below), denoting
+entries to appear in the GRUB boot menu, in addition to the current
+system entry and the entry pointing to previous system generations.
+
+@item @code{default-entry} (default: @code{0})
+The index of the default boot menu entry.  Index 0 is for the current
+system's entry.
+
+@item @code{timeout} (default: @code{5})
+The number of seconds to wait for keyboard input before booting.  Set to
+0 to boot immediately, and to -1 to wait indefinitely.
+
+@item @code{theme} (default: @var{%default-theme})
+The @code{grub-theme} object describing the theme to use.
+@end table
+
+@end deftp
+
+Should you want to list additional boot menu entries @i{via} the
+@code{menu-entries} field above, you will need to create them with the
+@code{menu-entry} form:
+
+@deftp {Data Type} menu-entry
+The type of an entry in the GRUB boot menu.
+
+@table @asis
+
+@item @code{label}
+The label to show in the menu---e.g., @code{"GNU System"}.
+
+@item @code{linux}
+The Linux kernel to boot.
+
+@item @code{linux-arguments} (default: @code{()})
+The list of extra Linux kernel command-line arguments---e.g.,
+@code{("console=ttyS0")}.
+
+@item @code{initrd}
+A G-Expression or string denoting the file name of the initial RAM disk
+to use (@pxref{G-Expressions}).
+
+@end table
+@end deftp
+
+@c FIXME: Write documentation once it's stable.
+Themes are created using the @code{grub-theme} form, which is not
+documented yet.
+
+@defvr {Scheme Variable} %default-theme
+This is the default GRUB theme used by the operating system, with a
+fancy background image displaying the GNU and Guix logos.
+@end defvr
+
 
 @node Invoking guix system
 @subsection Invoking @code{guix system}
