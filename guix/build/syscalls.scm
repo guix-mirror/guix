@@ -31,6 +31,7 @@
             MS_MOVE
             mount
             umount
+            mount-points
             swapon
             swapoff
             processes
@@ -165,6 +166,18 @@ constants from <sys/mount.h>."
                  (list err)))
         (when update-mtab?
           (remove-from-mtab target))))))
+
+(define (mount-points)
+  "Return the mounts points for currently mounted file systems."
+  (call-with-input-file "/proc/mounts"
+    (lambda (port)
+      (let loop ((result '()))
+        (let ((line (read-line port)))
+          (if (eof-object? line)
+              (reverse result)
+              (match (string-tokenize line)
+                ((source mount-point _ ...)
+                 (loop (cons mount-point result))))))))))
 
 (define swapon
   (let* ((ptr  (dynamic-func "swapon" (dynamic-link)))

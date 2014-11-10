@@ -44,6 +44,9 @@
       ;; Both return values have been encountered in the wild.
       (memv (system-error-errno args) (list EPERM ENOENT)))))
 
+(test-assert "mount-points"
+  (member "/" (mount-points)))
+
 (test-assert "swapon, ENOENT/EPERM"
   (catch 'system-error
     (lambda ()
