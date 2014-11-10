@@ -24,6 +24,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages disk)
+  #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
   #:export (installation-os))
 
@@ -244,8 +245,9 @@ Use Alt-F2 for documentation.
      ;; Explicitly allow for empty passwords.
      (base-pam-services #:allow-empty-passwords? #t))
 
-    (packages (cons* texinfo-4                ; for the standalone Info reader
+    (packages (cons* texinfo-4                 ;for the standalone Info reader
                      parted ddrescue
+                     grub                  ;mostly so xrefs to its manual work
                      wireless-tools
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
