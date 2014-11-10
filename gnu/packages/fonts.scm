@@ -237,6 +237,4 @@ package provides the TrueType (TTF) files.")
     (synopsis "Simple bitmap programming font")
     (description "Terminus Font is a clean, fixed width bitmap font, designed
 for long (8 and more hours per day) work with computers.")
-    (license
-     (license:x11-style
-      "http://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web"))))
+    (license license:silofl1.1)))
