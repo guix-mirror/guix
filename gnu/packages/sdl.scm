@@ -104,6 +104,11 @@ joystick, and graphics hardware.")
               (base32
                "0dr4kgvhq9wf2riibh178c2al996spwwak6zffpv5n5bqmw29w3r"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; By default, libmikmod tries to dlopen libasound etc., which won't work
+     ;; unless the right libalsa happens to be in $LD_LIBRARY_PATH.  Pass
+     ;; '--disable-dl' to avoid that.
+     '(#:configure-flags '("--disable-dl")))
     (inputs `(("alsa-lib" ,alsa-lib)
               ("libx11" ,libx11)))
     (synopsis "Library for module sound formats")
