@@ -102,6 +102,10 @@ the user's target storage device rather than on the RAM disk."
              (documentation
               "Make the store copy-on-write, with writes going to \
 the given target.")
+
+             ;; This is meant to be explicitly started by the user.
+             (auto-start? #f)
+
              (start #~(case-lambda
                         ((target)
                          #$(make-cow-store #~target)

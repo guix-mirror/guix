@@ -68,7 +68,9 @@
           (setenv "PATH" "/run/current-system/profile/bin")
 
           (format #t "starting services...~%")
-          (for-each start '#$(append-map service-provision services))))
+          (for-each start
+                    '#$(append-map service-provision
+                                   (filter service-auto-start? services)))))
 
     (gexp->file "dmd.conf" config)))
 

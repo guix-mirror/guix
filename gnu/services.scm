@@ -27,6 +27,7 @@
             service-respawn?
             service-start
             service-stop
+            service-auto-start?
             service-activate
             service-user-accounts
             service-user-groups
@@ -51,6 +52,8 @@
   (start         service-start)                   ; g-expression (procedure)
   (stop          service-stop                     ; g-expression (procedure)
                  (default #~(const #f)))
+  (auto-start?   service-auto-start?              ; Boolean
+                 (default #t))
   (user-accounts service-user-accounts            ; list of <user-account>
                  (default '()))
   (user-groups   service-user-groups              ; list of <user-groups>
