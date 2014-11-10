@@ -26,6 +26,9 @@
                 (group "users")
 
                 ;; Adding the account to the "wheel" group
-                ;; makes it a sudoer.
-                (supplementary-groups '("wheel"))
+                ;; makes it a sudoer.  Adding it to "audio"
+                ;; and "video" allows the user to play sound
+                ;; and access the webcam.
+                (supplementary-groups '("wheel"
+                                        "audio" "video"))
                 (home-directory "/home/alice")))))
