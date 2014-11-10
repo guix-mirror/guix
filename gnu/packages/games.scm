@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,9 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages fontutils)
-  #:use-module (guix build-system gnu))
+  #:use-module (gnu packages bash)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial))
 
 (define-public gnubg
   (package
@@ -289,7 +292,7 @@ against the computer in a game of chess, either through the default terminal
 interface or via an external visual interface such as GNU XBoard.")
     (license gpl3+)))
 
-(define-public freedink-engine
+(define freedink-engine
   (package
     (name "freedink-engine")
     (version "108.4")
@@ -320,7 +323,7 @@ game data files but it also supports user-produced game mods or \"D-Mods\".
 To that extent, it also includes a front-end for managing all of your D-Mods.")
     (license gpl3+)))
 
-(define-public freedink-data
+(define freedink-data
   (package
     (name "freedink-data")
     (version "1.08.20140901")
@@ -342,6 +345,33 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
     (license gpl3+)))
 
 ;; TODO: Add freedink-dfarc when there's a wxWidgets package.
+
+(define-public freedink
+  ;; This is a wrapper that tells the engine where to find the data.
+  (package (inherit freedink-engine)
+    (name "freedink")
+    (build-system trivial-build-system)
+    (arguments
+     '(#:builder (begin
+                   (use-modules (guix build utils))
+
+                   (let* ((output     (assoc-ref %outputs "out"))
+                          (bin        (string-append output "/bin"))
+                          (executable (string-append bin "/freedink")))
+                     (mkdir-p bin)
+                     (call-with-output-file executable
+                       (lambda (port)
+                         (format port "#!~a/bin/sh
+exec ~a/bin/freedink -refdir ~a/share/dink\n"
+                                 (assoc-ref %build-inputs "bash")
+                                 (assoc-ref %build-inputs "engine")
+                                 (assoc-ref %build-inputs "data"))
+                         (chmod port #o777)))))
+       #:modules ((guix build utils))))
+    (inputs `(("engine" ,freedink-engine)
+              ("data" ,freedink-data)
+              ("bash" ,bash)))
+    (native-inputs '())))
 
 (define-public xboard
   (package
