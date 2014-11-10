@@ -694,6 +694,12 @@ downloads it and unpacks it;
 otherwise, it builds the package from source, locally
 (@pxref{Substitutes}).
 
+Control over the build environment is a feature that is also useful for
+developers.  The @command{guix environment} command allows developers of
+a package to quickly set up the right development environment for their
+package, without having to manually install the package's dependencies
+in their profile (@pxref{Invoking guix environment}).
+
 @node Invoking guix package
 @section Invoking @command{guix package}
 
@@ -1576,6 +1582,7 @@ Build systems are @code{<build-system>} objects.  The interface to
 create and manipulate them is provided by the @code{(guix build-system)}
 module, and actual build systems are exported by specific modules.
 
+@cindex bag (low-level package representation)
 Under the hood, build systems first compile package objects to
 @dfn{bags}.  A @dfn{bag} is like a package, but with less
 ornamentation---in other words, a bag is a lower-level representation of
@@ -2894,6 +2901,7 @@ and exit.
 @node Invoking guix environment
 @section Invoking @command{guix environment}
 
+@cindex reproducible build environments
 The purpose of @command{guix environment} is to assist hackers in
 creating reproducible development environments without polluting their
 package profile.  The @command{guix environment} tool takes one or more
