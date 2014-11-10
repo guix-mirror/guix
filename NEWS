@@ -10,6 +10,182 @@ Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.8 (since 0.7)
+
+** Package management
+
+*** New visual user interface in Emacs
+
+See “Emacs Interface” in the manual.
+
+*** New ‘guix environment’ command to produce development environment
+
+See “Invoking guix environment” in the manual.
+
+*** The ‘guix import’ command can now import packages from pipy.python.org
+
+See “Invoking guix import” in the manual.
+
+*** New ‘guix lint’ command, for use by Guix developers
+
+See “Invoking guix lint” in the manual.
+
+*** Packages can now be “grafted” with replacements of their dependencies
+
+See “Security Updates” in the manual.
+
+*** The distribution can be extended with ‘--load-path’ or $GUIX_PACKAGE_PATH
+
+This allows users to maintain their own package definitions, and make them
+visible to the various user interfaces.  See “Package Modules” in the manual.
+
+*** ‘guix package’ better reports package upgrades
+
+*** ‘guix package’ has a new ‘--switch-generation’ option
+
+See “Invoking guix package” in the manual.
+
+*** ‘guix-daemon’ has a new ‘--substitute-urls’ option
+
+See “Invoking guix-daemon” in the manual.
+
+** GNU distribution
+
+*** The stand-alone operating system now supports Linux mapped devices
+
+See “Mapped Devices” in the manual.
+
+*** New fields in ‘operating-system’ declarations, better documentation
+
+New fields include ‘hosts-file’, ‘mapped-devices’, and ‘swap-devices’.
+See “operating-system Reference” in the manual.
+
+*** New services: ‘dhcp-client-service’, ‘bitlbee-service’, ‘ntp-service’
+
+See “Services” in the manual.
+
+*** ‘grub-configuration’ declarations can now specify a theme
+
+See “GRUB Configuration” in the manual.
+
+*** The ‘base-initrd’ now has a different signature
+
+Existing uses in ‘operating-system’ declarations need to be updated.  See
+“Initial RAM Disk” in the manual for details.
+
+*** eudev is now used by default, instead of an old udev release
+
+*** ‘guix system vm’ has a new ‘--full-boot’ option
+
+See “Invoking guix system” in the manual.
+
+*** The ‘file’ command is now part of the package build environment
+
+Autoconf-generated ‘configure’ scripts for packages using Libtool use ‘file’
+to determine the target ABI, notably on MIPS, hence this change.
+
+*** Bootstrapping packages moved to (gnu packages commencement) modules
+
+** Programming interfaces
+
+*** New ‘ruby-build-system’, for Ruby packages
+
+See “Build Systems” in the manual.
+
+*** New ‘glib-or-gtk-build-system’, for packages using GLib schemas
+
+See “Build Systems” in the manual.
+
+*** ‘gnu-build-system’ has a new #:substitutable? parameter
+
+This allows packagers to mark a package as requiring a local build, thus
+preventing it from being substituted by a pre-built binary.
+
+*** ‘cmake-build-system’ has a new #:build-type parameter
+
+See “Build Systems” in the manual.
+
+*** The ‘supported-systems’ field of packages is used more consistently
+
+This allows packagers to prevent attempts to build a package on a given
+architecture when that architecture is known not to be supported.  The
+‘package-transitive-supported-systems’ procedure returns the intersection of
+the systems supported by the given package and by its dependencies.
+
+*** The ‘wrap-program’ procedure can now be called multiple times
+
+*** New ‘graft-derivations’ and ‘package-grafts’ procedures
+
+They implement “grafts”, as described under “Security Updates” in the manual.
+
+*** New “bag” intermediate representation for use by build systems
+
+“Bags” are used internally as an intermediate representation between packages
+and derivations.  See “Build Systems” in the manual.
+
+*** New (guix monad-repl) module, for monadic interaction at the REPL
+
+See “The Store Monad” in the manual.
+
+*** New (guix build emacs-utils) module, to facilitate building Emacs packages
+
+*** New (guix tests) module, with tools used by the test suite
+
+*** The internal ‘guix-register’ command now deduplicates files in store items
+
+*** Several system modules moved from (guix build …) to (gnu build …)
+
+Also, the (gnu build linux-boot) module has been introduced, with code
+typically used by initial RAM disks when booting on GNU/Linux-libre.
+
+*** (guix profiles) provides a representation of package transactions
+
+This factorizes code between ‘guix package’ and the Emacs user interface.
+
+** Native language support
+
+** Bugs fixed
+
+*** ‘guix-daemon’ now really deduplicates store items by default
+
+Deduplication means that identical files found in /gnu/store are stored only
+once, using hard links.  This feature was wrongfully disabled, and is now
+enabled by default.  The former ‘--disable-store-optimization’ option has been
+renamed to ‘--disable-deduplication’.
+
+*** ‘guix-daemon’ no longer uses ‘vfork’
+
+This could cause problems with ancient Linux kernel.
+
+*** Fixed compilation of ‘gccgo’ (<http://bugs.gnu.org/18101>)
+*** 'make clean' doesn't delete os-config.tmpl (<http://bugs.gnu.org/18243>)
+*** Fix handling of periods by fill-paragraph (<http://bugs.gnu.org/17468>)
+*** Produce a top-level Info 'dir' file (<http://bugs.gnu.org/18305>)
+*** guix offload ignores unreachable machines (<http://bugs.gnu.org/18070>)
+*** guix offload: Ignore EEXIST when registering a .drv as a GC root
+    (<http://bugs.gnu.org/18115>)
+*** perl-tk: Build sequentially (<http://bugs.gnu.org/18262>)
+*** download: Use the 'SERVER NAME' TLS extension when possible
+    (<http://bugs.gnu.org/18526>)
+*** libdaemon: Add alternate source URLs (<http://bugs.gnu.org/18639>)
+*** icu4c: Reinstate RUNPATH on shared libraries 
+    (<http://bugs.gnu.org/18695>)
+*** nss-mdns: Add alternate source URLs (<http://bugs.gnu.org/18704>)
+*** download: Add "Accept: */*" to the HTTP headers
+    (<http://bugs.gnu.org/18768>)
+*** guix-register: Do not attempt to create NIX_STORE_DIR 
+    (<http://bugs.gnu.org/18689>)
+*** Allow Linux-libre to find our 'modprobe' command
+    (<http://bugs.gnu.org/18525>)
+*** man-pages: Build sequentially (<http://bugs.gnu.org/18701>)
+*** Fix intermittent test failures involving GC (<http://bugs.gnu.org/18935>)
+*** guix import: pypi: Gracefully handle non-existent packages 
+    (<http://bugs.gnu.org/18831>)
+*** Make sure the shared library has the '.so' extension
+    (<http://bugs.gnu.org/18521>)
+*** pull: Use the build procedure provided by the newly-downloaded Guix.
+    (<http://bugs.gnu.org/18534>)
+
 * Changes in 0.7 (since 0.6)
 ** Package management
 *** Binaries for mips64el-linux now available from hydra.gnu.org
