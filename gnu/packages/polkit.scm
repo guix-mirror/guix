@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:select (lgpl2.0+ mpl2.0))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
@@ -27,6 +28,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages xml))
 
 (define-public mozjs
@@ -132,4 +134,34 @@ handling the policy that allows unprivileged processes to speak to
 privileged processes.  It is a framework for centralizing the decision
 making process with respect to granting access to privileged operations
 for unprivileged applications.")
+    (license lgpl2.0+)))
+
+(define-public polkit-qt
+  (package
+    (name "polkit-qt")
+    (version "1-0.112.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://download.kde.org/stable/apps/KDE4.x/admin/"
+                   name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1ip78x20hjqvm08kxhp6gb8hf6k5n6sxyx6kk2yvvq53djzh7yv7"))))
+    (build-system cmake-build-system)
+    (inputs
+      `(("glib" ,glib)
+        ("polkit" ,polkit)))
+    (propagated-inputs
+      `(("qt" ,qt-4))) ; according to the pkg-config files
+    (native-inputs
+      `(("pkg-config", pkg-config)))
+    (arguments
+      `(#:tests? #f)) ; there is a test subdirectory, but no test target
+    (home-page "http://api.kde.org/kdesupport-api/polkit-qt-1-apidocs/")
+    (synopsis "Qt frontend to the polkit library")
+    (description "Polkit-qt is a library that lets developers use the
+PolicyKit API through a Qt-styled API.  It is mainly a wrapper around
+QAction and QAbstractButton that lets you integrate those two component
+easily with PolicyKit.")
     (license lgpl2.0+)))
