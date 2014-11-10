@@ -1,6 +1,21 @@
 # List of source files which contain translatable strings.  These should be
-# only package modules.  Strings of the tools are in 'po/guix'.
+# only package modules (currently it's only a subset of them, but eventually
+# all of them should be listed here.)  Strings of the tools are in 'po/guix'.
+gnu/packages/aspell.scm
+gnu/packages/backup.scm
 gnu/packages/base.scm
-gnu/packages/guile.scm
-gnu/packages/lout.scm
 gnu/packages/databases.scm
+gnu/packages/gcc.scm
+gnu/packages/gettext.scm
+gnu/packages/guile.scm
+gnu/packages/inkscape.scm
+gnu/packages/linux.scm
+gnu/packages/lout.scm
+gnu/packages/mpd.scm
+gnu/packages/pdf.scm
+gnu/packages/ratpoison.scm
+gnu/packages/scanner.scm
+gnu/packages/scheme.scm
+gnu/packages/wordnet.scm
+gnu/packages/zip.scm
+gnu/packages/zsh.scm
