@@ -334,7 +334,7 @@ VAL is a list, call the function on each element of this list."
   'face 'guix-info-file-path
   'help-echo "Find file"
   'action (lambda (btn)
-            (find-file (button-label btn))))
+            (guix-find-file (button-label btn))))
 
 (define-button-type 'guix-url
   :supertype 'guix

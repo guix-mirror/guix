@@ -154,6 +154,12 @@ accessed with KEYS."
     (dolist (key keys val)
       (setq val (cdr (assq key val))))))
 
+(defun guix-find-file (file)
+  "Find FILE if it exists."
+  (if (file-exists-p file)
+      (find-file file)
+    (message "File '%s' does not exist." file)))
+
 
 ;;; Diff
 
