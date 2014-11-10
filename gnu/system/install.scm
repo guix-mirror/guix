@@ -112,7 +112,9 @@ the given target.")
              (stop #~(lambda (target)
                        ;; Delete the temporary directory, but leave everything
                        ;; mounted as there may still be processes using it
-                       ;; since 'user-processes' doesn't depend on us.
+                       ;; since 'user-processes' doesn't depend on us.  The
+                       ;; 'user-unmount' service will unmount TARGET
+                       ;; eventually.
                        (delete-file-recursively
                         (string-append target #$%backing-directory))))))))
 

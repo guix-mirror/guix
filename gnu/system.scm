@@ -269,16 +269,20 @@ from the initrd."
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
 bookkeeping."
+  (define known-fs
+    (map file-system-mount-point (operating-system-file-systems os)))
+
   (mlet* %store-monad ((mappings  (device-mapping-services os))
                        (root-fs   (root-file-system-service))
                        (other-fs  (other-file-system-services os))
+                       (unmount   (user-unmount-service known-fs))
                        (swaps     (swap-services os))
                        (procs     (user-processes-service
                                    (map (compose first service-provision)
                                         other-fs)))
                        (host-name (host-name-service
                                    (operating-system-host-name os))))
-    (return (cons* host-name procs root-fs
+    (return (cons* host-name procs root-fs unmount
                    (append other-fs mappings swaps)))))
 
 (define (operating-system-services os)

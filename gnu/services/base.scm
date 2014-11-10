@@ -38,6 +38,7 @@
   #:use-module (ice-9 format)
   #:export (root-file-system-service
             file-system-service
+            user-unmount-service
             device-mapping-service
             swap-service
             user-processes-service
@@ -143,6 +144,33 @@ names such as device-mapping services."
                 (chdir "/")
 
                 (umount #$target)
+                #f))))))
+
+(define (user-unmount-service known-mount-points)
+  "Return a service whose sole purpose is to unmount file systems not listed
+in KNOWN-MOUNT-POINTS when it is stopped."
+  (with-monad %store-monad
+    (return
+     (service
+      (documentation "Unmount manually-mounted file systems.")
+      (provision '(user-unmount))
+      (start #~(const #t))
+      (stop #~(lambda args
+                (define (known? mount-point)
+                  (member mount-point
+                          (cons* "/proc" "/sys"
+                                 '#$known-mount-points)))
+
+                (for-each (lambda (mount-point)
+                            (format #t "unmounting '~a'...~%" mount-point)
+                            (catch 'system-error
+                              (lambda ()
+                                (umount mount-point))
+                              (lambda args
+                                (let ((errno (system-error-errno args)))
+                                  (format #t "failed to unmount '~a': ~a~%"
+                                          mount-point (strerror errno))))))
+                          (filter (negate known?) (mount-points)))
                 #f))))))
 
 (define %do-not-kill-file
