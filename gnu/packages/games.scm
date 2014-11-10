@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
+;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,8 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages fontutils)
   #:use-module (guix build-system gnu))
 
 (define-public gnubg
@@ -285,6 +288,60 @@ asynchronously and at a user-defined speed.")
 against the computer in a game of chess, either through the default terminal
 interface or via an external visual interface such as GNU XBoard.")
     (license gpl3+)))
+
+(define-public freedink-engine
+  (package
+    (name "freedink-engine")
+    (version "108.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freedink/freedink-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "08c51imfjfcydm7h0va09z8qfw5nc837bi2x754ni2z737hb5kw2"))))
+    (build-system gnu-build-system)
+    (arguments `(#:configure-flags '("--disable-embedded-resources")))
+    (native-inputs `(("gettext" ,gnu-gettext)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("sdl" ,sdl)
+              ("sdl-image" ,sdl-image)
+              ("sdl-mixer" ,sdl-mixer)
+              ("sdl-ttf" ,sdl-ttf)
+              ("sdl-gfx" ,sdl-gfx)
+              ("fontconfig" ,fontconfig)
+              ("check" ,check)))
+    (home-page "http://www.gnu.org/software/freedink/")
+    (synopsis "Twisted adventures of young pig farmer Dink Smallwood")
+    (description
+     "GNU FreeDink is a free and portable re-implementation of the engine
+for the role-playing game Dink Smallwood.  It supports not only the original
+game data files but it also supports user-produced game mods or \"D-Mods\".
+To that extent, it also includes a front-end for managing all of your D-Mods.")
+    (license gpl3+)))
+
+(define-public freedink-data
+  (package
+    (name "freedink-data")
+    (version "1.08.20140901")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freedink/freedink-data-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "04f1aa8gfz30qkgv7chjz5n1s8v5hbqs01h2113cq1ylm3isd5sp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-delete 'configure (alist-delete 'check %standard-phases))
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (home-page "http://www.gnu.org/software/freedink/")
+    (synopsis "Game data for GNU Freedink")
+    (description
+     "This package contains the game data of GNU Freedink.")
+    (license gpl3+)))
+
+;; TODO: Add freedink-dfarc when there's a wxWidgets package.
 
 (define-public xboard
   (package
