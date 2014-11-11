@@ -64,6 +64,11 @@ See “operating-system Reference” in the manual.
 
 See “Services” in the manual.
 
+*** Free firmware can be loaded
+
+This notably enables support for some Atheros-based WiFi devices (ath9k-htc.)
+See “operating-system Reference” in the manual.
+
 *** ‘grub-configuration’ declarations can now specify a theme
 
 See “GRUB Configuration” in the manual.
@@ -83,8 +88,6 @@ See “Invoking guix system” in the manual.
 
 Autoconf-generated ‘configure’ scripts for packages using Libtool use ‘file’
 to determine the target ABI, notably on MIPS, hence this change.
-
-*** Bootstrapping packages moved to (gnu packages commencement) modules
 
 ** Programming interfaces
 
@@ -142,6 +145,7 @@ typically used by initial RAM disks when booting on GNU/Linux-libre.
 
 This factorizes code between ‘guix package’ and the Emacs user interface.
 
+*** Bootstrapping packages moved to (gnu packages commencement) modules
 ** Native language support
 
 ** Bugs fixed
