@@ -658,10 +658,10 @@ we're running in the final root."
 
 (define (kernel->grub-label kernel)
   "Return a label for the GRUB menu entry that boots KERNEL."
-  (string-append "GNU system with "
+  (string-append "GNU with "
                  (string-titlecase (package-name kernel)) " "
                  (package-version kernel)
-                 " (technology preview)"))
+                 " (alpha)"))
 
 (define* (operating-system-grub.cfg os #:optional (old-entries '()))
   "Return the GRUB configuration file for OS.  Use OLD-ENTRIES to populate the
