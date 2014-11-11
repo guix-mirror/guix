@@ -119,12 +119,13 @@ in the Mozilla clients.")
     (build-system gnu-build-system)
     (inputs
       `(("expat" ,expat)
-        ("glib" ,glib)
         ("glib:bin" ,glib "bin") ; for glib-mkenums
         ("intltool" ,intltool)
         ("linux-pam" ,linux-pam)
         ("mozjs" ,mozjs)
         ("nspr" ,nspr)))
+    (propagated-inputs
+      `(("glib" ,glib))) ; required by polkit-gobject-1.pc
     (native-inputs
       `(("pkg-config", pkg-config)))
     (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
@@ -150,8 +151,7 @@ for unprivileged applications.")
                "1ip78x20hjqvm08kxhp6gb8hf6k5n6sxyx6kk2yvvq53djzh7yv7"))))
     (build-system cmake-build-system)
     (inputs
-      `(("glib" ,glib)
-        ("polkit" ,polkit)))
+      `(("polkit" ,polkit)))
     (propagated-inputs
       `(("qt" ,qt-4))) ; according to the pkg-config files
     (native-inputs
