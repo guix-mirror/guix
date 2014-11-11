@@ -79,6 +79,7 @@ MODULES =					\
   guix/build/graft.scm				\
   guix/packages.scm				\
   guix/import/utils.scm				\
+  guix/import/gnu.scm				\
   guix/import/snix.scm				\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
@@ -93,6 +94,7 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
   guix/scripts/lint.scm				\
+  guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/environment.scm			\
   guix.scm					\

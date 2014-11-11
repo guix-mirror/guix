@@ -64,7 +64,10 @@
 
             releases
             latest-release
+            gnu-release-archive-types
             gnu-package-name->name+version
+
+            download-tarball
             package-update-path
             package-update
             update-package-source))
@@ -381,6 +384,11 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
                  (begin
                    (ftp-close conn)
                    #f)))))))))
+
+(define (gnu-release-archive-types release)
+  "Return the available types of archives for RELEASE---a list of strings such
+as \"gz\" or \"xz\"."
+  (map file-extension (gnu-release-files release)))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
