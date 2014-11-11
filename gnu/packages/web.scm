@@ -157,7 +157,8 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "archive/" version ".tar.gz"))
               (sha256
                (base32
-                "10s7xxxx6pp4ydp3san69sa6q379ih3pv92fyi565ggmlw8igv7a"))))
+                "10s7xxxx6pp4ydp3san69sa6q379ih3pv92fyi565ggmlw8igv7a"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)))
     ;; The release tarball lacks the generated files.
