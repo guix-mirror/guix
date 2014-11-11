@@ -3385,6 +3385,13 @@ The system bootloader configuration object.  @xref{GRUB Configuration}.
 A two-argument monadic procedure that returns an initial RAM disk for
 the Linux kernel.  @xref{Initial RAM Disk}.
 
+@item @code{firmware} (default: @var{%base-firmware})
+@cindex firmware
+List of firmware packages loadable by the operating system kernel.
+
+The default includes firmware needed for Atheros-based WiFi devices
+(Linux-libre module @code{ath9k}.)
+
 @item @code{host-name}
 The host name.
 

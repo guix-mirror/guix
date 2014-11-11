@@ -28,6 +28,7 @@
             activate-setuid-programs
             activate-/bin/sh
             activate-modprobe
+            activate-firmware
             activate-current-system))
 
 ;;; Commentary:
@@ -259,6 +260,15 @@ copy SOURCE to TARGET."
     (lambda (port)
       (display modprobe port))))
 
+(define (activate-firmware directory)
+  "Tell the kernel to look for device firmware under DIRECTORY.  This
+mechanism bypasses udev: it allows Linux to handle firmware loading directly
+by itself, without having to resort to a \"user helper\"."
+  (call-with-output-file "/sys/module/firmware_class/parameters/path"
+    (lambda (port)
+      (display directory port))))
+
+
 (define %current-system
   ;; The system that is current (a symlink.)  This is not necessarily the same
   ;; as the system we booted (aka. /run/booted-system) because we can re-build

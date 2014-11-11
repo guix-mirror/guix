@@ -39,6 +39,7 @@
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages firmware)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
@@ -79,6 +80,7 @@
             local-host-aliases
             %setuid-programs
             %base-packages
+            %base-firmware
 
             luks-device-mapping))
 
@@ -99,6 +101,8 @@
 
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
           (default base-initrd))
+  (firmware operating-system-firmware             ; list of packages
+            (default %base-firmware))
 
   (host-name operating-system-host-name)          ; string
   (hosts-file operating-system-hosts-file         ; M item | #f
@@ -158,6 +162,20 @@ file."
                 files)))
 
   (gexp->derivation name builder))
+
+(define (directory-union name things)
+  "Return a directory that is the union of THINGS."
+  (match things
+    ((one)
+     ;; Only one thing; return it.
+     (with-monad %store-monad (return one)))
+    (_
+     (gexp->derivation name
+                       #~(begin
+                           (use-modules (guix build union))
+                           (union-build #$output '#$things))
+                       #:modules '((guix build union))
+                       #:local-build? #t))))
 
 
 ;;;
@@ -297,6 +315,10 @@ explicitly appear in OS."
 ;;;
 ;;; /etc.
 ;;;
+
+(define %base-firmware
+  ;; Firmware usable by default.
+  (list ath9k-htc-firmware))
 
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
@@ -518,6 +540,8 @@ etc."
                        (modules  (imported-modules %modules))
                        (compiled (compiled-modules %modules))
                        (modprobe (modprobe-wrapper))
+                       (firmware (directory-union
+                                  "firmware" (operating-system-firmware os)))
                        (accounts (operating-system-accounts os)))
     (define setuid-progs
       (operating-system-setuid-programs os))
@@ -562,6 +586,10 @@ etc."
 
                     ;; Tell the kernel to use our 'modprobe' command.
                     (activate-modprobe #$modprobe)
+
+                    ;; Tell the kernel where firmware is.
+                    (activate-firmware
+                     (string-append #$firmware "/lib/firmware"))
 
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.
