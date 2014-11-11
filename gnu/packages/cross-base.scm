@@ -45,6 +45,12 @@
         `(cons ,(string-append "--target=" target)
                ,flags))))))
 
+(define (package-with-patch original patch)
+  "Return package ORIGINAL with PATCH applied."
+  (package (inherit original)
+    (source (origin (inherit (package-source original))
+              (patches (list patch))))))
+
 (define (cross-binutils target)
   "Return a cross-Binutils for TARGET."
   (let ((binutils (package (inherit binutils)
@@ -64,7 +70,14 @@
                         ;; practice the RUNPATH of target libs only refers to
                         ;; target libs, not native libs, so this is safe.
                         `(cons "--with-sysroot=/" ,flags)))))))
-    (cross binutils target)))
+
+    ;; For Xtensa, apply Qualcomm's patch.
+    (cross (if (string-prefix? "xtensa-" target)
+               (package-with-patch binutils
+                                   (search-patch
+                                    "ath9k-htc-firmware-binutils.patch"))
+               binutils)
+           target)))
 
 (define (cross-gcc-arguments target libc)
   "Return build system arguments for a cross-gcc for TARGET, using LIBC (which
@@ -165,6 +178,13 @@ may be either a libc package or #f.)"
        ;; for instance.
        #f))))
 
+(define (cross-gcc-patches target)
+  "Return GCC patches needed for TARGET."
+  (cond ((string-prefix? "xtensa-" target)
+         ;; Patch by Qualcomm needed to build the ath9k-htc firmware.
+         (list (search-patch "ath9k-htc-firmware-gcc.patch")))
+        (else '())))
+
 (define* (cross-gcc target
                     #:optional (xbinutils (cross-binutils target)) libc)
   "Return a cross-compiler for TARGET, where TARGET is a GNU triplet.  Use
@@ -176,8 +196,8 @@ GCC that does not target a libc; otherwise, target that libc."
                          target))
     (source (origin (inherit (package-source gcc-4.8))
               (patches
-               (list (search-patch
-                      "gcc-cross-environment-variables.patch")))))
+               (cons (search-patch "gcc-cross-environment-variables.patch")
+                     (cross-gcc-patches target)))))
 
     ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
     ;; found by default, etc.

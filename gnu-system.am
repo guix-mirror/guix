@@ -311,6 +311,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
+  gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
+  gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
