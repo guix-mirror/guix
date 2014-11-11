@@ -34,6 +34,7 @@
   #:use-module (gnu system grub)
   #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -216,9 +217,15 @@ it atomically, and then run OS's activation script."
           #f
           (apply throw args)))))
 
+(define (seconds->string seconds)
+  "Return a string representing the date for SECONDS."
+  (let ((time (make-time time-utc 0 seconds)))
+    (date->string (time-utc->date time)
+                  "~Y-~m-~d ~H:~M")))
+
 (define* (previous-grub-entries #:optional (profile %system-profile))
   "Return a list of 'menu-entry' for the generations of PROFILE."
-  (define (system->grub-entry system)
+  (define (system->grub-entry system number time)
     (unless-file-not-found
      (call-with-input-file (string-append system "/parameters")
        (lambda (port)
@@ -228,7 +235,9 @@ it atomically, and then run OS's activation script."
                               ('kernel linux)
                               _ ...)
             (menu-entry
-             (label label)
+             (label (string-append label " (#"
+                                   (number->string number) ", "
+                                   (seconds->string time) ")"))
              (linux linux)
              (linux-arguments
               (list (string-append "--root=" root)
@@ -240,9 +249,14 @@ it atomically, and then run OS's activation script."
                      system)
             #f))))))
 
-  (let ((systems (map (cut generation-file-name profile <>)
-                      (generation-numbers profile))))
-    (filter-map system->grub-entry systems)))
+  (let* ((numbers (generation-numbers profile))
+         (systems (map (cut generation-file-name profile <>)
+                       numbers))
+         (times   (map (lambda (system)
+                         (unless-file-not-found
+                          (stat:mtime (lstat system))))
+                       systems)))
+    (filter-map system->grub-entry systems numbers times)))
 
 
 ;;;
