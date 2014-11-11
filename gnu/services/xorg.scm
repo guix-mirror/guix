@@ -118,7 +118,7 @@ EndSection
 
           (apply execl (string-append #$xorg-server "/bin/X")
                  (string-append #$xorg-server "/bin/X") ;argv[0]
-                 "-ac" "-logverbose" "-verbose"
+                 "-logverbose" "-verbose"
                  "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
                  "-config" #$config
                  "-nolisten" "tcp" "-terminate"
