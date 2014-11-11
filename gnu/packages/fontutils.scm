@@ -265,6 +265,7 @@ smooth contours with constant curvature at the spline joins.")
        (method url-fetch)
        (uri (string-append "https://github.com/fontforge/libuninameslist/"
                            "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "016zxffpc8iwpxxmnjkdirn6dsbcvdb2wjdrp123sf79f4nsynyj"))))
