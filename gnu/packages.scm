@@ -348,13 +348,16 @@ it."
                                           #:ftp-open ftp-open*
                                           #:ftp-close (const #f))
                           (_ "looking for the latest release of GNU ~a...") name)
-            ((latest-version . _)
-             (when (version>? latest-version full-name)
-               (format (current-error-port)
-                       (_ "~a: note: using ~a \
+            ((? gnu-release? release)
+             (let ((latest-version
+                    (string-append (gnu-release-package release) "-"
+                                   (gnu-release-version release))))
+              (when (version>? latest-version full-name)
+                (format (current-error-port)
+                        (_ "~a: note: using ~a \
 but ~a is available upstream~%")
-                       (location->string (package-location package))
-                       full-name latest-version)))
+                        (location->string (package-location package))
+                        full-name latest-version))))
             (_ #t)))))
     (lambda (key . args)
       ;; Silently ignore networking errors rather than preventing

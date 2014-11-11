@@ -56,6 +56,12 @@
             find-packages
             gnu-package?
 
+            gnu-release?
+            gnu-release-package
+            gnu-release-version
+            gnu-release-directory
+            gnu-release-files
+
             releases
             latest-release
             gnu-package-name->name+version
@@ -189,6 +195,13 @@ network to check in GNU's database."
 ;;; Latest release.
 ;;;
 
+(define-record-type* <gnu-release> gnu-release make-gnu-release
+  gnu-release?
+  (package    gnu-release-package)
+  (version    gnu-release-version)
+  (directory  gnu-release-directory)
+  (files      gnu-release-files))
+
 (define (ftp-server/directory project)
   "Return the FTP server and directory where PROJECT's tarball are
 stored."
@@ -227,9 +240,9 @@ stored."
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
 
-(define (release-file project file)
+(define (release-file? project file)
   "Return #f if FILE is not a release tarball of PROJECT, otherwise return
-PACKAGE-VERSION."
+true."
   (and (not (string-suffix? ".sig" file))
        (and=> (regexp-exec %tarball-rx file)
               (lambda (match)
@@ -237,7 +250,37 @@ PACKAGE-VERSION."
                 (equal? project (match:substring match 1))))
        (not (regexp-exec %alpha-tarball-rx file))
        (let ((s (sans-extension file)))
-         (and (regexp-exec %package-name-rx s) s))))
+         (regexp-exec %package-name-rx s))))
+
+(define (tarball->version tarball)
+  "Return the version TARBALL corresponds to.  TARBALL is a file name like
+\"coreutils-8.23.tar.xz\"."
+  (let-values (((name version)
+                (gnu-package-name->name+version (sans-extension tarball))))
+    version))
+
+(define (coalesce-releases releases)
+  "Coalesce the elements of RELEASES that correspond to the same version."
+  (define (same-version? r1 r2)
+    (string=? (gnu-release-version r1) (gnu-release-version r2)))
+
+  (define (release>? r1 r2)
+    (version>? (gnu-release-version r1) (gnu-release-version r2)))
+
+  (fold (lambda (release result)
+          (match result
+            ((head . tail)
+             (if (same-version? release head)
+                 (cons (gnu-release
+                        (inherit release)
+                        (files (append (gnu-release-files release)
+                                       (gnu-release-files head))))
+                       tail)
+                 (cons release result)))
+            (()
+             (list release))))
+        '()
+        (sort releases release>?)))
 
 (define (releases project)
   "Return the list of releases of PROJECT as a list of release name/directory
@@ -251,7 +294,7 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
       (match directories
         (()
          (ftp-close conn)
-         result)
+         (coalesce-releases result))
         ((directory rest ...)
          (let* ((files   (ftp-list conn directory))
                 (subdirs (filter-map (match-lambda
@@ -267,10 +310,15 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                   ;; in /gnu/guile, filter out guile-oops and
                   ;; guile-www; in mit-scheme, filter out binaries.
                   (filter-map (match-lambda
-                                ((file 'file . _)
-                                 (and=> (release-file project file)
-                                        (cut cons <> directory)))
-                                (_ #f))
+                               ((file 'file . _)
+                                (if (release-file? project file)
+                                    (gnu-release
+                                     (package project)
+                                     (version (tarball->version file))
+                                     (directory directory)
+                                     (files (list file)))
+                                    #f))
+                               (_ #f))
                               files)
                   result))))))))
 
@@ -280,6 +328,10 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
 open (resp. close) FTP connections; this can be useful to reuse connections."
   (define (latest a b)
     (if (version>? a b) a b))
+
+  (define (latest-release a b)
+    (if (version>? (gnu-release-version a) (gnu-release-version b))
+        a b))
 
   (define contains-digit?
     (cut string-any char-set:digit <>))
@@ -307,14 +359,19 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
         (match subdirs
           (()
            ;; No sub-directories, so assume that tarballs are here.
-           (let ((files (filter-map (match-lambda
-                                     ((file 'file . _)
-                                      (release-file project file))
-                                     (_ #f))
-                                    entries)))
+           (let ((releases (filter-map (match-lambda
+                                        ((file 'file . _)
+                                         (and (release-file? project file)
+                                              (gnu-release
+                                               (package project)
+                                               (version
+                                                (tarball->version file))
+                                               (directory directory)
+                                               (files (list file)))))
+                                        (_ #f))
+                                       entries)))
              (ftp-close conn)
-             (and=> (reduce latest #f files)
-                    (cut cons <> directory))))
+             (reduce latest-release #f (coalesce-releases releases))))
           ((subdirs ...)
            ;; Assume that SUBDIRS correspond to versions, and jump into the
            ;; one with the highest version number.
@@ -346,11 +403,9 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
   "Return an update path for PACKAGE, or #f if no update is needed."
   (and (gnu-package? package)
        (match (latest-release (package-name package))
-         ((name+version . directory)
-          (let-values (((_ new-version)
-                        (package-name->name+version name+version)))
-            (and (version>? name+version (package-full-name package))
-                 `(,new-version . ,directory))))
+         (($ <gnu-release> name version directory)
+          (and (version>? version (package-version package))
+               `(,version . ,directory)))
          (_ #f))))
 
 (define* (download-tarball store project directory version
