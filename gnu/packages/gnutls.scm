@@ -63,7 +63,7 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.19")
+    (version "3.2.20")
     (source (origin
              (method url-fetch)
              (uri
@@ -74,8 +74,7 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1krx33ab2ijwfz71f1ba8labxfsic7jhlhv6rvjsyw566jj9a3d2"))
-             (patches (list (search-patch "gnutls-server-name-fix.patch")))))
+               "165mpmm506jgpiffgf0s01rrn8c14qkan1saaa79dvf3g1z0arvr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
