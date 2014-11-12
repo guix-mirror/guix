@@ -23,6 +23,7 @@
 
 GNU_SYSTEM_MODULES =				\
   gnu.scm					\
+  gnu/artwork.scm				\
   gnu/packages.scm				\
   gnu/packages/abiword.scm			\
   gnu/packages/acct.scm				\

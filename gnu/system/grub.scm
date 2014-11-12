@@ -24,7 +24,7 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix download)
-  #:use-module (guix git-download)
+  #:use-module (gnu artwork)
   #:autoload   (gnu packages grub) (grub)
   #:autoload   (gnu packages inkscape) (inkscape)
   #:autoload   (gnu packages imagemagick) (imagemagick)
@@ -76,16 +76,6 @@
                    (default '((fg . cyan) (bg . blue))))
   (color-highlight grub-theme-color-highlight
                    (default '((fg . white) (bg . blue)))))
-
-(define %artwork-repository
-  (origin
-    (method git-fetch)
-    (uri (git-reference
-          (url "git://git.savannah.gnu.org/guix/guix-artwork.git")
-          (commit "281157a")))
-    (sha256
-     (base32
-      "02x1myh013mzqnr28d4k1mxs4malv5vszpxdwkjarbhbbkchypz5"))))
 
 (define %background-image
   (grub-image

@@ -17,8 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services xorg)
-  #:use-module (guix packages)
-  #:use-module (guix git-download)
+  #:use-module (gnu artwork)
   #:use-module (gnu services)
   #:use-module (gnu system linux)                 ; 'pam-service'
   #:use-module ((gnu packages base) #:select (canonical-package))
@@ -161,16 +160,6 @@ EndSection
 ;;;
 ;;; SLiM log-in manager.
 ;;;
-
-(define %artwork-repository
-  (origin
-    (method git-fetch)
-    (uri (git-reference
-          (url "git://git.savannah.gnu.org/guix/guix-artwork.git")
-          (commit "71d77b1")))
-    (sha256
-     (base32
-      "03j0fwh6j5knzbfjj3cs0a30cssy706p18b8x7d1p91p29hlzjif"))))
 
 (define %default-slim-theme
   ;; Theme based on work by Felipe López.
