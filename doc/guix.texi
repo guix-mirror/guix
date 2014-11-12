@@ -3964,7 +3964,9 @@ there is no @code{xorg-service} procedure.  Instead, the X server is
 started by the @dfn{login manager}, currently SLiM.
 
 @deffn {Monadic Procedure} slim-service [#:allow-empty-passwords? #f] @
-  [#:auto-login? #f] [#:default-user ""] [#:startx]
+  [#:auto-login? #f] [#:default-user ""] [#:startx] @
+  [#:theme @var{%default-slim-theme}] @
+  [#:theme-name @var{%default-slim-theme-name}]
 Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
 @code{xorg-start-command}.
@@ -3972,7 +3974,17 @@ turn starts the X display server with @var{startx}, a command as returned by
 When @var{allow-empty-passwords?} is true, allow logins with an empty
 password.  When @var{auto-login?} is true, log in automatically as
 @var{default-user}.
+
+If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
+@var{theme} must be a gexp denoting the name of a directory containing the
+theme to use.  In that case, @var{theme-name} specifies the name of the
+theme.
 @end deffn
+
+@defvr {Scheme Variable} %default-theme
+@defvrx {Scheme Variable} %default-theme-name
+The G-Expression denoting the default SLiM theme and its name.
+@end defvr
 
 @deffn {Monadic Procedure} xorg-start-command [#:guile] @
   [#:drivers '()] [#:resolutions '()] [#:xorg-server @var{xorg-server}]

@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services xorg)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (gnu services)
   #:use-module (gnu system linux)                 ; 'pam-service'
   #:use-module ((gnu packages base) #:select (canonical-package))
@@ -35,6 +37,9 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (xorg-start-command
+
+            %default-slim-theme
+            %default-slim-theme-name
             slim-service))
 
 ;;; Commentary:
@@ -152,9 +157,35 @@ EndSection
 
   (gexp->script "xinitrc" builder))
 
+
+;;;
+;;; SLiM log-in manager.
+;;;
+
+(define %artwork-repository
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "git://git.savannah.gnu.org/guix/guix-artwork.git")
+          (commit "71d77b1")))
+    (sha256
+     (base32
+      "03j0fwh6j5knzbfjj3cs0a30cssy706p18b8x7d1p91p29hlzjif"))))
+
+(define %default-slim-theme
+  ;; Theme based on work by Felipe López.
+  #~(string-append #$%artwork-repository "/slim"))
+
+(define %default-slim-theme-name
+  ;; This must be the name of the sub-directory in %DEFAULT-SLIM-THEME that
+  ;; contains the actual theme files.
+  "0.8")
+
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
                        (default-user "")
+                       (theme %default-slim-theme)
+                       (theme-name %default-slim-theme-name)
                        (xauth xauth) (dmd dmd) (bash bash)
                        startx)
   "Return a service that spawns the SLiM graphical login manager, which in
@@ -163,7 +194,13 @@ turn starts the X display server with @var{startx}, a command as returned by
 
 When @var{allow-empty-passwords?} is true, allow logins with an empty
 password.  When @var{auto-login?} is true, log in automatically as
-@var{default-user}."
+@var{default-user}.
+
+If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
+@var{theme} must be a gexp denoting the name of a directory containing the
+theme to use.  In that case, @var{theme-name} specifies the name of the
+theme."
+
   (define (slim.cfg)
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))
                         (xinitrc (xinitrc)))
@@ -181,9 +218,13 @@ sessions   wmaker,ratpoison
 
 halt_cmd " dmd "/sbin/halt
 reboot_cmd " dmd "/sbin/reboot
-" (if auto-login?
-      (string-append "auto_login yes\ndefault_user " default-user)
-      ""))))
+"
+(if auto-login?
+    (string-append "auto_login yes\ndefault_user " default-user "\n")
+    "")
+(if theme-name
+    (string-append "current_theme " theme-name "\n")
+    ""))))
 
   (mlet %store-monad ((slim.cfg (slim.cfg)))
     (return
@@ -200,7 +241,10 @@ reboot_cmd " dmd "/sbin/reboot
            (fork+exec-command
             (list (string-append #$slim "/bin/slim") "-nodaemon")
             #:environment-variables
-            (list (string-append "SLIM_CFGFILE=" #$slim.cfg)))))
+            (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
+                  #$@(if theme
+                         (list #~(string-append "SLIM_THEMESDIR=" #$theme))
+                         #~())))))
       (stop #~(make-kill-destructor))
       (respawn? #t)
       (pam-services
