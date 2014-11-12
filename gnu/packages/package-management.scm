@@ -36,6 +36,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages bdw-gc))
 
@@ -75,7 +76,8 @@
                    (copy "mips64el")
                    #t)
                  %standard-phases)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("emacs" ,emacs)))           ;for guix.el (0.8)
     (inputs
      (let ((boot-guile (lambda (arch hash)
                          (origin
