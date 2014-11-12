@@ -290,14 +290,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.8.0.3")
+    (version "4.9.0.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://code.call-cc.org/releases/4.8.0/chicken-"
+             (uri (string-append "http://code.call-cc.org/releases/4.9.0/chicken-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1hwrnc2dhgbnz3mlpcb4qvg76kwsfzqylw24gxyy91jmygk1853a"))))
+               "0598mar1qswfd8hva9nqs88zjn02lzkqd8fzdd21dz1nki1prpq4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
