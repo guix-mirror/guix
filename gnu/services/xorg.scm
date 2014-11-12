@@ -148,11 +148,14 @@ EndSection
           (false-if-exception (execl file file)))
 
         ;; Then try a pre-configured session type.
-        (match (command-line)
-          ((_ "ratpoison")
-           (execl (string-append #$ratpoison "/bin/ratpoison")))
-          (_
-           (execl (string-append #$windowmaker "/bin/wmaker"))))))
+        (let ((ratpoison (string-append #$ratpoison "/bin/ratpoison"))
+              (wmaker    (string-append #$windowmaker "/bin/wmaker")))
+          (match (command-line)
+            ((_ "ratpoison")
+             (execl ratpoison ratpoison))
+            (_
+             ;; 'wmaker' does execvp(argv[0]), so we really can't mess up.
+             (execl wmaker wmaker))))))
 
   (gexp->script "xinitrc" builder))
 
