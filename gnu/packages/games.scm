@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages perl)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial))
 
@@ -462,3 +464,37 @@ you control to bounce a ball around the game zone destroying blocks with a
 proton ball.  Each block carries a different point value.  The more blocks you
 destroy, the better your score.  The person with the highest score wins.")
     (license (x11-style "file://COPYING" "Very similar to the X11 licence."))))
+
+(define-public gtypist
+  (package
+    (name "gtypist")
+    (version "2.9.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gtypist/gtypist-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0xzrkkmj0b1dw3yr0m9hml2y634cc4h61im6zwcq57s7285z8fn1"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; We do not provide `ncurses.h' within an `ncursesw'
+               ;; sub-directory, so patch the source accordingly.  See
+               ;; <http://bugs.gnu.org/19018>.
+               '(for-each (lambda (file)
+                            (substitute* file
+                              (("ncursesw/ncurses.h")
+                               "ncurses.h")))
+                          (find-files "." "configure$|\\.c$")))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)
+              ("perl" ,perl)))
+    (home-page "http://www.gnu.org/software/gtypist/")
+    (synopsis "Typing tutor")
+    (description
+     "GNU Typist is a universal typing tutor.  It can be used to learn and
+practice touch-typing.  Several tutorials are included; in addition to
+tutorials for the standard QWERTY layout, there are also tutorials for the
+alternative layouts Dvorak and Colemak, as well as for the numpad.  Tutorials
+are primarily in English, however some in other languages are provided.")
+    (license gpl3+)))
