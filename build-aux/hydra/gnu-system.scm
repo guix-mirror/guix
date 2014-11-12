@@ -151,7 +151,7 @@ system.")
                    (run-with-store store
                      (system-disk-image installation-os
                                         #:disk-image-size
-                                        (* 630 MiB)))))
+                                        (* 800 MiB)))))
       '()))
 
 (define job-name
