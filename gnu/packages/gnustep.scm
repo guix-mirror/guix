@@ -40,17 +40,31 @@
                 "1i3dw1yagsa3rs9x2na2ynqlgmbahayws0kz4vl00fla6550nns3"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'wrap
+     '(#:phases (alist-cons-before
+                 'configure 'pre-configure
                  (lambda* (#:key outputs #:allow-other-keys)
+                   ;; 'wmaker' wants to invoke 'wmaker.inst' the first time,
+                   ;; and the 'wmsetbg', so make sure it uses the right ones.
+                   ;; We can't use a wrapper here because that would pollute
+                   ;; $PATH in the whole session.
                    (let* ((out (assoc-ref outputs "out"))
                           (bin (string-append out "/bin")))
-                     ;; 'wmaker' wants to invoke 'wmaker.inst' the first time,
-                     ;; which in turn wants to invoke 'wmmenugen' etc., so
-                     ;; make sure everything is in $PATH.
-                     (wrap-program (string-append bin "/wmaker")
-                                   `("PATH" ":" prefix (,bin)))))
-                 %standard-phases)))
+                     (substitute* "src/main.c"
+                       (("\"wmaker\\.inst")
+                        (string-append "\"" bin "/wmaker.inst")))
+                     (substitute* '("src/defaults.c" "WPrefs.app/Menu.c")
+                       (("\"wmsetbg")
+                        (string-append "\"" bin "/wmsetbg")))))
+                 (alist-cons-after
+                  'install 'wrap
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      ;; In turn, 'wmaker.inst' wants to invoke 'wmmenugen'
+                      ;; etc., so make sure everything is in $PATH.
+                      (wrap-program (string-append bin "/wmaker.inst")
+                                    `("PATH" ":" prefix (,bin)))))
+                  %standard-phases))))
     (inputs
      `(("libxmu" ,libxmu)
        ("libxft" ,libxft)
