@@ -23,16 +23,22 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages perl))
 
+(define %ftp-base
+  "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/")
+
 (define-public lsof
   (package
    (name "lsof")
-   (version "4.87")
+   (version "4.88")
    (source (origin
             (method url-fetch)
-            (uri (string-append "ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_"
-                                version ".tar.bz2"))
-            (sha256 (base32
-                     "0b6si72sml7gr9784ak491cxxbm9mx5bh174yg6rrirbv04kgpfz"))))
+            (uri (list (string-append %ftp-base "lsof_"
+                                      version ".tar.bz2")
+                       (string-append %ftp-base "OLD/lsof_"
+                                      version ".tar.bz2")))
+            (sha256
+             (base32
+              "16y9wm26rg81mihnzcbdg8h8vhxmq8kn62ssxb8cqydp4q79nvzy"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)))
    (arguments
