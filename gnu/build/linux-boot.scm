@@ -93,7 +93,7 @@ Return the value associated with OPTION, or #f on failure."
 with the given MAJOR number, starting with MINOR."
   (mknod base 'block-special #o644 (device-number major minor))
   (let loop ((i 1))
-    (when (< i 6)
+    (when (< i 16)
       (mknod (string-append base (number->string i))
              'block-special #o644 (device-number major (+ minor i)))
       (loop (+ i 1)))))
