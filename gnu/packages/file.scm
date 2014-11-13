@@ -26,6 +26,7 @@
 
 (define-public file
   (package
+   (replacement file/fixed)
    (name "file")
    (version "5.19")
    (source (origin
@@ -44,3 +45,15 @@ extensions to tell you the type of a file, but looks at the actual contents
 of the file.")
    (license bsd-2)
    (home-page "http://www.darwinsys.com/file/")))
+
+(define file/fixed                                ;fix for CVE-2014-3710
+  (let ((real-version "5.20"))
+    (package (inherit file)
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
+                                    real-version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0iyjs9z8kp43gz7gva4j67h4p0n53f7q8x3ibai9s01sp3xnphsv"))))
+      (replacement #f))))
