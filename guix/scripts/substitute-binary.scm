@@ -731,8 +731,8 @@ substituter disabled~%")
           ;; Tell the daemon what the expected hash of the Nar itself is.
           (format #t "~a~%" (narinfo-hash narinfo))
 
-          (format (current-error-port) "downloading `~a' from `~a'~:[~*~; (~,1f MiB installed)~]...~%"
-                  store-path (uri->string uri)
+          (format (current-error-port) "downloading `~a'~:[~*~; (~,1f MiB installed)~]...~%"
+                  store-path
 
                   ;; Use the Nar size as an estimate of the installed size.
                   (narinfo-size narinfo)
