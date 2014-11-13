@@ -274,15 +274,15 @@ allow automatic login and starting any app.")
 (define-public net-base
   (package
     (name "net-base")
-    (version "5.2")
+    (version "5.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://debian/pool/main/n/netbase/netbase_"
-                   version ".tar.gz"))
+                   version ".tar.xz"))
              (sha256
               (base32
-               "01rkvqrg7krkx8b432nz6bpi8w3s4cm5q5r891k23cdrc9nsaayn"))))
+               "12xqjwg3p4rzmmh2iib6sigm9l29y3dgk74mmnw64k84jnbwdxl1"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -292,10 +292,10 @@ allow automatic login and starting any app.")
 
                    (let* ((source (assoc-ref %build-inputs "source"))
                           (tar    (assoc-ref %build-inputs "tar"))
-                          (gzip   (assoc-ref %build-inputs "gzip"))
+                          (xz     (assoc-ref %build-inputs "xz"))
                           (output (assoc-ref %outputs "out"))
                           (etc    (string-append output "/etc")))
-                     (setenv "PATH" (string-append gzip "/bin"))
+                     (setenv "PATH" (string-append xz "/bin"))
                      (system* (string-append tar "/bin/tar") "xvf"
                               source)
                      (chdir ,(string-append "netbase-" version))
@@ -306,7 +306,7 @@ allow automatic login and starting any app.")
                                     '("services" "protocols" "rpc")))
                      #t))))
     (native-inputs `(("tar" ,tar)
-                     ("gzip" ,c:gzip)))
+                     ("xz" ,c:xz)))
     (synopsis "IANA protocol, port, and RPC number assignments")
     (description
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
