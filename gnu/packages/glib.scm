@@ -250,16 +250,23 @@ bindings to call into the C library.")
               (base32
                "01j4yd7i84n9nk4ccs6yifg84pp68nr9by57jdbhj7dpdxf5rwk7"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("file" ,file)))
     (propagated-inputs
      `(;; Propagate gettext because users expect it to be there, and so does
        ;; the `intltool-update' script.
        ("gettext" ,gnu-gettext)
 
-       ;; `file' is used by `intltool-update' too.
-       ("file" ,file)
-
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'unpack 'patch-file-references
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((file (assoc-ref inputs "file")))
+                     (substitute* "intltool-update.in"
+                       (("`file") (string-append "`" file "/bin/file")))))
+                 %standard-phases)))
     (home-page "https://launchpad.net/intltool/+download")
     (synopsis "Tools to centralise translations of different file formats")
     (description
