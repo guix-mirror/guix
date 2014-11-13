@@ -70,8 +70,7 @@
                          #:optional (package-derivation package-derivation))
   "Convert PACKAGE to an alist suitable for Hydra."
   `((derivation . ,(derivation-file-name
-                    (package-derivation store package system
-                                        #:graft? #f)))
+                    (package-derivation store package system)))
     (description . ,(package-synopsis package))
     (long-description . ,(package-description package))
     (license . ,(package-license package))
