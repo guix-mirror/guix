@@ -161,6 +161,9 @@ in KNOWN-MOUNT-POINTS when it is stopped."
                           (cons* "/proc" "/sys"
                                  '#$known-mount-points)))
 
+                ;; Make sure we don't keep the user's mount points busy.
+                (chdir "/")
+
                 (for-each (lambda (mount-point)
                             (format #t "unmounting '~a'...~%" mount-point)
                             (catch 'system-error
