@@ -167,7 +167,8 @@ loaded at boot time in the order in which they appear."
 
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    `("libahci.ko" "ahci.ko" ; modules for SATA controllers
+    `("libahci.ko" "ahci.ko"                      ;for SATA controllers
+      "pata_acpi.ko" "pata_atiixp.ko"             ;for ATA controllers
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())
