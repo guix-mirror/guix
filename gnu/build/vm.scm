@@ -112,17 +112,21 @@ the #:references-graphs parameter of 'derivation'."
 
 (define* (initialize-partition-table device partition-size
                                      #:key
+                                     bootable?
                                      (label-type "msdos")
                                      (offset (expt 2 20)))
   "Create on DEVICE a partition table of type LABEL-TYPE, with a single
-partition of PARTITION-SIZE bytes starting at OFFSET bytes.  Return #t on
-success."
+partition of PARTITION-SIZE bytes starting at OFFSET bytes.  When BOOTABLE? is
+true, set the bootable flag on the partition.  Return #t on success."
   (format #t "creating partition table with a ~a B partition...\n"
           partition-size)
-  (unless (zero? (system* "parted" device "mklabel" label-type
-                          "mkpart" "primary" "ext2"
-                          (format #f "~aB" offset)
-                          (format #f "~aB" partition-size)))
+  (unless (zero? (apply system* "parted" device "mklabel" label-type
+                        "mkpart" "primary" "ext2"
+                        (format #f "~aB" offset)
+                        (format #f "~aB" partition-size)
+                        (if bootable?
+                            '("set" "1" "boot" "on")
+                            '())))
     (error "failed to create partition table")))
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
@@ -183,13 +187,16 @@ volume name."
                                file-system-label
                                (closures '())
                                copy-closures?
+                               (bootable? #t)
                                (register-closures? #t))
   "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a FILE-SYSTEM-TYPE
 partition with (optionally) FILE-SYSTEM-LABEL as its volume name, and with
-GRUB installed.  If REGISTER-CLOSURES? is true, register all of CLOSURES is
-the partition's store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the
-partition.  SYSTEM-DIRECTORY is the name of the directory of the 'system'
-derivation."
+GRUB installed.  When BOOTABLE? is true, set the bootable flag on that
+partition.
+
+If REGISTER-CLOSURES? is true, register all of CLOSURES is the partition's
+store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
+SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
   (define target-directory
     "/fs")
 
@@ -197,7 +204,8 @@ derivation."
     (string-append device "1"))
 
   (initialize-partition-table device
-                              (- disk-image-size (* 5 (expt 2 20))))
+                              (- disk-image-size (* 5 (expt 2 20)))
+                              #:bootable? bootable?)
 
   (format-partition partition file-system-type
                     #:label file-system-label)
