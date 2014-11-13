@@ -36,6 +36,11 @@
                      "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l"))
             (patches (list (search-patch "file-CVE-2014-3587.patch")))))
    (build-system gnu-build-system)
+
+   ;; When cross-compiling, this package depends upon a native install of
+   ;; itself.
+   (self-native-input? #t)
+
    (synopsis "File type guesser")
    (description
     "The file command is a file type guesser, a command-line tool that tells
