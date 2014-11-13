@@ -507,7 +507,7 @@ accessed and migrated on modern systems.")
     (inputs
      `(("e2fsprogs" ,e2fsprogs)
        ("curl" ,curl)
-       ("file" ,file)
+       ("file" ,file-5.20)                        ;work around CVE-2014-3710
        ("libxml2" ,libxml2)
        ("zlib" ,zlib)
        ("gettext" ,gnu-gettext)))
