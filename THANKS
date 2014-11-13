@@ -23,7 +23,6 @@ infrastructure help:
 	     Kete <kete@ninthfloor.org>
              Alex Kost <alezost@gmail.com>
 	  Matthew Lien <bluet@bluet.org>
-           Felipe López <felipe.lopez@openmailbox.org>
 	    Niels Möller <nisse@lysator.liu.se>
 	   Yutaka Niibe <gniibe@fsij.org>
              Adam Pribyl <pribyl@lowlevel.cz>
@@ -32,3 +31,9 @@ infrastructure help:
 	     Alen Skondro <askondro@gmail.com>
 	 Matthias Wachs <wachs@net.in.tum.de>
            Philip Woods <elzairthesorcerer@gmail.com>
+
+GNU Guix also includes non-software works.  Thanks to the following
+people who contributed the logo and general artwork and themes:
+
+           Nikita Karetnikov <nikita@karetnikov.org>
+           Felipe López <felipe.lopez@openmailbox.org>

@@ -4923,13 +4923,21 @@ details about contributions.
 @chapter Acknowledgments
 
 Guix is based on the Nix package manager, which was designed and
-implemented by Eelco Dolstra.  Nix pioneered functional package
+implemented by Eelco Dolstra, with contributions from other people (see
+the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
 management, and promoted unprecedented features, such as transactional
 package upgrades and rollbacks, per-user profiles, and referentially
 transparent build processes.  Without this work, Guix would not exist.
 
 The Nix-based software distributions, Nixpkgs and NixOS, have also been
 an inspiration for Guix.
+
+GNU@tie{}Guix itself is a collective work with contributions from a
+number of people.  See the @file{AUTHORS} file in Guix for more
+information on these fine people.  The @file{THANKS} file lists people
+who have helped by reporting bugs, taking care of the infrastructure,
+providing artwork and themes, making suggestions, and more---thank you!
+
 
 @c *********************************************************************
 @node GNU Free Documentation License
