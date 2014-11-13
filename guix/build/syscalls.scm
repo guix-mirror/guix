@@ -106,9 +106,9 @@
              ((device mount-point type options freq passno)
               (string=? target mount-point))
              (_ #f))
-            (call-with-input-file "/etc/fstab" read-mtab)))
+            (call-with-input-file "/etc/mtab" read-mtab)))
 
-  (call-with-output-file "/etc/fstab"
+  (call-with-output-file "/etc/mtab"
     (lambda (port)
       (for-each (match-lambda
                  ((device mount-point type options freq passno)
