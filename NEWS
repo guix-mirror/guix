@@ -189,6 +189,7 @@ This could cause problems with ancient Linux kernel.
     (<http://bugs.gnu.org/18521>)
 *** pull: Use the build procedure provided by the newly-downloaded Guix.
     (<http://bugs.gnu.org/18534>)
+*** WindowMaker no longer pollutes $PATH (<http://bugs.gnu.org/18698>)
 
 * Changes in 0.7 (since 0.6)
 ** Package management
