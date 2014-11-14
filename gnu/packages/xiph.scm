@@ -43,7 +43,8 @@
             flac
             libkate
             vorbis-tools
-            opus))
+            opus
+            opus-tools))
 
 (define libogg
   (package
@@ -308,4 +309,37 @@ but is also intended for storage and streaming applications.  It is
 standardized by the Internet Engineering Task Force (IETF) as RFC 6716 which
 incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (license license:bsd-3)
-    (home-page "http://www.opus-codec.org/")))
+    (home-page "http://www.opus-codec.org")))
+
+(define opus-tools
+  (package
+    (name "opus-tools")
+    (version "0.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.mozilla.org/pub/mozilla.org/opus/opus-tools-"
+                    version ".tar.gz"))
+              (sha256
+               (base32 
+                "0fk4nknvl111k89j5yckmyrh6b2wvgyhrqfncp7rig3zikbkv1xi"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The package developers misuse pkg-config such that it doesn't work
+     ;; when cross compiling.  Therefore we avoid it completly and set the 
+     ;; necessary flags ourselves.
+     `(#:configure-flags (list (string-append "CFLAGS=-I"
+                                              (assoc-ref %build-inputs "libogg")
+                                              "/include -I"
+                                              (assoc-ref %build-inputs "opus")
+                                              "/include/opus"))))
+    (inputs `(("libogg" ,libogg)
+              ("opus" ,opus)
+              ("flac" ,flac)))
+    (synopsis "Command line utilities to encode, inspect, and decode .opus
+files")
+    (description "Opus is a royalty-free, highly versatile audio codec.
+Opus-tools provide command line utilities for creating, inspecting and
+decoding .opus files")
+    (license license:bsd-3)
+    (home-page "http://www.opus-codec.org")))
