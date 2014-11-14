@@ -3301,7 +3301,6 @@ kernel, initial RAM disk, and boot loader looks like this:
                       %base-file-systems))
   (users (list (user-account
                 (name "alice")
-                (password "")
                 (uid 1000) (group 100)
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
@@ -3703,7 +3702,15 @@ account.  System accounts are sometimes treated specially; for instance,
 graphical login managers do not list them.
 
 @item @code{password} (default: @code{#f})
-Unless @code{#f}, this is the password to be used for the account.
+You would normally leave this field to @code{#f}, initialize user
+passwords as @code{root} with the @command{passwd} command, and then let
+users change it with @command{passwd}.
+
+If you @emph{do} want to have a preset password for an account, then
+this field must contain the encrypted password, as a string.
+@xref{crypt,,, The GNU C Library Reference Manual}, for more information
+on password encryption, and @ref{Encryption,,, GNU Guile Reference
+Manual}, for information on Guile's @code{crypt} procedure.
 
 @end table
 @end deftp
