@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.1.4")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
@@ -45,7 +46,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1ksgx1rn4wp80290399q6d26zpbx0nb3sxh45wl4wr58raxmrk71"))))
+         "18z9mwhzgh4gqc0c6ydbjg0a87jc0j38sha10mzfvjbmsjw1xfi2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
