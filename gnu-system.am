@@ -264,6 +264,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/weechat.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
+  gnu/packages/wine.scm				\
   gnu/packages/wordnet.scm			\
   gnu/packages/wv.scm				\
   gnu/packages/xfig.scm				\
