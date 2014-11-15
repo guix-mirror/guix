@@ -4595,7 +4595,7 @@ Once your package builds correctly, please send us a patch
 (@pxref{Contributing}).  Well, if you need help, we will be happy to
 help you too.  Once the patch is committed in the Guix repository, the
 new package automatically gets built on the supported platforms by
-@url{http://hydra.gnu.org/gnu/master, our continuous integration
+@url{http://hydra.gnu.org/jobset/gnu/master, our continuous integration
 system}.
 
 @cindex substituter
