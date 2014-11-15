@@ -129,7 +129,7 @@ the Nix package manager.")
                       (recursive? #t)))
                 (sha256
                  (base32
-                  "1ifkx8dlggpcdnz0wh1qc7v4fb3mffjqca4055nnwjsvxh0gcv8y"))))
+                  "1zd583msp531cs5crx6xjxmk181d2qwd6j3kjc29zrmvxh8rpk94"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.7)
          ((#:phases phases)
