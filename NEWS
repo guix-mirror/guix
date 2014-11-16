@@ -24,7 +24,7 @@ See “Invoking guix environment” in the manual.
 
 *** The ‘guix import’ command has been extended and documented
 
-It can now import packages from pipy.python.org and from GNU.
+It can now import packages from pypi.python.org and from GNU.
 See “Invoking guix import” in the manual.
 
 *** New ‘guix lint’ command, for use by Guix developers
