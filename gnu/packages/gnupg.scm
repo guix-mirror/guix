@@ -71,17 +71,17 @@ Daemon and possibly more in the future.")
                "0k2wi34qhp5hq71w1ab3kw1gfsx7xff79bvynqkxp35kls94826y"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     `(("libgpg-error" ,libgpg-error)))
+     `(("libgpg-error-host" ,libgpg-error)))
     (native-inputs
      ;; Needed here for the 'gpg-error' program.
-     `(("libgpg-error" ,libgpg-error)))
+     `(("libgpg-error-native" ,libgpg-error)))
     (arguments
      ;; The '--with-gpg-error-prefix' argument is needed because otherwise
      ;; 'configure' uses 'gpg-error-config' to determine the '-L' flag, and
      ;; the 'gpg-error-config' it runs is the native one---i.e., the wrong one.
      `(#:configure-flags
        (list (string-append "--with-gpg-error-prefix="
-                            (assoc-ref %build-inputs "libgpg-error")))))
+                            (assoc-ref %build-inputs "libgpg-error-host")))))
     (outputs '("out" "debug"))
     (home-page "http://gnupg.org/")
     (synopsis "Cryptographic function library")
