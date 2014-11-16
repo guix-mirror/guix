@@ -165,7 +165,8 @@ The following dependencies are optional:
 @item
 Installing
 @url{http://savannah.nongnu.org/projects/guile-json/, Guile-JSON} will
-allow you to use the @command{guix import pypi} command; it is of
+allow you to use the @command{guix import pypi} command (@pxref{Invoking
+guix import}).  It is of
 interest primarily for developers and not for casual users.
 @item
 Installing @uref{http://gnutls.org/, GnuTLS-Guile} will
@@ -1463,6 +1464,10 @@ This package object can be inspected using procedures found in the
 @code{(guix packages)} module; for instance, @code{(package-name hello)}
 returns---surprise!---@code{"hello"}.
 
+With luck, you may be able to import part or all of the definition of
+the package you are interested in from another repository, using the
+@code{guix import} command (@pxref{Invoking guix import}).
+
 In the example above, @var{hello} is defined into a module of its own,
 @code{(gnu packages hello)}.  Technically, this is not strictly
 necessary, but it is convenient to do so: all the packages defined in
@@ -1521,15 +1526,12 @@ However, any other dependencies need to be specified in the
 unavailable to the build process, possibly leading to a build failure.
 @end itemize
 
-Once a package definition is in place@footnote{Simple package
-definitions like the one above may be automatically converted from the
-Nixpkgs distribution using the @command{guix import} command.}, the
+Once a package definition is in place, the
 package may actually be built using the @code{guix build} command-line
 tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
 more information on how to test package definitions, and
 @ref{Invoking guix lint}, for information on how to check a definition
 for style conformance.
-
 
 Eventually, updating the package definition to a new upstream version
 can be partly automated by the @command{guix refresh} command
@@ -2475,6 +2477,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix build::         Building packages from the command line.
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
+* Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix environment::   Setting up development environments.
@@ -2760,6 +2763,96 @@ hash (@pxref{Invoking guix archive}).
 @c it exists.
 
 @end table
+
+@node Invoking guix import
+@section Invoking @command{guix import}
+
+@cindex importing packages
+@cindex package import
+@cindex package conversion
+The @command{guix import} command is useful for people willing to add a
+package to the distribution but who'd rather do as little work as
+possible to get there---a legitimate demand.  The command knows of a few
+repositories from which it can ``import'' package meta-data.  The result
+is a package definition, or a template thereof, in the format we know
+(@pxref{Defining Packages}).
+
+The general syntax is:
+
+@example
+guix import @var{importer} @var{options}@dots{}
+@end example
+
+@var{importer} specifies the source from which to import package
+meta-data, and @var{options} specifies a package identifier and other
+options specific to @var{importer}.  Currently, the available
+``importers'' are:
+
+@table @code
+@item gnu
+Import meta-data for the given GNU package.  This provides a template
+for the latest version of that GNU package, including the hash of its
+source tarball, and its canonical synopsis and description.
+
+Additional information such as the package's dependencies and its
+license needs to be figured out manually.
+
+For example, the following command returns a package definition for
+GNU@tie{}Hello:
+
+@example
+guix import gnu hello
+@end example
+
+Specific command-line options are:
+
+@table @code
+@item --key-download=@var{policy}
+As for @code{guix refresh}, specify the policy to handle missing OpenPGP
+keys when verifying the package's signature.  @xref{Invoking guix
+refresh, @code{--key-download}}.
+@end table
+
+@item pypi
+@cindex pypi
+Import meta-data from the @uref{https://pypi.python.org/, Python Package
+Index}@footnote{This functionality requires Guile-JSON to be installed.
+@xref{Requirements}.}.  Information is taken from the JSON-formatted
+description available at @code{pypi.python.org} and usually includes all
+the relevant information, including package dependencies.
+
+The command below imports meta-data for the @code{itsdangerous} Python
+package:
+
+@example
+guix import pypi itsdangerous
+@end example
+
+@item nix
+Import meta-data from a local copy of the source of the
+@uref{http://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
+relies on the @command{nix-instantiate} command of
+@uref{http://nixos.org/nix/, Nix}.}.  Package definitions in Nixpkgs are
+typically written in a mixture of Nix-language and Bash code.  This
+command only imports the high-level package structure that is written in
+the Nix language.  It normally includes all the basic fields of a
+package definition.
+
+When importing a GNU package, the synopsis and descriptions are replaced
+by their canonical upstream variant.
+
+As an example, the command below imports the package definition of
+LibreOffice (more precisely, it imports the definition of the package
+bound to the @code{libreoffice} top-level attribute):
+
+@example
+guix import nix ~/path/to/nixpkgs libreoffice
+@end example
+@end table
+
+The structure of the @command{guix import} code is modular.  It would be
+useful to have more importers for other package formats, and your help
+is welcome here (@pxref{Contributing}).
 
 @node Invoking guix refresh
 @section Invoking @command{guix refresh}
