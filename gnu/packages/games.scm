@@ -23,8 +23,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages games)
-  #:use-module ((guix licenses)
-                #:hide (zlib))
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages)
@@ -54,6 +54,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages zip)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
@@ -87,7 +88,7 @@ teaching the game.  It has an advanced evaluation engine based on artificial
 neural networks suitable for both beginners and advanced players.  In
 addition to a command-line interface, it also features an attractive, 3D
 representation of the playing board.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public gnubik
   (package
@@ -117,7 +118,7 @@ each of its faces have a uniform color.  The game is customizable, allowing
 you to set the size of the cube (the default is 3x3) or to change the colors.
 You may even apply photos to the faces instead of colors.  The game is
 scriptable with Guile.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public abbaye
   (package
@@ -179,7 +180,7 @@ France.  The Cathars, who preach about good Christian beliefs, were being
 expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public pingus
   (package
@@ -225,7 +226,7 @@ giving them commands, like build a bridge, dig a hole, or redirect all animals
 in the other direction.  Multiple such commands are necessary to reach the
 level's exit.  The game is presented in a 2D side view.")
     ;; Some source files are under bsd-3 and gpl2+ licenses.
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public talkfilters
   (package
@@ -244,8 +245,8 @@ level's exit.  The game is presented in a 2D side view.")
     (description "The GNU Talk Filters are programs that convert English text
 into stereotyped or otherwise humorous dialects.  The filters are provided as
 a C library, so they can easily be integrated into other programs.")
-    (license gpl2+)))
- 
+    (license license:gpl2+)))
+
 (define-public cmatrix
   (package
     (name "cmatrix")
@@ -278,7 +279,7 @@ a C library, so they can easily be integrated into other programs.")
 based on the screensaver from the movie's website.  It works with terminal
 settings up to 132x300 and can scroll lines all at the same rate or
 asynchronously and at a user-defined speed.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public chess
   (package
@@ -298,7 +299,7 @@ asynchronously and at a user-defined speed.")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal
 interface or via an external visual interface such as GNU XBoard.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define freedink-engine
   (package
@@ -329,7 +330,7 @@ interface or via an external visual interface such as GNU XBoard.")
 for the role-playing game Dink Smallwood.  It supports not only the original
 game data files but it also supports user-produced game mods or \"D-Mods\".
 To that extent, it also includes a front-end for managing all of your D-Mods.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define freedink-data
   (package
@@ -350,7 +351,7 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
     (synopsis "Game data for GNU Freedink")
     (description
      "This package contains the game data of GNU Freedink.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 ;; TODO: Add freedink-dfarc when there's a wxWidgets package.
 
@@ -416,7 +417,7 @@ including international chess, xiangqi (Chinese chess), shogi (Japanese chess)
 and Makruk.  Several lesser-known variants are also supported.  It presents a
 fully interactive graphical interface and it can load and save games in the
 Portable Game Notation.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 
 (define-public xboing
@@ -469,7 +470,8 @@ Portable Game Notation.")
 you control to bounce a ball around the game zone destroying blocks with a
 proton ball.  Each block carries a different point value.  The more blocks you
 destroy, the better your score.  The person with the highest score wins.")
-    (license (x11-style "file://COPYING" "Very similar to the X11 licence."))))
+    (license (license:x11-style "file://COPYING"
+                                "Very similar to the X11 licence."))))
 
 (define-public gtypist
   (package
@@ -503,7 +505,7 @@ practice touch-typing.  Several tutorials are included; in addition to
 tutorials for the standard QWERTY layout, there are also tutorials for the
 alternative layouts Dvorak and Colemak, as well as for the numpad.  Tutorials
 are primarily in English, however some in other languages are provided.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public tiled
   (package
@@ -537,7 +539,7 @@ clone.")
 
     ;; As noted in 'COPYING', part of it is under GPLv2+, while the rest is
     ;; under BSD-2.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public openal
   (package
@@ -566,4 +568,52 @@ including air absorption, occlusion, and environmental reverb, are available
 through the EFX extension.  It also facilitates streaming audio, multi-channel
 buffers, and audio capture.")
     (home-page "http://kcat.strangesoft.net/openal.html")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
+
+(define-public irrlicht
+  (package
+    (name "irrlicht")
+    (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/irrlicht/Irrlicht%20SDK/"
+                    (version-major+minor version)
+                    "/" version "/irrlicht-" version ".zip"))
+              (sha256
+               (base32
+                "0yz9lvsc8aqk8wj4rnpanxrw90gqpwn9w5hxp94r8hnm2q0vjjw1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'unpack 'fix-build-env
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "Makefile"
+                       (("INSTALL_DIR = /usr/local/lib")
+                        (string-append "INSTALL_DIR = " out "/lib")))
+                     ;; The Makefile assumes these directories exist.
+                     (mkdir-p (string-append out "/lib"))
+                     (mkdir-p (string-append out "/include"))))
+                 (alist-replace
+                  'unpack
+                  (lambda* (#:key source #:allow-other-keys)
+                    (and (zero? (system* "unzip" source))
+                         ;; The actual source is buried a few directories deep.
+                         (chdir "irrlicht-1.8.1/source/Irrlicht/")))
+                  ;; No configure script
+                  (alist-delete 'configure %standard-phases)))
+       #:tests? #f ; no check target
+       #:make-flags '("CC=gcc" "sharedlib")))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (synopsis "3D game engine written in C++")
+    (description
+     "The Irrlicht Engine is a high performance realtime 3D engine written in
+C++.  Features include an OpenGL renderer, extensible materials, scene graph
+management, character animation, particle and other special effects, support
+for common mesh file formats, and collision detection.")
+    (home-page "http://irrlicht.sourceforge.net/")
+    (license license:zlib)))
