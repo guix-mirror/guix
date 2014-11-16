@@ -343,7 +343,7 @@ for Guile\".")
                  (("moddir =.*/share/guile/site" all)
                   (string-append all "/2.0"))))))
     (build-system gnu-build-system)
-    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("guile" ,guile-2.0)))
     (home-page "http://savannah.nongnu.org/projects/guile-json/")
     (synopsis "JSON module for Guile")
     (description
