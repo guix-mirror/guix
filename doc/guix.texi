@@ -2953,12 +2953,29 @@ The following options can be used to customize GnuPG operation:
 
 @table @code
 
-@item --key-server=@var{host}
-Use @var{host} as the OpenPGP key server when importing a public key.
-
 @item --gpg=@var{command}
 Use @var{command} as the GnuPG 2.x command.  @var{command} is searched
 for in @code{$PATH}.
+
+@item --key-download=@var{policy}
+Handle missing OpenPGP keys according to @var{policy}, which may be one
+of:
+
+@table @code
+@item always
+Always download missing OpenPGP keys from the key server, and add them
+to the user's GnuPG keyring.
+
+@item never
+Never try to download missing OpenPGP keys.  Instead just bail out.
+
+@item interactive
+When a package signed with an unknown OpenPGP key is encountered, ask
+the user whether to download it or not.  This is the default behavior.
+@end table
+
+@item --key-server=@var{host}
+Use @var{host} as the OpenPGP key server when importing a public key.
 
 @end table
 
