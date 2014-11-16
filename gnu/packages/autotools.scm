@@ -45,7 +45,7 @@
        (base32
         "113nlmidxy9kjr45kg9x3ngar4951mvag1js2a3j8nxcz34wxsv4"))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("perl" ,perl)
        ("m4" ,m4)))
     ;; XXX: testsuite: 209 and 279 failed. The latter is an impurity. It
@@ -172,7 +172,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
              (patches
               (list (search-patch "automake-skip-amhello-tests.patch")))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("autoconf" ,(autoconf-wrapper))
        ("perl" ,perl)))
     (native-search-paths
