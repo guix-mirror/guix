@@ -40,17 +40,17 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages bdw-gc))
 
-(define-public guix-0.7
+(define-public guix-0.8
   (package
     (name "guix")
-    (version "0.7")
+    (version "0.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "05r7bsjgc0a4m7yy433n3c1dlv2yqlf3qpwlhayn9djhpp2q1ssb"))))
+               "1p7yqbnhjc1yjzinbjzphgj6wasc7p8ki9yj0vql5bsz01dp28zv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -77,7 +77,7 @@
                    #t)
                  %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs)))           ;for guix.el (0.8)
+                     ("emacs" ,emacs)))           ;for guix.el
     (inputs
      (let ((boot-guile (lambda (arch hash)
                          (origin
@@ -119,7 +119,7 @@ the Nix package manager.")
 (define guix-devel
   ;; Development version of Guix.
   (let ((commit "48bd76e"))
-    (package (inherit guix-0.7)
+    (package (inherit guix-0.8)
       (version (string-append "0.7." commit))
       (source (origin
                 (method git-fetch)
@@ -131,7 +131,7 @@ the Nix package manager.")
                  (base32
                   "1zd583msp531cs5crx6xjxmk181d2qwd6j3kjc29zrmvxh8rpk94"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.7)
+       (substitute-keyword-arguments (package-arguments guix-0.8)
          ((#:phases phases)
           `(alist-cons-before
             'configure 'bootstrap
@@ -167,12 +167,12 @@ the Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix-0.7)))
+         ,@(package-native-inputs guix-0.8)))
       (propagated-inputs
        `(("guile-json" ,guile-json)
-         ,@(package-propagated-inputs guix-0.7))))))
+         ,@(package-propagated-inputs guix-0.8))))))
 
-(define-public guix guix-devel)
+(define-public guix guix-0.8)
 
 (define-public nix
   (package
