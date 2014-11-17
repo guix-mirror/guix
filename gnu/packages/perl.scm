@@ -141,3 +141,23 @@ pseudo ttys.")
 manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
     (license (package-license perl))))
+
+(define-public perl-digest-sha1
+  (package
+    (name "perl-digest-sha1")
+    (version "2.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                                  "Digest-SHA1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k23p5pjk42vvzg8xcn4iwdii47i0qm4awdzgbmz08bl331dmhb8"))))
+    (build-system perl-build-system)
+    (synopsis "Perl implementation of the SHA-1 message digest algorithm")
+    (description
+     "This package provides 'Digest::SHA1', an implementation of the NIST
+SHA-1 message digest algorithm for use by Perl programs.")
+    (home-page (string-append "http://search.cpan.org/~gaas/Digest-SHA1-"
+                              version "/SHA1.pm"))
+    (license (package-license perl))))
