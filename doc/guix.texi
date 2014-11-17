@@ -436,7 +436,7 @@ is normally run as @code{root} like this:
 @end example
 
 @noindent
-For details on how to set it up, @ref{Setting Up the Daemon}.
+For details on how to set it up, @pxref{Setting Up the Daemon}.
 
 @cindex chroot
 @cindex container, build environment
@@ -634,7 +634,7 @@ When using Guix, each package ends up in the @dfn{package store}, in its
 own directory---something that resembles
 @file{/gnu/store/xxx-package-1.2}, where @code{xxx} is a base32 string
 (note that Guix comes with an Emacs extension to shorten those file
-names, @ref{Emacs Prettify}.)
+names, @pxref{Emacs Prettify}.)
 
 Instead of referring to these directories, users have their own
 @dfn{profile}, which points to the packages that they actually want to
@@ -2717,7 +2717,7 @@ The following option is available:
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
 Write the hash in the format specified by @var{fmt}.  For more
-information on the valid values for @var{fmt}, @ref{Invoking guix hash}.
+information on the valid values for @var{fmt}, @pxref{Invoking guix hash}.
 @end table
 
 @node Invoking guix hash
@@ -2890,7 +2890,7 @@ The following options are supported:
 @item --update
 @itemx -u
 Update distribution source files (package recipes) in place.
-@ref{Defining Packages}, for more information on package definitions.
+@xref{Defining Packages}, for more information on package definitions.
 
 @item --select=[@var{subset}]
 @itemx -s @var{subset}
@@ -3139,7 +3139,7 @@ For information on porting to other architectures or kernels,
 @end menu
 
 Building this distribution is a cooperative effort, and you are invited
-to join!  @ref{Contributing}, for information about how you can help.
+to join!  @xref{Contributing}, for information about how you can help.
 
 @node System Installation
 @section System Installation
@@ -4658,7 +4658,7 @@ each package is built based solely on other packages in the
 distribution.  The root of this dependency graph is a small set of
 @dfn{bootstrap binaries}, provided by the @code{(gnu packages
 bootstrap)} module.  For more information on bootstrapping,
-@ref{Bootstrapping}.
+@pxref{Bootstrapping}.
 
 @node Packaging Guidelines
 @section Packaging Guidelines
@@ -4683,7 +4683,7 @@ for each package we define a variable bound to the package definition,
 and export that variable from a module (@pxref{Package Modules}).
 However, in-depth Scheme knowledge is @emph{not} a prerequisite for
 creating packages.  For more information on package definitions,
-@ref{Defining Packages}.
+@pxref{Defining Packages}.
 
 Once a package definition is in place, stored in a file in the Guix
 source tree, it can be tested using the @command{guix build} command
@@ -4777,7 +4777,7 @@ hyphens.  For instance, GNUnet is available as @code{gnunet}, and
 SDL_net as @code{sdl-net}.
 
 We do not add @code{lib} prefixes for library packages, unless these are
-already part of the official project name.  But see @pxref{Python
+already part of the official project name.  But @pxref{Python
 Modules} and @ref{Perl Modules} for special rules concerning modules for
 the Python and Perl languages.
 
