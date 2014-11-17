@@ -108,7 +108,7 @@ MODULES +=					\
 endif BUILD_DAEMON_OFFLOAD
 
 # Internal module with test suite support.
-noinst_DATA = guix/tests.scm
+dist_noinst_DATA = guix/tests.scm
 
 # Because of the autoload hack in (guix build download), we must build it
 # first to avoid errors on systems where (gnutls) is unavailable.
