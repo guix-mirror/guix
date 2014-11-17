@@ -50,7 +50,7 @@ See “Invoking guix package” in the manual.
 
 See “Invoking guix-daemon” in the manual.
 
-** GNU distribution
+** Distribution
 
 *** The stand-alone operating system now supports Linux mapped devices
 
@@ -89,6 +89,68 @@ See “Invoking guix system” in the manual.
 
 Autoconf-generated ‘configure’ scripts for packages using Libtool use ‘file’
 to determine the target ABI, notably on MIPS, hence this change.
+
+*** 162 new packages
+
+abiword, acpica, adns, arb, ath9k-htc-firmware, atlas, avrdude, cppunit,
+dblatex, detox, dfu-programmer, dionysus, direvent, dmidecode, dri3proto,
+emacs-no-x-toolkit, emacs-w3m, emacs-wget, enchant, eudev, feh, flashrom,
+flint, fontforge, freedink, freeimage, fribidi,
+gcc-cross-sans-libc-xtensa-elf, giblib, gnome-themes-standard, gpsbabel,
+gpscorrelate, graphite2, gtypist, guile-charting, guile-sdl, imake, imlib2,
+irrlicht, jbig2dec, libpsl, libspiro, libuninameslist, libwmf, lm-sensors,
+magit, minetest, miscfiles, mozjs, mupdf, nix, nspr, nss-mdns, ntp, nvi, opam,
+openal, openjpeg, opus-tools, orpheus, ots, oxygen-icons, paredit, perf,
+perl-archive-zip, perl-dbd-sqlite, perl-dbi, perl-image-exiftool,
+perl-io-socket-ssl, perl-net-ssleay, perl-www-curl, perl-zip, polkit,
+polkit-qt, postgresql, potrace, presentproto, python-certifi, python-coverage,
+python-cython, python-discover, python-docutils, python-exif-read,
+python-extras, python-fixtures, python-itsdangerous, python-jinja2,
+python-jsonschema, python-markupsafe, python-mimeparse, python-nose,
+python-oauthlib, python-py, python-pygments, python-pyjwt, python-pyld,
+python-pytest, python-scripttest, python-sphinx, python-subunit,
+python-testrepository, python-testresources, python-testscenarios,
+python-testtools, python-unidecode, python-unittest2, python-virtualenv,
+python2-certifi, python2-coverage, python2-cython, python2-discover,
+python2-docutils, python2-exif-read, python2-extras, python2-fixtures,
+python2-itsdangerous, python2-jinja2, python2-jsonschema, python2-markupsafe,
+python2-mimeparse, python2-nose, python2-oauthlib, python2-py,
+python2-pygments, python2-pyjwt, python2-pyld, python2-pytest,
+python2-requests, python2-scripttest, python2-sphinx, python2-subunit,
+python2-testrepository, python2-testresources, python2-testscenarios,
+python2-testtools, python2-unidecode, python2-unittest2, python2-virtualenv,
+rrdtool, ruby, ruby, ruby-i18n, sane-backends, scrot, sound-theme-freedesktop,
+stress, synergy, tdb, terminus-font, testdisk, texi2html, tiled, transfig,
+unclutter, unixodbc, weechat, wv, xboing, xf86-video-modesetting, xfig,
+xsensors, zsh
+
+*** 117 package updates
+
+acct-6.6.2, acl-2.2.52, apl-1.4, apr-1.5.1, apr-util-1.5.3, autoconf-2.68,
+autoconf-2.69, autogen-5.18.4, bash-4.3.30, bash-light-4.3.30, bazaar-2.6.0,
+bison-2.7, calcurse-3.2.1, ccache-3.1.10, chicken-4.9.0.1, coreutils-8.23,
+curl-7.37.1, datamash-1.0.6, dbus-1.8.8, docbook-xml-4.2, docbook-xml-4.4,
+docbook-xml-4.5, emacs-24.4, ffmpeg-2.2.10, ffmpeg-2.4.3, file-5.19,
+file-5.20, freeipmi-1.4.5, gcc-4.7.4, gcc-4.9.2, gcc-toolchain-4.9.2,
+gcl-2.6.11, gdb-7.8.1, geiser-0.6, gettext-0.19.3, git-2.1.2, glibc-2.20,
+glibc-2.20, glibc-stripped-tarball-2.20, global-6.3.2, glpk-4.55,
+gnupg-1.4.18, gnupg-2.0.26, gnurl-7.37.0, gnutls-3.2.20, gpgme-1.5.1,
+gst-plugins-base-1.0.10, gstreamer-1.0.10, gtk+-3.10.1, gtkmm-3.9.16,
+guile-1.8.8, guile-json-0.4.0, guile-ncurses-1.6, guile-ssh-0.7.1, guix-0.7,
+guix-0.7.48bd76e, hello-2.10, help2man-1.46.3, icecat-31.2.0,
+libart-lgpl-2.3.21, libassuan-2.1.3, libatomic-ops-7.4.2, libdrm-2.4.33,
+libffi-3.1, libgc-7.2f, libgc-7.4.2, libgcrypt-1.5.4, libgcrypt-1.6.2,
+libidn-1.29, libjpeg-9a, libotr-4.0.0, libsodium-1.0.0, libtasn1-4.1,
+libunistring-0.9.4, libwebsockets-1.3, lightning-2.0.5, linux-libre-3.17.3,
+lsof-4.88, lua-5.2.3, lvm2-2.02.109, lzip-1.16, make-4.1, maxima-5.34.1,
+mit-scheme-9.2, mysql-5.1.73, neon-0.30.0, net-base-5.3, nettle-2.7.1,
+notmuch-0.18.1, openssh-6.7p1, openssl-1.0.1j, parallel-20141022,
+phonon-4.8.2, pspp-0.8.4, python-3.3.5, python-dateutil-1.5,
+python2-dateutil-1.5, python2-pyicu-1.8, qt-4.8.6, qt-5.3.2, rcs-5.9.3,
+readline-6.3, subversion-1.7.18, swig-3.0.2, tar-1.28, texinfo-5.2,
+tor-0.2.5.10, transmission-2.84, ucommon-6.1.11, valgrind-3.10.0, vlc-2.1.5,
+wget-1.16, windowmaker-0.95.6, xapian-1.2.18, xf86-video-ati-6.14.6,
+xpdf-3.04, youtube-dl-2014.09.06
 
 ** Programming interfaces
 
@@ -147,7 +209,6 @@ typically used by initial RAM disks when booting on GNU/Linux-libre.
 This factorizes code between ‘guix package’ and the Emacs user interface.
 
 *** Bootstrapping packages moved to (gnu packages commencement) modules
-** Native language support
 
 ** Bugs fixed
 
@@ -191,6 +252,10 @@ This could cause problems with ancient Linux kernel.
 *** pull: Use the build procedure provided by the newly-downloaded Guix.
     (<http://bugs.gnu.org/18534>)
 *** WindowMaker no longer pollutes $PATH (<http://bugs.gnu.org/18698>)
+
+** Native language support
+*** New translation: cs (Czech)
+*** Updated translations: de, sr, vi
 
 * Changes in 0.7 (since 0.6)
 ** Package management
