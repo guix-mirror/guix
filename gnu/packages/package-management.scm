@@ -118,9 +118,9 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "48bd76e"))
+  (let ((commit "47739f5"))
     (package (inherit guix-0.8)
-      (version (string-append "0.7." commit))
+      (version (string-append "0.8." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -129,7 +129,7 @@ the Nix package manager.")
                       (recursive? #t)))
                 (sha256
                  (base32
-                  "1zd583msp531cs5crx6xjxmk181d2qwd6j3kjc29zrmvxh8rpk94"))))
+                  "17azgv1i8f9spwa35m23d2yk0wlmf48xm6ka1rqh30nhacwlmnx7"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8)
          ((#:phases phases)
@@ -172,7 +172,7 @@ the Nix package manager.")
        `(("guile-json" ,guile-json)
          ,@(package-propagated-inputs guix-0.8))))))
 
-(define-public guix guix-0.8)
+(define-public guix guix-devel)
 
 (define-public nix
   (package
