@@ -61,11 +61,16 @@
     `(#:configure-flags '("--with-gnutls" "--with-gssapi")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
-      (alist-cons-before
-       'check 'patch-runtests
+      (alist-replace
+       'check
        (lambda _
-           (substitute* "tests/runtests.pl"
-             (("/bin/sh") (which "sh"))))
+         (substitute* "tests/runtests.pl"
+           (("/bin/sh") (which "sh")))
+
+         ;; The top-level "make check" does "make -C tests quiet-test", which
+         ;; is too quiet.  Use the "test" target instead, which is more
+         ;; verbose.
+         (zero? (system* "make" "-C" "tests" "test")))
        %standard-phases)))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
