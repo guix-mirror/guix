@@ -65,7 +65,8 @@
       (method url-fetch)
       (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
-      (patches (list (search-patch "python-libffi-mips-n32-fix.patch")))
+      (patches (list (search-patch "python-libffi-mips-n32-fix.patch")
+                     (search-patch "python2-sqlite-3.8.4-test-fix.patch")))
       (patch-flags '("-p0"))
       (sha256
        (base32
@@ -119,6 +120,7 @@
         (let ((bz2 (assoc-ref %build-inputs "bzip2"))
               (gdbm (assoc-ref %build-inputs "gdbm"))
               (libffi (assoc-ref %build-inputs "libffi"))
+              (sqlite (assoc-ref %build-inputs "sqlite"))
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
               (zlib (assoc-ref %build-inputs "zlib")))
@@ -127,6 +129,7 @@
                (string-append "CPPFLAGS="
                 "-I" bz2 "/include "
                 "-I" gdbm "/include "
+                "-I" sqlite "/include "
                 "-I" openssl "/include "
                 "-I" readline "/include "
                 "-I" zlib "/include")
@@ -134,6 +137,7 @@
                 "-L" bz2 "/lib "
                 "-L" gdbm "/lib "
                 "-L" libffi "/lib "
+                "-L" sqlite "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
                 "-L" zlib "/lib")))
@@ -177,6 +181,7 @@
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
        ("libffi" ,libffi)                         ; for ctypes
+       ("sqlite" ,sqlite)                         ; for sqlite extension
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("zlib" ,zlib)
@@ -208,6 +213,7 @@ data types.")
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (list (search-patch "python-fix-tests.patch")
+                             (search-patch "python-sqlite-3.8.4-test-fix.patch")
                              (search-patch "python-libffi-mips-n32-fix.patch")))
               (patch-flags '("-p0"))
               (sha256

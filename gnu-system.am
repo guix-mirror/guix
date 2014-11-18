@@ -417,6 +417,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
+  gnu/packages/patches/python-sqlite-3.8.4-test-fix.patch	\
+  gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/qt4-tests.patch				\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
