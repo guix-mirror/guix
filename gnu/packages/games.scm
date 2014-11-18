@@ -733,3 +733,81 @@ single player.  Mods and texture packs allow players to personalize the game
 in different ways.")
     (home-page "http://minetest.net")
     (license license:lgpl2.1+)))
+
+(define glkterm
+  (package
+   (name "glkterm")
+   (version "1.0.4")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://www.ifarchive.org/if-archive/programming/"
+                         "glk/implementations/glkterm-104.tar.gz"))
+     (sha256
+      (base32
+       "0zlj9nlnkdlvgbiliczinirqygiq8ikg5hzh5vgcmnpg9pvnwga7"))))
+   (build-system gnu-build-system)
+   (propagated-inputs `(("ncurses" ,ncurses))) ; required by Make.glkterm
+   (arguments
+    '(#:tests? #f ; no check target
+      #:phases
+      (alist-replace
+       'install
+       (lambda* (#:key outputs #:allow-other-keys)
+         (let* ((out (assoc-ref outputs "out"))
+                (inc (string-append out "/include")))
+           (mkdir-p inc)
+           (for-each
+            (lambda (file)
+              (copy-file file (string-append inc "/" file)))
+            '("glk.h" "glkstart.h" "gi_blorb.h" "gi_dispa.h" "Make.glkterm"))
+           (mkdir (string-append out "/lib"))
+           (copy-file "libglkterm.a" (string-append out "/lib/libglkterm.a"))))
+       (alist-delete 'configure %standard-phases))))
+   (home-page "http://www.eblong.com/zarf/glk/")
+   (synopsis "Curses Implementation of the Glk API")
+   (description
+    "Glk defines a portable API for applications with text UIs.  It was
+primarily designed for interactive fiction, but it should be suitable for many
+interactive text utilities, particularly those based on a command line.
+This is an implementation of the Glk library which runs in a terminal window,
+using the curses.h library for screen control.")
+   (license (license:fsf-free "file://README"))))
+
+(define-public glulxe
+  (package
+   (name "glulxe")
+   (version "0.5.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://www.ifarchive.org/if-archive/programming/"
+                         "glulx/interpreters/glulxe/glulxe-052.tar.gz"))
+     (sha256
+      (base32
+       "19iw6kl8ncqcy9pv4gsqfh3xsa1n94zd234rqavvmxccnf3nj19g"))))
+   (build-system gnu-build-system)
+   (inputs `(("glk" ,glkterm)))
+   (arguments
+    '(#:tests? #f ; no check target
+      #:make-flags
+      (let* ((glk (assoc-ref %build-inputs "glk")))
+        (list (string-append "GLKINCLUDEDIR=" glk "/include")
+              (string-append "GLKLIBDIR=" glk "/lib")
+              (string-append "GLKMAKEFILE=" "Make.glkterm")))
+      #:phases
+      (alist-replace
+       'install
+       (lambda* (#:key outputs #:allow-other-keys)
+         (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+           (mkdir-p bin)
+           (copy-file "glulxe" (string-append bin "/glulxe"))))
+       (alist-delete 'configure %standard-phases))))
+   (home-page "http://www.eblong.com/zarf/glulx/")
+   (synopsis "Interpreter for Glulx VM")
+   (description
+    "Glulx is a 32-bit portable virtual machine intended for writing and
+playing interactive fiction.  It was designed by Andrew Plotkin to relieve
+some of the restrictions in the venerable Z-machine format.  This is the
+reference interpreter, using Glk API.")
+   (license (license:fsf-free "file://README"))))
