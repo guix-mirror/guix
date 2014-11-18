@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright   2014 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,9 +24,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
@@ -95,6 +101,7 @@ This package provides the core library and elements.")
        ("glib" ,glib "bin")
        ("python" ,python-2)))))
 
+
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
@@ -108,9 +115,17 @@ This package provides the core library and elements.")
        (base32
         "1s4pphbb5kpdh4rrmb8rala4sp499k4by59925k15xiz58xyhm4p"))))
     (build-system gnu-build-system)
-    ;; FIXME: Add more dependencies for further plugins.
     (inputs
      `(("glib" ,glib)
+       ("pango" ,pango)
+       ("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("zlib" ,zlib)
+       ("libXext" ,libxext)
+       ("libxv" ,libxv)
+       ("alsa-lib" ,alsa-lib)
        ("gstreamer" ,gstreamer)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
@@ -127,18 +142,41 @@ This package provides the core library and elements.")
       ;; should almost never be used".
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
-     "Plugins for the gstreamer multimedia library")
-    (description
-     "GStreamer is a library for constructing graphs of media-handling
-components.  The applications it supports range from simple Ogg/Vorbis
-playback, audio/video streaming to complex audio (mixing) and video
-(non-linear editing) processing.
+     "Plugins for the GStreamer multimedia library")
+    (description "This package provides an essential exemplary set of plug-ins
+for the GStreamer multimedia library.")
+    (license lgpl2.0+)))
 
-Applications can take advantage of advances in codec and filter technology
-transparently.  Developers can add new codecs and filters by writing a
-simple plugin with a clean, generic interface.
 
-This package provides an essential exemplary set of elements.")
+(define-public gst-plugins-good
+  (package
+    (name "gst-plugins-good")
+    (version "1.0.10")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "1bi8ci0jssi8bsa7wbmqcwphl579vvxpshn2qnaggiha13b440y6"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("gstreamer" ,gstreamer)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("glib" ,glib "bin")
+        ("gst-plugins-base" ,gst-plugins-base)
+        ("python-wrapper" ,python-wrapper)))
+    (arguments
+     `(#:tests? #f))
+    (home-page "http://gstreamer.freedesktop.org/")
+    (synopsis
+     "Plugins for the GStreamer multimedia library")
+    (description "GStreamer Good Plug-ins is a set of plug-ins for the
+GStreamer multimedia library.  This set contains those plug-ins which the
+developers consider to have good quality code and correct functionality.")
     (license lgpl2.0+)))
 
 (define-public gst-plugins-base-0.10
@@ -147,8 +185,9 @@ This package provides an essential exemplary set of elements.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-"
-                          version ".tar.xz"))
+      (uri (string-append 
+            "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-"
+            version ".tar.xz"))
       (sha256
        (base32
         "0jp6hjlra98cnkal4n6bdmr577q8mcyp3c08s3a02c4hjhw5rr0z"))))
