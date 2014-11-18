@@ -98,8 +98,8 @@
                      ("zip" ,zip)))
     (synopsis "Many common UNIX utilities in a single executable")
     (description "BusyBox combines tiny versions of many common UNIX utilities
-into a single small executable.  It provides a fairly complete
-environment for any small or embedded system.")
+into a single small executable.  It provides a fairly complete environment for
+any small or embedded system.")
     (home-page "http://www.busybox.net")
     ;; Some files are gplv2+
     (license gpl2)))
