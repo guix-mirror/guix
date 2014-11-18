@@ -427,33 +427,45 @@ property manipulation.")
     (version "1.7.18")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://archive.apache.org/dist/subversion/subversion-"
-                                 version ".tar.bz2"))
+             (uri (string-append "http://archive.apache.org/dist/subversion/"
+                                 "subversion-" version ".tar.bz2"))
              (sha256
               (base32
                "06nrqnn3qq1hhskkcdbm0ilk2xv6ay2gyf2c7qvxp6xncb782wzn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
-                 'install 'instal-perl-bindings
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Follow the instructions from
-                   ;; 'subversion/bindings/swig/INSTALL'.
-                   (let ((out (assoc-ref outputs "out")))
-                     (and (zero? (system* "make" "swig-pl-lib"))
-                          ;; FIXME: Test failures.
-                          ;; (zero? (system* "make" "check-swig-pl"))
-                          (zero? (system* "make" "install-swig-pl-lib"))
+                 'configure 'patch-libtool-wrapper-ls
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; This substitution allows tests svnauthz_tests and
+                   ;; svnlook_tests to pass.  These tests execute svnauthz and
+                   ;; svnlook through their libtool wrapper scripts from svn
+                   ;; hooks, whose empty environments cause "ls: command not
+                   ;; found" errors.  It would be nice if this fix ultimately
+                   ;; made its way into libtool.
+                   (let ((coreutils (assoc-ref inputs "coreutils")))
+                     (substitute* "libtool"
+                       (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))))
+                 (alist-cons-after
+                  'install 'instal-perl-bindings
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Follow the instructions from
+                    ;; 'subversion/bindings/swig/INSTALL'.
+                    (let ((out (assoc-ref outputs "out")))
+                      (and (zero? (system* "make" "swig-pl-lib"))
+                           ;; FIXME: Test failures.
+                           ;; (zero? (system* "make" "check-swig-pl"))
+                           (zero? (system* "make" "install-swig-pl-lib"))
 
-                          ;; Set the right installation prefix.
-                          (with-directory-excursion
-                              "subversion/bindings/swig/perl/native"
-                            (and (zero?
-                                  (system* "perl" "Makefile.PL"
-                                           (string-append "PREFIX=" out)))
-                                 (zero?
-                                  (system* "make" "install")))))))
-                 %standard-phases)))
+                           ;; Set the right installation prefix.
+                           (with-directory-excursion
+                               "subversion/bindings/swig/perl/native"
+                             (and (zero?
+                                   (system* "perl" "Makefile.PL"
+                                            (string-append "PREFIX=" out)))
+                                  (zero?
+                                   (system* "make" "install")))))))
+                  %standard-phases))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ;; For the Perl bindings.
