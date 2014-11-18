@@ -161,7 +161,11 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("cairo" ,cairo)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("zlib" ,zlib)))
+    `(("zlib" ,zlib)
+
+      ;; Some packages, such as Openbox, expect Pango to be built with the
+      ;; optional libxft support.
+      ("libxft" ,libxft)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
