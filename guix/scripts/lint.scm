@@ -49,7 +49,7 @@
   ;; provided MESSAGE.
   (let ((loc (or (package-field-location package field)
                  (package-location package))))
-    (format (guix-warning-port) (_ "~a: ~a: ~a~%")
+    (format (guix-warning-port) "~a: ~a: ~a~%"
             (location->string loc)
             (package-full-name package)
             message)))
@@ -90,14 +90,14 @@
   (define (check-not-empty description)
     (when (string-null? description)
       (emit-warning package
-                    "description should not be empty"
+                    (_ "description should not be empty")
                     'description)))
 
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
                 (string-prefix-ci? (package-name package) description))
       (emit-warning package
-                    "description should start with an upper-case letter or digit"
+                    (_ "description should start with an upper-case letter or digit")
                     'description)))
 
   (define (check-end-of-sentence-space description)
@@ -113,8 +113,8 @@
                            r (cons (match:start m) r)))))))
       (unless (null? infractions)
         (emit-warning package
-                      (format #f "sentences in description should be followed ~
-by two spaces; possible infraction~p at ~{~a~^, ~}"
+                      (format #f (_ "sentences in description should be followed ~
+by two spaces; possible infraction~p at ~{~a~^, ~}")
                               (length infractions)
                               infractions)
                       'description))))
@@ -134,7 +134,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
        (when (member "pkg-config"
                      (map package-name (filter package? packages)))
         (emit-warning package
-                      "pkg-config should probably be a native input"
+                      (_ "pkg-config should probably be a native input")
                       'inputs))))))
 
 (define (package-name-regexp package)
@@ -149,7 +149,7 @@ line."
   (define (check-not-empty synopsis)
     (when (string-null? synopsis)
       (emit-warning package
-                    "synopsis should not be empty"
+                    (_ "synopsis should not be empty")
                     'synopsis)))
 
   (define (check-final-period synopsis)
@@ -157,7 +157,7 @@ line."
     (when (and (string-suffix? "." synopsis)
                (not (string-suffix? "etc." synopsis)))
       (emit-warning package
-                    "no period allowed at the end of the synopsis"
+                    (_ "no period allowed at the end of the synopsis")
                     'synopsis)))
 
   (define check-start-article
@@ -169,26 +169,27 @@ line."
           (when (or (string-prefix-ci? "A " synopsis)
                     (string-prefix-ci? "An " synopsis))
             (emit-warning package
-                          "no article allowed at the beginning of the synopsis"
+                          (_ "no article allowed at the beginning of \
+the synopsis")
                           'synopsis)))))
 
   (define (check-synopsis-length synopsis)
     (when (>= (string-length synopsis) 80)
       (emit-warning package
-                    "synopsis should be less than 80 characters long"
+                    (_ "synopsis should be less than 80 characters long")
                     'synopsis)))
 
   (define (check-proper-start synopsis)
     (unless (properly-starts-sentence? synopsis)
       (emit-warning package
-                    "synopsis should start with an upper-case letter or digit"
+                    (_ "synopsis should start with an upper-case letter or digit")
                     'synopsis)))
 
   (define (check-start-with-package-name synopsis)
     (when (and (regexp-exec (package-name-regexp package) synopsis)
                (not (starts-with-abbreviation? synopsis)))
       (emit-warning package
-                    "synopsis should not start with the package name"
+                    (_ "synopsis should not start with the package name")
                     'synopsis)))
 
  (let ((synopsis (package-synopsis package)))
@@ -217,7 +218,8 @@ line."
                       #f))
                     patches))
       (emit-warning package
-                    "file names of patches should start with the package name"
+                    (_ "file names of patches should start with \
+the package name")
                     'patches))))
 
 (define (escape-quotes str)
@@ -254,7 +256,7 @@ descriptions maintained upstream."
                            (package-location package))))
        (unless (and upstream (string=? upstream downstream))
          (format (guix-warning-port)
-                 "~a: ~a: proposed synopsis: ~s~%"
+                 (_ "~a: ~a: proposed synopsis: ~s~%")
                  (location->string loc) (package-full-name package)
                  upstream)))
 
@@ -266,7 +268,7 @@ descriptions maintained upstream."
                   (not (string=? (fill-paragraph upstream 100)
                                  (fill-paragraph downstream 100))))
          (format (guix-warning-port)
-                 "~a: ~a: proposed description:~%     \"~a\"~%"
+                 (_ "~a: ~a: proposed description:~%     \"~a\"~%")
                  (location->string loc) (package-full-name package)
                  (fill-paragraph (escape-quotes upstream) 77 7)))))))
 
