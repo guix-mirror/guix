@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ftp)
-  #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module ((guix licenses) #:select (gpl3+ clarified-artistic))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -54,3 +54,52 @@ uses the Readline library for input.  It has bookmarks, a built-in mirror
 command, and can transfer several files in parallel.  It was designed with
 reliability in mind.")
     (license gpl3+)))
+
+(define-public ncftp
+  (package
+    (name "ncftp")
+    (version "3.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.ncftp.com/ncftp/ncftp-"
+                                  version "-src.tar.bz2"))
+              (sha256
+               (base32
+                "0hlx12i0lwi99qsrx7nccf4nvwjj2gych4yks5y179b1ax0y5sxl"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Use the right 'rm' and 'ls'.
+                  (substitute* (cons "configure"
+                                     (find-files "."
+                                                 "^(Makefile\\.in|.*\\.sh)$"))
+                    (("/bin/(rm|ls)" _ command)
+                     command))
+
+                  ;; This is free software, avoid any confusion.
+                  (substitute* (find-files "." "\\.c$")
+                    (("a freeware program")
+                     "free software"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; This is an old 'configure' script that doesn't
+                   ;; understand variables passed as arguments.
+                   (let ((out (assoc-ref outputs "out")))
+                     (setenv "CONFIG_SHELL" (which "sh"))
+                     (setenv "SHELL" (which "sh"))
+                     (zero? (system* "./configure"
+                                     (string-append "--prefix=" out)))))
+                 %standard-phases)
+       #:tests? #f))                              ;there are no tests
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://www.ncftp.com/ncftp/")
+    (synopsis "Command-line File Transfer Protocol (FTP) client")
+    (description
+     "NcFTP Client (or just NcFTP) is a set of command-line programs to access
+File Transfer Protocol (FTP) servers.  This includes 'ncftp', an interactive
+FTP browser, as well as non-interactive commands such as 'ncftpput' and
+'ncftpget'.")
+    (license clarified-artistic)))
