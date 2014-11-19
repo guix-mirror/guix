@@ -28,6 +28,7 @@
             cc0
             cddl1.0
             cecill-c
+            clarified-artistic
             cpl1.0
             epl1.0
             expat
@@ -126,6 +127,12 @@ which may be a file:// URI pointing the package's tree."
   (license "CeCILL-C"
            "http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html"
            "https://www.gnu.org/licenses/license-list.html#CeCILL"))
+
+(define clarified-artistic
+  (license "Clarified Artistic"
+           ;; http://directory.fsf.org/wiki/User:Jgay/license-categorization#Clarified_Artistic_License
+           "http://gianluca.dellavedova.org/2011/01/03/clarified-artistic-license/"
+           "https://www.gnu.org/licenses/license-list.html#ArtisticLicense2"))
 
 (define cpl1.0
   (license "CPL 1.0"
