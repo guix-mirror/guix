@@ -293,11 +293,11 @@ descriptions maintained upstream."
      (check       check-inputs-should-be-native))
    (lint-checker
      (name        'patch-filenames)
-     (description "Validate filenames of patches")
+     (description "Validate file names of patches")
      (check       check-patches))
    (lint-checker
      (name        'synopsis)
-     (description "Validate package synopsis")
+     (description "Validate package synopses")
      (check       check-synopsis-style))))
 
 (define (run-checkers package checkers)
