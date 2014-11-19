@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -37,6 +38,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages which)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages m4)
 
@@ -429,4 +431,86 @@ has an ease of use unmatched by other C++ callback libraries.")
     (description
      "Glibmm provides a C++ programming interface to the part of GLib that are
 useful for C++.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pygobject-2
+  (package
+    (name "python2-pygobject")
+    ;; This was the last version to declare the 2.0 platform number, i.e. its
+    ;; pkg-config files were named pygobject-2.0.pc
+    (version "2.28.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/pygobject/"
+                           (version-major+minor version)
+                           "/pygobject-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1f5dfxjnil2glfwxnqr14d2cjfbkghsbsn8n04js2c2icr7iv2pv"))
+       (patches
+        (list (search-patch
+               "python2-pygobject-2-gi-info-type-error-domain.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)
+       ("glib-bin" ,glib "bin")         ;for tests: glib-compile-schemas
+       ("pkg-config" ,pkg-config)
+       ("dbus" ,dbus)))                 ;for tests
+    (inputs
+     `(("python" ,python-2)
+       ("glib"   ,glib)
+       ("python2-py2cairo" ,python2-py2cairo)
+       ("gobject-introspection" ,gobject-introspection)))
+    (propagated-inputs
+     `(("libffi" ,libffi)))             ;mentioned in pygobject-2.0.pc
+    (arguments
+     `(#:tests? #f                      ;segfaults during tests
+       #:configure-flags '("LIBS=-lcairo-gobject")))
+    (home-page "https://pypi.python.org/pypi/PyGObject")
+    (synopsis "Python bindings for GObject")
+    (description
+     "Python bindings for GLib, GObject, and GIO.")
+    (license license:lgpl2.1+)))
+
+(define-public python-pygobject
+  (package
+    (name "python-pygobject")
+    (version "3.12.2")                  ;last version that works with
+                                        ;gobject-introspection 1.38
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/pygobject/"
+                           (version-major+minor version)
+                           "/pygobject-" version ".tar.xz"))
+       (sha256
+        (base32
+         "08m5yad1hjdax4g39w6lgjk4124mcwpa8fc5iyvb8nygk8s3syky"))))
+    ;; 3.14.0: 0m1d75iwxa6k1xbkn6c6yq5r10pxnf7i5c2a5yvwsnab7ylzz7kp
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)
+       ("glib-bin" ,glib "bin")         ;for tests: glib-compile-schemas
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("glib"   ,glib)
+       ("python-pycairo" ,python-pycairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libffi" ,libffi)))
+    (arguments
+     ;; TODO: failing tests: test_native_calls_async
+     ;; test_native_calls_async_errors test_native_calls_sync
+     ;; test_native_calls_sync_errors test_python_calls_async
+     ;; test_python_calls_async_error test_python_calls_async_error_result
+     ;; test_python_calls_sync test_python_calls_sync_errors
+     ;; test_python_calls_sync_noargs test_callback_user_data_middle_none
+     ;; test_callback_user_data_middle_single
+     ;; test_callback_user_data_middle_tuple
+     '(#:tests? #f))
+    (home-page "https://pypi.python.org/pypi/PyGObject")
+    (synopsis "Python bindings for GObject")
+    (description
+     "Python bindings for GLib, GObject, and GIO.")
     (license license:lgpl2.1+)))
