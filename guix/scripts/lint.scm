@@ -74,7 +74,7 @@
   (for-each (lambda (checker)
               (format #t "- ~a: ~a~%"
                       (lint-checker-name checker)
-                      (lint-checker-description checker)))
+                      (_ (lint-checker-description checker))))
             %checkers)
   (exit 0))
 
