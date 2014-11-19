@@ -28,8 +28,10 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
@@ -155,22 +157,38 @@ for the GStreamer multimedia library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
-                          version ".tar.xz"))
+      (uri (string-append 
+            "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
+            version ".tar.xz"))
       (sha256
        (base32
         "1bi8ci0jssi8bsa7wbmqcwphl579vvxpshn2qnaggiha13b440y6"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
+       ("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("flac" ,flac)
+       ("speex" ,speex)
+       ("libogg" ,libogg) ;; should be a propagated input of the above
+       ("libx11" ,libx11)
+       ("zlib" ,zlib)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg)
+       ("libXext" ,libxext)
+       ("libxv" ,libxv)
+       ("pulseaudio" ,pulseaudio)
        ("gstreamer" ,gstreamer)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")
         ("gst-plugins-base" ,gst-plugins-base)
         ("python-wrapper" ,python-wrapper)))
-    (arguments
-     `(#:tests? #f))
+   (arguments
+    `(#:configure-flags (list "--disable-osx_audio" 
+                              "--disable-osx_video"
+                              "--disable-directsound"
+                              "--disable-waveform")))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
