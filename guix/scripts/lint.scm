@@ -278,23 +278,23 @@ descriptions maintained upstream."
 (define %checkers
   (list
    (lint-checker
-     (name        "description")
+     (name        'description)
      (description "Validate package descriptions")
      (check       check-description-style))
    (lint-checker
-     (name        "gnu-description")
+     (name        'gnu-description)
      (description "Validate synopsis & description of GNU packages")
      (check       check-gnu-synopsis+description))
    (lint-checker
-     (name        "inputs-should-be-native")
+     (name        'inputs-should-be-native)
      (description "Identify inputs that should be native inputs")
      (check       check-inputs-should-be-native))
    (lint-checker
-     (name        "patch-filenames")
+     (name        'patch-filenames)
      (description "Validate filenames of patches")
      (check       check-patches))
    (lint-checker
-     (name        "synopsis")
+     (name        'synopsis)
      (description "Validate package synopsis")
      (check       check-synopsis-style))))
 
@@ -336,11 +336,12 @@ Run a set of checkers on the specified package; if none is specified, run the ch
   ;;                                  'certainty'.
   (list (option '(#\c "checkers") #t #f
                 (lambda (opt name arg result arg-handler)
-                  (let ((names (string-split arg #\,)))
+                  (let ((names (map string->symbol (string-split arg #\,))))
                     (for-each (lambda (c)
-                                (when (not (member c (map lint-checker-name
-                                                          %checkers)))
-                                  (leave (_ "~a: invalid checker") c)))
+                                (unless (memq c
+                                              (map lint-checker-name
+                                                   %checkers))
+                                  (leave (_ "~a: invalid checker~%") c)))
                               names)
                     (values (alist-cons 'checkers
                              (filter (lambda (checker)
