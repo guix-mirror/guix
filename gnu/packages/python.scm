@@ -2192,3 +2192,38 @@ toolkits.")
       (inputs `(("python2-numpydoc" ,python2-numpydoc)
                 ,@(alist-delete "python-numpydoc" 
                                 (package-inputs matplotlib)))))))
+
+(define-public python-sqlalchemy
+  (package
+    (name "python-sqlalchemy")
+    (version "0.9.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/S/"
+                          "SQLAlchemy/SQLAlchemy-" version ".tar.gz"))
+      (sha256
+       (base32
+        "059ayifj5l08v6vv56anhyibyllscn10dlzr2fcw68gz1hfjdzsz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython) ;for c extensions
+       ("python-pytest" ,python-pytest)
+       ("python-mock"   ,python-mock))) ;for tests
+    (arguments
+     `(#:phases (alist-replace
+                 'check
+                 (lambda _ (zero? (system* "py.test")))
+                 %standard-phases)))
+    (home-page "http://www.sqlalchemy.org")
+    (synopsis "Database abstraction library")
+    (description
+     "SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that
+gives application developers the full power and flexibility of SQL.  It
+provides a full suite of well known enterprise-level persistence patterns,
+designed for efficient and high-performing database access, adapted into a
+simple and Pythonic domain language.")
+    (license x11)))
+
+(define-public python2-sqlalchemy
+  (package-with-python2 python-sqlalchemy))
