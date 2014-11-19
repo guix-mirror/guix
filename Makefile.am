@@ -233,7 +233,6 @@ EXTRA_DIST =						\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
   build-aux/list-packages.scm				\
-  build-aux/sync-descriptions.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
@@ -308,8 +307,7 @@ dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 sync-descriptions:
-	-$(top_builddir)/pre-inst-env $(GUILE)		\
-	   $(top_srcdir)/build-aux/sync-descriptions.scm
+	-$(top_builddir)/pre-inst-env guix lint --checkers=gnu-description
 
 gen-ChangeLog:
 	if test -d .git; then				\

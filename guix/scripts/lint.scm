@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -219,12 +220,71 @@ line."
                     "file names of patches should start with the package name"
                     'patches))))
 
+(define (escape-quotes str)
+  "Replace any quote character in STR by an escaped quote character."
+  (list->string
+   (string-fold-right (lambda (chr result)
+                        (match chr
+                          (#\" (cons* #\\ #\"result))
+                          (_   (cons chr result))))
+                      '()
+                      str)))
+
+(define official-gnu-packages*
+  (memoize
+   (lambda ()
+     "A memoizing version of 'official-gnu-packages' that returns the empty
+list when something goes wrong, such as a networking issue."
+     (let ((gnus (false-if-exception (official-gnu-packages))))
+       (or gnus '())))))
+
+(define (check-gnu-synopsis+description package)
+  "Make sure that, if PACKAGE is a GNU package, it uses the synopsis and
+descriptions maintained upstream."
+  (match (find (lambda (descriptor)
+                 (string=? (gnu-package-name descriptor)
+                           (package-name package)))
+               (official-gnu-packages*))
+    (#f                                   ;not a GNU package, so nothing to do
+     #t)
+    (descriptor                           ;a genuine GNU package
+     (let ((upstream   (gnu-package-doc-summary descriptor))
+           (downstream (package-synopsis package))
+           (loc        (or (package-field-location package 'synopsis)
+                           (package-location package))))
+       (unless (and upstream (string=? upstream downstream))
+         (format (guix-warning-port)
+                 "~a: ~a: proposed synopsis: ~s~%"
+                 (location->string loc) (package-full-name package)
+                 upstream)))
+
+     (let ((upstream   (gnu-package-doc-description descriptor))
+           (downstream (package-description package))
+           (loc        (or (package-field-location package 'description)
+                           (package-location package))))
+       (when (and upstream
+                  (not (string=? (fill-paragraph upstream 100)
+                                 (fill-paragraph downstream 100))))
+         (format (guix-warning-port)
+                 "~a: ~a: proposed description:~%     \"~a\"~%"
+                 (location->string loc) (package-full-name package)
+                 (fill-paragraph (escape-quotes upstream) 77 7)))))))
+
+
+;;;
+;;; List of checkers.
+;;;
+
 (define %checkers
   (list
    (lint-checker
      (name        "description")
      (description "Validate package descriptions")
      (check       check-description-style))
+   (lint-checker
+     (name        "gnu-description")
+     (description "Validate synopsis & description of GNU packages")
+     (check       check-gnu-synopsis+description))
    (lint-checker
      (name        "inputs-should-be-native")
      (description "Identify inputs that should be native inputs")
