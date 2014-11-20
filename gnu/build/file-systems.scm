@@ -293,7 +293,7 @@ run a file system check."
        (mkdir-p (string-append root "/etc"))
        (let ((port (open-file (string-append root "/etc/mtab") "a")))
          (format port "~a ~a ~a ~a 0 0~%"
-                 source mount-point type (or options ""))
+                 source mount-point type (or options "rw"))
          (close-port port))))))
 
 ;;; file-systems.scm ends here
