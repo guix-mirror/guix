@@ -23,6 +23,8 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix monads)
+  #:use-module (guix records)
+
   #:use-module ((gnu build vm)
                 #:select (qemu-command))
   #:use-module (gnu packages base)
@@ -55,6 +57,13 @@
   #:export (expression->derivation-in-linux-vm
             qemu-image
             system-qemu-image
+
+            file-system-mapping
+            file-system-mapping?
+            file-system-mapping-source
+            file-system-mapping-target
+            file-system-mapping-writable?
+
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
             system-disk-image))
@@ -338,6 +347,27 @@ of the GNU system as described by OS."
                               ("grub.cfg" ,grub.cfg))
                    #:copy-inputs? #t))))
 
+
+;;;
+;;; VMs that share file systems with the host.
+;;;
+
+;; Mapping of host file system SOURCE to mount point TARGET in the guest.
+(define-record-type* <file-system-mapping> file-system-mapping
+  make-file-system-mapping
+  file-system-mapping?
+  (source    file-system-mapping-source)          ;string
+  (target    file-system-mapping-target)          ;string
+  (writable? file-system-mapping-writable?        ;Boolean
+             (default #f)))
+
+(define %store-mapping
+  ;; Mapping of the host's store into the guest.
+  (file-system-mapping
+   (source (%store-prefix))
+   (target (%store-prefix))
+   (writable? #f)))
+
 (define (file-system->mount-tag fs)
   "Return a 9p mount tag for host file system FS."
   ;; QEMU mount tags cannot contain slashes and cannot start with '_'.
@@ -348,19 +378,34 @@ of the GNU system as described by OS."
                               (chr chr))
                              fs)))
 
-(define (host-9p-file-system source target)
-  "Return a <file-system> to mount the host's SOURCE file system as TARGET in
-the guest, using a 9p virtfs."
-  (file-system
-    (mount-point target)
-    (device (file-system->mount-tag source))
-    (type "9p")
-    (options "trans=virtio")
-    (check? #f)))
+(define (mapping->file-system mapping)
+  "Return a 9p file system that realizes MAPPING."
+  (match mapping
+    (($ <file-system-mapping> source target writable?)
+     (file-system
+       (mount-point target)
+       (device (file-system->mount-tag source))
+       (type "9p")
+       (flags (if writable? '() '(read-only)))
+       (options (string-append "trans=virtio"))
+       (check? #f)
+       (create-mount-point? #t)))))
 
-(define (virtualized-operating-system os)
+(define (virtualized-operating-system os mappings)
   "Return an operating system based on OS suitable for use in a virtualized
-environment with the store shared with the host."
+environment with the store shared with the host.  MAPPINGS is a list of
+<file-system-mapping> to realize in the virtualized OS."
+  (define user-file-systems
+    ;; Remove file systems that conflict with those added below, or that are
+    ;; normally bound to real devices.
+    (remove (lambda (fs)
+              (let ((target (file-system-mount-point fs))
+                    (source (file-system-device fs)))
+                (or (string=? target (%store-prefix))
+                    (string=? target "/")
+                    (string-prefix? "/dev/" source))))
+            (operating-system-file-systems os)))
+
   (operating-system (inherit os)
     (initrd (lambda (file-systems . rest)
               (apply base-initrd file-systems
@@ -378,19 +423,11 @@ environment with the store shared with the host."
                            (type "ext4"))
 
                          (file-system (inherit
-                                       (host-9p-file-system (%store-prefix)
-                                                            (%store-prefix)))
+                                       (mapping->file-system %store-mapping))
                             (needed-for-boot? #t))
 
-                         ;; Remove file systems that conflict with those
-                         ;; above, or that are normally bound to real devices.
-                         (remove (lambda (fs)
-                                   (let ((target (file-system-mount-point fs))
-                                         (source (file-system-device fs)))
-                                     (or (string=? target (%store-prefix))
-                                         (string=? target "/")
-                                         (string-prefix? "/dev/" source))))
-                                 (operating-system-file-systems os))))))
+                         (append (map mapping->file-system mappings)
+                                 user-file-systems)))))
 
 (define* (system-qemu-image/shared-store
           os
@@ -442,6 +479,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 #:key
                                                 (qemu qemu)
                                                 (graphic? #t)
+                                                (mappings '())
                                                 full-boot?
                                                 (disk-image-size
                                                  (* (if full-boot? 500 15)
@@ -449,11 +487,14 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host.
 
+MAPPINGS is a list of <file-system-mapping> specifying mapping of host file
+systems into the guest.
+
 When FULL-BOOT? is true, the returned script runs everything starting from the
 bootloader; otherwise it directly starts the operating system kernel.  The
 DISK-IMAGE-SIZE parameter specifies the size in bytes of the root disk image;
 it is mostly useful when FULL-BOOT?  is true."
-  (mlet* %store-monad ((os ->  (virtualized-operating-system os))
+  (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings))
                        (os-drv (operating-system-derivation os))
                        (image  (system-qemu-image/shared-store
                                 os
@@ -472,7 +513,9 @@ exec " #$qemu "/bin/" #$(qemu-command (%current-system))
             -initrd " #$os-drv "/initrd \
             -append \"" #$(if graphic? "" "console=ttyS0 ")
             "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "))
-#$(common-qemu-options image (list (%store-prefix)))
+#$(common-qemu-options image
+                       (map file-system-mapping-source
+                            (cons %store-mapping mappings)))
 " \"$@\"\n")
              port)
             (chmod port #o555))))
