@@ -4676,14 +4676,14 @@ kernel mode setting (KMS).")
 (define-public xcb-util
   (package
     (name "xcb-util")
-    (version "0.3.9")
+    (version "0.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1i0qbhqkcdlbbsj7ifkyjsffl61whj24d3zlg5pxf3xj1af2a4f6"))))
+               "1sahmrgbpyki4bb72hxym0zvxwnycmswsxiisgqlln9vrdlr9r26"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxcb" ,libxcb)))
