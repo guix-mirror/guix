@@ -42,17 +42,20 @@
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.3.1")
+    (version "0.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://xkbcommon.org/download/" name "-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13mk335r4dhi9qglzbp46ina1wz4qgcp8r7s06iq7j50pf0kb5ww"))))
+               "176ii5dn2wh74q48sd8ac37ljlvgvp5f506glr96z6ibfhj7igch"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("libxcb" ,libxcb)))
     (native-inputs
-     `(("bison" ,bison)))
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://xkbcommon.org/")
     (synopsis "Library to handle keyboard descriptions")
     (description "Xkbcommon is a library to handle keyboard descriptions,
