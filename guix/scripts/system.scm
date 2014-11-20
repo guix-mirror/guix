@@ -264,7 +264,7 @@ it atomically, and then run OS's activation script."
 ;;;
 
 (define* (system-derivation-for-action os action
-                                       #:key image-size full-boot?)
+                                       #:key image-size full-boot? mappings)
   "Return as a monadic value the derivation for OS according to ACTION."
   (case action
     ((build init reconfigure)
@@ -274,7 +274,8 @@ it atomically, and then run OS's activation script."
     ((vm)
      (system-qemu-image/shared-store-script os
                                             #:full-boot? full-boot?
-                                            #:disk-image-size image-size))
+                                            #:disk-image-size image-size
+                                            #:mappings mappings))
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
@@ -298,7 +299,8 @@ true."
 (define* (perform-action action os
                          #:key grub? dry-run?
                          use-substitutes? device target
-                         image-size full-boot?)
+                         image-size full-boot?
+                         (mappings '()))
   "Perform ACTION for OS.  GRUB? specifies whether to install GRUB; DEVICE is
 the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
 is the size of the image to be built, for the 'vm-image' and 'disk-image'
@@ -307,7 +309,8 @@ boot directly to the kernel or to the bootloader."
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
                                                 #:image-size image-size
-                                                #:full-boot? full-boot?))
+                                                #:full-boot? full-boot?
+                                                #:mappings mappings))
        (grub      (package->derivation grub))
        (grub.cfg  (grub.cfg os))
        (drvs   -> (if (and grub? (memq action '(init reconfigure)))
@@ -380,6 +383,10 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (display (_ "
       --no-grub          for 'init', do not install GRUB"))
   (display (_ "
+      --share=SPEC       for 'vm', share host file system according to SPEC"))
+  (display (_ "
+      --expose=SPEC      for 'vm', expose host file system according to SPEC"))
+  (display (_ "
       --full-boot        for 'vm', make a full boot sequence"))
   (newline)
   (display (_ "
@@ -388,6 +395,19 @@ Build the operating system declared in FILE according to ACTION.\n"))
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
+
+(define (specification->file-system-mapping spec writable?)
+  "Read the SPEC and return the corresponding <file-system-mapping>."
+  (let ((index (string-index spec #\=)))
+    (if index
+        (file-system-mapping
+         (source (substring spec 0 index))
+         (target (substring spec (+ 1 index)))
+         (writable? writable?))
+        (file-system-mapping
+         (source spec)
+         (target spec)
+         (writable? writable?)))))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -408,6 +428,18 @@ Build the operating system declared in FILE according to ACTION.\n"))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
+
+         (option '("share") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'file-system-mapping
+                               (specification->file-system-mapping arg #t)
+                               result)))
+         (option '("expose") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'file-system-mapping
+                               (specification->file-system-mapping arg #f)
+                               result)))
+
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -502,6 +534,11 @@ Build the operating system declared in FILE according to ACTION.\n"))
                         #:use-substitutes? (assoc-ref opts 'substitutes?)
                         #:image-size (assoc-ref opts 'image-size)
                         #:full-boot? (assoc-ref opts 'full-boot?)
+                        #:mappings (filter-map (match-lambda
+                                                (('file-system-mapping . m)
+                                                 m)
+                                                (_ #f))
+                                               opts)
                         #:grub? grub?
                         #:target target #:device device)
         #:system system))))

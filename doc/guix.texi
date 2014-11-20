@@ -4375,11 +4375,26 @@ This command also installs GRUB on the device specified in
 
 @item vm
 @cindex virtual machine
+@cindex VM
 Build a virtual machine that contain the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
 Arguments given to the script are passed as is to QEMU.
 
 The VM shares its store with the host system.
+
+Additional file systems can be shared between the host and the VM using
+the @code{--share} and @code{--expose} command-line options: the former
+specifies a directory to be shared with write access, while the latter
+provides read-only access to the shared directory.
+
+The example below creates a VM in which the user's home directory is
+accessible read-only, and where the @file{/exchange} directory is a
+read-write mapping of the host's @file{$HOME/tmp}:
+
+@example
+guix system vm my-config.scm \
+   --expose=$HOME --share=$HOME/tmp=/exchange
+@end example
 
 On GNU/Linux, the default is to boot directly to the kernel; this has
 the advantage of requiring only a very tiny root disk image since the
