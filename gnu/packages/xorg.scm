@@ -4708,14 +4708,14 @@ event: Some utilities that have little to do with events any more.")
 (define-public xcb-util-image
   (package
     (name "xcb-util-image")
-    (version "0.3.9")
+    (version "0.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1pr1l1nkg197gyl9d0fpwmn72jqpxjfgn9y13q4gawg1m873qnnk"))))
+               "1z1gxacg7q4cw6jrd26gvi5y04npsyavblcdad1xccc8swvnmf9d"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxcb" ,libxcb)))
