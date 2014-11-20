@@ -142,10 +142,18 @@ EndSection
     #~(begin
         (use-modules (ice-9 match))
 
-        ;; First, try to run ~/.xsession.
-        (let* ((home (getenv "HOME"))
-               (file (string-append home "/.xsession")))
-          (false-if-exception (execl file file)))
+        (let* ((home     (getenv "HOME"))
+               (profile  (string-append home "/.guix-profile/bin"))
+               (PATH     (or (getenv "PATH") ""))
+               (xsession (string-append home "/.xsession")))
+          ;; Make sure the user's profile is visible.
+          (setenv "PATH"
+                  (string-append profile
+                                 (if (string-null? PATH) "" ":")
+                                 PATH))
+
+          ;; First, try to run ~/.xsession.
+          (false-if-exception (execl xsession xsession)))
 
         ;; Then try a pre-configured session type.
         (let ((ratpoison (string-append #$ratpoison "/bin/ratpoison"))
