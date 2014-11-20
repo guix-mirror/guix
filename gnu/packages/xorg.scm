@@ -2038,7 +2038,7 @@ autotools system.")
 (define-public xcb-proto
   (package
     (name "xcb-proto")
-    (version "1.7.1")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
@@ -2048,7 +2048,7 @@ autotools system.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0ds4qg6slidrzyz6q9ckq0a19hn6blzpnvciy4brh741gn49jpdd"))))
+            "0bp3f53l9fy5x3mn1rkj1g81aiyzl90wacwvqdgy831aa3kfxb5l"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-wrapper)))
