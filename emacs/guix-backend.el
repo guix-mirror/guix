@@ -206,7 +206,8 @@ this address (it should be defined by
   ;; A mix of the code from `geiser-repl--start-repl' and
   ;; `geiser-repl--to-repl-buffer'.
   (let ((impl 'guile)
-        (geiser-guile-load-path (list guix-load-path))
+        (geiser-guile-load-path (cons guix-load-path
+                                      geiser-guile-load-path))
         (geiser-repl-startup-time guix-repl-startup-time))
     (with-current-buffer buffer
       (geiser-repl-mode)
