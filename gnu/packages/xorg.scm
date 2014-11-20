@@ -4740,14 +4740,14 @@ image: Port of Xlib's XImage and XShmImage functions.")
 (define-public xcb-util-keysyms
   (package
     (name "xcb-util-keysyms")
-    (version "0.3.9")
+    (version "0.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0vjwk7vrcfnlhiadv445c6skfxmdrg5v4qf81y8s2s5xagqarqbv"))))
+               "1nbd45pzc1wm6v5drr5338j4nicbgxa5hcakvsvm5pnyy47lky0f"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxcb" ,libxcb)))
