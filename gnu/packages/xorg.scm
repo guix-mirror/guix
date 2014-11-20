@@ -4770,14 +4770,14 @@ keysyms: Standard X key constants and conversion to/from keycodes.")
 (define-public xcb-util-renderutil
   (package
     (name "xcb-util-renderutil")
-    (version "0.3.8")
+    (version "0.3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0lkl9ij9b447c0br2qc5qsynjn09c4fdz7sd6yp7pyi8az2sb2cp"))))
+               "0nza1csdvvxbmk8vgv8vpmq7q8h05xrw3cfx9lwxd1hjzd47xsf6"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxcb" ,libxcb)))
