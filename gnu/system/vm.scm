@@ -338,6 +338,26 @@ of the GNU system as described by OS."
                               ("grub.cfg" ,grub.cfg))
                    #:copy-inputs? #t))))
 
+(define (file-system->mount-tag fs)
+  "Return a 9p mount tag for host file system FS."
+  ;; QEMU mount tags cannot contain slashes and cannot start with '_'.
+  ;; Compute an identifier that corresponds to the rules.
+  (string-append "TAG"
+                 (string-map (match-lambda
+                              (#\/ #\_)
+                              (chr chr))
+                             fs)))
+
+(define (host-9p-file-system source target)
+  "Return a <file-system> to mount the host's SOURCE file system as TARGET in
+the guest, using a 9p virtfs."
+  (file-system
+    (mount-point target)
+    (device (file-system->mount-tag source))
+    (type "9p")
+    (options "trans=virtio")
+    (check? #f)))
+
 (define (virtualized-operating-system os)
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host."
@@ -356,13 +376,11 @@ environment with the store shared with the host."
                            (mount-point "/")
                            (device "/dev/vda1")
                            (type "ext4"))
-                         (file-system
-                           (mount-point (%store-prefix))
-                           (device "store")
-                           (type "9p")
-                           (needed-for-boot? #t)
-                           (options "trans=virtio")
-                           (check? #f))
+
+                         (file-system (inherit
+                                       (host-9p-file-system (%store-prefix)
+                                                            (%store-prefix)))
+                            (needed-for-boot? #t))
 
                          ;; Remove file systems that conflict with those
                          ;; above, or that are normally bound to real devices.
@@ -402,11 +420,18 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
                 #:register-closures? #f
                 #:copy-inputs? full-boot?)))
 
-(define* (common-qemu-options image)
-  "Return the a string-value gexp with the common QEMU options to boot IMAGE."
-#~(string-append
+(define* (common-qemu-options image shared-fs)
+  "Return the a string-value gexp with the common QEMU options to boot IMAGE,
+with '-virtfs' options for the host file systems listed in SHARED-FS."
+  (define (virtfs-option fs)
+    #~(string-append "-virtfs local,path=\"" #$fs
+                     "\",security_model=none,mount_tag=\""
+                     #$(file-system->mount-tag fs)
+                     "\" "))
+
+  #~(string-append
      " -enable-kvm -no-reboot -net nic,model=virtio \
-  -virtfs local,path=" #$(%store-prefix) ",security_model=none,mount_tag=store \
+  " #$@(map virtfs-option shared-fs) " \
   -net user \
   -serial stdio \
   -drive file=" #$image
@@ -447,7 +472,7 @@ exec " #$qemu "/bin/" #$(qemu-command (%current-system))
             -initrd " #$os-drv "/initrd \
             -append \"" #$(if graphic? "" "console=ttyS0 ")
             "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "))
-#$(common-qemu-options image)
+#$(common-qemu-options image (list (%store-prefix)))
 " \"$@\"\n")
              port)
             (chmod port #o555))))
