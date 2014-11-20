@@ -255,39 +255,33 @@ UNIONFS."
       (newline port)
       (close-port port)))
 
-  (catch #t
-    (lambda ()
-      (if volatile-root?
-          (begin
-            (mkdir-p "/real-root")
-            (mount root "/real-root" type MS_RDONLY)
-            (mkdir-p "/rw-root")
-            (mount "none" "/rw-root" "tmpfs")
+  (if volatile-root?
+      (begin
+        (mkdir-p "/real-root")
+        (mount root "/real-root" type MS_RDONLY)
+        (mkdir-p "/rw-root")
+        (mount "none" "/rw-root" "tmpfs")
 
-            ;; We want read-write /dev nodes.
-            (make-essential-device-nodes #:root "/rw-root")
+        ;; We want read-write /dev nodes.
+        (make-essential-device-nodes #:root "/rw-root")
 
-            ;; Make /root a union of the tmpfs and the actual root.  Use
-            ;; 'max_files' to set a high RLIMIT_NOFILE for the unionfs process
-            ;; itself.  Failing to do that, we quickly run out of file
-            ;; descriptors; see <http://bugs.gnu.org/17827>.
-            (unless (zero? (system* unionfs "-o"
-                                    "cow,allow_other,use_ino,suid,dev,max_files=65536"
-                                    "/rw-root=RW:/real-root=RO"
-                                    "/root"))
-              (error "unionfs failed"))
+        ;; Make /root a union of the tmpfs and the actual root.  Use
+        ;; 'max_files' to set a high RLIMIT_NOFILE for the unionfs process
+        ;; itself.  Failing to do that, we quickly run out of file
+        ;; descriptors; see <http://bugs.gnu.org/17827>.
+        (unless (zero? (system* unionfs "-o"
+                                "cow,allow_other,use_ino,suid,dev,max_files=65536"
+                                "/rw-root=RW:/real-root=RO"
+                                "/root"))
+          (error "unionfs failed"))
 
-            ;; Make sure unionfs remains alive till the end.  Because
-            ;; 'fuse_daemonize' doesn't tell the PID of the forked daemon, we
-            ;; have to resort to 'pidof' here.
-            (mark-as-not-killable (pidof unionfs)))
-          (begin
-            (check-file-system root type)
-            (mount root "/root" type))))
-    (lambda args
-      (format (current-error-port) "exception while mounting '~a': ~s~%"
-              root args)
-      (start-repl)))
+        ;; Make sure unionfs remains alive till the end.  Because
+        ;; 'fuse_daemonize' doesn't tell the PID of the forked daemon, we
+        ;; have to resort to 'pidof' here.
+        (mark-as-not-killable (pidof unionfs)))
+      (begin
+        (check-file-system root type)
+        (mount root "/root" type)))
 
   (copy-file "/proc/mounts" "/root/etc/mtab"))
 
