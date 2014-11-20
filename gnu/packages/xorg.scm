@@ -4424,7 +4424,7 @@ kernel mode setting (KMS).")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.8.1")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
@@ -4434,7 +4434,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-            "03gspxcdl8r7jwbwg7fyp4cc6zic9z91amp4g5z0wwahx48nix6j"))))
+            "1xqgc81krx14f2c8yl5chzg5g2l26mhm2rwffy8dx7jv0iq5sqq3"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
