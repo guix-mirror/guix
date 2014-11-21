@@ -24,7 +24,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
-                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1+ lgpl3+
+                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib) #:prefix license:)
   #:use-module (gnu packages)

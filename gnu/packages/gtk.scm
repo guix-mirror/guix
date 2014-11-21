@@ -634,3 +634,109 @@ extensive documentation, including API reference and a tutorial.")
        ("atkmm" ,atkmm)
        ("gtk+" ,gtk+-2)
        ("glibmm" ,glibmm)))))
+
+(define-public python-pycairo
+  (package
+    (name "python-pycairo")
+    (version "1.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://cairographics.org/releases/pycairo-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32
+        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs                  ;pycairo.pc references cairo
+     `(("cairo" ,cairo)))
+    (arguments
+     `(#:tests? #f
+       #:phases (alist-cons-before
+                 'build 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (zero? (system* "./waf" "configure"
+                                   (string-append "--prefix="
+                                                  (assoc-ref outputs "out")))))
+                 (alist-replace
+                  'build
+                  (lambda _
+                    (zero? (system* "./waf" "build")))
+                  (alist-replace
+                   'install
+                   (lambda _
+                     (zero? (system* "./waf" "install")))
+                   %standard-phases)))))
+    (home-page "http://cairographics.org/pycairo/")
+    (synopsis "Python bindings for cairo")
+    (description
+     "Pycairo is a set of Python bindings for the Cairo graphics library.")
+    (license license:lgpl3+)))
+
+(define-public python2-py2cairo
+  (package (inherit python-pycairo)
+    (name "python2-py2cairo")
+    (version "1.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://cairographics.org/releases/py2cairo-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32
+        "0cblk919wh6w0pgb45zf48xwxykfif16qk264yga7h9fdkq3j16k"))))
+    (arguments
+     `(#:python ,python-2
+       ,@(package-arguments python-pycairo)))
+    ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
+    (license '(license:lgpl2.1 license:mpl1.1))))
+
+(define-public python2-pygtk
+  (package
+    (name "python2-pygtk")
+    (version "2.24.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://ftp.gnome.org/pub/GNOME/sources"
+                          "/pygtk/" (version-major+minor version)
+                          "/pygtk-" version ".tar.bz2"))
+      (sha256
+       (base32
+        "04k942gn8vl95kwf0qskkv6npclfm31d78ljkrkgyqxxcni1w76d"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python-2)
+       ("glib"   ,glib)))
+    (propagated-inputs
+     `(("python-pycairo"   ,python2-py2cairo)    ;loaded at runtime
+       ("python-pygobject" ,python2-pygobject-2) ;referenced in pc file
+       ("gtk+"             ,gtk+-2)))
+    (arguments
+     `(#:tests? #f
+       #:phases (alist-cons-after
+                 'install 'install-pth
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   ;; pygtk's modules are stored in a subdirectory of python's
+                   ;; site-packages directory.  Add a .pth file so that python
+                   ;; will add that subdirectory to its module search path.
+                   (let* ((out    (assoc-ref outputs "out"))
+                          (site   (string-append out "/lib/python"
+                                                 ,(version-major+minor
+                                                   (package-version python-2))
+                                                 "/site-packages")))
+                     (call-with-output-file (string-append site "/pygtk.pth")
+                       (lambda (port)
+                         (format port "gtk-2.0~%")))))
+                 %standard-phases)))
+    (home-page "http://www.pygtk.org/")
+    (synopsis "Python bindings for GTK+")
+    (description
+     "PyGTK allows you to write full featured GTK programs in Python.  It is
+targetted at GTK 2.x, and can be used in conjunction with gnome-python to
+write GNOME applications.")
+    (license license:lgpl2.1+)))
