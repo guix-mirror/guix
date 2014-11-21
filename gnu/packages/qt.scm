@@ -53,10 +53,20 @@
                "176ii5dn2wh74q48sd8ac37ljlvgvp5f506glr96z6ibfhj7igch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxcb" ,libxcb)))
+     `(("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("xkeyboard-config" ,xkeyboard-config)))
     (native-inputs
      `(("bison" ,bison)
        ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xkb-config-root="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb")
+             (string-append "--with-x-locale-root="
+                            (assoc-ref %build-inputs "libx11")
+                            "/share/X11/locale"))))
     (home-page "http://xkbcommon.org/")
     (synopsis "Library to handle keyboard descriptions")
     (description "Xkbcommon is a library to handle keyboard descriptions,
