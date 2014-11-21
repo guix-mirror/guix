@@ -190,6 +190,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
   gnu/packages/ntp.scm				\
+  gnu/packages/nutrition.scm			\
   gnu/packages/nvi.scm				\
   gnu/packages/ocaml.scm			\
   gnu/packages/ocrad.scm			\
