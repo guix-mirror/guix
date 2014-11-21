@@ -162,6 +162,7 @@ check whether everything is alright."
         ;; XXX: This one is used bare-bones, without a libc, so add a case
         ;; here just so we can keep going.
         ((string=? system "xtensa-elf") "no-ld.so")
+        ((string=? system "avr") "no-ld.so")
 
         (else (error "dynamic linker name not known for this system"
                      system))))
