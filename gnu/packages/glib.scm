@@ -55,6 +55,7 @@
   (package
     (name "dbus")
     (version "1.8.8")
+    (replacement dbus-1.8.10)                     ;fix for CVE-2014-7824
     (source (origin
              (method url-fetch)
              (uri
@@ -112,6 +113,20 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
+
+(define-public dbus-1.8.10
+  (let ((real-version "1.8.10"))
+    (package (inherit dbus)
+      (source (origin
+                (method url-fetch)
+                (uri
+                 (string-append "http://dbus.freedesktop.org/releases/dbus/dbus-"
+                                real-version ".tar.gz"))
+                (sha256
+                 (base32
+                  "13mgvwigm931r8n9363imnn0vn6dvc0m322k3p8fs5c8nvyqggqh"))
+                (patches (list (search-patch "dbus-localstatedir.patch")))))
+      (replacement #f))))
 
 (define glib
   (package
