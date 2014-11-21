@@ -24,7 +24,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
-                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1+
+                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1+ lgpl3+
                           psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib) #:prefix license:)
   #:use-module (gnu packages)
@@ -52,6 +52,7 @@
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -2256,6 +2257,41 @@ Python's distutils.")
 
 (define-public python2-distutils-extra
   (package-with-python2 python-distutils-extra))
+
+(define-public python2-elib.intl
+  (package
+    (name "python2-elib.intl")
+    (version "0.0.3")
+    (source
+     (origin
+       ;; This project doesn't tag releases or publish tarballs, so we take
+       ;; source from a (semi-arbitrary, i.e. latest as of now) git commit.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dieterv/elib.intl.git")
+             (commit "d09997cfef")))
+       (sha256
+        (base32
+         "0y7vzff9xgbnaay7m0va1arl6g68ncwrvbgwl7jqlclsahzzb09d"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     ;; incompatible with Python 3 (exception syntax)
+     `(#:python ,python-2
+       #:tests? #f
+       ;; With standard flags, the install phase attempts to create a zip'd
+       ;; egg file, and fails with an error: 'ZIP does not support timestamps
+       ;; before 1980'
+       #:configure-flags '("--single-version-externally-managed"
+                           "--record=elib.txt")))
+    (home-page "https://github.com/dieterv/elib.intl")
+    (synopsis "Enhanced internationalization for Python")
+    (description
+     "The elib.intl module provides enhanced internationalization (I18N)
+services for your Python modules and applications.")
+    (license lgpl3+)))
+
 (define-public python-pillow
   (package
     (name "python-pillow")
