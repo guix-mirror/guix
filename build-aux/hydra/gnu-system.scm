@@ -70,7 +70,8 @@
                          #:optional (package-derivation package-derivation))
   "Convert PACKAGE to an alist suitable for Hydra."
   `((derivation . ,(derivation-file-name
-                    (package-derivation store package system)))
+                    (package-derivation store package system
+                                        #:graft? #f)))
     (description . ,(package-synopsis package))
     (long-description . ,(package-description package))
     (license . ,(package-license package))
@@ -93,7 +94,9 @@ SYSTEM."
   `(,(symbol-append (string->symbol target) (string->symbol ".") job-name
                     (string->symbol ".") (string->symbol system)) .
     ,(cute package->alist store package system
-           (cut package-cross-derivation <> <> target <>))))
+           (lambda* (store package system #:key graft?)
+             (package-cross-derivation store package target system
+                                       #:graft? graft?)))))
 
 (define %core-packages
   ;; Note: Don't put the '-final' package variants because (1) that's
