@@ -1659,3 +1659,26 @@ counters, tracepoints, kprobes, and uprobes (dynamic tracing).  It is capable
 of lightweight profiling.  This package contains the user-land tools and in
 particular the 'perf' command.")
     (license (package-license linux-libre))))
+
+(define-public pflask
+  (package
+    (name "pflask")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ghedo/pflask/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1g8fjj67dfkc2s0852l9vqi1pm61gp4rxbpzbzg780f5s5hd1fys"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (home-page "http://ghedo.github.io/pflask/")
+    (synopsis "Simple tool for creating Linux namespace containers")
+    (description "pflask is a simple tool for creating Linux namespace
+containers.  It can be used for running a command or even booting an OS inside
+an isolated container, created with the help of Linux namespaces.  It is
+similar in functionality to chroot, although pflask provides better isolation
+thanks to the use of namespaces.")
+    (license bsd-2)))
