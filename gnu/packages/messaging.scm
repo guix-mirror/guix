@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,12 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages enchant)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -117,5 +124,39 @@ microblogging network (plus all other Twitter API compatible services like
 identi.ca and status.net).")
     (home-page "http://www.bitlbee.org/")
     (license (list gpl2+ bsd-2))))
+
+(define-public hexchat
+  (package
+    (name "hexchat")
+    (version "2.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1ag9rmfisv0hsbk05jq4f1rnap7kwg90vgbmkr9zklkh6imfxk7z"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("intltool" ,intltool)))
+    (inputs `(("dbus-glib" ,dbus-glib)
+              ("dbus" ,dbus)
+              ("enchant" ,enchant)
+              ("glib:bin" ,glib "bin")            ;need glib-genmarshal
+              ("gtk" ,gtk+-2)
+              ("libcanberra" ,libcanberra)
+              ("libnotify" ,libnotify)
+              ("openssl" ,openssl)
+              ("perl-xml-parser" ,perl-xml-parser) ;for addons
+              ("python-2" ,python-2)))             ;for addons
+    (synopsis "Graphical IRC Client")
+    (description
+     "HexChat lets you connect to multiple IRC networks at once.  The main window
+shows the list of currently connected networks and their channels, the current
+conversation and the list of users.  It uses colors to differentiate between
+users and to highlight messages.  It checks spelling using available
+dictionaries.  HexChat can be extended with multiple addons.")
+    (home-page "http://hexchat.net/")
+    (license gpl2+)))
 
 ;;; messaging.scm ends here
