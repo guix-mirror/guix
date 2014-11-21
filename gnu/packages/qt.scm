@@ -26,6 +26,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -36,7 +37,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages gl)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages xorg))
 
 (define-public libxkbcommon
@@ -85,7 +86,6 @@ X11 (yet).")
     (propagated-inputs
      `(("mesa" ,mesa)))
     (inputs
-     ;; FIXME: Add input ruby once available.
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("fontconfig" ,fontconfig)
@@ -102,6 +102,7 @@ X11 (yet).")
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
        ("python-wrapper" ,python-wrapper)
+       ("ruby" ,ruby)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
