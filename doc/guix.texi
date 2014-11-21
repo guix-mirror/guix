@@ -3415,7 +3415,7 @@ kernel, initial RAM disk, and boot loader looks like this:
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
   (packages (cons emacs %base-packages))
-  (services (cons (lsh-service #:port 2222 #:allow-root-login? #t)
+  (services (cons (lsh-service #:port 2222 #:root-login? #t)
                   %base-services)))
 @end lisp
 
@@ -4016,7 +4016,7 @@ In addition, @var{extra-settings} specifies a string to append to the
 configuration file.
 @end deffn
 
-Furthermore, @code{(gnu system ssh)} provides the following service.
+Furthermore, @code{(gnu services ssh)} provides the following service.
 
 @deffn {Monadic Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
        [#:interfaces '()] [#:port-number 22] @
