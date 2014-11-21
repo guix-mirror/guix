@@ -2230,6 +2230,32 @@ simple and Pythonic domain language.")
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
+(define-public python-distutils-extra
+  (package
+    (name "python-distutils-extra")
+    (version "2.38")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://launchpad.net/python-distutils-extra/trunk/"
+                          version "/+download/python-distutils-extra-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0lx15kcbby9zisx33p2h5hgakgwh2bvh0ibag8z0px4j6ifhs41x"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://launchpad.net/python-distutils-extra/")
+    (synopsis "Enhancements to Python's distutils")
+    (description
+     "The python-distutils-extra module enables you to easily integrate
+gettext support, themed icons, and scrollkeeper-based documentation into
+Python's distutils.")
+    (license gpl2)))
+
+(define-public python2-distutils-extra
+  (package-with-python2 python-distutils-extra))
 (define-public python-pillow
   (package
     (name "python-pillow")
