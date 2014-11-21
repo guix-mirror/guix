@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
@@ -2227,3 +2229,53 @@ simple and Pythonic domain language.")
 
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
+
+(define-public python-pillow
+  (package
+    (name "python-pillow")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/P/"
+                           "Pillow/Pillow-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iw36c73wkhz88wa78v6l43llsb080ihw8yq7adhfqxdib7l4hzr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose"       ,python-nose)))
+    (inputs
+     `(("lcms"     ,lcms)
+       ("zlib"     ,zlib)
+       ("libjpeg"  ,libjpeg)
+       ("openjpeg" ,openjpeg)
+       ("libtiff"  ,libtiff)))
+    (propagated-inputs
+     `(;; Used at runtime for pkg_resources
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'install 'check-installed
+                 (lambda _
+                   (begin
+                     (setenv "HOME" (getcwd))
+                     (and (zero? (system* "python" "selftest.py" "--installed"))
+                          (zero? (system* "python" "test-installed.py")))))
+                 (alist-delete 'check %standard-phases))))
+    (home-page "https://pypi.python.org/pypi/Pillow")
+    (synopsis "Fork of the Python Imaging Library")
+    (description
+     "The Python Imaging Library adds image processing capabilities to your
+Python interpreter.  This library provides extensive file format support, an
+efficient internal representation, and fairly powerful image processing
+capabilities.  The core image library is designed for fast access to data
+stored in a few basic pixel formats.  It should provide a solid foundation for
+a general image processing tool.")
+    (license (x11-style
+              "http://www.pythonware.com/products/pil/license.htm"
+              "The PIL Software License"))))
+
+(define-public python2-pillow
+  (package-with-python2 python-pillow))
