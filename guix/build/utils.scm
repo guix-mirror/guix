@@ -36,6 +36,7 @@
             directory-exists?
             executable-file?
             call-with-ascii-input-file
+            elf-file?
             with-directory-excursion
             mkdir-p
             copy-recursively
@@ -105,6 +106,17 @@ return values of applying PROC to the port."
         (proc port))
       (lambda ()
         (close-input-port port)))))
+
+(define (elf-file? file)
+  "Return true if FILE starts with the ELF magic bytes."
+  (define (get-header)
+    (call-with-input-file file
+      (lambda (port)
+        (get-bytevector-n port 4))
+      #:binary #t #:guess-encoding #f))
+
+  (equal? (get-header)
+          #vu8(#x7f #x45 #x4c #x46)))             ;"\177ELF"
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
@@ -783,6 +795,7 @@ the previous wrapper."
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
+;;; eval: (put 'call-with-ascii-input-file 'scheme-indent-function 1)
 ;;; eval: (put 'with-throw-handler 'scheme-indent-function 1)
 ;;; eval: (put 'let-matches 'scheme-indent-function 3)
 ;;; eval: (put 'with-atomic-file-replacement 'scheme-indent-function 1)
