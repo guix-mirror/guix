@@ -73,13 +73,13 @@
   (or (getenv "NIX_STORE")
       "/gnu/store"))
 
-(define (parallel-job-count)
-  "Return the number of processes to be passed next to GNU Make's `-j'
-argument."
-  (match (getenv "NIX_BUILD_CORES")               ;set by the daemon
-    (#f  1)
-    ("0" (current-processor-count))
-    (x   (or (string->number x) 1))))
+(define parallel-job-count
+  ;; Number of processes to be passed next to GNU Make's `-j' argument.
+  (make-parameter
+   (match (getenv "NIX_BUILD_CORES")              ;set by the daemon
+     (#f  1)
+     ("0" (current-processor-count))
+     (x   (or (string->number x) 1)))))
 
 (define (directory-exists? dir)
   "Return #t if DIR exists and is a directory."
