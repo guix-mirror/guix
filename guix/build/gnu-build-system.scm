@@ -343,7 +343,8 @@ makefiles."
               debug-output objcopy-command))
     (file-system-fold (const #t)
                       (lambda (path stat result)  ; leaf
-                        (and (or (not debug-output)
+                        (and (elf-file? path)
+                             (or (not debug-output)
                                  (make-debug-file path))
                              (zero? (apply system* strip-command
                                            (append strip-flags (list path))))
