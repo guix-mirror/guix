@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define-public %pkg-config
   (package
    (name "pkg-config")
-   (version "0.27.1")
+   (version "0.28")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -38,7 +38,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "05wc5nwkqz7saj2v33ydmz1y6jdg659dll4jjh91n41m63gx0qsg"))))
+              "0igqq5m204w71m11y0nipbdf5apx87hwfll6axs12hn4dqfb6vkb"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--with-internal-glib")))
    (native-search-paths
