@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages emacs)
@@ -47,8 +49,9 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ bsd-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -392,5 +395,49 @@ useful features.")
 
     ;; License is specified in file '__init__.py'.
     (license gpl2)))
+
+(define-public libetpan
+  (package
+    (name "libetpan")
+    (version "1.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/dinhviethoa/" name
+                   "/archive/" version ".tar.gz"))
+             (sha256
+               (base32 "05qyqx2c1ppb1jnrs3m52i60f9xlxfxdmb9dnwg4vqjv8kwv2qkr"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,(autoconf-wrapper))
+                     ("automake" ,automake)
+                     ("libtool" ,libtool "bin")
+                     ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; 'libetpan-config --libs' returns '-lssl -lcrypto -lsasl2', so these
+     ;; libraries need to be propagated.
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("openssl" ,openssl)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)))
+    (arguments
+      '(#:phases (alist-cons-before
+                  'configure 'autogen
+                  (lambda _
+                    (system* "./autogen.sh")) ;; Note: this fails because the
+                         ;; generated configure script uses /bin/sh. It is
+                         ;; replaced in the configure phase by the correct
+                         ;; value. TODO: replace the configure phase by the
+                         ;; autogen phase and have the SHELL variable be replaced
+                  %standard-phases)
+        #:configure-flags
+        '("--disable-static" "--disable-db")))
+    (home-page "http://www.etpan.org/libetpan.html")
+    (synopsis "Portable middleware for email access")
+    (description
+     "The purpose of this mail library is to provide a portable, efficient
+framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
+provides an API for C language.  It's the low-level API used by MailCore and
+MailCore 2.")
+    (license (bsd-style "file://COPYING"))))
 
 ;;; mail.scm ends here
