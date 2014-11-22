@@ -32,7 +32,10 @@
                 #:select (zlib))
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages check))
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl))
 
 (define-public transmission
   (package
@@ -119,5 +122,34 @@ DHT, µTP, PEX and Magnet Links.")
      "LibTorrent is a BitTorrent library used by and developed in parallel
 with the BitTorrent client rtorrent.  It is written in C++ with emphasis on
 speed and efficiency.")
+    (home-page "http://libtorrent.rakshasa.no/")
+    (license l:gpl2+)))
+
+(define-public rtorrent
+  (package
+    (name "rtorrent")
+    (version "0.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://libtorrent.rakshasa.no/downloads/rtorrent-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "113yrrac75vqi4g8r6bgs0ggjllj9bkg9shv08vqzdhkwqg2q2mw"))))
+    (build-system gnu-build-system)
+    (inputs `(("libtorrent" ,libtorrent)
+              ("ncurses" ,ncurses)
+              ("curl" ,curl)
+              ("cyrus-sasl" ,cyrus-sasl)
+              ("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("cppunit" ,cppunit)))
+    (synopsis "BitTorrent client with ncurses interface")
+    (description
+     "rTorrent is a BitTorrent client with an ncurses interface.  It supports
+full encryption, DHT, PEX, and Magnet Links.  It can also be controlled via
+XML-RPC over SCGI.")
     (home-page "http://libtorrent.rakshasa.no/")
     (license l:gpl2+)))
