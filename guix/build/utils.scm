@@ -108,31 +108,35 @@ return values of applying PROC to the port."
       (lambda ()
         (close-input-port port)))))
 
-(define (elf-file? file)
-  "Return true if FILE starts with the ELF magic bytes."
-  (define (get-header)
-    (call-with-input-file file
-      (lambda (port)
-        (get-bytevector-n port 4))
-      #:binary #t #:guess-encoding #f))
+(define (file-header-match header)
+  "Return a procedure that returns true when its argument is a file starting
+with the bytes in HEADER, a bytevector."
+  (define len
+    (bytevector-length header))
 
-  (equal? (get-header)
-          #vu8(#x7f #x45 #x4c #x46)))             ;"\177ELF"
+  (lambda (file)
+    "Return true if FILE starts with the right magic bytes."
+    (define (get-header)
+      (call-with-input-file file
+        (lambda (port)
+          (get-bytevector-n port len))
+        #:binary #t #:guess-encoding #f))
+
+    (equal? (get-header) header)))
+
+(define %elf-magic-bytes
+  ;; Magic bytes of ELF files.  See <elf.h>.
+  (u8-list->bytevector (map char->integer (string->list "\x7FELF"))))
+
+(define elf-file?
+  (file-header-match %elf-magic-bytes))
 
 (define %ar-magic-bytes
   ;; Magic bytes of archives created by 'ar'.  See <ar.h>.
   (u8-list->bytevector (map char->integer (string->list "!<arch>\n"))))
 
-(define (ar-file? file)
-  "Return true if FILE starts with the magic bytes of archives as created by
-'ar'."
-  (define (get-header)
-    (call-with-input-file file
-      (lambda (port)
-        (get-bytevector-n port 8))
-      #:binary #t #:guess-encoding #f))
-
-  (equal? (get-header) %ar-magic-bytes))
+(define ar-file?
+  (file-header-match %ar-magic-bytes))
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
