@@ -37,6 +37,7 @@
             executable-file?
             call-with-ascii-input-file
             elf-file?
+            ar-file?
             with-directory-excursion
             mkdir-p
             copy-recursively
@@ -117,6 +118,21 @@ return values of applying PROC to the port."
 
   (equal? (get-header)
           #vu8(#x7f #x45 #x4c #x46)))             ;"\177ELF"
+
+(define %ar-magic-bytes
+  ;; Magic bytes of archives created by 'ar'.  See <ar.h>.
+  (u8-list->bytevector (map char->integer (string->list "!<arch>\n"))))
+
+(define (ar-file? file)
+  "Return true if FILE starts with the magic bytes of archives as created by
+'ar'."
+  (define (get-header)
+    (call-with-input-file file
+      (lambda (port)
+        (get-bytevector-n port 8))
+      #:binary #t #:guess-encoding #f))
+
+  (equal? (get-header) %ar-magic-bytes))
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
