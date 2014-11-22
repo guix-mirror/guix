@@ -96,7 +96,7 @@ listing the files modified by a patch.")
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("less" ,less)
-              ("file" ,file-5.20)                 ;work around CVE-2014-3710
+              ("file" ,file)
               ("ed" ,ed)))
     (arguments
      '(#:parallel-tests? #f

@@ -27,14 +27,14 @@
 (define-public file
   (package
    (name "file")
-   (version "5.19")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
-                   version ".tar.gz"))
-            (sha256 (base32
-                     "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l"))
-            (patches (list (search-patch "file-CVE-2014-3587.patch")))))
+    (version "5.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0iyjs9z8kp43gz7gva4j67h4p0n53f7q8x3ibai9s01sp3xnphsv"))))
    (build-system gnu-build-system)
 
    ;; When cross-compiling, this package depends upon a native install of
@@ -50,13 +50,3 @@ of the file.")
    (license bsd-2)
    (home-page "http://www.darwinsys.com/file/")))
 
-(define-public file-5.20                          ;fix for CVE-2014-3710
-  (package (inherit file)
-    (version "5.20")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0iyjs9z8kp43gz7gva4j67h4p0n53f7q8x3ibai9s01sp3xnphsv"))))))
