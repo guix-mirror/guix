@@ -979,6 +979,12 @@ point numbers")
          ;; Disable parallel build as it gives errors: atlas_pthread.h is
          ;; needed to compile C files before it is generated.
          "-Ss" "pmake" "make -j 1"
+         ;; Probe is failing for MIPS.  We therefore define the system
+         ;; architecture explicitly by setting (-A) MACHINETYPE = 49
+         ;; 'MIPSR1xK' and (-V) ISA = 1 'none'.
+         ,,@(if (string-prefix? "mips" (%current-system))
+              (list "-A" "49" "-V" "1")
+              (list))
          ;; Generate shared libraries.
          "--shared"
          ;; Build a full LAPACK library.
