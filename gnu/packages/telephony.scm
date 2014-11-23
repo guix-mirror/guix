@@ -142,13 +142,13 @@ multiplayer games.")
 (define-public sipwitch
   (package
    (name "sipwitch")
-   (version "1.9.2")
+   (version "1.9.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sipwitch/sipwitch-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0cf0zrdfi4w9qn50ags3rvwc29km2k526f6sm6i7jb0hsrvg0k8x"))))
+                     "1iyh390rmxqrks7rypl8ql7fhd3pmy2ckqnp1p0llzrx67jh2q91"))))
    (build-system gnu-build-system)
    ;; The configure.ac uses pkg-config but in a kludgy way which breaks when 
    ;; cross-compiling.  Among other issues there the program name "pkg-config"
