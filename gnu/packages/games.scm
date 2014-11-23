@@ -168,7 +168,8 @@ scriptable with Guile.")
                      (let ((prefix (assoc-ref outputs "out")))
                        ;; Create directories that the makefile assumes exist.
                        (mkdir-p (string-append prefix "/bin"))
-                       (mkdir-p (string-append prefix "/share/applications"))))
+                       (mkdir-p (string-append prefix "/share/applications"))
+                       (mkdir-p (string-append prefix "/share/pixmaps"))))
                    ;; No configure script.
                    (alist-delete 'configure %standard-phases))))
        #:tests? #f)) ;; No check target.
