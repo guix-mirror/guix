@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -364,5 +365,32 @@ attachments, create new maildirs, and so on.")
      "Notmuch is a command-line based program for indexing, searching, read-
 ing, and tagging large collections of email messages.")
     (license gpl3+)))
+
+(define-public getmail
+  (package
+    (name "getmail")
+    (version "4.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15rqmm25pq6ll8aaqh8h6pfdkpqs7y6yismb3h3w1bz8j292c8zl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:python ,python-2))
+    (home-page "http://pyropus.ca/software/getmail/")
+    (synopsis "Mail retriever")
+    (description
+     "A flexible, extensible mail retrieval system with support for
+POP3, IMAP4, SSL variants of both, maildirs, mboxrd files, external MDAs,
+arbitrary message filtering, single-user and domain-mailboxes, and many other
+useful features.")
+
+    ;; License is specified in file '__init__.py'.
+    (license gpl2)))
 
 ;;; mail.scm ends here
