@@ -24,15 +24,21 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages databases)
@@ -50,6 +56,7 @@
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ bsd-style))
   #:use-module (guix packages)
@@ -439,5 +446,51 @@ framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
     (license (bsd-style "file://COPYING"))))
+
+(define-public claws-mail
+  (package
+    (name "claws-mail")
+    (version "3.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/project/claws-mail/"
+                    "Claws Mail/" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32 "0cyixz1jgfpi8abh9fbb8ylx9mcvw4jqj81cms666wpqr6v828yp"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("bogofilter" ,bogofilter)
+              ("curl" ,curl)
+              ("dbus-glib" ,dbus-glib)
+              ("dbus" ,dbus)
+              ("enchant" ,enchant)
+              ("expat" ,expat)
+              ("ghostscript" ,ghostscript)
+              ("hicolor-icon-theme" ,hicolor-icon-theme)
+              ("gnupg" ,gnupg)
+              ("gnutls" ,gnutls)
+              ("gpgme" ,gpgme)
+              ("gtk" ,gtk+-2)
+              ("libarchive" ,libarchive)
+              ("libcanberra" ,libcanberra)
+              ("libetpan" ,libetpan)
+              ("libnotify" ,libnotify)
+              ("libsm" ,libsm)
+              ("libxml2" ,libxml2)
+              ("perl" ,perl)
+              ("python-2" ,python-2)))
+    (arguments
+      '(#:configure-flags
+        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")))
+    (synopsis "GTK-based Email client")
+    (description
+     "Claws-Mail is an email client (and news reader) based on GTK+.  The
+appearance and interface are designed to be familiar to new users coming from
+other popular email clients, as well as experienced users.  Almost all commands
+are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
+which can add many functionalities to the base client.")
+    (home-page "http://www.claws-mail.org/")
+    (license gpl3+))) ; most files are actually public domain or x11
 
 ;;; mail.scm ends here
