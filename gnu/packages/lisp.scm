@@ -31,13 +31,13 @@
 (define-public gcl
   (package
     (name "gcl")
-    (version "2.6.11")
+    (version "2.6.12")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/" name "/" name "-" version ".tar.gz"))
       (sha256
-       (base32 "177vz8z74mky5nrq6qlfvnzvb1prw8jmlv4cwfx8w7k3k818y1a4"))))
+       (base32 "1s4hs2qbjqmn9h88l4xvsifq5c3dlc5s74lyb61rdi5grhdlkf4f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f  ; The build system seems not to be thread safe.
