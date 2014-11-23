@@ -2843,7 +2843,8 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-            "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))))
+            "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))
+        (patches (list (search-patch "xf86-video-openchrome-includes.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
