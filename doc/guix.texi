@@ -4745,6 +4745,7 @@ needed is to review and apply the patch.
 * Version Numbers::      When the name is not enough.
 * Python Modules::       Taming the snake.
 * Perl Modules::         Little pearls.
+* Fonts::                Fond of fonts.
 @end menu
 
 @node Software Freedom
@@ -4795,6 +4796,8 @@ We do not add @code{lib} prefixes for library packages, unless these are
 already part of the official project name.  But @pxref{Python
 Modules} and @ref{Perl Modules} for special rules concerning modules for
 the Python and Perl languages.
+
+Font package names are handled differently, @pxref {Fonts}.
 
 
 @node Version Numbers
@@ -4869,6 +4872,43 @@ Modules containing several classes keep their lowercase upstream name and
 are also prepended by @code{perl-}.  Such modules tend to have the word
 @code{perl} somewhere in their name, which gets dropped in favor of the
 prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
+
+
+@node Fonts
+@subsection Fonts
+
+For fonts that are in general not installed by a user for typesetting
+purposes, or that are distributed as part of a larger software package,
+we rely on the general packaging rules for software; for instance, this
+applies to the fonts delivered as part of the X.Org system or fonts that
+are part of TeX Live.
+
+To make it easier for a user to search for fonts, names for other packages
+containing only fonts are constructed as follows, independently of the
+upstream package name.
+
+The name of a package containing only one font family starts with
+@code{font-}; it is followed by the foundry name and a dash @code{-}
+if the foundry is known, and the font family name, in which spaces are
+replaced by dashes (and as usual, all upper case letters are transformed
+to lower case).
+For example, the Gentium font family by SIL is packaged under the name
+@code{font-sil-gentium}.
+
+For a package containing several font families, the name of the collection
+is used in the place of the font family name.
+For instance, the Liberation fonts consist of three families,
+Liberation Sans, Liberation Serif and Liberation Mono.
+These could be packaged separately under the names
+@code{font-liberation-sans} and so on; but as they are distributed together
+under a common name, we prefer to package them together as
+@code{font-liberation}.
+
+In the case where several formats of the same font family or font collection
+are packaged separately, a short form of the format, prepended by a dash,
+is added to the package name.  We use @code{-ttf} for TrueType fonts,
+@code {-otf} for OpenType fonts and @code{-type1} for PostScript Type 1
+fonts.
 
 
 
