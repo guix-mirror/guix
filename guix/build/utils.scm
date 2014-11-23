@@ -122,7 +122,13 @@ with the bytes in HEADER, a bytevector."
           (get-bytevector-n port len))
         #:binary #t #:guess-encoding #f))
 
-    (equal? (get-header) header)))
+    (catch 'system-error
+      (lambda ()
+        (equal? (get-header) header))
+      (lambda args
+        (if (= EISDIR (system-error-errno args))
+            #f                                    ;FILE is a directory
+            (apply throw args))))))
 
 (define %elf-magic-bytes
   ;; Magic bytes of ELF files.  See <elf.h>.
