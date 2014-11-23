@@ -3818,8 +3818,8 @@ users change it with @command{passwd}.
 
 If you @emph{do} want to have a preset password for an account, then
 this field must contain the encrypted password, as a string.
-@xref{crypt,,, The GNU C Library Reference Manual}, for more information
-on password encryption, and @ref{Encryption,,, GNU Guile Reference
+@xref{crypt,,, libc, The GNU C Library Reference Manual}, for more information
+on password encryption, and @ref{Encryption,,, guile, GNU Guile Reference
 Manual}, for information on Guile's @code{crypt} procedure.
 
 @end table
