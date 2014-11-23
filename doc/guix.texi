@@ -3275,8 +3275,9 @@ Systems}).  This is typically done using the @code{-L} option of
 @command{mkfs.ext4} and related commands.
 
 The installation image includes Parted (@pxref{Overview,,, parted, GNU
-Parted User Manual}), @command{fdisk}, and e2fsprogs, the suite of tools
-to manipulate ext2/ext3/ext4 file systems.
+Parted User Manual}), @command{fdisk}, Cryptsetup/LUKS for disk
+encryption, and e2fsprogs, the suite of tools to manipulate
+ext2/ext3/ext4 file systems.
 
 @item
 Once that is done, mount the target root partition under @file{/mnt}.

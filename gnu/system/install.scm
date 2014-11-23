@@ -22,6 +22,7 @@
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages grub)
@@ -254,6 +255,7 @@ Use Alt-F2 for documentation.
     (packages (cons* texinfo-4                 ;for the standalone Info reader
                      parted ddrescue
                      grub                  ;mostly so xrefs to its manual work
+                     cryptsetup
                      wireless-tools
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
