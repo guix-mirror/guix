@@ -84,7 +84,7 @@
                                      ,(string-append ".tar." archive-type)))
                  (sha256
                   (base32
-                   ,(bytevector->base32-string (file-sha256 tarball))))))
+                   ,(bytevector->nix-base32-string (file-sha256 tarball))))))
        (build-system gnu-build-system)
        (synopsis ,(gnu-package-doc-summary package))
        (description ,(gnu-package-doc-description package))
