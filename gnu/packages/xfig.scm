@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,14 @@
                   (close-pipe in)
                   (close-port out)))
               (zero? (system* "make" "install.doc"))))
-          %standard-phases)))))
+          (alist-cons-after
+           'install 'wrap-xfig
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/xfig")
+                             `("XAPPLRESDIR" suffix
+                               (,(string-append out "/etc/X11/app-defaults"))))))
+           %standard-phases))))))
     (home-page "http://xfig.org/")
     (synopsis "Interactive drawing tool")
     (description
