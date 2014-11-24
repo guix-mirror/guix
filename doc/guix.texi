@@ -76,6 +76,92 @@ package management tool written for the GNU system.
 * GNU Free Documentation License::  The license of this manual.
 * Concept Index::               Concepts.
 * Programming Index::           Data types, functions, and variables.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Installation
+
+* Requirements::                Software needed to build and run Guix.
+* Setting Up the Daemon::       Preparing the build daemon's environment.
+* Invoking guix-daemon::        Running the build daemon.
+
+Setting Up the Daemon
+
+* Build Environment Setup::     Preparing the isolated build environment.
+* Daemon Offload Setup::        Offloading builds to remote machines.
+
+Package Management
+
+* Features::                    How Guix will make your life brighter.
+* Invoking guix package::       Package installation, removal, etc.
+* Emacs Interface::             Package management from Emacs.
+* Substitutes::                 Downloading pre-built binaries.
+* Packages with Multiple Outputs::  Single source package, multiple outputs.
+* Invoking guix gc::            Running the garbage collector.
+* Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix archive::       Exporting and importing store files.
+
+Programming Interface
+
+* Defining Packages::           Defining new packages.
+* Build Systems::               Specifying how packages are built.
+* The Store::                   Manipulating the package store.
+* Derivations::                 Low-level interface to package derivations.
+* The Store Monad::             Purely functional interface to the store.
+* G-Expressions::               Manipulating build expressions.
+
+Utilities
+
+* Invoking guix build::         Building packages from the command line.
+* Invoking guix download::      Downloading a file and printing its hash.
+* Invoking guix hash::          Computing the cryptographic hash of a file.
+* Invoking guix import::        Importing package definitions.
+* Invoking guix refresh::       Updating package definitions.
+* Invoking guix lint::          Finding errors in package definitions.
+* Invoking guix environment::   Setting up development environments.
+
+GNU Distribution
+
+* System Installation::         Installing the whole operating system.
+* System Configuration::        Configuring a GNU system.
+* Installing Debugging Files::  Feeding the debugger.
+* Security Updates::            Deploying security fixes quickly.
+* Package Modules::             Packages from the programmer's viewpoint.
+* Packaging Guidelines::        Growing the distribution.
+* Bootstrapping::               GNU/Linux built from scratch.
+* Porting::                     Targeting another platform or kernel.
+
+System Configuration
+
+* Using the Configuration System::  Customizing your GNU system.
+* operating-system Reference::  Detail of operating-system declarations.
+* File Systems::                Configuring file system mounts.
+* Mapped Devices::              Block device extra processing.
+* User Accounts::               Specifying user accounts.
+* Services::                    Specifying system services.
+* Setuid Programs::             Programs running with root privileges.
+* Initial RAM Disk::            Linux-Libre bootstrapping.
+* GRUB Configuration::          Configuring the boot loader.
+* Invoking guix system::        Instantiating a system configuration.
+* Defining Services::           Adding new service definitions.
+
+Services
+
+* Base Services::               Essential system services.
+* Networking Services::         Network setup, SSH daemon, etc.
+* X Window::                    Graphical display.
+
+Packaging Guidelines
+
+* Software Freedom::     What may go into the distribution.
+* Package Naming::       What's in a name?
+* Version Numbers::      When the name is not enough.
+* Python Modules::       Taming the snake.
+* Perl Modules::         Little pearls.
+* Fonts::                Fond of fonts.
+
+@end detailmenu
 @end menu
 
 @c *********************************************************************
