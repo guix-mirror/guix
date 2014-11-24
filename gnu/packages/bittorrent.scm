@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,7 +31,8 @@
   #:use-module ((gnu packages compression)
                 #:select (zlib))
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages check))
 
 (define-public transmission
   (package
@@ -88,3 +90,34 @@ DHT, µTP, PEX and Magnet Links.")
     ;;
     ;; A few files files carry an MIT/X11 license header.
     (license l:gpl3+)))
+
+(define-public libtorrent
+  (package
+    (name "libtorrent")
+    (version "0.13.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://libtorrent.rakshasa.no/downloads/libtorrent-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ma910br5vxrfpm4f4w4942lpmhwvqjnnf9h8vpf52fw35qhjkkh"))))
+    (build-system gnu-build-system)
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ;; Add this when you enable tests:
+                     ;; ("cppunit" ,cppunit)
+                     ))
+    (arguments
+     ;; FIXME: enable tests on the next release:
+     ;; https://github.com/rakshasa/libtorrent/issues/59
+     `(#:tests? #f))
+    (synopsis "BitTorrent library of rtorrent")
+    (description
+     "LibTorrent is a BitTorrent library used by and developed in parallel
+with the BitTorrent client rtorrent.  It is written in C++ with emphasis on
+speed and efficiency.")
+    (home-page "http://libtorrent.rakshasa.no/")
+    (license l:gpl2+)))
