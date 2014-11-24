@@ -4033,12 +4033,17 @@ When @var{initialize?} is true, automatically create the seed and host key
 upon service activation if they do not exist yet.  This may take long and
 require interaction.
 
+When @var{initialize?} is false, it is up to the user to initialize the
+randomness generator (@pxref{lsh-make-seed,,, lsh, LSH Manual}), and to create
+a key pair with the private key stored in file @var{host-key} (@pxref{lshd
+basics,,, lsh, LSH Manual}).
+
 When @var{interfaces} is empty, lshd listens for connections on all the
 network interfaces; otherwise, @var{interfaces} must be a list of host names
 or addresses.
 
-@var{allow-empty-passwords?} specifies whether to accepts log-ins with empty
-passwords, and @var{root-login?} specifies whether to accepts log-ins as
+@var{allow-empty-passwords?} specifies whether to accept log-ins with empty
+passwords, and @var{root-login?} specifies whether to accept log-ins as
 root.
 
 The other options should be self-descriptive.
