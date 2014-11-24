@@ -297,6 +297,43 @@ subcommands helps automate some parts of the flow to make working with it a
 lot easier.")
     (license bsd-2)))
 
+(define-public git-test-sequence
+  (let ((commit "48e5a2f"))
+    (package
+      (name "git-test-sequence")
+      (version (string-append "20140312." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      ;; There are many other scripts in this directory; we
+                      ;; are interested in just one for this package.
+                      (url "https://github.com/dustin/bindir")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1dcq0y16yznbv4k9h8gg90kv1gkn8r8dbvl4m2rpfd7q5nqhn617"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils))
+                     (let* ((source (assoc-ref %build-inputs "source"))
+                            (output (assoc-ref %outputs "out"))
+                            (bindir (string-append output "/bin"))
+                            (script "git-test-sequence"))
+                       (begin
+                         (mkdir-p bindir)
+                         (copy-file (string-append source "/" script)
+                                    (string-append bindir "/" script))
+                         #t)))))
+      (home-page "http://dustin.sallings.org/2010/03/28/git-test-sequence.html")
+      (synopsis "Run a command over a sequence of commits")
+      (description
+       "git-test-sequence is similar to an automated git bisect except it’s
+linear.  It will test every change between two points in the DAG.  It will
+also walk each side of a merge and test those changes individually.")
+      (license (x11-style "file://LICENSE")))))
+
 (define-public mercurial
   (package
     (name "mercurial")
