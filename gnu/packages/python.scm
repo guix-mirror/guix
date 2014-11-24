@@ -35,6 +35,8 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages zip)
@@ -1873,3 +1875,60 @@ writing C extensions for Python as easy as Python itself.")
     (name "python2-cython")
     (inputs
      `(("python-2" ,python-2))))) ; this is not automatically changed
+
+;; This version of numpy is missing the documentation and is only used to
+;; build matplotlib which is required to build numpy's documentation.
+(define python-numpy-bootstrap
+  (package
+    (name "python-numpy-bootstrap")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/numpy"
+                           "/numpy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "070ybfvpgfmiz2hs94x445hvkh9dh52nyi0m8jp5kdihgvhbnx80"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-nose" ,python-nose)
+       ("atlas" ,atlas)))
+    (native-inputs
+     `(("gfortran" ,gfortran-4.8)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'set-environment-variables
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let* ((atlas-threaded
+                  (string-append (assoc-ref inputs "atlas") 
+                                 "/lib/libtatlas.so"))
+                 ;; On single core CPUs only the serial library is created.
+                 (atlas-lib
+                  (if (file-exists? atlas-threaded)
+                      atlas-threaded
+                      (string-append (assoc-ref inputs "atlas") 
+                                     "/lib/libsatlas.so"))))
+            (setenv "ATLAS" atlas-lib)))
+        ;; Tests can only be run after the library has been installed and not
+        ;; within the source directory.
+        (alist-cons-after
+         'install 'check
+         (lambda _ 
+           (with-directory-excursion "/tmp"
+             (zero? (system* "python" "-c" "import numpy; numpy.test()"))))
+         (alist-delete 
+          'check 
+          %standard-phases)))))
+    (home-page "http://www.numpy.org/")
+    (synopsis "Fundamental package for scientific computing with Python")
+    (description "NumPy is the fundamental package for scientific computing
+with Python. It contains among other things: a powerful N-dimensional array
+object, sophisticated (broadcasting) functions, tools for integrating C/C++
+and Fortran code, useful linear algebra, Fourier transform, and random number
+capabilities.")
+    (license bsd-3)))
+
+(define python2-numpy-bootstrap
+  (package-with-python2 python-numpy-bootstrap))
