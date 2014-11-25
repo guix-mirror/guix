@@ -40,7 +40,7 @@
             ibmpl1.0
             imlib2
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
-            mpl2.0
+            mpl1.1 mpl2.0
             openldap2.8 openssl
             psfl public-domain
             qpl
@@ -238,6 +238,11 @@ which may be a file:// URI pointing the package's tree."
   (license "LGPL 3+"
            "https://www.gnu.org/licenses/lgpl.html"
            "https://www.gnu.org/licenses/license-list#LGPLv3"))
+
+(define mpl1.1
+  (license "MPL 1.1"
+           "http://directory.fsf.org/wiki/License:MPLv1.1"
+           "https://www.gnu.org/licenses/license-list#MPL"))
 
 (define mpl2.0
   (license "MPL 2.0"
