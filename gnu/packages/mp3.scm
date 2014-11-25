@@ -36,7 +36,8 @@
                 #:select (alsa-lib))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake))
 
 (define-public libmad
   (package
@@ -130,6 +131,31 @@ across several platforms, and providing a powerful and feature-rich API with
 a highly stable and efficient implementation.")
    (license license:lgpl2.0+)
    (home-page "http://id3lib.sourceforge.net/")))
+
+(define-public taglib
+  (package
+    (name "taglib")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://taglib.github.io/releases/taglib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "06n7gnbcqa3r6c9gv00y0y1r48dyyazm6yj403i7ma0r2k6p3lvj"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))                    ;no 'test' target
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://developer.kde.org/~wheeler/taglib.html")
+    (synopsis "Library to access audio file meta-data")
+    (description
+     "TagLib is a C++ library for reading and editing the meta-data of several
+popular audio formats.  Currently it supports both ID3v1 and ID3v2 for MP3
+files, Ogg Vorbis comments and ID3 tags and Vorbis comments in FLAC, MPC,
+Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
+
+    ;; Dual-licensed: user may choose between LGPLv2.1 or MPLv1.1.
+    (license (list license:lgpl2.1 license:mpl1.1))))
 
 (define-public mp3info
   (package
