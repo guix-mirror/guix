@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pcre)
@@ -128,6 +130,65 @@ across several platforms, and providing a powerful and feature-rich API with
 a highly stable and efficient implementation.")
    (license license:lgpl2.0+)
    (home-page "http://id3lib.sourceforge.net/")))
+
+(define-public mp3info
+  (package
+    (name "mp3info")
+    (version "0.8.5a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.ibiblio.org/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "042f1czcs9n2sbqvg4rsvfwlqib2gk976mfa2kxlfjghx5laqf04"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/bin/rm") "rm")
+                  (("/usr/bin/install") "install")
+                  (("man/man1") "share/man/man1")))))
+    (build-system gnu-build-system)
+    (outputs '("out" "gui"))                      ;GTK+ interface in "gui"
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "Makefile"
+                       (("prefix=.*")
+                        (string-append "prefix := " out "\n")))))
+                 (alist-cons-before
+                  'install 'pre-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (mkdir-p (string-append out "/bin"))
+                      (mkdir-p (string-append out "/share/man/man1"))))
+                  (alist-cons-after
+                   'install 'post-install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Move the GTK+ interface to "gui".
+                     (let ((out (assoc-ref outputs "out"))
+                           (gui (assoc-ref outputs "gui")))
+                       (mkdir-p (string-append gui "/bin"))
+                       (rename-file (string-append out "/bin/gmp3info")
+                                    (string-append gui "/bin/gmp3info"))))
+                   %standard-phases)))
+        #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("ncurses" ,ncurses)))
+    (home-page "http://www.ibiblio.org/mp3info/")
+    (synopsis "MP3 technical info viewer and ID3 1.x tag editor")
+    (description
+     "MP3Info is a little utility used to read and modify the ID3 tags of MP3
+files.  MP3Info can also display various techincal aspects of an MP3 file
+including playing time, bit-rate, sampling frequency and other attributes in a
+pre-defined or user-specifiable output format.")
+    (license license:gpl2+)))
 
 (define-public libmp3splt
   (package
