@@ -36,7 +36,8 @@ dist_lisp_DATA =				\
   $(AUTOLOADS)
 
 nodist_lisp_DATA =				\
-  emacs/guix-init.el
+  emacs/guix-init.el				\
+  emacs/guix-profiles.el
 
 $(AUTOLOADS): $(ELFILES)
 	$(EMACS) --batch --eval						\

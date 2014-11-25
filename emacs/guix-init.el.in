@@ -4,11 +4,4 @@
   (replace-regexp-in-string "${prefix}" "@prefix@" "@emacsuidir@")
   "Directory with scheme files for \"guix.el\" package.")
 
-(defvar guix-default-profile
-  (concat (or (getenv "NIX_STATE_DIR") "@guix_localstatedir@/guix")
-          "/profiles/per-user/"
-          (getenv "USER")
-          "/guix-profile")
-  "Default Guix profile.")
-
 (provide 'guix-init)

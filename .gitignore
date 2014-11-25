@@ -110,3 +110,4 @@ GTAGS
 /emacs/guix-autoloads.el
 /emacs/guix-helper.scm
 /emacs/guix-init.el
+/emacs/guix-profiles.el
