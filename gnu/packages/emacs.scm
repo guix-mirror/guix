@@ -44,6 +44,10 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages linux)               ;alsa
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages mp3)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
@@ -365,3 +369,122 @@ operations.")
     (description
      "Emacs-wget is an emacs interface for the wget file downloader.")
     (license gpl2+)))
+
+
+;;;
+;;; Multimedia.
+;;;
+
+(define-public emms
+  (package
+    (name "emms")
+    (version "4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/emms/emms-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1q0n3iwva8bvai2rl9sm49sdjmk0wi7vajz4knz01l7g67nrp87l"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/usr/bin/install-info")
+                   ;; No need to use 'install-info' since it would create a
+                   ;; useless 'dir' file.
+                   "true")
+                  (("^INFODIR=.*")
+                   ;; Install Info files to $out/share/info, not $out/info.
+                   "INFODIR := $(PREFIX)/share/info\n")
+                  (("/site-lisp/emms")
+                   ;; Install directly in share/emacs/site-lisp, not in a
+                   ;; sub-directory.
+                   "/site-lisp")
+                  (("^all: (.*)\n" _ rest)
+                   ;; Build 'emms-print-metadata'.
+                   (string-append "all: " rest " emms-print-metadata\n"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build emacs-utils))
+
+       #:phases (alist-replace
+                 'configure
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out     (assoc-ref outputs "out"))
+                         (vorbis  (assoc-ref inputs "vorbis-tools"))
+                         (alsa    (assoc-ref inputs "alsa-utils"))
+                         (mpg321  (assoc-ref inputs "mpg321"))
+                         (mp3info (assoc-ref inputs "mp3info")))
+                     ;; Specify the installation directory.
+                     (substitute* "Makefile"
+                       (("PREFIX=.*$")
+                        (string-append "PREFIX := " out "\n")))
+
+                     (setenv "SHELL" (which "sh"))
+                     (setenv "CC" "gcc")
+
+                     ;; Specify the absolute file names of the various
+                     ;; programs so that everything works out-of-the-box.
+                     (with-directory-excursion "lisp"
+                       (emacs-substitute-variables
+                           "emms-player-mpg321-remote.el"
+                         ("emms-player-mpg321-remote-command"
+                          (string-append mpg321 "/bin/mpg321")))
+                       (substitute* "emms-player-simple.el"
+                         (("\"ogg123\"")
+                          (string-append "\"" vorbis "/bin/ogg123\"")))
+                       (emacs-substitute-variables "emms-info-ogginfo.el"
+                         ("emms-info-ogginfo-program-name"
+                          (string-append vorbis "/bin/ogginfo")))
+                       (emacs-substitute-variables "emms-info-libtag.el"
+                         ("emms-info-libtag-program-name"
+                          (string-append out "/bin/emms-print-metadata")))
+                       (substitute* "emms-volume-amixer.el"
+                         (("\"amixer\"")
+                          (string-append "\"" alsa "/bin/amixer\"")))
+                       (substitute* "emms-tag-editor.el"
+                         (("\"mp3info\"")
+                          (string-append mp3info "/bin/mp3info"))))))
+                 (alist-cons-before
+                  'install 'pre-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; The 'install' rule expects 'emms-print-metadata.1' to
+                    ;; be already installed.
+                    (let* ((out  (assoc-ref outputs "out"))
+                           (man1 (string-append out "/share/man/man1")))
+                      (mkdir-p man1)
+                      (copy-file "emms-print-metadata.1"
+                                 (string-append man1 "/emms-print-metadata.1"))))
+                  (alist-cons-after
+                   'install 'post-install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (target (string-append
+                                     out "/bin/emms-print-metadata")))
+                       (mkdir-p (dirname target))
+                       (copy-file "src/emms-print-metadata" target)
+                       (chmod target #o555)))
+                   %standard-phases)))
+       #:tests? #f))
+    (native-inputs `(("emacs" ,emacs)            ;for (guix build emacs-utils)
+                     ("texinfo" ,texinfo)))
+    (inputs `(;("perl" ,perl)                     ;for 'emms-print-metadata.pl'
+              ("alsa-utils" ,alsa-utils)
+              ("vorbis-tools" ,vorbis-tools)
+              ("mpg321" ,mpg321)
+              ("taglib" ,taglib)
+              ("mp3info" ,mp3info)))
+    (synopsis "Emacs Multimedia System")
+    (description
+     "EMMS is the Emacs Multimedia System.  It is a small front-end which
+can control one of the supported external players.  Thus, it supports
+whatever formats are supported by your music player.  It also
+supports tagging and playlist management, all behind a clean and
+light user interface.")
+    (home-page "http://www.gnu.org/software/emms/")
+    (license gpl3+)))
