@@ -204,9 +204,7 @@ file."
   "Return file system services for the file systems of OS that are not marked
 as 'needed-for-boot'."
   (define file-systems
-    (remove (lambda (fs)
-              (or (file-system-needed-for-boot? fs)
-                  (string=? "/" (file-system-mount-point fs))))
+    (remove file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
   (define (device-mappings fs)
@@ -638,12 +636,7 @@ we're running in the final root."
 (define (operating-system-initrd-file os)
   "Return a gexp denoting the initrd file of OS."
   (define boot-file-systems
-    (filter (match-lambda
-             (($ <file-system> device title "/")
-              #t)
-             (($ <file-system> device title mount-point type flags
-                               options boot?)
-              boot?))
+    (filter file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
   (define mapped-devices
