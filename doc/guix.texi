@@ -596,7 +596,9 @@ parallelism---for instance, by running @code{make -j$NIX_BUILD_CORES}.
 @item --max-jobs=@var{n}
 @itemx -M @var{n}
 Allow at most @var{n} build jobs in parallel.  The default value is
-@code{1}.
+@code{1}.  Setting it to @code{0} means that no builds will be performed
+locally; instead, the daemon will offload builds (@pxref{Daemon Offload
+Setup}), or simply fail.
 
 @item --debug
 Produce debugging output.
@@ -2764,6 +2766,12 @@ may be helpful when debugging setup issues with the build daemon.
 @itemx -c @var{n}
 Allow the use of up to @var{n} CPU cores for the build.  The special
 value @code{0} means to use as many CPU cores as available.
+
+@item --max-jobs=@var{n}
+@itemx -M @var{n}
+Allow at most @var{n} build jobs in parallel.  @xref{Invoking
+guix-daemon, @code{--max-jobs}}, for details about this option and the
+equivalent @command{guix-daemon} option.
 
 @end table
 
