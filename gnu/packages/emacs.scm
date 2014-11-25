@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,6 +140,15 @@ editor (without an X toolkit)" )
              (sha256
               (base32 "1mrk0bzqcpfhsw6635qznn47nzfy9ps7wrhkpymswdfpw5mdsry5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (symlink "geiser-install.el"
+                            (string-append (assoc-ref outputs "out")
+                                           "/share/emacs/site-lisp/"
+                                           "geiser-autoloads.el")))
+                 %standard-phases)))
     (inputs `(("guile" ,guile-2.0)
               ("emacs" ,emacs)))
     (home-page "http://nongnu.org/geiser/")
@@ -190,6 +200,7 @@ giving her access to live metadata.")
            (copy-file source target)
            (with-directory-excursion lisp-dir
              (parameterize ((%emacs emacs))
+               (emacs-generate-autoloads ,name lisp-dir)
                (emacs-batch-eval '(byte-compile-file "paredit.el"))))))))
     (home-page "http://mumble.net/~campbell/emacs/paredit/")
     (synopsis "Emacs minor mode for editing parentheses")
@@ -244,7 +255,13 @@ when typing parentheses directly or commenting out code line by line.")
              (emacs-substitute-variables "magit.el"
                ("magit-git-executable" (string-append git "/bin/git"))
                ("magit-gitk-executable" (string-append git:gui "/bin/gitk")))))
-         %standard-phases))))
+         (alist-cons-after
+          'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (emacs-generate-autoloads
+             ,name (string-append (assoc-ref outputs "out")
+                                  "/share/emacs/site-lisp/")))
+          %standard-phases)))))
     (home-page "http://magit.github.io/")
     (synopsis "Emacs interface for the Git version control system")
     (description
@@ -321,6 +338,7 @@ operations.")
                      (string-append (assoc-ref outputs "out")
                                     "/share/emacs/site-lisp")
                    (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                   (symlink "w3m-load.el" "w3m-autoloads.el")
                    #t)))
           %standard-phases)))))
     (home-page "http://emacs-w3m.namazu.org/")
@@ -363,7 +381,13 @@ operations.")
            (let ((wget (assoc-ref inputs "wget")))
              (emacs-substitute-variables "wget.el"
                ("wget-command" (string-append wget "/bin/wget")))))
-         %standard-phases))))
+         (alist-cons-after
+          'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (emacs-generate-autoloads
+             "wget" (string-append (assoc-ref outputs "out")
+                                   "/share/emacs/site-lisp/")))
+          %standard-phases)))))
     (home-page "http://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
@@ -469,6 +493,9 @@ operations.")
                      (let* ((out    (assoc-ref outputs "out"))
                             (target (string-append
                                      out "/bin/emms-print-metadata")))
+                       (symlink "emms-auto.el"
+                                (string-append out "/share/emacs/site-lisp/"
+                                               "emms-autoloads.el"))
                        (mkdir-p (dirname target))
                        (copy-file "src/emms-print-metadata" target)
                        (chmod target #o555)))
