@@ -413,10 +413,11 @@ PROC's result is returned."
         (false-if-exception (delete-file template))))))
 
 (define (substitute file pattern+procs)
-  "PATTERN+PROCS is a list of regexp/two-argument procedure.  For each line
-of FILE, and for each PATTERN that it matches, call the corresponding PROC
-as (PROC LINE MATCHES); PROC must return the line that will be written as a
-substitution of the original line."
+  "PATTERN+PROCS is a list of regexp/two-argument-procedure pairs.  For each
+line of FILE, and for each PATTERN that it matches, call the corresponding
+PROC as (PROC LINE MATCHES); PROC must return the line that will be written as
+a substitution of the original line.  Be careful about using '$' to match the
+end of a line; by itself it won't match the terminating newline of a line."
   (let ((rx+proc  (map (match-lambda
                         (((? regexp? pattern) . proc)
                          (cons pattern proc))
@@ -476,7 +477,10 @@ When one of the MATCH-VAR is `_', no variable is bound to the corresponding
 match substring.
 
 Alternatively, FILE may be a list of file names, in which case they are
-all subject to the substitutions."
+all subject to the substitutions.
+
+Be careful about using '$' to match the end of a line; by itself it won't
+match the terminating newline of a line."
     ((substitute* file ((regexp match-var ...) body ...) ...)
      (let ()
        (define (substitute-one-file file-name)
