@@ -1932,3 +1932,52 @@ capabilities.")
 
 (define python2-numpy-bootstrap
   (package-with-python2 python-numpy-bootstrap))
+
+(define-public python-pyparsing
+  (package
+    (name "python-pyparsing")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/pyparsing"
+                           "/pyparsing-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01lasib0n2fp2k99c988qhz16lm9hcwmnmrmhybdb3jq2xmkvr0p"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f ; no test target
+       #:modules ((guix build python-build-system)
+                  (guix build utils))
+       #:phases
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((doc (string-append (assoc-ref outputs "doc") 
+                                     "/share/doc/" ,name "-" ,version))
+                 (html-doc (string-append doc "/html"))
+                 (examples (string-append doc "/examples")))
+            (mkdir-p html-doc)
+            (mkdir-p examples)
+            (for-each 
+             (lambda (dir tgt)
+               (map (lambda (file) 
+                      (copy-file file (string-append tgt "/" (basename file))))
+                    (find-files dir ".*")))
+             (list "docs" "htmldoc" "examples")
+             (list doc html-doc examples))))
+        %standard-phases)))
+    (home-page "http://pyparsing.wikispaces.com")
+    (synopsis "Python parsing class library")
+    (description
+     "The pyparsing module is an alternative approach to creating and
+executing simple grammars, vs. the traditional lex/yacc approach, or the use
+of regular expressions.  The pyparsing module provides a library of classes
+that client code uses to construct the grammar directly in Python code.")
+    (license expat)))
+
+(define-public python2-pyparsing
+  (package-with-python2 python-pyparsing))
+
