@@ -132,7 +132,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.3.0")
+    (version "1.3.2")
     (source
      (origin
       (method url-fetch)
@@ -141,7 +141,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0w8rfb6yhcwkwzvjafrashcygy4hd9xwwmvlnkfd1m2h0paywqas"))))
+        "01l4hvcknk9nb4bvyb6aqaid19jg0wv3ik54j1b89hnzamwm75gb"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
