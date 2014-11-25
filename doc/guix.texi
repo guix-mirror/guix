@@ -4889,7 +4889,7 @@ already part of the official project name.  But @pxref{Python
 Modules} and @ref{Perl Modules} for special rules concerning modules for
 the Python and Perl languages.
 
-Font package names are handled differently, @pxref {Fonts}.
+Font package names are handled differently, @pxref{Fonts}.
 
 
 @node Version Numbers
@@ -4999,7 +4999,7 @@ under a common name, we prefer to package them together as
 In the case where several formats of the same font family or font collection
 are packaged separately, a short form of the format, prepended by a dash,
 is added to the package name.  We use @code{-ttf} for TrueType fonts,
-@code {-otf} for OpenType fonts and @code{-type1} for PostScript Type 1
+@code{-otf} for OpenType fonts and @code{-type1} for PostScript Type 1
 fonts.
 
 
