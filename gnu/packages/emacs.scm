@@ -444,6 +444,9 @@ operations.")
                        (emacs-substitute-variables "emms-info-libtag.el"
                          ("emms-info-libtag-program-name"
                           (string-append out "/bin/emms-print-metadata")))
+                       (emacs-substitute-variables "emms-info-mp3info.el"
+                         ("emms-info-mp3info-program-name"
+                          (string-append mp3info "/bin/mp3info")))
                        (substitute* "emms-volume-amixer.el"
                          (("\"amixer\"")
                           (string-append "\"" alsa "/bin/amixer\"")))
