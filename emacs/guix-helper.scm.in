@@ -50,6 +50,7 @@
                                 (and=> (getenv "HOME")
                                        (cut string-append <> "/.config")))
                             (cut string-append <> "/guix/latest"))))
+    (push! module-dir %load-path)
     (push! module-dir %load-compiled-path)
     (if (and updates-dir (file-exists? updates-dir))
         (begin
