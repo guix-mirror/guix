@@ -388,6 +388,14 @@ to it are lost."
        ;; Prepare the real root file system under /root.
        (unless (file-exists? "/root")
          (mkdir "/root"))
+
+       (when (procedure? pre-mount)
+         ;; Do whatever actions are needed before mounting the root file
+         ;; system--e.g., installing device mappings.  Error out when the
+         ;; return value is false.
+         (unless (pre-mount)
+           (error "pre-mount actions failed")))
+
        (if root
            (mount-root-file-system (canonicalize-device-spec root)
                                    root-fs-type
@@ -397,12 +405,6 @@ to it are lost."
        (unless (file-exists? "/root/dev")
          (mkdir "/root/dev")
          (make-essential-device-nodes #:root "/root"))
-
-       (when (procedure? pre-mount)
-         ;; Do whatever actions are needed before mounting--e.g., installing
-         ;; device mappings.  Error out when the return value is false.
-         (unless (pre-mount)
-           (error "pre-mount actions failed")))
 
        ;; Mount the specified file systems.
        (for-each mount-file-system
