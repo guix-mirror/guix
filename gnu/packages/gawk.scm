@@ -64,7 +64,17 @@
                           '((substitute* "extension/configure"
                               (("/usr/bin/file") (which "file"))))
                           '())))
-                %standard-phases)))
+
+                (alist-cons-before
+                 'check 'install-locales
+                 (lambda _
+                   ;; A bunch of tests require the availability of a UTF-8
+                   ;; locale and otherwise fail.  Give them what they want.
+                   (setenv "LOCPATH" (getcwd))
+                   (zero? (system* "localedef" "--no-archive"
+                                   "--prefix" (getcwd) "-i" "en_US"
+                                   "-f" "UTF-8" "./en_US.UTF-8")))
+                 %standard-phases))))
    (inputs `(("libsigsegv" ,libsigsegv)
 
              ,@(if (%current-target-system)
