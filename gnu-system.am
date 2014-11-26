@@ -72,6 +72,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
   gnu/packages/dc.scm				\
+  gnu/packages/debug.scm			\
   gnu/packages/dejagnu.scm			\
   gnu/packages/dictionaries.scm			\
   gnu/packages/disk.scm				\
