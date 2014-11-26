@@ -381,25 +381,27 @@ included.")
    ;; users should automatically pull Linux headers as well.
    (propagated-inputs `(("linux-headers" ,linux-libre-headers)))
 
-   ;; Store the locales separately (~100 MiB).  Note that "out" retains a
-   ;; reference to them anyway, so there's no space savings here.
-   ;; TODO: Eventually we may want to add a $LOCALE_ARCHIVE search path like
-   ;; Nixpkgs does.
-   (outputs '("out" "locales" "debug"))
+   (outputs '("out" "debug"))
 
    (arguments
     `(#:out-of-source? #t
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
-            (string-append "--localedir=" (assoc-ref %outputs "locales")
-                           "/share/locale")
 
+            ;; Installing a locale archive with all the locales is to
+            ;; expensive (~100 MiB), so we rely on users to install the
+            ;; locales they really want.
+            ;;
+            ;; Set the default locale path.  In practice, $LOCPATH may be
+            ;; defined to point whatever locales users want.  However, setuid
+            ;; binaries don't honor $LOCPATH, so they'll instead look into
+            ;; $libc_cv_localedir; we choose /run/current-system/locale, with
+            ;; the idea that it is going to be populated by the sysadmin.
+            ;;
             ;; `--localedir' is not honored, so work around it.
             ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
-            (string-append "libc_cv_localedir="
-                           (assoc-ref %outputs "locales")
-                           "/share/locale")
+            (string-append "libc_cv_localedir=/run/current-system/locale")
 
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
@@ -476,11 +478,7 @@ included.")
                        "")
                       (("exec @PERL@")
                        "exec perl"))))
-                (alist-cons-after
-                 'install 'install-locales
-                 (lambda _
-                   (zero? (system* "make" "localedata/install-locales")))
-                 %standard-phases))))
+                %standard-phases)))
 
    (inputs `(("static-bash" ,(static-package bash-light))))
 
