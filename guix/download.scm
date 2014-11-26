@@ -61,15 +61,23 @@
        ,@(map (cut string-append <> "/gcc") gnu-mirrors))
       (gnupg
        "ftp://gd.tuwien.ac.at/privacy/gnupg/"
-       "ftp://gnupg.x-zone.org/pub/gnupg/"
-       "ftp://ftp.gnupg.cz/pub/gcrypt/"
-       "ftp://sunsite.dk/pub/security/gcrypt/"
-       "http://gnupg.wildyou.net/"
-       "http://ftp.gnupg.zone-h.org/"
-       "ftp://ftp.jyu.fi/pub/crypt/gcrypt/"
-       "ftp://trumpetti.atm.tut.fi/gcrypt/"
+       "ftp://mirrors.dotsrc.org/gcrypt/"
        "ftp://mirror.cict.fr/gnupg/"
-       "ftp://ftp.strasbourg.linuxfr.org/pub/gnupg/")
+       "http://artfiles.org/gnupg.org"
+       "ftp://ftp.franken.de/pub/crypt/mirror/ftp.gnupg.org/gcrypt/"
+       "ftp://ftp.freenet.de/pub/ftp.gnupg.org/gcrypt/"
+       "http://www.crysys.hu/"
+       "ftp://ftp.hi.is/pub/mirrors/gnupg/"
+       "ftp://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/"
+       "ftp://ftp.bit.nl/mirror/gnupg/"
+       "ftp://ftp.surfnet.nl/pub/security/gnupg/"
+       "ftp://ftp.iasi.roedu.net/pub/mirrors/ftp.gnupg.org/"
+       "ftp://ftp.sunet.se/pub/security/gnupg/"
+       "ftp://mirror.switch.ch/mirror/gnupg/"
+       "ftp://mirror.tje.me.uk/pub/mirrors/ftp.gnupg.org/"
+       "ftp://ftp.mirrorservice.org/sites/ftp.gnupg.org/gcrypt/"
+       "ftp://ftp.ring.gr.jp/pub/net/gnupg/"
+       "ftp://ftp.gnupg.org/gcrypt/")
       (gnome
        "http://ftp.belnet.be/ftp.gnome.org/"
        "http://ftp.linux.org.uk/mirrors/ftp.gnome.org/"
