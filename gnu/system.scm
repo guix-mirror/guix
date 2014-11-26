@@ -46,12 +46,15 @@
   #:use-module (gnu services base)
   #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system locale)
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (operating-system
             operating-system?
 
@@ -69,6 +72,7 @@
             operating-system-packages
             operating-system-timezone
             operating-system-locale
+            operating-system-locale-definitions
             operating-system-mapped-devices
             operating-system-file-systems
             operating-system-activation-script
@@ -129,7 +133,9 @@
 
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale               ; string
-            (default "en_US.UTF-8"))
+            (default "en_US.utf8"))
+  (locale-definitions operating-system-locale-definitions ; list of <locale-definition>
+                      (default %default-locale-definitions))
 
   (services operating-system-user-services        ; list of monadic services
             (default %base-services))
@@ -649,6 +655,19 @@ we're running in the final root."
                                            #:mapped-devices mapped-devices)))
     (return #~(string-append #$initrd "/initrd"))))
 
+(define (operating-system-locale-directory os)
+  "Return the directory containing the locales compiled for the definitions
+listed in OS.  The C library expects to find it under
+/run/current-system/locale."
+  ;; While we're at it, check whether the locale of OS is defined.
+  (unless (member (operating-system-locale os)
+                  (map locale-definition-name
+                       (operating-system-locale-definitions os)))
+    (raise (condition
+            (&message (message "system locale lacks a definition")))))
+
+  (locale-directory (operating-system-locale-definitions os)))
+
 (define (kernel->grub-label kernel)
   "Return a label for the GRUB menu entry that boots KERNEL."
   (string-append "GNU with "
@@ -698,6 +717,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
        (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
        (initrd      (operating-system-initrd-file os))
+       (locale      (operating-system-locale-directory os))
        (params      (operating-system-parameters-file os)))
     (file-union "system"
                 `(("boot" ,#~#$boot)
@@ -705,6 +725,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                   ("parameters" ,#~#$params)
                   ("initrd" ,initrd)
                   ("profile" ,#~#$profile)
+                  ("locale" ,#~#$locale)          ;used by libc
                   ("etc" ,#~#$etc)))))
 
 ;;; system.scm ends here

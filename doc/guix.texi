@@ -139,6 +139,7 @@ System Configuration
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
@@ -3470,6 +3471,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
@@ -3496,7 +3498,7 @@ kernel, initial RAM disk, and boot loader looks like this:
 (operating-system
   (host-name "komputilo")
   (timezone "Europe/Paris")
-  (locale "fr_FR.UTF-8")
+  (locale "fr_FR.utf8")
   (bootloader (grub-configuration
                 (device "/dev/sda")))
   (file-systems (cons (file-system
@@ -3649,9 +3651,13 @@ package}).
 @item @code{timezone}
 A timezone identifying string---e.g., @code{"Europe/Paris"}.
 
-@item @code{locale} (default: @code{"en_US.UTF-8"})
-The name of the default locale (@pxref{Locales,,, libc, The GNU C
-Library Reference Manual}).
+@item @code{locale} (default: @code{"en_US.utf8"})
+The name of the default locale (@pxref{Locale Names,,, libc, The GNU C
+Library Reference Manual}).  @xref{Locales}, for more information.
+
+@item @code{locale-definitions} (default: @var{%default-locale-definitions})
+The list of locale definitions to be compiled and that may be used at
+run time.  @xref{Locales}.
 
 @item @code{services} (default: @var{%base-services})
 A list of monadic values denoting system services.  @xref{Services}.
@@ -3958,6 +3964,78 @@ to be present on the system.  This includes groups such as ``root'',
 specific devices such as ``audio'', ``disk'', and ``cdrom''.
 @end defvr
 
+@node Locales
+@subsection Locales
+
+@cindex locale
+A @dfn{locale} defines cultural conventions for a particular language
+and region of the world (@pxref{Locales,,, libc, The GNU C Library
+Reference Manual}).  Each locale has a name that typically has the form
+@code{@var{language}_@var{territory}.@var{charset}}---e.g.,
+@code{fr_LU.utf8} designates the locale for the French language, with
+cultural conventions from Luxembourg, and using the UTF-8 encoding.
+
+@cindex locale definition
+Usually, you will want to specify the default locale for the machine
+using the @code{locale} field of the @code{operating-system} declaration
+(@pxref{operating-system Reference, @code{locale}}).
+
+That locale must be among the @dfn{locale definitions} that are known to
+the system---and these are specified in the @code{locale-definitions}
+slot of @code{operating-system}.  The default value includes locale
+definition for some widely used locales, but not for all the available
+locales, in order to save space.
+
+If the locale specified in the @code{locale} field is not among the
+definitions listed in @code{locale-definitions}, @command{guix system}
+raises an error.  In that case, you should add the locale definition to
+the @code{locale-definitions} field.  For instance, to add the North
+Frisian locale for Germany, the value of that field may be:
+
+@example
+(cons (locale-definition
+        (name "fy_DE.utf8") (source "fy_DE"))
+      %default-locale-definitions)
+@end example
+
+Likewise, to save space, one might want @code{locale-definitions} to
+list only the locales that are actually used, as in:
+
+@example
+(list (locale-definition
+        (name "ja_JP.eucjp") (source "ja_JP")
+        (charset "EUC-JP")))
+@end example
+
+The @code{locale-definition} form is provided by the @code{(gnu system
+locale)} module.  Details are given below.
+
+@deftp {Data Type} locale-definition
+This is the data type of a locale definition.
+
+@table @asis
+
+@item @code{name}
+The name of the locale.  @xref{Locale Names,,, libc, The GNU C Library
+Reference Manual}, for more information on locale names.
+
+@item @code{source}
+The name of the source for that locale.  This is typically the
+@code{@var{language}_@var{territory}} part of the locale name.
+
+@item @code{charset} (default: @code{"UTF-8"})
+The ``character set'' or ``code set'' for that locale,
+@uref{http://www.iana.org/assignments/character-sets, as defined by
+IANA}.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %default-locale-definitions
+An arbitrary list of commonly used locales, used as the default value of
+the @code{locale-definitions} field of @code{operating-system}
+declarations.
+@end defvr
 
 @node Services
 @subsection Services

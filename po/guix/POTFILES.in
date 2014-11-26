@@ -1,6 +1,7 @@
 # List of source files which contain translatable strings.
 # This should be source files of the various tools, and not package modules.
 gnu/packages.scm
+gnu/system.scm
 guix/scripts/build.scm
 guix/scripts/download.scm
 guix/scripts/package.scm
