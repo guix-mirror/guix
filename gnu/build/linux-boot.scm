@@ -400,8 +400,9 @@ to it are lost."
 
        (when (procedure? pre-mount)
          ;; Do whatever actions are needed before mounting--e.g., installing
-         ;; device mappings.
-         (pre-mount))
+         ;; device mappings.  Error out when the return value is false.
+         (unless (pre-mount)
+           (error "pre-mount actions failed")))
 
        ;; Mount the specified file systems.
        (for-each mount-file-system
