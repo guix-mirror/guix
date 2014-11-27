@@ -56,6 +56,7 @@ MODULES =					\
   guix/ftp-client.scm				\
   guix/http-client.scm				\
   guix/gnupg.scm				\
+  guix/elf.scm					\
   guix/store.scm				\
   guix/svn-download.scm				\
   guix/ui.scm					\
