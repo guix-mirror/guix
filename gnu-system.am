@@ -303,6 +303,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/build/install.scm				\
   gnu/build/linux-boot.scm			\
   gnu/build/linux-initrd.scm			\
+  gnu/build/linux-modules.scm			\
   gnu/build/vm.scm
 
 
