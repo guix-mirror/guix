@@ -5173,7 +5173,7 @@ no-dependency requirement is verified by checking whether the files of
 the final tool chain contain references to the @file{/gnu/store}
 directories of the bootstrap inputs.  The process that leads to this
 ``final'' tool chain is described by the package definitions found in
-the @code{(gnu packages base)} module.
+the @code{(gnu packages commencement)} module.
 
 @c See <http://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
 The first tool that gets built with the bootstrap binaries is
@@ -5194,7 +5194,7 @@ And voilà!  At this point we have the complete set of build tools that
 the GNU Build System expects.  These are in the @code{%final-inputs}
 variable of the @code{(gnu packages commencement)} module, and are
 implicitly used by any package that uses @code{gnu-build-system}
-(@pxref{Defining Packages}).
+(@pxref{Build Systems, @code{gnu-build-system}}).
 
 
 @unnumberedsubsec Building the Bootstrap Binaries
