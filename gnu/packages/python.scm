@@ -41,12 +41,18 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages fontutils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1))
 
 (define-public python-2
   (package
@@ -2015,3 +2021,97 @@ that client code uses to construct the grammar directly in Python code.")
     ;; of matplotlib.
     (arguments `(#:tests? #f
                  #:python ,python-2))))
+
+(define-public python-matplotlib
+  (package
+    (name "python-matplotlib")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/matplotlib"
+                           "/matplotlib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m6v9nwdldlwk22gcd339zg6mny5m301fxgks7z8sb8m9wawg8qp"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-dateutil" ,python-dateutil-2)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-six" ,python-six)
+       ("python-pytz" ,python-pytz)
+       ("python-numpy" ,python-numpy-bootstrap)
+       ("python-sphinx" ,python-sphinx)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("libpng" ,libpng)
+       ("imagemagick" ,imagemagick)
+       ("freetype" ,freetype)
+       ;; FIXME: Add backends when available.
+       ;("python-pygtk" ,python-pygtk)
+       ;("python-pycairo" ,python-pycairo)
+       ;("python-pygobject" ,python-pygobject)
+       ;("python-wxpython" ,python-wxpython)
+       ;("python-pyqt" ,python-pyqt)
+       ))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (info (string-append data "/info"))
+                 (html (string-append doc "/html")))
+            (with-directory-excursion "doc"
+              ;; Without setting this variable we get an encoding error.
+              (setenv "LANG" "en_US.UTF-8")
+              ;; Produce pdf in 'A4' format.
+              (substitute* (find-files "." "conf\\.py")
+                (("latex_paper_size = 'letter'")
+                 "latex_paper_size = 'a4'"))
+              (mkdir-p html)
+              (mkdir-p info)
+              ;; The doc recommends to run the 'html' target twice.
+              (system* "python" "make.py" "html")
+              (system* "python" "make.py" "html")
+              (system* "python" "make.py" "latex")
+              (system* "python" "make.py" "texinfo")
+              (copy-file "build/texinfo/matplotlib.info"
+                         (string-append info "/matplotlib.info"))
+              (copy-file "build/latex/Matplotlib.pdf"
+                         (string-append doc "/Matplotlib.pdf"))
+              (with-directory-excursion "build/html"
+                (map (lambda (file)
+                       (let* ((dir (dirname file))
+                              (tgt-dir (string-append html "/" dir)))
+                         (unless (equal? "." dir)
+                           (mkdir-p tgt-dir))
+                         (copy-file file (string-append html "/" file))))
+                     (find-files "." ".*"))))))
+        %standard-phases)))
+    (home-page "http://matplotlib.org")
+    (synopsis "2D plotting library for Python")
+    (description
+     "Matplotlib is a Python 2D plotting library which produces publication
+quality figures in a variety of hardcopy formats and interactive environments
+across platforms.  Matplotlib can be used in Python scripts, the python and
+ipython shell, web application servers, and six graphical user interface
+toolkits.")
+    (license psfl)))
+
+(define-public python2-matplotlib
+  (let ((matplotlib (package-with-python2 python-matplotlib)))
+    (package (inherit matplotlib)
+      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
+      ;; customized for Python 2.
+      (inputs `(("python2-numpydoc" ,python2-numpydoc)
+                ,@(alist-delete "python-numpydoc" 
+                                (package-inputs matplotlib)))))))
