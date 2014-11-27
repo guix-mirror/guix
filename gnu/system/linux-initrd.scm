@@ -166,8 +166,7 @@ modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear."
   (define virtio-modules
     ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
-    '("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
-      "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"))
+    '("virtio_pci.ko" "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"))
 
   (define cifs-modules
     ;; Modules needed to mount CIFS file systems.
@@ -175,7 +174,7 @@ loaded at boot time in the order in which they appear."
 
   (define virtio-9p-modules
     ;; Modules for the 9p paravirtualized file system.
-    '("fscache.ko" "9pnet.ko" "9p.ko" "9pnet_virtio.ko"))
+    '("9p.ko" "9pnet_virtio.ko"))
 
   (define (file-system-type-predicate type)
     (lambda (fs)
@@ -183,7 +182,7 @@ loaded at boot time in the order in which they appear."
 
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    `("libahci.ko" "ahci.ko"                      ;for SATA controllers
+    `("ahci.ko"                                   ;for SATA controllers
       "pata_acpi.ko" "pata_atiixp.ko"             ;for ATA controllers
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
