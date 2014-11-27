@@ -236,14 +236,15 @@ loaded at boot time in the order in which they appear."
          (boot-system #:mounts '#$(map file-system->spec file-systems)
                       #:pre-mount (lambda ()
                                     (and #$@device-mapping-commands))
-                      #:linux-modules (map (lambda (file)
-                                             (string-append #$kodir "/" file))
-                                           '#$linux-modules)
+                      #:linux-modules '#$linux-modules
+                      #:linux-module-directory '#$kodir
                       #:qemu-guest-networking? #$qemu-networking?
                       #:volatile-root? '#$volatile-root?))
      #:name "base-initrd"
      #:modules '((guix build utils)
                  (gnu build linux-boot)
-                 (gnu build file-systems)))))
+                 (gnu build linux-modules)
+                 (gnu build file-systems)
+                 (guix elf)))))
 
 ;;; linux-initrd.scm ends here

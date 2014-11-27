@@ -529,8 +529,10 @@ etc."
   (define %modules
     '((gnu build activation)
       (gnu build linux-boot)
+      (gnu build linux-modules)
       (gnu build file-systems)
-      (guix build utils)))
+      (guix build utils)
+      (guix elf)))
 
   (define (service-activations services)
     ;; Return the activation scripts for SERVICES.

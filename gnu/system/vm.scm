@@ -104,7 +104,9 @@
                                               '((gnu build vm)
                                                 (gnu build install)
                                                 (gnu build linux-boot)
+                                                (gnu build linux-modules)
                                                 (gnu build file-systems)
+                                                (guix elf)
                                                 (guix build utils)
                                                 (guix build store-copy)))
                                              (guile-for-build
