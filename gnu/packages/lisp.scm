@@ -63,7 +63,10 @@
                        (find-files "h" "\\.defs"))
                     (("SHELL=/bin/(ba)?sh")
                      (string-append "SHELL=" (which "bash")))))
-                %standard-phases)))
+                ;; drop strip phase to make maxima build, see
+                ;; https://www.ma.utexas.edu/pipermail/maxima/2008/009769.html
+                (alist-delete 'strip
+                 %standard-phases))))
     (native-inputs
      `(("m4" ,m4)
        ("readline" ,readline)
