@@ -175,7 +175,7 @@ to the caller without emitting an error message."
                            %fetch-timeout
                            0)
            (begin
-             (warning (_ "while fetching ~a: server is unresponsive~%")
+             (warning (_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
              (warning (_ "try `--no-substitutes' if the problem persists~%"))
 
