@@ -160,11 +160,7 @@ module name."
     (lambda args
       ;; If this module was already loaded and we're in modprobe style, ignore
       ;; the error.
-
-      ;; FIXME: Use errno once 'guile-linux-syscalls.patch' provides a useful
-      ;; errno here.
-      (unless (and recursive?
-                   (module-loaded? (string-drop-right (basename file) 3)))
+      (unless (and recursive? (= EEXIST (system-error-errno args)))
         (apply throw args)))))
 
 ;;; linux-modules.scm ends here
