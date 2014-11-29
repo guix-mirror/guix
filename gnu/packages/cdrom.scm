@@ -217,3 +217,33 @@ files.  Dvdisaster works at the image level so that the recovery does not
 depend on the file system of the medium.  The maximum error correction
 capacity is user-selectable.")
     (license gpl2+)))
+
+(define-public cd-discid
+  (package
+    (name "cd-discid")
+    (version "1.4")
+    (home-page "http://linukz.org/cd-discid.shtml")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/download/cd-discid-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qrcvn7227qaayjcd5rm7z0k5q89qfy5qkdgwr5pd7ih0va8rmpz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/usr/bin/install")
+                   "install")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases (alist-delete 'configure %standard-phases)
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))))
+    (synopsis "Get CDDB discid information from an audio CD")
+    (description
+     "cd-discid is a command-line tool to retrieve CDDB discid information
+from an audio CD.")
+    (license gpl2+)))
