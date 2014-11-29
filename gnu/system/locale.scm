@@ -48,7 +48,7 @@
 
 (define* (localedef-command locale
                             #:key (libc (canonical-package glibc)))
-  "Return a gexp that runs 'localdef' from LIBC to build LOCALE."
+  "Return a gexp that runs 'localedef' from LIBC to build LOCALE."
   #~(begin
       (format #t "building locale '~a'...~%"
               #$(locale-definition-name locale))
