@@ -250,23 +250,14 @@ as 'needed-for-boot'."
 (define (operating-system-user-mapped-devices os)
   "Return the subset of mapped devices that can be installed in
 user-land--i.e., those not needed during boot."
-  (let ((devices      (operating-system-mapped-devices os))
-        (file-systems (operating-system-file-systems os)))
-   (filter (lambda (md)
-             (let ((user (mapped-device-user md file-systems)))
-               (or (not user)
-                   (not (file-system-needed-for-boot? user)))))
-           devices)))
+  (remove mapped-device-needed-for-boot?
+          (operating-system-mapped-devices os)))
 
 (define (operating-system-boot-mapped-devices os)
   "Return the subset of mapped devices that must be installed during boot,
 from the initrd."
-  (let ((devices      (operating-system-mapped-devices os))
-        (file-systems (operating-system-file-systems os)))
-   (filter (lambda (md)
-             (let ((user (mapped-device-user md file-systems)))
-               (and user (file-system-needed-for-boot? user))))
-           devices)))
+  (filter mapped-device-needed-for-boot?
+          (operating-system-mapped-devices os)))
 
 (define (device-mapping-services os)
   "Return the list of device-mapping services for OS as a monadic list."

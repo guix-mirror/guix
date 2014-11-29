@@ -3837,19 +3837,27 @@ detailed below.
 Objects of this type represent device mappings that will be made when
 the system boots up.
 
-@table @code
-@item source
+@table @asis
+@item @code{source}
 This string specifies the name of the block device to be mapped, such as
 @code{"/dev/sda3"}.
 
-@item target
+@item @code{target}
 This string specifies the name of the mapping to be established.  For
 example, specifying @code{"my-partition"} will lead to the creation of
 the @code{"/dev/mapper/my-partition"} device.
 
-@item type
+@item @code{type}
 This must be a @code{mapped-device-kind} object, which specifies how
 @var{source} is mapped to @var{target}.
+
+@item @code{needed-for-boot?} (default: @code{#f})
+This Boolean value indicates whether the device mapping must be made at
+boot time---i.e., from the initial RAM disk, before any user file
+systems are mounted.
+
+You would set it to @code{#t} for instance when the mapped device is
+used by the root file system.
 @end table
 @end deftp
 
