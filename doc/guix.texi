@@ -5250,12 +5250,20 @@ one:
 guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
 @end example
 
+For this to work, the @code{glibc-dynamic-linker} procedure in
+@code{(gnu packages bootstrap)} must be augmented to return the right
+file name for libc's dynamic linker on that platform; likewise,
+@code{system->linux-architecture} in @code{(gnu packages linux)} must be
+taught about the new platform.
+
 Once these are built, the @code{(gnu packages bootstrap)} module needs
-to be updated to refer to these binaries on the target platform.  In
-addition, the @code{glibc-dynamic-linker} procedure in that module must
-be augmented to return the right file name for libc's dynamic linker on
-that platform; likewise, @code{system->linux-architecture} in @code{(gnu
-packages linux)} must be taught about the new platform.
+to be updated to refer to these binaries on the target platform.  That
+is, the hashes and URLs of the bootstrap tarballs for the new platform
+must be added alongside those of the currently supported platforms.  The
+bootstrap Guile tarball is treated specially: it is expected to be
+available locally, and @file{gnu-system.am} has rules do download it for
+the supported architectures; a rule for the new platform must be added
+as well.
 
 In practice, there may be some complications.  First, it may be that the
 extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
