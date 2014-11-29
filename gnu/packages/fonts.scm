@@ -32,9 +32,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config))
 
-(define-public ttf-dejavu
+(define-public font-dejavu
   (package
-    (name "ttf-dejavu")
+    (name "font-dejavu")
     (version "2.34")
     (source (origin
              (method url-fetch)
@@ -98,9 +98,9 @@ provide serif, sans and monospaced variants.")
      (license:x11-style
       "http://dejavu-fonts.org/"))))
 
-(define-public ttf-bitstream-vera
+(define-public font-bitstream-vera
   (package
-    (name "ttf-bitstream-vera")
+    (name "font-bitstream-vera")
     (version "1.10")
     (source (origin
              (method url-fetch)
@@ -152,9 +152,9 @@ package provides the TrueType (TTF) files.")
      (license:x11-style
       "https://www-old.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
 
-(define-public freefont-ttf
+(define-public font-gnu-freefont-ttf
   (package
-    (name "freefont-ttf")
+    (name "font-gnu-freefont-ttf")
     (version "20100919")
     (source (origin
              (method url-fetch)
@@ -269,9 +269,9 @@ and Bitstream Vera Sans Mono).
 The Liberation Fonts are sponsored by Red Hat.")
     (license license:silofl1.1)))
 
-(define-public terminus-font
+(define-public font-terminus
   (package
-    (name "terminus-font")
+    (name "font-terminus")
     (version "4.39")
     (source
       (origin
