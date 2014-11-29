@@ -37,7 +37,7 @@
 (operating-system
  (host-name "gnu")
  (timezone "Europe/Paris")
- (locale "en_US.UTF-8")
+ (locale "en_US.utf8")
 
  (bootloader (grub-configuration
               (device "/dev/sda")))
