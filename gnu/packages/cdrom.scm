@@ -32,7 +32,11 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages which))
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages wget)
+  #:use-module (gnu packages xiph))
 
 (define-public libcddb
   (package
@@ -246,4 +250,75 @@ capacity is user-selectable.")
     (description
      "cd-discid is a command-line tool to retrieve CDDB discid information
 from an audio CD.")
+    (license gpl2+)))
+
+(define-public abcde
+  (package
+    (name "abcde")
+    (version "2.6")
+    (home-page "http://abcde.einval.com/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/download/abcde-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0y2cg233n2hixs0ji76dggpzgf52v4c4mnpwiai889ql2piafgk8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/usr/bin/install")
+                   "install")
+                  (("^etcdir = .*$")
+                   (string-append "etcdir = $(prefix)/etc\n"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs inputs #:allow-other-keys)
+                   (substitute* "Makefile"
+                     (("^prefix = .*$")
+                      (string-append "prefix = "
+                                     (assoc-ref outputs "out")
+                                     "\n"))))
+                 (alist-cons-after
+                  'install 'wrap
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((wget   (assoc-ref inputs "wget"))
+                          (vorbis (assoc-ref inputs "vorbis-tools"))
+                          (parano (assoc-ref inputs "cdparanoia"))
+                          (which  (assoc-ref inputs "which"))
+                          (discid (assoc-ref inputs "cd-discid"))
+                          (out    (assoc-ref outputs "out")))
+                      (define (wrap file)
+                        (wrap-program file
+                                      `("PATH" ":" prefix
+                                        (,(string-append out "/bin:"
+                                                         wget "/bin:"
+                                                         which "/bin:"
+                                                         vorbis "/bin:"
+                                                         discid "/bin:"
+                                                         parano "/bin")))))
+
+                      (for-each wrap
+                                (find-files (string-append out "/bin")
+                                            ".*"))))
+                  %standard-phases))
+       #:tests? #f))
+
+    (inputs `(("wget" ,wget)
+              ("which" ,which)
+              ("cdparanoia" ,cdparanoia)
+              ("cd-discid" ,cd-discid)
+              ("vorbis-tools" ,vorbis-tools)
+
+              ;; A couple of Python and Perl scripts are included.
+              ("python" ,python)
+              ("perl" ,perl)))
+
+    (synopsis "Command-line audio CD ripper")
+    (description
+     "abcde is a front-end command-line utility (actually, a shell script)
+that grabs tracks off a CD, encodes them to Ogg/Vorbis, MP3, FLAC, Ogg/Speex
+and/or MPP/MP+ (Musepack) format, and tags them, all in one go.")
     (license gpl2+)))
