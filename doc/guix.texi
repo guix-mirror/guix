@@ -3731,6 +3731,13 @@ is interpreted as a partition label name; when it is @code{uuid},
 The @code{label} and @code{uuid} options offer a way to refer to disk
 partitions without having to hard-code their actual device name.
 
+However, when a file system's source is a mapped device (@pxref{Mapped
+Devices}), its @code{device} field @emph{must} refer to the mapped
+device name---e.g., @file{/dev/mapper/root-partition}---and consequently
+@code{title} must be set to @code{'device}.  This is required so that
+the system knows that mounting the file system depends on having the
+corresponding device mapping established.
+
 @item @code{flags} (default: @code{'()})
 This is a list of symbols denoting mount flags.  Recognized flags
 include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
