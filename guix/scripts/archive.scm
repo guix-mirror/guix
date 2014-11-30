@@ -293,7 +293,8 @@ the input port."
 (define (guix-archive . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* args %options
+    (args-fold* (append args (environment-build-options))
+                %options
                 (lambda (opt name arg result)
                   (leave (_ "~A: unrecognized option~%") name))
                 (lambda (arg result)

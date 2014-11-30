@@ -2781,6 +2781,24 @@ the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
 store)} module.
 
+In addition to options explicitly passed on the command line,
+@command{guix build} and other @command{guix} commands that support
+building honor the @code{GUIX_BUILD_OPTIONS} environment variable.
+
+@defvr {Environment Variable} GUIX_BUILD_OPTIONS
+Users can define this variable to a list of command line options that
+will automatically be used by @command{guix build} and other
+@command{guix} commands that can perform builds, as in the example
+below:
+
+@example
+$ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
+@end example
+
+These options are appended to the ones passed on the command line.
+@end defvr
+
+
 @node Invoking guix download
 @section Invoking @command{guix download}
 

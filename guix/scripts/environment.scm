@@ -213,7 +213,8 @@ packages."
 ;; Entry point.
 (define (guix-environment . args)
   (define (parse-options)
-    (args-fold* args %options
+    (args-fold* (append args (environment-build-options))
+                %options
                 (lambda (opt name arg result)
                   (leave (_ "~A: unrecognized option~%") name))
                 (lambda (arg result)

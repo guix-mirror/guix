@@ -99,8 +99,8 @@ unset LANGUAGE
 LC_MESSAGES=C
 export LC_MESSAGES
 
-# Ignore user modules.
-unset GUIX_PACKAGE_PATH
+# Ignore user settings.
+unset GUIX_PACKAGE_PATH GUIX_BUILD_OPTIONS
 
 storedir="@storedir@"
 prefix="@prefix@"
