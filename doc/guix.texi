@@ -586,7 +586,7 @@ Cache build failures.  By default, only successful builds are cached.
 Use @var{n} CPU cores to build each derivation; @code{0} means as many
 as available.
 
-The default value is @code{1}, but it may be overridden by clients, such
+The default value is @code{0}, but it may be overridden by clients, such
 as the @code{--cores} option of @command{guix build} (@pxref{Invoking
 guix build}).
 
