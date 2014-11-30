@@ -45,7 +45,6 @@
             mapped-device-source
             mapped-device-target
             mapped-device-type
-            mapped-device-needed-for-boot?
 
             mapped-device-kind
             mapped-device-kind?
@@ -158,9 +157,7 @@ file system."
   mapped-device?
   (source    mapped-device-source)                ;string
   (target    mapped-device-target)                ;string
-  (type      mapped-device-type)                  ;<mapped-device-kind>
-  (needed-for-boot? mapped-device-needed-for-boot? ;Boolean
-                    (default #f)))
+  (type      mapped-device-type))                 ;<mapped-device-kind>
 
 (define-record-type* <mapped-device-type> mapped-device-kind
   make-mapped-device-kind
