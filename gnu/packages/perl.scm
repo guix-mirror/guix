@@ -298,3 +298,23 @@ shell.")
     (home-page (string-append "http://search.cpan.org/~adamk/"
                               "File-Which-" version))
     (license (package-license perl))))
+
+(define-public perl-getopt-tabular
+  (package
+    (name "perl-getopt-tabular")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GW/GWARD/"
+                                  "Getopt-Tabular-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xskl9lcj07sdfx5dkma5wvhhgf5xlsq0khgh8kk34dm6dv0dpwv"))))
+    (build-system perl-build-system)
+    (synopsis "Table-driven argument parsing for Perl")
+    (description
+     "Getopt::Tabular is a Perl 5 module for table-driven argument parsing,
+vaguely inspired by John Ousterhout's Tk_ParseArgv.")
+    (home-page (string-append "http://search.cpan.org/~gward/"
+                              "Getopt-Tabular-" version))
+    (license (package-license perl))))
