@@ -46,6 +46,8 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -1938,6 +1940,75 @@ capabilities.")
 
 (define python2-numpy-bootstrap
   (package-with-python2 python-numpy-bootstrap))
+
+(define-public python-numpy
+  (package (inherit python-numpy-bootstrap)
+    (name "python-numpy")
+    (outputs '("out" "doc"))
+    (inputs 
+     `(("which" ,which)
+       ("python-setuptools" ,python-setuptools)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-sphinx" ,python-sphinx)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-numpydoc" ,python-numpydoc)
+       ,@(package-inputs python-numpy-bootstrap)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)
+       ("perl" ,perl)
+       ,@(package-native-inputs python-numpy-bootstrap)))
+    (arguments
+     `(,@(substitute-keyword-arguments 
+             (package-arguments python-numpy-bootstrap)
+           ((#:phases phases)
+            `(alist-cons-after
+              'install 'install-doc
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                       (doc (string-append 
+                             data "/doc/" ,name "-" 
+                             ,(package-version python-numpy-bootstrap)))
+                       (info (string-append data "/info"))
+                       (html (string-append doc "/html"))
+                       (pyver ,(string-append "PYVER=")))
+                  (with-directory-excursion "doc"
+                    (mkdir-p html)
+                    (system* "make" "html" pyver)
+                    (system* "make" "latex" "PAPER=a4" pyver)
+                    (system* "make" "-C" "build/latex" 
+                             "all-pdf" "PAPER=a4" pyver)
+                    ;; FIXME: Generation of the info file fails.
+                    ;; (system* "make" "info" pyver)
+                    ;; (mkdir-p info)
+                    ;; (copy-file "build/texinfo/numpy.info"
+                    ;;            (string-append info "/numpy.info"))
+                    (for-each (lambda (file)
+                                (copy-file (string-append "build/latex" file)
+                                           (string-append doc file)))
+                              '("/numpy-ref.pdf" "/numpy-user.pdf"))
+                    (with-directory-excursion "build/html"
+                      (for-each (lambda (file)
+                                  (let* ((dir (dirname file))
+                                         (tgt-dir (string-append html "/" dir)))
+                                    (unless (equal? "." dir)
+                                      (mkdir-p tgt-dir))
+                                    (copy-file file (string-append html "/" file))))
+                                (find-files "." ".*"))))))
+              ,phases)))))))
+
+(define-public python2-numpy
+  (let ((numpy (package-with-python2 python-numpy)))
+    (package (inherit numpy)
+      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is customized for
+      ;; Python 2. Since it is also an input to PYTHON2-MATPLOTLIB, we need to
+      ;; import the right version of 'matplotlib' as well.
+      (inputs `(("python2-numpydoc" ,python2-numpydoc)
+                ("python2-matplotlib" ,python2-matplotlib)
+                ,@(alist-delete "python-numpydoc" 
+                                (alist-delete "python-matplotlib"
+                                              (package-inputs numpy))))))))
 
 (define-public python-pyparsing
   (package
