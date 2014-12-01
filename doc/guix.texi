@@ -1808,6 +1808,13 @@ modules}.  This is achieved by wrapping the programs in launch scripts
 that appropriately set the @code{XDG_DATA_DIRS} and @code{GTK_PATH}
 environment variables.
 
+It is possible to exclude specific package outputs from that wrapping
+process by listing their names in the
+@code{#:glib-or-gtk-wrap-excluded-outputs} parameter.  This is useful
+when an output is known not to contain any GLib or GTK+ binaries, and
+where wrapping would gratuitously add a dependency of that output on
+GLib and GTK+.
+
 @item glib-or-gtk-compile-schemas
 The phase @code{glib-or-gtk-compile-schemas} makes sure that all GLib's
 @uref{https://developer.gnome.org/gio/stable/glib-compile-schemas.html,

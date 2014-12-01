@@ -122,6 +122,7 @@
                                                   "bin" "sbin"))
                             (phases '(@ (guix build glib-or-gtk-build-system)
                                         %standard-phases))
+                            (glib-or-gtk-wrap-excluded-outputs '())
                             (system (%current-system))
                             (imported-modules %default-imported-modules)
                             (modules %default-modules)
@@ -153,6 +154,8 @@
                           #:search-paths ',(map search-path-specification->sexp
                                                 search-paths)
                           #:phases ,phases
+                          #:glib-or-gtk-wrap-excluded-outputs
+                           ,glib-or-gtk-wrap-excluded-outputs
                           #:configure-flags ,configure-flags
                           #:make-flags ,make-flags
                           #:out-of-source? ,out-of-source?

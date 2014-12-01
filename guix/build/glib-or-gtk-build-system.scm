@@ -79,37 +79,45 @@ a list with all found directories."
 
   (fold glib-schemas '() inputs))
 
-(define* (wrap-all-programs #:key inputs outputs #:allow-other-keys)
+(define* (wrap-all-programs #:key inputs outputs
+                            (glib-or-gtk-wrap-excluded-outputs '())
+                            #:allow-other-keys)
   "Implement phase \"glib-or-gtk-wrap\": look for GSettings schemas and
 gtk+-v.0 libraries and create wrappers with suitably set environment variables
-if found."
+if found.
+
+Wrapping is not applied to outputs whose name is listed in
+GLIB-OR-GTK-WRAP-EXCLUDED-OUTPUTS.  This is useful when an output is known not
+to contain any GLib or GTK+ binaries, and where wrapping would gratuitously
+add a dependency of that output on GLib and GTK+."
   (define handle-output
     (match-lambda
      ((output . directory)
-      (let* ((bindir       (string-append directory "/bin"))
-             (bin-list     (find-files bindir ".*"))
-             (schemas      (schemas-directories
-                            (alist-cons output directory inputs)))
-             (gtk-mod-dirs (gtk-module-directories
-                            (alist-cons output directory inputs)))
-             (schemas-env-var
-              (if (not (null? schemas))
-                  `("XDG_DATA_DIRS" ":" prefix ,schemas)
-                  #f))
-             (gtk-mod-env-var
-              (if (not (null? gtk-mod-dirs))
-                  `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
-                  #f)))
-        (cond
-         ((and schemas-env-var gtk-mod-env-var)
-          (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
-                    bin-list))
-         (schemas-env-var
-          (for-each (cut wrap-program <> schemas-env-var)
-                    bin-list))
-         (gtk-mod-env-var
-          (for-each (cut wrap-program <> gtk-mod-env-var)
-                    bin-list)))))))
+      (unless (member output glib-or-gtk-wrap-excluded-outputs)
+        (let* ((bindir       (string-append directory "/bin"))
+               (bin-list     (find-files bindir ".*"))
+               (schemas      (schemas-directories
+                              (alist-cons output directory inputs)))
+               (gtk-mod-dirs (gtk-module-directories
+                              (alist-cons output directory inputs)))
+               (schemas-env-var
+                (if (not (null? schemas))
+                    `("XDG_DATA_DIRS" ":" prefix ,schemas)
+                    #f))
+               (gtk-mod-env-var
+                (if (not (null? gtk-mod-dirs))
+                    `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
+                    #f)))
+          (cond
+           ((and schemas-env-var gtk-mod-env-var)
+            (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
+                      bin-list))
+           (schemas-env-var
+            (for-each (cut wrap-program <> schemas-env-var)
+                      bin-list))
+           (gtk-mod-env-var
+            (for-each (cut wrap-program <> gtk-mod-env-var)
+                      bin-list))))))))
 
   (for-each handle-output outputs)
   #t)
