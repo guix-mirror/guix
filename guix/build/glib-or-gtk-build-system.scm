@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (%standard-phases
             glib-or-gtk-build))
 
@@ -96,13 +98,15 @@ if found."
               #f)))
     (cond
      ((and schemas-env-var gtk-mod-env-var)
-      (map (lambda (prog)
-             (wrap-program prog schemas-env-var gtk-mod-env-var))
-           bin-list))
+      (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
+                bin-list))
      (schemas-env-var
-      (map (lambda (prog) (wrap-program prog schemas-env-var)) bin-list))
+      (for-each (cut wrap-program <> schemas-env-var)
+                bin-list))
      (gtk-mod-env-var
-      (map (lambda (prog) (wrap-program prog gtk-mod-env-var)) bin-list)))))
+      (for-each (cut wrap-program <> gtk-mod-env-var)
+                bin-list)))
+    #t))
 
 (define* (compile-glib-schemas #:key inputs outputs #:allow-other-keys)
   "Implement phase \"glib-or-gtk-compile-schemas\": compile \"glib\" schemas
