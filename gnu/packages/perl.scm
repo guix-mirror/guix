@@ -318,3 +318,28 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
     (home-page (string-append "http://search.cpan.org/~gward/"
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
+
+(define-public perl-regexp-common
+  (package
+    (name "perl-regexp-common")
+    (version "2013031301")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AB/ABIGAIL/"
+                                  "Regexp-Common-" version ".tar.gz"))
+              (sha256
+               (base32
+                "112wybsm0vr8yfannx6sdfvgp5vza28gjgr3pgn69ak4sac836kj"))))
+    (build-system perl-build-system)
+    (synopsis "Provide commonly requested regular expressions")
+    (description
+     "This module exports a single hash (`%RE') that stores or generates
+commonly needed regular expressions.  Patterns currently provided include:
+balanced parentheses and brackets, delimited text (with escapes), integers and
+floating-point numbers in any base (up to 36), comments in 44 languages,
+offensive language, lists of any pattern, IPv4 addresses, URIs, and Zip
+codes.")
+    (home-page (string-append "http://search.cpan.org/~abigail/"
+                              "Regexp-Common-" version))
+    ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
+    (license (list (package-license perl) x11 bsd-3))))
