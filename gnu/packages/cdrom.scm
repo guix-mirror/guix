@@ -229,7 +229,7 @@ capacity is user-selectable.")
     (home-page "http://linukz.org/cd-discid.shtml")
     (source (origin
               (method url-fetch)
-              (uri (string-append home-page "/download/cd-discid-"
+              (uri (string-append "http://linukz.org/download/cd-discid-"
                                   version ".tar.gz"))
               (sha256
                (base32
