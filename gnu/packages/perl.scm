@@ -343,3 +343,24 @@ codes.")
                               "Regexp-Common-" version))
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
+
+(define-public perl-sys-cpu
+  (package
+    (name "perl-sys-cpu")
+    (version "0.61")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MZ/MZSANFORD/"
+                                  "Sys-CPU-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))))
+    (build-system perl-build-system)
+    (synopsis "Perl extension for getting CPU information")
+    (description
+     "In responce to a post on perlmonks.org, a module for counting the number
+of CPU's on a system.  Support has now also been added for type of CPU and
+clock speed.")
+    (home-page (string-append "http://search.cpan.org/~mzsanford/"
+                              "Sys-CPU-" version))
+    (license (package-license perl))))
