@@ -161,3 +161,28 @@ SHA-1 message digest algorithm for use by Perl programs.")
     (home-page (string-append "http://search.cpan.org/~gaas/Digest-SHA1-"
                               version "/SHA1.pm"))
     (license (package-license perl))))
+
+(define-public perl-benchmark-timer
+  (package
+    (name "perl-benchmark-timer")
+    (version "0.7102")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DC/DCOPPIT/"
+                                  "Benchmark-Timer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gl9ybm9hgia3ld5s11b7bv2p2hmx5rss5hxcfy6rmbzrjcnci01"))))
+    (build-system perl-build-system)
+    ;; The optional input module Statistics::PointEstimation (from
+    ;; Statistics-TTest) lists no license.
+    (synopsis "Benchmarking with statistical confidence")
+    (description
+     "The Benchmark::Timer class allows you to time portions of code
+conveniently, as well as benchmark code by allowing timings of repeated
+trials.  It is perfect for when you need more precise information about the
+running time of portions of your code than the Benchmark module will give you,
+but don't want to go all out and profile your code.")
+    (home-page (string-append "http://search.cpan.org/~dcoppit/"
+                              "Benchmark-Timer-" version))
+    (license gpl2)))
