@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages libevent)
@@ -49,11 +50,12 @@
               (sha256
                (base32
                 "1sxr1magqb5s26yvr5yhs1f7bmir8gl09niafg64lhgfnhv1kz59"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
     (arguments
-     '(#:phases (alist-cons-after
+     '(#:glib-or-gtk-wrap-excluded-outputs '("out")
+       #:phases (alist-cons-after
                  'install 'move-gui
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; Move the GUI to its own output, so that "out" doesn't
