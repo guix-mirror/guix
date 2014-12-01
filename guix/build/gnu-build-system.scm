@@ -372,6 +372,27 @@ makefiles."
                                        strip-directories)))
                          outputs))))
 
+(define* (validate-documentation-location #:key outputs
+                                          #:allow-other-keys)
+  "Documentation should go to 'share/info' and 'share/man', not just 'info/'
+and 'man/'.  This phase moves directories to the right place if needed."
+  (define (validate-sub-directory output sub-directory)
+    (let ((directory (string-append output "/" sub-directory)))
+      (when (directory-exists? directory)
+        (let ((target (string-append output "/share/" sub-directory)))
+          (format #t "moving '~a' to '~a'~%" directory target)
+          (mkdir-p (dirname target))
+          (rename-file directory target)))))
+
+  (define (validate-output output)
+    (for-each (cut validate-sub-directory output <>)
+              '("man" "info")))
+
+  (match outputs
+    (((names . directories) ...)
+     (for-each validate-output directories)))
+  #t)
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -380,7 +401,8 @@ makefiles."
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
-            patch-shebangs strip)))
+            patch-shebangs strip
+            validate-documentation-location)))
 
 
 (define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)
