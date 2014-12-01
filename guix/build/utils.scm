@@ -35,6 +35,7 @@
 
             directory-exists?
             executable-file?
+            symbolic-link?
             call-with-ascii-input-file
             elf-file?
             ar-file?
@@ -92,6 +93,10 @@
   (let ((s (stat file #f)))
     (and s
          (not (zero? (logand (stat:mode s) #o100))))))
+
+(define (symbolic-link? file)
+  "Return #t if FILE is a symbolic link (aka. \"symlink\".)"
+  (eq? (stat:type (lstat file)) 'symlink))
 
 (define (call-with-ascii-input-file file proc)
   "Open FILE as an ASCII or binary file, and pass the resulting port to
