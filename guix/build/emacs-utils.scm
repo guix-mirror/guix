@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:export (%emacs
             emacs-batch-eval
             emacs-batch-edit-file
+            emacs-generate-autoloads
             emacs-substitute-sexps
             emacs-substitute-variables))
 
@@ -46,6 +48,14 @@
                           (string-append "--visit=" file)
                           (format #f "--eval=~S" expr)))
     (error "emacs-batch-edit-file failed!" file expr)))
+
+(define (emacs-generate-autoloads name directory)
+  "Generate autoloads for Emacs package NAME placed in DIRECTORY."
+  (let* ((file (string-append directory "/" name "-autoloads.el"))
+         (expr `(let ((backup-inhibited t)
+                      (generated-autoload-file ,file))
+                  (update-directory-autoloads ,directory))))
+    (emacs-batch-eval expr)))
 
 (define-syntax emacs-substitute-sexps
   (syntax-rules ()
