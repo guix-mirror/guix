@@ -207,3 +207,24 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
     (home-page (string-append "http://search.cpan.org/~neilb/"
                               "Exporter-Lite-" version))
     (license (package-license perl))))
+
+(define-public perl-probe-perl
+  (package
+    (name "perl-probe-perl")
+    (version "0.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/K/KW/KWILLIAMS/"
+                                  "Probe-Perl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c9wiaz0mqqknafr4jdr0g2gdzxnn539182z0icqaqvp5qgd5r6r"))))
+    (build-system perl-build-system)
+    (synopsis "Information about the currently running perl")
+    (description
+     "Probe::Perl provides methods for obtaining information about the
+currently running perl interpreter.  It originally began life as code in the
+Module::Build project, but has been externalized here for general use.")
+    (home-page (string-append "http://search.cpan.org/~kwilliams/"
+                              "Probe-Perl-" version))
+    (license (package-license perl))))
