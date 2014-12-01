@@ -276,3 +276,25 @@ bin as is also commonly used) paths of your Perl distribution.")
     (home-page (string-append "http://search.cpan.org/~adamk/"
                               "Test-Script-" version))
     (license (package-license perl))))
+
+(define-public perl-file-which
+  (package
+    (name "perl-file-which")
+    (version "1.09")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "File-Which-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hxjyh9yrv32f3g8vrnr8iylzprajsac14vjm75kf1qnj1jyqbxp"))))
+    (build-system perl-build-system)
+    (native-inputs `(("test-script" ,perl-test-script)))
+    (synopsis "Portable implementation of the `which' utility")
+    (description
+     "File::Which was created to be able to get the paths to executable
+programs on systems under which the `which' program wasn't implemented in the
+shell.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "File-Which-" version))
+    (license (package-license perl))))
