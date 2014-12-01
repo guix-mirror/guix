@@ -252,3 +252,27 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; "You may use this module under the terms of the BSD, Artistic, or GPL
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
+
+(define-public perl-test-script
+  (package
+    (name "perl-test-script")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "Test-Script-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15pb4zzsnm33msc1syhig2bk05xqc0pckmfyahdwbd177bj5w7p2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("probe-perl" ,perl-probe-perl)
+       ("ipc-run3"   ,perl-ipc-run3)))
+    (synopsis "Basic cross-platform tests for scripts")
+    (description
+     "The intent of the Test::Script module is to provide a series of basic
+tests for 80% of the testing you will need to do for scripts in the script (or
+bin as is also commonly used) paths of your Perl distribution.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "Test-Script-" version))
+    (license (package-license perl))))
