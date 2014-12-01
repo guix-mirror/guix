@@ -83,41 +83,50 @@ a list with all found directories."
   "Implement phase \"glib-or-gtk-wrap\": look for GSettings schemas and
 gtk+-v.0 libraries and create wrappers with suitably set environment variables
 if found."
-  (let* ((out (assoc-ref outputs "out"))
-         (bindir (string-append out "/bin"))
-         (bin-list (find-files bindir ".*"))
-         (schemas (schemas-directories (acons "out" out inputs)))
+  (define handle-output
+    (match-lambda
+     ((output . directory)
+      (let* ((bindir       (string-append directory "/bin"))
+             (bin-list     (find-files bindir ".*"))
+             (schemas      (schemas-directories
+                            (alist-cons output directory inputs)))
+             (gtk-mod-dirs (gtk-module-directories
+                            (alist-cons output directory inputs)))
+             (schemas-env-var
+              (if (not (null? schemas))
+                  `("XDG_DATA_DIRS" ":" prefix ,schemas)
+                  #f))
+             (gtk-mod-env-var
+              (if (not (null? gtk-mod-dirs))
+                  `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
+                  #f)))
+        (cond
+         ((and schemas-env-var gtk-mod-env-var)
+          (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
+                    bin-list))
          (schemas-env-var
-          (if (not (null? schemas))
-              `("XDG_DATA_DIRS" ":" prefix ,schemas)
-              #f))
-         (gtk-mod-dirs (gtk-module-directories (acons "out" out inputs)))
+          (for-each (cut wrap-program <> schemas-env-var)
+                    bin-list))
          (gtk-mod-env-var
-          (if (not (null? gtk-mod-dirs))
-              `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
-              #f)))
-    (cond
-     ((and schemas-env-var gtk-mod-env-var)
-      (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
-                bin-list))
-     (schemas-env-var
-      (for-each (cut wrap-program <> schemas-env-var)
-                bin-list))
-     (gtk-mod-env-var
-      (for-each (cut wrap-program <> gtk-mod-env-var)
-                bin-list)))
-    #t))
+          (for-each (cut wrap-program <> gtk-mod-env-var)
+                    bin-list)))))))
 
-(define* (compile-glib-schemas #:key inputs outputs #:allow-other-keys)
+  (for-each handle-output outputs)
+  #t)
+
+(define* (compile-glib-schemas #:key outputs #:allow-other-keys)
   "Implement phase \"glib-or-gtk-compile-schemas\": compile \"glib\" schemas
 if needed."
-  (let* ((out (assoc-ref outputs "out"))
-         (schemasdir (string-append out "/share/glib-2.0/schemas")))
-    (if (and (directory-exists? schemasdir)
-             (not (file-exists?
-                   (string-append schemasdir "/gschemas.compiled"))))
-        (system* "glib-compile-schemas" schemasdir)
-        #t)))
+  (every (match-lambda
+          ((output . directory)
+           (let ((schemasdir (string-append directory
+                                            "/share/glib-2.0/schemas")))
+             (if (and (directory-exists? schemasdir)
+                      (not (file-exists?
+                            (string-append schemasdir "/gschemas.compiled"))))
+                 (zero? (system* "glib-compile-schemas" schemasdir))
+                 #t))))
+         outputs))
 
 (define %standard-phases
   (alist-cons-after
