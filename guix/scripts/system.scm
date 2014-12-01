@@ -151,18 +151,22 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
             ;; Copy items to the new store.
             (copy-closure to-copy target #:log-port log-port)))))
 
-  (mlet* %store-monad ((os-dir -> (derivation->output-path os-drv))
-                       (%         (maybe-copy os-dir)))
+  (let ((os-dir   (derivation->output-path os-drv))
+        (format   (lift %store-monad format))
+        (populate (lift2 %store-monad populate-root-file-system)))
 
-    ;; Create a bunch of additional files.
-    (format log-port "populating '~a'...~%" target)
-    (populate-root-file-system os-dir target)
+    (mbegin %store-monad
+      (maybe-copy os-dir)
 
-    (when grub?
-      (unless (false-if-exception (install-grub grub.cfg device target))
-        (leave (_ "failed to install GRUB on device '~a'~%") device)))
+      ;; Create a bunch of additional files.
+      (format log-port "populating '~a'...~%" target)
+      (populate os-dir target)
 
-    (return #t)))
+      (begin
+        (when grub?
+          (unless (false-if-exception (install-grub grub.cfg device target))
+            (leave (_ "failed to install GRUB on device '~a'~%") device)))
+        (return #t)))))
 
 
 ;;;
