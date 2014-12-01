@@ -228,3 +228,27 @@ Module::Build project, but has been externalized here for general use.")
     (home-page (string-append "http://search.cpan.org/~kwilliams/"
                               "Probe-Perl-" version))
     (license (package-license perl))))
+
+(define-public perl-ipc-run3
+  (package
+    (name "perl-ipc-run3")
+    (version "0.048")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "IPC-Run3-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r9m8q78bg7yycpixd7738jm40yz71p2q7inm766kzsw3g6c709x"))))
+    (build-system perl-build-system)
+    (synopsis "Run a subprocess with input/ouput redirection")
+    (description
+     "The IPC::Run3 module allows you to run a subprocess and redirect stdin,
+stdout, and/or stderr to files and perl data structures.  It aims to satisfy
+99% of the need for using system, qx, and open3 with a simple, extremely
+Perlish API and none of the bloat and rarely used features of IPC::Run.")
+    (home-page (string-append "http://search.cpan.org/~rjbs/"
+                              "IPC-Run3-" version))
+    ;; "You may use this module under the terms of the BSD, Artistic, or GPL
+    ;; licenses, any version."
+    (license (list bsd-3 gpl3+))))
