@@ -20,6 +20,7 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -393,6 +394,64 @@ and 'man/'.  This phase moves directories to the right place if needed."
      (for-each validate-output directories)))
   #t)
 
+(define* (compress-documentation #:key outputs
+                                 (compress-documentation? #t)
+                                 (documentation-compressor "gzip")
+                                 (documentation-compressor-flags
+                                  '("--best" "--no-name"))
+                                 (compressed-documentation-extension ".gz")
+                                 #:allow-other-keys)
+  "When COMPRESS-DOCUMENTATION? is true, compress man pages and Info files
+found in OUTPUTS using DOCUMENTATION-COMPRESSOR, called with
+DOCUMENTATION-COMPRESSOR-FLAGS."
+  (define (retarget-symlink link)
+    (let ((target (readlink link)))
+      (delete-file link)
+      (symlink (string-append target compressed-documentation-extension)
+               link)))
+
+  (define (has-links? file)
+    ;; Return #t if FILE has hard links.
+    (> (stat:nlink (lstat file)) 1))
+
+  (define (maybe-compress-directory directory regexp)
+    (or (not (directory-exists? directory))
+        (match (find-files directory regexp)
+          (()                                     ;nothing to compress
+           #t)
+          ((files ...)                            ;one or more files
+           (format #t
+                   "compressing documentation in '~a' with ~s and flags ~s~%"
+                   directory documentation-compressor
+                   documentation-compressor-flags)
+           (call-with-values
+               (lambda ()
+                 (partition symbolic-link? files))
+             (lambda (symlinks regular-files)
+               ;; Compress the non-symlink files, and adjust symlinks to refer
+               ;; to the compressed files.  Leave files that have hard links
+               ;; unchanged ('gzip' would refuse to compress them anyway.)
+               (and (zero? (apply system* documentation-compressor
+                                  (append documentation-compressor-flags
+                                          (remove has-links? regular-files))))
+                    (every retarget-symlink
+                           (filter (cut string-match regexp <>)
+                                   symlinks)))))))))
+
+  (define (maybe-compress output)
+    (and (maybe-compress-directory (string-append output "/share/man")
+                                   "\\.[0-9]+$")
+         (maybe-compress-directory (string-append output "/share/info")
+                                   "\\.info(-[0-9]+)?$")))
+
+  (if compress-documentation?
+      (match outputs
+        (((names . directories) ...)
+         (every maybe-compress directories)))
+      (begin
+        (format #t "not compressing documentation~%")
+        #t)))
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -402,7 +461,8 @@ and 'man/'.  This phase moves directories to the right place if needed."
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
             patch-shebangs strip
-            validate-documentation-location)))
+            validate-documentation-location
+            compress-documentation)))
 
 
 (define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)
