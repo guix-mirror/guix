@@ -36,14 +36,14 @@
 
 (define (directory-included? directory directories-list)
   "Is DIRECTORY included in DIRECTORIES-LIST?"
-  (fold (lambda (s p) (or (string-ci=? s directory) p)) 
+  (fold (lambda (s p) (or (string-ci=? s directory) p))
         #f directories-list))
 
 (define (gtk-module-directories inputs)
   "Check for the existence of \"libdir/gtk-v.0\" in INPUTS.  Return a list
 with all found directories."
-  (let* ((version 
-          (if (string-match "gtk\\+-3" 
+  (let* ((version
+          (if (string-match "gtk\\+-3"
                             (or (assoc-ref inputs "gtk+")
                                 (assoc-ref inputs "source")
                                 "gtk+-3")) ; we default to version 3
@@ -54,7 +54,7 @@ with all found directories."
             (let* ((in (match input
                          ((_ . dir) dir)
                          (_ "")))
-                   (libdir 
+                   (libdir
                     (string-append in "/lib/gtk-" version)))
               (if (and (directory-exists? libdir)
                        (not (directory-included? libdir prev)))
@@ -85,18 +85,18 @@ if found."
          (bindir (string-append out "/bin"))
          (bin-list (find-files bindir ".*"))
          (schemas (schemas-directories (acons "out" out inputs)))
-         (schemas-env-var 
+         (schemas-env-var
           (if (not (null? schemas))
               `("XDG_DATA_DIRS" ":" prefix ,schemas)
               #f))
          (gtk-mod-dirs (gtk-module-directories (acons "out" out inputs)))
-         (gtk-mod-env-var 
+         (gtk-mod-env-var
           (if (not (null? gtk-mod-dirs))
               `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
               #f)))
     (cond
      ((and schemas-env-var gtk-mod-env-var)
-      (map (lambda (prog) 
+      (map (lambda (prog)
              (wrap-program prog schemas-env-var gtk-mod-env-var))
            bin-list))
      (schemas-env-var
@@ -110,16 +110,16 @@ if needed."
   (let* ((out (assoc-ref outputs "out"))
          (schemasdir (string-append out "/share/glib-2.0/schemas")))
     (if (and (directory-exists? schemasdir)
-             (not (file-exists? 
+             (not (file-exists?
                    (string-append schemasdir "/gschemas.compiled"))))
         (system* "glib-compile-schemas" schemasdir)
         #t)))
 
 (define %standard-phases
   (alist-cons-after
-   'install 'glib-or-gtk-wrap wrap-all-programs 
-   (alist-cons-after 
-    'install 'glib-or-gtk-compile-schemas compile-glib-schemas 
+   'install 'glib-or-gtk-wrap wrap-all-programs
+   (alist-cons-after
+    'install 'glib-or-gtk-compile-schemas compile-glib-schemas
     gnu:%standard-phases)))
 
 (define* (glib-or-gtk-build #:key inputs (phases %standard-phases)
