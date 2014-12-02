@@ -29,9 +29,31 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg))
 
-
-
 ;; packages outside the x.org system proper
+
+(define-public xclip
+  (package
+    (name "xclip")
+    (version "0.12")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "mirror://sourceforge/" name "/" name "-" version ".tar.gz"))
+        (sha256
+          (base32
+           "0ibcf46rldnv0r424qcnai1fa5iq3lm5q5rdd7snsi5sb78gmixp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f))   ; There is no test suite
+    (inputs `(("libxmu" ,libxmu)
+              ("libxt" ,libxt)))
+    (home-page "http://xclip.sourceforge.net/")
+    (synopsis "Command line interface to X11 clipboard")
+    (description "Xclip is a command line interface to the X11 clipboard.  It
+can also be used for copying files, as an alternative to sftp/scp, thus
+avoiding password prompts when X11 forwarding has already been setup.")
+    (license license:gpl2+)))
 
 (define-public xeyes
   (package
