@@ -39,7 +39,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public atk
   (package
