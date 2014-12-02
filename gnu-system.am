@@ -274,6 +274,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/xnee.scm				\
+  gnu/packages/xdisorg.scm			\
   gnu/packages/xorg.scm				\
   gnu/packages/yasm.scm				\
   gnu/packages/zile.scm				\
