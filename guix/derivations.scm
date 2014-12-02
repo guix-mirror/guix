@@ -37,6 +37,7 @@
             derivation-inputs
             derivation-sources
             derivation-system
+            derivation-builder
             derivation-builder-arguments
             derivation-builder-environment-vars
             derivation-file-name
