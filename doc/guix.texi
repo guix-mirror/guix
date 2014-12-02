@@ -3533,7 +3533,7 @@ kernel, initial RAM disk, and boot loader looks like this:
                       %base-file-systems))
   (users (list (user-account
                 (name "alice")
-                (uid 1000) (group 100)
+                (group "users")
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
   (packages (cons emacs %base-packages))
