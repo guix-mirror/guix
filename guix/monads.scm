@@ -41,7 +41,7 @@
             mbegin
             mwhen
             munless
-            lift1 lift2 lift3 lift4 lift5 lift6 lift7 lift
+            lift0 lift1 lift2 lift3 lift4 lift5 lift6 lift7 lift
             listm
             foldm
             mapm
@@ -222,6 +222,7 @@ CONDITION is true, return *unspecified* in the current monad."
          (with-monad monad
            (return (proc args ...))))))))
 
+(define-lift lift0 ())
 (define-lift lift1 (a))
 (define-lift lift2 (a b))
 (define-lift lift3 (a b c))
