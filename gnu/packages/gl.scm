@@ -31,7 +31,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages guile))
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages xdisorg))
 
 (define-public glu
   (package
