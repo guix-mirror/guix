@@ -33,7 +33,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages perl))

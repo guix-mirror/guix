@@ -38,6 +38,7 @@
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages which)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages zip)
   #:autoload   (gnu packages texinfo) (texinfo))
 
