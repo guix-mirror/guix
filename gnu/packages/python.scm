@@ -2196,6 +2196,113 @@ toolkits.")
                 ,@(alist-delete "python-numpydoc" 
                                 (package-inputs matplotlib)))))))
 
+;; Scipy 0.14.0 with Numpy 0.19.X fails several tests.  This is known and
+;; planned to be fixed in 0.14.1.  It is claimed that the failures can safely
+;; be ignored:
+;; http://mail.scipy.org/pipermail/scipy-dev/2014-September/020043.html
+;; https://github.com/scipy/scipy/issues/3853 
+;;
+;; The main test suite procedure prints the summary message:
+;;
+;; Ran 16412 tests in 245.033s
+;; FAILED (KNOWNFAIL=277, SKIP=921, errors=327, failures=42)
+;; 
+;; However, it still does return normally.
+(define-public python-scipy
+  (package
+    (name "python-scipy")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scipy"
+                           "/scipy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "053bmz4qmnk4dmxvspfak8r10rpmy6mzwfzgy33z338ppzka6hab"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)
+       ("atlas" ,atlas)))
+    (native-inputs
+     `(("gfortran" ,gfortran-4.8)
+       ("texlive" ,texlive)
+       ("perl" ,perl)))
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'set-environment-variables
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let* ((atlas-threaded
+                  (string-append (assoc-ref inputs "atlas") 
+                                 "/lib/libtatlas.so"))
+                 ;; On single core CPUs only the serial library is created.
+                 (atlas-lib
+                  (if (file-exists? atlas-threaded)
+                      atlas-threaded
+                      (string-append (assoc-ref inputs "atlas") 
+                                     "/lib/libsatlas.so"))))
+            (setenv "ATLAS" atlas-lib)))
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                  (doc (string-append data "/doc/" ,name "-" ,version))
+                  (html (string-append doc "/html"))
+                  (pyver ,(string-append "PYVER=")))
+             (with-directory-excursion "doc"
+               ;; Without setting this variable we get an encoding error.
+               (setenv "LANG" "en_US.UTF-8")
+               ;; Fix generation of images for mathematical expressions.
+               (substitute* (find-files "source" "conf\\.py")
+                 (("pngmath_use_preview = True")
+                  "pngmath_use_preview = False"))
+               (mkdir-p html)
+               (system* "make" "html" pyver)
+               (system* "make" "latex" "PAPER=a4" pyver)
+               (system* "make" "-C" "build/latex" "all-pdf" "PAPER=a4" pyver)
+               (copy-file "build/latex/scipy-ref.pdf"
+                          (string-append doc "/scipy-ref.pdf"))
+               (with-directory-excursion "build/html"
+                 (for-each (lambda (file)
+                             (let* ((dir (dirname file))
+                                    (tgt-dir (string-append html "/" dir)))
+                               (unless (equal? "." dir)
+                                 (mkdir-p tgt-dir))
+                               (copy-file file (string-append html "/" file))))
+                           (find-files "." ".*"))))))
+         ;; Tests can only be run after the library has been installed and not
+         ;; within the source directory.
+         (alist-cons-after
+          'install 'check
+          (lambda _ 
+            (with-directory-excursion "/tmp"
+              (zero? (system* "python" "-c" "import scipy; scipy.test()"))))
+          (alist-delete 
+           'check 
+           %standard-phases))))))
+    (home-page "http://www.scipy.org/")
+    (synopsis "The Scipy library provides efficient numerical routines")
+    (description "The SciPy library is one of the core packages that make up
+the SciPy stack.  It provides many user-friendly and efficient numerical
+routines such as routines for numerical integration and optimization.")
+    (license bsd-3)))
+
+(define-public python2-scipy
+  (let ((scipy (package-with-python2 python-scipy)))
+    (package (inherit scipy)
+      ;; Use packages customized for python-2.
+      (inputs `(("python2-matplotlib" ,python2-matplotlib)
+                ("python2-numpy" ,python2-numpy)
+                ,@(alist-delete "python-matplotlib" 
+                                (alist-delete "python-numpy" 
+                                              (package-inputs scipy))))))))
+
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
@@ -2341,3 +2448,4 @@ a general image processing tool.")
 
 (define-public python2-pillow
   (package-with-python2 python-pillow))
+
