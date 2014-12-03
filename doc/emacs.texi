@@ -66,7 +66,7 @@ To disable automatic loading of installed Emacs packages, set
 @code{guix-package-enable-at-startup} variable to @code{nil} before
 requiring @code{guix-init}.  This variable has the same meaning for
 Emacs packages installed with Guix, as @code{package-enable-at-startup}
-for the inbuilt Emacs package system (@pxref{Package Installation,,,
+for the built-in Emacs package system (@pxref{Package Installation,,,
 emacs, The GNU Emacs Manual}).
 
 You can activate Emacs packages installed in your profile whenever you
