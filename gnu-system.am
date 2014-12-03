@@ -251,6 +251,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
+  gnu/packages/tre.scm				\
   gnu/packages/unclutter.scm			\
   gnu/packages/unrtf.scm			\
   gnu/packages/upnp.scm				\
