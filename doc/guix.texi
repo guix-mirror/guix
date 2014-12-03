@@ -4526,7 +4526,7 @@ configuration file.
 Furthermore, @code{(gnu services ssh)} provides the following service.
 
 @deffn {Monadic Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
-       [#:interfaces '()] [#:port-number 22] @
+       [#:daemonic? #t] [#:interfaces '()] [#:port-number 22] @
        [#:allow-empty-passwords? #f] [#:root-login? #f] @
        [#:syslog-output? #t] [#:x11-forwarding? #t] @
        [#:tcp/ip-forwarding? #t] [#:password-authentication? #t] @
@@ -4534,6 +4534,12 @@ Furthermore, @code{(gnu services ssh)} provides the following service.
 Run the @command{lshd} program from @var{lsh} to listen on port @var{port-number}.
 @var{host-key} must designate a file containing the host key, and readable
 only by root.
+
+When @var{daemonic?} is true, @command{lshd} will detach from the
+controlling terminal and log its output to syslogd, unless one sets
+@var{syslog-output?} to false.  Obviously, it also makes lsh-service
+depend on existence of syslogd service.  When @var{pid-file?} is true,
+@command{lshd} writes its PID to the file called @var{pid-file}.
 
 When @var{initialize?} is true, automatically create the seed and host key
 upon service activation if they do not exist yet.  This may take long and

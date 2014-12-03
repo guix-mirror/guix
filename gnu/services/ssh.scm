@@ -73,12 +73,15 @@
 
 (define* (lsh-service #:key
                       (lsh lsh)
+                      (daemonic? #t)
                       (host-key "/etc/lsh/host-key")
                       (interfaces '())
                       (port-number 22)
                       (allow-empty-passwords? #f)
                       (root-login? #f)
                       (syslog-output? #t)
+                      (pid-file? #f)
+                      (pid-file "/var/run/lshd.pid")
                       (x11-forwarding? #t)
                       (tcp/ip-forwarding? #t)
                       (password-authentication? #t)
@@ -87,6 +90,12 @@
   "Run the @command{lshd} program from @var{lsh} to listen on port @var{port-number}.
 @var{host-key} must designate a file containing the host key, and readable
 only by root.
+
+When @var{daemonic?} is true, @command{lshd} will detach from the
+controlling terminal and log its output to syslogd, unless one sets
+@var{syslog-output?} to false.  Obviously, it also makes lsh-service
+depend on existence of syslogd service.  When @var{pid-file?} is true,
+@command{lshd} writes its PID to the file called @var{pid-file}.
 
 When @var{initialize?} is true, automatically create the seed and host key
 upon service activation if they do not exist yet.  This may take long and
@@ -107,30 +116,47 @@ root.
 
 The other options should be self-descriptive."
   (define lsh-command
-    (cons* #~(string-append #$lsh "/sbin/lshd")
-           #~(string-append "--host-key=" #$host-key)
-           #~(string-append "--password-helper=" #$lsh "/sbin/lsh-pam-checkpw")
-           #~(string-append "--subsystems=sftp=" #$lsh "/sbin/sftp-server")
-           "-p" (number->string port-number)
-           (if password-authentication? "--password" "--no-password")
-           (if public-key-authentication?
-               "--publickey" "--no-publickey")
-           (if root-login?
-               "--root-login" "--no-root-login")
-           (if x11-forwarding?
-               "--x11-forward" "--no-x11-forward")
-           (if tcp/ip-forwarding?
-               "--tcpip-forward" "--no-tcpip-forward")
-           (if (null? interfaces)
-               '()
-               (list (string-append "--interfaces="
-                                    (string-join interfaces ","))))))
+    (append
+     (cons #~(string-append #$lsh "/sbin/lshd")
+           (if daemonic?
+               (let ((syslog (if syslog-output? '()
+                                 (list "--no-syslog"))))
+                 (cons "--daemonic"
+                       (if pid-file?
+                           (cons #~(string-append "--pid-file=" #$pid-file)
+                                 syslog)
+                           (cons "--no-pid-file" syslog))))
+               (if pid-file?
+                   (list #~(string-append "--pid-file=" #$pid-file))
+                   '())))
+     (cons* #~(string-append "--host-key=" #$host-key)
+            #~(string-append "--password-helper=" #$lsh "/sbin/lsh-pam-checkpw")
+            #~(string-append "--subsystems=sftp=" #$lsh "/sbin/sftp-server")
+            "-p" (number->string port-number)
+            (if password-authentication? "--password" "--no-password")
+            (if public-key-authentication?
+                "--publickey" "--no-publickey")
+            (if root-login?
+                "--root-login" "--no-root-login")
+            (if x11-forwarding?
+                "--x11-forward" "--no-x11-forward")
+            (if tcp/ip-forwarding?
+                "--tcpip-forward" "--no-tcpip-forward")
+            (if (null? interfaces)
+                '()
+                (list (string-append "--interfaces="
+                                     (string-join interfaces ",")))))))
+
+  (define requires
+    (if (and daemonic? syslog-output?)
+        '(networking syslogd)
+        '(networking)))
 
   (with-monad %store-monad
     (return (service
              (documentation "GNU lsh SSH server")
              (provision '(ssh-daemon))
-             (requirement '(networking))
+             (requirement requires)
              (start #~(make-forkexec-constructor (list #$@lsh-command)))
              (stop  #~(make-kill-destructor))
              (pam-services
