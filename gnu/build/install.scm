@@ -36,14 +36,15 @@
 
 (define* (install-grub grub.cfg device mount-point)
   "Install GRUB with GRUB.CFG on DEVICE, which is assumed to be mounted on
-MOUNT-POINT."
+MOUNT-POINT.  Note that the caller must make sure that GRUB.CFG is registered
+as a GC root."
   (let* ((target (string-append mount-point "/boot/grub/grub.cfg"))
          (pivot  (string-append target ".new")))
     (mkdir-p (dirname target))
 
-    ;; Copy GRUB.CFG instead of just symlinking it since it's not a GC root.
-    ;; Do that atomically.
-    (copy-file grub.cfg pivot)
+    ;; Symlink GRUB.CFG, under the assumption that it has been registered as a
+    ;; GC root somewhere.  Do that atomically.
+    (symlink grub.cfg pivot)
     (rename-file pivot target)
 
     (unless (zero? (system* "grub-install" "--no-floppy"
