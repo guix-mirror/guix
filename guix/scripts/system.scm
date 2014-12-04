@@ -131,6 +131,14 @@ TARGET, and register them."
               (map (cut copy-item <> target #:log-port log-port)
                    to-copy))))
 
+(define (install-grub* grub.cfg device target)
+  "This is a variant of 'install-grub' with error handling, lifted in
+%STORE-MONAD"
+  (with-monad %store-monad
+    (unless (false-if-exception (install-grub grub.cfg device target))
+      (leave (_ "failed to install GRUB on device '~a'~%") device))
+    (return #t)))
+
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
@@ -162,11 +170,8 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
       (format log-port "populating '~a'...~%" target)
       (populate os-dir target)
 
-      (begin
-        (when grub?
-          (unless (false-if-exception (install-grub grub.cfg device target))
-            (leave (_ "failed to install GRUB on device '~a'~%") device)))
-        (return #t)))))
+      (mwhen grub?
+        (install-grub* grub.cfg device target)))))
 
 
 ;;;
@@ -338,14 +343,11 @@ boot directly to the kernel or to the bootloader."
 
           (case action
             ((reconfigure)
-             (mlet %store-monad ((% (switch-to-system os)))
-               (when grub?
-                 (unless (false-if-exception
-                          (install-grub (derivation->output-path grub.cfg)
-                                        device "/"))
-                   (leave (_ "failed to install GRUB on device '~a'~%")
-                          device)))
-               (return #t)))
+             (mbegin %store-monad
+               (switch-to-system os)
+               (mwhen grub?
+                 (install-grub* (derivation->output-path grub.cfg)
+                                device "/"))))
             ((init)
              (newline)
              (format #t (_ "initializing operating system under '~a'...~%")
