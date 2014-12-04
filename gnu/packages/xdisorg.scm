@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -215,3 +217,37 @@ notification protocol.  The reference implementation is mostly under an X Window
 System style license, and has no special dependencies.")
     ;; Most of the code is provided under x11 license.
     (license license:lgpl2.0+)))
+
+(define-public wmctrl
+  (package
+    (name "wmctrl")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://tomas.styblo.name/wmctrl/dist/wmctrl-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1afclc57b9017a73mfs9w7lbdvdipmf9q0xdk116f61gnvyix2np"))
+              (patches (list (search-patch "wmctrl-64-fix.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--mandir="
+                            (assoc-ref %outputs "out")
+                            "/share/man"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxmu" ,libxmu)
+       ("glib" ,glib)))
+    (home-page "http://tomas.styblo.name/wmctrl/")
+    (synopsis "Command-line tool to control X window managers")
+    (description
+     "Wmctrl allows to interact with an X window manager that is compatible
+with the EWMH/NetWM specification.  It can query the window manager for
+information, and request for certain window management actions (resize and
+move windows, switch between desktops, etc.)")
+    (license license:gpl2+)))
