@@ -205,11 +205,7 @@ numeric gid or #f."
                      ;; The default is 'string-locale<?', but we don't have
                      ;; it when run from the initrd's statically-linked
                      ;; Guile.
-                     string<?))
-
-  ;; Prevent ETC from being GC'd.
-  (rm-f "/var/guix/gcroots/etc-directory")
-  (symlink etc "/var/guix/gcroots/etc-directory"))
+                     string<?)))
 
 (define %setuid-directory
   ;; Place where setuid programs are stored.
