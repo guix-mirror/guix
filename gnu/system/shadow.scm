@@ -115,9 +115,13 @@
         (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
                    #$output)))
 
-  (mlet %store-monad ((bashrc (text-file "bashrc" "\
-# Allow non-login shells such as an xterm to get things right.
-test -f /etc/profile && source /etc/profile\n"))
+  (mlet %store-monad ((profile (text-file "bash_profile" "\
+# Honor per-interactive-shell startup file
+if [ -f ~/.bashrc ]; then . ~/.bashrc; fi\n"))
+                      (bashrc (text-file "bashrc" "\
+PS1='\\u@\\h \\w\\$ '
+alias ls='ls -p --color'
+alias ll='ls -l'\n"))
                       (guile-wm (gexp->derivation "guile-wm" copy-guile-wm
                                                   #:modules
                                                   '((guix build utils))))
@@ -127,7 +131,8 @@ XTerm*metaSendsEscape: true\n"))
                       (gdbinit   (text-file "gdbinit" "\
 # Tell GDB where to look for separate debugging files.
 set debug-file-directory ~/.guix-profile/lib/debug\n")))
-    (return `((".bashrc" ,bashrc)
+    (return `((".bash_profile" ,profile)
+              (".bashrc" ,bashrc)
               (".Xdefaults" ,xdefaults)
               (".guile-wm" ,guile-wm)
               (".gdbinit" ,gdbinit)))))

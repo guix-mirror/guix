@@ -386,11 +386,10 @@ This is the GNU system.  Welcome.\n")
        (nsswitch   (text-file "nsswitch.conf"
                               "hosts: files dns\n"))
 
-       ;; TODO: Generate bashrc from packages' search-paths.
-       (bashrc    (text-file* "bashrc"  "
-export PS1='\\u@\\h \\w\\$ '
-
-export LC_ALL=\"" locale "\"
+       ;; Startup file for POSIX-compliant login shells, which set system-wide
+       ;; environment variables.
+       (profile    (text-file* "profile"  "\
+export LANG=\"" locale "\"
 export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
@@ -399,11 +398,7 @@ export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
 
 export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
 export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
-export CPATH=$HOME/.guix-profile/include:" profile "/include
-export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
-alias ls='ls -p --color'
-alias ll='ls -l'
 "))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
@@ -416,7 +411,7 @@ alias ll='ls -l'
                   ("nsswitch.conf" ,#~#$nsswitch)
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
-                  ("profile" ,#~#$bashrc)
+                  ("profile" ,#~#$profile)
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
