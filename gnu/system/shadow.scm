@@ -122,6 +122,9 @@ if [ -f ~/.bashrc ]; then . ~/.bashrc; fi\n"))
 PS1='\\u@\\h \\w\\$ '
 alias ls='ls -p --color'
 alias ll='ls -l'\n"))
+                      (zlogin (text-file "zlogin" "\
+# Honor system-wide environment variables
+source /etc/profile\n"))
                       (guile-wm (gexp->derivation "guile-wm" copy-guile-wm
                                                   #:modules
                                                   '((guix build utils))))
@@ -133,6 +136,7 @@ XTerm*metaSendsEscape: true\n"))
 set debug-file-directory ~/.guix-profile/lib/debug\n")))
     (return `((".bash_profile" ,profile)
               (".bashrc" ,bashrc)
+              (".zlogin" ,zlogin)
               (".Xdefaults" ,xdefaults)
               (".guile-wm" ,guile-wm)
               (".gdbinit" ,gdbinit)))))
