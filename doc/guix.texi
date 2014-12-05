@@ -2802,7 +2802,8 @@ below:
 $ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
 @end example
 
-These options are appended to the ones passed on the command line.
+These options are parsed independently, and the result is appended to
+the parsed command-line options.
 @end defvr
 
 

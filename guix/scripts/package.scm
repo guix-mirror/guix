@@ -668,8 +668,12 @@ removed from MANIFEST."
 (define (guix-package . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold* (append args (environment-build-options))
-                %options
+    (append (parse-options-from args)
+            (parse-options-from (environment-build-options))))
+
+  (define (parse-options-from args)
+    ;; Actual parsing takes place here.
+    (args-fold* args %options
                 (lambda (opt name arg result arg-handler)
                   (leave (_ "~A: unrecognized option~%") name))
                 (lambda (arg result arg-handler)
