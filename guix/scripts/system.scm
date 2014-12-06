@@ -164,8 +164,8 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
             (copy-closure to-copy target #:log-port log-port)))))
 
   (let ((os-dir   (derivation->output-path os-drv))
-        (format   (lift %store-monad format))
-        (populate (lift2 %store-monad populate-root-file-system)))
+        (format   (lift format %store-monad))
+        (populate (lift2 populate-root-file-system %store-monad)))
 
     (mbegin %store-monad
       (maybe-copy os-dir)
