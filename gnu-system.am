@@ -279,6 +279,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/xdisorg.scm			\
   gnu/packages/xorg.scm				\
   gnu/packages/yasm.scm				\
+  gnu/packages/yubico.scm			\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
   gnu/packages/zsh.scm				\
