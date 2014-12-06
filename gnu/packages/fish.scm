@@ -35,14 +35,20 @@
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "096rhi911s3j618cvp8fj9pb4jniy3y6415jvjg8bhszsp1x7r5p"))))
+                "096rhi911s3j618cvp8fj9pb4jniy3y6415jvjg8bhszsp1x7r5p"))
+              (modules '((guix build utils)))
+              ;; Don't try to install /etc/fish/config.fish.
+              (snippet
+               '(substitute* "Makefile.in"
+                  ((".*INSTALL.*sysconfdir.*fish.*") "")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)))
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f ; no check target
+       #:configure-flags '("--sysconfdir=/etc")))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,
