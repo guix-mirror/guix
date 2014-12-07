@@ -36,9 +36,11 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages databases)
@@ -492,5 +494,38 @@ are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
 which can add many functionalities to the base client.")
     (home-page "http://www.claws-mail.org/")
     (license gpl3+))) ; most files are actually public domain or x11
+
+(define-public msmtp
+  (package
+    (name "msmtp")
+    (version "1.4.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://downloads.sourceforge.net/project/msmtp/msmtp/" version
+             "/msmtp-" version ".tar.bz2"))
+       (sha256 (base32
+                "122z38pv4q03w3mbnhrhg4w85a51258sfdg2ips0b6cgwz3wbw1b"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libidn" ,libidn)
+       ("gnutls" ,gnutls)
+       ("zlib" ,zlib)
+       ("gsasl" ,gsasl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://msmtp.sourceforge.net/")
+    (arguments
+     `(#:configure-flags (list "--with-libgsasl"
+                               "--with-libidn"
+                               "--with-ssl=gnutls")))
+    (synopsis
+     "Simple and easy to use SMTP client with decent sendmail compatibility")
+    (description
+     "msmtp is an SMTP client.  In the default mode, it transmits a mail to
+an SMTP server (for example at a free mail provider) which takes care of further
+delivery.")
+    (license gpl3+)))
 
 ;;; mail.scm ends here
