@@ -5,49 +5,68 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: guix 0.7-pre1\n"
+"Project-Id-Version: guix 0.8\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-07-25 00:55+0200\n"
-"PO-Revision-Date: 2014-07-14 11:29-0300\n"
+"POT-Creation-Date: 2014-11-09 22:32+0100\n"
+"PO-Revision-Date: 2014-12-07 16:05-0300\n"
 "Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: gnu/packages.scm:102
+#: gnu/packages.scm:120
 #, scheme-format
 msgid "cannot access `~a': ~a~%"
 msgstr "ne eblas atingi '~a': ~a~%"
 
-#: guix/scripts/build.scm:54 guix/scripts/package.scm:349
+#: gnu/packages.scm:350
+#, scheme-format
+msgid "looking for the latest release of GNU ~a..."
+msgstr "ni serĉas la lastan eldonon de GNU ~a..."
+
+#: gnu/packages.scm:354
+#, scheme-format
+msgid "~a: note: using ~a but ~a is available upstream~%"
+msgstr "~a: rimarko: ni uzas ~a sed ~a disponeblas unuanivele~%"
+
+#: gnu/packages.scm:376 guix/scripts/package.scm:305
 #, scheme-format
 msgid "ambiguous package specification `~a'~%"
 msgstr "plursenca pak-specifigo '~a'~%"
 
-#: guix/scripts/build.scm:55 guix/scripts/package.scm:351
+#: gnu/packages.scm:377 guix/scripts/package.scm:307
 #, scheme-format
 msgid "choosing ~a from ~a~%"
 msgstr "ni elektas ~a el ~a~%"
 
-#: guix/scripts/build.scm:61
+#: gnu/packages.scm:383
 #, scheme-format
 msgid "~A: package not found for version ~a~%"
 msgstr "~A: pako ne trovita por versio ~a~%"
 
-#: guix/scripts/build.scm:63
+#: gnu/packages.scm:385
 #, scheme-format
 msgid "~A: unknown package~%"
 msgstr "~A: nekonata pako~%"
 
-#: guix/scripts/build.scm:86
+#: guix/scripts/build.scm:65
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
 msgstr "fiasko dum kreo de radiko GC '~a': ~a~%"
 
-#: guix/scripts/build.scm:123
+#: guix/scripts/build.scm:102
+msgid ""
+"\n"
+"  -L, --load-path=DIR    prepend DIR to the package module search path"
+msgstr ""
+"\n"
+"  -L, --load-path=UJO    antaŭmedi UJOn al la modula serĉvojo de la pako"
+
+#: guix/scripts/build.scm:104
 msgid ""
 "\n"
 "  -K, --keep-failed      keep build tree of failed builds"
@@ -55,7 +74,7 @@ msgstr ""
 "\n"
 "  -K, --keep-failed      teni konstru-arbon el fiaskintaj konstruoj"
 
-#: guix/scripts/build.scm:125
+#: guix/scripts/build.scm:106
 msgid ""
 "\n"
 "  -n, --dry-run          do not build the derivations"
@@ -63,7 +82,7 @@ msgstr ""
 "\n"
 "  -n, --dry-run          ne konstrui derivaĵojn"
 
-#: guix/scripts/build.scm:127
+#: guix/scripts/build.scm:108
 msgid ""
 "\n"
 "      --fallback         fall back to building when the substituter fails"
@@ -71,7 +90,7 @@ msgstr ""
 "\n"
 "      --fallback         retropaŝi al konstruado kiam la anstataŭiganto fiaskas"
 
-#: guix/scripts/build.scm:129
+#: guix/scripts/build.scm:110
 msgid ""
 "\n"
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
@@ -79,7 +98,7 @@ msgstr ""
 "\n"
 "      --no-substitutes   konstrui anstataŭ provi jam-konstruitajn anstataŭigantojn"
 
-#: guix/scripts/build.scm:131
+#: guix/scripts/build.scm:112
 msgid ""
 "\n"
 "      --no-build-hook    do not attempt to offload builds via the build hook"
@@ -87,7 +106,7 @@ msgstr ""
 "\n"
 "      --no-build-hook    ne provi disŝarĝi konstruojn per la konstru-hoko"
 
-#: guix/scripts/build.scm:133
+#: guix/scripts/build.scm:114
 msgid ""
 "\n"
 "      --max-silent-time=SECONDS\n"
@@ -97,7 +116,7 @@ msgstr ""
 "      --max-silent-time=SEKUNDOJ\n"
 "                         marki la konstruon kiel fiaskintan post SEKUNDOJ da silento"
 
-#: guix/scripts/build.scm:136
+#: guix/scripts/build.scm:117
 msgid ""
 "\n"
 "      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
@@ -105,7 +124,7 @@ msgstr ""
 "\n"
 "      --timeout=SEKUNDOJ marki la konstruon kiel fiaskintan post SEKUNDOJ da aktivado"
 
-#: guix/scripts/build.scm:138
+#: guix/scripts/build.scm:119
 msgid ""
 "\n"
 "      --verbosity=LEVEL  use the given verbosity LEVEL"
@@ -113,7 +132,7 @@ msgstr ""
 "\n"
 "      --verbosity=NIVELO uzi la indikitan detaligan NIVELOn"
 
-#: guix/scripts/build.scm:140
+#: guix/scripts/build.scm:121
 msgid ""
 "\n"
 "  -c, --cores=N          allow the use of up to N CPU cores for the build"
@@ -121,12 +140,12 @@ msgstr ""
 "\n"
 "  -c, --cores=N          permesigi uzon de ĝis N CPU-nukleojn por la konstruo"
 
-#: guix/scripts/build.scm:206
+#: guix/scripts/build.scm:195
 #, scheme-format
 msgid "~a: not a number~%"
 msgstr "~a: ne estas numero~%"
 
-#: guix/scripts/build.scm:223
+#: guix/scripts/build.scm:213
 msgid ""
 "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
@@ -134,7 +153,7 @@ msgstr ""
 "Uzado: guix build [MODIFILO]... PAKO-AŬ-DERIVAĴO...\n"
 "Konstrui la indikitan PAKO-AŬ-DERIVAĴOn kaj montri iliajn eligajn vojojn.\n"
 
-#: guix/scripts/build.scm:225
+#: guix/scripts/build.scm:215
 msgid ""
 "\n"
 "  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
@@ -142,7 +161,7 @@ msgstr ""
 "\n"
 "  -e, --expression=ESPR  konstrui la pakon aŭ derivaĵon kiu rezultas de ESPR"
 
-#: guix/scripts/build.scm:227
+#: guix/scripts/build.scm:217
 msgid ""
 "\n"
 "  -S, --source           build the packages' source derivations"
@@ -150,7 +169,7 @@ msgstr ""
 "\n"
 "  -S, --source           konstrui la font-derivaĵojn de la pakoj"
 
-#: guix/scripts/build.scm:229
+#: guix/scripts/build.scm:219
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
@@ -158,7 +177,7 @@ msgstr ""
 "\n"
 "  -s, --system=SISTEMO   provi konstrui por SISTEMO--ekz., \"i686-linux\""
 
-#: guix/scripts/build.scm:231
+#: guix/scripts/build.scm:221
 msgid ""
 "\n"
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
@@ -166,7 +185,7 @@ msgstr ""
 "\n"
 "      --target=TRIOPO    cruc-konstrui por TRIOPO--ekz., \"armel-linux-gnu\""
 
-#: guix/scripts/build.scm:233
+#: guix/scripts/build.scm:223
 msgid ""
 "\n"
 "      --with-source=SOURCE\n"
@@ -176,7 +195,15 @@ msgstr ""
 "      --with-source=FONTO\n"
 "                         uzi FONTOn dum konstruo de la koresponda pako"
 
-#: guix/scripts/build.scm:236
+#: guix/scripts/build.scm:226
+msgid ""
+"\n"
+"      --no-grafts        do not graft packages"
+msgstr ""
+"\n"
+"      --no-grafts        ne kunmetu pakojn"
+
+#: guix/scripts/build.scm:228
 msgid ""
 "\n"
 "  -d, --derivations      return the derivation paths of the given packages"
@@ -184,7 +211,7 @@ msgstr ""
 "\n"
 "  -d, --derivations      liveri la derivaĵajn vojojn de la indikitaj pakoj"
 
-#: guix/scripts/build.scm:238
+#: guix/scripts/build.scm:230
 msgid ""
 "\n"
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
@@ -194,7 +221,7 @@ msgstr ""
 "  -r, --root=DOSIERO     igi DOSIEROn simbola ligo al la rezulto, kaj registri\n"
 "                         ĝin kiel radikon de rubaĵ-kolektanto"
 
-#: guix/scripts/build.scm:241
+#: guix/scripts/build.scm:233
 msgid ""
 "\n"
 "      --log-file         return the log file names for the given derivations"
@@ -202,10 +229,11 @@ msgstr ""
 "\n"
 "      --log-file         liveri la protokol-dosierajn nomojn por la indikitaj derivaĵoj"
 
-#: guix/scripts/build.scm:246 guix/scripts/download.scm:53
-#: guix/scripts/package.scm:525 guix/scripts/gc.scm:58
-#: guix/scripts/hash.scm:55 guix/scripts/pull.scm:82
-#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:362
+#: guix/scripts/build.scm:238 guix/scripts/download.scm:53
+#: guix/scripts/package.scm:451 guix/scripts/gc.scm:58
+#: guix/scripts/hash.scm:55 guix/scripts/pull.scm:81
+#: guix/scripts/substitute-binary.scm:560 guix/scripts/system.scm:371
+#: guix/scripts/lint.scm:262
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -213,10 +241,11 @@ msgstr ""
 "\n"
 "  -h, --help             montri ĉi tiun helpon kaj eliri"
 
-#: guix/scripts/build.scm:248 guix/scripts/download.scm:55
-#: guix/scripts/package.scm:527 guix/scripts/gc.scm:60
-#: guix/scripts/hash.scm:57 guix/scripts/pull.scm:84
-#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:364
+#: guix/scripts/build.scm:240 guix/scripts/download.scm:55
+#: guix/scripts/package.scm:453 guix/scripts/gc.scm:60
+#: guix/scripts/hash.scm:57 guix/scripts/pull.scm:83
+#: guix/scripts/substitute-binary.scm:562 guix/scripts/system.scm:373
+#: guix/scripts/lint.scm:266
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -224,19 +253,20 @@ msgstr ""
 "\n"
 "  -V, --version          montri informon pri versio kaj eliri"
 
-#: guix/scripts/build.scm:368
+#: guix/scripts/build.scm:366
 #, scheme-format
 msgid "sources do not match any package:~{ ~a~}~%"
 msgstr "fontoj ne kongruas al iu ajn pako:~{ ~a~}~%"
 
-#: guix/scripts/build.scm:397 guix/scripts/download.scm:96
-#: guix/scripts/package.scm:763 guix/scripts/gc.scm:122
-#: guix/scripts/pull.scm:115 guix/scripts/system.scm:414
+#: guix/scripts/build.scm:395 guix/scripts/download.scm:96
+#: guix/scripts/package.scm:673 guix/scripts/gc.scm:122
+#: guix/scripts/pull.scm:213 guix/scripts/system.scm:426
+#: guix/scripts/lint.scm:313
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: nerekonata modifilo~%"
 
-#: guix/scripts/build.scm:425
+#: guix/scripts/build.scm:423
 #, scheme-format
 msgid "no build log for '~a'~%"
 msgstr "neniu konstruita protokolo por '~a'~%"
@@ -280,73 +310,42 @@ msgstr "~a: analizo de URI fiaskis~%"
 msgid "~a: download failed~%"
 msgstr "~a: elŝuto fiaskis~%"
 
-#: guix/scripts/package.scm:88
+#: guix/scripts/package.scm:97
 #, scheme-format
 msgid "failed to build the empty profile~%"
 msgstr "fiasko dum konstruo de malplena profilo~%"
 
-#: guix/scripts/package.scm:97
+#: guix/scripts/package.scm:113
 #, scheme-format
 msgid "switching from generation ~a to ~a~%"
 msgstr "alterno el generacio ~a al ~a~%"
 
-#: guix/scripts/package.scm:108 guix/scripts/package.scm:873
-#: guix/scripts/package.scm:985
-#, scheme-format
-msgid "profile '~a' does not exist~%"
-msgstr "profilo '~a' ne ekzistas~%"
-
-#: guix/scripts/package.scm:112
+#: guix/scripts/package.scm:132
 #, scheme-format
 msgid "nothing to do: already at the empty profile~%"
 msgstr "nenio por fari: jam estas ĉe la malplena profilo~%"
 
-#: guix/scripts/package.scm:197
+#: guix/scripts/package.scm:144
 #, scheme-format
-msgid "The following package would be removed:~%~{~a~%~}~%"
-msgstr "La jena pako devos esti forigata:~%~{~a~%~}~%"
+msgid "deleting ~a~%"
+msgstr "ni forigas ~a~%"
 
-#: guix/scripts/package.scm:202
-#, scheme-format
-msgid "The following package will be removed:~%~{~a~%~}~%"
-msgstr "La jena pako estos forigata:~%~{~a~%~}~%"
-
-#: guix/scripts/package.scm:214
-#, scheme-format
-msgid "The following package would be installed:~%~{~a~%~}~%"
-msgstr "La jena pako estus instalata:~% ~{~a~%~}~%"
-
-#: guix/scripts/package.scm:219
-#, scheme-format
-msgid "The following package will be installed:~%~{~a~%~}~%"
-msgstr "La jena pako estos instalata:~% ~{~a~%~}~%"
-
-#: guix/scripts/package.scm:339
+#: guix/scripts/package.scm:295
 #, scheme-format
 msgid "package `~a' lacks output `~a'~%"
 msgstr "pako '~a' malhavas eligon '~a'~%"
 
-#: guix/scripts/package.scm:356
+#: guix/scripts/package.scm:312
 #, scheme-format
 msgid "~a: package not found~%"
 msgstr "~a: pako ne trovita~%"
 
-#: guix/scripts/package.scm:391
-#, scheme-format
-msgid "looking for the latest release of GNU ~a..."
-msgstr "ni serĉas la lastan eldonon de GNU ~a..."
-
-#: guix/scripts/package.scm:395
-#, scheme-format
-msgid "~a: note: using ~a but ~a is available upstream~%"
-msgstr "~a: rimarko: ni uzas ~a sed ~a disponeblas unuanivele~%"
-
-#: guix/scripts/package.scm:467
+#: guix/scripts/package.scm:390
 #, scheme-format
 msgid "The following environment variable definitions may be needed:~%"
 msgstr "La jenaj medi-variablaj difinoj povos esti necesaj:~%"
 
-#: guix/scripts/package.scm:483
+#: guix/scripts/package.scm:406
 msgid ""
 "Usage: guix package [OPTION]... PACKAGES...\n"
 "Install, remove, or upgrade PACKAGES in a single transaction.\n"
@@ -354,7 +353,7 @@ msgstr ""
 "Uzmaniero: guix package [MODIFILO]... PAKOJ...\n"
 "Instalas, forigas, aŭ ĝisdatigas PAKOJn en ununura ago.\n"
 
-#: guix/scripts/package.scm:485
+#: guix/scripts/package.scm:408
 msgid ""
 "\n"
 "  -i, --install=PACKAGE  install PACKAGE"
@@ -362,7 +361,7 @@ msgstr ""
 "\n"
 "  -i, --install=PAKO     instali PAKOn"
 
-#: guix/scripts/package.scm:487
+#: guix/scripts/package.scm:410
 msgid ""
 "\n"
 "  -e, --install-from-expression=EXP\n"
@@ -372,7 +371,7 @@ msgstr ""
 "  -e, --install-from-expression=ESP\n"
 "                         instali la pakon ESP rezultas al"
 
-#: guix/scripts/package.scm:490
+#: guix/scripts/package.scm:413
 msgid ""
 "\n"
 "  -r, --remove=PACKAGE   remove PACKAGE"
@@ -380,7 +379,7 @@ msgstr ""
 "\n"
 "  -r, --remove=PAKO      forigi PAKOn"
 
-#: guix/scripts/package.scm:492
+#: guix/scripts/package.scm:415
 msgid ""
 "\n"
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
@@ -388,7 +387,7 @@ msgstr ""
 "\n"
 "  -u, --upgrade[=REGESP] ĝisdatigi ĉiujn instalitajn pakojn kongruantajn al REGESP"
 
-#: guix/scripts/package.scm:494
+#: guix/scripts/package.scm:417
 msgid ""
 "\n"
 "      --roll-back        roll back to the previous generation"
@@ -396,7 +395,7 @@ msgstr ""
 "\n"
 "      --roll-back        retropaŝi al la antaŭa generacio"
 
-#: guix/scripts/package.scm:496
+#: guix/scripts/package.scm:419
 msgid ""
 "\n"
 "      --search-paths     display needed environment variable definitions"
@@ -404,7 +403,7 @@ msgstr ""
 "\n"
 "      --search-paths     montri necesajn medi-variablajn difinojn"
 
-#: guix/scripts/package.scm:498
+#: guix/scripts/package.scm:421
 msgid ""
 "\n"
 "  -l, --list-generations[=PATTERN]\n"
@@ -414,7 +413,7 @@ msgstr ""
 "  -I, --list-generations[=ŜABLONO]\n"
 "                         listigi generaciojn kongruantajn al ŜABLONO"
 
-#: guix/scripts/package.scm:501
+#: guix/scripts/package.scm:424
 msgid ""
 "\n"
 "  -d, --delete-generations[=PATTERN]\n"
@@ -424,7 +423,17 @@ msgstr ""
 "  -d, --delete-generations[=ŜABLONO]\n"
 "                         forigi generaciojn kongruantajn al ŜABLONO"
 
-#: guix/scripts/package.scm:504
+#: guix/scripts/package.scm:427
+msgid ""
+"\n"
+"  -S, --switch-generation=PATTERN\n"
+"                         switch to a generation matching PATTERN"
+msgstr ""
+"\n"
+"  -S, --switch-generations=ŜABLONO\n"
+"                         ŝalti al generacio kongruanta al ŜABLONO"
+
+#: guix/scripts/package.scm:430
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
@@ -432,7 +441,7 @@ msgstr ""
 "\n"
 "  -p, --profile=PROFILO  uzi PROFILOn anstataŭ la apriora profilo de la uzanto"
 
-#: guix/scripts/package.scm:507
+#: guix/scripts/package.scm:433
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the profile"
@@ -440,7 +449,7 @@ msgstr ""
 "\n"
 "      --bootstrap        uzi la praŝargilon Guile por konstrui la profilon"
 
-#: guix/scripts/package.scm:509 guix/scripts/pull.scm:75
+#: guix/scripts/package.scm:435 guix/scripts/pull.scm:74
 msgid ""
 "\n"
 "      --verbose          produce verbose output"
@@ -448,7 +457,7 @@ msgstr ""
 "\n"
 "      --verbose          produkti detalplenan eligon"
 
-#: guix/scripts/package.scm:512
+#: guix/scripts/package.scm:438
 msgid ""
 "\n"
 "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
@@ -456,7 +465,7 @@ msgstr ""
 "\n"
 "  -s, --search=REGESP    serĉi en resumo kaj priskribo uzante REGESP"
 
-#: guix/scripts/package.scm:514
+#: guix/scripts/package.scm:440
 msgid ""
 "\n"
 "  -I, --list-installed[=REGEXP]\n"
@@ -466,7 +475,7 @@ msgstr ""
 "  -I, --list-installed[=REGESP]\n"
 "                         listigi instalitajn pakojn kongruantajn al REGESP"
 
-#: guix/scripts/package.scm:517
+#: guix/scripts/package.scm:443
 msgid ""
 "\n"
 "  -A, --list-available[=REGEXP]\n"
@@ -476,71 +485,72 @@ msgstr ""
 "  -A, --list-available[=REGESP]\n"
 "                         listigi disponeblajn pakojn kongruantajn al REGESP"
 
-#: guix/scripts/package.scm:520
-#, fuzzy
+#: guix/scripts/package.scm:446
 msgid ""
 "\n"
 "  --show=PACKAGE         show details about PACKAGE"
 msgstr ""
 "\n"
-"  -i, --install=PAKO     instali PAKOn"
+"  -show=PAKO             montri detalojn pri PAKO"
 
-#: guix/scripts/package.scm:767
+#: guix/scripts/package.scm:677
 #, scheme-format
 msgid "~A: extraneous argument~%"
 msgstr "~A: fremda argumento~%"
 
-#: guix/scripts/package.scm:782
+#: guix/scripts/package.scm:687
 #, scheme-format
 msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
 msgstr "Provu \"info '(guix) Invoking guix package'\" por pli da informo.'%"
 
-#: guix/scripts/package.scm:804
+#: guix/scripts/package.scm:709
 #, scheme-format
 msgid "error: while creating directory `~a': ~a~%"
 msgstr "eraro: dum kreo de dosierujo '~a': ~a~%"
 
-#: guix/scripts/package.scm:808
+#: guix/scripts/package.scm:713
 #, scheme-format
 msgid "Please create the `~a' directory, with you as the owner.~%"
 msgstr "Bonvolu krei la dosierujon '~a', kun vi kiel posedanto.~%"
 
-#: guix/scripts/package.scm:815
+#: guix/scripts/package.scm:720
 #, scheme-format
 msgid "error: directory `~a' is not owned by you~%"
 msgstr "eraro: dosierujo '~a' ne estas posedata de vi~%"
 
-#: guix/scripts/package.scm:818
+#: guix/scripts/package.scm:723
 #, scheme-format
 msgid "Please change the owner of `~a' to user ~s.~%"
 msgstr "Bonvole ŝanĝu la posedanton de '~a' al la uzanto ~s.~%"
 
-#: guix/scripts/package.scm:843
+#: guix/scripts/package.scm:756
 #, scheme-format
-msgid "deleting ~a~%"
-msgstr "ni forigas ~a~%"
+msgid "cannot switch to generation '~a'~%"
+msgstr "ne eblas ŝalti al generacio '~a'~%"
 
-#: guix/scripts/package.scm:896 guix/scripts/package.scm:1001
+#: guix/scripts/package.scm:788 guix/scripts/package.scm:889
 #, scheme-format
 msgid "invalid syntax: ~a~%"
 msgstr "malvalida sintakso: ~a~%"
 
-#: guix/scripts/package.scm:925
+#: guix/scripts/package.scm:825
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "nenio por fari~%"
 
-#: guix/scripts/package.scm:948
+#: guix/scripts/package.scm:840
 #, scheme-format
 msgid "~a package in profile~%"
-msgstr "pako ~a en profilo~%"
+msgid_plural "~a packages in profile~%"
+msgstr[0] "pako ~a en profilo~%"
+msgstr[1] "pakoj ~a en profilo~%"
 
-#: guix/scripts/package.scm:963
+#: guix/scripts/package.scm:855
 #, scheme-format
 msgid "Generation ~a\t~a"
 msgstr "Generacio ~a\t~a"
 
-#: guix/scripts/package.scm:970
+#: guix/scripts/package.scm:862
 #, scheme-format
 msgid "~a\t(current)~%"
 msgstr "~a\t(nuna)~%"
@@ -643,7 +653,7 @@ msgstr ""
 msgid "unrecognized option: ~a~%"
 msgstr "nerekonata modifilo: ~a~%"
 
-#: guix/scripts/hash.scm:134 guix/ui.scm:233
+#: guix/scripts/hash.scm:134 guix/ui.scm:252
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -653,7 +663,7 @@ msgstr "~a~%"
 msgid "wrong number of arguments~%"
 msgstr "malĝusta nombro da argumentoj~%"
 
-#: guix/scripts/pull.scm:73
+#: guix/scripts/pull.scm:72
 msgid ""
 "Usage: guix pull [OPTION]...\n"
 "Download and deploy the latest version of Guix.\n"
@@ -661,7 +671,7 @@ msgstr ""
 "Uzmaniero: guix pull [MODIFILO]...\n"
 "Elŝuti kaj liveri la lastan version de Guix.\n"
 
-#: guix/scripts/pull.scm:77
+#: guix/scripts/pull.scm:76
 msgid ""
 "\n"
 "      --url=URL          download the Guix tarball from URL"
@@ -669,7 +679,7 @@ msgstr ""
 "\n"
 "      --url=URL          elŝuti la tar-dosiero de Guix el URL"
 
-#: guix/scripts/pull.scm:79
+#: guix/scripts/pull.scm:78
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the new Guix"
@@ -677,28 +687,41 @@ msgstr ""
 "\n"
 "      --bootstrap        uzi la 'bootstrap' Guile por konstrui novan Guix"
 
-#: guix/scripts/pull.scm:117
+#: guix/scripts/pull.scm:132
+msgid "tarball did not produce a single source directory"
+msgstr "tarball ne produktis ununuran fontan dosierujon"
+
+#: guix/scripts/pull.scm:150
 #, scheme-format
-msgid "~A: unexpected argument~%"
-msgstr "~A: neatendita argumento~%"
+msgid "unpacking '~a'...~%"
+msgstr "malpakado de '~a'...~%"
 
-#: guix/scripts/pull.scm:126
-msgid "failed to download up-to-date source, exiting\n"
-msgstr "fiasko dum elŝuto de aktuala fonto, ni ĉesas\n"
+#: guix/scripts/pull.scm:159
+msgid "failed to unpack source code"
+msgstr "ni malsukcesis malpaki font-kodon"
 
-#: guix/scripts/pull.scm:145
+#: guix/scripts/pull.scm:200
 #, scheme-format
 msgid "updated ~a successfully deployed under `~a'~%"
 msgstr "ni ĝisdatigis ~a sukcese, liverita sur '~a'~%"
 
-#: guix/scripts/pull.scm:148
+#: guix/scripts/pull.scm:203
 #, scheme-format
 msgid "failed to update Guix, check the build log~%"
 msgstr "fiasko dum ĝisdatigo de Guix, kontrolu la konstru-protokolon~%"
 
-#: guix/scripts/pull.scm:150
+#: guix/scripts/pull.scm:205
 msgid "Guix already up to date\n"
 msgstr "Guix jam estas ĝisdata\n"
+
+#: guix/scripts/pull.scm:215
+#, scheme-format
+msgid "~A: unexpected argument~%"
+msgstr "~A: neatendita argumento~%"
+
+#: guix/scripts/pull.scm:224
+msgid "failed to download up-to-date source, exiting\n"
+msgstr "fiasko dum elŝuto de aktuala fonto, ni ĉesas\n"
 
 #: guix/scripts/substitute-binary.scm:80
 #, scheme-format
@@ -775,12 +798,12 @@ msgstr "Ni elŝutas, bonvolu atendi...~%"
 msgid "(Please consider upgrading Guile to get proper progress report.)~%"
 msgstr "(Bonvolu konsideri pri ĝisdatigo de Guile por havigi ĝustan progres-raporton.)~%"
 
-#: guix/scripts/substitute-binary.scm:545
+#: guix/scripts/substitute-binary.scm:541
 #, scheme-format
 msgid "host name lookup error: ~a~%"
 msgstr "eraro en serĉado de gastigant-nomo: ~a~%"
 
-#: guix/scripts/substitute-binary.scm:554
+#: guix/scripts/substitute-binary.scm:550
 msgid ""
 "Usage: guix substitute-binary [OPTION]...\n"
 "Internal tool to substitute a pre-built binary to a local build.\n"
@@ -788,7 +811,7 @@ msgstr ""
 "Uzmaniero: guix substitute-binary [MODIFILO]...\n"
 "Interna ilo por anstataŭigi antaŭ-konstruitan duumaĵon al loka kompilaĵo.\n"
 
-#: guix/scripts/substitute-binary.scm:556
+#: guix/scripts/substitute-binary.scm:552
 msgid ""
 "\n"
 "      --query            report on the availability of substitutes for the\n"
@@ -798,7 +821,7 @@ msgstr ""
 "      --query            raporti pri la disponebleco de anstataŭigoj por la\n"
 "                         konservaj dosier-nomoj indikitaj per la ĉefenigujo"
 
-#: guix/scripts/substitute-binary.scm:559
+#: guix/scripts/substitute-binary.scm:555
 msgid ""
 "\n"
 "      --substitute STORE-FILE DESTINATION\n"
@@ -810,16 +833,21 @@ msgstr ""
 "                         elŝuti KONSERV-DOSIEROn kaj konservi ĝin kiel Nar en la\n"
 "                         dosiero CELO"
 
-#: guix/scripts/substitute-binary.scm:604
+#: guix/scripts/substitute-binary.scm:600
 msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
 msgstr "ACL por importo de arĥivoj ŝajnas esti ne-ekigita, anstataŭoj eble ne disponeblos\n"
 
-#: guix/scripts/substitute-binary.scm:625
+#: guix/scripts/substitute-binary.scm:634
+#, scheme-format
+msgid "these substitute URLs will not be used:~{ ~a~}~%"
+msgstr "tiuj ĉi anstataŭigaj URL-oj ne estos uzataj:~{ ~a~}~%"
+
+#: guix/scripts/substitute-binary.scm:660
 #, scheme-format
 msgid "failed to look up host '~a' (~a), substituter disabled~%"
 msgstr "ni malsukcesis serĉi gastiganton '~a' (~a), anstataŭiganto estas malebligata~%"
 
-#: guix/scripts/substitute-binary.scm:732
+#: guix/scripts/substitute-binary.scm:767
 #, scheme-format
 msgid "~a: unrecognized options~%"
 msgstr "~a: nerekonata modifiloj~%"
@@ -863,7 +891,7 @@ msgstr "malĝustaj argumentoj"
 msgid "failed to open operating system file '~a': ~a~%"
 msgstr "fiasko dum malfermo de la operaci-sistema dosiero '~a': ~a~%"
 
-#: guix/scripts/system.scm:78 guix/ui.scm:238
+#: guix/scripts/system.scm:78 guix/ui.scm:258
 #, scheme-format
 msgid "~a: ~a~%"
 msgstr "~a: ~a~%"
@@ -883,7 +911,7 @@ msgstr "fiasko dum registro de '~a' sub '~a'~%"
 msgid "initializing the current root file system~%"
 msgstr "ekigado de la nuna radika dosiersistemo~%"
 
-#: guix/scripts/system.scm:162 guix/scripts/system.scm:318
+#: guix/scripts/system.scm:162 guix/scripts/system.scm:325
 #, scheme-format
 msgid "failed to install GRUB on device '~a'~%"
 msgstr "fiasko dum instalo de GRUB en la aparato '~a'~%"
@@ -893,17 +921,17 @@ msgstr "fiasko dum instalo de GRUB en la aparato '~a'~%"
 msgid "activating system...~%"
 msgstr "ni aktivas la sistemon...~%"
 
-#: guix/scripts/system.scm:236
+#: guix/scripts/system.scm:239
 #, scheme-format
 msgid "unrecognized boot parameters for '~a'~%"
 msgstr "nerekonataj ekŝargaj parametroj por '~a'~%"
 
-#: guix/scripts/system.scm:323
+#: guix/scripts/system.scm:330
 #, scheme-format
 msgid "initializing operating system under '~a'...~%"
 msgstr "ni ekigas la operaci-sistemon sub '~a'...~%"
 
-#: guix/scripts/system.scm:339
+#: guix/scripts/system.scm:346
 msgid ""
 "Usage: guix system [OPTION] ACTION FILE\n"
 "Build the operating system declared in FILE according to ACTION.\n"
@@ -911,35 +939,35 @@ msgstr ""
 "Uzmaniero: guix system [MODIFILO] AGO DOSIERO\n"
 "Konstrui la operaci-sistemon deklarita en DOSIERO akorde al AGO.\n"
 
-#: guix/scripts/system.scm:342
+#: guix/scripts/system.scm:349
 msgid "The valid values for ACTION are:\n"
 msgstr "La validaj valoroj por AGO estas:\n"
 
-#: guix/scripts/system.scm:343
+#: guix/scripts/system.scm:350
 msgid "  - 'reconfigure', switch to a new operating system configuration\n"
 msgstr "  - 'reconfigure', alterni al nova operaci-sistema agordaro\n"
 
-#: guix/scripts/system.scm:345
+#: guix/scripts/system.scm:352
 msgid "  - 'build', build the operating system without installing anything\n"
 msgstr "  - 'build', konstrui la operaci-sistemon sen instali ion ajn\n"
 
-#: guix/scripts/system.scm:347
+#: guix/scripts/system.scm:354
 msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
 msgstr "  - 'vm', konstrui virtual-maŝinan bildon kiu kundividas la gastigantan memoron\n"
 
-#: guix/scripts/system.scm:349
+#: guix/scripts/system.scm:356
 msgid "  - 'vm-image', build a freestanding virtual machine image\n"
 msgstr "  - 'vm-image', konstrui memstaran virtual-maŝinan bildon\n"
 
-#: guix/scripts/system.scm:351
+#: guix/scripts/system.scm:358
 msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
 msgstr "  - 'disk-image', konstrui disk-bildon, taŭga por USB-memoro\n"
 
-#: guix/scripts/system.scm:353
+#: guix/scripts/system.scm:360
 msgid "  - 'init', initialize a root file system to run GNU.\n"
 msgstr "  - 'init', ekigi radikan dosiersistemon por lanĉi GNU-on.\n"
 
-#: guix/scripts/system.scm:357
+#: guix/scripts/system.scm:364
 msgid ""
 "\n"
 "      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
@@ -947,7 +975,7 @@ msgstr ""
 "\n"
 "      --image-size=GRANDO por 'vm-image', produkti bildon je GRANDO"
 
-#: guix/scripts/system.scm:359
+#: guix/scripts/system.scm:366
 msgid ""
 "\n"
 "      --no-grub          for 'init', do not install GRUB"
@@ -955,20 +983,85 @@ msgstr ""
 "\n"
 "      --no-grub          por 'init', ne instali GRUB"
 
-#: guix/scripts/system.scm:422
+#: guix/scripts/system.scm:368
+msgid ""
+"\n"
+"      --full-boot        for 'vm', make a full boot sequence"
+msgstr ""
+"\n"
+"      --full-boot        por 'vm', fari kompletan ekŝargan sekvon"
+
+#: guix/scripts/system.scm:434
 #, scheme-format
 msgid "~a: unknown action~%"
 msgstr "~a: nekonata pako~%"
 
-#: guix/scripts/system.scm:439
+#: guix/scripts/system.scm:451
 #, scheme-format
 msgid "wrong number of arguments for action '~a'~%"
 msgstr "malĝusta nombro da argumentoj por la ago '~a'~%"
 
-#: guix/scripts/system.scm:459
+#: guix/scripts/system.scm:471
 #, scheme-format
 msgid "no configuration file specified~%"
 msgstr "neniu agorda dosiero estis indikata~%"
+
+#: guix/scripts/lint.scm:51
+#, scheme-format
+msgid "~a: ~a: ~a~%"
+msgstr "~a: ~a: ~a~%"
+
+#: guix/scripts/lint.scm:72
+#, scheme-format
+msgid "Available checkers:~%"
+msgstr "Disponeblaj kontroliloj:~%"
+
+#: guix/scripts/lint.scm:226
+msgid "Validate package descriptions"
+msgstr "Validigi pak-priskribojn"
+
+#: guix/scripts/lint.scm:230
+msgid "Identify inputs that should be native inputs"
+msgstr "Identigi enigojn kiuj devus esti originalaj enigoj"
+
+#: guix/scripts/lint.scm:234
+msgid "Validate filenames of patches"
+msgstr "Validigi dosiernomojn de flikaĵoj"
+
+#: guix/scripts/lint.scm:238
+msgid "Validate package synopsis"
+msgstr "Validigi pak-resumojn"
+
+#: guix/scripts/lint.scm:257
+msgid ""
+"Usage: guix lint [OPTION]... [PACKAGE]...\n"
+"Run a set of checkers on the specified package; if none is specified, run the checkers on all packages.\n"
+msgstr ""
+"Uzmaniero: guix lint [MODIFILO]... [PAKO]...\n"
+"Lanĉi aron da kontroliloj por la indikita pako; se neniu estas indikita, lanĉi la konstrolilojn por ĉiuj pakoj.\n"
+
+#: guix/scripts/lint.scm:259
+msgid ""
+"\n"
+"  -c, --checkers=CHECKER1,CHECKER2...\n"
+"                         only run the specificed checkers"
+msgstr ""
+"\n"
+"  -c, --checkers=KONTROL1,KONTROL2...\n"
+"                         nur lanĉi la indikitajn kontrolilojn"
+
+#: guix/scripts/lint.scm:264
+msgid ""
+"\n"
+"  -l, --list-checkers    display the list of available lint checkers"
+msgstr ""
+"\n"
+"  -l, --list-checkers    montri la liston de disponeblaj kontroliloj"
+
+#: guix/scripts/lint.scm:283
+#, scheme-format
+msgid "~a: invalid checker"
+msgstr "~a: malvalida kontrolilo"
 
 #: guix/gnu-maintenance.scm:373
 #, scheme-format
@@ -990,12 +1083,12 @@ msgstr "~a: ne eblis trovi fontan dosieron"
 msgid "~a: ~a: no `version' field in source; skipping~%"
 msgstr "~a: ~a: neniu kampo 'version' en la fonto; ni saltas~%"
 
-#: guix/ui.scm:131
+#: guix/ui.scm:135
 #, scheme-format
 msgid "failed to install locale: ~a~%"
 msgstr "fiasko dum instalo de lokaĵaro: ~a~%"
 
-#: guix/ui.scm:150
+#: guix/ui.scm:154
 msgid ""
 "Copyright (C) 2014 the Guix authors\n"
 "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
@@ -1007,7 +1100,7 @@ msgstr ""
 "Tio ĉi estas libera programaro: vi estas libera por modifi kaj redisdoni ĝin.\n"
 "Estas NENIU GARANTIO, plejamplekse permesate de leĝoj.\n"
 
-#: guix/ui.scm:158
+#: guix/ui.scm:162
 #, scheme-format
 msgid ""
 "\n"
@@ -1016,7 +1109,7 @@ msgstr ""
 "\n"
 "Raportu program-misojn al: ~a."
 
-#: guix/ui.scm:160
+#: guix/ui.scm:164
 #, scheme-format
 msgid ""
 "\n"
@@ -1025,7 +1118,7 @@ msgstr ""
 "\n"
 "hejm-paĝo de ~a: <~a>"
 
-#: guix/ui.scm:162
+#: guix/ui.scm:166
 msgid ""
 "\n"
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
@@ -1033,100 +1126,160 @@ msgstr ""
 "\n"
 "Ĝenerala helpo por uzi programaron de GNU: <http://www.gnu.org/gethelp/>"
 
-#: guix/ui.scm:169
+#: guix/ui.scm:173
 #, scheme-format
 msgid "~a: invalid number~%"
 msgstr "~a: malvalida numero~%"
 
-#: guix/ui.scm:186
+#: guix/ui.scm:190
 #, scheme-format
 msgid "invalid number: ~a~%"
 msgstr "malvalida numero: ~a~%"
 
-#: guix/ui.scm:201
+#: guix/ui.scm:213
 #, scheme-format
 msgid "unknown unit: ~a~%"
 msgstr "nekonata unuo: ~a~%"
 
-#: guix/ui.scm:212
+#: guix/ui.scm:224
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: pako '~a' havas malvalidan enigon: ~s~%"
 
-#: guix/ui.scm:219
+#: guix/ui.scm:231
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: konstrui sistemon '~a' ne subtenas crucajn konstruojn~%"
 
-#: guix/ui.scm:224
+#: guix/ui.scm:236
+#, scheme-format
+msgid "profile '~a' does not exist~%"
+msgstr "profilo '~a' ne ekzistas~%"
+
+#: guix/ui.scm:239
+#, scheme-format
+msgid "generation ~a of profile '~a' does not exist~%"
+msgstr "generacio ~a de la profilo '~a' ne ekzistas~%"
+
+#: guix/ui.scm:243
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "fiasko dum konekto al '~a': ~a~%"
 
-#: guix/ui.scm:229
+#: guix/ui.scm:248
 #, scheme-format
 msgid "build failed: ~a~%"
 msgstr "konstruo fiakis: ~a~%"
 
-#: guix/ui.scm:257
+#: guix/ui.scm:277
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "fiasko dum lego de esprimo ~s: ~s~%"
 
-#: guix/ui.scm:263
+#: guix/ui.scm:283
 #, scheme-format
 msgid "failed to evaluate expression `~a': ~s~%"
 msgstr "fiasko dum analizo de esprimo '~a': ~a~%"
 
-#: guix/ui.scm:272
+#: guix/ui.scm:292
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
 msgstr "la esprimo ~s ne rezultas pakon~%"
 
-#: guix/ui.scm:319
+#: guix/ui.scm:339
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
-msgstr "~:[La jena derivo povus esti konstruata:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[La jena derivo estus konstruata:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[La jenaj derivoj estus konstruataj:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:324
+#: guix/ui.scm:344
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
-msgstr "~:[La jena derivo povus esti elŝutata:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[La jena derivo estus elŝutata:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[La jenaj derivoj estus elŝutataj:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:330
+#: guix/ui.scm:350
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
-msgstr "~:[La jena derivo estos esti konstruata:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[La jena derivo estos konstruata:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[La jenaj derivoj estos konstruataj:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:335
+#: guix/ui.scm:355
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
-msgstr "~:[La jena derivo estos esti elŝutata:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[La jena derivo estos elŝutata:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[La jenaj derivoj estos elŝutataj:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:352
+#: guix/ui.scm:407
+#, scheme-format
+msgid "The following package would be removed:~%~{~a~%~}~%"
+msgid_plural "The following packages would be removed:~%~{~a~%~}~%"
+msgstr[0] "La jena pako estus forigata:~%~{~a~%~}~%"
+msgstr[1] "La jenaj pakoj estus forigataj:~%~{~a~%~}~%"
+
+#: guix/ui.scm:412
+#, scheme-format
+msgid "The following package will be removed:~%~{~a~%~}~%"
+msgid_plural "The following packages will be removed:~%~{~a~%~}~%"
+msgstr[0] "La jena pako estos forigata:~%~{~a~%~}~%"
+msgstr[1] "La jenaj pakoj estos forigataj:~%~{~a~%~}~%"
+
+#: guix/ui.scm:425
+#, scheme-format
+msgid "The following package would be upgraded:~%~{~a~%~}~%"
+msgid_plural "The following packages would be upgraded:~%~{~a~%~}~%"
+msgstr[0] "La jena pako estus ĝisdatigata:~%~{~a~%~}~%"
+msgstr[1] "La jenaj pakoj estus ĝisdatigataj:~%~{~a~%~}~%"
+
+#: guix/ui.scm:430
+#, scheme-format
+msgid "The following package will be upgraded:~%~{~a~%~}~%"
+msgid_plural "The following packages will be upgraded:~%~{~a~%~}~%"
+msgstr[0] "La jena pako estos ĝisdatigata:~%~{~a~%~}~%"
+msgstr[1] "La jenaj pakoj estos ĝisdatigataj:~%~{~a~%~}~%"
+
+#: guix/ui.scm:441
+#, scheme-format
+msgid "The following package would be installed:~%~{~a~%~}~%"
+msgid_plural "The following packages would be installed:~%~{~a~%~}~%"
+msgstr[0] "La jena pako estus instalata:~% ~{~a~%~}~%"
+msgstr[1] "La jenaj pakoj estus instalataj:~% ~{~a~%~}~%"
+
+#: guix/ui.scm:446
+#, scheme-format
+msgid "The following package will be installed:~%~{~a~%~}~%"
+msgid_plural "The following packages will be installed:~%~{~a~%~}~%"
+msgstr[0] "La jena pako estos instalata:~% ~{~a~%~}~%"
+msgstr[1] "La jenaj pakoj estos instalataj:~% ~{~a~%~}~%"
+
+#: guix/ui.scm:463
 msgid "<unknown location>"
 msgstr "<nekonata loko>"
 
-#: guix/ui.scm:380
+#: guix/ui.scm:489
 #, scheme-format
 msgid "failed to create configuration directory `~a': ~a~%"
 msgstr "fiasko dum kreo de agorda dosierujo '~a': ~a~%"
 
-#: guix/ui.scm:475 guix/ui.scm:489
+#: guix/ui.scm:589 guix/ui.scm:603
 msgid "unknown"
 msgstr "nekonata"
 
-#: guix/ui.scm:598
+#: guix/ui.scm:712
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "malvalida argumento: ~a~%"
 
-#: guix/ui.scm:603
+#: guix/ui.scm:717
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Provu 'guix --help' por pli da informo.~%"
 
-#: guix/ui.scm:633
+#: guix/ui.scm:747
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -1134,21 +1287,21 @@ msgstr ""
 "Uzmaniero: guix KOMANDO ARGj...\n"
 "Lanĉas KOMANDOn kun ARGj.\n"
 
-#: guix/ui.scm:636
+#: guix/ui.scm:750
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "KOMANDO devas esti unu el la sub-komandoj sube listataj:\n"
 
-#: guix/ui.scm:656
+#: guix/ui.scm:770
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: komando ne trovita~%"
 
-#: guix/ui.scm:674
+#: guix/ui.scm:788
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: mankas komanda nomo~%"
 
-#: guix/ui.scm:682
+#: guix/ui.scm:796
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: nerekonata modifilo: '~a'~%"
@@ -1172,83 +1325,74 @@ msgstr "ni sekvas la redirektigon al '~a'...~%"
 msgid "download failed"
 msgstr "elŝuto fiaskis"
 
-#: guix/nar.scm:134
-msgid "unexpected executable file marker"
-msgstr "neatendita rul-dosiera markilo"
-
-#: guix/nar.scm:141
-msgid "unsupported nar file type"
-msgstr "nesubtenata dosier-tipo nar"
-
-#: guix/nar.scm:209
-msgid "unsupported file type"
-msgstr "nesubtenata dosier-tipo"
-
-#: guix/nar.scm:219
-msgid "invalid nar signature"
-msgstr "malvalida subskribo nar"
-
-#: guix/nar.scm:230
-msgid "invalid nar end-of-file marker"
-msgstr "malvalida dosierfina markilo nar"
-
-#: guix/nar.scm:244
-msgid "invalid symlink tokens"
-msgstr "malvalidaj simbol-ligaj ĵetonoj"
-
-#: guix/nar.scm:263
-msgid "unexpected directory entry termination"
-msgstr "neatendita fino de dosieruja enigo"
-
-#: guix/nar.scm:272
-msgid "unexpected directory inter-entry marker"
-msgstr "neatendita dosieruja inter-eniga markilo"
-
-#: guix/nar.scm:277
-msgid "unsupported nar entry type"
-msgstr "nesubtenata enig-tipo nar"
-
-#: guix/nar.scm:376
+#: guix/nar.scm:155
 msgid "signature is not a valid s-expression"
 msgstr "subskribo ne estas valida s-esprimo"
 
-#: guix/nar.scm:385
+#: guix/nar.scm:164
 msgid "invalid signature"
 msgstr "nevalida subskribo"
 
-#: guix/nar.scm:389
+#: guix/nar.scm:168
 msgid "invalid hash"
 msgstr "nevalida haketo"
 
-#: guix/nar.scm:397
+#: guix/nar.scm:176
 msgid "unauthorized public key"
 msgstr "nerajtigita publika ŝlosilo"
 
-#: guix/nar.scm:402
+#: guix/nar.scm:181
 msgid "corrupt signature data"
 msgstr "difektita subskriba datumaro"
 
-#: guix/nar.scm:422
+#: guix/nar.scm:201
 msgid "corrupt file set archive"
 msgstr "difektita arĥivo de dosier-grupo"
 
-#: guix/nar.scm:432
+#: guix/nar.scm:211
 #, scheme-format
 msgid "importing file or directory '~a'...~%"
 msgstr "ni importas dosieron aŭ dosierujon '~a'...~%"
 
-#: guix/nar.scm:441
+#: guix/nar.scm:220
 #, scheme-format
 msgid "found valid signature for '~a'~%"
 msgstr "ni trovis validan subskribon por '~a'~%"
 
-#: guix/nar.scm:448
+#: guix/nar.scm:227
 msgid "imported file lacks a signature"
 msgstr "importita dosiero malhavas subskribon"
 
-#: guix/nar.scm:487
+#: guix/nar.scm:266
 msgid "invalid inter-file archive mark"
 msgstr "malvalida inter-dosiera arĥiva marko"
+
+#~ msgid "unexpected executable file marker"
+#~ msgstr "neatendita rul-dosiera markilo"
+
+#~ msgid "unsupported nar file type"
+#~ msgstr "nesubtenata dosier-tipo nar"
+
+#~ msgid "unsupported file type"
+#~ msgstr "nesubtenata dosier-tipo"
+
+#~ msgid "invalid nar signature"
+#~ msgstr "malvalida subskribo nar"
+
+#~ msgid "invalid nar end-of-file marker"
+#~ msgstr "malvalida dosierfina markilo nar"
+
+#~ msgid "invalid symlink tokens"
+#~ msgstr "malvalidaj simbol-ligaj ĵetonoj"
+
+#~ msgid "unexpected directory entry termination"
+#~ msgstr "neatendita fino de dosieruja enigo"
+
+#~ msgid "unexpected directory inter-entry marker"
+#~ msgstr "neatendita dosieruja inter-eniga markilo"
+
+#~ msgid "unsupported nar entry type"
+#~ msgstr "nesubtenata enig-tipo nar"
 
 #~ msgid "Hello, GNU world: An example GNU package"
 #~ msgstr "Saluton, mondo GNU: ekzemplo de pako GNU"
