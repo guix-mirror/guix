@@ -693,7 +693,7 @@ extensive documentation, including API reference and a tutorial.")
      `(#:python ,python-2
        ,@(package-arguments python-pycairo)))
     ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
-    (license '(license:lgpl2.1 license:mpl1.1))))
+    (license (list license:lgpl2.1 license:mpl1.1))))
 
 (define-public python2-pygtk
   (package
