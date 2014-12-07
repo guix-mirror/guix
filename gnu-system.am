@@ -161,6 +161,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/links.scm			\
   gnu/packages/linux.scm			\
   gnu/packages/lisp.scm				\
+  gnu/packages/llvm.scm				\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
