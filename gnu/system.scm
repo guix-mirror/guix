@@ -38,6 +38,7 @@
   #:use-module (gnu packages nano)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages firmware)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
@@ -333,6 +334,7 @@ explicitly appear in OS."
          pciutils usbutils
          util-linux inetutils isc-dhcp wireless-tools
          net-tools                        ; XXX: remove when Inetutils suffices
+         man-db
 
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
          ;; already depends on it anyway.
