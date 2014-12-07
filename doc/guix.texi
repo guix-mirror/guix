@@ -4078,11 +4078,42 @@ An important part of preparing an @code{operating-system} declaration is
 listing @dfn{system services} and their configuration (@pxref{Using the
 Configuration System}).  System services are typically daemons launched
 when the system boots, or other actions needed at that time---e.g.,
-configuring network access.  They are managed by GNU@tie{}dmd
-(@pxref{Introduction,,, dmd, GNU dmd Manual}).
+configuring network access.
+
+Services are managed by GNU@tie{}dmd (@pxref{Introduction,,, dmd, GNU
+dmd Manual}).  On a running system, the @command{deco} command allows
+you to list the available services, show their status, start and stop
+them, or do other specific operations (@pxref{Jump Start,,, dmd, GNU dmd
+Manual}).  For example:
+
+@example
+# deco status dmd
+@end example
+
+The above command, run as @code{root}, lists the currently defined
+services.  The @command{deco doc} command shows a synopsis of the given
+service:
+
+@example
+# deco doc nscd
+Run libc's name service cache daemon (nscd).
+@end example
+
+The @command{start}, @command{stop}, and @command{restart} sub-commands
+have the effect you would expect.  For instance, the commands below stop
+the nscd service and restart the Xorg display server:
+
+@example
+# deco stop nscd
+Service nscd has been stopped.
+# deco restart xorg-server
+Service xorg-server has been stopped.
+Service xorg-server has been started.
+@end example
 
 The following sections document the available services, starting with
-the core services.
+the core services, that may be used in an @code{operating-system}
+declaration.
 
 @menu
 * Base Services::               Essential system services.
