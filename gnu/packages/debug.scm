@@ -20,8 +20,14 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages indent)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pretty-print))
 
 (define-public delta
   (package
@@ -71,3 +77,63 @@ program to exhibit a bug.")
     ;; See License.txt, which is a bsd-3 license, despite the project's
     ;; home-page pointing to a bsd-2 license.
     (license bsd-3)))
+
+(define-public c-reduce
+  (package
+    (name "c-reduce")
+    (version "2.2.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (list
+            (string-append "http://embed.cs.utah.edu/creduce/"
+                           "creduce-" version ".tar.gz")))
+      (sha256
+       (base32
+        "0wh0fkyg2l41d2wkndrgdiai9g2qiav7jik7cys21vmgzq01pyy2"))
+      (modules '((guix build utils)))
+      (snippet
+       '(substitute* "clang_delta/TransformationManager.cpp"
+          (("llvm/Config/config.h") "llvm/Config/llvm-config.h")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("astyle"          ,astyle)
+       ("delta"           ,delta)
+       ("llvm"            ,llvm)
+       ("clang"           ,clang)
+       ("flex"            ,flex)
+       ("indent"          ,indent)
+       ("perl"            ,perl)
+       ("benchmark-timer" ,perl-benchmark-timer)
+       ("exporter-lite"   ,perl-exporter-lite)
+       ("file-which"      ,perl-file-which)
+       ("getopt-tabular"  ,perl-getopt-tabular)
+       ("regex-common"    ,perl-regexp-common)
+       ("sys-cpu"         ,perl-sys-cpu)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'install 'set-load-paths
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   ;; Tell creduce where to find the perl modules it needs.
+                   (let* ((out (assoc-ref outputs "out"))
+                          (prog (string-append out "/bin/creduce")))
+                     (wrap-program
+                      prog
+                      `("PERL5LIB" ":" prefix
+                        ,(map (lambda (p)
+                                (string-append (assoc-ref inputs p)
+                                               "/lib/perl5/site_perl/"
+                                               ,(package-version perl)))
+                              '("benchmark-timer" "exporter-lite"
+                                "file-which"      "getopt-tabular"
+                                "regex-common"    "sys-cpu"))))))
+                 %standard-phases)))
+    (home-page "http://embed.cs.utah.edu/creduce")
+    (synopsis "Reducer for interesting code")
+    (description
+     "C-Reduce is a tool that takes a large C or C++ program that has a
+property of interest (such as triggering a compiler bug) and automatically
+produces a much smaller C/C++ program that has the same property.  It is
+intended for use by people who discover and report bugs in compilers and other
+tools that process C/C++ code.")
+    (license ncsa)))
