@@ -189,3 +189,29 @@ put into mtdev may be from any MT device, specifically type A without
 contact tracking, type A with contact tracking, or type B with contact
 tracking.")
     (license license:x11)))
+
+(define-public startup-notification
+  (package
+    (name "startup-notification")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/" name
+                           "/releases/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jmyryrpqb35y9hd5sgxqy2z0r1snw7d3ljw0jak0n0cjdz1yf9w"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("xcb-util" ,xcb-util)))
+    (home-page "http://www.freedesktop.org/wiki/Software/startup-notification/")
+    (synopsis "Application startup notification and feedback library")
+    (description
+     "Startup-notification contains a reference implementation of the startup
+notification protocol.  The reference implementation is mostly under an X Window
+System style license, and has no special dependencies.")
+    ;; Most of the code is provided under x11 license.
+    (license license:lgpl2.0+)))
