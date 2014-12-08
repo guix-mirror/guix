@@ -2449,3 +2449,50 @@ a general image processing tool.")
 (define-public python2-pillow
   (package-with-python2 python-pillow))
 
+(define-public python-pycparser
+  (package
+    (name "python-pycparser")
+    (version "2.10")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "pycparser/pycparser-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0v5qfq03yvd1pi0dwlgfai0p3dh9bq94pydn19c4pdn0c6v9hzcm"))))
+    (outputs '("out" "doc"))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases 
+       (alist-replace
+        'check
+        (lambda _
+          (with-directory-excursion "tests"
+            (zero? (system* "python" "all_tests.py"))))
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                  (doc (string-append data "/doc/" ,name "-" ,version))
+                  (examples (string-append doc "/examples")))
+             (mkdir-p examples)
+             (for-each (lambda (file)
+                         (copy-file (string-append "." file)
+                                    (string-append doc file)))
+                       '("/README.rst" "/CHANGES" "/LICENSE"))
+             (copy-recursively "examples" examples)))
+         %standard-phases))))
+    (home-page "https://github.com/eliben/pycparser")
+    (synopsis "C parser in Python")
+    (description
+     "Pycparser is a complete parser of the C language, written in pure Python
+using the PLY parsing library.  It parses C code into an AST and can serve as
+a front-end for C compilers or analysis tools.")
+    (license bsd-3)))
+
+(define-public python2-pycparser
+  (package-with-python2 python-pycparser))
