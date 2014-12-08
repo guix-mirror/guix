@@ -86,6 +86,8 @@ prepended to the name."
               arguments)))
       (inputs
         (map rewrite (package-inputs p)))
+      (propagated-inputs
+        (map rewrite (package-propagated-inputs p)))
       (native-inputs
         (map rewrite (package-native-inputs p))))))
 
