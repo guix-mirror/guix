@@ -239,6 +239,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/skribilo.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
+  gnu/packages/socat.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/swig.scm				\
