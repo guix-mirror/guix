@@ -166,7 +166,8 @@ modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear."
   (define virtio-modules
     ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
-    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"))
+    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
+      "virtio_console"))
 
   (define cifs-modules
     ;; Modules needed to mount CIFS file systems.
