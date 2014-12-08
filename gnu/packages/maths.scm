@@ -953,6 +953,9 @@ point numbers")
     (inputs `(("gfortran" ,gfortran-4.8)
               ("lapack-tar" ,(package-source lapack))))
     (outputs '("out" "doc"))
+    ;; For the moment we drop support for MIPS at it fails to compile. See
+    ;; https://lists.gnu.org/archive/html/guix-devel/2014-11/msg00516.html
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (arguments
      `(#:parallel-build? #f
        #:parallel-tests? #f
