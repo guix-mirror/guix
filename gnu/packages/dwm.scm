@@ -112,3 +112,30 @@ state.")
      "A dynamic menu for X, originally designed for dwm.  It manages large
 numbers of user-defined menu items efficiently.")
     (license x11)))
+
+(define-public slock
+  (package
+    (name "slock")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/slock-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1r70s3npmp0nyrfdsxz8cw1i1z8n9phqdlw02wjphv341h3yajp0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)))
+    (home-page "http://tools.suckless.org/slock/")
+    (synopsis "Simple X session lock")
+    (description
+     "Simple X session lock with trivial feedback on password entry.")
+    (license x11)))
