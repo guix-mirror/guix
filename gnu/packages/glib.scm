@@ -223,6 +223,11 @@ dynamic loading, and an object system.")
      `(;; In practice, GIR users will need libffi when using
        ;; gobject-introspection.
        ("libffi" ,libffi)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GI_TYPELIB_PATH")
+            (directories '("lib/girepository-1.0")))))
+    (search-paths native-search-paths)
     (arguments
      `(;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
        ;; some tests to fail.
