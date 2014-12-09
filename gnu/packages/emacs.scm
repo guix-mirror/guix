@@ -520,3 +520,46 @@ supports tagging and playlist management, all behind a clean and
 light user interface.")
     (home-page "http://www.gnu.org/software/emms/")
     (license gpl3+)))
+
+
+;;;
+;;; Miscellaneous.
+;;;
+
+(define-public bbdb
+  (package
+    (name "bbdb")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/bbdb/bbdb-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gs16bbpiiy01w9pyg12868r57kx1v3hnw04gmqsmpc40l1hyy05"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; We don't want to build and install the PDF.
+               '(substitute* "doc/Makefile.in"
+                  (("^doc_DATA = .*$")
+                   "doc_DATA =\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Add an autoloads file with the right name for guix.el.
+                   (let* ((out  (assoc-ref outputs "out"))
+                          (site (string-append out "/share/emacs/site-lisp")))
+                     (with-directory-excursion site
+                       (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el"))))
+                 %standard-phases)))
+    (native-inputs `(("emacs" ,emacs)))
+    (home-page "http://savannah.nongnu.org/projects/bbdb/")
+    (synopsis "Contact management utility for Emacs")
+    (description
+     "BBDB is the Insidious Big Brother Database for GNU Emacs.  It provides
+an address book for email and snail mail addresses, phone numbers and the
+like.  It can be linked with various Emacs mail clients (Message and Mail
+mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
+    (license gpl3+)))
