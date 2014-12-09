@@ -294,3 +294,48 @@ of the screen selected by mouse.")
     ;; X11 license.
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public unclutter
+  (package
+    (name "unclutter")
+    (version "8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ftp.x.org/contrib/utilities/unclutter-"
+                    version ".tar.Z"))
+              (sha256
+               (base32
+                "0ahrr5z6wxqqfyihm112hnq0859zlxisrb3y5232zav58j6sfmdq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target
+       #:phases (alist-delete
+                 'configure
+                 (alist-replace
+                  'install
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let* ((out  (assoc-ref outputs "out"))
+                           (bin  (string-append out "/bin"))
+                           (man1 (string-append out "/share/man/man1")))
+                      (mkdir-p bin)
+                      (mkdir-p man1)
+                      (zero?
+                       (system* "make" "install" "install.man"
+                                (string-append "BINDIR=" bin)
+                                (string-append "MANDIR=" man1)))))
+                  %standard-phases))))
+    (inputs `(("libx11" ,libx11)))
+    (home-page "http://ftp.x.org/contrib/utilities/")
+    (synopsis "Hide idle mouse cursor")
+    (description
+     "Unclutter is a program which runs permanently in the background of an
+X11 session.  It checks on the X11 pointer (cursor) position every few
+seconds, and when it finds it has not moved (and no buttons are pressed
+on the mouse, and the cursor is not in the root window) it creates a
+small sub-window as a child of the window the cursor is in.  The new
+window installs a cursor of size 1x1 but a mask of all 0, i.e. an
+invisible cursor.  This allows you to see all the text in an xterm or
+xedit, for example.  The human factors crowd would agree it should make
+things less distracting.")
+    (license license:public-domain)))
