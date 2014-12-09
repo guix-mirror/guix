@@ -2496,3 +2496,48 @@ a front-end for C compilers or analysis tools.")
 
 (define-public python2-pycparser
   (package-with-python2 python-pycparser))
+
+(define-public python-cffi
+  (package
+    (name "python-cffi")
+    (version "0.8.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/c/"
+                          "cffi/cffi-" version ".tar.gz"))
+      (sha256 
+       (base32 "0406j3sgndmx88idv5zxkkrwfqxmjl18pj8gf47nsg4ymzixjci5"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("libffi" ,libffi)))
+    (propagated-inputs ; required at run-time
+     `(("python-pycparser" ,python-pycparser)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:tests? #f ; FIXME: requires pytest
+       #:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (html (string-append doc "/html")))
+            (with-directory-excursion "doc"
+              (system* "make" "html")
+              (mkdir-p html)
+              (copy-recursively "build/html" html))
+            (copy-file "LICENSE" (string-append doc "/LICENSE"))))
+        %standard-phases)))
+    (home-page "http://cffi.readthedocs.org")
+    (synopsis "Foreign function interface for Python")
+    (description
+     "Foreign Function Interface for Python calling C code.")
+    (license expat)))
+
+(define-public python2-cffi
+  (package-with-python2 python-cffi))
