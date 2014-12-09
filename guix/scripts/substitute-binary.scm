@@ -758,6 +758,10 @@ substituter disabled~%")
                                             progress)))
             ;; Unpack the Nar at INPUT into DESTINATION.
             (restore-file input destination)
+
+            ;; Skip a line after what 'progress-proc' printed.
+            (newline (current-error-port))
+
             (every (compose zero? cdr waitpid) pids))))
        (("--version")
         (show-version-and-exit "guix substitute-binary"))
