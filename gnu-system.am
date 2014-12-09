@@ -233,7 +233,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/scanner.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
-  gnu/packages/scrot.scm			\
   gnu/packages/sdl.scm				\
   gnu/packages/search.scm			\
   gnu/packages/serveez.scm			\

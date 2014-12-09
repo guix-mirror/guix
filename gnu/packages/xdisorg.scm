@@ -251,3 +251,46 @@ with the EWMH/NetWM specification.  It can query the window manager for
 information, and request for certain window management actions (resize and
 move windows, switch between desktops, etc.)")
     (license license:gpl2+)))
+
+(define-public scrot
+  (package
+    (name "scrot")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://linuxbrit.co.uk/downloads/scrot-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wll744rhb49lvr2zs6m93rdmiq59zm344jzqvijrdn24ksiqgb1"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; By default, man and doc are put in PREFIX/{man,doc} instead of
+     ;; PREFIX/share/{man,doc}.
+     '(#:configure-flags
+       (list (string-append "--mandir="
+                            (assoc-ref %outputs "out")
+                            "/share/man"))
+       #:phases (alist-replace
+                 'install
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (doc (string-append out "/share/doc/scrot")))
+                     (mkdir-p doc)
+                     (zero?
+                      (system* "make" "install"
+                               (string-append "docsdir=" doc)))))
+                 %standard-phases)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("giblib" ,giblib)))
+    (home-page "http://linuxbrit.co.uk/software/")
+    (synopsis "Command-line screen capture utility for X Window System")
+    (description
+     "Scrot allows to save a screenshot of a full screen, a window or a part
+of the screen selected by mouse.")
+    ;; This license removes a clause about X Consortium from the original
+    ;; X11 license.
+    (license (license:x11-style "file://COPYING"
+                                "See 'COPYING' in the distribution."))))
