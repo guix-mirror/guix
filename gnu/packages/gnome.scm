@@ -1136,10 +1136,9 @@ controls using the Bonobo component framework.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs
-     `(("gtk+" ,gtk+)))
-    (inputs
-     `(("startup-notification" ,startup-notification)
-       ("libxres" ,libxres)))
+     `(("gtk+" ,gtk+)
+       ("libxres" ,libxres)
+       ("startup-notification" ,startup-notification)))
     (home-page "https://developer.gnome.org/libwnck/")
     (synopsis "Window Navigator Construction Kit")
     (description
@@ -1163,7 +1162,9 @@ Hints specification (EWMH).")
                (base32
                 "15713yl0f8f3p99jzqqfmbicrdswd3vwpx7r3bkf1bgh6d9lvs4b"))))
     (propagated-inputs
-     `(("gtk+" ,gtk+-2)))))
+     `(("gtk+" ,gtk+-2)
+       ("libxres" ,libxres)
+       ("startup-notification" ,startup-notification)))))
 
 (define-public goffice
   (package
