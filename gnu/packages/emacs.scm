@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages gtk)
@@ -63,7 +64,7 @@
              (sha256
               (base32
                "1zflm6ac34s6v166p58ilxrxbxjm0q2wfc25f8y0mjml1lbr3qs7"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (alist-cons-before
                  'configure 'fix-/bin/pwd
@@ -119,6 +120,7 @@ languages.")
     (name "emacs-no-x-toolkit")
     (synopsis "The extensible, customizable, self-documenting text
 editor (without an X toolkit)" )
+    (build-system gnu-build-system)
     (inputs (append `(("inotify-tools" ,inotify-tools))
                     (alist-delete "gtk+" (package-inputs emacs))))
     (arguments (append '(#:configure-flags '("--with-x-toolkit=no"))
