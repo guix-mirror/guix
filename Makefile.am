@@ -282,6 +282,13 @@ SUFFIXES = .go
 guix_install_go_files = install-nobase_nodist_guilemoduleDATA
 $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 
+# The above trick doesn't work for 'config.go' because both 'config.scm' and
+# 'config.go' are listed in $(nobase_nodist_guilemodule_DATA).  Thus, give it
+# special treatment.
+install-data-hook: set-bootstrap-executable-permissions
+	touch "$(DESTDIR)$(guilemoduledir)/guix/config.go"
+
+
 SUBDIRS = po/guix po/packages
 BUILT_SOURCES =
 

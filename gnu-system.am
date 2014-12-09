@@ -484,7 +484,7 @@ nodist_bootstrap_mips64el_linux_DATA =					\
 
 # Those files must remain executable, so they remain executable once
 # imported into the store.
-install-data-hook:
+set-bootstrap-executable-permissions:
 	chmod +x $(DESTDIR)$(bootstrapdir)/*/{bash,mkdir,tar,xz}
 
 DISTCLEANFILES =				\
