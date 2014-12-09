@@ -134,14 +134,23 @@ TARGET, and register them."
 (define (install-grub* grub.cfg device target)
   "This is a variant of 'install-grub' with error handling, lifted in
 %STORE-MONAD"
-  (let ((add-root (store-lift add-indirect-root)))
+  (let* ((gc-root      (string-append %gc-roots-directory "/grub.cfg"))
+         (temp-gc-root (string-append gc-root ".new"))
+         (delete-file  (lift1 delete-file %store-monad))
+         (make-symlink (lift2 switch-symlinks %store-monad))
+         (rename       (lift2 rename-file %store-monad)))
     (mbegin %store-monad
+      ;; Prepare the symlink to GRUB.CFG to make sure that it's a GC root when
+      ;; 'install-grub' completes (being a bit paranoid.)
+      (make-symlink temp-gc-root grub.cfg)
+
       (munless (false-if-exception (install-grub grub.cfg device target))
+        (delete-file temp-gc-root)
         (leave (_ "failed to install GRUB on device '~a'~%") device))
 
       ;; Register GRUB.CFG as a GC root so that its dependencies (background
       ;; image, font, etc.) are not reclaimed.
-      (add-root "/boot/grub/grub.cfg"))))
+      (rename temp-gc-root gc-root))))
 
 (define* (install os-drv target
                   #:key (log-port (current-output-port))

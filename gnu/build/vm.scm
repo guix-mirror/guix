@@ -178,17 +178,11 @@ volume name."
   (display "populating...\n")
   (populate-root-file-system system-directory target-directory))
 
-(define (register-grub.cfg-root target)
-  "On file system TARGET, make '/boot/grub/grub.cfg' an indirect GC root."
-  (define hash
-    ;; XXX: Believe it or not, this is that nix-base32-encoded SHA1 of the
-    ;; string "/boot/grub/grub.cfg".  We need it here, but gcrypt isn't
-    ;; available (a random hash would do as well, though.)
-    "kv0yq1d48kavqfhjfzvc4lcyazx2mqhv")
-
-  (let ((directory (string-append target "/var/guix/gcroots/auto")))
+(define (register-grub.cfg-root target grub.cfg)
+  "On file system TARGET, register GRUB.CFG as a GC root."
+  (let ((directory (string-append target "/var/guix/gcroots")))
     (mkdir-p directory)
-    (symlink "/boot/grub/grub.cfg" (string-append directory "/" hash))))
+    (symlink grub.cfg (string-append directory "/grub.cfg"))))
 
 (define* (initialize-hard-disk device
                                #:key
@@ -234,9 +228,8 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
 
   (install-grub grub.cfg device target-directory)
 
-  ;; Register $target/boot/grub/grub.cfg as an indirect root, so that GRUB.CFG
-  ;; is not reclaimed.
-  (register-grub.cfg-root target-directory)
+  ;; Register GRUB.CFG as a GC root.
+  (register-grub.cfg-root target-directory grub.cfg)
 
   ;; 'guix-register' resets timestamps and everything, so no need to do it
   ;; once more in that case.
