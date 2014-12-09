@@ -347,6 +347,15 @@ Bash syntax and the @code{shadow} commands):
   done
 @end example
 
+The @file{/gnu/store} directory (or whichever was specified with the
+@code{--with-store-dir} option) must have ownership and permissions as
+follows:
+
+@example
+# chgrp guix-builder /gnu/store
+# chmod 1775 /gnu/store
+@end example
+
 @noindent
 The @code{guix-daemon} program may then be run as @code{root} with:
 
