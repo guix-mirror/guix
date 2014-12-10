@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages xfce)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -27,7 +27,12 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages pdf)
+  #:use-module (gnu packages gstreamer))
 
 (define-public gtk-xfce-engine
   (package
@@ -193,3 +198,38 @@ GLib and GIO.  It was started as a complete rewrite of the former Xfce menu
 library called libxfce4menu, which, in contrast to garcon, was lacking menu
 merging features essential for loading menus modified with menu editors.")
     (license lgpl2.0+)))
+
+(define-public tumbler
+  (package
+    (name "tumbler")
+    (version "0.1.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0ijm04vm75gmhyyzrlqdr6vzchr01hlajcm84lm6j64cim8dxm82"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin") ; need glib-genmarshal
+       ("dbus-glib" ,dbus-glib))) ; need dbus-binding-tool
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by tumbler-1.pc
+    (inputs
+     `(("dbus" ,dbus)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("freetype" ,freetype)
+       ("libjpeg" ,libjpeg)
+       ("libgsf" ,libgsf)
+       ("poppler" ,poppler)
+       ("gstreamer" ,gstreamer-0.10)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "D-Bus service for applications to request thumbnails")
+    (description
+     "Tumbler is a D-Bus service for applications to request thumbnails for
+various URI schemes and MIME types.  It is an implementation of the thumbnail
+management D-Bus specification.")
+    (license gpl2+)))
