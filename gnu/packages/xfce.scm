@@ -24,7 +24,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public gtk-xfce-engine
   (package
@@ -100,4 +102,35 @@ Xfce Desktop Environment.")
     (description
      "Settings daemon for Xfce, implemented as a D-Bus-based configuration
 storage system.")
+    (license lgpl2.0+)))
+
+(define-public libxfce4ui
+  (package
+    (name "libxfce4ui")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qm31s6568cz4c8rl9fsfq0xmf7pldxm0ki62gx1cpybihlgmfd2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; libxfce4kbd-private-2.pc refers to all these.
+     `(("gtk+" ,gtk+-2)
+       ("libxfce4util" ,libxfce4util)
+       ("xfconf" ,xfconf)))
+    (inputs `(("libsm" ,libsm)
+              ("libice" ,libice)
+              ("startup-notification" ,startup-notification)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Widgets library for Xfce")
+    (description
+     "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
+to share commonly used Xfce widgets amoung the Xfce applications.")
     (license lgpl2.0+)))
