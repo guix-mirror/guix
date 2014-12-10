@@ -290,3 +290,34 @@ applications menu, workspace switcher and more.")
      "Application finder for Xfce, it will show the applications installed on
 your system in categories, so you can quickly find and launch them.")
     (license gpl2+)))
+
+(define-public xfce4-session
+  (package
+    (name "xfce4-session")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1kj65jkjhd0ysf0yxsf88wzpyv6n8i8qgd3gb502hf1x9jksk2mv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-xsession-prefix=" %output))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("iceauth" ,iceauth)
+       ("libsm" ,libsm)
+       ("libwnck" ,libwnck-1)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce session manager")
+    (description
+     "Session manager for Xfce, it will restore your session on startup and
+allows you to shutdown the computer from Xfce.")
+    (license gpl2+)))
