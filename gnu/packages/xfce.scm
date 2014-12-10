@@ -416,3 +416,31 @@ thunar-volman is installed and configured properly, and you plug in your
 digitcal camera, it will automatically spawn your preferred photo application
 and import the new pictures from your camera.")
     (license gpl2+)))
+
+(define-public xfwm4
+  (package
+    (name "xfwm4")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "170zzs7adj47srsi2cl723w9pl8k8awd7w1bpzxby7hj92zmf8s9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libwnck", libwnck-1)
+       ("libxfce4ui" ,libxfce4ui)
+       ("libxrandr" ,libxrandr)
+       ("libxcomposite" ,libxcomposite)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce window manager")
+    (description
+     "Window manager for Xfce, it handles the placement of windows
+on the screen.")
+    (license gpl2+)))
