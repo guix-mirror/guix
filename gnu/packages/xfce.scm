@@ -321,3 +321,34 @@ your system in categories, so you can quickly find and launch them.")
      "Session manager for Xfce, it will restore your session on startup and
 allows you to shutdown the computer from Xfce.")
     (license gpl2+)))
+
+(define-public xfce4-settings
+  (package
+    (name "xfce4-settings")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zppq747z9lrxyv5zrrvpalq7hb3gfhy9p7qbldisgv7m6dz0hq8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("exo" ,exo)
+       ("garcon" ,garcon)
+       ("libnotify" ,libnotify)
+       ("libxcursor", libxcursor)
+       ("libxi" ,libxi)
+       ("libxrandr" ,libxrandr)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce settings manager")
+    (description
+     "Settings manager for Xfce, it can control various aspects of the desktop
+like appearance, display, keyboard and mouse settings.")
+    (license gpl2+)))
