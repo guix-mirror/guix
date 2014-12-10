@@ -1160,7 +1160,8 @@ autotools system.")
           (base32
             "1b8sniijb85v4my6v30ma9yqnwl4hkclci9l1hqxnipfyhl4sa9j"))))
     (build-system gnu-build-system)
-    (inputs
+    (propagated-inputs
+     ;; xcomposite.pc refers to all these.
       `(("xproto" ,xproto)
         ("libxfixes" ,libxfixes)
         ("libx11" ,libx11)
