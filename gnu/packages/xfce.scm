@@ -166,3 +166,30 @@ that are targeted at desktop development, libexo is targeted at application
 development.")
     ;; Libraries are under LGPLv2+, and programs under GPLv2+.
     (license (list gpl2+ lgpl2.1+))))
+
+(define-public garcon
+  (package
+    (name "garcon")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v7pkvxcayi86z4f173z5l7w270f3g369sa88z59w0y0p7ns7ph2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")))
+    (propagated-inputs `(("glib" ,glib))) ; required by garcon-1.pc
+    (inputs `(("libxfce4util" ,libxfce4util)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Implementation of the freedesktop.org menu specification")
+    (description
+     "Garcon is a freedesktop.org compliant menu implementation based on
+GLib and GIO.  It was started as a complete rewrite of the former Xfce menu
+library called libxfce4menu, which, in contrast to garcon, was lacking menu
+merging features essential for loading menus modified with menu editors.")
+    (license lgpl2.0+)))
