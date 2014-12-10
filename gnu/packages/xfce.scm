@@ -444,3 +444,34 @@ and import the new pictures from your camera.")
      "Window manager for Xfce, it handles the placement of windows
 on the screen.")
     (license gpl2+)))
+
+(define-public xfdesktop
+  (package
+    (name "xfdesktop")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0yrddj1lgk3xn4w340y89z7x2isks72ia36pka08kk2x8gpfcyl9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("exo" ,exo)
+       ("garcon" ,garcon)
+       ("libnotify" ,libnotify)
+       ("libwnck" ,libwnck-1)
+       ("libxfce4ui" ,libxfce4ui)
+       ("thunar" ,thunar)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce desktop manager")
+    (description
+     "Desktop manager for Xfce, it sets the background color or image with
+optional application menu or icons for minimized applications or launchers,
+devices and folders.")
+    (license gpl2+)))
