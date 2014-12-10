@@ -274,10 +274,11 @@ printing and other features typical of a source code editor.")
              (base32
               "05s6ksvy1yan6h6zny9n3bmvygcnzma6ljl6i0z9cci2xg116c8q"))))
    (build-system gnu-build-system)
-   (inputs
+   (propagated-inputs ; required by gdk-pixbuf-2.0.pc
     `(("glib" ,glib)
-      ("libjpeg" ,libjpeg)
-      ("libpng" ,libpng)
+      ("libpng" ,libpng)))
+   (inputs
+    `(("libjpeg" ,libjpeg)
       ("libtiff" ,libtiff)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
