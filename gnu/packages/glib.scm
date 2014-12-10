@@ -197,18 +197,17 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.42.0")
+    (version "1.38.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://ftp.gnome.org/pub/GNOME/sources/"
-                   "gobject-introspection/" (version-major+minor version)
-                   "/gobject-introspection-" version ".tar.xz"))
+                   "gobject-introspection/"
+                   (substring version 0 (string-rindex version #\.))
+                   "/gobject-introspection-"
+                   version ".tar.xz"))
              (sha256
-              (base32 "1xwm7wmr9r9wp6xljb3bckx3a4siybavaq39w46ly7gpskxfv8iv"))
-             (patches (list 
-                       (search-patch "gobject-introspection-cc.patch")
-                       (search-patch 
-                        "gobject-introspection-absolute-shlib-path.patch")))))
+              (base32 "0wvxyvgajmms2bb6k3pf1rdpnd79xdxamykzvxzmcyn1ag9yax9m"))
+             (patches (list (search-patch "gobject-introspection-cc.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("bison" ,bison)
@@ -229,10 +228,7 @@ dynamic loading, and an object system.")
             (directories '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
     (arguments
-     `(;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
-       ;; some tests to fail.
-       #:tests? #f
-       #:phases
+     `(#:phases
         (alist-cons-before
          'configure 'patch-paths
          (lambda _
