@@ -50,6 +50,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages which)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2542,3 +2543,45 @@ a front-end for C compilers or analysis tools.")
 
 (define-public python2-cffi
   (package-with-python2 python-cffi))
+
+(define-public python-xcffib
+  (package
+    (name "python-xcffib")
+    (version "0.1.9")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/x/"
+                          "xcffib/xcffib-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0655hzxv57h1a9ja9kwp0ichbkhf3djw32k33d66xp0q37dq2y81"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi))) ; used at run time
+    (arguments
+     `(#:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((doc (string-append (assoc-ref outputs "out") "/share"
+                                    "/doc/" ,name "-" ,version)))
+            (mkdir-p doc)
+            (copy-file "README.md"
+                       (string-append doc "/README.md"))))
+        %standard-phases)))
+    (home-page "https://github.com/tych0/xcffib")
+    (synopsis "XCB Python bindings")
+    (description
+     "Xcffib is a replacement for xpyb, an XCB Python bindings.  It adds
+support for Python 3 and PyPy.  It is based on cffi.")
+    (license expat)))
+
+(define-public python2-xcffib
+  (package-with-python2 python-xcffib))
+
