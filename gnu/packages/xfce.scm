@@ -71,3 +71,33 @@
      "A general-purpose utility library with core application support for the
 Xfce Desktop Environment.")
     (license lgpl2.0+)))
+
+(define-public xfconf
+  (package
+    (name "xfconf")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0xh520z0qh0ib0ijgnyrgii9h5d4pc53n6mx1chhyzfc86j1jlhp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; libxfconf-0.pc refers to all these.
+     `(("glib" ,glib)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)))
+    (inputs
+     `(("libxfce4util" ,libxfce4util)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Configuration storage and query system for Xfce")
+    (description
+     "Settings daemon for Xfce, implemented as a D-Bus-based configuration
+storage system.")
+    (license lgpl2.0+)))
