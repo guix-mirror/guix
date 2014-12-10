@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.32")
+   (version "8.36")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/pcre/pcre/"
                                 version "/pcre-" version ".tar.bz2"))
             (sha256
              (base32
-              "0m8gvrf1q0iwll4csirvvj98xygw4cy7r14i5l53ivsqs2dzn4x9"))))
+              "1fs5p1z67m9f4xnyil3s4lhgyld78f7m4d1yawpyhh0cvrbk90zg"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
@@ -43,7 +44,8 @@
     `(#:configure-flags '("--enable-utf"
                           "--enable-pcregrep-libz"
                           "--enable-pcregrep-libbz2"
-                          "--enable-pcretest-libreadline")))
+                          "--enable-pcretest-libreadline"
+                          "--enable-jit")))
    (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression
