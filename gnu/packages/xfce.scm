@@ -233,3 +233,34 @@ merging features essential for loading menus modified with menu editors.")
 various URI schemes and MIME types.  It is an implementation of the thumbnail
 management D-Bus specification.")
     (license gpl2+)))
+
+(define-public xfce4-panel
+  (package
+    (name "xfce4-panel")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1f8903nx6ivzircl8d8s9zna4vjgfy0qhjk5d2x19g9bmycgj89k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     `(("libxfce4util" ,libxfce4util))) ; required by libxfce4panel-1.0.pc
+    (inputs
+     `(("exo" ,exo)
+       ("garcon", garcon)
+       ("libwnck" ,libwnck-1)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce desktop panel")
+    (description
+     "Desktop panel for Xfce, which contains program launchers, window buttons,
+applications menu, workspace switcher and more.")
+    ;; Libraries are under LGPLv2.1+, and programs under GPLv2+.
+    (license (list gpl2+ lgpl2.1+))))
