@@ -32,7 +32,10 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages pdf)
-  #:use-module (gnu packages gstreamer))
+  #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages pcre))
 
 (define-public gtk-xfce-engine
   (package
@@ -351,4 +354,35 @@ allows you to shutdown the computer from Xfce.")
     (description
      "Settings manager for Xfce, it can control various aspects of the desktop
 like appearance, display, keyboard and mouse settings.")
+    (license gpl2+)))
+
+(define-public thunar
+  (package
+    (name "thunar")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+                                  "Thunar-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1fn8wjzkfvnx2giv3rrg2cyrr2c96f9mskgvcji0ixyfcjga249c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("exo" ,exo)
+       ("gudev", eudev)
+       ("libexif" ,libexif)
+       ("libnotify" ,libnotify)
+       ("libxfce4ui" ,libxfce4ui)
+       ("pcre" ,pcre)
+       ("xfce4-panel" ,xfce4-panel)
+       ("startup-notification" ,startup-notification)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce file manager")
+    (description
+     "A modern file manager for graphical desktop, aiming to be easy-to-use and
+fast.")
     (license gpl2+)))
