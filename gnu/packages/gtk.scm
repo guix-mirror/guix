@@ -696,6 +696,63 @@ extensive documentation, including API reference and a tutorial.")
     ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
     (license (list license:lgpl2.1 license:mpl1.1))))
 
+(define-public python-cairocffi
+  (package
+    (name "python-cairocffi")
+    (version "0.6")
+    (source
+     (origin
+      (method url-fetch)
+      ;; The archive on pypi is missing the 'utils' directory!
+      (uri (string-append "https://github.com/SimonSapin/cairocffi/archive/v"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("python-docutils" ,python-docutils)
+       ("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-xcffib" ,python-xcffib))) ; used at run time
+    (arguments
+     `(#:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (html (string-append doc "/html")))
+            (setenv "LD_LIBRARY_PATH" 
+                    (string-append (assoc-ref inputs "cairo") "/lib" ":"
+                                   (assoc-ref inputs "gdk-pixbuf") "/lib"))
+            (setenv "LANG" "en_US.UTF-8")
+            (mkdir-p html)
+            (for-each (lambda (file)
+                        (copy-file (string-append "." file)
+                                   (string-append doc file)))
+                      '("/README.rst" "/CHANGES" "/LICENSE"))
+            (system* "python" "setup.py" "build_sphinx")
+            (copy-recursively "docs/_build/html" html)))
+        %standard-phases)))
+    (home-page "https://github.com/SimonSapin/cairocffi")
+    (synopsis "Python bindings and object-oriented API for Cairo")
+    (description
+     "Cairocffi is a CFFI-based drop-in replacement for Pycairo, a set of
+Python bindings and object-oriented API for cairo.  Cairo is a 2D vector
+graphics library with support for multiple backends including image buffers,
+PNG, PostScript, PDF, and SVG file output.")
+    (license license:bsd-3)))
+
+(define-public python2-cairocffi
+  (package-with-python2 python-cairocffi))
+
 (define-public python2-pygtk
   (package
     (name "python2-pygtk")
