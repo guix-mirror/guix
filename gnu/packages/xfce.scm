@@ -264,3 +264,29 @@ management D-Bus specification.")
 applications menu, workspace switcher and more.")
     ;; Libraries are under LGPLv2.1+, and programs under GPLv2+.
     (license (list gpl2+ lgpl2.1+))))
+
+(define-public xfce4-appfinder
+  (package
+    (name "xfce4-appfinder")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0falckrziw8m1a72nxd7fqq84r3xfbrb6lv35flsca346rzawah4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("garcon" ,garcon)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce application finder")
+    (description
+     "Application finder for Xfce, it will show the applications installed on
+your system in categories, so you can quickly find and launch them.")
+    (license gpl2+)))
