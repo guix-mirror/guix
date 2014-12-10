@@ -20,6 +20,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -46,3 +47,27 @@
     (description
      "Default GTK+ engine and themes for Xfce Desktop Environment.")
     (license gpl2+)))
+
+(define-public libxfce4util
+  (package
+    (name "libxfce4util")
+    (version "4.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/"
+                                  (version-major+minor version)
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "13k0wwbbqvdmbj4xmk4nxdlgvrdgr5y6r3dk380mzfw053hzwy89"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs `(("glib" ,glib))) ; required by libxfce4util-1.0.pc
+    (home-page "http://www.xfce.org/")
+    (synopsis "Basic utility library for Xfce")
+    (description
+     "A general-purpose utility library with core application support for the
+Xfce Desktop Environment.")
+    (license lgpl2.0+)))
