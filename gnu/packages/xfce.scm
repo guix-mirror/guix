@@ -26,7 +26,8 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages web))
 
 (define-public gtk-xfce-engine
   (package
@@ -134,3 +135,34 @@ storage system.")
      "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
 to share commonly used Xfce widgets amoung the Xfce applications.")
     (license lgpl2.0+)))
+
+(define-public exo
+  (package
+    (name "exo")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1c05pbagw14djv5zmqg34qfj40jav8sd10w2zi2wpzrad4qal8bf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; exo-1.pc refers to all these.
+     `(("gtk+" ,gtk+-2)
+       ("libxfce4util" ,libxfce4util)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Extension library for Xfce")
+    (description
+     "An extension library to Xfce.  While Xfce comes with quite a few libraries
+that are targeted at desktop development, libexo is targeted at application
+development.")
+    ;; Libraries are under LGPLv2+, and programs under GPLv2+.
+    (license (list gpl2+ lgpl2.1+))))
