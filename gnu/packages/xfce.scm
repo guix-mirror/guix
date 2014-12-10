@@ -386,3 +386,33 @@ like appearance, display, keyboard and mouse settings.")
      "A modern file manager for graphical desktop, aiming to be easy-to-use and
 fast.")
     (license gpl2+)))
+
+(define-public thunar-volman
+  (package
+    (name "thunar-volman")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1sxw09fwyn5sr6ipxk7r8gqjyf41c2v7vkgl0l6mhy5mcb48f27z"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("exo" ,exo)
+       ("gudev" ,eudev)
+       ("libnotify" ,libnotify)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Removable media manager for Thunar")
+    (description
+     "Thunar-volman is an extension for the Thunar File Manager, which enables
+automatic management of removable drives and media.  For example, if
+thunar-volman is installed and configured properly, and you plug in your
+digitcal camera, it will automatically spawn your preferred photo application
+and import the new pictures from your camera.")
+    (license gpl2+)))
