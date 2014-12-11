@@ -51,6 +51,8 @@
   #:use-module (gnu packages which)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2118,10 +2120,35 @@ that client code uses to construct the grammar directly in Python code.")
          "0m6v9nwdldlwk22gcd339zg6mny5m301fxgks7z8sb8m9wawg8qp"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
+    (propagated-inputs ; the following packages are all needed at run time
+     `(("python-pyparsing" ,python-pyparsing)
+       ("python-pygobject" ,python-pygobject)
+       ("gobject-introspection" ,gobject-introspection)
+       ;; The 'gtk+' package (and 'gdk-pixbuf', 'atk' and 'pango' propagated
+       ;; from 'gtk+') provides the required 'typelib' files used by
+       ;; 'gobject-introspection'. The location of these files is set with the
+       ;; help of the environment variable GI_TYPELIB_PATH. At build time this
+       ;; is done automatically by a 'native-search-path' procedure. However,
+       ;; at run-time the user must set this variable as follows:
+       ;;
+       ;; export GI_TYPELIB_PATH=~/.guix-profile/lib/girepository-1.0
+       ;;
+       ;; 'typelib' files include references to dynamic libraries. Currently
+       ;; the references do not include the full path to the libraries. For
+       ;; this reason the user must set the LD_LIBRARY_PATH to the location of 
+       ;; 'libgtk-3.so.0', 'libgdk-3.so.0' and 'libatk-1.0.so.0':
+       ;;
+       ;; export LD_LIBRARY_PATH=~/.guix-profile/lib
+       ("gtk+" ,gtk+)
+       ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
+       ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
+       ;; object. For this reason we need to import both libraries.
+       ;; https://pythonhosted.org/cairocffi/cffi_api.html#converting-pycairo
+       ("python-pycairo" ,python-pycairo)
+       ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-dateutil" ,python-dateutil-2)
-       ("python-pyparsing" ,python-pyparsing)
        ("python-six" ,python-six)
        ("python-pytz" ,python-pytz)
        ("python-numpy" ,python-numpy-bootstrap)
@@ -2132,10 +2159,10 @@ that client code uses to construct the grammar directly in Python code.")
        ("libpng" ,libpng)
        ("imagemagick" ,imagemagick)
        ("freetype" ,freetype)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("python-pillow" ,python-pillow)
        ;; FIXME: Add backends when available.
-       ;("python-pygtk" ,python-pygtk)
-       ;("python-pycairo" ,python-pycairo)
-       ;("python-pygobject" ,python-pygobject)
        ;("python-wxpython" ,python-wxpython)
        ;("python-pyqt" ,python-pyqt)
        ))
@@ -2145,40 +2172,51 @@ that client code uses to construct the grammar directly in Python code.")
        ("texinfo" ,texinfo)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                 (doc (string-append data "/doc/" ,name "-" ,version))
-                 (info (string-append data "/info"))
-                 (html (string-append doc "/html")))
-            (with-directory-excursion "doc"
-              ;; Without setting this variable we get an encoding error.
-              (setenv "LANG" "en_US.UTF-8")
-              ;; Produce pdf in 'A4' format.
-              (substitute* (find-files "." "conf\\.py")
-                (("latex_paper_size = 'letter'")
-                 "latex_paper_size = 'a4'"))
-              (mkdir-p html)
-              (mkdir-p info)
-              ;; The doc recommends to run the 'html' target twice.
-              (system* "python" "make.py" "html")
-              (system* "python" "make.py" "html")
-              (system* "python" "make.py" "latex")
-              (system* "python" "make.py" "texinfo")
-              (copy-file "build/texinfo/matplotlib.info"
-                         (string-append info "/matplotlib.info"))
-              (copy-file "build/latex/Matplotlib.pdf"
-                         (string-append doc "/Matplotlib.pdf"))
-              (with-directory-excursion "build/html"
-                (map (lambda (file)
-                       (let* ((dir (dirname file))
-                              (tgt-dir (string-append html "/" dir)))
-                         (unless (equal? "." dir)
-                           (mkdir-p tgt-dir))
-                         (copy-file file (string-append html "/" file))))
-                     (find-files "." ".*"))))))
-        %standard-phases)))
+       (alist-cons-before
+        'build 'configure-environment
+        (lambda* (#:key outputs inputs #:allow-other-keys)
+          (let ((cairo (assoc-ref inputs "cairo"))
+                (gtk+ (assoc-ref inputs "gtk+")))
+            ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
+            ;; has not effect.
+            ;;
+            ;; FIXME: setting LD_LIBRARY_PATH should be removed once we patch
+            ;; gobject-introspection to include the full path of shared
+            ;; libraries in 'typelib' files.
+            (setenv "LD_LIBRARY_PATH"
+                    (string-append cairo "/lib:" gtk+ "/lib"))
+            (setenv "HOME" (getcwd))
+            (call-with-output-file "setup.cfg"
+              (lambda (port)
+                (format port "[rc_options]~%
+backend = GTK3Agg~%")))))
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                  (doc (string-append data "/doc/" ,name "-" ,version))
+                  (info (string-append data "/info"))
+                  (html (string-append doc "/html")))
+             (with-directory-excursion "doc"
+               ;; Without setting this variable we get an encoding error.
+               (setenv "LANG" "en_US.UTF-8")
+               ;; Produce pdf in 'A4' format.
+               (substitute* (find-files "." "conf\\.py")
+                 (("latex_paper_size = 'letter'")
+                  "latex_paper_size = 'a4'"))
+               (mkdir-p html)
+               (mkdir-p info)
+               ;; The doc recommends to run the 'html' target twice.
+               (system* "python" "make.py" "html")
+               (system* "python" "make.py" "html")
+               (system* "python" "make.py" "latex")
+               (system* "python" "make.py" "texinfo")
+               (copy-file "build/texinfo/matplotlib.info"
+                          (string-append info "/matplotlib.info"))
+               (copy-file "build/latex/Matplotlib.pdf"
+                          (string-append doc "/Matplotlib.pdf"))
+               (copy-recursively "build/html" html))))
+        %standard-phases))))
     (home-page "http://matplotlib.org")
     (synopsis "2D plotting library for Python")
     (description
@@ -2194,9 +2232,17 @@ toolkits.")
     (package (inherit matplotlib)
       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
       ;; customized for Python 2.
-      (inputs `(("python2-numpydoc" ,python2-numpydoc)
-                ,@(alist-delete "python-numpydoc" 
-                                (package-inputs matplotlib)))))))
+      (propagated-inputs 
+       `(("python2-py2cairo" ,python2-py2cairo)
+         ("python2-pygobject-2" ,python2-pygobject-2)
+         ,@(alist-delete "python-pycairo"
+                         (alist-delete "python-pygobject"
+                                       (package-propagated-inputs 
+                                        matplotlib)))))
+      (inputs 
+       `(("python2-numpydoc" ,python2-numpydoc)
+         ,@(alist-delete "python-numpydoc" 
+                         (package-inputs matplotlib)))))))
 
 ;; Scipy 0.14.0 with Numpy 0.19.X fails several tests.  This is known and
 ;; planned to be fixed in 0.14.1.  It is claimed that the failures can safely
