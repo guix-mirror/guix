@@ -28,6 +28,55 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
+(define-public bedtools
+  (package
+    (name "bedtools")
+    (version "2.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16aq0w3dmbd0853j32xk9jin4vb6v6fgakfyvrsmsjizzbn3fpfl"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("python" ,python-2)))
+    (inputs `(("samtools" ,samtools)
+              ("zlib" ,zlib)))
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-makefile-SHELL-definition
+        (lambda _
+          ;; patch-makefile-SHELL cannot be used here as it does not
+          ;; yet patch definitions with `:='.  Since changes to
+          ;; patch-makefile-SHELL result in a full rebuild, features
+          ;; of patch-makefile-SHELL are reimplemented here.
+          (substitute* "Makefile"
+            (("^SHELL := .*$") (string-append "SHELL := " (which "bash") " -e \n"))))
+        (alist-delete
+         'configure
+         (alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (mkdir-p bin)
+              (for-each (lambda (file)
+                          (copy-file file (string-append bin (basename file))))
+                        (find-files "bin" ".*"))))
+          %standard-phases)))))
+    (home-page "https://github.com/arq5x/bedtools2")
+    (synopsis "Tools for genome analysis and arithmetic")
+    (description
+     "Collectively, the bedtools utilities are a swiss-army knife of tools for
+a wide-range of genomics analysis tasks.  The most widely-used tools enable
+genome arithmetic: that is, set theory on the genome.  For example, bedtools
+allows one to intersect, merge, count, complement, and shuffle genomic
+intervals from multiple files in widely-used genomic file formats such as BAM,
+BED, GFF/GTF, VCF.")
+    (license license:gpl2)))
+
 (define-public samtools
   (package
     (name "samtools")
