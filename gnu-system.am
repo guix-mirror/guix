@@ -45,6 +45,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
   gnu/packages/bdw-gc.scm			\
+  gnu/packages/bioinformatics.scm		\
   gnu/packages/bittorrent.scm			\
   gnu/packages/bison.scm			\
   gnu/packages/boost.scm			\
