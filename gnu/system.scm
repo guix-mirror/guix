@@ -398,6 +398,7 @@ export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
 
 export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
 export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
+export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
 "))
        (skel      (skeleton-directory skeletons)))
