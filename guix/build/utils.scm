@@ -638,7 +638,7 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
   (let ((st (stat file)))
    (substitute* file
-     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
+     (("^ *SHELL[[:blank:]]*:?=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
        _ dir shell args)
       (let* ((old (string-append dir shell))
              (new (or (find-shell shell) old)))
