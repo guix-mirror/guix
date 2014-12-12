@@ -629,9 +629,7 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
   ;; XXX: Unlike with `patch-shebang', FILE is always touched.
 
   (define (find-shell name)
-    (let ((shell
-           (search-path (search-path-as-string->list (getenv "PATH"))
-                        name)))
+    (let ((shell (which name)))
       (unless shell
         (format (current-error-port)
                 "patch-makefile-SHELL: warning: no binary for shell `~a' found in $PATH~%"
