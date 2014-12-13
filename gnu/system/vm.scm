@@ -472,7 +472,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
      " -enable-kvm -no-reboot -net nic,model=virtio \
   " #$@(map virtfs-option shared-fs) " \
   -net user \
-  -serial stdio \
+  -serial stdio -vga std \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly \
   -m 256"))
