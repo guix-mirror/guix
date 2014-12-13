@@ -170,6 +170,9 @@ function load_video {
   insmod video_cirrus
 }
 
+# Set 'root' to the partition that contains /gnu/store.
+search --file --set ~a/share/grub/unicode.pf2
+
 if loadfont ~a/share/grub/unicode.pf2; then
   set gfxmode=640x480
   load_video
@@ -185,7 +188,7 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                        #$grub
+                        #$grub #$grub
                         #$image
                         #$(theme-colors grub-theme-color-normal)
                         #$(theme-colors grub-theme-color-highlight))))))
