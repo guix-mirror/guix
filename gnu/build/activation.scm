@@ -50,6 +50,25 @@
                 ,name)))
     (zero? (apply system* "groupadd" args))))
 
+(define %skeleton-directory
+  ;; Directory containing skeleton files for new accounts.
+  ;; Note: keep the trailing '/' so that 'scandir' enters it.
+  "/etc/skel/")
+
+(define (dot-or-dot-dot? file)
+  (member file '("." "..")))
+
+(define* (copy-account-skeletons home
+                                 #:optional (directory %skeleton-directory))
+  "Copy the account skeletons from DIRECTORY to HOME."
+  (let ((files (scandir directory (negate dot-or-dot-dot?)
+                        string<?)))
+    (mkdir-p home)
+    (for-each (lambda (file)
+                (copy-file (string-append directory "/" file)
+                           (string-append home "/" file)))
+              files)))
+
 (define* (add-user name group
                    #:key uid comment home shell password system?
                    (supplementary-groups '())
@@ -70,6 +89,7 @@ properties.  Return #t on success."
           (cut format <> "~a:x:~a:~a:~a:~a:~a~%"
                name "0" "0" comment home shell))
         (chmod "/etc/shadow" #o600)
+        (copy-account-skeletons (or home "/root"))
         #t)
 
       ;; Use 'useradd' from the Shadow package.
@@ -198,9 +218,7 @@ numeric gid or #f."
                 ;; XXX: Dirty hack to meet sudo's expectations.
                 (when (string=? (basename target) "sudoers")
                   (chmod target #o440))))
-            (scandir etc
-                     (lambda (file)
-                       (not (member file '("." ".."))))
+            (scandir etc (negate dot-or-dot-dot?)
 
                      ;; The default is 'string-locale<?', but we don't have
                      ;; it when run from the initrd's statically-linked
