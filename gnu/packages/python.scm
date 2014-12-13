@@ -1934,7 +1934,8 @@ writing C extensions for Python as easy as Python itself.")
          'install 'check
          (lambda _ 
            (with-directory-excursion "/tmp"
-             (zero? (system* "python" "-c" "import numpy; numpy.test()"))))
+             (zero? (system* "python" "-c" 
+                             "import numpy; numpy.test(verbose=2)"))))
          (alist-delete 
           'check 
           %standard-phases)))))
