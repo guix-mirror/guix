@@ -105,19 +105,36 @@
                             files)))
               bindirs)))
 
+(define* (rename-pth-file #:key name inputs outputs #:allow-other-keys)
+  "Rename easy-install.pth to NAME.pth to avoid conflicts between packages
+installed with setuptools."
+  (let* ((out (assoc-ref outputs "out"))
+         (python (assoc-ref inputs "python"))
+         (site-packages (string-append out "/lib/python"
+                                       (get-python-version python)
+                                       "/site-packages"))
+         (easy-install-pth (string-append site-packages "/easy-install.pth"))
+         (new-pth (string-append site-packages "/" name ".pth")))
+    (when (file-exists? easy-install-pth)
+      (rename-file easy-install-pth new-pth))
+    #t))
+
 (define %standard-phases
   ;; 'configure' and 'build' phases are not needed.  Everything is done during
   ;; 'install'.
-  (alist-cons-after
-   'install 'wrap
-   wrap
-   (alist-replace
-    'build build
+  (alist-cons-before
+   'strip 'rename-pth-file
+   rename-pth-file
+   (alist-cons-after
+    'install 'wrap
+    wrap
     (alist-replace
-     'check check
-     (alist-replace 'install install
-                    (alist-delete 'configure
-                                               gnu:%standard-phases))))))
+     'build build
+     (alist-replace
+      'check check
+      (alist-replace 'install install
+                     (alist-delete 'configure
+                                   gnu:%standard-phases)))))))
 
 (define* (python-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)
