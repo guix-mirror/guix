@@ -209,11 +209,14 @@ entries corresponding to old generations of the system."
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
       #~(format port "menuentry ~s {
+  # Set 'root' to the partition that contains the kernel.
+  search --file --set ~a/bzImage~%
+
   linux ~a/bzImage ~a
   initrd ~a
 }~%"
                 #$label
-                #$linux (string-join (list #$@arguments))
+                #$linux #$linux (string-join (list #$@arguments))
                 #$initrd))))
 
   (mlet %store-monad ((sugar (eye-candy config #~port)))
@@ -223,14 +226,9 @@ entries corresponding to old generations of the system."
             #$sugar
             (format port "
 set default=~a
-set timeout=~a
-search.file ~a/bzImage~%"
+set timeout=~a~%"
                     #$(grub-configuration-default-entry config)
-                    #$(grub-configuration-timeout config)
-                    #$(any (match-lambda
-                            (($ <menu-entry> _ linux)
-                             linux))
-                           all-entries))
+                    #$(grub-configuration-timeout config))
             #$@(map entry->gexp all-entries)
 
             #$@(if (pair? old-entries)
