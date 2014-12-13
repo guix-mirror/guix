@@ -96,6 +96,7 @@ Xfce Desktop Environment.")
                (base32
                 "0xh520z0qh0ib0ijgnyrgii9h5d4pc53n6mx1chhyzfc86j1jlhp"))))
     (build-system gnu-build-system)
+    (arguments '(#:parallel-tests? #f)) ; parallel tests failed
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
