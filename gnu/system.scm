@@ -336,6 +336,11 @@ explicitly appear in OS."
          net-tools                        ; XXX: remove when Inetutils suffices
          man-db
 
+         ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
+         ;; want the other commands and the man pages (notably because
+         ;; auto-completion in Emacs shell relies on man pages.)
+         sudo
+
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
          ;; already depends on it anyway.
          kmod eudev
