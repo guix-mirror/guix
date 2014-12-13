@@ -1292,3 +1292,35 @@ engineering.")
     (description
      "The default GNOME 3 themes (Adwaita and some accessibility themes).")
     (license license:lgpl2.1+)))
+
+(define-public vala
+  (package
+    (name "vala")
+    (version "0.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0swyym2papln0f62ah05dpvq3vv6fssap26jq2zqp9dkkaqsn1w4"))))
+    (build-system gnu-build-system)
+    (arguments '(#:make-flags '("CC=gcc")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("xsltproc" ,libxslt)
+       ("dbus" ,dbus)                                     ; for dbus tests
+       ("gobject-introspection" ,gobject-introspection))) ; for gir tests
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by libvala-0.26.pc
+    (home-page "http://live.gnome.org/Vala/")
+    (synopsis "Compiler for the GObject type system")
+    (description
+     "Vala is a programming language that aims to bring modern programming
+language features to GNOME developers without imposing any additional runtime
+requirements and without using a different ABI compared to applications and
+libraries written in C.")
+    (license license:lgpl2.1+)))
