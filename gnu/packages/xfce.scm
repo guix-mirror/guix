@@ -276,6 +276,35 @@ applications menu, workspace switcher and more.")
     ;; Libraries are under LGPLv2.1+, and programs under GPLv2+.
     (license (list gpl2+ lgpl2.1+))))
 
+(define-public xfce4-battery-plugin
+  (package
+    (name "xfce4-battery-plugin")
+    (version "1.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "04gbplcj8z4vg5xbks8cc2jjf62mmf9sdymg90scjwmb82pv2ngn"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("intltool" ,intltool)))
+    (inputs `(("glib" ,glib)
+              ("gtk+" ,gtk+-2)
+              ("libxfce4util" ,libxfce4util)
+              ("libxfce4ui" ,libxfce4ui)
+              ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "http://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin")
+    (synopsis "Battery monitor panel plugin for Xfce4")
+    (description
+     "A battery monitor panel plugin for Xfce4, compatible with APM and ACPI.")
+    ;; The main plugin code is covered by gpl2+, but the files containing code
+    ;; to read the battery state via ACPI or APM are covered by lgpl2.0+.
+    (license (list gpl2+ lgpl2.0+))))
+
 (define-public xfce4-appfinder
   (package
     (name "xfce4-appfinder")
