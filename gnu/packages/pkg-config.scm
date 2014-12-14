@@ -71,13 +71,11 @@ instance.")))
        #:builder (begin
                    (use-modules (guix build utils))
 
-                   (let* ((out  (assoc-ref %outputs "out"))
-                          (bin  (string-append out "/bin"))
-                          (prog (string-append ,target "-pkg-config"))
-                          (native
-                           (string-append
-                            (assoc-ref %build-inputs "pkg-config")
-                            "/bin/pkg-config")))
+                   (let* ((in     (assoc-ref %build-inputs "pkg-config"))
+                          (out    (assoc-ref %outputs "out"))
+                          (bin    (string-append out "/bin"))
+                          (prog   (string-append ,target "-pkg-config"))
+                          (native (string-append in "/bin/pkg-config")))
 
                      (mkdir-p bin)
 
@@ -85,7 +83,13 @@ instance.")))
                      ;; This satisfies the pkg.m4 macros, which use
                      ;; AC_PROG_TOOL to determine the `pkg-config' program
                      ;; name.
-                     (symlink native (string-append bin "/" prog))))))
+                     (symlink native (string-append bin "/" prog))
+
+                     ;; Also make 'pkg.m4' available, some packages might
+                     ;; expect it.
+                     (mkdir-p (string-append out "/share"))
+                     (symlink (string-append in "/share/aclocal")
+                              (string-append out "/share/aclocal"))))))
     (native-inputs `(("pkg-config" ,%pkg-config)))
 
     ;; Ignore native inputs, and set `PKG_CONFIG_PATH' for target inputs.

@@ -64,6 +64,7 @@
             string->generations
             string->duration
             args-fold*
+            environment-build-options
             run-guix-command
             program-name
             guix-warning-port
@@ -711,6 +712,10 @@ reporting."
       ;; XXX: MSG is not i18n'd.
       (leave (_ "invalid argument: ~a~%")
              (apply format #f msg args)))))
+
+(define (environment-build-options)
+  "Return additional build options passed as environment variables."
+  (arguments-from-environment-variable "GUIX_BUILD_OPTIONS"))
 
 (define (show-guix-usage)
   (format (current-error-port)

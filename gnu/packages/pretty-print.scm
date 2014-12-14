@@ -196,3 +196,44 @@ output to 8 different formats, including HTML, LaTeX and ODF.  It can also
 output to ANSI color escape sequences, so that highlighted source code can be
 seen in a terminal.")
     (license gpl3+)))
+
+(define-public astyle
+  (package
+    (name "astyle")
+    (version "2.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/astyle/astyle/astyle%20"
+                           version "/astyle_"  version "_linux.tar.gz"))
+       (sha256
+        (base32
+         "0f9sh9kq5ajp1yz133h00fr9235p1m698x7n3h7zbrhjiwgynd6s"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags (list (string-append "prefix=" %output)
+                          "INSTALL=install"
+                          "all")
+       #:phases (alist-replace
+                 'configure
+                 (lambda _ (chdir "build/gcc"))
+                 (alist-cons-after
+                  'install 'install-libs
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Libraries are not installed by default
+                    (let* ((output (assoc-ref outputs "out"))
+                           (libdir (string-append output "/lib")))
+                      (begin
+                        (mkdir-p libdir)
+                        (for-each (lambda (l)
+                                    (copy-file
+                                     l (string-append libdir "/" (basename l))))
+                                  (find-files "bin" "lib*")))))
+                  %standard-phases))))
+    (home-page "http://astyle.sourceforge.net/")
+    (synopsis "Source code indenter, formatter, and beautifier")
+    (description
+     "Artistic Style is a source code indenter, formatter, and beautifier for
+the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
+    (license lgpl3+)))

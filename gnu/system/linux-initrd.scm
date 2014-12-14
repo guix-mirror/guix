@@ -92,7 +92,9 @@ MODULES and taken from LINUX."
   (define build-exp
     #~(begin
         (use-modules (ice-9 match) (ice-9 regex)
-                     (guix build utils))
+                     (srfi srfi-1)
+                     (guix build utils)
+                     (gnu build linux-modules))
 
         (define (string->regexp str)
           ;; Return a regexp that matches STR exactly.
@@ -101,21 +103,35 @@ MODULES and taken from LINUX."
         (define module-dir
           (string-append #$linux "/lib/modules"))
 
+        (define (lookup module)
+          (let ((name (ensure-dot-ko module)))
+            (match (find-files module-dir (string->regexp name))
+              ((file)
+               file)
+              (()
+               (error "module not found" name module-dir))
+              ((_ ...)
+               (error "several modules by that name"
+                      name module-dir)))))
+
+        (define modules
+          (let ((modules (map lookup '#$modules)))
+            (append modules
+                    (recursive-module-dependencies modules
+                                                   #:lookup-module lookup))))
+
         (mkdir #$output)
         (for-each (lambda (module)
-                    (match (find-files module-dir (string->regexp module))
-                      ((file)
-                       (format #t "copying '~a'...~%" file)
-                       (copy-file file (string-append #$output "/" module)))
-                      (()
-                       (error "module not found" module module-dir))
-                      ((_ ...)
-                       (error "several modules by that name"
-                              module module-dir))))
-                  '#$modules)))
+                    (format #t "copying '~a'...~%" module)
+                    (copy-file module
+                               (string-append #$output "/"
+                                              (basename module))))
+                  (delete-duplicates modules))))
 
   (gexp->derivation "linux-modules" build-exp
-                    #:modules '((guix build utils))))
+                    #:modules '((guix build utils)
+                                (guix elf)
+                                (gnu build linux-modules))))
 
 (define (file-system->spec fs)
   "Return a list corresponding to file-system FS that can be passed to the
@@ -150,16 +166,16 @@ modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
 loaded at boot time in the order in which they appear."
   (define virtio-modules
     ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
-    '("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
-      "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"))
+    '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
+      "virtio_console"))
 
   (define cifs-modules
     ;; Modules needed to mount CIFS file systems.
-    '("md4.ko" "ecb.ko" "cifs.ko"))
+    '("md4" "ecb" "cifs"))
 
   (define virtio-9p-modules
     ;; Modules for the 9p paravirtualized file system.
-    '("fscache.ko" "9pnet.ko" "9p.ko" "9pnet_virtio.ko"))
+    '("9p" "9pnet_virtio"))
 
   (define (file-system-type-predicate type)
     (lambda (fs)
@@ -167,8 +183,8 @@ loaded at boot time in the order in which they appear."
 
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    `("libahci.ko" "ahci.ko"                      ;for SATA controllers
-      "pata_acpi.ko" "pata_atiixp.ko"             ;for ATA controllers
+    `("ahci"                                   ;for SATA controllers
+      "pata_acpi" "pata_atiixp"                ;for ATA controllers
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())
@@ -179,7 +195,7 @@ loaded at boot time in the order in which they appear."
             virtio-9p-modules
             '())
       ,@(if volatile-root?
-            '("fuse.ko")
+            '("fuse")
             '())
       ,@extra-modules))
 
@@ -220,14 +236,15 @@ loaded at boot time in the order in which they appear."
          (boot-system #:mounts '#$(map file-system->spec file-systems)
                       #:pre-mount (lambda ()
                                     (and #$@device-mapping-commands))
-                      #:linux-modules (map (lambda (file)
-                                             (string-append #$kodir "/" file))
-                                           '#$linux-modules)
+                      #:linux-modules '#$linux-modules
+                      #:linux-module-directory '#$kodir
                       #:qemu-guest-networking? #$qemu-networking?
                       #:volatile-root? '#$volatile-root?))
      #:name "base-initrd"
      #:modules '((guix build utils)
                  (gnu build linux-boot)
-                 (gnu build file-systems)))))
+                 (gnu build linux-modules)
+                 (gnu build file-systems)
+                 (guix elf)))))
 
 ;;; linux-initrd.scm ends here

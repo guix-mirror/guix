@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,17 +25,18 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pulseaudio)
-  #:use-module ((gnu packages linux)
-                #:select (alsa-lib))
+  #:use-module (gnu packages linux)               ;alsa-lib
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake))
 
 (define-public libmad
   (package
@@ -128,6 +130,90 @@ across several platforms, and providing a powerful and feature-rich API with
 a highly stable and efficient implementation.")
    (license license:lgpl2.0+)
    (home-page "http://id3lib.sourceforge.net/")))
+
+(define-public taglib
+  (package
+    (name "taglib")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://taglib.github.io/releases/taglib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "06n7gnbcqa3r6c9gv00y0y1r48dyyazm6yj403i7ma0r2k6p3lvj"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))                    ;no 'test' target
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://developer.kde.org/~wheeler/taglib.html")
+    (synopsis "Library to access audio file meta-data")
+    (description
+     "TagLib is a C++ library for reading and editing the meta-data of several
+popular audio formats.  Currently it supports both ID3v1 and ID3v2 for MP3
+files, Ogg Vorbis comments and ID3 tags and Vorbis comments in FLAC, MPC,
+Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
+
+    ;; Dual-licensed: user may choose between LGPLv2.1 or MPLv1.1.
+    (license (list license:lgpl2.1 license:mpl1.1))))
+
+(define-public mp3info
+  (package
+    (name "mp3info")
+    (version "0.8.5a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.ibiblio.org/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "042f1czcs9n2sbqvg4rsvfwlqib2gk976mfa2kxlfjghx5laqf04"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/bin/rm") "rm")
+                  (("/usr/bin/install") "install")
+                  (("man/man1") "share/man/man1")))))
+    (build-system gnu-build-system)
+    (outputs '("out" "gui"))                      ;GTK+ interface in "gui"
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "Makefile"
+                       (("prefix=.*")
+                        (string-append "prefix := " out "\n")))))
+                 (alist-cons-before
+                  'install 'pre-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (mkdir-p (string-append out "/bin"))
+                      (mkdir-p (string-append out "/share/man/man1"))))
+                  (alist-cons-after
+                   'install 'post-install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Move the GTK+ interface to "gui".
+                     (let ((out (assoc-ref outputs "out"))
+                           (gui (assoc-ref outputs "gui")))
+                       (mkdir-p (string-append gui "/bin"))
+                       (rename-file (string-append out "/bin/gmp3info")
+                                    (string-append gui "/bin/gmp3info"))))
+                   %standard-phases)))
+        #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("ncurses" ,ncurses)))
+    (home-page "http://www.ibiblio.org/mp3info/")
+    (synopsis "MP3 technical info viewer and ID3 1.x tag editor")
+    (description
+     "MP3Info is a little utility used to read and modify the ID3 tags of MP3
+files.  MP3Info can also display various techincal aspects of an MP3 file
+including playing time, bit-rate, sampling frequency and other attributes in a
+pre-defined or user-specifiable output format.")
+    (license license:gpl2+)))
 
 (define-public libmp3splt
   (package

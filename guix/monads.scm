@@ -39,7 +39,9 @@
             mlet
             mlet*
             mbegin
-            lift1 lift2 lift3 lift4 lift5 lift6 lift7 lift
+            mwhen
+            munless
+            lift0 lift1 lift2 lift3 lift4 lift5 lift6 lift7 lift
             listm
             foldm
             mapm
@@ -173,9 +175,15 @@ form is (VAR -> VAL), bind VAR to the non-monadic value VAL in the same way as
                body ...)))))))
 
 (define-syntax mbegin
-  (syntax-rules ()
+  (syntax-rules (%current-monad)
     "Bind the given monadic expressions in sequence, returning the result of
 the last one."
+    ((_ %current-monad mexp)
+     mexp)
+    ((_ %current-monad mexp rest ...)
+     (>>= mexp
+          (lambda (unused-value)
+            (mbegin %current-monad rest ...))))
     ((_ monad mexp)
      (with-monad monad
        mexp))
@@ -184,6 +192,26 @@ the last one."
        (>>= mexp
             (lambda (unused-value)
               (mbegin monad rest ...)))))))
+
+(define-syntax mwhen
+  (syntax-rules ()
+    "When CONDITION is true, evaluate EXP0..EXP* as in an 'mbegin'.  When
+CONDITION is false, return *unspecified* in the current monad."
+    ((_ condition exp0 exp* ...)
+     (if condition
+         (mbegin %current-monad
+           exp0 exp* ...)
+         (return *unspecified*)))))
+
+(define-syntax munless
+  (syntax-rules ()
+    "When CONDITION is false, evaluate EXP0..EXP* as in an 'mbegin'.  When
+CONDITION is true, return *unspecified* in the current monad."
+    ((_ condition exp0 exp* ...)
+     (if condition
+         (return *unspecified*)
+         (mbegin %current-monad
+           exp0 exp* ...)))))
 
 (define-syntax define-lift
   (syntax-rules ()
@@ -194,6 +222,7 @@ the last one."
          (with-monad monad
            (return (proc args ...))))))))
 
+(define-lift lift0 ())
 (define-lift lift1 (a))
 (define-lift lift2 (a b))
 (define-lift lift3 (a b c))

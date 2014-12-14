@@ -31,7 +31,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.16")
+    (version "1.16.1")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1rxhr3jmgbwryzl51di4avqxw9m9j1z2aak8q1npns0p184xsqcj"))))
+        "0csdw41hixa4kd0m19r7p41sip1hlnkp5y62bdzq9zhmxq3wg5ib"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)

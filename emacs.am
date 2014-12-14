@@ -21,6 +21,7 @@ AUTOLOADS = emacs/guix-autoloads.el
 ELFILES =					\
   emacs/guix-backend.el				\
   emacs/guix-base.el				\
+  emacs/guix-emacs.el				\
   emacs/guix-history.el				\
   emacs/guix-info.el				\
   emacs/guix-list.el				\
@@ -36,7 +37,8 @@ dist_lisp_DATA =				\
   $(AUTOLOADS)
 
 nodist_lisp_DATA =				\
-  emacs/guix-init.el
+  emacs/guix-init.el				\
+  emacs/guix-profiles.el
 
 $(AUTOLOADS): $(ELFILES)
 	$(EMACS) --batch --eval						\

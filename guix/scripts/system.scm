@@ -131,6 +131,27 @@ TARGET, and register them."
               (map (cut copy-item <> target #:log-port log-port)
                    to-copy))))
 
+(define (install-grub* grub.cfg device target)
+  "This is a variant of 'install-grub' with error handling, lifted in
+%STORE-MONAD"
+  (let* ((gc-root      (string-append %gc-roots-directory "/grub.cfg"))
+         (temp-gc-root (string-append gc-root ".new"))
+         (delete-file  (lift1 delete-file %store-monad))
+         (make-symlink (lift2 switch-symlinks %store-monad))
+         (rename       (lift2 rename-file %store-monad)))
+    (mbegin %store-monad
+      ;; Prepare the symlink to GRUB.CFG to make sure that it's a GC root when
+      ;; 'install-grub' completes (being a bit paranoid.)
+      (make-symlink temp-gc-root grub.cfg)
+
+      (munless (false-if-exception (install-grub grub.cfg device target))
+        (delete-file temp-gc-root)
+        (leave (_ "failed to install GRUB on device '~a'~%") device))
+
+      ;; Register GRUB.CFG as a GC root so that its dependencies (background
+      ;; image, font, etc.) are not reclaimed.
+      (rename temp-gc-root gc-root))))
+
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
@@ -151,18 +172,19 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
             ;; Copy items to the new store.
             (copy-closure to-copy target #:log-port log-port)))))
 
-  (mlet* %store-monad ((os-dir -> (derivation->output-path os-drv))
-                       (%         (maybe-copy os-dir)))
+  (let ((os-dir   (derivation->output-path os-drv))
+        (format   (lift format %store-monad))
+        (populate (lift2 populate-root-file-system %store-monad)))
 
-    ;; Create a bunch of additional files.
-    (format log-port "populating '~a'...~%" target)
-    (populate-root-file-system os-dir target)
+    (mbegin %store-monad
+      (maybe-copy os-dir)
 
-    (when grub?
-      (unless (false-if-exception (install-grub grub.cfg device target))
-        (leave (_ "failed to install GRUB on device '~a'~%") device)))
+      ;; Create a bunch of additional files.
+      (format log-port "populating '~a'...~%" target)
+      (populate os-dir target)
 
-    (return #t)))
+      (mwhen grub?
+        (install-grub* grub.cfg device target)))))
 
 
 ;;;
@@ -334,14 +356,11 @@ boot directly to the kernel or to the bootloader."
 
           (case action
             ((reconfigure)
-             (mlet %store-monad ((% (switch-to-system os)))
-               (when grub?
-                 (unless (false-if-exception
-                          (install-grub (derivation->output-path grub.cfg)
-                                        device "/"))
-                   (leave (_ "failed to install GRUB on device '~a'~%")
-                          device)))
-               (return #t)))
+             (mbegin %store-monad
+               (switch-to-system os)
+               (mwhen grub?
+                 (install-grub* (derivation->output-path grub.cfg)
+                                device "/"))))
             ((init)
              (newline)
              (format #t (_ "initializing operating system under '~a'...~%")
@@ -467,6 +486,11 @@ Build the operating system declared in FILE according to ACTION.\n"))
 (define (guix-system . args)
   (define (parse-options)
     ;; Return the alist of option values.
+    (append (parse-options-from args)
+            (parse-options-from (environment-build-options))))
+
+  (define (parse-options-from args)
+    ;; Actual parsing takes place here.
     (args-fold* args %options
                 (lambda (opt name arg result)
                   (leave (_ "~A: unrecognized option~%") name))

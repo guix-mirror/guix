@@ -39,7 +39,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.13")
+    (version "1.17")
     (source
      (origin
       (method url-fetch)
@@ -47,7 +47,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "02lv5h865f8if391xjp3njg04k0l4x2pwjkcdbzcwilail1skazq"))))
+        "1dapxzxl1naghf342fwfc2w2f2c5hb9gr1a1s4n8dsqn26kybx1z"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -132,7 +132,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.3.0")
+    (version "1.3.2")
     (source
      (origin
       (method url-fetch)
@@ -141,7 +141,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0w8rfb6yhcwkwzvjafrashcygy4hd9xwwmvlnkfd1m2h0paywqas"))))
+        "01l4hvcknk9nb4bvyb6aqaid19jg0wv3ik54j1b89hnzamwm75gb"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))

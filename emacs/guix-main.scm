@@ -857,6 +857,7 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                (derivations (list derivation))
                (new-profile (derivation->output-path derivation)))
           (set-build-options store
+                             #:print-build-trace #f
                              #:use-substitutes? use-substitutes?)
           (show-manifest-transaction store manifest transaction
                                      #:dry-run? dry-run?)
@@ -908,6 +909,7 @@ GENERATIONS is a list of generation numbers."
       (let* ((derivation  (package-source-derivation store source))
              (derivations (list derivation)))
         (set-build-options store
+                           #:print-build-trace #f
                            #:use-substitutes? use-substitutes?)
         (show-what-to-build store derivations
                             #:use-substitutes? use-substitutes?

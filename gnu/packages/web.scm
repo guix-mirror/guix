@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages web)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -76,6 +78,69 @@ using the Internet and the Web to communicate, plan, and develop the server
 and its related documentation.")
     (license l:asl2.0)
     (home-page "https://httpd.apache.org/")))
+
+(define-public nginx
+  (package
+    (name "nginx")
+    (version "1.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://nginx.org/download/nginx-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "060s77qxhkn02fjkcndsr0xppj2bppjzkj0gn84svrykb4lqqq5m"))))
+    (build-system gnu-build-system)
+    (inputs `(("pcre" ,pcre)
+              ("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f                      ; no test target
+       #:phases
+       (alist-cons-before
+        'configure 'patch-/bin/sh
+        (lambda _
+          (substitute* "auto/feature"
+            (("/bin/sh") (which "bash"))))
+        (alist-replace
+         'configure
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((flags
+                  (list (string-append "--prefix=" (assoc-ref outputs "out"))
+                        "--with-http_ssl_module"
+                        "--with-pcre-jit"
+                        "--with-ipv6"
+                        "--with-debug"
+                        ;; Even when not cross-building, we pass the
+                        ;; --crossbuild option to avoid customizing for the
+                        ;; kernel version on the build machine.
+                        ,(let ((system "Linux")    ; uname -s
+                               (release "2.6.32")  ; uname -r
+                               ;; uname -m
+                               (machine (match (or (%current-target-system)
+                                                   (%current-system))
+                                          ("x86_64-linux"   "x86_64")
+                                          ("i686-linux"     "i686")
+                                          ("mips64el-linux" "mips64"))))
+                           (string-append "--crossbuild="
+                                          system ":" release ":" machine)))))
+             (setenv "CC" "gcc")
+             (format #t "environment variable `CC' set to `gcc'~%")
+             (format #t "configure flags: ~s~%" flags)
+             (zero? (apply system* "./configure" flags))))
+         %standard-phases))))
+    (home-page "http://nginx.org")
+    (synopsis "HTTP and reverse proxy server")
+    (description
+     "Nginx (\"engine X\") is a high-performance web and reverse proxy server
+created by Igor Sysoev.  It can be used both as a standalone web server
+and as a proxy to reduce the load on back-end HTTP or mail servers.")
+    ;; Almost all of nginx is distributed under the bsd-2 license.
+    ;; The exceptions are:
+    ;;   * The 'nginx-http-push' module is covered by the expat license.
+    ;;   * The 'nginx-development-kit' module is mostly covered by bsd-3,
+    ;;     except for two source files which are bsd-4 licensed.
+    (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
 
 (define-public json-c
   (package

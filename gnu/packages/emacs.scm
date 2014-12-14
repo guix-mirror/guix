@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages gtk)
@@ -44,6 +46,10 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages linux)               ;alsa
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages mp3)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
@@ -58,7 +64,7 @@
              (sha256
               (base32
                "1zflm6ac34s6v166p58ilxrxbxjm0q2wfc25f8y0mjml1lbr3qs7"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (alist-cons-before
                  'configure 'fix-/bin/pwd
@@ -114,6 +120,7 @@ languages.")
     (name "emacs-no-x-toolkit")
     (synopsis "The extensible, customizable, self-documenting text
 editor (without an X toolkit)" )
+    (build-system gnu-build-system)
     (inputs (append `(("inotify-tools" ,inotify-tools))
                     (alist-delete "gtk+" (package-inputs emacs))))
     (arguments (append '(#:configure-flags '("--with-x-toolkit=no"))
@@ -135,6 +142,15 @@ editor (without an X toolkit)" )
              (sha256
               (base32 "1mrk0bzqcpfhsw6635qznn47nzfy9ps7wrhkpymswdfpw5mdsry5"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (symlink "geiser-install.el"
+                            (string-append (assoc-ref outputs "out")
+                                           "/share/emacs/site-lisp/"
+                                           "geiser-autoloads.el")))
+                 %standard-phases)))
     (inputs `(("guile" ,guile-2.0)
               ("emacs" ,emacs)))
     (home-page "http://nongnu.org/geiser/")
@@ -186,6 +202,7 @@ giving her access to live metadata.")
            (copy-file source target)
            (with-directory-excursion lisp-dir
              (parameterize ((%emacs emacs))
+               (emacs-generate-autoloads ,name lisp-dir)
                (emacs-batch-eval '(byte-compile-file "paredit.el"))))))))
     (home-page "http://mumble.net/~campbell/emacs/paredit/")
     (synopsis "Emacs minor mode for editing parentheses")
@@ -240,7 +257,13 @@ when typing parentheses directly or commenting out code line by line.")
              (emacs-substitute-variables "magit.el"
                ("magit-git-executable" (string-append git "/bin/git"))
                ("magit-gitk-executable" (string-append git:gui "/bin/gitk")))))
-         %standard-phases))))
+         (alist-cons-after
+          'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (emacs-generate-autoloads
+             ,name (string-append (assoc-ref outputs "out")
+                                  "/share/emacs/site-lisp/")))
+          %standard-phases)))))
     (home-page "http://magit.github.io/")
     (synopsis "Emacs interface for the Git version control system")
     (description
@@ -317,6 +340,7 @@ operations.")
                      (string-append (assoc-ref outputs "out")
                                     "/share/emacs/site-lisp")
                    (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                   (symlink "w3m-load.el" "w3m-autoloads.el")
                    #t)))
           %standard-phases)))))
     (home-page "http://emacs-w3m.namazu.org/")
@@ -359,9 +383,183 @@ operations.")
            (let ((wget (assoc-ref inputs "wget")))
              (emacs-substitute-variables "wget.el"
                ("wget-command" (string-append wget "/bin/wget")))))
-         %standard-phases))))
+         (alist-cons-after
+          'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (emacs-generate-autoloads
+             "wget" (string-append (assoc-ref outputs "out")
+                                   "/share/emacs/site-lisp/")))
+          %standard-phases)))))
     (home-page "http://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
      "Emacs-wget is an emacs interface for the wget file downloader.")
     (license gpl2+)))
+
+
+;;;
+;;; Multimedia.
+;;;
+
+(define-public emms
+  (package
+    (name "emms")
+    (version "4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/emms/emms-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1q0n3iwva8bvai2rl9sm49sdjmk0wi7vajz4knz01l7g67nrp87l"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/usr/bin/install-info")
+                   ;; No need to use 'install-info' since it would create a
+                   ;; useless 'dir' file.
+                   "true")
+                  (("^INFODIR=.*")
+                   ;; Install Info files to $out/share/info, not $out/info.
+                   "INFODIR := $(PREFIX)/share/info\n")
+                  (("/site-lisp/emms")
+                   ;; Install directly in share/emacs/site-lisp, not in a
+                   ;; sub-directory.
+                   "/site-lisp")
+                  (("^all: (.*)\n" _ rest)
+                   ;; Build 'emms-print-metadata'.
+                   (string-append "all: " rest " emms-print-metadata\n"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build emacs-utils))
+
+       #:phases (alist-replace
+                 'configure
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out     (assoc-ref outputs "out"))
+                         (vorbis  (assoc-ref inputs "vorbis-tools"))
+                         (alsa    (assoc-ref inputs "alsa-utils"))
+                         (mpg321  (assoc-ref inputs "mpg321"))
+                         (mp3info (assoc-ref inputs "mp3info")))
+                     ;; Specify the installation directory.
+                     (substitute* "Makefile"
+                       (("PREFIX=.*$")
+                        (string-append "PREFIX := " out "\n")))
+
+                     (setenv "SHELL" (which "sh"))
+                     (setenv "CC" "gcc")
+
+                     ;; Specify the absolute file names of the various
+                     ;; programs so that everything works out-of-the-box.
+                     (with-directory-excursion "lisp"
+                       (emacs-substitute-variables
+                           "emms-player-mpg321-remote.el"
+                         ("emms-player-mpg321-remote-command"
+                          (string-append mpg321 "/bin/mpg321")))
+                       (substitute* "emms-player-simple.el"
+                         (("\"ogg123\"")
+                          (string-append "\"" vorbis "/bin/ogg123\"")))
+                       (emacs-substitute-variables "emms-info-ogginfo.el"
+                         ("emms-info-ogginfo-program-name"
+                          (string-append vorbis "/bin/ogginfo")))
+                       (emacs-substitute-variables "emms-info-libtag.el"
+                         ("emms-info-libtag-program-name"
+                          (string-append out "/bin/emms-print-metadata")))
+                       (emacs-substitute-variables "emms-info-mp3info.el"
+                         ("emms-info-mp3info-program-name"
+                          (string-append mp3info "/bin/mp3info")))
+                       (substitute* "emms-volume-amixer.el"
+                         (("\"amixer\"")
+                          (string-append "\"" alsa "/bin/amixer\"")))
+                       (substitute* "emms-tag-editor.el"
+                         (("\"mp3info\"")
+                          (string-append mp3info "/bin/mp3info"))))))
+                 (alist-cons-before
+                  'install 'pre-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; The 'install' rule expects 'emms-print-metadata.1' to
+                    ;; be already installed.
+                    (let* ((out  (assoc-ref outputs "out"))
+                           (man1 (string-append out "/share/man/man1")))
+                      (mkdir-p man1)
+                      (copy-file "emms-print-metadata.1"
+                                 (string-append man1 "/emms-print-metadata.1"))))
+                  (alist-cons-after
+                   'install 'post-install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (target (string-append
+                                     out "/bin/emms-print-metadata")))
+                       (symlink "emms-auto.el"
+                                (string-append out "/share/emacs/site-lisp/"
+                                               "emms-autoloads.el"))
+                       (mkdir-p (dirname target))
+                       (copy-file "src/emms-print-metadata" target)
+                       (chmod target #o555)))
+                   %standard-phases)))
+       #:tests? #f))
+    (native-inputs `(("emacs" ,emacs)            ;for (guix build emacs-utils)
+                     ("texinfo" ,texinfo)))
+    (inputs `(;("perl" ,perl)                     ;for 'emms-print-metadata.pl'
+              ("alsa-utils" ,alsa-utils)
+              ("vorbis-tools" ,vorbis-tools)
+              ("mpg321" ,mpg321)
+              ("taglib" ,taglib)
+              ("mp3info" ,mp3info)))
+    (synopsis "Emacs Multimedia System")
+    (description
+     "EMMS is the Emacs Multimedia System.  It is a small front-end which
+can control one of the supported external players.  Thus, it supports
+whatever formats are supported by your music player.  It also
+supports tagging and playlist management, all behind a clean and
+light user interface.")
+    (home-page "http://www.gnu.org/software/emms/")
+    (license gpl3+)))
+
+
+;;;
+;;; Miscellaneous.
+;;;
+
+(define-public bbdb
+  (package
+    (name "bbdb")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/bbdb/bbdb-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gs16bbpiiy01w9pyg12868r57kx1v3hnw04gmqsmpc40l1hyy05"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; We don't want to build and install the PDF.
+               '(substitute* "doc/Makefile.in"
+                  (("^doc_DATA = .*$")
+                   "doc_DATA =\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Add an autoloads file with the right name for guix.el.
+                   (let* ((out  (assoc-ref outputs "out"))
+                          (site (string-append out "/share/emacs/site-lisp")))
+                     (with-directory-excursion site
+                       (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el"))))
+                 %standard-phases)))
+    (native-inputs `(("emacs" ,emacs)))
+    (home-page "http://savannah.nongnu.org/projects/bbdb/")
+    (synopsis "Contact management utility for Emacs")
+    (description
+     "BBDB is the Insidious Big Brother Database for GNU Emacs.  It provides
+an address book for email and snail mail addresses, phone numbers and the
+like.  It can be linked with various Emacs mail clients (Message and Mail
+mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
+    (license gpl3+)))

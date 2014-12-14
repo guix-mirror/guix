@@ -84,3 +84,58 @@ left corner.
 dwm draws a small customizable border around windows to indicate the focus
 state.")
     (license x11)))
+
+(define-public dmenu
+  (package
+    (name "dmenu")
+    (version "4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/dmenu-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0l58jpxrr80fmyw5pgw5alm5qry49aw6y049745wl991v2cdcb08"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)))
+    (home-page "http://tools.suckless.org/dmenu/")
+    (synopsis "Dynamic menu")
+    (description
+     "A dynamic menu for X, originally designed for dwm.  It manages large
+numbers of user-defined menu items efficiently.")
+    (license x11)))
+
+(define-public slock
+  (package
+    (name "slock")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/slock-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1r70s3npmp0nyrfdsxz8cw1i1z8n9phqdlw02wjphv341h3yajp0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)))
+    (home-page "http://tools.suckless.org/slock/")
+    (synopsis "Simple X session lock")
+    (description
+     "Simple X session lock with trivial feedback on password entry.")
+    (license x11)))

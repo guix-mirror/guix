@@ -72,6 +72,7 @@
             package-name->name+version
             string-tokenize*
             string-replace-substring
+            arguments-from-environment-variable
             file-extension
             file-sans-extension
             call-with-temporary-output-file
@@ -626,6 +627,15 @@ REPLACEMENT."
                 (cons* replacement
                        (substring str start index)
                        pieces))))))))
+
+(define (arguments-from-environment-variable variable)
+  "Retrieve value of environment variable denoted by string VARIABLE in the
+form of a list of strings (`char-set:graphic' tokens) suitable for consumption
+by `args-fold', if VARIABLE is defined, otherwise return an empty list."
+  (let ((env (getenv variable)))
+    (if env
+        (string-tokenize env char-set:graphic)
+        '())))
 
 (define (call-with-temporary-output-file proc)
   "Call PROC with a name of a temporary file and open output port to that

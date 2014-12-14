@@ -96,6 +96,7 @@ Section \"Files\"
   ModulePath \"" xf86-video-intel "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-mach64 "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-nv "/lib/xorg/modules/drivers\"
+  ModulePath \"" xf86-video-sis "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-synaptics "/lib/xorg/modules/input\"
@@ -142,28 +143,31 @@ EndSection
     #~(begin
         (use-modules (ice-9 match))
 
-        (let* ((home     (getenv "HOME"))
-               (profile  (string-append home "/.guix-profile/bin"))
-               (PATH     (or (getenv "PATH") ""))
-               (xsession (string-append home "/.xsession")))
-          ;; Make sure the user's profile is visible.
-          (setenv "PATH"
-                  (string-append profile
-                                 (if (string-null? PATH) "" ":")
-                                 PATH))
+        (define (exec-from-login-shell command . args)
+          ;; Run COMMAND from a login shell so that it gets to see the same
+          ;; environment variables that one gets when logging in on a tty, for
+          ;; instance.
+          (let* ((pw    (getpw (getuid)))
+                 (shell (passwd:shell pw))
+                 (st    (stat command #f)))
+            (when (and st (not (zero? (logand (stat:mode st) #o100))))
+              ;; The '--login' option is supported at least by Bash and zsh.
+              (execl shell shell "--login" "-c"
+                     (string-join (cons command args))))))
 
-          ;; First, try to run ~/.xsession.
-          (false-if-exception (execl xsession xsession)))
+        ;; First, try to run ~/.xsession.
+        (let* ((home     (getenv "HOME"))
+               (xsession (string-append home "/.xsession")))
+          (exec-from-login-shell xsession))
 
         ;; Then try a pre-configured session type.
         (let ((ratpoison (string-append #$ratpoison "/bin/ratpoison"))
               (wmaker    (string-append #$windowmaker "/bin/wmaker")))
           (match (command-line)
             ((_ "ratpoison")
-             (execl ratpoison ratpoison))
+             (exec-from-login-shell ratpoison))
             (_
-             ;; 'wmaker' does execvp(argv[0]), so we really can't mess up.
-             (execl wmaker wmaker))))))
+             (exec-from-login-shell wmaker))))))
 
   (gexp->script "xinitrc" builder))
 

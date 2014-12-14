@@ -52,6 +52,7 @@
 ;;; Code:
 
 (require 'geiser-mode)
+(require 'guix-emacs)
 
 (defvar guix-load-path
   (file-name-directory (or load-file-name
@@ -125,7 +126,8 @@ This REPL is used for receiving information only if
   "Hook run before executing an operation in Guix REPL.")
 
 (defvar guix-after-repl-operation-hook
-  '(guix-repl-operation-success-message)
+  '(guix-emacs-load-autoloads-maybe
+    guix-repl-operation-success-message)
   "Hook run after executing successful operation in Guix REPL.")
 
 (defvar guix-repl-operation-p nil

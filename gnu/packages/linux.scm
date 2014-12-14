@@ -192,7 +192,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.17.3")
+  (let* ((version "3.18")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -265,7 +265,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1qyk70m7y7ak94idkqpgyinnnpqpwxvl39rwh8pqdvrcm7w5b0lq"))))
+               "1kv03bhls9rya4sg3qixyjirc79pn2g5bcwldcj7hs4apa77sd0g"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -1487,7 +1487,13 @@ mapper.  Kernel components are part of Linux-libre.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qscyd44jmhs4k32ggp107hlym1pcyjzihiai48xs7xzib4wbndb"))))
+                "0qscyd44jmhs4k32ggp107hlym1pcyjzihiai48xs7xzib4wbndb"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Install the manual pages in the right place.
+               '(substitute* "Makefile"
+                  (("INSTALL_MAN= .*")
+                   "INSTALL_MAN= $(PREFIX)/share/man")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace

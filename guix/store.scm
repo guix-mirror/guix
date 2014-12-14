@@ -435,14 +435,14 @@ encoding conversion errors."
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
-                            (max-build-jobs (current-processor-count))
+                            (max-build-jobs 1)
                             timeout
                             (max-silent-time 3600)
                             (use-build-hook? #t)
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
-                            (build-cores 1)
+                            (build-cores (current-processor-count))
                             (use-substitutes? #t)
                             (binary-caches '())) ; client "untrusted" cache URLs
   ;; Must be called after `open-connection'.

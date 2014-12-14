@@ -56,11 +56,21 @@ Manual}):
 (require 'guix-init)
 @end example
 
-Do not worry about the efficiency of that @code{require} thing.  It will
-not load the whole ``guix.el'' package, it will just autoload the main
-interactive commands (@pxref{Autoload,,, elisp, The GNU Emacs Lisp
-Reference Manual}).
+By default, along with autoloading (@pxref{Autoload,,, elisp, The GNU
+Emacs Lisp Reference Manual}) the main interactive commands for
+``guix.el'' (@pxref{Emacs Commands}), requiring @code{guix-init} will
+also autoload commands for the Emacs packages installed in your user
+profile.
 
+To disable automatic loading of installed Emacs packages, set
+@code{guix-package-enable-at-startup} variable to @code{nil} before
+requiring @code{guix-init}.  This variable has the same meaning for
+Emacs packages installed with Guix, as @code{package-enable-at-startup}
+for the built-in Emacs package system (@pxref{Package Installation,,,
+emacs, The GNU Emacs Manual}).
+
+You can activate Emacs packages installed in your profile whenever you
+want using @kbd{M-x@tie{}guix-emacs-load-autoloads}.
 
 @node Emacs Usage
 @subsection Usage

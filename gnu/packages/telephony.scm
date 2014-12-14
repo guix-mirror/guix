@@ -56,13 +56,13 @@ reimplementation.")
 (define-public ucommon
   (package
    (name "ucommon")
-   (version "6.1.11")
+   (version "6.2.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/commoncpp/" name "-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0hpwxiyd7c3qnzksk6vw94cdig1v8yy6khgcaa87a7hb3zbkv4zg"))))
+                     "1apk1k877knvh2k1yqspsln5wm81a4ly4w97ang1qhi21ydwgjnn"))))
    (build-system gnu-build-system)
    (synopsis "Common C++ framework for threaded applications")
    (description "GNU uCommon C++ is meant as a very light-weight C++ library
@@ -75,13 +75,13 @@ support.")
 (define-public ccrtp
   (package
    (name "ccrtp")
-   (version "2.0.9")
+   (version "2.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ccrtp/ccrtp-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "1prh2niwa4lzvskk12j4ckr7dv141dfh8yjmpkbhbnv4gmpifci0"))))
+                     "1p1pk2m7v75rdrh05rizpqcd5p08g3n541rw0kssyfzd805fb90d"))))
    (build-system gnu-build-system)
    (inputs `(("ucommon" ,ucommon)
              ("libgcrypt" ,libgcrypt)))
@@ -142,13 +142,13 @@ multiplayer games.")
 (define-public sipwitch
   (package
    (name "sipwitch")
-   (version "1.9.2")
+   (version "1.9.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sipwitch/sipwitch-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0cf0zrdfi4w9qn50ags3rvwc29km2k526f6sm6i7jb0hsrvg0k8x"))))
+                     "1iyh390rmxqrks7rypl8ql7fhd3pmy2ckqnp1p0llzrx67jh2q91"))))
    (build-system gnu-build-system)
    ;; The configure.ac uses pkg-config but in a kludgy way which breaks when 
    ;; cross-compiling.  Among other issues there the program name "pkg-config"

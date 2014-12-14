@@ -26,6 +26,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
+  #:use-module (gnu build linux-modules)
   #:use-module (gnu build file-systems)
   #:export (mount-essential-file-systems
             linux-command-line
@@ -34,7 +35,6 @@
             configure-qemu-networking
 
             bind-mount
-            load-linux-module*
             device-number
             boot-system))
 
@@ -218,14 +218,6 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 
     (logand (network-interface-flags sock interface) IFF_UP)))
 
-(define (load-linux-module* file)
-  "Load Linux module from FILE, the name of a `.ko' file."
-  (define (slurp module)
-    ;; TODO: Use 'mmap' to reduce memory usage.
-    (call-with-input-file file get-bytevector-all))
-
-  (load-linux-module (slurp file)))
-
 (define (device-number major minor)
   "Return the device number for the device with MAJOR and MINOR, for use as
 the last argument of `mknod'."
@@ -332,16 +324,17 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
 
 (define* (boot-system #:key
                       (linux-modules '())
+                      linux-module-directory
                       qemu-guest-networking?
                       volatile-root?
                       pre-mount
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
-first loading LINUX-MODULES (a list of absolute file names of '.ko' files),
-then setting up QEMU guest networking if QEMU-GUEST-NETWORKING? is true,
-calling PRE-MOUNT, mounting the file systems specified in MOUNTS, and finally
-booting into the new root if any.  The initrd supports kernel command-line
-options '--load', '--root', and '--repl'.
+first loading LINUX-MODULES (a list of module names) from
+LINUX-MODULE-DIRECTORY, then setting up QEMU guest networking if
+QEMU-GUEST-NETWORKING? is true, calling PRE-MOUNT, mounting the file systems
+specified in MOUNTS, and finally booting into the new root if any.  The initrd
+supports kernel command-line options '--load', '--root', and '--repl'.
 
 Mount the root file system, specified by the '--root' command-line argument,
 if any.
@@ -362,6 +355,10 @@ to it are lost."
              mounts)
         "ext4"))
 
+  (define (lookup-module name)
+    (string-append linux-module-directory "/"
+                   (ensure-dot-ko name)))
+
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
 
@@ -376,7 +373,10 @@ to it are lost."
          (start-repl))
 
        (display "loading kernel modules...\n")
-       (for-each load-linux-module* linux-modules)
+       (current-module-debugging-port (current-output-port))
+       (for-each (cut load-linux-module* <>
+                      #:lookup-module lookup-module)
+                 (map lookup-module linux-modules))
 
        (when qemu-guest-networking?
          (unless (configure-qemu-networking)
@@ -388,6 +388,14 @@ to it are lost."
        ;; Prepare the real root file system under /root.
        (unless (file-exists? "/root")
          (mkdir "/root"))
+
+       (when (procedure? pre-mount)
+         ;; Do whatever actions are needed before mounting the root file
+         ;; system--e.g., installing device mappings.  Error out when the
+         ;; return value is false.
+         (unless (pre-mount)
+           (error "pre-mount actions failed")))
+
        (if root
            (mount-root-file-system (canonicalize-device-spec root)
                                    root-fs-type
@@ -397,11 +405,6 @@ to it are lost."
        (unless (file-exists? "/root/dev")
          (mkdir "/root/dev")
          (make-essential-device-nodes #:root "/root"))
-
-       (when (procedure? pre-mount)
-         ;; Do whatever actions are needed before mounting--e.g., installing
-         ;; device mappings.
-         (pre-mount))
 
        ;; Mount the specified file systems.
        (for-each mount-file-system

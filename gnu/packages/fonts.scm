@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,9 +32,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config))
 
-(define-public ttf-dejavu
+(define-public font-dejavu
   (package
-    (name "ttf-dejavu")
+    (name "font-dejavu")
     (version "2.34")
     (source (origin
              (method url-fetch)
@@ -97,9 +98,9 @@ provide serif, sans and monospaced variants.")
      (license:x11-style
       "http://dejavu-fonts.org/"))))
 
-(define-public ttf-bitstream-vera
+(define-public font-bitstream-vera
   (package
-    (name "ttf-bitstream-vera")
+    (name "font-bitstream-vera")
     (version "1.10")
     (source (origin
              (method url-fetch)
@@ -151,9 +152,9 @@ package provides the TrueType (TTF) files.")
      (license:x11-style
       "https://www-old.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
 
-(define-public freefont-ttf
+(define-public font-gnu-freefont-ttf
   (package
-    (name "freefont-ttf")
+    (name "font-gnu-freefont-ttf")
     (version "20100919")
     (source (origin
              (method url-fetch)
@@ -203,9 +204,74 @@ package provides the TrueType (TTF) files.")
 10646/Unicode UCS (Universal Character Set).")
    (license license:gpl3+)))
 
-(define-public terminus-font
+(define-public font-liberation
   (package
-    (name "terminus-font")
+    (name "font-liberation")
+    (version "2.00.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://fedorahosted.org/releases/l/i/"
+                                  "liberation-fonts/liberation-fonts-ttf-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "010m4zfqan4w04b6bs9pm3gapn9hsb18bmwwgp2p6y6idj52g43q"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
+                                        "/bin/tar"))
+               (PATH     (string-append (assoc-ref %build-inputs "gzip")
+                                        "/bin"))
+               (font-dir (string-append %output "/share/fonts/truetype"))
+               (doc-dir  (string-append %output "/share/doc/" ,name)))
+           (setenv "PATH" PATH)
+           (system* tar "xvf" (assoc-ref %build-inputs "source"))
+           (mkdir-p font-dir)
+           (mkdir-p doc-dir)
+           (chdir (string-append "liberation-fonts-ttf-" ,version))
+           (for-each (lambda (ttf)
+                       (copy-file ttf
+                                  (string-append font-dir "/"
+                                                 (basename ttf))))
+                     (find-files "." "\\.ttf$"))
+           (for-each (lambda (doc)
+                       (copy-file doc
+                                  (string-append doc-dir "/"
+                                                 (basename doc))))
+                     '("AUTHORS" "ChangeLog" "LICENSE" "README" "TODO"))))))
+    (native-inputs
+     `(("source" ,source)
+       ("tar" ,tar)
+       ("gzip" ,gzip)))
+    (home-page "https://fedorahosted.org/liberation-fonts/")
+    (synopsis
+     "Fonts compatible with Arial, Times New Roman, and Courier New")
+    (description
+     "The Liberation font family aims at metric compatibility with
+Arial, Times New Roman, and Courier New.
+
+There are three sets:
+
+- Sans (a substitute for Arial, Albany, Helvetica, Nimbus Sans L, and
+Bitstream Vera Sans);
+
+- Serif (a substitute for Times New Roman, Thorndale, Nimbus Roman, and
+Bitstream Vera Serif);
+
+- Mono (a substitute for Courier New, Cumberland, Courier, Nimbus Mono L,
+and Bitstream Vera Sans Mono).
+
+The Liberation Fonts are sponsored by Red Hat.")
+    (license license:silofl1.1)))
+
+(define-public font-terminus
+  (package
+    (name "font-terminus")
     (version "4.39")
     (source
       (origin

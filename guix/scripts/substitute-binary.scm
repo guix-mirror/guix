@@ -175,7 +175,7 @@ to the caller without emitting an error message."
                            %fetch-timeout
                            0)
            (begin
-             (warning (_ "while fetching ~a: server is unresponsive~%")
+             (warning (_ "while fetching ~a: server is somewhat slow~%")
                       (uri->string uri))
              (warning (_ "try `--no-substitutes' if the problem persists~%"))
 
@@ -758,6 +758,10 @@ substituter disabled~%")
                                             progress)))
             ;; Unpack the Nar at INPUT into DESTINATION.
             (restore-file input destination)
+
+            ;; Skip a line after what 'progress-proc' printed.
+            (newline (current-error-port))
+
             (every (compose zero? cdr waitpid) pids))))
        (("--version")
         (show-version-and-exit "guix substitute-binary"))

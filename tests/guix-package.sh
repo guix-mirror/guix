@@ -289,3 +289,16 @@ GUIX_PACKAGE_PATH="$module_dir"
 export GUIX_PACKAGE_PATH
 guix package -A emacs-foo-bar | grep 42
 guix package -i emacs-foo-bar-42 -n
+unset GUIX_PACKAGE_PATH
+
+# Using 'GUIX_BUILD_OPTIONS'.
+
+available="`guix package -A | sort`"
+GUIX_BUILD_OPTIONS="--dry-run"
+export GUIX_BUILD_OPTIONS
+
+# Make sure $GUIX_BUILD_OPTIONS is not simply appended to the command-line,
+# which would break 'guix package -A' and similar.
+available2="`guix package -A | sort`"
+test "$available2" = "$available"
+guix package -I

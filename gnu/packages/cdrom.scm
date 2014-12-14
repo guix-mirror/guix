@@ -32,7 +32,11 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages which))
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages wget)
+  #:use-module (gnu packages xiph))
 
 (define-public libcddb
   (package
@@ -68,14 +72,14 @@ caching facility provided by the library.")
 (define-public libcdio
   (package
     (name "libcdio")
-    (version "0.92")
+    (version "0.93")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1b9zngn8nnxb1yyngi1kwi73nahp4lsx59j17q1bahzz58svydik"))))
+               "0xb9km1750ndr7nglgbv1smv03dy8nkcfd9djbzqn3ldzlicswj9"))))
     (build-system gnu-build-system)
     (inputs
        `(("ncurses" ,ncurses)
@@ -216,4 +220,105 @@ data is either added to the medium or kept in separate error correction
 files.  Dvdisaster works at the image level so that the recovery does not
 depend on the file system of the medium.  The maximum error correction
 capacity is user-selectable.")
+    (license gpl2+)))
+
+(define-public cd-discid
+  (package
+    (name "cd-discid")
+    (version "1.4")
+    (home-page "http://linukz.org/cd-discid.shtml")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://linukz.org/download/cd-discid-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qrcvn7227qaayjcd5rm7z0k5q89qfy5qkdgwr5pd7ih0va8rmpz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/usr/bin/install")
+                   "install")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases (alist-delete 'configure %standard-phases)
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))))
+    (synopsis "Get CDDB discid information from an audio CD")
+    (description
+     "cd-discid is a command-line tool to retrieve CDDB discid information
+from an audio CD.")
+    (license gpl2+)))
+
+(define-public abcde
+  (package
+    (name "abcde")
+    (version "2.6")
+    (home-page "http://abcde.einval.com/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/download/abcde-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0y2cg233n2hixs0ji76dggpzgf52v4c4mnpwiai889ql2piafgk8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("/usr/bin/install")
+                   "install")
+                  (("^etcdir = .*$")
+                   (string-append "etcdir = $(prefix)/etc\n"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs inputs #:allow-other-keys)
+                   (substitute* "Makefile"
+                     (("^prefix = .*$")
+                      (string-append "prefix = "
+                                     (assoc-ref outputs "out")
+                                     "\n"))))
+                 (alist-cons-after
+                  'install 'wrap
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((wget   (assoc-ref inputs "wget"))
+                          (vorbis (assoc-ref inputs "vorbis-tools"))
+                          (parano (assoc-ref inputs "cdparanoia"))
+                          (which  (assoc-ref inputs "which"))
+                          (discid (assoc-ref inputs "cd-discid"))
+                          (out    (assoc-ref outputs "out")))
+                      (define (wrap file)
+                        (wrap-program file
+                                      `("PATH" ":" prefix
+                                        (,(string-append out "/bin:"
+                                                         wget "/bin:"
+                                                         which "/bin:"
+                                                         vorbis "/bin:"
+                                                         discid "/bin:"
+                                                         parano "/bin")))))
+
+                      (for-each wrap
+                                (find-files (string-append out "/bin")
+                                            ".*"))))
+                  %standard-phases))
+       #:tests? #f))
+
+    (inputs `(("wget" ,wget)
+              ("which" ,which)
+              ("cdparanoia" ,cdparanoia)
+              ("cd-discid" ,cd-discid)
+              ("vorbis-tools" ,vorbis-tools)
+
+              ;; A couple of Python and Perl scripts are included.
+              ("python" ,python)
+              ("perl" ,perl)))
+
+    (synopsis "Command-line audio CD ripper")
+    (description
+     "abcde is a front-end command-line utility (actually, a shell script)
+that grabs tracks off a CD, encodes them to Ogg/Vorbis, MP3, FLAC, Ogg/Speex
+and/or MPP/MP+ (Musepack) format, and tags them, all in one go.")
     (license gpl2+)))

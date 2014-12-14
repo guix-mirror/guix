@@ -119,7 +119,9 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (_ "
-  -c, --cores=N          allow the use of up to N CPU cores for the build")))
+  -c, --cores=N          allow the use of up to N CPU cores for the build"))
+  (display (_ "
+  -M, --max-jobs=N       allow at most N build jobs")))
 
 (define (set-build-options-from-command-line store opts)
   "Given OPTS, an alist as returned by 'args-fold' given
@@ -128,6 +130,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   (set-build-options store
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
                      #:build-cores (or (assoc-ref opts 'cores) 0)
+                     #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
@@ -192,7 +195,15 @@ options handled by 'set-build-options-from-command-line', and listed in
                   (let ((c (false-if-exception (string->number arg))))
                     (if c
                         (apply values (alist-cons 'cores c result) rest)
-                        (leave (_ "~a: not a number~%") arg)))))))
+                        (leave (_ "not a number: '~a' option argument: ~a~%")
+                               name arg)))))
+        (option '(#\M "max-jobs") #t #f
+                (lambda (opt name arg result . rest)
+                  (let ((c (false-if-exception (string->number arg))))
+                    (if c
+                        (apply values (alist-cons 'max-jobs c result) rest)
+                        (leave (_ "not a number: '~a' option argument: ~a~%")
+                               name arg)))))))
 
 
 ;;;
@@ -390,6 +401,11 @@ arguments with packages that use the specified source."
 (define (guix-build . args)
   (define (parse-options)
     ;; Return the alist of option values.
+    (append (parse-options-from args)
+            (parse-options-from (environment-build-options))))
+
+  (define (parse-options-from args)
+    ;; Actual parsing takes place here.
     (args-fold* args %options
                 (lambda (opt name arg result)
                   (leave (_ "~A: unrecognized option~%") name))

@@ -76,6 +76,93 @@ package management tool written for the GNU system.
 * GNU Free Documentation License::  The license of this manual.
 * Concept Index::               Concepts.
 * Programming Index::           Data types, functions, and variables.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Installation
+
+* Requirements::                Software needed to build and run Guix.
+* Setting Up the Daemon::       Preparing the build daemon's environment.
+* Invoking guix-daemon::        Running the build daemon.
+
+Setting Up the Daemon
+
+* Build Environment Setup::     Preparing the isolated build environment.
+* Daemon Offload Setup::        Offloading builds to remote machines.
+
+Package Management
+
+* Features::                    How Guix will make your life brighter.
+* Invoking guix package::       Package installation, removal, etc.
+* Emacs Interface::             Package management from Emacs.
+* Substitutes::                 Downloading pre-built binaries.
+* Packages with Multiple Outputs::  Single source package, multiple outputs.
+* Invoking guix gc::            Running the garbage collector.
+* Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix archive::       Exporting and importing store files.
+
+Programming Interface
+
+* Defining Packages::           Defining new packages.
+* Build Systems::               Specifying how packages are built.
+* The Store::                   Manipulating the package store.
+* Derivations::                 Low-level interface to package derivations.
+* The Store Monad::             Purely functional interface to the store.
+* G-Expressions::               Manipulating build expressions.
+
+Utilities
+
+* Invoking guix build::         Building packages from the command line.
+* Invoking guix download::      Downloading a file and printing its hash.
+* Invoking guix hash::          Computing the cryptographic hash of a file.
+* Invoking guix import::        Importing package definitions.
+* Invoking guix refresh::       Updating package definitions.
+* Invoking guix lint::          Finding errors in package definitions.
+* Invoking guix environment::   Setting up development environments.
+
+GNU Distribution
+
+* System Installation::         Installing the whole operating system.
+* System Configuration::        Configuring a GNU system.
+* Installing Debugging Files::  Feeding the debugger.
+* Security Updates::            Deploying security fixes quickly.
+* Package Modules::             Packages from the programmer's viewpoint.
+* Packaging Guidelines::        Growing the distribution.
+* Bootstrapping::               GNU/Linux built from scratch.
+* Porting::                     Targeting another platform or kernel.
+
+System Configuration
+
+* Using the Configuration System::  Customizing your GNU system.
+* operating-system Reference::  Detail of operating-system declarations.
+* File Systems::                Configuring file system mounts.
+* Mapped Devices::              Block device extra processing.
+* User Accounts::               Specifying user accounts.
+* Locales::                     Language and cultural convention settings.
+* Services::                    Specifying system services.
+* Setuid Programs::             Programs running with root privileges.
+* Initial RAM Disk::            Linux-Libre bootstrapping.
+* GRUB Configuration::          Configuring the boot loader.
+* Invoking guix system::        Instantiating a system configuration.
+* Defining Services::           Adding new service definitions.
+
+Services
+
+* Base Services::               Essential system services.
+* Networking Services::         Network setup, SSH daemon, etc.
+* X Window::                    Graphical display.
+
+Packaging Guidelines
+
+* Software Freedom::     What may go into the distribution.
+* Package Naming::       What's in a name?
+* Version Numbers::      When the name is not enough.
+* Python Modules::       Taming the snake.
+* Perl Modules::         Little pearls.
+* Fonts::                Fond of fonts.
+
+@end detailmenu
 @end menu
 
 @c *********************************************************************
@@ -258,6 +345,15 @@ Bash syntax and the @code{shadow} commands):
             -c "Guix build user $i" --system          \
             guix-builder$i;
   done
+@end example
+
+The @file{/gnu/store} directory (or whichever was specified with the
+@code{--with-store-dir} option) must have ownership and permissions as
+follows:
+
+@example
+# chgrp guix-builder /gnu/store
+# chmod 1775 /gnu/store
 @end example
 
 @noindent
@@ -499,7 +595,7 @@ Cache build failures.  By default, only successful builds are cached.
 Use @var{n} CPU cores to build each derivation; @code{0} means as many
 as available.
 
-The default value is @code{1}, but it may be overridden by clients, such
+The default value is @code{0}, but it may be overridden by clients, such
 as the @code{--cores} option of @command{guix build} (@pxref{Invoking
 guix build}).
 
@@ -510,7 +606,9 @@ parallelism---for instance, by running @code{make -j$NIX_BUILD_CORES}.
 @item --max-jobs=@var{n}
 @itemx -M @var{n}
 Allow at most @var{n} build jobs in parallel.  The default value is
-@code{1}.
+@code{1}.  Setting it to @code{0} means that no builds will be performed
+locally; instead, the daemon will offload builds (@pxref{Daemon Offload
+Setup}), or simply fail.
 
 @item --debug
 Produce debugging output.
@@ -1719,6 +1817,13 @@ modules}.  This is achieved by wrapping the programs in launch scripts
 that appropriately set the @code{XDG_DATA_DIRS} and @code{GTK_PATH}
 environment variables.
 
+It is possible to exclude specific package outputs from that wrapping
+process by listing their names in the
+@code{#:glib-or-gtk-wrap-excluded-outputs} parameter.  This is useful
+when an output is known not to contain any GLib or GTK+ binaries, and
+where wrapping would gratuitously add a dependency of that output on
+GLib and GTK+.
+
 @item glib-or-gtk-compile-schemas
 The phase @code{glib-or-gtk-compile-schemas} makes sure that all GLib's
 @uref{https://developer.gnome.org/gio/stable/glib-compile-schemas.html,
@@ -2679,12 +2784,37 @@ may be helpful when debugging setup issues with the build daemon.
 Allow the use of up to @var{n} CPU cores for the build.  The special
 value @code{0} means to use as many CPU cores as available.
 
+@item --max-jobs=@var{n}
+@itemx -M @var{n}
+Allow at most @var{n} build jobs in parallel.  @xref{Invoking
+guix-daemon, @code{--max-jobs}}, for details about this option and the
+equivalent @command{guix-daemon} option.
+
 @end table
 
 Behind the scenes, @command{guix build} is essentially an interface to
 the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
 store)} module.
+
+In addition to options explicitly passed on the command line,
+@command{guix build} and other @command{guix} commands that support
+building honor the @code{GUIX_BUILD_OPTIONS} environment variable.
+
+@defvr {Environment Variable} GUIX_BUILD_OPTIONS
+Users can define this variable to a list of command line options that
+will automatically be used by @command{guix build} and other
+@command{guix} commands that can perform builds, as in the example
+below:
+
+@example
+$ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
+@end example
+
+These options are parsed independently, and the result is appended to
+the parsed command-line options.
+@end defvr
+
 
 @node Invoking guix download
 @section Invoking @command{guix download}
@@ -3275,8 +3405,9 @@ Systems}).  This is typically done using the @code{-L} option of
 @command{mkfs.ext4} and related commands.
 
 The installation image includes Parted (@pxref{Overview,,, parted, GNU
-Parted User Manual}), @command{fdisk}, and e2fsprogs, the suite of tools
-to manipulate ext2/ext3/ext4 file systems.
+Parted User Manual}), @command{fdisk}, Cryptsetup/LUKS for disk
+encryption, and e2fsprogs, the suite of tools to manipulate
+ext2/ext3/ext4 file systems.
 
 @item
 Once that is done, mount the target root partition under @file{/mnt}.
@@ -3375,6 +3506,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
+* Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
@@ -3401,7 +3533,7 @@ kernel, initial RAM disk, and boot loader looks like this:
 (operating-system
   (host-name "komputilo")
   (timezone "Europe/Paris")
-  (locale "fr_FR.UTF-8")
+  (locale "fr_FR.utf8")
   (bootloader (grub-configuration
                 (device "/dev/sda")))
   (file-systems (cons (file-system
@@ -3411,7 +3543,7 @@ kernel, initial RAM disk, and boot loader looks like this:
                       %base-file-systems))
   (users (list (user-account
                 (name "alice")
-                (uid 1000) (group 100)
+                (group "users")
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
   (packages (cons emacs %base-packages))
@@ -3554,9 +3686,13 @@ package}).
 @item @code{timezone}
 A timezone identifying string---e.g., @code{"Europe/Paris"}.
 
-@item @code{locale} (default: @code{"en_US.UTF-8"})
-The name of the default locale (@pxref{Locales,,, libc, The GNU C
-Library Reference Manual}).
+@item @code{locale} (default: @code{"en_US.utf8"})
+The name of the default locale (@pxref{Locale Names,,, libc, The GNU C
+Library Reference Manual}).  @xref{Locales}, for more information.
+
+@item @code{locale-definitions} (default: @var{%default-locale-definitions})
+The list of locale definitions to be compiled and that may be used at
+run time.  @xref{Locales}.
 
 @item @code{services} (default: @var{%base-services})
 A list of monadic values denoting system services.  @xref{Services}.
@@ -3629,6 +3765,13 @@ is interpreted as a partition label name; when it is @code{uuid},
 
 The @code{label} and @code{uuid} options offer a way to refer to disk
 partitions without having to hard-code their actual device name.
+
+However, when a file system's source is a mapped device (@pxref{Mapped
+Devices}), its @code{device} field @emph{must} refer to the mapped
+device name---e.g., @file{/dev/mapper/root-partition}---and consequently
+@code{title} must be set to @code{'device}.  This is required so that
+the system knows that mounting the file system depends on having the
+corresponding device mapping established.
 
 @item @code{flags} (default: @code{'()})
 This is a list of symbols denoting mount flags.  Recognized flags
@@ -3818,8 +3961,8 @@ users change it with @command{passwd}.
 
 If you @emph{do} want to have a preset password for an account, then
 this field must contain the encrypted password, as a string.
-@xref{crypt,,, The GNU C Library Reference Manual}, for more information
-on password encryption, and @ref{Encryption,,, GNU Guile Reference
+@xref{crypt,,, libc, The GNU C Library Reference Manual}, for more information
+on password encryption, and @ref{Encryption,,, guile, GNU Guile Reference
 Manual}, for information on Guile's @code{crypt} procedure.
 
 @end table
@@ -3863,6 +4006,78 @@ to be present on the system.  This includes groups such as ``root'',
 specific devices such as ``audio'', ``disk'', and ``cdrom''.
 @end defvr
 
+@node Locales
+@subsection Locales
+
+@cindex locale
+A @dfn{locale} defines cultural conventions for a particular language
+and region of the world (@pxref{Locales,,, libc, The GNU C Library
+Reference Manual}).  Each locale has a name that typically has the form
+@code{@var{language}_@var{territory}.@var{charset}}---e.g.,
+@code{fr_LU.utf8} designates the locale for the French language, with
+cultural conventions from Luxembourg, and using the UTF-8 encoding.
+
+@cindex locale definition
+Usually, you will want to specify the default locale for the machine
+using the @code{locale} field of the @code{operating-system} declaration
+(@pxref{operating-system Reference, @code{locale}}).
+
+That locale must be among the @dfn{locale definitions} that are known to
+the system---and these are specified in the @code{locale-definitions}
+slot of @code{operating-system}.  The default value includes locale
+definition for some widely used locales, but not for all the available
+locales, in order to save space.
+
+If the locale specified in the @code{locale} field is not among the
+definitions listed in @code{locale-definitions}, @command{guix system}
+raises an error.  In that case, you should add the locale definition to
+the @code{locale-definitions} field.  For instance, to add the North
+Frisian locale for Germany, the value of that field may be:
+
+@example
+(cons (locale-definition
+        (name "fy_DE.utf8") (source "fy_DE"))
+      %default-locale-definitions)
+@end example
+
+Likewise, to save space, one might want @code{locale-definitions} to
+list only the locales that are actually used, as in:
+
+@example
+(list (locale-definition
+        (name "ja_JP.eucjp") (source "ja_JP")
+        (charset "EUC-JP")))
+@end example
+
+The @code{locale-definition} form is provided by the @code{(gnu system
+locale)} module.  Details are given below.
+
+@deftp {Data Type} locale-definition
+This is the data type of a locale definition.
+
+@table @asis
+
+@item @code{name}
+The name of the locale.  @xref{Locale Names,,, libc, The GNU C Library
+Reference Manual}, for more information on locale names.
+
+@item @code{source}
+The name of the source for that locale.  This is typically the
+@code{@var{language}_@var{territory}} part of the locale name.
+
+@item @code{charset} (default: @code{"UTF-8"})
+The ``character set'' or ``code set'' for that locale,
+@uref{http://www.iana.org/assignments/character-sets, as defined by
+IANA}.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %default-locale-definitions
+An arbitrary list of commonly used locales, used as the default value of
+the @code{locale-definitions} field of @code{operating-system}
+declarations.
+@end defvr
 
 @node Services
 @subsection Services
@@ -3872,11 +4087,42 @@ An important part of preparing an @code{operating-system} declaration is
 listing @dfn{system services} and their configuration (@pxref{Using the
 Configuration System}).  System services are typically daemons launched
 when the system boots, or other actions needed at that time---e.g.,
-configuring network access.  They are managed by GNU@tie{}dmd
-(@pxref{Introduction,,, dmd, GNU dmd Manual}).
+configuring network access.
+
+Services are managed by GNU@tie{}dmd (@pxref{Introduction,,, dmd, GNU
+dmd Manual}).  On a running system, the @command{deco} command allows
+you to list the available services, show their status, start and stop
+them, or do other specific operations (@pxref{Jump Start,,, dmd, GNU dmd
+Manual}).  For example:
+
+@example
+# deco status dmd
+@end example
+
+The above command, run as @code{root}, lists the currently defined
+services.  The @command{deco doc} command shows a synopsis of the given
+service:
+
+@example
+# deco doc nscd
+Run libc's name service cache daemon (nscd).
+@end example
+
+The @command{start}, @command{stop}, and @command{restart} sub-commands
+have the effect you would expect.  For instance, the commands below stop
+the nscd service and restart the Xorg display server:
+
+@example
+# deco stop nscd
+Service nscd has been stopped.
+# deco restart xorg-server
+Service xorg-server has been stopped.
+Service xorg-server has been started.
+@end example
 
 The following sections document the available services, starting with
-the core services.
+the core services, that may be used in an @code{operating-system}
+declaration.
 
 @menu
 * Base Services::               Essential system services.
@@ -3904,7 +4150,7 @@ system, you will want to append services to @var{%base-services}, like
 this:
 
 @example
-(cons* (avahi-service) (lshd-service) %base-services)
+(cons* (avahi-service) (lsh-service) %base-services)
 @end example
 @end defvr
 
@@ -3967,7 +4213,7 @@ Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @node Networking Services
 @subsubsection Networking Services
 
-The @code{(gnu system networking)} module provides services to configure
+The @code{(gnu services networking)} module provides services to configure
 the network interface.
 
 @cindex DHCP, networking service
@@ -4032,12 +4278,17 @@ When @var{initialize?} is true, automatically create the seed and host key
 upon service activation if they do not exist yet.  This may take long and
 require interaction.
 
+When @var{initialize?} is false, it is up to the user to initialize the
+randomness generator (@pxref{lsh-make-seed,,, lsh, LSH Manual}), and to create
+a key pair with the private key stored in file @var{host-key} (@pxref{lshd
+basics,,, lsh, LSH Manual}).
+
 When @var{interfaces} is empty, lshd listens for connections on all the
 network interfaces; otherwise, @var{interfaces} must be a list of host names
 or addresses.
 
-@var{allow-empty-passwords?} specifies whether to accepts log-ins with empty
-passwords, and @var{root-login?} specifies whether to accepts log-ins as
+@var{allow-empty-passwords?} specifies whether to accept log-ins with empty
+passwords, and @var{root-login?} specifies whether to accept log-ins as
 root.
 
 The other options should be self-descriptive.
@@ -4745,6 +4996,7 @@ needed is to review and apply the patch.
 * Version Numbers::      When the name is not enough.
 * Python Modules::       Taming the snake.
 * Perl Modules::         Little pearls.
+* Fonts::                Fond of fonts.
 @end menu
 
 @node Software Freedom
@@ -4795,6 +5047,8 @@ We do not add @code{lib} prefixes for library packages, unless these are
 already part of the official project name.  But @pxref{Python
 Modules} and @ref{Perl Modules} for special rules concerning modules for
 the Python and Perl languages.
+
+Font package names are handled differently, @pxref{Fonts}.
 
 
 @node Version Numbers
@@ -4869,6 +5123,43 @@ Modules containing several classes keep their lowercase upstream name and
 are also prepended by @code{perl-}.  Such modules tend to have the word
 @code{perl} somewhere in their name, which gets dropped in favor of the
 prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
+
+
+@node Fonts
+@subsection Fonts
+
+For fonts that are in general not installed by a user for typesetting
+purposes, or that are distributed as part of a larger software package,
+we rely on the general packaging rules for software; for instance, this
+applies to the fonts delivered as part of the X.Org system or fonts that
+are part of TeX Live.
+
+To make it easier for a user to search for fonts, names for other packages
+containing only fonts are constructed as follows, independently of the
+upstream package name.
+
+The name of a package containing only one font family starts with
+@code{font-}; it is followed by the foundry name and a dash @code{-}
+if the foundry is known, and the font family name, in which spaces are
+replaced by dashes (and as usual, all upper case letters are transformed
+to lower case).
+For example, the Gentium font family by SIL is packaged under the name
+@code{font-sil-gentium}.
+
+For a package containing several font families, the name of the collection
+is used in the place of the font family name.
+For instance, the Liberation fonts consist of three families,
+Liberation Sans, Liberation Serif and Liberation Mono.
+These could be packaged separately under the names
+@code{font-liberation-sans} and so on; but as they are distributed together
+under a common name, we prefer to package them together as
+@code{font-liberation}.
+
+In the case where several formats of the same font family or font collection
+are packaged separately, a short form of the format, prepended by a dash,
+is added to the package name.  We use @code{-ttf} for TrueType fonts,
+@code{-otf} for OpenType fonts and @code{-type1} for PostScript Type 1
+fonts.
 
 
 
@@ -4955,7 +5246,7 @@ no-dependency requirement is verified by checking whether the files of
 the final tool chain contain references to the @file{/gnu/store}
 directories of the bootstrap inputs.  The process that leads to this
 ``final'' tool chain is described by the package definitions found in
-the @code{(gnu packages base)} module.
+the @code{(gnu packages commencement)} module.
 
 @c See <http://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
 The first tool that gets built with the bootstrap binaries is
@@ -4976,7 +5267,7 @@ And voilà!  At this point we have the complete set of build tools that
 the GNU Build System expects.  These are in the @code{%final-inputs}
 variable of the @code{(gnu packages commencement)} module, and are
 implicitly used by any package that uses @code{gnu-build-system}
-(@pxref{Defining Packages}).
+(@pxref{Build Systems, @code{gnu-build-system}}).
 
 
 @unnumberedsubsec Building the Bootstrap Binaries
@@ -5024,12 +5315,20 @@ one:
 guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
 @end example
 
+For this to work, the @code{glibc-dynamic-linker} procedure in
+@code{(gnu packages bootstrap)} must be augmented to return the right
+file name for libc's dynamic linker on that platform; likewise,
+@code{system->linux-architecture} in @code{(gnu packages linux)} must be
+taught about the new platform.
+
 Once these are built, the @code{(gnu packages bootstrap)} module needs
-to be updated to refer to these binaries on the target platform.  In
-addition, the @code{glibc-dynamic-linker} procedure in that module must
-be augmented to return the right file name for libc's dynamic linker on
-that platform; likewise, @code{system->linux-architecture} in @code{(gnu
-packages linux)} must be taught about the new platform.
+to be updated to refer to these binaries on the target platform.  That
+is, the hashes and URLs of the bootstrap tarballs for the new platform
+must be added alongside those of the currently supported platforms.  The
+bootstrap Guile tarball is treated specially: it is expected to be
+available locally, and @file{gnu-system.am} has rules do download it for
+the supported architectures; a rule for the new platform must be added
+as well.
 
 In practice, there may be some complications.  First, it may be that the
 extended GNU triplet that specifies an ABI (like the @code{eabi} suffix

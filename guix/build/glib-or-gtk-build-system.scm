@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (%standard-phases
             glib-or-gtk-build))
 
@@ -36,14 +38,14 @@
 
 (define (directory-included? directory directories-list)
   "Is DIRECTORY included in DIRECTORIES-LIST?"
-  (fold (lambda (s p) (or (string-ci=? s directory) p)) 
+  (fold (lambda (s p) (or (string-ci=? s directory) p))
         #f directories-list))
 
 (define (gtk-module-directories inputs)
   "Check for the existence of \"libdir/gtk-v.0\" in INPUTS.  Return a list
 with all found directories."
-  (let* ((version 
-          (if (string-match "gtk\\+-3" 
+  (let* ((version
+          (if (string-match "gtk\\+-3"
                             (or (assoc-ref inputs "gtk+")
                                 (assoc-ref inputs "source")
                                 "gtk+-3")) ; we default to version 3
@@ -54,7 +56,7 @@ with all found directories."
             (let* ((in (match input
                          ((_ . dir) dir)
                          (_ "")))
-                   (libdir 
+                   (libdir
                     (string-append in "/lib/gtk-" version)))
               (if (and (directory-exists? libdir)
                        (not (directory-included? libdir prev)))
@@ -77,49 +79,68 @@ a list with all found directories."
 
   (fold glib-schemas '() inputs))
 
-(define* (wrap-all-programs #:key inputs outputs #:allow-other-keys)
+(define* (wrap-all-programs #:key inputs outputs
+                            (glib-or-gtk-wrap-excluded-outputs '())
+                            #:allow-other-keys)
   "Implement phase \"glib-or-gtk-wrap\": look for GSettings schemas and
 gtk+-v.0 libraries and create wrappers with suitably set environment variables
-if found."
-  (let* ((out (assoc-ref outputs "out"))
-         (bindir (string-append out "/bin"))
-         (bin-list (find-files bindir ".*"))
-         (schemas (schemas-directories (acons "out" out inputs)))
-         (schemas-env-var 
-          (if (not (null? schemas))
-              `("XDG_DATA_DIRS" ":" prefix ,schemas)
-              #f))
-         (gtk-mod-dirs (gtk-module-directories (acons "out" out inputs)))
-         (gtk-mod-env-var 
-          (if (not (null? gtk-mod-dirs))
-              `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
-              #f)))
-    (cond
-     ((and schemas-env-var gtk-mod-env-var)
-      (map (lambda (prog) 
-             (wrap-program prog schemas-env-var gtk-mod-env-var))
-           bin-list))
-     (schemas-env-var
-      (map (lambda (prog) (wrap-program prog schemas-env-var)) bin-list))
-     (gtk-mod-env-var
-      (map (lambda (prog) (wrap-program prog gtk-mod-env-var)) bin-list)))))
+if found.
 
-(define* (compile-glib-schemas #:key inputs outputs #:allow-other-keys)
+Wrapping is not applied to outputs whose name is listed in
+GLIB-OR-GTK-WRAP-EXCLUDED-OUTPUTS.  This is useful when an output is known not
+to contain any GLib or GTK+ binaries, and where wrapping would gratuitously
+add a dependency of that output on GLib and GTK+."
+  (define handle-output
+    (match-lambda
+     ((output . directory)
+      (unless (member output glib-or-gtk-wrap-excluded-outputs)
+        (let* ((bindir       (string-append directory "/bin"))
+               (bin-list     (find-files bindir ".*"))
+               (schemas      (schemas-directories
+                              (alist-cons output directory inputs)))
+               (gtk-mod-dirs (gtk-module-directories
+                              (alist-cons output directory inputs)))
+               (schemas-env-var
+                (if (not (null? schemas))
+                    `("XDG_DATA_DIRS" ":" prefix ,schemas)
+                    #f))
+               (gtk-mod-env-var
+                (if (not (null? gtk-mod-dirs))
+                    `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
+                    #f)))
+          (cond
+           ((and schemas-env-var gtk-mod-env-var)
+            (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
+                      bin-list))
+           (schemas-env-var
+            (for-each (cut wrap-program <> schemas-env-var)
+                      bin-list))
+           (gtk-mod-env-var
+            (for-each (cut wrap-program <> gtk-mod-env-var)
+                      bin-list))))))))
+
+  (for-each handle-output outputs)
+  #t)
+
+(define* (compile-glib-schemas #:key outputs #:allow-other-keys)
   "Implement phase \"glib-or-gtk-compile-schemas\": compile \"glib\" schemas
 if needed."
-  (let* ((out (assoc-ref outputs "out"))
-         (schemasdir (string-append out "/share/glib-2.0/schemas")))
-    (if (and (directory-exists? schemasdir)
-             (not (file-exists? 
-                   (string-append schemasdir "/gschemas.compiled"))))
-        (system* "glib-compile-schemas" schemasdir)
-        #t)))
+  (every (match-lambda
+          ((output . directory)
+           (let ((schemasdir (string-append directory
+                                            "/share/glib-2.0/schemas")))
+             (if (and (directory-exists? schemasdir)
+                      (not (file-exists?
+                            (string-append schemasdir "/gschemas.compiled"))))
+                 (zero? (system* "glib-compile-schemas" schemasdir))
+                 #t))))
+         outputs))
 
 (define %standard-phases
   (alist-cons-after
-   'install 'glib-or-gtk-wrap wrap-all-programs 
-   (alist-cons-after 
-    'install 'glib-or-gtk-compile-schemas compile-glib-schemas 
+   'install 'glib-or-gtk-wrap wrap-all-programs
+   (alist-cons-after
+    'install 'glib-or-gtk-compile-schemas compile-glib-schemas
     gnu:%standard-phases)))
 
 (define* (glib-or-gtk-build #:key inputs (phases %standard-phases)

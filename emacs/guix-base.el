@@ -28,51 +28,11 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'guix-profiles)
 (require 'guix-backend)
 (require 'guix-utils)
 (require 'guix-history)
 (require 'guix-messages)
-
-
-;;; Profiles
-
-(defvar guix-user-profile
-  (expand-file-name "~/.guix-profile")
-  "User profile.")
-
-(defvar guix-default-profile
-  (concat (or (getenv "NIX_STATE_DIR") "/var/guix")
-          "/profiles/per-user/"
-          (getenv "USER")
-          "/guix-profile")
-  "Default Guix profile.")
-
-(defvar guix-current-profile guix-default-profile
-  "Current profile.")
-
-(defun guix-profile-prompt (&optional default)
-  "Prompt for profile and return it.
-Use DEFAULT as a start directory.  If it is nil, use
-`guix-current-profile'."
-  (let* ((path (read-file-name "Profile: "
-                               (file-name-directory
-                                (or default guix-current-profile))))
-         (path (directory-file-name (expand-file-name path))))
-    (if (string= path guix-user-profile)
-        guix-default-profile
-      path)))
-
-(defun guix-set-current-profile (path)
-  "Set `guix-current-profile' to PATH.
-Interactively, prompt for PATH.  With prefix, use
-`guix-default-profile'."
-  (interactive
-   (list (if current-prefix-arg
-             guix-default-profile
-           (guix-profile-prompt))))
-  (setq guix-current-profile path)
-  (message "Current profile has been set to '%s'."
-           guix-current-profile))
 
 
 ;;; Parameters of the entries

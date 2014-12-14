@@ -264,6 +264,9 @@ main (int argc, char *argv[])
   /* Turn automatic deduplication on by default.  */
   settings.autoOptimiseStore = true;
 
+  /* Default to using as many cores as possible.  */
+  settings.buildCores = 0;
+
   argvSaved = argv;
 
   try

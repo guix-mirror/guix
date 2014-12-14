@@ -84,3 +84,13 @@ guix build -e "(begin
 # Running a gexp.
 guix build -e '#~(mkdir #$output)' -d
 guix build -e '#~(mkdir #$output)' -d | grep 'gexp\.drv'
+
+# Using 'GUIX_BUILD_OPTIONS'.
+GUIX_BUILD_OPTIONS="--dry-run"
+export GUIX_BUILD_OPTIONS
+
+guix build emacs
+
+GUIX_BUILD_OPTIONS="--something-completely-crazy"
+if guix build emacs;
+then false; else true; fi

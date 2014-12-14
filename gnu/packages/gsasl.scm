@@ -48,13 +48,13 @@
 (define-public gss
   (package
    (name "gss")
-   (version "1.0.2")
+   (version "1.0.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gss/gss-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1qa8lbkzi6ilfggx7mchfzjnchvhwi68rck3jf9j4425ncz7zsd9"))))
+                     "1syyvh3k659xf1hdv9pilnnhbbhs6vfapayp4xgdcc8mfgf9v4gz"))))
    (build-system gnu-build-system)
    (inputs `(("nettle" ,nettle)
              ("shishi" ,shishi)

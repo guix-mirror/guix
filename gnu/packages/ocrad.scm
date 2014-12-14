@@ -27,14 +27,14 @@
 (define-public ocrad
   (package
     (name "ocrad")
-    (version "0.23")
+    (version "0.24")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/ocrad/ocrad-"
                                  version ".tar.lz"))
              (sha256
               (base32
-               "0vx0v4sz8ivgcp04zggdq9cv9sb5zxnn7j1nm15cds0zq1wr9g7m"))))
+               "0hhlx072d00bi9qia0nj5izsq4qkscpfz2mpbyfc72msl3hfvslv"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
     (home-page "http://www.gnu.org/software/ocrad/")

@@ -689,9 +689,12 @@ commands and their arguments.")
                    (let ((port (open-file ".config" "al")))
                      (display "
       CONFIG_DEBUG_SYSLOG=y
-      CONFIG_CTRL_IFACE_DBUS=y
-      CONFIG_CTRL_IFACE_DBUS_NEW=y
-      CONFIG_CTRL_IFACE_DBUS_INTRO=y
+
+      # TODO: Add a variant of this package with DBus support.
+      #CONFIG_CTRL_IFACE_DBUS=y
+      #CONFIG_CTRL_IFACE_DBUS_NEW=y
+      #CONFIG_CTRL_IFACE_DBUS_INTRO=y
+
       CONFIG_DRIVER_NL80211=y
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
       CONFIG_LIBNL32=y
@@ -708,7 +711,9 @@ commands and their arguments.")
     (inputs
      `(("readline" ,readline)
        ("libnl" ,libnl)
-       ("dbus" ,dbus)
+       ;; TODO: Add a variant with DBus support.  This significantly increases
+       ;; the size of its closure since DBus depends on libx11.
+       ;; ("dbus" ,dbus)
        ("openssl" ,o:openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

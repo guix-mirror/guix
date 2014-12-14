@@ -7,7 +7,7 @@ diff --git a/libguile/posix.c b/libguile/posix.c
 index 324f21b..cbee94d 100644
 --- a/libguile/posix.c
 +++ b/libguile/posix.c
-@@ -2286,6 +2286,266 @@ scm_init_popen (void)
+@@ -2286,6 +2286,261 @@ scm_init_popen (void)
  }
  #endif
  
@@ -84,12 +84,7 @@ index 324f21b..cbee94d 100644
 +  free (c_options);
 +
 +  if (err != 0)
-+    {
-+      /* XXX: `insmod' actually provides better translation of some of
-+	 the error codes.  */
-+      errno = err;
-+      SCM_SYSERROR;
-+    }
++    SCM_SYSERROR;
 +
 +  return SCM_UNSPECIFIED;
 +}

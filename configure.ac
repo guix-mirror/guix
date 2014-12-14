@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT([GNU Guix], [0.8], [bug-guix@gnu.org], [guix],
+AC_INIT([GNU Guix], [0.9], [bug-guix@gnu.org], [guix],
   [http://www.gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -185,6 +185,7 @@ AM_CONDITIONAL([HAVE_EMACS], [test "x$EMACS" != "xno"])
 emacsuidir="${guilemoduledir}/guix/emacs"
 AC_SUBST([emacsuidir])
 AC_CONFIG_FILES([emacs/guix-init.el
+                 emacs/guix-profiles.el
                  emacs/guix-helper.scm])
 
 AC_OUTPUT

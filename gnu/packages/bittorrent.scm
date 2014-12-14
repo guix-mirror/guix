@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages libevent)
@@ -30,7 +32,11 @@
   #:use-module ((gnu packages compression)
                 #:select (zlib))
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl))
 
 (define-public transmission
   (package
@@ -44,11 +50,12 @@
               (sha256
                (base32
                 "1sxr1magqb5s26yvr5yhs1f7bmir8gl09niafg64lhgfnhv1kz59"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
     (arguments
-     '(#:phases (alist-cons-after
+     '(#:glib-or-gtk-wrap-excluded-outputs '("out")
+       #:phases (alist-cons-after
                  'install 'move-gui
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; Move the GUI to its own output, so that "out" doesn't
@@ -88,3 +95,63 @@ DHT, µTP, PEX and Magnet Links.")
     ;;
     ;; A few files files carry an MIT/X11 license header.
     (license l:gpl3+)))
+
+(define-public libtorrent
+  (package
+    (name "libtorrent")
+    (version "0.13.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://libtorrent.rakshasa.no/downloads/libtorrent-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ma910br5vxrfpm4f4w4942lpmhwvqjnnf9h8vpf52fw35qhjkkh"))))
+    (build-system gnu-build-system)
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ;; Add this when you enable tests:
+                     ;; ("cppunit" ,cppunit)
+                     ))
+    (arguments
+     ;; FIXME: enable tests on the next release:
+     ;; https://github.com/rakshasa/libtorrent/issues/59
+     `(#:tests? #f))
+    (synopsis "BitTorrent library of rtorrent")
+    (description
+     "LibTorrent is a BitTorrent library used by and developed in parallel
+with the BitTorrent client rtorrent.  It is written in C++ with emphasis on
+speed and efficiency.")
+    (home-page "http://libtorrent.rakshasa.no/")
+    (license l:gpl2+)))
+
+(define-public rtorrent
+  (package
+    (name "rtorrent")
+    (version "0.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://libtorrent.rakshasa.no/downloads/rtorrent-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "113yrrac75vqi4g8r6bgs0ggjllj9bkg9shv08vqzdhkwqg2q2mw"))))
+    (build-system gnu-build-system)
+    (inputs `(("libtorrent" ,libtorrent)
+              ("ncurses" ,ncurses)
+              ("curl" ,curl)
+              ("cyrus-sasl" ,cyrus-sasl)
+              ("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("cppunit" ,cppunit)))
+    (synopsis "BitTorrent client with ncurses interface")
+    (description
+     "rTorrent is a BitTorrent client with an ncurses interface.  It supports
+full encryption, DHT, PEX, and Magnet Links.  It can also be controlled via
+XML-RPC over SCGI.")
+    (home-page "http://libtorrent.rakshasa.no/")
+    (license l:gpl2+)))

@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -37,6 +38,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages which)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages m4)
 
@@ -54,8 +56,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.8.8")
-    (replacement dbus-1.8.10)                     ;fix for CVE-2014-7824
+    (version "1.8.10")
     (source (origin
              (method url-fetch)
              (uri
@@ -63,7 +64,7 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "1zfi5grrlryppgrl23im82cqw6l9fk1wlc2ayvzx0yd994v2dayz"))
+               "13mgvwigm931r8n9363imnn0vn6dvc0m322k3p8fs5c8nvyqggqh"))
              (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -114,35 +115,23 @@ or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
 
-(define-public dbus-1.8.10
-  (let ((real-version "1.8.10"))
-    (package (inherit dbus)
-      (source (origin
-                (method url-fetch)
-                (uri
-                 (string-append "http://dbus.freedesktop.org/releases/dbus/dbus-"
-                                real-version ".tar.gz"))
-                (sha256
-                 (base32
-                  "13mgvwigm931r8n9363imnn0vn6dvc0m322k3p8fs5c8nvyqggqh"))
-                (patches (list (search-patch "dbus-localstatedir.patch")))))
-      (replacement #f))))
-
 (define glib
   (package
    (name "glib")
-   (version "2.40.0")
+   (version "2.40.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
                                 name "/" (string-take version 4) "/"
                                 name "-" version ".tar.xz"))
             (sha256
-             (base32 "1d98mbqjmc34s8095lkw1j1bwvnnkw9581yfvjaikjvfjsaz29qd"))
+             (base32
+              "0ykcf99mhpkza3xwa3k79vgfml8mqiac9044802yi5q8jpr8mzz8"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
                            (search-patch "glib-tests-prlimit.patch")
-                           (search-patch "glib-tests-timer.patch")))))
+                           (search-patch "glib-tests-timer.patch")
+                           (search-patch "glib-tests-gapplication.patch")))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -233,6 +222,11 @@ dynamic loading, and an object system.")
      `(;; In practice, GIR users will need libffi when using
        ;; gobject-introspection.
        ("libffi" ,libffi)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GI_TYPELIB_PATH")
+            (directories '("lib/girepository-1.0")))))
+    (search-paths native-search-paths)
     (arguments
      `(#:phases
         (alist-cons-before
@@ -429,4 +423,86 @@ has an ease of use unmatched by other C++ callback libraries.")
     (description
      "Glibmm provides a C++ programming interface to the part of GLib that are
 useful for C++.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pygobject-2
+  (package
+    (name "python2-pygobject")
+    ;; This was the last version to declare the 2.0 platform number, i.e. its
+    ;; pkg-config files were named pygobject-2.0.pc
+    (version "2.28.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/pygobject/"
+                           (version-major+minor version)
+                           "/pygobject-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1f5dfxjnil2glfwxnqr14d2cjfbkghsbsn8n04js2c2icr7iv2pv"))
+       (patches
+        (list (search-patch
+               "python2-pygobject-2-gi-info-type-error-domain.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)
+       ("glib-bin" ,glib "bin")         ;for tests: glib-compile-schemas
+       ("pkg-config" ,pkg-config)
+       ("dbus" ,dbus)))                 ;for tests
+    (inputs
+     `(("python" ,python-2)
+       ("glib"   ,glib)
+       ("python2-py2cairo" ,python2-py2cairo)
+       ("gobject-introspection" ,gobject-introspection)))
+    (propagated-inputs
+     `(("libffi" ,libffi)))             ;mentioned in pygobject-2.0.pc
+    (arguments
+     `(#:tests? #f                      ;segfaults during tests
+       #:configure-flags '("LIBS=-lcairo-gobject")))
+    (home-page "https://pypi.python.org/pypi/PyGObject")
+    (synopsis "Python bindings for GObject")
+    (description
+     "Python bindings for GLib, GObject, and GIO.")
+    (license license:lgpl2.1+)))
+
+(define-public python-pygobject
+  (package
+    (name "python-pygobject")
+    (version "3.12.2")                  ;last version that works with
+                                        ;gobject-introspection 1.38
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/pygobject/"
+                           (version-major+minor version)
+                           "/pygobject-" version ".tar.xz"))
+       (sha256
+        (base32
+         "08m5yad1hjdax4g39w6lgjk4124mcwpa8fc5iyvb8nygk8s3syky"))))
+    ;; 3.14.0: 0m1d75iwxa6k1xbkn6c6yq5r10pxnf7i5c2a5yvwsnab7ylzz7kp
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)
+       ("glib-bin" ,glib "bin")         ;for tests: glib-compile-schemas
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("glib"   ,glib)
+       ("python-pycairo" ,python-pycairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libffi" ,libffi)))
+    (arguments
+     ;; TODO: failing tests: test_native_calls_async
+     ;; test_native_calls_async_errors test_native_calls_sync
+     ;; test_native_calls_sync_errors test_python_calls_async
+     ;; test_python_calls_async_error test_python_calls_async_error_result
+     ;; test_python_calls_sync test_python_calls_sync_errors
+     ;; test_python_calls_sync_noargs test_callback_user_data_middle_none
+     ;; test_callback_user_data_middle_single
+     ;; test_callback_user_data_middle_tuple
+     '(#:tests? #f))
+    (home-page "https://pypi.python.org/pypi/PyGObject")
+    (synopsis "Python bindings for GObject")
+    (description
+     "Python bindings for GLib, GObject, and GIO.")
     (license license:lgpl2.1+)))

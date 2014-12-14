@@ -161,3 +161,206 @@ SHA-1 message digest algorithm for use by Perl programs.")
     (home-page (string-append "http://search.cpan.org/~gaas/Digest-SHA1-"
                               version "/SHA1.pm"))
     (license (package-license perl))))
+
+(define-public perl-benchmark-timer
+  (package
+    (name "perl-benchmark-timer")
+    (version "0.7102")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DC/DCOPPIT/"
+                                  "Benchmark-Timer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gl9ybm9hgia3ld5s11b7bv2p2hmx5rss5hxcfy6rmbzrjcnci01"))))
+    (build-system perl-build-system)
+    ;; The optional input module Statistics::PointEstimation (from
+    ;; Statistics-TTest) lists no license.
+    (synopsis "Benchmarking with statistical confidence")
+    (description
+     "The Benchmark::Timer class allows you to time portions of code
+conveniently, as well as benchmark code by allowing timings of repeated
+trials.  It is perfect for when you need more precise information about the
+running time of portions of your code than the Benchmark module will give you,
+but don't want to go all out and profile your code.")
+    (home-page (string-append "http://search.cpan.org/~dcoppit/"
+                              "Benchmark-Timer-" version))
+    (license gpl2)))
+
+(define-public perl-exporter-lite
+  (package
+    (name "perl-exporter-lite")
+    (version "0.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                                  "Exporter-Lite-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0k4gkvid4fr8yvwj0axdx5111mzfw2iipls3qllxr364fqhmclpj"))))
+    (build-system perl-build-system)
+    (synopsis "Lightweight exporting of functions and variables")
+    (description
+     "Exporter::Lite is an alternative to Exporter, intended to provide a
+lightweight subset of the most commonly-used functionality.  It supports
+import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
+    (home-page (string-append "http://search.cpan.org/~neilb/"
+                              "Exporter-Lite-" version))
+    (license (package-license perl))))
+
+(define-public perl-probe-perl
+  (package
+    (name "perl-probe-perl")
+    (version "0.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/K/KW/KWILLIAMS/"
+                                  "Probe-Perl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c9wiaz0mqqknafr4jdr0g2gdzxnn539182z0icqaqvp5qgd5r6r"))))
+    (build-system perl-build-system)
+    (synopsis "Information about the currently running perl")
+    (description
+     "Probe::Perl provides methods for obtaining information about the
+currently running perl interpreter.  It originally began life as code in the
+Module::Build project, but has been externalized here for general use.")
+    (home-page (string-append "http://search.cpan.org/~kwilliams/"
+                              "Probe-Perl-" version))
+    (license (package-license perl))))
+
+(define-public perl-ipc-run3
+  (package
+    (name "perl-ipc-run3")
+    (version "0.048")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "IPC-Run3-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r9m8q78bg7yycpixd7738jm40yz71p2q7inm766kzsw3g6c709x"))))
+    (build-system perl-build-system)
+    (synopsis "Run a subprocess with input/ouput redirection")
+    (description
+     "The IPC::Run3 module allows you to run a subprocess and redirect stdin,
+stdout, and/or stderr to files and perl data structures.  It aims to satisfy
+99% of the need for using system, qx, and open3 with a simple, extremely
+Perlish API and none of the bloat and rarely used features of IPC::Run.")
+    (home-page (string-append "http://search.cpan.org/~rjbs/"
+                              "IPC-Run3-" version))
+    ;; "You may use this module under the terms of the BSD, Artistic, or GPL
+    ;; licenses, any version."
+    (license (list bsd-3 gpl3+))))
+
+(define-public perl-test-script
+  (package
+    (name "perl-test-script")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "Test-Script-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15pb4zzsnm33msc1syhig2bk05xqc0pckmfyahdwbd177bj5w7p2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("probe-perl" ,perl-probe-perl)
+       ("ipc-run3"   ,perl-ipc-run3)))
+    (synopsis "Basic cross-platform tests for scripts")
+    (description
+     "The intent of the Test::Script module is to provide a series of basic
+tests for 80% of the testing you will need to do for scripts in the script (or
+bin as is also commonly used) paths of your Perl distribution.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "Test-Script-" version))
+    (license (package-license perl))))
+
+(define-public perl-file-which
+  (package
+    (name "perl-file-which")
+    (version "1.09")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "File-Which-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hxjyh9yrv32f3g8vrnr8iylzprajsac14vjm75kf1qnj1jyqbxp"))))
+    (build-system perl-build-system)
+    (native-inputs `(("test-script" ,perl-test-script)))
+    (synopsis "Portable implementation of the `which' utility")
+    (description
+     "File::Which was created to be able to get the paths to executable
+programs on systems under which the `which' program wasn't implemented in the
+shell.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "File-Which-" version))
+    (license (package-license perl))))
+
+(define-public perl-getopt-tabular
+  (package
+    (name "perl-getopt-tabular")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GW/GWARD/"
+                                  "Getopt-Tabular-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xskl9lcj07sdfx5dkma5wvhhgf5xlsq0khgh8kk34dm6dv0dpwv"))))
+    (build-system perl-build-system)
+    (synopsis "Table-driven argument parsing for Perl")
+    (description
+     "Getopt::Tabular is a Perl 5 module for table-driven argument parsing,
+vaguely inspired by John Ousterhout's Tk_ParseArgv.")
+    (home-page (string-append "http://search.cpan.org/~gward/"
+                              "Getopt-Tabular-" version))
+    (license (package-license perl))))
+
+(define-public perl-regexp-common
+  (package
+    (name "perl-regexp-common")
+    (version "2013031301")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AB/ABIGAIL/"
+                                  "Regexp-Common-" version ".tar.gz"))
+              (sha256
+               (base32
+                "112wybsm0vr8yfannx6sdfvgp5vza28gjgr3pgn69ak4sac836kj"))))
+    (build-system perl-build-system)
+    (synopsis "Provide commonly requested regular expressions")
+    (description
+     "This module exports a single hash (`%RE') that stores or generates
+commonly needed regular expressions.  Patterns currently provided include:
+balanced parentheses and brackets, delimited text (with escapes), integers and
+floating-point numbers in any base (up to 36), comments in 44 languages,
+offensive language, lists of any pattern, IPv4 addresses, URIs, and Zip
+codes.")
+    (home-page (string-append "http://search.cpan.org/~abigail/"
+                              "Regexp-Common-" version))
+    ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
+    (license (list (package-license perl) x11 bsd-3))))
+
+(define-public perl-sys-cpu
+  (package
+    (name "perl-sys-cpu")
+    (version "0.61")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MZ/MZSANFORD/"
+                                  "Sys-CPU-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))))
+    (build-system perl-build-system)
+    (synopsis "Perl extension for getting CPU information")
+    (description
+     "In responce to a post on perlmonks.org, a module for counting the number
+of CPU's on a system.  Support has now also been added for type of CPU and
+clock speed.")
+    (home-page (string-append "http://search.cpan.org/~mzsanford/"
+                              "Sys-CPU-" version))
+    (license (package-license perl))))

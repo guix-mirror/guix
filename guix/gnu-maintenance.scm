@@ -233,12 +233,14 @@ stored."
      (values "ftp.gnu.org" (string-append "/gnu/" project)))))
 
 (define (sans-extension tarball)
-  "Return TARBALL without its .tar.* extension."
-  (let ((end (string-contains tarball ".tar")))
+  "Return TARBALL without its .tar.* or .zip extension."
+  (let ((end (or (string-contains tarball ".tar")
+                 (string-contains tarball ".zip"))))
     (substring tarball 0 end)))
 
 (define %tarball-rx
-  (make-regexp "^(.+)-([0-9]|[^-])*(-src)?\\.tar\\."))
+  ;; Note: .zip files are notably used for freefont-ttf.
+  (make-regexp "^(.+)-([0-9]|[^-])*(-src)?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))

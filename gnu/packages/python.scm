@@ -24,27 +24,40 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
-                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1+
+                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1))
 
 (define-public python-2
   (package
@@ -55,7 +68,8 @@
       (method url-fetch)
       (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
-      (patches (list (search-patch "python-libffi-mips-n32-fix.patch")))
+      (patches (list (search-patch "python-libffi-mips-n32-fix.patch")
+                     (search-patch "python2-sqlite-3.8.4-test-fix.patch")))
       (patch-flags '("-p0"))
       (sha256
        (base32
@@ -109,6 +123,7 @@
         (let ((bz2 (assoc-ref %build-inputs "bzip2"))
               (gdbm (assoc-ref %build-inputs "gdbm"))
               (libffi (assoc-ref %build-inputs "libffi"))
+              (sqlite (assoc-ref %build-inputs "sqlite"))
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
               (zlib (assoc-ref %build-inputs "zlib")))
@@ -117,6 +132,7 @@
                (string-append "CPPFLAGS="
                 "-I" bz2 "/include "
                 "-I" gdbm "/include "
+                "-I" sqlite "/include "
                 "-I" openssl "/include "
                 "-I" readline "/include "
                 "-I" zlib "/include")
@@ -124,6 +140,7 @@
                 "-L" bz2 "/lib "
                 "-L" gdbm "/lib "
                 "-L" libffi "/lib "
+                "-L" sqlite "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
                 "-L" zlib "/lib")))
@@ -167,6 +184,7 @@
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
        ("libffi" ,libffi)                         ; for ctypes
+       ("sqlite" ,sqlite)                         ; for sqlite extension
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("zlib" ,zlib)
@@ -198,6 +216,7 @@ data types.")
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (list (search-patch "python-fix-tests.patch")
+                             (search-patch "python-sqlite-3.8.4-test-fix.patch")
                              (search-patch "python-libffi-mips-n32-fix.patch")))
               (patch-flags '("-p0"))
               (sha256
@@ -1873,3 +1892,653 @@ writing C extensions for Python as easy as Python itself.")
     (name "python2-cython")
     (inputs
      `(("python-2" ,python-2))))) ; this is not automatically changed
+
+;; This version of numpy is missing the documentation and is only used to
+;; build matplotlib which is required to build numpy's documentation.
+(define python-numpy-bootstrap
+  (package
+    (name "python-numpy-bootstrap")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/numpy"
+                           "/numpy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "070ybfvpgfmiz2hs94x445hvkh9dh52nyi0m8jp5kdihgvhbnx80"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-nose" ,python-nose)
+       ("atlas" ,atlas)))
+    (native-inputs
+     `(("gfortran" ,gfortran-4.8)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'set-environment-variables
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let* ((atlas-threaded
+                  (string-append (assoc-ref inputs "atlas") 
+                                 "/lib/libtatlas.so"))
+                 ;; On single core CPUs only the serial library is created.
+                 (atlas-lib
+                  (if (file-exists? atlas-threaded)
+                      atlas-threaded
+                      (string-append (assoc-ref inputs "atlas") 
+                                     "/lib/libsatlas.so"))))
+            (setenv "ATLAS" atlas-lib)))
+        ;; Tests can only be run after the library has been installed and not
+        ;; within the source directory.
+        (alist-cons-after
+         'install 'check
+         (lambda _ 
+           (with-directory-excursion "/tmp"
+             (zero? (system* "python" "-c" 
+                             "import numpy; numpy.test(verbose=2)"))))
+         (alist-delete 
+          'check 
+          %standard-phases)))))
+    (home-page "http://www.numpy.org/")
+    (synopsis "Fundamental package for scientific computing with Python")
+    (description "NumPy is the fundamental package for scientific computing
+with Python. It contains among other things: a powerful N-dimensional array
+object, sophisticated (broadcasting) functions, tools for integrating C/C++
+and Fortran code, useful linear algebra, Fourier transform, and random number
+capabilities.")
+    (license bsd-3)))
+
+(define python2-numpy-bootstrap
+  (package-with-python2 python-numpy-bootstrap))
+
+(define-public python-numpy
+  (package (inherit python-numpy-bootstrap)
+    (name "python-numpy")
+    (outputs '("out" "doc"))
+    (inputs 
+     `(("which" ,which)
+       ("python-setuptools" ,python-setuptools)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-sphinx" ,python-sphinx)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-numpydoc" ,python-numpydoc)
+       ,@(package-inputs python-numpy-bootstrap)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)
+       ("perl" ,perl)
+       ,@(package-native-inputs python-numpy-bootstrap)))
+    (arguments
+     `(,@(substitute-keyword-arguments 
+             (package-arguments python-numpy-bootstrap)
+           ((#:phases phases)
+            `(alist-cons-after
+              'install 'install-doc
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                       (doc (string-append 
+                             data "/doc/" ,name "-" 
+                             ,(package-version python-numpy-bootstrap)))
+                       (info (string-append data "/info"))
+                       (html (string-append doc "/html"))
+                       (pyver ,(string-append "PYVER=")))
+                  (with-directory-excursion "doc"
+                    (mkdir-p html)
+                    (system* "make" "html" pyver)
+                    (system* "make" "latex" "PAPER=a4" pyver)
+                    (system* "make" "-C" "build/latex" 
+                             "all-pdf" "PAPER=a4" pyver)
+                    ;; FIXME: Generation of the info file fails.
+                    ;; (system* "make" "info" pyver)
+                    ;; (mkdir-p info)
+                    ;; (copy-file "build/texinfo/numpy.info"
+                    ;;            (string-append info "/numpy.info"))
+                    (for-each (lambda (file)
+                                (copy-file (string-append "build/latex" file)
+                                           (string-append doc file)))
+                              '("/numpy-ref.pdf" "/numpy-user.pdf"))
+                    (with-directory-excursion "build/html"
+                      (for-each (lambda (file)
+                                  (let* ((dir (dirname file))
+                                         (tgt-dir (string-append html "/" dir)))
+                                    (unless (equal? "." dir)
+                                      (mkdir-p tgt-dir))
+                                    (copy-file file (string-append html "/" file))))
+                                (find-files "." ".*"))))))
+              ,phases)))))))
+
+(define-public python2-numpy
+  (let ((numpy (package-with-python2 python-numpy)))
+    (package (inherit numpy)
+      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is customized for
+      ;; Python 2. Since it is also an input to PYTHON2-MATPLOTLIB, we need to
+      ;; import the right version of 'matplotlib' as well.
+      (inputs `(("python2-numpydoc" ,python2-numpydoc)
+                ("python2-matplotlib" ,python2-matplotlib)
+                ,@(alist-delete "python-numpydoc" 
+                                (alist-delete "python-matplotlib"
+                                              (package-inputs numpy))))))))
+
+(define-public python-pyparsing
+  (package
+    (name "python-pyparsing")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/pyparsing"
+                           "/pyparsing-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01lasib0n2fp2k99c988qhz16lm9hcwmnmrmhybdb3jq2xmkvr0p"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f ; no test target
+       #:modules ((guix build python-build-system)
+                  (guix build utils))
+       #:phases
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((doc (string-append (assoc-ref outputs "doc") 
+                                     "/share/doc/" ,name "-" ,version))
+                 (html-doc (string-append doc "/html"))
+                 (examples (string-append doc "/examples")))
+            (mkdir-p html-doc)
+            (mkdir-p examples)
+            (for-each 
+             (lambda (dir tgt)
+               (map (lambda (file) 
+                      (copy-file file (string-append tgt "/" (basename file))))
+                    (find-files dir ".*")))
+             (list "docs" "htmldoc" "examples")
+             (list doc html-doc examples))))
+        %standard-phases)))
+    (home-page "http://pyparsing.wikispaces.com")
+    (synopsis "Python parsing class library")
+    (description
+     "The pyparsing module is an alternative approach to creating and
+executing simple grammars, vs. the traditional lex/yacc approach, or the use
+of regular expressions.  The pyparsing module provides a library of classes
+that client code uses to construct the grammar directly in Python code.")
+    (license expat)))
+
+(define-public python2-pyparsing
+  (package-with-python2 python-pyparsing))
+
+(define-public python-numpydoc
+  (package
+    (name "python-numpydoc")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append 
+             "https://pypi.python.org/packages/source/n/numpydoc/numpydoc-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0d4dnifaxkll50jx6czj05y8cb4ny60njd2wz299sj2jxfy51w4k"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)
+       ("python-nose" ,python-nose)))
+    (home-page "https://pypi.python.org/pypi/numpydoc")
+    (synopsis
+     "Numpy's Sphinx extensions")
+    (description
+     "Sphinx extension to support docstrings in Numpy format.")
+    (license bsd-2)))
+
+(define-public python2-numpydoc
+  (package 
+    (inherit (package-with-python2 python-numpydoc))
+    ;; With python-2 1 test (out of 30) fails because it doesn't find
+    ;; matplotlib.  With python-3 it seems to detect at run-time the absence
+    ;; of matplotlib.
+    (arguments `(#:tests? #f
+                 #:python ,python-2))))
+
+(define-public python-matplotlib
+  (package
+    (name "python-matplotlib")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/matplotlib"
+                           "/matplotlib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m6v9nwdldlwk22gcd339zg6mny5m301fxgks7z8sb8m9wawg8qp"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-dateutil" ,python-dateutil-2)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-six" ,python-six)
+       ("python-pytz" ,python-pytz)
+       ("python-numpy" ,python-numpy-bootstrap)
+       ("python-sphinx" ,python-sphinx)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("libpng" ,libpng)
+       ("imagemagick" ,imagemagick)
+       ("freetype" ,freetype)
+       ;; FIXME: Add backends when available.
+       ;("python-pygtk" ,python-pygtk)
+       ;("python-pycairo" ,python-pycairo)
+       ;("python-pygobject" ,python-pygobject)
+       ;("python-wxpython" ,python-wxpython)
+       ;("python-pyqt" ,python-pyqt)
+       ))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (info (string-append data "/info"))
+                 (html (string-append doc "/html")))
+            (with-directory-excursion "doc"
+              ;; Without setting this variable we get an encoding error.
+              (setenv "LANG" "en_US.UTF-8")
+              ;; Produce pdf in 'A4' format.
+              (substitute* (find-files "." "conf\\.py")
+                (("latex_paper_size = 'letter'")
+                 "latex_paper_size = 'a4'"))
+              (mkdir-p html)
+              (mkdir-p info)
+              ;; The doc recommends to run the 'html' target twice.
+              (system* "python" "make.py" "html")
+              (system* "python" "make.py" "html")
+              (system* "python" "make.py" "latex")
+              (system* "python" "make.py" "texinfo")
+              (copy-file "build/texinfo/matplotlib.info"
+                         (string-append info "/matplotlib.info"))
+              (copy-file "build/latex/Matplotlib.pdf"
+                         (string-append doc "/Matplotlib.pdf"))
+              (with-directory-excursion "build/html"
+                (map (lambda (file)
+                       (let* ((dir (dirname file))
+                              (tgt-dir (string-append html "/" dir)))
+                         (unless (equal? "." dir)
+                           (mkdir-p tgt-dir))
+                         (copy-file file (string-append html "/" file))))
+                     (find-files "." ".*"))))))
+        %standard-phases)))
+    (home-page "http://matplotlib.org")
+    (synopsis "2D plotting library for Python")
+    (description
+     "Matplotlib is a Python 2D plotting library which produces publication
+quality figures in a variety of hardcopy formats and interactive environments
+across platforms.  Matplotlib can be used in Python scripts, the python and
+ipython shell, web application servers, and six graphical user interface
+toolkits.")
+    (license psfl)))
+
+(define-public python2-matplotlib
+  (let ((matplotlib (package-with-python2 python-matplotlib)))
+    (package (inherit matplotlib)
+      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
+      ;; customized for Python 2.
+      (inputs `(("python2-numpydoc" ,python2-numpydoc)
+                ,@(alist-delete "python-numpydoc" 
+                                (package-inputs matplotlib)))))))
+
+;; Scipy 0.14.0 with Numpy 0.19.X fails several tests.  This is known and
+;; planned to be fixed in 0.14.1.  It is claimed that the failures can safely
+;; be ignored:
+;; http://mail.scipy.org/pipermail/scipy-dev/2014-September/020043.html
+;; https://github.com/scipy/scipy/issues/3853 
+;;
+;; The main test suite procedure prints the summary message:
+;;
+;; Ran 16412 tests in 245.033s
+;; FAILED (KNOWNFAIL=277, SKIP=921, errors=327, failures=42)
+;; 
+;; However, it still does return normally.
+(define-public python-scipy
+  (package
+    (name "python-scipy")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scipy"
+                           "/scipy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "053bmz4qmnk4dmxvspfak8r10rpmy6mzwfzgy33z338ppzka6hab"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)
+       ("atlas" ,atlas)))
+    (native-inputs
+     `(("gfortran" ,gfortran-4.8)
+       ("texlive" ,texlive)
+       ("perl" ,perl)))
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'set-environment-variables
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let* ((atlas-threaded
+                  (string-append (assoc-ref inputs "atlas") 
+                                 "/lib/libtatlas.so"))
+                 ;; On single core CPUs only the serial library is created.
+                 (atlas-lib
+                  (if (file-exists? atlas-threaded)
+                      atlas-threaded
+                      (string-append (assoc-ref inputs "atlas") 
+                                     "/lib/libsatlas.so"))))
+            (setenv "ATLAS" atlas-lib)))
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                  (doc (string-append data "/doc/" ,name "-" ,version))
+                  (html (string-append doc "/html"))
+                  (pyver ,(string-append "PYVER=")))
+             (with-directory-excursion "doc"
+               ;; Without setting this variable we get an encoding error.
+               (setenv "LANG" "en_US.UTF-8")
+               ;; Fix generation of images for mathematical expressions.
+               (substitute* (find-files "source" "conf\\.py")
+                 (("pngmath_use_preview = True")
+                  "pngmath_use_preview = False"))
+               (mkdir-p html)
+               (system* "make" "html" pyver)
+               (system* "make" "latex" "PAPER=a4" pyver)
+               (system* "make" "-C" "build/latex" "all-pdf" "PAPER=a4" pyver)
+               (copy-file "build/latex/scipy-ref.pdf"
+                          (string-append doc "/scipy-ref.pdf"))
+               (with-directory-excursion "build/html"
+                 (for-each (lambda (file)
+                             (let* ((dir (dirname file))
+                                    (tgt-dir (string-append html "/" dir)))
+                               (unless (equal? "." dir)
+                                 (mkdir-p tgt-dir))
+                               (copy-file file (string-append html "/" file))))
+                           (find-files "." ".*"))))))
+         ;; Tests can only be run after the library has been installed and not
+         ;; within the source directory.
+         (alist-cons-after
+          'install 'check
+          (lambda _ 
+            (with-directory-excursion "/tmp"
+              (zero? (system* "python" "-c" "import scipy; scipy.test()"))))
+          (alist-delete 
+           'check 
+           %standard-phases))))))
+    (home-page "http://www.scipy.org/")
+    (synopsis "The Scipy library provides efficient numerical routines")
+    (description "The SciPy library is one of the core packages that make up
+the SciPy stack.  It provides many user-friendly and efficient numerical
+routines such as routines for numerical integration and optimization.")
+    (license bsd-3)))
+
+(define-public python2-scipy
+  (let ((scipy (package-with-python2 python-scipy)))
+    (package (inherit scipy)
+      ;; Use packages customized for python-2.
+      (inputs `(("python2-matplotlib" ,python2-matplotlib)
+                ("python2-numpy" ,python2-numpy)
+                ,@(alist-delete "python-matplotlib" 
+                                (alist-delete "python-numpy" 
+                                              (package-inputs scipy))))))))
+
+(define-public python-sqlalchemy
+  (package
+    (name "python-sqlalchemy")
+    (version "0.9.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/S/"
+                          "SQLAlchemy/SQLAlchemy-" version ".tar.gz"))
+      (sha256
+       (base32
+        "059ayifj5l08v6vv56anhyibyllscn10dlzr2fcw68gz1hfjdzsz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython) ;for c extensions
+       ("python-pytest" ,python-pytest)
+       ("python-mock"   ,python-mock))) ;for tests
+    (arguments
+     `(#:phases (alist-replace
+                 'check
+                 (lambda _ (zero? (system* "py.test")))
+                 %standard-phases)))
+    (home-page "http://www.sqlalchemy.org")
+    (synopsis "Database abstraction library")
+    (description
+     "SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that
+gives application developers the full power and flexibility of SQL.  It
+provides a full suite of well known enterprise-level persistence patterns,
+designed for efficient and high-performing database access, adapted into a
+simple and Pythonic domain language.")
+    (license x11)))
+
+(define-public python2-sqlalchemy
+  (package-with-python2 python-sqlalchemy))
+
+(define-public python-distutils-extra
+  (package
+    (name "python-distutils-extra")
+    (version "2.38")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://launchpad.net/python-distutils-extra/trunk/"
+                          version "/+download/python-distutils-extra-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0lx15kcbby9zisx33p2h5hgakgwh2bvh0ibag8z0px4j6ifhs41x"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://launchpad.net/python-distutils-extra/")
+    (synopsis "Enhancements to Python's distutils")
+    (description
+     "The python-distutils-extra module enables you to easily integrate
+gettext support, themed icons, and scrollkeeper-based documentation into
+Python's distutils.")
+    (license gpl2)))
+
+(define-public python2-distutils-extra
+  (package-with-python2 python-distutils-extra))
+
+(define-public python2-elib.intl
+  (package
+    (name "python2-elib.intl")
+    (version "0.0.3")
+    (source
+     (origin
+       ;; This project doesn't tag releases or publish tarballs, so we take
+       ;; source from a (semi-arbitrary, i.e. latest as of now) git commit.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dieterv/elib.intl.git")
+             (commit "d09997cfef")))
+       (sha256
+        (base32
+         "0y7vzff9xgbnaay7m0va1arl6g68ncwrvbgwl7jqlclsahzzb09d"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     ;; incompatible with Python 3 (exception syntax)
+     `(#:python ,python-2
+       #:tests? #f
+       ;; With standard flags, the install phase attempts to create a zip'd
+       ;; egg file, and fails with an error: 'ZIP does not support timestamps
+       ;; before 1980'
+       #:configure-flags '("--single-version-externally-managed"
+                           "--record=elib.txt")))
+    (home-page "https://github.com/dieterv/elib.intl")
+    (synopsis "Enhanced internationalization for Python")
+    (description
+     "The elib.intl module provides enhanced internationalization (I18N)
+services for your Python modules and applications.")
+    (license lgpl3+)))
+
+(define-public python-pillow
+  (package
+    (name "python-pillow")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/P/"
+                           "Pillow/Pillow-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iw36c73wkhz88wa78v6l43llsb080ihw8yq7adhfqxdib7l4hzr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose"       ,python-nose)))
+    (inputs
+     `(("lcms"     ,lcms)
+       ("zlib"     ,zlib)
+       ("libjpeg"  ,libjpeg)
+       ("openjpeg" ,openjpeg)
+       ("libtiff"  ,libtiff)))
+    (propagated-inputs
+     `(;; Used at runtime for pkg_resources
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'install 'check-installed
+                 (lambda _
+                   (begin
+                     (setenv "HOME" (getcwd))
+                     (and (zero? (system* "python" "selftest.py" "--installed"))
+                          (zero? (system* "python" "test-installed.py")))))
+                 (alist-delete 'check %standard-phases))))
+    (home-page "https://pypi.python.org/pypi/Pillow")
+    (synopsis "Fork of the Python Imaging Library")
+    (description
+     "The Python Imaging Library adds image processing capabilities to your
+Python interpreter.  This library provides extensive file format support, an
+efficient internal representation, and fairly powerful image processing
+capabilities.  The core image library is designed for fast access to data
+stored in a few basic pixel formats.  It should provide a solid foundation for
+a general image processing tool.")
+    (license (x11-style
+              "http://www.pythonware.com/products/pil/license.htm"
+              "The PIL Software License"))))
+
+(define-public python2-pillow
+  (package-with-python2 python-pillow))
+
+(define-public python-pycparser
+  (package
+    (name "python-pycparser")
+    (version "2.10")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "pycparser/pycparser-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0v5qfq03yvd1pi0dwlgfai0p3dh9bq94pydn19c4pdn0c6v9hzcm"))))
+    (outputs '("out" "doc"))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases 
+       (alist-replace
+        'check
+        (lambda _
+          (with-directory-excursion "tests"
+            (zero? (system* "python" "all_tests.py"))))
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                  (doc (string-append data "/doc/" ,name "-" ,version))
+                  (examples (string-append doc "/examples")))
+             (mkdir-p examples)
+             (for-each (lambda (file)
+                         (copy-file (string-append "." file)
+                                    (string-append doc file)))
+                       '("/README.rst" "/CHANGES" "/LICENSE"))
+             (copy-recursively "examples" examples)))
+         %standard-phases))))
+    (home-page "https://github.com/eliben/pycparser")
+    (synopsis "C parser in Python")
+    (description
+     "Pycparser is a complete parser of the C language, written in pure Python
+using the PLY parsing library.  It parses C code into an AST and can serve as
+a front-end for C compilers or analysis tools.")
+    (license bsd-3)))
+
+(define-public python2-pycparser
+  (package-with-python2 python-pycparser))
+
+(define-public python-cffi
+  (package
+    (name "python-cffi")
+    (version "0.8.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/c/"
+                          "cffi/cffi-" version ".tar.gz"))
+      (sha256 
+       (base32 "0406j3sgndmx88idv5zxkkrwfqxmjl18pj8gf47nsg4ymzixjci5"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("libffi" ,libffi)))
+    (propagated-inputs ; required at run-time
+     `(("python-pycparser" ,python-pycparser)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:tests? #f ; FIXME: requires pytest
+       #:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (html (string-append doc "/html")))
+            (with-directory-excursion "doc"
+              (system* "make" "html")
+              (mkdir-p html)
+              (copy-recursively "build/html" html))
+            (copy-file "LICENSE" (string-append doc "/LICENSE"))))
+        %standard-phases)))
+    (home-page "http://cffi.readthedocs.org")
+    (synopsis "Foreign function interface for Python")
+    (description
+     "Foreign Function Interface for Python calling C code.")
+    (license expat)))
+
+(define-public python2-cffi
+  (package-with-python2 python-cffi))

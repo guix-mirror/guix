@@ -170,6 +170,9 @@ function load_video {
   insmod video_cirrus
 }
 
+# Set 'root' to the partition that contains /gnu/store.
+search --file --set ~a/share/grub/unicode.pf2
+
 if loadfont ~a/share/grub/unicode.pf2; then
   set gfxmode=640x480
   load_video
@@ -185,7 +188,7 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                        #$grub
+                        #$grub #$grub
                         #$image
                         #$(theme-colors grub-theme-color-normal)
                         #$(theme-colors grub-theme-color-highlight))))))
@@ -209,11 +212,14 @@ entries corresponding to old generations of the system."
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
       #~(format port "menuentry ~s {
+  # Set 'root' to the partition that contains the kernel.
+  search --file --set ~a/bzImage~%
+
   linux ~a/bzImage ~a
   initrd ~a
 }~%"
                 #$label
-                #$linux (string-join (list #$@arguments))
+                #$linux #$linux (string-join (list #$@arguments))
                 #$initrd))))
 
   (mlet %store-monad ((sugar (eye-candy config #~port)))
@@ -223,14 +229,9 @@ entries corresponding to old generations of the system."
             #$sugar
             (format port "
 set default=~a
-set timeout=~a
-search.file ~a/bzImage~%"
+set timeout=~a~%"
                     #$(grub-configuration-default-entry config)
-                    #$(grub-configuration-timeout config)
-                    #$(any (match-lambda
-                            (($ <menu-entry> _ linux)
-                             linux))
-                           all-entries))
+                    #$(grub-configuration-timeout config))
             #$@(map entry->gexp all-entries)
 
             #$@(if (pair? old-entries)

@@ -376,7 +376,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                     (add-to-store store (basename patch) #t
                                   "sha256" patch))
                    ((? origin?)
-                    (package-source-derivation store patch)))))
+                    (package-source-derivation store patch system)))))
          (iota (length patches))
 
          patches))

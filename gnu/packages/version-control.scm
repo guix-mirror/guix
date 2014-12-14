@@ -4,6 +4,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,13 +23,18 @@
 
 (define-module (gnu packages version-control)
   #:use-module ((guix licenses)
-                #:select (asl2.0 gpl1+ gpl2 gpl2+ gpl3+ x11-style))
+                #:select (asl2.0 bsd-2
+                          gpl1+ gpl2 gpl2+ gpl3+ lgpl2.1
+                          x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cook)
   #:use-module (gnu packages curl)
@@ -204,6 +210,130 @@ everything from small to very large projects with speed and efficiency.")
    (license gpl2)
    (home-page "http://git-scm.com/")))
 
+(define-public shflags
+  (package
+    (name "shflags")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://shflags.googlecode.com/files/"
+                                  "shflags-" version ".tgz"))
+              (sha256
+               (base32
+                "08laxhf1hifh3w4j0hri5ppcklaqz0mnkmbaz8j0wxih29vi8slm"))))
+    (build-system trivial-build-system)
+    (native-inputs `(("tar" ,tar)
+                     ("gzip" ,gzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let* ((source (assoc-ref %build-inputs "source"))
+                          (tar    (assoc-ref %build-inputs "tar"))
+                          (gzip   (assoc-ref %build-inputs "gzip"))
+                          (output (assoc-ref %outputs "out"))
+                          (srcdir (string-append output "/src")))
+                     (begin
+                       (setenv "PATH" (string-append gzip "/bin"))
+                       (system* (string-append tar "/bin/tar") "xzf"
+                                source)
+                       (chdir ,(string-append name "-" version))
+                       (mkdir-p srcdir)
+                       (copy-file "src/shflags"
+                                  (string-append srcdir "/shflags"))
+                       #t)))))
+    (home-page "https://code.google.com/p/shflags/")
+    (synopsis "Command-line flags library for shell scripts")
+    (description
+     "Shell Flags (shFlags) is a library written to greatly simplify the
+handling of command-line flags in Bourne based Unix shell scripts (bash, dash,
+ksh, sh, zsh).  Most shell scripts use getopt for flags processing, but the
+different versions of getopt on various OSes make writing portable shell
+scripts difficult.  shFlags instead provides an API that doesn't change across
+shell and OS versions so the script writer can be confident that the script
+will work.")
+    (license lgpl2.1)))
+
+(define-public git-flow
+  (package
+    (name "git-flow")
+    ;; This version has not be officially released yet, so we build it
+    ;; directly from the git repository.
+    (version "0.4.2-pre")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nvie/gitflow/")
+                    (commit "15aab26")))
+              (sha256
+               (base32
+                "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
+    (build-system gnu-build-system)
+    (inputs `(("shflags" ,shflags)))
+    (arguments
+     '(#:tests? #f                    ; no tests
+       #:make-flags (list (string-append "prefix="
+                                         (assoc-ref %outputs "out")))
+       #:phases (alist-cons-after
+                 'unpack 'reset-shFlags-link
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; The link points to a file in the shFlags submodule.
+                   ;; Redirect it to point to our system shFlags.
+                   (let ((shflags (assoc-ref inputs "shflags")))
+                     (begin
+                       (delete-file "gitflow-shFlags")
+                       (symlink (string-append shflags "/src/shflags")
+                                "gitflow-shFlags"))))
+                 (alist-delete
+                  'configure
+                  (alist-delete 'build %standard-phases)))))
+    (home-page "http://nvie.com/posts/a-successful-git-branching-model/")
+    (synopsis "Git extensions for Vincent Driessen's branching model")
+    (description
+     "Vincent Driessen's branching model is a git branching and release
+management strategy that helps developers keep track of features, hotfixes,
+and releases in bigger software projects.  The git-flow library of git
+subcommands helps automate some parts of the flow to make working with it a
+lot easier.")
+    (license bsd-2)))
+
+(define-public git-test-sequence
+  (let ((commit "48e5a2f"))
+    (package
+      (name "git-test-sequence")
+      (version (string-append "20140312." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      ;; There are many other scripts in this directory; we
+                      ;; are interested in just one for this package.
+                      (url "https://github.com/dustin/bindir")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1dcq0y16yznbv4k9h8gg90kv1gkn8r8dbvl4m2rpfd7q5nqhn617"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils))
+                     (let* ((source (assoc-ref %build-inputs "source"))
+                            (output (assoc-ref %outputs "out"))
+                            (bindir (string-append output "/bin"))
+                            (script "git-test-sequence"))
+                       (begin
+                         (mkdir-p bindir)
+                         (copy-file (string-append source "/" script)
+                                    (string-append bindir "/" script))
+                         #t)))))
+      (home-page "http://dustin.sallings.org/2010/03/28/git-test-sequence.html")
+      (synopsis "Run a command over a sequence of commits")
+      (description
+       "git-test-sequence is similar to an automated git bisect except it’s
+linear.  It will test every change between two points in the DAG.  It will
+also walk each side of a merge and test those changes individually.")
+      (license (x11-style "file://LICENSE")))))
+
 (define-public mercurial
   (package
     (name "mercurial")
@@ -297,33 +427,45 @@ property manipulation.")
     (version "1.7.18")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://archive.apache.org/dist/subversion/subversion-"
-                                 version ".tar.bz2"))
+             (uri (string-append "http://archive.apache.org/dist/subversion/"
+                                 "subversion-" version ".tar.bz2"))
              (sha256
               (base32
                "06nrqnn3qq1hhskkcdbm0ilk2xv6ay2gyf2c7qvxp6xncb782wzn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
-                 'install 'instal-perl-bindings
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Follow the instructions from
-                   ;; 'subversion/bindings/swig/INSTALL'.
-                   (let ((out (assoc-ref outputs "out")))
-                     (and (zero? (system* "make" "swig-pl-lib"))
-                          ;; FIXME: Test failures.
-                          ;; (zero? (system* "make" "check-swig-pl"))
-                          (zero? (system* "make" "install-swig-pl-lib"))
+                 'configure 'patch-libtool-wrapper-ls
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; This substitution allows tests svnauthz_tests and
+                   ;; svnlook_tests to pass.  These tests execute svnauthz and
+                   ;; svnlook through their libtool wrapper scripts from svn
+                   ;; hooks, whose empty environments cause "ls: command not
+                   ;; found" errors.  It would be nice if this fix ultimately
+                   ;; made its way into libtool.
+                   (let ((coreutils (assoc-ref inputs "coreutils")))
+                     (substitute* "libtool"
+                       (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))))
+                 (alist-cons-after
+                  'install 'instal-perl-bindings
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Follow the instructions from
+                    ;; 'subversion/bindings/swig/INSTALL'.
+                    (let ((out (assoc-ref outputs "out")))
+                      (and (zero? (system* "make" "swig-pl-lib"))
+                           ;; FIXME: Test failures.
+                           ;; (zero? (system* "make" "check-swig-pl"))
+                           (zero? (system* "make" "install-swig-pl-lib"))
 
-                          ;; Set the right installation prefix.
-                          (with-directory-excursion
-                              "subversion/bindings/swig/perl/native"
-                            (and (zero?
-                                  (system* "perl" "Makefile.PL"
-                                           (string-append "PREFIX=" out)))
-                                 (zero?
-                                  (system* "make" "install")))))))
-                 %standard-phases)))
+                           ;; Set the right installation prefix.
+                           (with-directory-excursion
+                               "subversion/bindings/swig/perl/native"
+                             (and (zero?
+                                   (system* "perl" "Makefile.PL"
+                                            (string-append "PREFIX=" out)))
+                                  (zero?
+                                   (system* "make" "install")))))))
+                  %standard-phases))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ;; For the Perl bindings.

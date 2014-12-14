@@ -45,6 +45,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
   gnu/packages/bdw-gc.scm			\
+  gnu/packages/bioinformatics.scm		\
   gnu/packages/bittorrent.scm			\
   gnu/packages/bison.scm			\
   gnu/packages/boost.scm			\
@@ -72,6 +73,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
   gnu/packages/dc.scm				\
+  gnu/packages/debug.scm			\
   gnu/packages/dejagnu.scm			\
   gnu/packages/dictionaries.scm			\
   gnu/packages/disk.scm				\
@@ -160,6 +162,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/links.scm			\
   gnu/packages/linux.scm			\
   gnu/packages/lisp.scm				\
+  gnu/packages/llvm.scm				\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
@@ -173,6 +176,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mc.scm				\
   gnu/packages/mcrypt.scm			\
   gnu/packages/messaging.scm			\
+  gnu/packages/mg.scm				\
   gnu/packages/miscfiles.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
@@ -189,6 +193,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
   gnu/packages/ntp.scm				\
+  gnu/packages/nutrition.scm			\
   gnu/packages/nvi.scm				\
   gnu/packages/ocaml.scm			\
   gnu/packages/ocrad.scm			\
@@ -229,7 +234,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/scanner.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
-  gnu/packages/scrot.scm			\
   gnu/packages/sdl.scm				\
   gnu/packages/search.scm			\
   gnu/packages/serveez.scm			\
@@ -237,6 +241,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/skribilo.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
+  gnu/packages/socat.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/swig.scm				\
@@ -249,7 +254,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
-  gnu/packages/unclutter.scm			\
+  gnu/packages/tre.scm				\
   gnu/packages/unrtf.scm			\
   gnu/packages/upnp.scm				\
   gnu/packages/uucp.scm				\
@@ -273,8 +278,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/xnee.scm				\
+  gnu/packages/xdisorg.scm			\
   gnu/packages/xorg.scm				\
+  gnu/packages/xfce.scm				\
   gnu/packages/yasm.scm				\
+  gnu/packages/yubico.scm			\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
   gnu/packages/zsh.scm				\
@@ -294,6 +302,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/install.scm			\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
+  gnu/system/locale.scm				\
   gnu/system/shadow.scm				\
   gnu/system/vm.scm				\
 						\
@@ -302,6 +311,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/build/install.scm				\
   gnu/build/linux-boot.scm			\
   gnu/build/linux-initrd.scm			\
+  gnu/build/linux-modules.scm			\
   gnu/build/vm.scm
 
 
@@ -351,6 +361,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
+  gnu/packages/patches/glib-tests-gapplication.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/gnunet-fix-scheduler.patch		\
@@ -412,6 +423,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
+  gnu/packages/patches/python-sqlite-3.8.4-test-fix.patch	\
+  gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
+  gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qt4-tests.patch				\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
@@ -433,7 +447,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/wmctrl-64-fix.patch			\
   gnu/packages/patches/xf86-input-synaptics-glibc-2.20.patch	\
+  gnu/packages/patches/xf86-video-openchrome-includes.patch	\
   gnu/packages/patches/xmodmap-asprintf.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
@@ -470,7 +486,7 @@ nodist_bootstrap_mips64el_linux_DATA =					\
 
 # Those files must remain executable, so they remain executable once
 # imported into the store.
-install-data-hook:
+set-bootstrap-executable-permissions:
 	chmod +x $(DESTDIR)$(bootstrapdir)/*/{bash,mkdir,tar,xz}
 
 DISTCLEANFILES =				\

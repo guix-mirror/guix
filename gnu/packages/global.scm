@@ -28,14 +28,14 @@
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.3.2")
+    (version "6.3.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "07iifpz00ch3drlscvk5v12j7bckwv6pk8040y81s1x14b0gf220"))))
+               "0j828dg2cjf77rx71cw68jpk7jl119v6nyb0kyvirr5i1860j1fx"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libtool" ,libtool)))

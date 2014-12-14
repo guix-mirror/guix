@@ -28,21 +28,27 @@
 (define-public fish
   (package
     (name "fish")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://fishshell.com/files/"
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "0i7h3hx8iszli3d4kphw79sz9m07f2lc2c9hr9smdps5s7wpllmg"))))
+                "096rhi911s3j618cvp8fj9pb4jniy3y6415jvjg8bhszsp1x7r5p"))
+              (modules '((guix build utils)))
+              ;; Don't try to install /etc/fish/config.fish.
+              (snippet
+               '(substitute* "Makefile.in"
+                  ((".*INSTALL.*sysconfdir.*fish.*") "")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)))
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f ; no check target
+       #:configure-flags '("--sysconfdir=/etc")))
     (synopsis "The friendly interactive shell")
     (description
      "Fish (friendly interactive shell) is a shell focused on interactive use,

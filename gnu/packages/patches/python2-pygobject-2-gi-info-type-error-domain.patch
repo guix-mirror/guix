@@ -1,0 +1,39 @@
+From e5df32ffbf37481dbb6a70c4d4e7b7b9778c5549 Mon Sep 17 00:00:00 2001
+From: "John (J5) Palmieri" <johnp@redhat.com>
+Date: Sat, 13 Aug 2011 04:13:28 -0400
+Subject: remove references to deprecated GI_INFO_TYPE_ERROR_DOMAIN
+
+
+diff --git a/gi/pygi-info.c b/gi/pygi-info.c
+index 8729e25..007b609 100644
+--- a/gi/pygi-info.c
++++ b/gi/pygi-info.c
+@@ -165,9 +165,6 @@ _pygi_info_new (GIBaseInfo *info)
+         case GI_INFO_TYPE_CONSTANT:
+             type = &PyGIConstantInfo_Type;
+             break;
+-        case GI_INFO_TYPE_ERROR_DOMAIN:
+-            type = &PyGIErrorDomainInfo_Type;
+-            break;
+         case GI_INFO_TYPE_UNION:
+             type = &PyGIUnionInfo_Type;
+             break;
+@@ -484,7 +481,6 @@ _pygi_g_type_info_size (GITypeInfo *type_info)
+                 case GI_INFO_TYPE_INVALID:
+                 case GI_INFO_TYPE_FUNCTION:
+                 case GI_INFO_TYPE_CONSTANT:
+-                case GI_INFO_TYPE_ERROR_DOMAIN:
+                 case GI_INFO_TYPE_VALUE:
+                 case GI_INFO_TYPE_SIGNAL:
+                 case GI_INFO_TYPE_PROPERTY:
+@@ -863,7 +859,6 @@ pygi_g_struct_info_is_simple (GIStructInfo *struct_info)
+                     case GI_INFO_TYPE_INVALID:
+                     case GI_INFO_TYPE_FUNCTION:
+                     case GI_INFO_TYPE_CONSTANT:
+-                    case GI_INFO_TYPE_ERROR_DOMAIN:
+                     case GI_INFO_TYPE_VALUE:
+                     case GI_INFO_TYPE_SIGNAL:
+                     case GI_INFO_TYPE_PROPERTY:
+-- 
+cgit v0.10.1
+

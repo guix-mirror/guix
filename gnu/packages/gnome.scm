@@ -46,7 +46,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public brasero
   (package
@@ -1119,6 +1120,51 @@ widgets built in the loading process.")
 controls using the Bonobo component framework.")
     (license license:lgpl2.0+)))
 
+(define-public libwnck
+  (package
+    (name "libwnck")
+    (version "3.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32 "074jww04z8g9r1acndqap79wx4kbm3rpkf4lcg1v82b66iv0027m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("libxres" ,libxres)
+       ("startup-notification" ,startup-notification)))
+    (home-page "https://developer.gnome.org/libwnck/")
+    (synopsis "Window Navigator Construction Kit")
+    (description
+     "Libwnck is the Window Navigator Construction Kit, a library for use in
+writing pagers, tasklists, and more generally applications that are dealing
+with window management.  It tries hard to respect the Extended Window Manager
+Hints specification (EWMH).")
+    (license license:lgpl2.0+)))
+
+;; stable version for gtk2, required by xfwm4.
+(define-public libwnck-1
+  (package (inherit libwnck)
+    (name "libwnck")
+    (version "2.30.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "15713yl0f8f3p99jzqqfmbicrdswd3vwpx7r3bkf1bgh6d9lvs4b"))))
+    (propagated-inputs
+     `(("gtk+" ,gtk+-2)
+       ("libxres" ,libxres)
+       ("startup-notification" ,startup-notification)))))
 
 (define-public goffice
   (package

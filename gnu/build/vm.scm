@@ -178,6 +178,12 @@ volume name."
   (display "populating...\n")
   (populate-root-file-system system-directory target-directory))
 
+(define (register-grub.cfg-root target grub.cfg)
+  "On file system TARGET, register GRUB.CFG as a GC root."
+  (let ((directory (string-append target "/var/guix/gcroots")))
+    (mkdir-p directory)
+    (symlink grub.cfg (string-append directory "/grub.cfg"))))
+
 (define* (initialize-hard-disk device
                                #:key
                                system-directory
@@ -221,6 +227,9 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
                              #:closures closures)
 
   (install-grub grub.cfg device target-directory)
+
+  ;; Register GRUB.CFG as a GC root.
+  (register-grub.cfg-root target-directory grub.cfg)
 
   ;; 'guix-register' resets timestamps and everything, so no need to do it
   ;; once more in that case.

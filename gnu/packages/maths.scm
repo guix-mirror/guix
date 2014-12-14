@@ -953,6 +953,9 @@ point numbers")
     (inputs `(("gfortran" ,gfortran-4.8)
               ("lapack-tar" ,(package-source lapack))))
     (outputs '("out" "doc"))
+    ;; For the moment we drop support for MIPS at it fails to compile. See
+    ;; https://lists.gnu.org/archive/html/guix-devel/2014-11/msg00516.html
+    (supported-systems (delete "mips64el-linux" %supported-systems))
     (arguments
      `(#:parallel-build? #f
        #:parallel-tests? #f
@@ -979,6 +982,12 @@ point numbers")
          ;; Disable parallel build as it gives errors: atlas_pthread.h is
          ;; needed to compile C files before it is generated.
          "-Ss" "pmake" "make -j 1"
+         ;; Probe is failing for MIPS.  We therefore define the system
+         ;; architecture explicitly by setting (-A) MACHINETYPE = 49
+         ;; 'MIPSR1xK' and (-V) ISA = 1 'none'.
+         ,,@(if (string-prefix? "mips" (%current-system))
+              (list "-A" "49" "-V" "1")
+              (list))
          ;; Generate shared libraries.
          "--shared"
          ;; Build a full LAPACK library.

@@ -70,12 +70,18 @@
                     (default '()))
   (options          file-system-options           ; string or #f
                     (default #f))
-  (needed-for-boot? file-system-needed-for-boot?  ; Boolean
+  (needed-for-boot? %file-system-needed-for-boot? ; Boolean
                     (default #f))
   (check?           file-system-check?            ; Boolean
                     (default #t))
   (create-mount-point? file-system-create-mount-point? ; Boolean
                        (default #f)))
+
+(define-inlinable (file-system-needed-for-boot? fs)
+  "Return true if FS has the 'needed-for-boot?' flag set, or if it's the root
+file system."
+  (or (%file-system-needed-for-boot? fs)
+      (string=? "/" (file-system-mount-point fs))))
 
 (define %fuse-control-file-system
   ;; Control file system for Linux' file systems in user-space (FUSE).

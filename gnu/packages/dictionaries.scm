@@ -29,14 +29,14 @@
 (define-public vera
   (package
     (name "vera")
-    (version "1.21a")
+    (version "1.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/vera/vera-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "09qz1g8js8qw735wmd8kraqbk1d1997v3px2lcc58frf1r66bp8f"))))
+                "1anx6ikwlkg7bn3c5a8xxrp33bvhfgxmncvnqbn2fp1hnbhqh5i7"))))
     (build-system trivial-build-system)
     (arguments
      `(#:builder (begin

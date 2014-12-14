@@ -1,0 +1,15 @@
+From resolution of upstream python issue #20901: http://bugs.python.org/issue20901
+
+diff --git a/Lib/sqlite3/test/hooks.py b/Lib/sqlite3/test/hooks.py
+--- Lib/sqlite3/test/hooks.py
++++ Lib/sqlite3/test/hooks.py
+@@ -162,7 +162,7 @@ class ProgressTests(unittest.TestCase):
+             create table bar (a, b)
+             """)
+         second_count = len(progress_calls)
+-        self.assertTrue(first_count > second_count)
++        self.assertGreaterEqual(first_count, second_count)
+ 
+     def CheckCancelOperation(self):
+         """
+

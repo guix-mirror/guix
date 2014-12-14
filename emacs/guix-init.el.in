@@ -1,14 +1,21 @@
 (require 'guix-autoloads)
+(require 'guix-emacs)
 
 (defvar guix-load-path
   (replace-regexp-in-string "${prefix}" "@prefix@" "@emacsuidir@")
   "Directory with scheme files for \"guix.el\" package.")
 
-(defvar guix-default-profile
-  (concat (or (getenv "NIX_STATE_DIR") "@guix_localstatedir@/guix")
-          "/profiles/per-user/"
-          (getenv "USER")
-          "/guix-profile")
-  "Default Guix profile.")
+(defcustom guix-package-enable-at-startup t
+  "If non-nil, activate Emacs packages installed in a user profile.
+Set this variable to nil before requiring `guix-init' file to
+avoid loading autoloads of Emacs packages installed in
+`guix-user-profile'."
+  :type 'boolean
+  :group 'guix)
+
+(add-to-list 'load-path (guix-emacs-directory))
+
+(when guix-package-enable-at-startup
+  (guix-emacs-load-autoloads 'all))
 
 (provide 'guix-init)

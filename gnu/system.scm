@@ -38,6 +38,7 @@
   #:use-module (gnu packages nano)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages firmware)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
@@ -46,12 +47,15 @@
   #:use-module (gnu services base)
   #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system locale)
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (operating-system
             operating-system?
 
@@ -69,6 +73,7 @@
             operating-system-packages
             operating-system-timezone
             operating-system-locale
+            operating-system-locale-definitions
             operating-system-mapped-devices
             operating-system-file-systems
             operating-system-activation-script
@@ -129,7 +134,9 @@
 
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale               ; string
-            (default "en_US.UTF-8"))
+            (default "en_US.utf8"))
+  (locale-definitions operating-system-locale-definitions ; list of <locale-definition>
+                      (default %default-locale-definitions))
 
   (services operating-system-user-services        ; list of monadic services
             (default %base-services))
@@ -204,9 +211,7 @@ file."
   "Return file system services for the file systems of OS that are not marked
 as 'needed-for-boot'."
   (define file-systems
-    (remove (lambda (fs)
-              (or (file-system-needed-for-boot? fs)
-                  (string=? "/" (file-system-mount-point fs))))
+    (remove file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
   (define (device-mappings fs)
@@ -329,6 +334,12 @@ explicitly appear in OS."
          pciutils usbutils
          util-linux inetutils isc-dhcp wireless-tools
          net-tools                        ; XXX: remove when Inetutils suffices
+         man-db
+
+         ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
+         ;; want the other commands and the man pages (notably because
+         ;; auto-completion in Emacs shell relies on man pages.)
+         sudo
 
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
          ;; already depends on it anyway.
@@ -380,11 +391,10 @@ This is the GNU system.  Welcome.\n")
        (nsswitch   (text-file "nsswitch.conf"
                               "hosts: files dns\n"))
 
-       ;; TODO: Generate bashrc from packages' search-paths.
-       (bashrc    (text-file* "bashrc"  "
-export PS1='\\u@\\h \\w\\$ '
-
-export LC_ALL=\"" locale "\"
+       ;; Startup file for POSIX-compliant login shells, which set system-wide
+       ;; environment variables.
+       (profile    (text-file* "profile"  "\
+export LANG=\"" locale "\"
 export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
@@ -393,11 +403,8 @@ export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
 
 export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
 export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
-export CPATH=$HOME/.guix-profile/include:" profile "/include
-export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
+export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
-alias ls='ls -p --color'
-alias ll='ls -l'
 "))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
@@ -410,7 +417,7 @@ alias ll='ls -l'
                   ("nsswitch.conf" ,#~#$nsswitch)
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
-                  ("profile" ,#~#$bashrc)
+                  ("profile" ,#~#$profile)
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
@@ -525,8 +532,10 @@ etc."
   (define %modules
     '((gnu build activation)
       (gnu build linux-boot)
+      (gnu build linux-modules)
       (gnu build file-systems)
-      (guix build utils)))
+      (guix build utils)
+      (guix elf)))
 
   (define (service-activations services)
     ;; Return the activation scripts for SERVICES.
@@ -638,12 +647,7 @@ we're running in the final root."
 (define (operating-system-initrd-file os)
   "Return a gexp denoting the initrd file of OS."
   (define boot-file-systems
-    (filter (match-lambda
-             (($ <file-system> device title "/")
-              #t)
-             (($ <file-system> device title mount-point type flags
-                               options boot?)
-              boot?))
+    (filter file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
   (define mapped-devices
@@ -655,6 +659,19 @@ we're running in the final root."
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
                                            #:mapped-devices mapped-devices)))
     (return #~(string-append #$initrd "/initrd"))))
+
+(define (operating-system-locale-directory os)
+  "Return the directory containing the locales compiled for the definitions
+listed in OS.  The C library expects to find it under
+/run/current-system/locale."
+  ;; While we're at it, check whether the locale of OS is defined.
+  (unless (member (operating-system-locale os)
+                  (map locale-definition-name
+                       (operating-system-locale-definitions os)))
+    (raise (condition
+            (&message (message "system locale lacks a definition")))))
+
+  (locale-directory (operating-system-locale-definitions os)))
 
 (define (kernel->grub-label kernel)
   "Return a label for the GRUB menu entry that boots KERNEL."
@@ -705,6 +722,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
        (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
        (initrd      (operating-system-initrd-file os))
+       (locale      (operating-system-locale-directory os))
        (params      (operating-system-parameters-file os)))
     (file-union "system"
                 `(("boot" ,#~#$boot)
@@ -712,6 +730,7 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                   ("parameters" ,#~#$params)
                   ("initrd" ,initrd)
                   ("profile" ,#~#$profile)
+                  ("locale" ,#~#$locale)          ;used by libc
                   ("etc" ,#~#$etc)))))
 
 ;;; system.scm ends here

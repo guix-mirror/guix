@@ -2,6 +2,8 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,14 +24,23 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages backup)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages gsasl)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages databases)
@@ -46,8 +57,10 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ bsd-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -363,6 +376,156 @@ attachments, create new maildirs, and so on.")
     (description
      "Notmuch is a command-line based program for indexing, searching, read-
 ing, and tagging large collections of email messages.")
+    (license gpl3+)))
+
+(define-public getmail
+  (package
+    (name "getmail")
+    (version "4.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15rqmm25pq6ll8aaqh8h6pfdkpqs7y6yismb3h3w1bz8j292c8zl"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:python ,python-2))
+    (home-page "http://pyropus.ca/software/getmail/")
+    (synopsis "Mail retriever")
+    (description
+     "A flexible, extensible mail retrieval system with support for
+POP3, IMAP4, SSL variants of both, maildirs, mboxrd files, external MDAs,
+arbitrary message filtering, single-user and domain-mailboxes, and many other
+useful features.")
+
+    ;; License is specified in file '__init__.py'.
+    (license gpl2)))
+
+(define-public libetpan
+  (package
+    (name "libetpan")
+    (version "1.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/dinhviethoa/" name
+                   "/archive/" version ".tar.gz"))
+             (sha256
+               (base32 "05qyqx2c1ppb1jnrs3m52i60f9xlxfxdmb9dnwg4vqjv8kwv2qkr"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,(autoconf-wrapper))
+                     ("automake" ,automake)
+                     ("libtool" ,libtool "bin")
+                     ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; 'libetpan-config --libs' returns '-lssl -lcrypto -lsasl2', so these
+     ;; libraries need to be propagated.
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("openssl" ,openssl)))
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)))
+    (arguments
+      '(#:phases (alist-cons-before
+                  'configure 'autogen
+                  (lambda _
+                    (system* "./autogen.sh")) ;; Note: this fails because the
+                         ;; generated configure script uses /bin/sh. It is
+                         ;; replaced in the configure phase by the correct
+                         ;; value. TODO: replace the configure phase by the
+                         ;; autogen phase and have the SHELL variable be replaced
+                  %standard-phases)
+        #:configure-flags
+        '("--disable-static" "--disable-db")))
+    (home-page "http://www.etpan.org/libetpan.html")
+    (synopsis "Portable middleware for email access")
+    (description
+     "The purpose of this mail library is to provide a portable, efficient
+framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
+provides an API for C language.  It's the low-level API used by MailCore and
+MailCore 2.")
+    (license (bsd-style "file://COPYING"))))
+
+(define-public claws-mail
+  (package
+    (name "claws-mail")
+    (version "3.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/project/claws-mail/"
+                    "Claws Mail/" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32 "0cyixz1jgfpi8abh9fbb8ylx9mcvw4jqj81cms666wpqr6v828yp"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("bogofilter" ,bogofilter)
+              ("curl" ,curl)
+              ("dbus-glib" ,dbus-glib)
+              ("dbus" ,dbus)
+              ("enchant" ,enchant)
+              ("expat" ,expat)
+              ("ghostscript" ,ghostscript)
+              ("hicolor-icon-theme" ,hicolor-icon-theme)
+              ("gnupg" ,gnupg)
+              ("gnutls" ,gnutls)
+              ("gpgme" ,gpgme)
+              ("gtk" ,gtk+-2)
+              ("libarchive" ,libarchive)
+              ("libcanberra" ,libcanberra)
+              ("libetpan" ,libetpan)
+              ("libnotify" ,libnotify)
+              ("libsm" ,libsm)
+              ("libxml2" ,libxml2)
+              ("perl" ,perl)
+              ("python-2" ,python-2)))
+    (arguments
+      '(#:configure-flags
+        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")))
+    (synopsis "GTK-based Email client")
+    (description
+     "Claws-Mail is an email client (and news reader) based on GTK+.  The
+appearance and interface are designed to be familiar to new users coming from
+other popular email clients, as well as experienced users.  Almost all commands
+are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
+which can add many functionalities to the base client.")
+    (home-page "http://www.claws-mail.org/")
+    (license gpl3+))) ; most files are actually public domain or x11
+
+(define-public msmtp
+  (package
+    (name "msmtp")
+    (version "1.4.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://downloads.sourceforge.net/project/msmtp/msmtp/" version
+             "/msmtp-" version ".tar.bz2"))
+       (sha256 (base32
+                "122z38pv4q03w3mbnhrhg4w85a51258sfdg2ips0b6cgwz3wbw1b"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libidn" ,libidn)
+       ("gnutls" ,gnutls)
+       ("zlib" ,zlib)
+       ("gsasl" ,gsasl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://msmtp.sourceforge.net/")
+    (arguments
+     `(#:configure-flags (list "--with-libgsasl"
+                               "--with-libidn"
+                               "--with-ssl=gnutls")))
+    (synopsis
+     "Simple and easy to use SMTP client with decent sendmail compatibility")
+    (description
+     "msmtp is an SMTP client.  In the default mode, it transmits a mail to
+an SMTP server (for example at a free mail provider) which takes care of further
+delivery.")
     (license gpl3+)))
 
 ;;; mail.scm ends here
