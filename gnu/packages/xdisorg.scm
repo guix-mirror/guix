@@ -29,6 +29,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -56,6 +57,47 @@
 can also be used for copying files, as an alternative to sftp/scp, thus
 avoiding password prompts when X11 forwarding has already been setup.")
     (license license:gpl2+)))
+
+(define-public xdotool
+  (package
+    (name "xdotool")
+    (version "2.20110530.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "http://semicomplete.googlecode.com/files/" name "-"
+              version ".tar.gz"))
+        (sha256
+          (base32
+           "0rxggg1cy7nnkwidx8x2w3c5f3pk6dh2b6q0q7hp069r3n5jrd77"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; Test suite requires a lot of black magic
+       #:phases 
+       (alist-replace 'configure 
+                      (lambda* (#:key outputs #:allow-other-keys #:rest args)
+                        (setenv "PREFIX" (assoc-ref outputs "out"))
+                        (setenv "LDFLAGS" (string-append "-Wl,-rpath="
+                                               (assoc-ref
+                                                %outputs "out") "/lib"))
+                        (setenv "CC" "gcc"))
+                      %standard-phases)))
+    (native-inputs `(("perl" ,perl))) ; for pod2man
+    (inputs `(("libx11" ,libx11)
+              ("libxext" ,libxext)
+              ("libxi" ,libxi)
+              ("libxinerama" ,libxinerama)
+              ("libxtst" ,libxtst)))
+    (home-page "http://www.semicomplete.com/projects/xdotool")
+    (synopsis "Fake keyboard/mouse input, window management, and more")
+    (description "Xdotool lets you simulate keyboard input and mouse activity,
+move and resize windows, etc.  It does this using X11's XTEST extension and
+other Xlib functions.  Additionally, you can search for windows and move,
+resize, hide, and modify window properties like the title.  If your window
+manager supports it, you can use xdotool to switch desktops, move windows
+between desktops, and change the number of desktops.")
+    (license license:bsd-3)))
 
 (define-public xeyes
   (package
