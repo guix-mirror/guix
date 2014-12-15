@@ -43,7 +43,14 @@
          "1y5p2hs4gif891b4ik20275a8xf3qrr1zh9wpysp4g8m0g1jckf2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+     `(;; There are 87 test failures when building on non-64-bit architectures
+       ;; due to invalid test data.  This has since been fixed upstream (see
+       ;; <https://github.com/samtools/samtools/pull/307>), but as there has
+       ;; not been a new release we disable the tests for all non-64-bit
+       ;; systems.
+       #:tests? ,(string=? (or (%current-system) (%current-target-system))
+                           "x86_64-linux")
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
         'unpack
