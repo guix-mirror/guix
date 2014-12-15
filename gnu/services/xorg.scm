@@ -36,7 +36,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (xorg-start-command
-
+            %default-xsessions
             %default-slim-theme
             %default-slim-theme-name
             slim-service))
@@ -136,9 +136,10 @@ EndSection
 
 (define* (xinitrc #:key
                   (guile (canonical-package guile-2.0))
-                  (ratpoison ratpoison)
-                  (windowmaker windowmaker))
-  "Return a system-wide xinitrc script that starts the specified X session."
+                  fallback-session)
+  "Return a system-wide xinitrc script that starts the specified X session,
+which should be passed to this script as the first argument.  If not, the
+@var{fallback-session} will be used."
   (define builder
     #~(begin
         (use-modules (ice-9 match))
@@ -155,26 +156,49 @@ EndSection
               (execl shell shell "--login" "-c"
                      (string-join (cons command args))))))
 
-        ;; First, try to run ~/.xsession.
-        (let* ((home     (getenv "HOME"))
-               (xsession (string-append home "/.xsession")))
-          (exec-from-login-shell xsession))
-
-        ;; Then try a pre-configured session type.
-        (let ((ratpoison (string-append #$ratpoison "/bin/ratpoison"))
-              (wmaker    (string-append #$windowmaker "/bin/wmaker")))
-          (match (command-line)
-            ((_ "ratpoison")
-             (exec-from-login-shell ratpoison))
-            (_
-             (exec-from-login-shell wmaker))))))
-
+        (let ((home (getenv "HOME"))
+              (session (match (command-line)
+                         ((_ x) x)
+                         (_     #$fallback-session))))
+          ;; First, try to run ~/.xsession.
+          (exec-from-login-shell (string-append home "/.xsession"))
+          ;; Then try to start the specified session.
+          (exec-from-login-shell session))))
   (gexp->script "xinitrc" builder))
 
 
 ;;;
 ;;; SLiM log-in manager.
 ;;;
+
+(define %default-xsessions
+  ;; Default xsessions available for log-in manager, representing as a list of
+  ;; monadic desktop entries.
+  (list (text-file* "wmaker.desktop" "
+[Desktop Entry]
+Name=Window Maker
+Exec=" windowmaker "/bin/wmaker
+Type=Application
+")
+        (text-file* "ratpoison.desktop" "
+[Desktop Entry]
+Name=Ratpoison
+Exec=" ratpoison "/bin/ratpoison
+Type=Application
+")))
+
+(define (xsessions-directory sessions)
+  "Return a directory containing SESSIONS, which should be a list of monadic
+desktop entries."
+  (mlet %store-monad ((sessions (sequence %store-monad sessions)))
+    (define builder
+      #~(begin
+          (mkdir #$output)
+          (for-each (lambda (session)
+                      (symlink session (string-append #$output "/"
+                                                      (basename session))))
+                    '#$sessions)))
+    (gexp->derivation "xsessions-dir" builder)))
 
 (define %default-slim-theme
   ;; Theme based on work by Felipe López.
@@ -191,6 +215,9 @@ EndSection
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
                        (xauth xauth) (dmd dmd) (bash bash)
+                       (sessions %default-xsessions)
+                       (auto-login-session #~(string-append #$windowmaker
+                                                            "/bin/wmaker"))
                        startx)
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
@@ -198,7 +225,7 @@ turn starts the X display server with @var{startx}, a command as returned by
 
 When @var{allow-empty-passwords?} is true, allow logins with an empty
 password.  When @var{auto-login?} is true, log in automatically as
-@var{default-user}.
+@var{default-user} with @var{auto-login-session}.
 
 If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
 @var{theme} must be a gexp denoting the name of a directory containing the
@@ -207,7 +234,9 @@ theme."
 
   (define (slim.cfg)
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))
-                        (xinitrc (xinitrc)))
+                        (xinitrc (xinitrc #:fallback-session
+                                          auto-login-session))
+                        (sessiondir (xsessions-directory sessions)))
       (text-file* "slim.cfg"  "
 default_path /run/current-system/profile/bin
 default_xserver " startx "
@@ -218,7 +247,7 @@ authfile /var/run/slim.auth
 # The login command.  '%session' is replaced by the chosen session name, one
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
 login_cmd  exec " xinitrc " %session
-sessions   wmaker,ratpoison
+sessiondir " sessiondir "
 
 halt_cmd " dmd "/sbin/halt
 reboot_cmd " dmd "/sbin/reboot
