@@ -35,6 +35,11 @@
 (define %store
   (open-connection-for-tests))
 
+(define-syntax-rule (test-assertm name exp)
+  (test-assert name
+    (run-with-store %store exp
+                    #:guile-for-build (%guile-for-build))))
+
 ;; Example manifest entries.
 
 (define guile-1.8.8
@@ -156,19 +161,18 @@
            (equal? (list glibc) install)
            (equal? (list (cons guile-1.8.8 guile-2.0.9)) upgrade)))))
 
-(test-assert "profile-derivation"
-  (run-with-store %store
-    (mlet* %store-monad
-        ((entry ->   (package->manifest-entry %bootstrap-guile))
-         (guile      (package->derivation %bootstrap-guile))
-         (drv        (profile-derivation (manifest (list entry))
-                                         #:info-dir? #f))
-         (profile -> (derivation->output-path drv))
-         (bindir ->  (string-append profile "/bin"))
-         (_          (built-derivations (list drv))))
-      (return (and (file-exists? (string-append bindir "/guile"))
-                   (string=? (dirname (readlink bindir))
-                             (derivation->output-path guile)))))))
+(test-assertm "profile-derivation"
+  (mlet* %store-monad
+      ((entry ->   (package->manifest-entry %bootstrap-guile))
+       (guile      (package->derivation %bootstrap-guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:info-dir? #f))
+       (profile -> (derivation->output-path drv))
+       (bindir ->  (string-append profile "/bin"))
+       (_          (built-derivations (list drv))))
+    (return (and (file-exists? (string-append bindir "/guile"))
+                 (string=? (dirname (readlink bindir))
+                           (derivation->output-path guile))))))
 
 (test-end "profiles")
 
