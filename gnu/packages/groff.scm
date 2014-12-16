@@ -46,6 +46,7 @@
                     ("perl" ,perl)
                     ("psutils" ,psutils)
                     ("texinfo" ,texinfo)))
+   (arguments '(#:parallel-build? #f))  ; parallel build fails
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
     "Groff is a typesetting package that reads plain text and produces
