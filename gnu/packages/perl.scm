@@ -74,6 +74,27 @@
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
+(define-public perl-clone
+  (package
+    (name "perl-clone")
+    (version "0.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
+                                  "Clone-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17fdhxpzrq2nwim3zkcrz4m9gjixp0i886yz54ysrshxy3k53wnr"))))
+    (build-system perl-build-system)
+    (synopsis "Recursively copy Perl datatypes")
+    (description
+     "This module provides a clone() method which makes recursive copies of
+nested hash, array, scalar and reference types, including tied variables and
+objects.")
+    (home-page (string-append "http://search.cpan.org/~garu/"
+                              "Clone-" version))
+    (license (package-license perl))))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
