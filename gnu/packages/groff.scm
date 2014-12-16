@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,20 +32,20 @@
 (define-public groff
   (package
    (name "groff")
-   (version "1.22.2")
+   (version "1.22.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/groff/groff-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "0xi07nhj5vdgax37rj25mwxzdmsz1ifx50hjgc6hqbkpqkd6821q"))))
+                     "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))))
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)
              ("netpbm" ,netpbm)))
    (native-inputs `(("bison" ,bison)
-             ("perl" ,perl)
-             ("psutils" ,psutils)
-             ("texinfo" ,texinfo)))
+                    ("perl" ,perl)
+                    ("psutils" ,psutils)
+                    ("texinfo" ,texinfo)))
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
     "Groff is a typesetting package that reads plain text and produces
