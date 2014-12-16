@@ -325,6 +325,25 @@ bin as is also commonly used) paths of your Perl distribution.")
                               "Test-Script-" version))
     (license (package-license perl))))
 
+(define-public perl-test-simple
+  (package
+    (name "perl-test-simple")
+    (version "1.001009")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
+                                  "Test-Simple-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1klxpy658aj1pmrw63j1hc16gilwh5rzhp9rb2d1iydi3hcm8xb5"))))
+    (build-system perl-build-system)
+    (synopsis "Basic utilities for writing tests")
+    (description
+     "Test::Simple contains basic utilities for writing tests.")
+    (home-page (string-append "http://search.cpan.org/~exodist/"
+                              "Test-Simple-" version))
+    (license (package-license perl))))
+
 (define-public perl-test-tester
   (package
     (name "perl-test-tester")
