@@ -253,6 +253,30 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-test-nowarnings
+  (package
+    (name "perl-test-nowarnings")
+    (version "1.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "Test-NoWarnings-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v385ch0hzz9naqwdw2az3zdqi15gka76pmiwlgsy6diiijmg2k3"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-test-tester" ,perl-test-tester)))
+    (synopsis "Ensure no warnings are produced while testing")
+    (description
+     "This modules causes any warnings during testing to be captured and
+stored.  It automatically adds an extra test that will run when your script
+ends to check that there were no warnings.  If there were any warings, the
+test will fail and output diagnostics of where, when and what the warning was,
+including a stack trace of what was going on when it occurred.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "Test-NoWarnings-" version))
+    (license lgpl2.1)))
+
 (define-public perl-test-script
   (package
     (name "perl-test-script")
