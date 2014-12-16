@@ -989,6 +989,29 @@ autotools system.")
     (license license:x11)))
 
 
+(define-public libxshmfence
+  (package
+    (name "libxshmfence")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/lib/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gnfb1z8sbbdc3xpz1zmm94lv7yvfh4kvip9s5pj37ya4llxphnv"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("xproto" ,xproto)))
+    (home-page "http://xorg.freedesktop.org")
+    (synopsis "X shared memory fences")
+    (description
+     "This library provides an interface to shared-memory fences for
+synchronization between the X server and direct-rendering clients.")
+    (license license:x11-style)))
+
+
 (define-public libfontenc
   (package
     (name "libfontenc")
