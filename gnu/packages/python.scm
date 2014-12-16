@@ -1928,24 +1928,17 @@ writing C extensions for Python as easy as Python itself.")
                       (string-append (assoc-ref inputs "atlas") 
                                      "/lib/libsatlas.so"))))
             (setenv "ATLAS" atlas-lib)))
-        (alist-cons-before
-         'check 'fix-failing-tests
-         (lambda _
-           (substitute* (find-files "numpy/linalg/tests" 
-                                    "test_regression\\.py")
-             (("x = np.eye(1000, 66)")
-              "x = np.eye(10, 66)")))
-         ;; Tests can only be run after the library has been installed and not
-         ;; within the source directory.
-         (alist-cons-after
-          'install 'check
-          (lambda _ 
-            (with-directory-excursion "/tmp"
-              (zero? (system* "python" "-c" 
-                              "import numpy; numpy.test(verbose=2)"))))
-          (alist-delete 
-           'check 
-           %standard-phases))))))
+        ;; Tests can only be run after the library has been installed and not
+        ;; within the source directory.
+        (alist-cons-after
+         'install 'check
+         (lambda _ 
+           (with-directory-excursion "/tmp"
+             (zero? (system* "python" "-c" 
+                             "import numpy; numpy.test(verbose=2)"))))
+         (alist-delete 
+          'check 
+          %standard-phases)))))
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
