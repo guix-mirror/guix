@@ -119,13 +119,13 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
    (name "ghostscript")
-   (version "9.06.0")
+   (version "9.14.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
                                 version ".tar.xz"))
             (sha256 (base32
-                     "0bcg2203p7cm0f53f3s883xhj2c91xnaxakj2cy7kcdknfxplvs4"))))
+                     "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
              ("lcms" ,lcms)
@@ -161,7 +161,7 @@ printing, and psresize, for adjusting page sizes.")
 file format.  It also includes a C library that implements the graphics
 capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
-   (license license:gpl3+)
+   (license license:agpl3+)
    (home-page "http://www.gnu.org/software/ghostscript/")))
 
 (define-public gs-fonts
