@@ -277,6 +277,27 @@ bin as is also commonly used) paths of your Perl distribution.")
                               "Test-Script-" version))
     (license (package-license perl))))
 
+(define-public perl-test-tester
+  (package
+    (name "perl-test-tester")
+    (version "0.109")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/F/FD/FDALY/"
+                                  "Test-Tester-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m9n28z09kq455r5nydj1bnr85lvmbfpcbjdkjfbpmfb5xgciiyk"))))
+    (build-system perl-build-system)
+    (synopsis "Simplify running Test::Builder tests")
+    (description
+     "Test::Tester allows testing of test modules based on Test::Builder with
+a minimum of effort.")
+    (home-page (string-append "http://search.cpan.org/~fdaly/"
+                              "Test-Tester-" version))
+    ;; "Under the same license as Perl itself"
+    (license (package-license perl))))
+
 (define-public perl-file-which
   (package
     (name "perl-file-which")
