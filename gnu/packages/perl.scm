@@ -253,6 +253,30 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-test-deep
+  (package
+    (name "perl-test-deep")
+    (version "0.114")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "Test-Deep-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09yr47vw7vj27sdik312x08938higcij8ybyq8k67mlccx8cpqf0"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-test-tester" ,perl-test-tester)
+              ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (synopsis "Flexible deep comparison for the Test::Builder framework")
+    (description
+     "Test::Deep compares two structures by going through each level, ensuring
+that the values match, that arrays and hashes have the same elements and that
+references are blessed into the correct class. It also handles circular data
+structures without getting caught in an infinite loop.")
+    (home-page (string-append "http://search.cpan.org/~rjbs/"
+                              "Test-Deep-" version))
+    (license gpl1+)))  ; or "Artistic License"
+
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
