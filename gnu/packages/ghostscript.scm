@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +34,14 @@
 (define-public lcms
   (package
    (name "lcms")
-   (version "2.4")
+   (version "2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "http://downloads.sourceforge.net/project/lcms/lcms/"
                    version "/lcms2-" version ".tar.gz"))
             (sha256 (base32
-                     "1s1ppvqaydf2yqc72mw6zfviwxccb311a6hrbi802sgjxw84sl9a"))))
+                     "1c8lgq8gfs3nyplvbx9k8wzfj6r2bqi3f611vb1m8z3476454wji"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg-8" ,libjpeg-8)
              ("libtiff" ,libtiff)
