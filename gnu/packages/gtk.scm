@@ -265,7 +265,7 @@ printing and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.28.2")
+   (version "2.31.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -273,7 +273,7 @@ printing and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "05s6ksvy1yan6h6zny9n3bmvygcnzma6ljl6i0z9cci2xg116c8q"))))
+              "1kajvfckn88bzcdnl73b933gmjhwjm3dhsj1yrpixhfsc4y5x9r5"))))
    (build-system gnu-build-system)
    (propagated-inputs ; required by gdk-pixbuf-2.0.pc
     `(("glib" ,glib)
