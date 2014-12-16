@@ -77,6 +77,64 @@ intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
     (license license:gpl2)))
 
+(define-public bowtie
+  (package
+    (name "bowtie")
+    (version "2.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15dnbqippwvhyh9zqjhaxkabk7lm1xbh1nvar1x4b5kwm117zijn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("^CC = .*$") "CC = gcc")
+                  (("^CPP = .*$") "CPP = g++")
+                  ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+                  (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)
+              ("perl-clone" ,perl-clone)
+              ("perl-test-deep" ,perl-test-deep)
+              ("perl-test-simple" ,perl-test-simple)
+              ("python" ,python-2)))
+    (arguments
+     '(#:make-flags '("allall")
+       #:phases
+       (alist-delete
+        'configure
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (for-each (lambda (file)
+                         (copy-file file (string-append bin file)))
+                       (find-files "." "bowtie2.*"))))
+         (alist-replace
+          'check
+          (lambda* (#:key outputs #:allow-other-keys)
+            (system* "perl"
+                     "scripts/test/simple_tests.pl"
+                     "--bowtie2=./bowtie2"
+                     "--bowtie2-build=./bowtie2-build"))
+          %standard-phases)))))
+    (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
+    (synopsis "Fast and sensitive nucleotide sequence read aligner")
+    (description
+     "Bowtie 2 is a fast and memory-efficient tool for aligning sequencing
+reads to long reference sequences.  It is particularly good at aligning reads
+of about 50 up to 100s or 1,000s of characters, and particularly good at
+aligning to relatively long (e.g. mammalian) genomes.  Bowtie 2 indexes the
+genome with an FM Index to keep its memory footprint small: for the human
+genome, its memory footprint is typically around 3.2 GB.  Bowtie 2 supports
+gapped, local, and paired-end alignment modes.")
+    (license license:gpl3+)))
+
 (define-public samtools
   (package
     (name "samtools")
