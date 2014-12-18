@@ -19,6 +19,7 @@
 
 (define-module (gnu packages libcanberra)
   #:use-module ((guix licenses) #:select (lgpl2.1+))
+  #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -46,7 +47,21 @@
             version ".tar.xz"))
       (sha256
        (base32
-        "0wps39h8rx2b00vyvkia5j40fkak3dpipp1kzilqla0cgvk73dn2"))))
+        "0wps39h8rx2b00vyvkia5j40fkak3dpipp1kzilqla0cgvk73dn2"))
+      ;; "sound-theme-freedesktop" is the default and fall-back sound theme for
+      ;; XDG desktops and should always be present.
+      ;; http://www.freedesktop.org/wiki/Specifications/sound-theme-spec/
+      ;; We make sure libcanberra will find it.
+      ;;
+      ;; We add the default sounds store directory to the code dealing with
+      ;; XDG_DATA_DIRS and not XDG_DATA_HOME. This is because XDG_DATA_HOME
+      ;; can only be a single directory and is inspected first.  XDG_DATA_DIRS
+      ;; can list an arbitrary number of directories and is only inspected
+      ;; later.  This is designed to allows the user to modify any theme at
+      ;; his pleasure.
+      (patch-flags '("-p0"))
+      (patches
+       (list (search-patch "libcanberra-sound-theme-freedesktop.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -55,9 +70,21 @@
        ("libtool" ,libtool)
        ("libvorbis" ,libvorbis)
        ("pulseaudio" ,pulseaudio)
-       ("udev" ,eudev)))
+       ("udev" ,eudev)
+       ("sound-theme-freedesktop" ,sound-theme-freedesktop)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'patch-default-sounds-directory
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "src/sound-theme-spec.c"
+            (("@SOUND_THEME_DIRECTORY@")
+             (string-append
+              (assoc-ref inputs "sound-theme-freedesktop")
+              "/share"))))
+        %standard-phases)))
     (home-page "http://0pointer.de/lennart/projects/libcanberra/")
     (synopsis
      "Implementation of the XDG Sound Theme and Name Specifications")

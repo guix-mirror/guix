@@ -1,0 +1,22 @@
+# We insert a hook called "@SOUND_THEME_DIRECTORY@" where, at build time, we
+# insert the directory of the package "sound-theme-freedesktop" in the store.
+
+--- src/sound-theme-spec.c.orig	2015-01-11 13:13:29.520527358 +0100
++++ src/sound-theme-spec.c	2015-01-11 14:27:23.035046849 +0100
+@@ -321,9 +321,13 @@
+         const char *g;
+ 
+         if (!(g = getenv("XDG_DATA_DIRS")) || *g == 0)
+-                return "/usr/local/share:/usr/share";
+-
+-        return g;
++                return "@SOUND_THEME_DIRECTORY@";
++        else {
++                const char *stp = ":@SOUND_THEME_DIRECTORY@";
++                size_t len = strlen(stp) + strlen(g) + 1;
++                char *g2 = (char*) malloc(len);
++                return strcat(strcpy(g2, g), stp);
++        }
+ }
+ 
+ static int load_theme_dir(ca_theme_data *t, const char *name) {
