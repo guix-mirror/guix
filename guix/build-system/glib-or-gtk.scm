@@ -34,15 +34,14 @@
 ;; This build system is an extension of the 'gnu-build-system'.  It
 ;; accomodates the needs of applications making use of glib or gtk+ (with "or"
 ;; to be interpreted in the mathematical sense).  This is achieved by adding
-;; two phases run after the 'install' phase:
+;; three phases run after the 'install' phase:
 ;;
 ;; 'glib-or-gtk-wrap' phase:
 ;;
-;; a) This phase looks for GSettings schemas by verifying the existence of
-;; path "datadir/glib-2.0/schemas" in all input packages.  If the path is
-;; found in any package, then all programs in "out/bin" are wrapped in scripts
-;; where the environment variable "XDG_DATA_DIRS" is set and points to the
-;; list of found schemas directories.
+;; a) This phase looks for GSettings schemas, GIO modules and theming data.
+;; If any of these is found in any input package, then all programs in
+;; "out/bin" are wrapped in scripts defining the nedessary environment
+;; variables.
 ;;
 ;; b) Looks for the existence of "libdir/gtk-3.0" directories in all input
 ;; packages.  If any is found, then the environment variable "GTK_PATH" is
@@ -55,6 +54,11 @@
 ;; Looks for the presence of "out/share/glib-2.0/schemas".  If that directory
 ;; exists and does not include a file named "gschemas.compiled", then
 ;; "glib-compile-schemas" is run in that directory.
+;;
+;; 'glib-or-gtk-icon-cache' phase:
+;;
+;; Looks for the existence of icon themes and, if no cache exists, generate
+;; the "icon-theme.cache" file.
 ;;
 ;; Code:
 
@@ -76,15 +80,22 @@
   (let ((module (resolve-interface '(gnu packages glib))))
     (module-ref module 'glib)))
 
+(define (default-gtk+)
+  "Return the default gtk+ package from which we use
+\"gtk-update-icon-cache\"."
+  (let ((module (resolve-interface '(gnu packages gtk))))
+    (module-ref module 'gtk+)))
+
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                (glib (default-glib)) (implicit-inputs? #t)
+                (glib (default-glib)) (gtk+ (default-gtk+))
+                (implicit-inputs? #t)
                 (strip-binaries? #t)
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:glib #:inputs #:native-inputs
+    '(#:source #:target #:glib #:gtk+ #:inputs #:native-inputs
       #:outputs #:implicit-inputs?))
 
   (and (not target)                               ;XXX: no cross-compilation
@@ -95,7 +106,8 @@
                               `(("source" ,source))
                               '())
                         ,@inputs))
-         (build-inputs `(("glib:bin" ,glib)
+         (build-inputs `(("glib:bin" ,glib "bin") ; to compile schemas
+                         ("gtk+" ,gtk+)           ; to generate icon cache
                          ,@(if implicit-inputs?
                                (standard-packages)
                                '())
