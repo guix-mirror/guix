@@ -220,19 +220,7 @@ and keep up to date translations of documentation.")
        ;; FIXME: Tests fail with:
        ;;   ImportError: No module named gi.repository
        ;; Where should that module come from?
-       #:tests? #f
-
-       #:phases (alist-cons-after
-                 'install 'set-mime-search-path
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   ;; Wrap 'evince' so that it knows where MIME info is.
-                   (let ((out  (assoc-ref outputs "out"))
-                         (mime (assoc-ref inputs "shared-mime-info")))
-                     (wrap-program (string-append out "/bin/evince")
-                                   `("XDG_DATA_DIRS" ":" prefix
-                                     ,(list (string-append mime "/share")
-                                            (string-append out "/share"))))))
-                 %standard-phases)))
+       #:tests? #f))
     (inputs
      `(("libspectre" ,libspectre)
        ;; ("djvulibre" ,djvulibre)
@@ -251,7 +239,9 @@ and keep up to date translations of documentation.")
        ("libsm" ,libsm)
        ("libice" ,libice)
        ("shared-mime-info" ,shared-mime-info)
-
+       ("dconf" ,dconf)
+       ("libcanberra" ,libcanberra)
+       
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
