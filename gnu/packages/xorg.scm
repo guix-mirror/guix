@@ -3269,17 +3269,17 @@ kernel mode setting (KMS).")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.2.4")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkbcomp-"
+               "mirror://xorg/individual/app/xkbcomp-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0bas1d2wjiy5zy9d0g92d2p9pwv4aapfbfidi7hxy8ax8jmwkl4i"))))
+            "0aibcbhhjlwcrxh943xg2dswwx5bz1x0pmhs28b55gzsg0vrgb6g"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
