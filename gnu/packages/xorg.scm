@@ -1392,17 +1392,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libxxf86dga
   (package
     (name "libxxf86dga")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXxf86dga-"
+               "mirror://xorg/individual/lib/libXxf86dga-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
+            "0zn7aqj8x0951d8zb2h2andldvwkzbsc4cs7q023g6nzq6vd9v4f"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xf86dgaproto" ,xf86dgaproto)))
