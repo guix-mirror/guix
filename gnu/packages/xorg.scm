@@ -3728,17 +3728,17 @@ kernel mode setting (KMS).")
 (define-public xvinfo
   (package
     (name "xvinfo")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xvinfo-"
+               "mirror://xorg/individual/app/xvinfo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "119rd93d7661ll1rfcdssn78l0b97326smziyr2f5wdwj2hlmiv0"))))
+            "1qsh7fszi727l3vwlaf9pb7bpikdv15smrx5qhlgg3kqzl7xklzf"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
