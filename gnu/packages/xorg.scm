@@ -3600,17 +3600,17 @@ kernel mode setting (KMS).")
 (define-public xrdb
   (package
     (name "xrdb")
-    (version "1.0.9")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xrdb-"
+               "mirror://xorg/individual/app/xrdb-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1dza5a34nj68fzhlgwf18i5bk0n24ig28yihwpjy7vwn57hh2934"))))
+            "0nsnr90wazcdd50nc5dqswy0bmq6qcj14nnrhyi7rln9pxmpp0kk"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
