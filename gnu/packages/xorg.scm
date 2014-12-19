@@ -1041,17 +1041,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfs
   (package
     (name "libfs")
-    (version "1.0.4")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libFS-"
+               "mirror://xorg/individual/lib/libFS-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "05c3bqgn5m7j4kx8wvy0p36faq6f9jv5yq12m6033m4lflg7cwvh"))))
+            "1mxfsvj9m3pn8cdkcn4kg190zp665mf4pv0083g6xykvsgxzq1wh"))))
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
