@@ -4714,14 +4714,14 @@ renderutil: Convenience functions for the Render extension.")
 (define-public xcb-util-wm
   (package
     (name "xcb-util-wm")
-    (version "0.3.9")
+    (version "0.4.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/xcb-util-wm-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0c30fj33gvwzwhyz1dhsfwni0ai16bxpvxb4l6c6s7vvj7drp3q3"))))
+               "0gra7hfyxajic4mjd63cpqvd20si53j1q3rbdlkqkahfciwq3gr8"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxcb" ,libxcb)))
