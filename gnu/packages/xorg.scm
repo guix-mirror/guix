@@ -3238,22 +3238,23 @@ kernel mode setting (KMS).")
 (define-public xinput
   (package
     (name "xinput")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xinput-"
+               "mirror://xorg/individual/app/xinput-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0zl4cdgnzh9shz20yn7hz889v4nkbyqwx0nb7dh6arn7abchgc2a"))))
+            "07w7zlpdhpwzzshg8q0y152cy3wl2fj7x1897glnp2la487jsqxp"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
         ("libxrandr" ,libxrandr)
         ("libxinerama" ,libxinerama)
+        ("libxext" ,libxext)
         ("libxi" ,libxi)
         ("libx11" ,libx11)
         ("inputproto" ,inputproto)))
