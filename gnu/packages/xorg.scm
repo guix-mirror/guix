@@ -964,17 +964,17 @@ autotools system.")
 (define-public libdmx
   (package
     (name "libdmx")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libdmx-"
+               "mirror://xorg/individual/lib/libdmx-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1fiq73sfxcbyjval118ialwrzxhzb08xsxmg69adcs47i9j0p1x7"))))
+            "00djlxas38kbsrglcmwmxfbmxjdchlbj95pqwjvdg8jn5rns6zf9"))))
     (build-system gnu-build-system)
     (inputs
       `(("xextproto" ,xextproto)
