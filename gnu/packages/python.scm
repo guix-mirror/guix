@@ -2726,3 +2726,88 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python2-cairocffi
   (package-with-python2 python-cairocffi))
 
+(define-public python-ipython
+  (package
+    (name "python-ipython")
+    (version "2.3.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/i/"
+                          "ipython/ipython-" version ".tar.gz"))
+      (sha256
+       (base32 "1764gi5m3ff481rjk336cw6i2h4zlc0nxam9rc5m8m7yl9m4d61y"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    ;; FIXME: add optional dependencies when available: pyzmq, tornado, ...
+    (inputs
+     `(("readline" ,readline)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy-bootstrap)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-nose" ,python-nose)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (html (string-append doc "/html"))
+                 (man1 (string-append data "/man/man1"))
+                 (info (string-append data "/info"))
+                 (examples (string-append doc "/examples")))
+            (setenv "LANG" "en_US.UTF-8")
+            (with-directory-excursion "docs"
+              ;; FIXME: html and pdf fail to build without optional pyzmq
+              ;(system* "make" "html")
+              ;(system* "make" "pdf" "PAPER=a4")
+              (system* "make" "info"))
+            (copy-recursively "docs/man" man1)
+            (copy-recursively "examples" examples)
+            ;; (copy-recursively "docs/build/html" html)
+            ;; (copy-file "docs/build/latex/ipython.pdf"
+            ;;            (string-append doc "/ipython.pdf"))
+            (mkdir-p info)
+            (copy-file "docs/build/texinfo/ipython.info"
+                       (string-append info "/ipython.info"))
+            (copy-file "COPYING.rst" (string-append doc "/COPYING.rst"))))
+        ;; Tests can only be run after the library has been installed and not
+        ;; within the source directory.
+        (alist-cons-after
+         'install 'check
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; The test procedure appears to miss the fact that some optional
+           ;; dependencies are missing.
+           ;; (with-directory-excursion "/tmp"
+           ;;   (zero? (system* (string-append (assoc-ref outputs "out")
+           ;;                                  "/bin/iptest"))))
+           #t)
+         (alist-delete 
+          'check 
+          %standard-phases)))))
+    (home-page "http://ipython.org")
+    (synopsis "IPython is a tool for interactive computing in Python")
+    (description
+     "IPython provides a rich architecture for interactive computing with:
+Powerful interactive shells, a browser-based notebook, support for interactive
+data visualization, embeddable interpreters and tools for parallel
+computing.")
+    (license bsd-3)))
+
+(define-public python2-ipython
+  (let ((ipython (package-with-python2 python-ipython)))
+    (package (inherit ipython)
+      ;; Make sure we use custom python2-NAME packages.
+      (inputs 
+       `(("python2-numpydoc" ,python2-numpydoc)
+         ("python2-matplotlib" ,python2-matplotlib)
+         ,@(alist-delete "python-numpydoc"
+                         (alist-delete "python-matplotlib"
+                                       (package-inputs ipython))))))))
