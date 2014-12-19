@@ -4111,17 +4111,17 @@ kernel mode setting (KMS).")
 (define-public libxau
   (package
     (name "libxau")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXau-"
+               "mirror://xorg/individual/lib/libXau-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "12d4f7sdv2pjxhk0lcay0pahccddszkw579dc59daqi37r8bllvi"))))
+            "1wm4pv12f36cwzhldpp7vy3lhm3xdcnp4f184xkxsp7b18r7gm7x"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xproto" ,xproto)))
