@@ -847,17 +847,17 @@ autotools system.")
 (define-public fontsproto
   (package
     (name "fontsproto")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/fontsproto-"
+               "mirror://xorg/individual/proto/fontsproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ab8mbqxdwvdz4k5x4xb9c4n5w7i1xw276cbpk4z7a1nlpjrg746"))))
+            "1f2sdsd74y34nnaf4m1zlcbhyv8xb6irnisc99f84c4ivnq4d415"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
