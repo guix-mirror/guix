@@ -2301,22 +2301,21 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.6.1")
+    (version "1.8.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-synaptics-"
+               "mirror://xorg/individual/driver/xf86-input-synaptics-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))
-        (patches
-         (list (search-patch "xf86-input-synaptics-glibc-2.20.patch")))))
+            "16phzd7yhl4wns957c35qz2nahmjvnlx05jf975s524qkvrdlkyp"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
+              ("libevdev" ,libevdev)
               ("mtdev" ,mtdev)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
