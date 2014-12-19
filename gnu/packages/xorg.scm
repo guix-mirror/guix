@@ -2250,17 +2250,17 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-keyboard
   (package
     (name "xf86-input-keyboard")
-    (version "1.6.1")
+    (version "1.8.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-keyboard-"
+               "mirror://xorg/individual/driver/xf86-input-keyboard-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1hwc1bjw5mxv186xbrxiky0agfglwqg8fsxqdh4br1vzgxpck7ma"))))
+            "0nyb61w30z32djrllgr2s1i13di3vsl6hg4pqjhxdal71971ria1"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
