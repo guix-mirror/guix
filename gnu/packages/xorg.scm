@@ -2534,17 +2534,19 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-glint
   (package
     (name "xf86-video-glint")
-    (version "1.2.7")
+    (version "1.2.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-glint-"
+               "mirror://xorg/individual/driver/xf86-video-glint-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0nf36jryabpncqq4m6sfsnmzk00f7gvfmjnl8l8sfy7w6sa6iacs"))))
+           "08a2aark2yn9irws9c78d9q44dichr03i9zbk61jgr54ncxqhzv5"))
+        (patches (list
+                  (search-patch "xf86-video-glint-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
