@@ -1472,17 +1472,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/mkfontscale-"
+               "mirror://xorg/individual/app/mkfontscale-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1539h3ws66vcql6sf2831bcs0r4d9b05lcgpswkw33lvcxighmff"))))
+            "0cdpn1ii2iw1vg2ga4w62acrh78gzgf0vza4g8wx5kkp4jcifh14"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
