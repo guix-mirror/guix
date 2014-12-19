@@ -2115,17 +2115,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xev
   (package
     (name "xev")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xev-"
+               "mirror://xorg/individual/app/xev-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "13xk5z7vy87rnn4574z0jfzymdivyc7pl4axim81sx0pmdysg1ip"))))
+            "0hv296mysglcgkx6lj1wxc23kshb2kix1a8yqppxj5vz16mpzw8i"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
