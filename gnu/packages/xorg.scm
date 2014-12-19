@@ -1776,17 +1776,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public videoproto
   (package
     (name "videoproto")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/videoproto-"
+               "mirror://xorg/individual/proto/videoproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0nk3i6gwkqq1w8zwn7bxz344pi1dwcjrmf6hr330h7hxjcj6viry"))))
+            "1dnlkd9nb0m135lgd6hd61vc29sdyarsyya8aqpx7z10p261dbld"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
