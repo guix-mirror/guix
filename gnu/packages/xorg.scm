@@ -3782,17 +3782,17 @@ kernel mode setting (KMS).")
 (define-public xwininfo
   (package
     (name "xwininfo")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xwininfo-"
+               "mirror://xorg/individual/app/xwininfo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0fmcr5yl03xw7m8p9h1rk67rrj7gp5x16a547xhmg8idw2f6r9lg"))))
+            "1y1zn8ijqslb5lfpbq4bb78kllhch8in98ps7n8fg3dxjpmb13i1"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
