@@ -4253,17 +4253,17 @@ kernel mode setting (KMS).")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXvMC-"
+               "mirror://xorg/individual/lib/libXvMC-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "18yf6ysc01pqkbk9704914ghalq1sl2hfdjmwggxm8qqhpy8bw18"))))
+            "015jk3bxfmj6zaw99x282f9npi8qqaw34yg186frags3z8g406jy"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
