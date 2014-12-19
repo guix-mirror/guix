@@ -125,17 +125,17 @@ autotools system.")
 (define-public bdftopcf
   (package
     (name "bdftopcf")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/bdftopcf-"
+               "mirror://xorg/individual/app/bdftopcf-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02hx981f7jfwylxj21s91yvv4h597nqqzz3vd6ar81zyn84b944w"))))
+            "1617zmgnx50n7vxlqyj84fl7vnk813jjqmi6jpigyz1xp9br1xga"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxfont" ,libxfont)))
