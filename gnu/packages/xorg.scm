@@ -3390,17 +3390,17 @@ kernel mode setting (KMS).")
 (define-public xkill
   (package
     (name "xkill")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkill-"
+               "mirror://xorg/individual/app/xkill-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ac110qbb9a4x1dim3vaghvdk3jc708i2p3f4rmag33458khg0xx"))))
+            "0bl1ky8ps9jg842j4mnmf4zbx8nkvk0h77w7bqjlpwij9wq2mvw8"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
