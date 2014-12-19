@@ -2222,17 +2222,17 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-joystick
   (package
     (name "xf86-input-joystick")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-joystick-"
+               "mirror://xorg/individual/driver/xf86-input-joystick-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1xgpkdmfw4ahjlva97gs9sllzw8nlpa8mxj59g28fxhak67mvv8x"))))
+            "038mfqairyyqvz02rk7v3i070sab1wr0k6fkxvyvxdgkfbnqcfzf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
