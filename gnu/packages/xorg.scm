@@ -2055,17 +2055,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xdpyinfo
   (package
     (name "xdpyinfo")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xdpyinfo-"
+               "mirror://xorg/individual/app/xdpyinfo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0gypsvpmay3lsh3b1dg29pjxv95pkrr21d4w6ys02mrbld24kvi3"))))
+            "154b29zlrq33lmni883jgwyrb2kx7z8h52jx1s3ys5x5d582iydf"))))
     (build-system gnu-build-system)
     (inputs
       `(("inputproto" ,inputproto)
