@@ -4223,17 +4223,17 @@ kernel mode setting (KMS).")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.3.2")
+    (version "1.4.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXrandr-"
+               "mirror://xorg/individual/lib/libXrandr-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "10cvv78ws8jznma4s45dzqz0ldcxk30qgsqrc4wxfcsjmcba5b3y"))))
+            "1b95p3l84ppv6j7dbbmg0zrz6k8xdwvnag1l6ajm3gk9qwdb79ya"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
