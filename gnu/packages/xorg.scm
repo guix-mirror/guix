@@ -1876,24 +1876,23 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xbacklight
   (package
     (name "xbacklight")
-    (version "1.1.2")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xbacklight-"
+               "mirror://xorg/individual/app/xbacklight-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02b5jfys2msla2yvg5s0knzyxg2104r25czkwd49i8g8kp804bxg"))))
+            "0arnd1j8vzhzmw72mqhjjcb2qwcbs9qphsy3ps593ajyld8wzxhp"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)
-        ("libxrandr" ,libxrandr)
-        ("libxrender" ,libxrender)))
+     `(("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
