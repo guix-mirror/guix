@@ -2140,17 +2140,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xextproto
   (package
     (name "xextproto")
-    (version "7.2.1")
+    (version "7.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xextproto-"
+               "mirror://xorg/individual/proto/xextproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "06kdanbnprxvgl56l5h0lqj4b0f1fbb1ndha33mv5wvy802v2lvw"))))
+            "1c2vma9gqgc2v06rfxdiqgwhxmzk2cbmknwf1ng3m76vr0xb5x7k"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
