@@ -4505,17 +4505,17 @@ kernel mode setting (KMS).")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXt-"
+               "mirror://xorg/individual/lib/libXt-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1g85gwnhs7lg5f01gfi1cpb916xc3spm1fjlv2f4xz2zzk1r7dcd"))))
+            "0myxwbx9ylam5x3ia5b5f4x8azcqdm420h9ad1r4hrgmi2lrffl4"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)
