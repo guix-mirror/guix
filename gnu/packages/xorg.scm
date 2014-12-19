@@ -1848,17 +1848,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xauth
   (package
     (name "xauth")
-    (version "1.0.7")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xauth-"
+               "mirror://xorg/individual/app/xauth-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1382wdfiakgckbw1xxavzh1nm34q21b1zzy96qp7ws66xc48rxw4"))))
+            "13y2invb0894b1in03jbglximbz6v31y2kr4yjjgica8xciibkjn"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -1867,6 +1867,10 @@ synchronization between the X server and direct-rendering clients.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
+
+    ;; FIXME: The test suite needs http://liw.fi/cmdtest/
+    (arguments `(#:tests? #f))
+
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
