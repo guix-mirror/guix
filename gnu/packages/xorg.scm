@@ -1225,17 +1225,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libxft
   (package
     (name "libxft")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXft-"
+               "mirror://xorg/individual/lib/libXft-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1gdv6559cdz1lfw73x7wsvax1fkvphmayrymprljhyyb5nwk5kkz"))))
+            "0k6wzi5rzs0d0n338ms8n8lfyhq914hw4yl2j7553wqxfqjci8zm"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xft.pc refers to all these.
