@@ -119,7 +119,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.40.2")
+   (version "2.42.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -127,7 +127,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0ykcf99mhpkza3xwa3k79vgfml8mqiac9044802yi5q8jpr8mzz8"))
+              "16pqvikrps1fvwwqvk0qi4a13mfg7gw6w5qfhk7bhi8f51jhhgwg"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
                            (search-patch "glib-tests-prlimit.patch")
@@ -165,7 +165,12 @@ shared NFS home directories.")
                                  "glib/tests/utils.c"
                                  "tests/spawn-test.c")
                     (("/bin/sh")
-                     (string-append (assoc-ref inputs "bash") "/bin/sh"))))
+                     (string-append (assoc-ref inputs "bash") "/bin/sh")))
+
+                  ;; Disable a test that requires dbus.
+                  (substitute* "gio/tests/gdbus-serialization.c"
+                    (("g_test_add_func \\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
+                     (string-append "/* " all " */"))))
                 %standard-phases)
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
