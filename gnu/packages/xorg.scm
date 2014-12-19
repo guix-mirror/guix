@@ -2360,17 +2360,18 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-ark
   (package
     (name "xf86-video-ark")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-ark-"
+               "mirror://xorg/individual/driver/xf86-video-ark-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "194zc35ivfh3vcxcilf9nbi88c2di8kbh84x535cljlpiajdnk5x"))))
+           "07p5vdsj2ckxb6wh02s61akcv4qfg6s1d5ld3jn3lfaayd3f1466"))
+        (patches (list (search-patch "xf86-video-ark-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
