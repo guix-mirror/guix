@@ -2159,6 +2159,32 @@ synchronization between the X server and direct-rendering clients.")
     (license license:x11)))
 
 
+(define-public libevdev
+  (package
+    (name "libevdev")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/" name "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0iil4pnla0kjdx52ay7igq65sx32sjbzn1wx9q3v74m5g7712m16"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("python" ,python)))
+    (home-page "http://www.freedesktop.org/wiki/Software/libevdev/")
+    (synopsis "Wrapper library for evdev devices")
+    (description
+     "libevdev is a wrapper library for evdev devices. it moves the common
+tasks when dealing with evdev devices into a library and provides a library
+interface to the callers, thus avoiding erroneous ioctls, etc.
+
+The eventual goal is that libevdev wraps all ioctls available to evdev
+devices, thus making direct access unnecessary.")
+    (license license:x11-style)))
+
+
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
