@@ -3441,17 +3441,17 @@ kernel mode setting (KMS).")
 (define-public xlsclients
   (package
     (name "xlsclients")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xlsclients-"
+               "mirror://xorg/individual/app/xlsclients-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1l97j15mg4wfzpm81wlpzagfjff7v4fwn7s2z2rpksk3gfcg7r8w"))))
+            "0g9x7rrggs741x9xwvv1k9qayma980d88nhdqw7j3pn3qvy6d5jx"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
