@@ -3755,20 +3755,21 @@ kernel mode setting (KMS).")
 (define-public xwd
   (package
     (name "xwd")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xwd-"
+               "mirror://xorg/individual/app/xwd-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0fkg6msy2zg7rda2rpxb7j6vmrdmqmk72xsxnyhz97196ykjnx82"))))
+            "0ybx48agdvjp9lgwvcw79r1x6jbqbyl3fliy3i5xwy4d4si9dcrv"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
+        ("libxkbfile" ,libxkbfile)
         ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
