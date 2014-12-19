@@ -4534,17 +4534,17 @@ kernel mode setting (KMS).")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXaw-"
+               "mirror://xorg/individual/lib/libXaw-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "14ll7ndf5njc30hz2w197qvwp7fqj7y14wq4p1cyxlbipfn79a47"))))
+            "1xnv7jy86j9vhmw74frkzcraynqbw1p1s79jasargsgwfi433z4n"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
