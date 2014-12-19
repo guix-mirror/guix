@@ -241,17 +241,17 @@ autotools system.")
 (define-public dri2proto
   (package
     (name "dri2proto")
-    (version "2.6")
+    (version "2.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/dri2proto-"
+               "mirror://xorg/individual/proto/dri2proto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02drlfqvjm2q7dvkkwli3fs2crb6rdb3kyd13vwx7z0rijrc10md"))))
+            "015az1vfdqmil1yay5nlsmpf6cf7vcbpslxjb72cfkzlvrv59dgr"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
