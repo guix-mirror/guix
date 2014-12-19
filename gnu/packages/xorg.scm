@@ -1171,17 +1171,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libxcomposite
   (package
     (name "libxcomposite")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXcomposite-"
+               "mirror://xorg/individual/lib/libXcomposite-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1b8sniijb85v4my6v30ma9yqnwl4hkclci9l1hqxnipfyhl4sa9j"))))
+            "0y21nfpa5s8qmx0srdlilyndas3sgl0c6rc26d5fx2vx436m1qpd"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
