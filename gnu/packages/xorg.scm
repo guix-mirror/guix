@@ -2433,17 +2433,17 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-cirrus
   (package
     (name "xf86-video-cirrus")
-    (version "1.4.0")
+    (version "1.5.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-cirrus-"
+               "mirror://xorg/individual/driver/xf86-video-cirrus-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0blnbspj4936wy46lp346s4b08dfcray6yicsxvv5b4699fzl1rb"))))
+            "1mycqgjp18b6adqj2h90vp324xh8ysyi5migfmjc914vbnkf2q9k"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
