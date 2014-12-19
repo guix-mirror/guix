@@ -71,14 +71,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.12.16")
+   (version "1.12.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0inqwsylqkrzcjivdirkjx5nhdgxbdc62fq284c3xppinfg9a195"))))
+              "1dpmlxmmigpiyv0jchjsn2l1a29655x24g5073hy8p4lmjvz0nfw"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -408,6 +408,7 @@ application suites.")
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
+      ("libxdamage" ,libxdamage)
       ("pango" ,pango)))
    (inputs
     `(("libxml2" ,libxml2)))
