@@ -3831,17 +3831,17 @@ kernel mode setting (KMS).")
 (define-public libxdamage
   (package
     (name "libxdamage")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXdamage-"
+               "mirror://xorg/individual/lib/libXdamage-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1a678bwap74sqczbr2z4y4fvbr35km3inkm8bi1igjyk4v46jqdw"))))
+            "1bamagq7g6s0d23l8rb3nppj8ifqj05f7z9bhbs4fdg8az3ffgvw"))))
     (build-system gnu-build-system)
     (propagated-inputs  
       ;; These are all in the Requires or Requires.private field of xdamage.pc
