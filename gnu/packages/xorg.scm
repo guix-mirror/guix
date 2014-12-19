@@ -1336,17 +1336,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libxres
   (package
     (name "libxres")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXres-"
+               "mirror://xorg/individual/lib/libXres-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1478pm70gdi6l70r4jpkyyg2am9wv6xh53z9ibwq5cg84p4n31pz"))))
+            "1rd0bzn67cpb2qkc946gch2183r4bdjfhs6cpqbipy47m9a91296"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
