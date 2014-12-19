@@ -916,17 +916,17 @@ autotools system.")
 (define-public inputproto
   (package
     (name "inputproto")
-    (version "2.2")
+    (version "2.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/inputproto-"
+               "mirror://xorg/individual/proto/inputproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1c5wqamfsd8g5i8kya5pjfmcac8q5zq1l3vclh6p96f24nmicxfy"))))
+            "1lf1jlxp0fc8h6fjdffhd084dqab94966l1zm3rwwsis0mifwiss"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
