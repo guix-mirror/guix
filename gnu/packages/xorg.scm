@@ -1015,17 +1015,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libfontenc-"
+               "mirror://xorg/individual/lib/libfontenc-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0zq1483xy31sssq0h3xxf8y1v4q14cp8rv164ayn7fsn30pq2wny"))))
+            "0qign0ivqk166l9yfd51gw9lbhgs718bcrmvc40yicjr6gnyz959"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
