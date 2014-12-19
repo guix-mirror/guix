@@ -2389,12 +2389,13 @@ devices, thus making direct access unnecessary.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-ast-"
+               "mirror://xorg/individual/driver/xf86-video-ast-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))))
+           "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))
+        (patches (list (search-patch "xf86-video-ast-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
