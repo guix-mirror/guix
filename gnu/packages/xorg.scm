@@ -4083,17 +4083,17 @@ kernel mode setting (KMS).")
 (define-public libice
   (package
     (name "libice")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libICE-"
+               "mirror://xorg/individual/lib/libICE-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "07mp13pb3s73kj7y490gnx619znzwk91mlf8kdw0rzq29ll93a94"))))
+            "00p2b6bsg6kcdbb39bv46339qcywxfl4hsrz8asm4hy6q7r34w4g"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xproto" ,xproto)))
