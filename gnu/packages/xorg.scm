@@ -869,17 +869,17 @@ autotools system.")
 (define-public glproto
   (package
     (name "glproto")
-    (version "1.4.15")
+    (version "1.4.17")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/glproto-"
+               "mirror://xorg/individual/proto/glproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0wf1vq9g4pyzahb23ywx554pm5bpax49lz188fk6m5p8wbmmc0wr"))))
+            "0h5ykmcddwid5qj6sbrszgkcypwn3mslvswxpgy2n2iixnyr9amd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
