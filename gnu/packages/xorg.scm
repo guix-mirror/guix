@@ -4445,17 +4445,17 @@ kernel mode setting (KMS).")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.5.0")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libX11-"
+               "mirror://xorg/individual/lib/libX11-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "11jdpl15bxwpwv0knpkh990s8jvlybng3dx477pkrz1bx7byz0n3"))))
+            "05mx0s0vqzds3qjc1gmjr2s6x2ll37z4lfhgm7p2w7936zl2g81a"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("kbproto" ,kbproto)
