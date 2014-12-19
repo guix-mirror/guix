@@ -1545,17 +1545,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public randrproto
   (package
     (name "randrproto")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/randrproto-"
+               "mirror://xorg/individual/proto/randrproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0wfwcq85wbm0g5r0snc7prgki1wi3kxrxhcxinyr54n45ihh03fr"))))
+            "1kq9h93qdnniiivry8jmhlgwn9fbx9xp5r9cmzfihlx5cs62xi45"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
