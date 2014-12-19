@@ -514,14 +514,14 @@ exceptions, macros, and a dynamic programming environment.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.10.0")
+    (version "1.11.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://cairographics.org/releases/cairomm-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13rrp96px95m6xnvmsaqb0wcqsnizg3bz334k0yhlyxf7v29d386"))))
+               "138052ybc58q5yl92m2p0br0k0a9g1pi9gfhmn4y220yih4pgxnc"))))
     (build-system gnu-build-system)
     (arguments
      ;; The examples lack -lcairo.
