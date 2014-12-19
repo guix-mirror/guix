@@ -1738,17 +1738,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public util-macros
   (package
     (name "util-macros")
-    (version "1.17")
+    (version "1.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/util-macros-"
+               "mirror://xorg/individual/util/util-macros-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1vbmrcn5n3wp4pyw0n4c3pyvzlc4yf7jzgngavfdq5zwfbgfsybx"))))
+            "1fnhpryf55l0yqajxn0cxan3kvsjzi67nlanz8clwqzf54cb2d98"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
