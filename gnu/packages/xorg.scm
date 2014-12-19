@@ -4135,17 +4135,17 @@ kernel mode setting (KMS).")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (version "5.0")
+    (version "5.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXfixes-"
+               "mirror://xorg/individual/lib/libXfixes-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1qx2rmwhmca2n7rgafy0arp15k5vwhdhhh6v6mx76hlj29328yjk"))))
+            "0rs7qgzr6dpr62db7sd91c1b47hzhzfr010qwnpcm8sg122w1gk3"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fixesproto" ,fixesproto)))
