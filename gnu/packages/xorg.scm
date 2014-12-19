@@ -3860,17 +3860,17 @@ kernel mode setting (KMS).")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXext-"
+               "mirror://xorg/individual/lib/libXext-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0ng8clhn7srbkadxjc7ih3z3v27v9ny0aa0dqkgddgxpgrhrq8jn"))))
+            "0dbfn5bznnrhqzvkrcmw4c44yvvpwdcsrvzxf4rk27r36b9x865m"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xextproto" ,xextproto)))
