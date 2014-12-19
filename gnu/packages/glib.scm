@@ -393,14 +393,15 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.37.7")
+    (version "2.42.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/glibmm/2.37/glibmm-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/glibmm/"
+                                 (version-major+minor version)
+                                 "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "0mms4yl5izsya1135772z4jkb184ss86x0wlg6dm7yvwxvb6bjlw"))))
+               "15rk3az8jh3rdwlc3lxjljbnh60drj3ka9574zd39lkqfgcq6l4q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
