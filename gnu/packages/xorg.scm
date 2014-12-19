@@ -2407,23 +2407,23 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "6.14.6")
+    (version "7.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               ;; FIXME: When updating, switch back to release uri.
                "mirror://xorg/individual/driver/xf86-video-ati-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0dpcdgw7vmx53l3byp900na5s980v1nw11a7y5yps67hwjrqclma"))))
+            "0dkrw036ikym8aacl43lnf04q0wbms5498xg5b3l16ngnq36ygpc"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments `(#:configure-flags `("--disable-glamor"))) ; TODO: Enable glamor
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
