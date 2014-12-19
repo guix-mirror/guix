@@ -3676,17 +3676,17 @@ kernel mode setting (KMS).")
 (define-public xtrans
   (package
     (name "xtrans")
-    (version "1.2.7")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xtrans-"
+               "mirror://xorg/individual/lib/xtrans-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "19p1bw3qyn0ia1znx6q3gx92rr9rl88ylrfijjclm8vhpa8i30bz"))))
+            "00c3ph17acnsch3gbdmx33b9ifjnl5w7vx8hrmic1r1cjcv3pgdd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
