@@ -3651,17 +3651,17 @@ kernel mode setting (KMS).")
 (define-public xset
   (package
     (name "xset")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xset-"
+               "mirror://xorg/individual/app/xset-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1s61mvscd0h7y6anljarj7nkii6plhs8ndx1fm8b1f1h00a1qdv1"))))
+            "0qw0iic27bz3yz2wynf1gxs70hhkcf9c4jrv7zhlg1mq57xz90j3"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
