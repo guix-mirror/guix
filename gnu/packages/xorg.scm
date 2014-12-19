@@ -1115,17 +1115,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libsm
   (package
     (name "libsm")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libSM-"
+               "mirror://xorg/individual/lib/libSM-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "07bzi6xwlhq36f60qfspjbz0qjj7zcgayi1vp4ihgx34kib1vhck"))))
+            "1gc7wavgs435g9qkp9jw4lhmaiq6ip9llv49f054ad6ryp4sib0b"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libice" ,libice))) ; SMlib.h includes ICElib.h
