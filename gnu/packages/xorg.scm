@@ -3888,17 +3888,17 @@ kernel mode setting (KMS).")
 (define-public libxinerama
   (package
     (name "libxinerama")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXinerama-"
+               "mirror://xorg/individual/lib/libXinerama-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1b3aq1762hxzchd9ndavdjlksq93991s0g2z6spf8wl3v0pprrx4"))))
+            "1qlqfvzw45gdzk9xirgwlp2qgj0hbsyiqj8yh8zml2bk2ygnjibs"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xineramaproto" ,xineramaproto)))
