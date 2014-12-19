@@ -3466,17 +3466,17 @@ kernel mode setting (KMS).")
 (define-public xmodmap
   (package
     (name "xmodmap")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xmodmap-"
+               "mirror://xorg/individual/app/xmodmap-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1dg47lay4vhrl9mfq3cfc6741a0m2n8wd4ljagd21ix3qklys8pg"))
+            "1hwzm54m4ng09ls9i4bq0x84zbyhamgzasgrvhxxp8jqk34f7qpg"))
         (patches (list (search-patch "xmodmap-asprintf.patch")))))
     (build-system gnu-build-system)
     (inputs
