@@ -1655,17 +1655,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public sessreg
   (package
     (name "sessreg")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/sessreg-"
+               "mirror://xorg/individual/app/sessreg-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0lifgjxdvc6lwyjk90slddnr12fsv88ldy6qhklr5av409cfwd47"))))
+            "1hy4wvgawajf4qw2k51fkcjzxw0drx60ydzpmqhj7k1g4z3cqahf"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
