@@ -2191,20 +2191,21 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.7.0")
+    (version "2.8.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-evdev-"
+               "mirror://xorg/individual/driver/xf86-input-evdev-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
+            "030haki1h0m85h91c91812gdnk6znfamw5kpr010zxwwbsgxxyl5"))))
     (build-system gnu-build-system)
     (inputs
-      `(("udev" ,udev)
+      `(("udev" ,eudev)
+        ("libevdev" ,libevdev)
         ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
