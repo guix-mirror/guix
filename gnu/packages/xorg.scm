@@ -1281,17 +1281,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libxmu
   (package
     (name "libxmu")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXmu-"
+               "mirror://xorg/individual/lib/libXmu-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1pbym8rrznxqd60zwf7w4xpf27sa72bky2knginqcfnca32q343h"))))
+            "02wx6jw7i0q5qwx87yf94fsn3h0xpz1k7dz1nkwfwm1j71ydqvkm"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
