@@ -1308,17 +1308,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libxpm
   (package
     (name "libxpm")
-    (version "3.5.10")
+    (version "3.5.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXpm-"
+               "mirror://xorg/individual/lib/libXpm-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0dd737ch4q9gr151wff1m3q2j7wf3pip4y81601xdrsh8wipxnx6"))))
+            "07041q4k8m4nirzl7lrqn8by2zylx0xvh6n0za301qqs3njszgf5"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gnu-gettext)
