@@ -1998,17 +1998,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xcursor-themes
   (package
     (name "xcursor-themes")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcursor-themes-"
+               "mirror://xorg/individual/data/xcursor-themes-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1is4bak0qkkhv63mfa5l7492r475586y52yzfxyv3psppn662ilr"))))
+            "11mv661nj1p22sqkv87ryj2lcx4m68a04b0rs6iqh3fzp42jrzg3"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
