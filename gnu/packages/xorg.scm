@@ -4477,17 +4477,17 @@ kernel mode setting (KMS).")
 (define-public libxcursor
   (package
     (name "libxcursor")
-    (version "1.1.13")
+    (version "1.1.14")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXcursor-"
+               "mirror://xorg/individual/lib/libXcursor-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "13xd1dyb06gwdwb0bxb22fkgdlmis6wrljm2xk6fhz0v9bg2g27p"))))
+            "1prkdicl5y5yx32h1azh6gjfbijvjp415javv8dsakd13jrarilv"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)
