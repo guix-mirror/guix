@@ -3679,17 +3679,17 @@ kernel mode setting (KMS).")
 (define-public xsetroot
   (package
     (name "xsetroot")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xsetroot-"
+               "mirror://xorg/individual/app/xsetroot-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1bazzsf9sy0q2bj4lxvh1kvyrhmpggzb7jg575i15sksksa3xwc8"))))
+            "1nf3ii31m1knimbidaaym8p61fq3blv8rrdr2775yhcclym5s8ds"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
