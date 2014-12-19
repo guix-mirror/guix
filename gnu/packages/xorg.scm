@@ -3626,17 +3626,17 @@ kernel mode setting (KMS).")
 (define-public xrefresh
   (package
     (name "xrefresh")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xrefresh-"
+               "mirror://xorg/individual/app/xrefresh-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0ywxzwa4kmnnmf8idr8ssgcil9xvbhnk155zpsh2i8ay93mh5586"))))
+            "1mlinwgvql6s1rbf46yckbfr9j22d3c3z7jx3n6ix7ca18dnf4rj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
