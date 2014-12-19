@@ -3913,11 +3913,10 @@ kernel mode setting (KMS).")
     (license license:x11)))
 
 
-;; The package is missing from X11R7.7.
 (define-public libxp
   (package
     (name "libxp")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
@@ -3927,7 +3926,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-            "1blwrr5zhmwwy87j0svmhv3hc13acyn5j14n5rv0anz81iav2r3y"))))
+            "1dfh5w8sjz5b5fl6dl4y63ckq99snslz7bir8zq2rg8ax6syabwm"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("printproto" ,printproto)))
