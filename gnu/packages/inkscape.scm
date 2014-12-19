@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,15 +42,14 @@
 (define-public inkscape
   (package
     (name "inkscape")
-    (version "0.48.4")
+    (version "0.48.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/inkscape/inkscape-"
-                                  version ".tar.gz"))
+                                  version ".tar.bz2"))
               (sha256
                (base32
-                "0nhxsgrgsx6zrgpkd1akxjvmdqjp8ccnsvlwxh62l0brg84fw6bf"))
-              (patches (list (search-patch "inkscape-stray-comma.patch")))))
+                "0sfr7a1vr1066rrkkqbqvcqs3gawalj68ralnhd6k87jz62fcv1b"))))
     (build-system gnu-build-system)
     (inputs
      `(("aspell" ,aspell)
@@ -60,11 +60,7 @@
        ("libpng" ,libpng)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-
-       ;; With libgc 7.4, compilation fails with:
-       ;; gc.cpp:123:1: error: invalid conversion from 'int (*)(void**, const void*)' to 'int (*)(void**, void*)'
-       ("libgc" ,libgc-7.2)
-
+       ("libgc" ,libgc)
        ("freetype" ,freetype)
        ("popt" ,popt)
        ("python" ,python-2)
@@ -74,6 +70,13 @@
      `(("intltool" ,intltool)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'unpack 'fix-test-includes
+                 (lambda _
+                   (substitute* "src/cxxtests.cpp"
+                     (("\\.\\./\\.\\./src") "../src")))
+                 %standard-phases)))
     (home-page "http://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape

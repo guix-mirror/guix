@@ -388,7 +388,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-CVE-2014-1592.patch		\
   gnu/packages/patches/icecat-CVE-2014-1593.patch		\
   gnu/packages/patches/icecat-CVE-2014-1594.patch		\
-  gnu/packages/patches/inkscape-stray-comma.patch               \
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
