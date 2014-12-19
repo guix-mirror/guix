@@ -891,17 +891,17 @@ autotools system.")
 (define-public iceauth
   (package
     (name "iceauth")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/iceauth-"
+               "mirror://xorg/individual/app/iceauth-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1aq6v671s2x5rc6zn0rgxb4wddg4vq94mckw3cpwl7ccrjjvd5hl"))))
+            "1x72y99dxf2fxnlyf0yrf9yzd8xzimxshy6l8mprwhrv6lvhi6dx"))))
     (build-system gnu-build-system)
     (inputs
       `(("libice" ,libice)))
