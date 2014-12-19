@@ -3944,17 +3944,17 @@ kernel mode setting (KMS).")
 (define-public libxrender
   (package
     (name "libxrender")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXrender-"
+               "mirror://xorg/individual/lib/libXrender-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1rmvja2gkf5v0k2n1bcghw8v98m2kfn3af0rbmsda5dwr69npd7r"))))
+            "0qpwyjhbpp734vnhca992pjh4w7ijslidkzx1pcwbbk000pv050x"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("renderproto" ,renderproto)))
