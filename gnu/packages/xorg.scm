@@ -4001,17 +4001,17 @@ kernel mode setting (KMS).")
 (define-public libxv
   (package
     (name "libxv")
-    (version "1.0.7")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXv-"
+               "mirror://xorg/individual/lib/libXv-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "044hllz013afhzywwpxz007l4zjy99bv9im065rqd30zckmllrjx"))))
+            "09a5j6bisysiipd0nw6s352565bp0n6gbyhv5hp63s3cd3w95zjm"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("videoproto" ,videoproto)))
