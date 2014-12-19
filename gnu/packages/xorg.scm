@@ -3362,17 +3362,17 @@ kernel mode setting (KMS).")
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.6")
+    (version "2.13")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkeyboard-config-"
-               version
-               ".tar.bz2"))
+              "mirror://xorg/individual/data/xkeyboard-config/xkeyboard-config-"
+              version
+              ".tar.bz2"))
         (sha256
           (base32
-            "1nmb7ma8rqryicc5xqrn2hm5pwp5lkf7nj28bwbf63mz2r0mk892"))))
+            "1klzbwabzd7bhbg23b14vy4l5xgpapn8lc0m5d8h40d3p7rfjnvv"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gnu-gettext)
