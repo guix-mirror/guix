@@ -4162,17 +4162,17 @@ kernel mode setting (KMS).")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.4.5")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXfont-"
+               "mirror://xorg/individual/lib/libXfont-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0w3irg00k6b6mziddnacln9q2rkf5848b04nvjqwv5bb1fw6zydv"))))
+            "0py2c498lrq6wrj9al6nj57v2ypid9cz0zzhc0hjndgrmp254g1s"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
