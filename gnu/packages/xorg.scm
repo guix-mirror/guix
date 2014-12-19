@@ -1448,17 +1448,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public makedepend
   (package
     (name "makedepend")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/makedepend-"
+               "mirror://xorg/individual/util/makedepend-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1zpp2b9dfvlnfj2i1mzdyn785rpl7vih5lap7kcpiv80xspbhmmb"))))
+            "09alw99r6y2bbd1dc786n3jfgv4j520apblyn7cw6jkjydshba7p"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
