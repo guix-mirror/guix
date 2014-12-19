@@ -2273,20 +2273,25 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-mouse
   (package
     (name "xf86-input-mouse")
-    (version "1.7.2")
+    (version "1.9.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-mouse-"
+               "mirror://xorg/individual/driver/xf86-input-mouse-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0fs1lwnycyv3d0m6l2wrnlgvbs8qw66d93hwlnmrsswfq5bp6ark"))))
+            "1kn5kx3qyn9qqvd6s24a2l1wfgck2pgfvzl90xpl024wfxsx719l"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
