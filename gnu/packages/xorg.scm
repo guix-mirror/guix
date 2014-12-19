@@ -3972,17 +3972,17 @@ kernel mode setting (KMS).")
 (define-public libxtst
   (package
     (name "libxtst")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXtst-"
+               "mirror://xorg/individual/lib/libXtst-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1q750hjplq1rfyxkr4545z1y2a1wfnc828ynvbws7b4jwdk3xsky"))))
+            "1ngn161nq679ffmbwl81i2hn75jjg5b3ffv6n4jilpvyazypy2pg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("recordproto" ,recordproto)))
