@@ -4282,17 +4282,17 @@ kernel mode setting (KMS).")
 (define-public libxxf86vm
   (package
     (name "libxxf86vm")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXxf86vm-"
+               "mirror://xorg/individual/lib/libXxf86vm-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
+            "1f1pxj018nk7ybxv58jmn5y8gm2288p4q3l2dng9n1p25v1qcpns"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
