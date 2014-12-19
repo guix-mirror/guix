@@ -3334,17 +3334,17 @@ kernel mode setting (KMS).")
 (define-public xkbutils
   (package
     (name "xkbutils")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkbutils-"
+               "mirror://xorg/individual/app/xkbutils-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ga913pw6chssf2016kjyjl6ar2lj83pa497w97ak2kq603sy2g4"))))
+            "0c412isxl65wplhl7nsk12vxlri29lk48g3p52hbrs3m0awqm8fj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
