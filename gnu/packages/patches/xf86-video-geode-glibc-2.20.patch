@@ -1,0 +1,15 @@
+Allow builds with glibc 2.20.
+Based on a patch by Peter Hutterer <peter.hutterer@who-t.net>.
+See <https://raw.githubusercontent.com/openembedded/oe-core/master/meta/recipes-graphics/xorg-driver/xf86-input-synaptics/always_include_xorg_server.h.patch>.
+
+--- xf86-video-geode-2.11.16/src/lx_memory.c.~1~	2014-07-16 16:59:37.000000000 -0400
++++ xf86-video-geode-2.11.16/src/lx_memory.c	2014-12-19 00:38:11.753388268 -0500
+@@ -23,6 +23,8 @@
+  * software without specific prior written permission.
+  */
+ 
++#include <xorg-server.h>
++
+ #include "xf86.h"
+ #include "geode.h"
+ #include "cim/cim_regs.h"

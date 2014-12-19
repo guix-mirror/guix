@@ -2480,28 +2480,28 @@ devices, thus making direct access unnecessary.")
     (license license:x11)))
 
 
-;; Compilation errors: Assembler messages operand size mismatch etc.
-;; (define-public xf86-video-geode
-;;   (package
-;;     (name "xf86-video-geode")
-;;     (version "2.11.13")
-;;     (source
-;;       (origin
-;;         (method url-fetch)
-;;         (uri (string-append
-;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-geode-"
-;;                version
-;;                ".tar.bz2"))
-;;         (sha256
-;;           (base32
-;;             "09p2cjd2fb7h32k9qs4wp7qvhfn2zv454spv5mfplv7w2jis4863"))))
-;;     (build-system gnu-build-system)
-;;     (inputs `(("pkg-config" ,pkg-config)
-;;               ("xorg-server" ,xorg-server)))
-;;     (home-page "http://www.x.org/wiki/")
-;;     (synopsis "Xorg implementation of the X Window System")
-;;     (description "X.org provides an implementation of the X Window System")
-;;     (license license:x11)))
+(define-public xf86-video-geode
+  (package
+    (name "xf86-video-geode")
+    (version "2.11.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/driver/xf86-video-geode-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+           "19y13xl7yfrgyis92rmxi0ld95ajgr5il0n9j1dridwzw9aizz1q"))
+        (patches (list (search-patch "xf86-video-geode-glibc-2.20.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)
+              ("xorg-server" ,xorg-server)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "Xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
 
 
 ;; Driver for obsolete graphics cards, depends on libglide:
