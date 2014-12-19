@@ -3189,17 +3189,17 @@ kernel mode setting (KMS).")
 (define-public xhost
   (package
     (name "xhost")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xhost-"
+               "mirror://xorg/individual/app/xhost-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0l483y6wfrjh37j16b41kpi2nc7ss5rvndafpbaylrs87ygx2w18"))))
+            "1hlxm0is9nks1cx033s1733kkib9ivx2bxa3pb9yayqavwibkxd6"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
