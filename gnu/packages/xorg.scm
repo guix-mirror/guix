@@ -2460,17 +2460,17 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-fbdev
   (package
     (name "xf86-video-fbdev")
-    (version "0.4.2")
+    (version "0.4.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-fbdev-"
+               "mirror://xorg/individual/driver/xf86-video-fbdev-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
+            "06ym7yy017lanj730hfkpfk4znx3dsj8jq3qvyzsn8w294kb7m4x"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
