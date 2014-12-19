@@ -4194,22 +4194,23 @@ kernel mode setting (KMS).")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.6.1")
+    (version "1.7.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXi-"
+               "mirror://xorg/individual/lib/libXi-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "029ihw4jq8mng8rx7a3jdvq64jm1zdkqidca93zmxv4jf9yn5qzj"))))
+            "0i12lj973grlp9fa79v0vh9cahk3nf9csdjnf81iip0qcrlc5zrc"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
         ("libx11" ,libx11)
-        ("libxext" ,libxext)))
+        ("libxext" ,libxext)
+        ("libxfixes" ,libxfixes)))
     (inputs
       `(("xproto" ,xproto)))
     (native-inputs
