@@ -4056,17 +4056,17 @@ kernel mode setting (KMS).")
 (define-public xproto
   (package
     (name "xproto")
-    (version "7.0.23")
+    (version "7.0.26")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xproto-"
+               "mirror://xorg/individual/proto/xproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "17lkmi12f89qvg4jj5spqzwzc24fmsqq68dv6kpy7r7b944lmq5d"))))
+            "0ksi8vhfd916bx2f3xlyhn6azf6cvvzrsdja26haa1cqfp0n4qb3"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
