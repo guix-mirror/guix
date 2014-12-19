@@ -1068,17 +1068,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libpciaccess-"
+               "mirror://xorg/individual/lib/libpciaccess-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "11509lkgd5j4g5wy0g13z4sf31h50hqx3jfwb2i4q6k98pv6iar7"))))
+            "06fy43n3c450h7xqpn3094bnfn7ca1mrq3i856y8kyqa0lmqraxb"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)))
