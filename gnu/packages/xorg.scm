@@ -2029,17 +2029,17 @@ synchronization between the X server and direct-rendering clients.")
 (define-public xcursorgen
   (package
     (name "xcursorgen")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcursorgen-"
+               "mirror://xorg/individual/app/xcursorgen-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "10f5wk1326mm45gvgpf4m2p0j80fcd0i4c52zikahb91zah72wdw"))))
+            "0v7nncj3kaa8c0524j7ricdf4rvld5i7c3m6fj55l5zbah7r3j1i"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
