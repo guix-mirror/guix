@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +57,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.8.10")
+    (version "1.8.12")
     (source (origin
              (method url-fetch)
              (uri
@@ -64,7 +65,7 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "13mgvwigm931r8n9363imnn0vn6dvc0m322k3p8fs5c8nvyqggqh"))
+               "07jhcalg00i2rx5zrgk73rg0vm7lzi5q5z2gscrbl999ipr2h569"))
              (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
