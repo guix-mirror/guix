@@ -3546,17 +3546,17 @@ kernel mode setting (KMS).")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xprop-"
+               "mirror://xorg/individual/app/xprop-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "18zi2any13zlb7f34fzyw6lkiwkd6k2scp3b800a1f4rj0c7m407"))))
+            "1ilvhqfjcg6f1hqahjkp8qaay9rhvmv2blvj3w9asraq0aqqivlv"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
