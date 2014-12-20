@@ -2823,17 +2823,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-savage
   (package
     (name "xf86-video-savage")
-    (version "2.3.4")
+    (version "2.3.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-savage-"
+               "mirror://xorg/individual/driver/xf86-video-savage-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0jdy4wv3k3ylx3lajjcbsg37z2hf6366a1jvv16sv1ln6dk6lris"))))
+            "0i2aqp68rfkrz9c1p6d7ny9x7bjrlnby7q56zf01fb12r42l4784"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
