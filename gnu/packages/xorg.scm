@@ -3027,17 +3027,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-vesa
   (package
     (name "xf86-video-vesa")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-vesa-"
+               "mirror://xorg/individual/driver/xf86-video-vesa-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0wqms28kkz2fvghqhqwp6w8zj7k5cgwnhzvkc7j4v268bf6h78g4"))))
+            "1y5fsg0c4bgmh1cfsbnaaf388fppyy02i7mcy9vax78flkjpb2yf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
