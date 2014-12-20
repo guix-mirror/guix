@@ -2614,17 +2614,18 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-mach64
   (package
     (name "xf86-video-mach64")
-    (version "6.9.1")
+    (version "6.9.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-mach64-"
+               "mirror://xorg/individual/driver/xf86-video-mach64-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0kl3kvpc2ny48z89313i9fi4cxzwb2pllvxcr9j5ly680ygx8slz"))))
+           "0pl582vnc6hdxqhf5c0qdyanjqxb4crnhqlmxxml5a60syw0iwcp"))
+        (patches (list (search-patch "xf86-video-mach64-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)

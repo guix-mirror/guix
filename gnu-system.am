@@ -465,6 +465,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-i128-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-intel-compat-api.patch	\
   gnu/packages/patches/xf86-video-intel-glibc-2.20.patch	\
+  gnu/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   gnu/packages/patches/xf86-video-openchrome-includes.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
   gnu/packages/patches/xmodmap-asprintf.patch
