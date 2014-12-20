@@ -2874,17 +2874,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.4")
+    (version "0.10.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-sis-"
+               "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "03diq0l93lfsipmwkpdb2ysgbxxryl6yakpghzc3fksjxa01112f"))))
+           "1l0w84x39gq4y9j81dny9r6rma1xkqvxpsavpkd8h7h8panbcbmy"))
+        (patches (list (search-patch "xf86-video-sis-update-api.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)
