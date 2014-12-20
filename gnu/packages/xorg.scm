@@ -2899,17 +2899,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-suncg6
   (package
     (name "xf86-video-suncg6")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-suncg6-"
+               "mirror://xorg/individual/driver/xf86-video-suncg6-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "07w0hm63fiy5l3cpcjsl0ig8z84z9r36xm0cmnpiv3g75dy6q8fi"))))
+            "04fgwgk02m4nimlv67rrg1wnyahgymrn6rb2cjj1l8bmzkii4glr"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
