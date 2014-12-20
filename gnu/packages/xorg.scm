@@ -3078,17 +3078,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-voodoo
   (package
     (name "xf86-video-voodoo")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-voodoo-"
+               "mirror://xorg/individual/driver/xf86-video-voodoo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0ha748yz92yzn6hp2rhin3il8f4j2rs4vkgdvqkagnv1ryxkh0ph"))))
+            "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
