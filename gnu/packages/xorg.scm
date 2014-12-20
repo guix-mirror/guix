@@ -2922,17 +2922,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-sunffb
   (package
     (name "xf86-video-sunffb")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-sunffb-"
+               "mirror://xorg/individual/driver/xf86-video-sunffb-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "04byax4sc1fn183vyyq0q11q730k16h2by4ggjky7s36wgv7ldzx"))))
+            "07z3ngifwg2d4jgq8pms47n5lr2yn0ai72g86xxjnb3k20n5ym7s"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
