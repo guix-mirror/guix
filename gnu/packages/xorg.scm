@@ -2641,17 +2641,18 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-mga
   (package
     (name "xf86-video-mga")
-    (version "1.5.0")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-mga-"
+               "mirror://xorg/individual/driver/xf86-video-mga-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "03l3wz5kz0hmxmzqqbkgn7pf9d956jlag04rb701a0fr1mw3v66a"))))
+           "1my7y67sadjjmab1dyxckylrggi7p01yk4wwg9w6k1q96pmb213p"))
+        (patches (list (search-patch "xf86-video-mga-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
