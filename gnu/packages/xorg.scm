@@ -155,7 +155,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/bigreqsproto-"
+               "mirror://xorg/individual/proto/bigreqsproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -177,7 +177,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/compositeproto-"
+               "mirror://xorg/individual/proto/compositeproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -202,7 +202,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/damageproto-"
+               "mirror://xorg/individual/proto/damageproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -224,7 +224,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/dmxproto-"
+               "mirror://xorg/individual/proto/dmxproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -259,7 +259,6 @@ autotools system.")
     (license license:x11)))
 
 
-;; not part of X11R7.7, required for newer versions of mesa
 (define-public dri3proto
   (package
     (name "dri3proto")
@@ -290,7 +289,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/encodings-"
+               "mirror://xorg/individual/font/encodings-"
                version
                ".tar.bz2"))
         (sha256
@@ -315,7 +314,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-100dpi-"
+               "mirror://xorg/individual/font/font-adobe-100dpi-"
                version
                ".tar.bz2"))
         (sha256
@@ -347,7 +346,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-75dpi-"
+               "mirror://xorg/individual/font/font-adobe-75dpi-"
                version
                ".tar.bz2"))
         (sha256
@@ -383,7 +382,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-alias-"
+               "mirror://xorg/individual/font/font-alias-"
                version
                ".tar.bz2"))
         (sha256
@@ -405,7 +404,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-arabic-misc-"
+               "mirror://xorg/individual/font/font-arabic-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -442,7 +441,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-cronyx-cyrillic-"
+               "mirror://xorg/individual/font/font-cronyx-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -475,7 +474,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-dec-misc-"
+               "mirror://xorg/individual/font/font-dec-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -504,7 +503,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-isas-misc-"
+               "mirror://xorg/individual/font/font-isas-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -534,7 +533,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-micro-misc-"
+               "mirror://xorg/individual/font/font-micro-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -560,7 +559,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-cyrillic-"
+               "mirror://xorg/individual/font/font-misc-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -586,7 +585,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-ethiopic-"
+               "mirror://xorg/individual/font/font-misc-ethiopic-"
                version
                ".tar.bz2"))
         (sha256
@@ -615,7 +614,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-misc-"
+               "mirror://xorg/individual/font/font-misc-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -645,7 +644,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-mutt-misc-"
+               "mirror://xorg/individual/font/font-mutt-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -671,7 +670,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-schumacher-misc-"
+               "mirror://xorg/individual/font/font-schumacher-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -701,7 +700,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-screen-cyrillic-"
+               "mirror://xorg/individual/font/font-screen-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -727,7 +726,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-sony-misc-"
+               "mirror://xorg/individual/font/font-sony-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -753,7 +752,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-sun-misc-"
+               "mirror://xorg/individual/font/font-sun-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -779,7 +778,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-util-"
+               "mirror://xorg/individual/font/font-util-"
                version
                ".tar.bz2"))
         (sha256
@@ -801,7 +800,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-winitzki-cyrillic-"
+               "mirror://xorg/individual/font/font-winitzki-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -827,7 +826,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-xfree86-type1-"
+               "mirror://xorg/individual/font/font-xfree86-type1-"
                version
                ".tar.bz2"))
         (sha256
@@ -943,7 +942,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/kbproto-"
+               "mirror://xorg/individual/proto/kbproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1098,7 +1097,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://xcb.freedesktop.org/dist/libpthread-stubs-"
+               "mirror://xorg/individual/xcb/libpthread-stubs-"
                version
                ".tar.bz2"))
         (sha256
@@ -1148,7 +1147,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libWindowsWM-"
+               "mirror://xorg/individual/lib/libWindowsWM-"
                version
                ".tar.bz2"))
         (sha256
@@ -1205,7 +1204,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXdmcp-"
+               "mirror://xorg/individual/lib/libXdmcp-"
                version
                ".tar.bz2"))
         (sha256
@@ -1261,7 +1260,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxkbfile-"
+               "mirror://xorg/individual/lib/libxkbfile-"
                version
                ".tar.bz2"))
         (sha256
@@ -1369,7 +1368,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXScrnSaver-"
+               "mirror://xorg/individual/lib/libXScrnSaver-"
                version
                ".tar.bz2"))
         (sha256
@@ -1425,7 +1424,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/luit-"
+               "mirror://xorg/individual/app/luit-"
                version
                ".tar.bz2"))
         (sha256
@@ -1497,7 +1496,6 @@ synchronization between the X server and direct-rendering clients.")
     (license license:x11)))
 
 
-;; not part of X11R7.7, required for newer versions of mesa
 (define-public presentproto
   (package
     (name "presentproto")
@@ -1519,7 +1517,6 @@ synchronization between the X server and direct-rendering clients.")
     (license (license:x11-style "file://presentproto.h"
                                 "See 'presentproto.h' in the distribution."))))
 
-;; The package is missing from X11R7.7.
 (define-public printproto
   (package
     (name "printproto")
@@ -1572,7 +1569,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/recordproto-"
+               "mirror://xorg/individual/proto/recordproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1594,7 +1591,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/renderproto-"
+               "mirror://xorg/individual/proto/renderproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1616,7 +1613,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/resourceproto-"
+               "mirror://xorg/individual/proto/resourceproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1638,7 +1635,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/scrnsaverproto-"
+               "mirror://xorg/individual/proto/scrnsaverproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1685,7 +1682,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/setxkbmap-"
+               "mirror://xorg/individual/app/setxkbmap-"
                version
                ".tar.bz2"))
         (sha256
@@ -1717,7 +1714,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/smproxy-"
+               "mirror://xorg/individual/app/smproxy-"
                version
                ".tar.bz2"))
         (sha256
@@ -1803,7 +1800,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/windowswmproto-"
+               "mirror://xorg/individual/proto/windowswmproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1825,7 +1822,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/x11perf-"
+               "mirror://xorg/individual/app/x11perf-"
                version
                ".tar.bz2"))
         (sha256
@@ -1911,7 +1908,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xbitmaps-"
+               "mirror://xorg/individual/data/xbitmaps-"
                version
                ".tar.bz2"))
         (sha256
@@ -1933,7 +1930,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://xcb.freedesktop.org/dist/xcb-proto-"
+               "mirror://xorg/individual/xcb/xcb-proto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1956,7 +1953,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcmiscproto-"
+               "mirror://xorg/individual/proto/xcmiscproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1978,7 +1975,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcmsdb-"
+               "mirror://xorg/individual/app/xcmsdb-"
                version
                ".tar.bz2"))
         (sha256
@@ -2094,7 +2091,7 @@ synchronization between the X server and direct-rendering clients.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xdriinfo-"
+               "mirror://xorg/individual/app/xdriinfo-"
                version
                ".tar.bz2"))
         (sha256
@@ -2342,7 +2339,7 @@ devices, thus making direct access unnecessary.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-void-"
+               "mirror://xorg/individual/driver/xf86-input-void-"
                version
                ".tar.bz2"))
         (sha256
@@ -2721,7 +2718,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-newport-"
+               "mirror://xorg/individual/driver/xf86-video-newport-"
                version
                ".tar.bz2"))
         (sha256
@@ -3111,7 +3108,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86bigfontproto-"
+               "mirror://xorg/individual/proto/xf86bigfontproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3132,7 +3129,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86dgaproto-"
+               "mirror://xorg/individual/proto/xf86dgaproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3153,7 +3150,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86driproto-"
+               "mirror://xorg/individual/proto/xf86driproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3174,7 +3171,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86vidmodeproto-"
+               "mirror://xorg/individual/proto/xf86vidmodeproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3195,7 +3192,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xgamma-"
+               "mirror://xorg/individual/app/xgamma-"
                version
                ".tar.bz2"))
         (sha256
@@ -3248,7 +3245,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xineramaproto-"
+               "mirror://xorg/individual/proto/xineramaproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3340,7 +3337,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkbevd-"
+               "mirror://xorg/individual/app/xkbevd-"
                version
                ".tar.bz2"))
         (sha256
@@ -3448,7 +3445,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xlsatoms-"
+               "mirror://xorg/individual/app/xlsatoms-"
                version
                ".tar.bz2"))
         (sha256
@@ -3529,7 +3526,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xorg-sgml-doctools-"
+               "mirror://xorg/individual/doc/xorg-sgml-doctools-"
                version
                ".tar.bz2"))
         (sha256
@@ -3551,7 +3548,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xpr-"
+               "mirror://xorg/individual/app/xpr-"
                version
                ".tar.bz2"))
         (sha256
@@ -3840,7 +3837,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xwud-"
+               "mirror://xorg/individual/app/xwud-"
                version
                ".tar.bz2"))
         (sha256
@@ -3869,7 +3866,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/fixesproto-"
+               "mirror://xorg/individual/proto/fixesproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -4093,7 +4090,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/mkfontdir-"
+               "mirror://xorg/individual/app/mkfontdir-"
                version
                ".tar.bz2"))
         (sha256
@@ -4374,10 +4371,8 @@ kernel mode setting (KMS).")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "http://xcb.freedesktop.org/dist/libxcb-"
-               version
-               ".tar.bz2"))
+        (uri (string-append "mirror://xorg/individual/xcb/"
+                            name "-" version ".tar.bz2"))
         (sha256
           (base32
             "1xqgc81krx14f2c8yl5chzg5g2l26mhm2rwffy8dx7jv0iq5sqq3"))))
@@ -4625,8 +4620,8 @@ kernel mode setting (KMS).")
     (version "0.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "1sahmrgbpyki4bb72hxym0zvxwnycmswsxiisgqlln9vrdlr9r26"))))
@@ -4657,8 +4652,8 @@ event: Some utilities that have little to do with events any more.")
     (version "0.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "1z1gxacg7q4cw6jrd26gvi5y04npsyavblcdad1xccc8swvnmf9d"))))
@@ -4689,8 +4684,8 @@ image: Port of Xlib's XImage and XShmImage functions.")
     (version "0.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "1nbd45pzc1wm6v5drr5338j4nicbgxa5hcakvsvm5pnyy47lky0f"))))
@@ -4719,8 +4714,8 @@ keysyms: Standard X key constants and conversion to/from keycodes.")
     (version "0.3.9")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "0nza1csdvvxbmk8vgv8vpmq7q8h05xrw3cfx9lwxd1hjzd47xsf6"))))
