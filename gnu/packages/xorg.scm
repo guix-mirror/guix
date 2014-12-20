@@ -4403,35 +4403,41 @@ kernel mode setting (KMS).")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.12.2")
+    (version "1.16.2.901")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xorg-server-"
-               version
-               ".tar.bz2"))
+              "mirror://xorg/individual/xserver/"
+              name "-" version ".tar.bz2"))
         (sha256
-          (base32
-            "1xf57hcq6r17zxyfnx9r1wd0ir1bw13ff8bsiszwrw9jyhi9x7ya"))))
+         (base32
+          "19jb8v26wc332ramwjdg5vjh3s36kr7n46s6fdfaxrj1wif5m27g"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
+        ("dri3proto" ,dri3proto)
         ("fontsproto" ,fontsproto)
         ("inputproto" ,inputproto)
         ("kbproto" ,kbproto)
         ("libpciaccess" ,libpciaccess)
+        ("mesa" ,mesa)
         ("pixman" ,pixman)
+        ("presentproto" ,presentproto)
         ("randrproto" ,randrproto)
         ("renderproto" ,renderproto)
+        ("resourceproto" ,resourceproto)
+        ("scrnsaverproto" ,scrnsaverproto)
         ("videoproto" ,videoproto)
         ("xextproto" ,xextproto)
         ("xineramaproto" ,xineramaproto)
+        ("xf86driproto" ,xf86driproto)
         ("xproto" ,xproto)))
     (inputs
       `(("bigreqsproto" ,bigreqsproto)
         ("compositeproto" ,compositeproto)
         ("damageproto" ,damageproto)
+        ("udev" ,eudev)
         ("dbus" ,dbus)
         ("dmxproto" ,dmxproto)
         ("libdmx" ,libdmx)
@@ -4444,16 +4450,13 @@ kernel mode setting (KMS).")
         ("libxkbfile" ,libxkbfile)
         ("libxrender" ,libxrender)
         ("libxres" ,libxres)
+        ("libxshmfence" ,libxshmfence)
         ("libxt" ,libxt)
         ("libxv" ,libxv)
-        ("mesa" ,mesa)
         ("recordproto" ,recordproto)
-        ("resourceproto" ,resourceproto)
-        ("scrnsaverproto" ,scrnsaverproto)
         ("xcmiscproto" ,xcmiscproto)
         ("xf86bigfontproto" ,xf86bigfontproto)
         ("xf86dgaproto" ,xf86dgaproto)
-        ("xf86driproto" ,xf86driproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
         ("xkbcomp" ,xkbcomp)
         ("xkeyboard-config" ,xkeyboard-config)
@@ -4476,21 +4479,18 @@ kernel mode setting (KMS).")
 
              ;; For the log file, etc.
              "--localstatedir=/var")
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys #:rest args)
-           (let ((configure (assoc-ref %standard-phases 'configure)))
-             (substitute* (find-files "." "\\.c$")
-               (("/bin/sh") (which "sh")))
 
-             ;; Don't try to 'mkdir /var'.
-             (substitute* "hw/xfree86/Makefile.in"
-               (("mkdir(.*)logdir.*")
-                "true\n"))
+       #:phases (alist-cons-before
+                 'configure 'pre-configure
+                 (lambda _
+                   (substitute* (find-files "." "\\.c$")
+                     (("/bin/sh") (which "sh")))
 
-             (apply configure args)))
-         %standard-phases)))
+                   ;; Don't try to 'mkdir /var'.
+                   (substitute* "hw/xfree86/Makefile.in"
+                     (("\\$\\(MKDIR_P\\).*logdir.*")
+                      "true\n")))
+                 %standard-phases)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
