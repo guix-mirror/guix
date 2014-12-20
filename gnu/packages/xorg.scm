@@ -2585,19 +2585,22 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-intel
   (package
     (name "xf86-video-intel")
-    (version "2.19.0")
+    (version "2.21.15")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-intel-"
+               "mirror://xorg/individual/driver/xf86-video-intel-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1g742szymajh88a5dw08sxcr45bmxgc4w3m6hddv9qscn5hks4rj"))))
+           "1z6ncmpszmwqi9xr590c4kp4gjjf7mndcr56r35x2bx7h87i8nkx"))
+        (patches (list (search-patch "xf86-video-intel-compat-api.patch")
+                       (search-patch "xf86-video-intel-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
+              ("udev" ,eudev)
               ("libx11" ,libx11)
               ("xorg-server" ,xorg-server)))
     (native-inputs
