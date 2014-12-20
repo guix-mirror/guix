@@ -2848,17 +2848,20 @@ kernel mode setting (KMS).")
 (define-public xf86-video-siliconmotion
   (package
     (name "xf86-video-siliconmotion")
-    (version "1.7.6")
+    (version "1.7.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-siliconmotion-"
+               "mirror://xorg/individual/driver/xf86-video-siliconmotion-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "01sdl6ky1vmvmfgx2d44i35rqafi0z07xdy40cvindcr2k91p7x5"))))
+           "1an321kqvsxq0z35acwl99lc8hpdkayw0q180744ypcl8ffvbf47"))
+        (patches
+         (list
+          (search-patch "xf86-video-siliconmotion-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))

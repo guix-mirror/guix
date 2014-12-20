@@ -1,0 +1,16 @@
+Removes references to mibstore.h and miInitializeBackingStore, which
+have been removed from xorg-server.  Zack Rusin <zackr@vmware.com>
+wrote: "It was a noop for at least 5 years and it has been removed."
+See: http://patches.openembedded.org/patch/46133/
+
+--- xf86-video-siliconmotion-1.7.7/src/smi_driver.c.~1~	2012-07-17 00:53:21.000000000 -0400
++++ xf86-video-siliconmotion-1.7.7/src/smi_driver.c	2014-12-19 01:30:16.708884086 -0500
+@@ -1750,8 +1750,6 @@
+ 		   "Done writing mode.  Register dump:\n");
+     SMI_PrintRegs(pScrn);
+ 
+-    miInitializeBackingStore(pScreen);
+-
+ #ifdef HAVE_XMODES
+     xf86DiDGAInit(pScreen, (unsigned long)(pSmi->FBBase + pScrn->fbOffset));
+ #endif
