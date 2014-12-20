@@ -2945,17 +2945,19 @@ kernel mode setting (KMS).")
 (define-public xf86-video-tdfx
   (package
     (name "xf86-video-tdfx")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-tdfx-"
+               "mirror://xorg/individual/driver/xf86-video-tdfx-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "124gsi30rj547jjd7gvv7xykfnwlyrxw0gcacamby7pvl3g33fg0"))))
+           "0nfqf1c8939s21ci1g7gacwzlr4g4nnilahgz7j2bz30zfnzpmbh"))
+        (patches (list
+                  (search-patch "xf86-video-tdfx-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
