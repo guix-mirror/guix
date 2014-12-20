@@ -2677,10 +2677,7 @@ devices, thus making direct access unnecessary.")
          (base32
            "0p6pjn5bnd2wr3lmas4b12zcq12d9ilvssga93fzlg90fdahikwh"))))
     (build-system gnu-build-system)
-    (inputs `(;; FIXME: This is a libdrm version incompatible with that of
-              ;; MESA, which xorg-server uses.  Therefore, using this driver
-              ;; leads to "unresolved symbol drmModeSetCursor2".
-              ("libdrm" ,libdrm)
+    (inputs `(("libdrm" ,libdrm)
               ("xf86driproto" ,xf86driproto)
               ("libx11" ,libx11)
               ("xorg-server" ,xorg-server)))
