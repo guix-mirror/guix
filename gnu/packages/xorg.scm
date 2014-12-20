@@ -2972,17 +2972,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-tga
   (package
     (name "xf86-video-tga")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-tga-"
+               "mirror://xorg/individual/driver/xf86-video-tga-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0mdqrn02zzkdnmhg4vh9djaawg6b2p82g5qbj66z8b30yr77b93h"))))
+           "0cb161lvdgi6qnf1sfz722qn38q7kgakcvj7b45ba3i0020828r0"))
+        (patches (list (search-patch "xf86-video-tga-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
