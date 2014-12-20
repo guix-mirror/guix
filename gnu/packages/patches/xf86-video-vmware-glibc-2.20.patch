@@ -1,0 +1,15 @@
+Allow builds with glibc 2.20.
+Based on a patch by Peter Hutterer <peter.hutterer@who-t.net>.
+See <https://raw.githubusercontent.com/openembedded/oe-core/master/meta/recipes-graphics/xorg-driver/xf86-input-synaptics/always_include_xorg_server.h.patch>.
+
+--- xf86-video-vmware-13.0.2/vmwgfx/vmwgfx_overlay.c.~1~	2014-03-20 09:15:03.000000000 -0400
++++ xf86-video-vmware-13.0.2/vmwgfx/vmwgfx_overlay.c	2014-12-19 02:31:34.759122552 -0500
+@@ -35,6 +35,8 @@
+  */
+ 
+ 
++#include <xorg-server.h>
++
+ #include "xf86xv.h"
+ #include "fourcc.h"
+ #define debug_printf(...)

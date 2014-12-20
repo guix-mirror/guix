@@ -3050,20 +3050,22 @@ kernel mode setting (KMS).")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "12.0.2")
+    (version "13.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-vmware-"
+               "mirror://xorg/individual/driver/xf86-video-vmware-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0isiwx516gww8hfk3vy7js83yziyjym9mq2zjadyq1a8v5gqf9y8"))))
+           "0m1wfsv34s4pyr5ry87yyjb2p6vmy6vyypdz5jx0sqnkx8n3vfn8"))
+        (patches (list (search-patch "xf86-video-vmware-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
+              ("mesa" ,mesa)            ; for xatracker
               ("xorg-server" ,xorg-server)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
