@@ -2766,18 +2766,19 @@ kernel mode setting (KMS).")
 (define-public xf86-video-openchrome
   (package
     (name "xf86-video-openchrome")
-    (version "0.2.906")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-openchrome-"
+               "mirror://xorg/individual/driver/xf86-video-openchrome-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))
-        (patches (list (search-patch "xf86-video-openchrome-includes.patch")))))
+           "1v8j4i1r268n4fc5gq54zg1x50j0rhw71f3lba7411mcblg2z7p4"))
+        (patches (list
+                  (search-patch "xf86-video-openchrome-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
