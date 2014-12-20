@@ -2695,17 +2695,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")
-    (version "1.2.6")
+    (version "1.2.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-neomagic-"
+               "mirror://xorg/individual/driver/xf86-video-neomagic-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "124qci48xrk0w2jy91n7vqs7s6q397zyiqqszhmkx6ld7six57mi"))))
+            "0x48sxs1p3kmwk3pq1j7vl93y59gdmgkq1x5xbnh0yal0angdash"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
