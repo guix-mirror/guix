@@ -512,3 +512,33 @@ on the screen.")
 optional application menu or icons for minimized applications or launchers,
 devices and folders.")
     (license gpl2+)))
+
+(define-public xfce4-terminal
+  (package
+    (name "xfce4-terminal")
+    (version "0.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "023y0lkfijifh05yz8grimxadqpi98mrivr00sl18nirq8b4fbwi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("vte" ,vte/gtk+-2)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce terminal emulator")
+    (description
+     "A lightweight and easy to use terminal emulator for Xfce.  Features
+include a simple configuration interface, the ability to use multiple tabs
+with terminals within a single window, the possibility to have a
+pseudo-transparent terminal background, and a compact mode (where both the
+menubar and the window decorations are hidden) that helps you to save space
+on your desktop.")
+    (license gpl2+)))
