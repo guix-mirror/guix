@@ -474,6 +474,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-sis-update-api.patch		\
   gnu/packages/patches/xf86-video-tdfx-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-tga-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-trident-remove-mibstore.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
   gnu/packages/patches/xmodmap-asprintf.patch
 

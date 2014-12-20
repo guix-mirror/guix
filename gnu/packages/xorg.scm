@@ -2997,17 +2997,19 @@ kernel mode setting (KMS).")
 (define-public xf86-video-trident
   (package
     (name "xf86-video-trident")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-trident-"
+               "mirror://xorg/individual/driver/xf86-video-trident-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02y5pzdp0a1c12jr8gghbrzgbyfbgq67x7kd7n4f323pmf8x1csb"))))
+           "0141qbfsm32i0pxjyx5czpa8x8m4lvapsp4amw1qigaa0gry6n3a"))
+        (patches (list
+                  (search-patch "xf86-video-trident-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
