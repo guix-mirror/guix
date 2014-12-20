@@ -2797,17 +2797,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-r128
   (package
     (name "xf86-video-r128")
-    (version "6.8.2")
+    (version "6.9.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-r128-"
+               "mirror://xorg/individual/driver/xf86-video-r128-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1c84x40k9qz9dnf5qs6nnjcgz7px6mpc3rbk8mj62zhp7mf16hbv"))))
+           "1q3fsc603k2yinphx5rrcl5356qkpywwz8axlw277l2231gjjbcb"))
+        (patches (list (search-patch "xf86-video-r128-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
