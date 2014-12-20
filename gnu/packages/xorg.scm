@@ -2560,17 +2560,19 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-video-i128
   (package
     (name "xf86-video-i128")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-i128-"
+               "mirror://xorg/individual/driver/xf86-video-i128-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1sik8ck410hb2885vy7rlc590hw5br8lr2fzxgmv55jyawgfpv9y"))))
+           "171b8lbxr56w3isph947dnw7x87hc46v6m3mcxdcz44gk167x0pq"))
+        (patches (list
+                  (search-patch "xf86-video-i128-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
