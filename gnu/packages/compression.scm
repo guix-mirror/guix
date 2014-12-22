@@ -70,6 +70,26 @@ independent of the input data and can be reduced, if necessary, at some cost
 in compression.")
     (license license:zlib)))
 
+(define-public fastjar
+  (package
+   (name "fastjar")
+   (version "0.98")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://savannah/fastjar/fastjar-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0iginbz2m15hcsa3x4y7v3mhk54gr1r7m3ghx0pg4n46vv2snmpi"))))
+   (build-system gnu-build-system)
+   (inputs `(("zlib" ,zlib)))
+   (home-page "http://savannah.nongnu.org/projects/fastjar")
+   (synopsis "Replacement for Sun's 'jar' utility")
+   (description
+    "FastJar is an attempt to create a much faster replacement for Sun's 'jar'
+utility.  Instead of being written in Java, FastJar is written in C.")
+   (license license:gpl2+)))
+
 (define-public gzip
   (package
    (name "gzip")
