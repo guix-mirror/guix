@@ -129,7 +129,9 @@ EXAMPLES =					\
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
 
-nobase_dist_guilemodule_DATA = $(MODULES) $(KCONFIGS) $(EXAMPLES)
+nobase_dist_guilemodule_DATA =                  \
+  $(MODULES) $(KCONFIGS) $(EXAMPLES)            \
+  $(MISC_DISTRO_FILES)
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
 # Do we need to provide our own non-broken (srfi srfi-37) module?

@@ -26,9 +26,11 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages elf)
+  #:use-module ((gnu packages perl) #:select (perl))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (ice-9 regex))
 
@@ -335,6 +337,77 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; "lib" and "out" outputs would refer to each other, creating
               ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
               #:separate-lib-output? #f))
+
+(define-public gcj-4.8
+  (package (inherit gcc-4.8)
+    (name "gcj")
+    (inputs
+     `(("fastjar" ,fastjar)
+       ("perl" ,perl)
+       ("javac.in" ,(search-path %load-path
+                                 "gnu/packages/javac.in"))
+       ("ecj-bootstrap" ,ecj-bootstrap-4.8)
+       ,@(package-inputs gcc-4.8)))
+    ;; Suppress the separate "lib" output, because otherwise the
+    ;; "lib" and "out" outputs would refer to each other, creating
+    ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
+    (outputs
+     (delete "lib" (package-outputs gcc-4.8)))
+    (arguments
+     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
+                                                (guix build utils)
+                                                (ice-9 regex)
+                                                (srfi srfi-1)
+                                                (srfi srfi-26))
+                                               ,@(package-arguments gcc-4.8))
+       ((#:configure-flags flags)
+        `(let ((ecj (assoc-ref %build-inputs "ecj-bootstrap")))
+           `("--enable-java-home"
+             "--enable-gjdoc"
+             ,(string-append "--with-ecj-jar=" ecj)
+             "--enable-languages=java"
+             ,@(remove (cut string-match "--enable-languages.*" <>)
+                       ,flags))))
+        ((#:phases phases)
+         `(alist-cons-after
+           'install 'install-javac-and-javap-wrappers
+           (lambda _
+             (let* ((javac  (assoc-ref %build-inputs "javac.in"))
+                    (ecj    (assoc-ref %build-inputs "ecj-bootstrap"))
+                    (gcj    (assoc-ref %outputs "out"))
+                    (gcjbin (string-append gcj "/bin/"))
+                    (jvm    (string-append gcj "/lib/jvm/"))
+                    (target (string-append jvm "/bin/javac")))
+
+               (symlink (string-append gcjbin "jcf-dump")
+                        (string-append jvm "/bin/javap"))
+
+               (copy-file ecj (string-append gcj "/share/java/ecj.jar"))
+
+               ;; Create javac wrapper from the template javac.in by
+               ;; replacing the @VARIABLES@ with paths.
+               (copy-file javac target)
+               (patch-shebang target)
+               (substitute* target
+                 (("@JAVA@")
+                  (string-append jvm "/bin/java"))
+                 (("@ECJ_JAR@")
+                  (string-append gcj "/share/java/ecj.jar"))
+                 (("@RT_JAR@")
+                  (string-append jvm "/jre/lib/rt.jar"))
+                 (("@TOOLS_JAR@")
+                  (string-append jvm "/lib/tools.jar")))
+               (chmod target #o755)
+               #t))
+           ,phases))))))
+
+(define ecj-bootstrap-4.8
+  (origin
+    (method url-fetch)
+    (uri "ftp://sourceware.org/pub/java/ecj-4.8.jar")
+    (sha256
+     (base32
+      "10fpqfbdzff1zcbxzh66xc8xbij9saykcj4xzm19wk9p3n7i5zcq"))))
 
 (define-public gcc-objc-4.8
   (custom-gcc gcc-4.8 "gcc-objc" '("objc")))
