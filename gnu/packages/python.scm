@@ -2011,17 +2011,17 @@ capabilities.")
                                 (find-files "." ".*"))))))
               ,phases)))))))
 
-(define-public python2-numpy
-  (let ((numpy (package-with-python2 python-numpy)))
-    (package (inherit numpy)
-      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is customized for
-      ;; Python 2. Since it is also an input to PYTHON2-MATPLOTLIB, we need to
-      ;; import the right version of 'matplotlib' as well.
-      (inputs `(("python2-numpydoc" ,python2-numpydoc)
-                ("python2-matplotlib" ,python2-matplotlib)
-                ,@(alist-delete "python-numpydoc" 
-                                (alist-delete "python-matplotlib"
-                                              (package-inputs numpy))))))))
+;; (define-public python2-numpy
+;;   (let ((numpy (package-with-python2 python-numpy)))
+;;     (package (inherit numpy)
+;;       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is customized for
+;;       ;; Python 2. Since it is also an input to PYTHON2-MATPLOTLIB, we need to
+;;       ;; import the right version of 'matplotlib' as well.
+;;       (inputs `(("python2-numpydoc" ,python2-numpydoc)
+;;                 ("python2-matplotlib" ,python2-matplotlib)
+;;                 ,@(alist-delete "python-numpydoc" 
+;;                                 (alist-delete "python-matplotlib"
+;;                                               (package-inputs numpy))))))))
 
 (define-public python-pyparsing
   (package
@@ -2227,22 +2227,22 @@ ipython shell, web application servers, and six graphical user interface
 toolkits.")
     (license psfl)))
 
-(define-public python2-matplotlib
-  (let ((matplotlib (package-with-python2 python-matplotlib)))
-    (package (inherit matplotlib)
-      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
-      ;; customized for Python 2.
-      (propagated-inputs 
-       `(("python2-py2cairo" ,python2-py2cairo)
-         ("python2-pygobject-2" ,python2-pygobject-2)
-         ,@(alist-delete "python-pycairo"
-                         (alist-delete "python-pygobject"
-                                       (package-propagated-inputs 
-                                        matplotlib)))))
-      (inputs 
-       `(("python2-numpydoc" ,python2-numpydoc)
-         ,@(alist-delete "python-numpydoc" 
-                         (package-inputs matplotlib)))))))
+;; (define-public python2-matplotlib
+;;   (let ((matplotlib (package-with-python2 python-matplotlib)))
+;;     (package (inherit matplotlib)
+;;       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
+;;       ;; customized for Python 2.
+;;       (propagated-inputs 
+;;        `(("python2-py2cairo" ,python2-py2cairo)
+;;          ("python2-pygobject-2" ,python2-pygobject-2)
+;;          ,@(alist-delete "python-pycairo"
+;;                          (alist-delete "python-pygobject"
+;;                                        (package-propagated-inputs 
+;;                                         matplotlib)))))
+;;       (inputs 
+;;        `(("python2-numpydoc" ,python2-numpydoc)
+;;          ,@(alist-delete "python-numpydoc" 
+;;                          (package-inputs matplotlib)))))))
 
 ;; Scipy 0.14.0 with Numpy 0.19.X fails several tests.  This is known and
 ;; planned to be fixed in 0.14.1.  It is claimed that the failures can safely
@@ -2341,15 +2341,15 @@ the SciPy stack.  It provides many user-friendly and efficient numerical
 routines such as routines for numerical integration and optimization.")
     (license bsd-3)))
 
-(define-public python2-scipy
-  (let ((scipy (package-with-python2 python-scipy)))
-    (package (inherit scipy)
-      ;; Use packages customized for python-2.
-      (inputs `(("python2-matplotlib" ,python2-matplotlib)
-                ("python2-numpy" ,python2-numpy)
-                ,@(alist-delete "python-matplotlib" 
-                                (alist-delete "python-numpy" 
-                                              (package-inputs scipy))))))))
+;; (define-public python2-scipy
+;;   (let ((scipy (package-with-python2 python-scipy)))
+;;     (package (inherit scipy)
+;;       ;; Use packages customized for python-2.
+;;       (inputs `(("python2-matplotlib" ,python2-matplotlib)
+;;                 ("python2-numpy" ,python2-numpy)
+;;                 ,@(alist-delete "python-matplotlib" 
+;;                                 (alist-delete "python-numpy" 
+;;                                               (package-inputs scipy))))))))
 
 (define-public python-sqlalchemy
   (package
