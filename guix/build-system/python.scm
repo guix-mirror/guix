@@ -55,8 +55,7 @@ PYTHON-BUILD-SYSTEM, such that it is compiled with PYTHON instead.  The
 inputs are changed recursively accordingly.  If the name of P starts with
 OLD-PREFIX, this is replaced by NEW-PREFIX; otherwise, NEW-PREFIX is
 prepended to the name."
-  (let* ((build-system (package-build-system p))
-         (rewrite-if-package
+  (let* ((rewrite-if-package
           (lambda (content)
             ;; CONTENT may be a file name, in which case it is returned, or a
             ;; package, which is rewritten with the new PYTHON and NEW-PREFIX.
@@ -68,28 +67,23 @@ prepended to the name."
            (match-lambda
              ((name content . rest)
               (append (list name (rewrite-if-package content)) rest)))))
-    (package (inherit p)
-      (name
-        (let ((name (package-name p)))
-          (if (eq? build-system python-build-system)
-              (string-append new-prefix
-                             (if (string-prefix? old-prefix name)
-                                 (substring name (string-length old-prefix))
-                                 name))
-              name)))
-      (arguments
-        (let ((arguments (package-arguments p)))
-          (if (eq? build-system python-build-system)
-              (if (member #:python arguments)
-                  (substitute-keyword-arguments arguments ((#:python p) python))
-                  (append arguments `(#:python ,python)))
-              arguments)))
-      (inputs
-        (map rewrite (package-inputs p)))
-      (propagated-inputs
-        (map rewrite (package-propagated-inputs p)))
-      (native-inputs
-        (map rewrite (package-native-inputs p))))))
+
+    (if (eq? (package-build-system p) python-build-system)
+        (package (inherit p)
+          (name (let ((name (package-name p)))
+                  (string-append new-prefix
+                                 (if (string-prefix? old-prefix name)
+                                     (substring name (string-length old-prefix))
+                                     name))))
+          (arguments
+           (let ((arguments (package-arguments p)))
+             (if (member #:python arguments)
+                 (substitute-keyword-arguments arguments ((#:python p) python))
+                 (append arguments `(#:python ,python)))))
+          (inputs (map rewrite (package-inputs p)))
+          (propagated-inputs (map rewrite (package-propagated-inputs p)))
+          (native-inputs (map rewrite (package-native-inputs p))))
+        p)))
 
 (define package-with-python2
   (cut package-with-explicit-python <> (default-python2) "python-" "python2-"))
