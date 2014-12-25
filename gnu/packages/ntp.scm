@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright 2014  John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,11 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages which)
   #:use-module (gnu packages linux)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages openssl)
+  #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
@@ -29,29 +33,31 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.6p5")
+   (version "4.2.8")
    (source (origin
 	    (method url-fetch)
 	    (uri (string-append 
-                  "http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-"
-                  (string-join (take (string-split version #\.) 2) ".")
+                  "http://archive.ntp.org/ntp4/ntp-"
+                  (version-major+minor version)
                   "/ntp-" version ".tar.gz"))
 	    (sha256
 	     (base32
-	      "077r69a41hasl8zf5c44km7cqgfhrkaj6a4jnr75j7nkz5qq7ayn"))))
-   (native-inputs `(("which" ,which)))
+	      "1vnqa1542d01xmlkw8f3rq57y360b2j7yxkkg9b11955nvw0v4if"))))
+   (native-inputs `(("which" ,which)
+                    ("pkg-config" ,pkg-config)))
    (inputs
-    ;; Build with POSIX capabilities support on GNU/Linux.  This allows 'ntpd'
-    ;; to run as non-root (when invoked with '-u'.)
-    (if (string-suffix? "-linux"
-                        (or (%current-target-system) (%current-system)))
-        `(("libcap" ,libcap))
-        '()))
+    `(("openssl" ,openssl)
+      ;; Build with POSIX capabilities support on GNU/Linux.  This allows 'ntpd'
+      ;; to run as non-root (when invoked with '-u'.)
+      ,@(if (string-suffix? "-linux"
+                            (or (%current-target-system) (%current-system)))
+            `(("libcap" ,libcap))
+            '())))
    (build-system gnu-build-system)
    (synopsis "Real time clock synchonization system")
    (description "NTP is a system designed to synchronize the clocks of
 computers over a network.")
-   (license (x11-style
+   (license (l:x11-style
              "http://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
              "A non-copyleft free licence from the University of Delaware"))
    (home-page "http://www.ntp.org")))
