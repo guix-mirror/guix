@@ -211,6 +211,7 @@ that beneath its ruins lay buried an ancient evil.")
               ("sdl-image" ,sdl-image)
               ("sdl-mixer" ,sdl-mixer)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("libpng" ,libpng)
               ("boost" ,boost)))
     (arguments
