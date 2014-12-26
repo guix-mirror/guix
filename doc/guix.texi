@@ -4177,9 +4177,90 @@ tool suite.)
 the ``message of the day''.
 @end deffn
 
-@deffn {Monadic Procedure} nscd-service [#:glibc glibc]
-Return a service that runs libc's name service cache daemon (nscd).
+@cindex name service cache daemon
+@cindex nscd
+@deffn {Monadic Procedure} nscd-service [@var{config}] [#:glibc glibc]
+Return a service that runs libc's name service cache daemon (nscd) with the
+given @var{config}---an @code{<nscd-configuration>} object.
 @end deffn
+
+@defvr {Scheme Variable} %nscd-default-configuration
+This is the default @code{<nscd-configuration>} value (see below) used
+by @code{nscd-service}.  This uses the caches defined by
+@var{%nscd-default-caches}; see below.
+@end defvr
+
+@deftp {Data Type} nscd-configuration
+This is the type representing the name service cache daemon (nscd)
+configuration.
+
+@table @asis
+
+@item @code{log-file} (default: @code{"/var/log/nscd.log"})
+Name of nscd's log file.  This is where debugging output goes when
+@code{debug-level} is strictly positive.
+
+@item @code{debug-level} (default: @code{0})
+Integer denoting the debugging levels.  Higher numbers mean more
+debugging output is logged.
+
+@item @code{caches} (default: @var{%nscd-default-caches})
+List of @code{<nscd-cache>} objects denoting things to be cached; see
+below.
+
+@end table
+@end deftp
+
+@deftp {Data Type} nscd-cache
+Data type representing a cache database of nscd and its parameters.
+
+@table @asis
+
+@item @code{database}
+This is a symbol representing the name of the database to be cached.
+Valid values are @code{passwd}, @code{group}, @code{hosts}, and
+@code{services}, which designate the corresponding NSS database
+(@pxref{NSS Basics,,, libc, The GNU C Library Reference Manual}).
+
+@item @code{positive-time-to-live}
+@itemx @code{negative-time-to-live} (default: @code{20})
+A number representing the number of seconds during which a positive or
+negative lookup result remains in cache.
+
+@item @code{check-files?} (default: @code{#t})
+Whether to check for updates of the files corresponding to
+@var{database}.
+
+For instance, when @var{database} is @code{hosts}, setting this flag
+instructs nscd to check for updates in @file{/etc/hosts} and to take
+them into account.
+
+@item @code{persistent?} (default: @code{#t})
+Whether the cache should be stored persistently on disk.
+
+@item @code{shared?} (default: @code{#t})
+Whether the cache should be shared among users.
+
+@item @code{max-database-size} (default: 32@tie{}MiB)
+Maximum size in bytes of the database cache.
+
+@c XXX: 'suggested-size' and 'auto-propagate?' seem to be expert
+@c settings, so leave them out.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %nscd-default-caches
+List of @code{<nscd-cache>} objects used by default by
+@code{nscd-configuration} (see above.)
+
+It enables persistent and aggressive caching of service and host name
+lookups.  The latter provides better host name lookup performance,
+resilience in the face of unreliable name servers, and also better
+privacy---often the result of host name lookups is in local cache, so
+external name servers do not even need to be queried.
+@end defvr
+
 
 @deffn {Monadic Procedure} syslog-service
 Return a service that runs @code{syslogd} with reasonable default

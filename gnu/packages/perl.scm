@@ -74,6 +74,27 @@
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
+(define-public perl-clone
+  (package
+    (name "perl-clone")
+    (version "0.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
+                                  "Clone-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17fdhxpzrq2nwim3zkcrz4m9gjixp0i886yz54ysrshxy3k53wnr"))))
+    (build-system perl-build-system)
+    (synopsis "Recursively copy Perl datatypes")
+    (description
+     "This module provides a clone() method which makes recursive copies of
+nested hash, array, scalar and reference types, including tied variables and
+objects.")
+    (home-page (string-append "http://search.cpan.org/~garu/"
+                              "Clone-" version))
+    (license (package-license perl))))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
@@ -253,6 +274,54 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-test-deep
+  (package
+    (name "perl-test-deep")
+    (version "0.114")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "Test-Deep-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09yr47vw7vj27sdik312x08938higcij8ybyq8k67mlccx8cpqf0"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-test-tester" ,perl-test-tester)
+              ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (synopsis "Flexible deep comparison for the Test::Builder framework")
+    (description
+     "Test::Deep compares two structures by going through each level, ensuring
+that the values match, that arrays and hashes have the same elements and that
+references are blessed into the correct class. It also handles circular data
+structures without getting caught in an infinite loop.")
+    (home-page (string-append "http://search.cpan.org/~rjbs/"
+                              "Test-Deep-" version))
+    (license gpl1+)))  ; or "Artistic License"
+
+(define-public perl-test-nowarnings
+  (package
+    (name "perl-test-nowarnings")
+    (version "1.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "Test-NoWarnings-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v385ch0hzz9naqwdw2az3zdqi15gka76pmiwlgsy6diiijmg2k3"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-test-tester" ,perl-test-tester)))
+    (synopsis "Ensure no warnings are produced while testing")
+    (description
+     "This modules causes any warnings during testing to be captured and
+stored.  It automatically adds an extra test that will run when your script
+ends to check that there were no warnings.  If there were any warings, the
+test will fail and output diagnostics of where, when and what the warning was,
+including a stack trace of what was going on when it occurred.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "Test-NoWarnings-" version))
+    (license lgpl2.1)))
+
 (define-public perl-test-script
   (package
     (name "perl-test-script")
@@ -275,6 +344,46 @@ tests for 80% of the testing you will need to do for scripts in the script (or
 bin as is also commonly used) paths of your Perl distribution.")
     (home-page (string-append "http://search.cpan.org/~adamk/"
                               "Test-Script-" version))
+    (license (package-license perl))))
+
+(define-public perl-test-simple
+  (package
+    (name "perl-test-simple")
+    (version "1.001009")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
+                                  "Test-Simple-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1klxpy658aj1pmrw63j1hc16gilwh5rzhp9rb2d1iydi3hcm8xb5"))))
+    (build-system perl-build-system)
+    (synopsis "Basic utilities for writing tests")
+    (description
+     "Test::Simple contains basic utilities for writing tests.")
+    (home-page (string-append "http://search.cpan.org/~exodist/"
+                              "Test-Simple-" version))
+    (license (package-license perl))))
+
+(define-public perl-test-tester
+  (package
+    (name "perl-test-tester")
+    (version "0.109")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/F/FD/FDALY/"
+                                  "Test-Tester-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m9n28z09kq455r5nydj1bnr85lvmbfpcbjdkjfbpmfb5xgciiyk"))))
+    (build-system perl-build-system)
+    (synopsis "Simplify running Test::Builder tests")
+    (description
+     "Test::Tester allows testing of test modules based on Test::Builder with
+a minimum of effort.")
+    (home-page (string-append "http://search.cpan.org/~fdaly/"
+                              "Test-Tester-" version))
+    ;; "Under the same license as Perl itself"
     (license (package-license perl))))
 
 (define-public perl-file-which

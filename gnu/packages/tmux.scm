@@ -28,7 +28,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "1.7")
+    (version "1.9a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -36,7 +36,7 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "0ywy1x2g905hmhkdz418ik42lcvnhnwr8fv63rcqczfg27d6nd38"))))
+               "1x9k4wfd4l5jg6fh7xkr3yyilizha6ka8m5b1nr0kw8wj0mv5qy5"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)

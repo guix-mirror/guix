@@ -105,24 +105,29 @@
      (append environment `((,%distro-root-directory . "gnu/packages"))))))
 
 (define* (scheme-files directory)
-  "Return the list of Scheme files found under DIRECTORY."
-  (file-system-fold (const #t)                    ; enter?
-                    (lambda (path stat result)    ; leaf
-                      (if (string-suffix? ".scm" path)
-                          (cons path result)
-                          result))
-                    (lambda (path stat result)    ; down
-                      result)
-                    (lambda (path stat result)    ; up
-                      result)
-                    (const #f)                    ; skip
-                    (lambda (path stat errno result)
-                      (warning (_ "cannot access `~a': ~a~%")
-                               path (strerror errno))
-                      result)
-                    '()
-                    directory
-                    stat))
+  "Return the list of Scheme files found under DIRECTORY, recursively.  The
+returned list is sorted in alphabetical order."
+
+  ;; Sort entries so that 'fold-packages' works in a deterministic fashion
+  ;; regardless of details of the underlying file system.
+  (sort (file-system-fold (const #t)                   ; enter?
+                          (lambda (path stat result)   ; leaf
+                            (if (string-suffix? ".scm" path)
+                                (cons path result)
+                                result))
+                          (lambda (path stat result)   ; down
+                            result)
+                          (lambda (path stat result)   ; up
+                            result)
+                          (const #f)                   ; skip
+                          (lambda (path stat errno result)
+                            (warning (_ "cannot access `~a': ~a~%")
+                                     path (strerror errno))
+                            result)
+                          '()
+                          directory
+                          stat)
+        string<?))
 
 (define file-name->module-name
   (let ((not-slash (char-set-complement (char-set #\/))))

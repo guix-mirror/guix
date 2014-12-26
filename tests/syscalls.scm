@@ -74,7 +74,7 @@
      (lset<= string=? names (all-network-interfaces)))))
 
 (test-assert "network-interface-flags"
-  (let* ((sock  (socket SOCK_STREAM AF_INET 0))
+  (let* ((sock  (socket AF_INET SOCK_STREAM 0))
          (flags (network-interface-flags sock "lo")))
     (close-port sock)
     (and (not (zero? (logand flags IFF_LOOPBACK)))
@@ -89,6 +89,38 @@
            #f)
          (lambda args
            (system-error-errno args)))))
+
+(test-skip (if (zero? (getuid)) 1 0))
+(test-equal "set-network-interface-flags"
+  EPERM
+  (let ((sock (socket AF_INET SOCK_STREAM 0)))
+    (catch 'system-error
+      (lambda ()
+        (set-network-interface-flags sock "lo" IFF_UP))
+      (lambda args
+        (close-port sock)
+        (system-error-errno args)))))
+
+(test-equal "network-interface-address lo"
+  (make-socket-address AF_INET (inet-pton AF_INET "127.0.0.1") 0)
+  (let* ((sock (socket AF_INET SOCK_STREAM 0))
+         (addr (network-interface-address sock "lo")))
+    (close-port sock)
+    addr))
+
+(test-equal "set-network-interface-address"
+  EPERM
+  (let ((sock (socket AF_INET SOCK_STREAM 0)))
+    (catch 'system-error
+      (lambda ()
+        (set-network-interface-address sock "nonexistent"
+                                       (make-socket-address
+                                        AF_INET
+                                        (inet-pton AF_INET "127.12.14.15")
+                                        0)))
+      (lambda args
+        (close-port sock)
+        (system-error-errno args)))))
 
 (test-end)
 

@@ -47,7 +47,8 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages ncurses))
 
 (define-public brasero
   (package
@@ -1292,3 +1293,89 @@ engineering.")
     (description
      "The default GNOME 3 themes (Adwaita and some accessibility themes).")
     (license license:lgpl2.1+)))
+
+(define-public vala
+  (package
+    (name "vala")
+    (version "0.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0swyym2papln0f62ah05dpvq3vv6fssap26jq2zqp9dkkaqsn1w4"))))
+    (build-system gnu-build-system)
+    (arguments '(#:make-flags '("CC=gcc")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("xsltproc" ,libxslt)
+       ("dbus" ,dbus)                                     ; for dbus tests
+       ("gobject-introspection" ,gobject-introspection))) ; for gir tests
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by libvala-0.26.pc
+    (home-page "http://live.gnome.org/Vala/")
+    (synopsis "Compiler for the GObject type system")
+    (description
+     "Vala is a programming language that aims to bring modern programming
+language features to GNOME developers without imposing any additional runtime
+requirements and without using a different ABI compared to applications and
+libraries written in C.")
+    (license license:lgpl2.1+)))
+
+(define-public vte
+  (package
+    (name "vte")
+    (version "0.38.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1rbxrigff9yszbgdw0gw4c2saz4d1hbbpz21phzxx14w49wvmnmj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("vala" ,vala)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib" ,glib "bin") ; for glib-genmarshal, etc.
+       ("xmllint" ,libxml2)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+))) ; required by libvte-2.91.pc
+    (home-page "http://www.gnome.org/")
+    (synopsis "Virtual Terminal Emulator")
+    (description
+     "VTE is a library (libvte) implementing a terminal emulator widget for
+GTK+, and a minimal sample application (vte) using that.  Vte is mainly used in
+gnome-terminal, but can also be used to embed a console/terminal in games,
+editors, IDEs, etc.")
+    (license license:lgpl2.1+)))
+
+;; stable version for gtk2, required by xfce4-terminal.
+(define-public vte/gtk+-2
+  (package (inherit vte)
+    (name "vte")
+    (version "0.28.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1bmhahkf8wdsra9whd3k5l5z4rv7r58ksr8mshzajgq2ma0hpkw6"))))
+    (arguments
+     '(#:configure-flags '("--disable-python")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib" ,glib "bin")))   ; for glib-genmarshal, etc.
+    (propagated-inputs
+     `(("gtk+" ,gtk+-2)         ; required by libvte.pc
+       ("ncurses" ,ncurses))))) ; required by libvte.la

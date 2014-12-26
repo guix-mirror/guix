@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -53,7 +53,17 @@
                           version "/" name "-" version ".tar.xz"))
       (sha256
        (base32
-        "02r9klfc0z26w270inq652249hq0wfzvwhzvwmk0n8v8nzkk5idh"))))
+        "02r9klfc0z26w270inq652249hq0wfzvwhzvwmk0n8v8nzkk5idh"))
+      (patches (map search-patch
+                    '("icecat-CVE-2014-1587-bug-1042567.patch"
+                      "icecat-CVE-2014-1587-bug-1072847.patch"
+                      "icecat-CVE-2014-1587-bug-1079729.patch"
+                      "icecat-CVE-2014-1587-bug-1080312.patch"
+                      "icecat-CVE-2014-1587-bug-1089207.patch"
+                      "icecat-CVE-2014-1590.patch"
+                      "icecat-CVE-2014-1592.patch"
+                      "icecat-CVE-2014-1593.patch"
+                      "icecat-CVE-2014-1594.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -90,6 +100,7 @@
                            "--disable-debug"
                            "--disable-debug-symbols"
 
+                           "--enable-pulseaudio"
                            "--disable-webrtc"     ; webrtc fails to build
 
                            "--with-system-zlib"

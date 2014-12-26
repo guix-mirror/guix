@@ -395,7 +395,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2014.11.21.1")
+    (version "2014.12.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -403,7 +403,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0rxpx8j4qhhsws6czlfji1x9igsinkbbwvld10qdylll7g9q1v7j"))))
+                "09z7v6jxs4a36kyy681mcypcqsxipplnbdy9s3rva1rpp5f74h2z"))))
     (build-system python-build-system)
     (inputs `(("setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")

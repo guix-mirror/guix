@@ -1,0 +1,115 @@
+Search for xfce4 panel plugins in the directories specified
+in XDG_DATA_DIRS and X_XFCE4_LIB_DIRS.  For discussion of the
+relevant issues, see:
+
+  https://bugzilla.xfce.org/show_bug.cgi?id=5455
+
+Patch by Mark H Weaver <mhw@netris.org>
+
+--- xfce4-panel-4.10.0/panel/panel-module.c.orig	2012-04-28 16:31:35.000000000 -0400
++++ xfce4-panel-4.10.0/panel/panel-module.c	2014-12-14 01:31:55.728107386 -0500
+@@ -35,8 +35,14 @@
+ #include <panel/panel-plugin-external-wrapper.h>
+ #include <panel/panel-plugin-external-46.h>
+ 
+-#define PANEL_PLUGINS_LIB_DIR (LIBDIR G_DIR_SEPARATOR_S "panel" G_DIR_SEPARATOR_S "plugins")
+-#define PANEL_PLUGINS_LIB_DIR_OLD (LIBDIR G_DIR_SEPARATOR_S "panel-plugins")
++#define PANEL_PLUGINS_LIB_DIR_TAIL (G_DIR_SEPARATOR_S "panel" G_DIR_SEPARATOR_S "plugins")
++#define PANEL_PLUGINS_LIB_DIR_TAIL_OLD (G_DIR_SEPARATOR_S "panel-plugins")
++
++static const gchar *plugins_lib_dir_tails[] =
++{
++  PANEL_PLUGINS_LIB_DIR_TAIL,
++  PANEL_PLUGINS_LIB_DIR_TAIL_OLD
++};
+ 
+ 
+ typedef enum _PanelModuleRunMode PanelModuleRunMode;
+@@ -335,21 +341,39 @@
+           /* show a messsage if the old module path key still exists */
+           g_message ("Plugin %s: The \"X-XFCE-Module-Path\" key is "
+                      "ignored in \"%s\", the panel will look for the "
+-                     "module in %s. See bug #5455 why this decision was made",
+-                     name, filename, PANEL_PLUGINS_LIB_DIR);
++                     "module in DIR%s for each DIR in $X_XFCE4_LIB_DIRS "
++                     "(%s by default).  See bug #5455 for discussion.",
++                     name, filename, PANEL_PLUGINS_LIB_DIR_TAIL, LIBDIR);
+         }
+ #endif
+ 
+-      path = g_module_build_path (PANEL_PLUGINS_LIB_DIR, module_name);
+-      found = g_file_test (path, G_FILE_TEST_EXISTS);
++      /* search for module */
++      {
++        gchar   *dirs_string;
++        gchar  **dirs;
++        int      i, j;
++
++        dirs_string = (gchar *) g_getenv ("X_XFCE4_LIB_DIRS");
++        if (!dirs_string)
++          dirs_string = LIBDIR;
++        dirs = g_strsplit (dirs_string, G_SEARCHPATH_SEPARATOR_S, 0);
++
++        found = FALSE;
++        path = NULL;
++
++        for (i = 0; !found && dirs[i] != NULL; i++)
++          for (j = 0; !found && j < G_N_ELEMENTS (plugins_lib_dir_tails); j++)
++            {
++              gchar *dir = g_strconcat (dirs[i], plugins_lib_dir_tails[j], NULL);
++
++              g_free (path);
++              path = g_module_build_path (dir, module_name);
++              found = g_file_test (path, G_FILE_TEST_EXISTS);
++              g_free (dir);
++            }
+ 
+-      if (!found)
+-        {
+-          /* deprecated location for module plugin directories */
+-          g_free (path);
+-          path = g_module_build_path (PANEL_PLUGINS_LIB_DIR_OLD, module_name);
+-          found = g_file_test (path, G_FILE_TEST_EXISTS);
+-        }
++        g_strfreev (dirs);
++      }
+ 
+       if (G_LIKELY (found))
+         {
+--- xfce4-panel-4.10.0/panel/panel-module-factory.c.orig	2012-04-28 16:31:35.000000000 -0400
++++ xfce4-panel-4.10.0/panel/panel-module-factory.c	2014-12-13 23:55:27.439404812 -0500
+@@ -42,6 +42,11 @@
+ #define PANEL_PLUGINS_DATA_DIR     (DATADIR G_DIR_SEPARATOR_S "panel" G_DIR_SEPARATOR_S "plugins")
+ #define PANEL_PLUGINS_DATA_DIR_OLD (DATADIR G_DIR_SEPARATOR_S "panel-plugins")
+ 
++static const gchar *plugins_data_dir_tails[] =
++{
++  (G_DIR_SEPARATOR_S "xfce4" G_DIR_SEPARATOR_S "panel" G_DIR_SEPARATOR_S "plugins"),
++  (G_DIR_SEPARATOR_S "xfce4" G_DIR_SEPARATOR_S "panel-plugins")
++};
+ 
+ 
+ static void     panel_module_factory_finalize        (GObject                  *object);
+@@ -223,8 +228,22 @@
+ panel_module_factory_load_modules (PanelModuleFactory *factory,
+                                    gboolean            warn_if_known)
+ {
++  const gchar * const * system_data_dirs;
++  int i, j;
++
+   panel_return_if_fail (PANEL_IS_MODULE_FACTORY (factory));
+ 
++  system_data_dirs = g_get_system_data_dirs ();
++  for (i = 0; system_data_dirs[i] != NULL; i++)
++    for (j = 0; j < G_N_ELEMENTS (plugins_data_dir_tails); j++)
++    {
++      gchar *dir;
++
++      dir = g_strconcat (system_data_dirs[i], plugins_data_dir_tails[j], NULL);
++      panel_module_factory_load_modules_dir (factory, dir, warn_if_known);
++      g_free (dir);
++    }
++
+   /* load from the new and old location */
+   panel_module_factory_load_modules_dir (factory, PANEL_PLUGINS_DATA_DIR, warn_if_known);
+   panel_module_factory_load_modules_dir (factory, PANEL_PLUGINS_DATA_DIR_OLD, warn_if_known);

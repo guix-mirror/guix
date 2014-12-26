@@ -145,6 +145,14 @@ configuration template file in the installation system."
               #~(unless (file-exists? #$local-template)
                   (copy-file #$template #$local-template)))))))
 
+(define %nscd-minimal-caches
+  ;; Minimal in-memory caching policy for nscd.
+  (list (nscd-cache (database 'hosts)
+                    (positive-time-to-live (* 3600 12))
+                    (negative-time-to-live 20)
+                    (persistent? #f)
+                    (max-database-size (* 5 (expt 2 20)))))) ;5 MiB
+
 (define (installation-services)
   "Return the list services for the installation image."
   (let ((motd (text-file "motd" "
@@ -206,7 +214,10 @@ You have been warned.  Thanks for being so brave.
           (console-font-service "tty5")
           (console-font-service "tty6")
 
-          (nscd-service))))
+          ;; Since this is running on a USB stick with a unionfs as the root
+          ;; file system, use an appropriate cache configuration.
+          (nscd-service (nscd-configuration
+                         (caches %nscd-minimal-caches))))))
 
 (define %issue
   ;; Greeting.

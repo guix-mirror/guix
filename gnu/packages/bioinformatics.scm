@@ -28,6 +28,113 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
+(define-public bedtools
+  (package
+    (name "bedtools")
+    (version "2.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16aq0w3dmbd0853j32xk9jin4vb6v6fgakfyvrsmsjizzbn3fpfl"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("python" ,python-2)))
+    (inputs `(("samtools" ,samtools)
+              ("zlib" ,zlib)))
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-makefile-SHELL-definition
+        (lambda _
+          ;; patch-makefile-SHELL cannot be used here as it does not
+          ;; yet patch definitions with `:='.  Since changes to
+          ;; patch-makefile-SHELL result in a full rebuild, features
+          ;; of patch-makefile-SHELL are reimplemented here.
+          (substitute* "Makefile"
+            (("^SHELL := .*$") (string-append "SHELL := " (which "bash") " -e \n"))))
+        (alist-delete
+         'configure
+         (alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (mkdir-p bin)
+              (for-each (lambda (file)
+                          (copy-file file (string-append bin (basename file))))
+                        (find-files "bin" ".*"))))
+          %standard-phases)))))
+    (home-page "https://github.com/arq5x/bedtools2")
+    (synopsis "Tools for genome analysis and arithmetic")
+    (description
+     "Collectively, the bedtools utilities are a swiss-army knife of tools for
+a wide-range of genomics analysis tasks.  The most widely-used tools enable
+genome arithmetic: that is, set theory on the genome.  For example, bedtools
+allows one to intersect, merge, count, complement, and shuffle genomic
+intervals from multiple files in widely-used genomic file formats such as BAM,
+BED, GFF/GTF, VCF.")
+    (license license:gpl2)))
+
+(define-public bowtie
+  (package
+    (name "bowtie")
+    (version "2.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15dnbqippwvhyh9zqjhaxkabk7lm1xbh1nvar1x4b5kwm117zijn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile"
+                  (("^CC = .*$") "CC = gcc")
+                  (("^CPP = .*$") "CPP = g++")
+                  ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+                  (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)
+              ("perl-clone" ,perl-clone)
+              ("perl-test-deep" ,perl-test-deep)
+              ("perl-test-simple" ,perl-test-simple)
+              ("python" ,python-2)))
+    (arguments
+     '(#:make-flags '("allall")
+       #:phases
+       (alist-delete
+        'configure
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (for-each (lambda (file)
+                         (copy-file file (string-append bin file)))
+                       (find-files "." "bowtie2.*"))))
+         (alist-replace
+          'check
+          (lambda* (#:key outputs #:allow-other-keys)
+            (system* "perl"
+                     "scripts/test/simple_tests.pl"
+                     "--bowtie2=./bowtie2"
+                     "--bowtie2-build=./bowtie2-build"))
+          %standard-phases)))))
+    (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
+    (synopsis "Fast and sensitive nucleotide sequence read aligner")
+    (description
+     "Bowtie 2 is a fast and memory-efficient tool for aligning sequencing
+reads to long reference sequences.  It is particularly good at aligning reads
+of about 50 up to 100s or 1,000s of characters, and particularly good at
+aligning to relatively long (e.g. mammalian) genomes.  Bowtie 2 indexes the
+genome with an FM Index to keep its memory footprint small: for the human
+genome, its memory footprint is typically around 3.2 GB.  Bowtie 2 supports
+gapped, local, and paired-end alignment modes.")
+    (license license:gpl3+)))
+
 (define-public samtools
   (package
     (name "samtools")
@@ -43,7 +150,14 @@
          "1y5p2hs4gif891b4ik20275a8xf3qrr1zh9wpysp4g8m0g1jckf2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+     `(;; There are 87 test failures when building on non-64-bit architectures
+       ;; due to invalid test data.  This has since been fixed upstream (see
+       ;; <https://github.com/samtools/samtools/pull/307>), but as there has
+       ;; not been a new release we disable the tests for all non-64-bit
+       ;; systems.
+       #:tests? ,(string=? (or (%current-system) (%current-target-system))
+                           "x86_64-linux")
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
         'unpack

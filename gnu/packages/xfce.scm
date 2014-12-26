@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -249,7 +251,8 @@ management D-Bus specification.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1f8903nx6ivzircl8d8s9zna4vjgfy0qhjk5d2x19g9bmycgj89k"))))
+                "1f8903nx6ivzircl8d8s9zna4vjgfy0qhjk5d2x19g9bmycgj89k"))
+              (patches (list (search-patch "xfce4-panel-plugins.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -261,6 +264,10 @@ management D-Bus specification.")
        ("garcon", garcon)
        ("libwnck" ,libwnck-1)
        ("libxfce4ui" ,libxfce4ui)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "X_XFCE4_LIB_DIRS")
+            (directories '("lib/xfce4")))))
     (home-page "http://www.xfce.org/")
     (synopsis "Xfce desktop panel")
     (description
@@ -268,6 +275,35 @@ management D-Bus specification.")
 applications menu, workspace switcher and more.")
     ;; Libraries are under LGPLv2.1+, and programs under GPLv2+.
     (license (list gpl2+ lgpl2.1+))))
+
+(define-public xfce4-battery-plugin
+  (package
+    (name "xfce4-battery-plugin")
+    (version "1.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "04gbplcj8z4vg5xbks8cc2jjf62mmf9sdymg90scjwmb82pv2ngn"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("intltool" ,intltool)))
+    (inputs `(("glib" ,glib)
+              ("gtk+" ,gtk+-2)
+              ("libxfce4util" ,libxfce4util)
+              ("libxfce4ui" ,libxfce4ui)
+              ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "http://goodies.xfce.org/projects/panel-plugins/xfce4-battery-plugin")
+    (synopsis "Battery monitor panel plugin for Xfce4")
+    (description
+     "A battery monitor panel plugin for Xfce4, compatible with APM and ACPI.")
+    ;; The main plugin code is covered by gpl2+, but the files containing code
+    ;; to read the battery state via ACPI or APM are covered by lgpl2.0+.
+    (license (list gpl2+ lgpl2.0+))))
 
 (define-public xfce4-appfinder
   (package
@@ -475,4 +511,34 @@ on the screen.")
      "Desktop manager for Xfce, it sets the background color or image with
 optional application menu or icons for minimized applications or launchers,
 devices and folders.")
+    (license gpl2+)))
+
+(define-public xfce4-terminal
+  (package
+    (name "xfce4-terminal")
+    (version "0.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "023y0lkfijifh05yz8grimxadqpi98mrivr00sl18nirq8b4fbwi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("vte" ,vte/gtk+-2)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce terminal emulator")
+    (description
+     "A lightweight and easy to use terminal emulator for Xfce.  Features
+include a simple configuration interface, the ability to use multiple tabs
+with terminals within a single window, the possibility to have a
+pseudo-transparent terminal background, and a compact mode (where both the
+menubar and the window decorations are hidden) that helps you to save space
+on your desktop.")
     (license gpl2+)))

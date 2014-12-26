@@ -37,6 +37,7 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
@@ -50,6 +51,9 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages which)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -614,6 +618,43 @@ get the local timezone information, unless you know the zoneinfo name, and
 under several distributions that's hard or impossible to figure out.")
     (license cc0)))
 
+(define-public python-pysam
+  (package
+    (name "python-pysam")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/pysam/pysam-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1fb6i6hbpzxaxb62kyyp5alaidwhj40f7c6gwbhr6njzlqd5l459"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; tests are excluded in the manifest
+       #:phases
+       (alist-cons-before
+        'build 'set-flags
+        (lambda _
+          (setenv "LDFLAGS" "-lncurses")
+          (setenv "CFLAGS" "-D_CURSES_LIB=1"))
+        %standard-phases)))
+    (inputs
+     `(("python-cython"     ,python-cython)
+       ("python-setuptools" ,python-setuptools)
+       ("ncurses"           ,ncurses)
+       ("zlib"              ,zlib)))
+    (home-page "https://github.com/pysam-developers/pysam")
+    (synopsis "Python bindings to the SAMtools C API")
+    (description
+     "Pysam is a Python module for reading and manipulating files in the
+SAM/BAM format.  Pysam is a lightweight wrapper of the SAMtools C API.  It
+also includes an interface for tabix.")
+    (license expat)))
+
+(define-public python2-pysam
+  (package-with-python2 python-pysam))
 
 (define-public python2-pysqlite
   (package
@@ -2117,10 +2158,35 @@ that client code uses to construct the grammar directly in Python code.")
          "0m6v9nwdldlwk22gcd339zg6mny5m301fxgks7z8sb8m9wawg8qp"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
+    (propagated-inputs ; the following packages are all needed at run time
+     `(("python-pyparsing" ,python-pyparsing)
+       ("python-pygobject" ,python-pygobject)
+       ("gobject-introspection" ,gobject-introspection)
+       ;; The 'gtk+' package (and 'gdk-pixbuf', 'atk' and 'pango' propagated
+       ;; from 'gtk+') provides the required 'typelib' files used by
+       ;; 'gobject-introspection'. The location of these files is set with the
+       ;; help of the environment variable GI_TYPELIB_PATH. At build time this
+       ;; is done automatically by a 'native-search-path' procedure. However,
+       ;; at run-time the user must set this variable as follows:
+       ;;
+       ;; export GI_TYPELIB_PATH=~/.guix-profile/lib/girepository-1.0
+       ;;
+       ;; 'typelib' files include references to dynamic libraries. Currently
+       ;; the references do not include the full path to the libraries. For
+       ;; this reason the user must set the LD_LIBRARY_PATH to the location of 
+       ;; 'libgtk-3.so.0', 'libgdk-3.so.0' and 'libatk-1.0.so.0':
+       ;;
+       ;; export LD_LIBRARY_PATH=~/.guix-profile/lib
+       ("gtk+" ,gtk+)
+       ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
+       ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
+       ;; object. For this reason we need to import both libraries.
+       ;; https://pythonhosted.org/cairocffi/cffi_api.html#converting-pycairo
+       ("python-pycairo" ,python-pycairo)
+       ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-dateutil" ,python-dateutil-2)
-       ("python-pyparsing" ,python-pyparsing)
        ("python-six" ,python-six)
        ("python-pytz" ,python-pytz)
        ("python-numpy" ,python-numpy-bootstrap)
@@ -2131,10 +2197,10 @@ that client code uses to construct the grammar directly in Python code.")
        ("libpng" ,libpng)
        ("imagemagick" ,imagemagick)
        ("freetype" ,freetype)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("python-pillow" ,python-pillow)
        ;; FIXME: Add backends when available.
-       ;("python-pygtk" ,python-pygtk)
-       ;("python-pycairo" ,python-pycairo)
-       ;("python-pygobject" ,python-pygobject)
        ;("python-wxpython" ,python-wxpython)
        ;("python-pyqt" ,python-pyqt)
        ))
@@ -2144,40 +2210,51 @@ that client code uses to construct the grammar directly in Python code.")
        ("texinfo" ,texinfo)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'install 'install-doc
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                 (doc (string-append data "/doc/" ,name "-" ,version))
-                 (info (string-append data "/info"))
-                 (html (string-append doc "/html")))
-            (with-directory-excursion "doc"
-              ;; Without setting this variable we get an encoding error.
-              (setenv "LANG" "en_US.UTF-8")
-              ;; Produce pdf in 'A4' format.
-              (substitute* (find-files "." "conf\\.py")
-                (("latex_paper_size = 'letter'")
-                 "latex_paper_size = 'a4'"))
-              (mkdir-p html)
-              (mkdir-p info)
-              ;; The doc recommends to run the 'html' target twice.
-              (system* "python" "make.py" "html")
-              (system* "python" "make.py" "html")
-              (system* "python" "make.py" "latex")
-              (system* "python" "make.py" "texinfo")
-              (copy-file "build/texinfo/matplotlib.info"
-                         (string-append info "/matplotlib.info"))
-              (copy-file "build/latex/Matplotlib.pdf"
-                         (string-append doc "/Matplotlib.pdf"))
-              (with-directory-excursion "build/html"
-                (map (lambda (file)
-                       (let* ((dir (dirname file))
-                              (tgt-dir (string-append html "/" dir)))
-                         (unless (equal? "." dir)
-                           (mkdir-p tgt-dir))
-                         (copy-file file (string-append html "/" file))))
-                     (find-files "." ".*"))))))
-        %standard-phases)))
+       (alist-cons-before
+        'build 'configure-environment
+        (lambda* (#:key outputs inputs #:allow-other-keys)
+          (let ((cairo (assoc-ref inputs "cairo"))
+                (gtk+ (assoc-ref inputs "gtk+")))
+            ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
+            ;; has not effect.
+            ;;
+            ;; FIXME: setting LD_LIBRARY_PATH should be removed once we patch
+            ;; gobject-introspection to include the full path of shared
+            ;; libraries in 'typelib' files.
+            (setenv "LD_LIBRARY_PATH"
+                    (string-append cairo "/lib:" gtk+ "/lib"))
+            (setenv "HOME" (getcwd))
+            (call-with-output-file "setup.cfg"
+              (lambda (port)
+                (format port "[rc_options]~%
+backend = GTK3Agg~%")))))
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                  (doc (string-append data "/doc/" ,name "-" ,version))
+                  (info (string-append data "/info"))
+                  (html (string-append doc "/html")))
+             (with-directory-excursion "doc"
+               ;; Without setting this variable we get an encoding error.
+               (setenv "LANG" "en_US.UTF-8")
+               ;; Produce pdf in 'A4' format.
+               (substitute* (find-files "." "conf\\.py")
+                 (("latex_paper_size = 'letter'")
+                  "latex_paper_size = 'a4'"))
+               (mkdir-p html)
+               (mkdir-p info)
+               ;; The doc recommends to run the 'html' target twice.
+               (system* "python" "make.py" "html")
+               (system* "python" "make.py" "html")
+               (system* "python" "make.py" "latex")
+               (system* "python" "make.py" "texinfo")
+               (copy-file "build/texinfo/matplotlib.info"
+                          (string-append info "/matplotlib.info"))
+               (copy-file "build/latex/Matplotlib.pdf"
+                          (string-append doc "/Matplotlib.pdf"))
+               (copy-recursively "build/html" html))))
+        %standard-phases))))
     (home-page "http://matplotlib.org")
     (synopsis "2D plotting library for Python")
     (description
@@ -2193,9 +2270,17 @@ toolkits.")
     (package (inherit matplotlib)
       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
       ;; customized for Python 2.
-      (inputs `(("python2-numpydoc" ,python2-numpydoc)
-                ,@(alist-delete "python-numpydoc" 
-                                (package-inputs matplotlib)))))))
+      (propagated-inputs 
+       `(("python2-py2cairo" ,python2-py2cairo)
+         ("python2-pygobject-2" ,python2-pygobject-2)
+         ,@(alist-delete "python-pycairo"
+                         (alist-delete "python-pygobject"
+                                       (package-propagated-inputs 
+                                        matplotlib)))))
+      (inputs 
+       `(("python2-numpydoc" ,python2-numpydoc)
+         ,@(alist-delete "python-numpydoc" 
+                         (package-inputs matplotlib)))))))
 
 ;; Scipy 0.14.0 with Numpy 0.19.X fails several tests.  This is known and
 ;; planned to be fixed in 0.14.1.  It is claimed that the failures can safely
@@ -2542,3 +2627,102 @@ a front-end for C compilers or analysis tools.")
 
 (define-public python2-cffi
   (package-with-python2 python-cffi))
+
+(define-public python-xcffib
+  (package
+    (name "python-xcffib")
+    (version "0.1.9")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/x/"
+                          "xcffib/xcffib-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0655hzxv57h1a9ja9kwp0ichbkhf3djw32k33d66xp0q37dq2y81"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi))) ; used at run time
+    (arguments
+     `(#:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((doc (string-append (assoc-ref outputs "out") "/share"
+                                    "/doc/" ,name "-" ,version)))
+            (mkdir-p doc)
+            (copy-file "README.md"
+                       (string-append doc "/README.md"))))
+        %standard-phases)))
+    (home-page "https://github.com/tych0/xcffib")
+    (synopsis "XCB Python bindings")
+    (description
+     "Xcffib is a replacement for xpyb, an XCB Python bindings.  It adds
+support for Python 3 and PyPy.  It is based on cffi.")
+    (license expat)))
+
+(define-public python2-xcffib
+  (package-with-python2 python-xcffib))
+
+(define-public python-cairocffi
+  (package
+    (name "python-cairocffi")
+    (version "0.6")
+    (source
+     (origin
+      (method url-fetch)
+      ;; The archive on pypi is missing the 'utils' directory!
+      (uri (string-append "https://github.com/SimonSapin/cairocffi/archive/v"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))
+    (build-system python-build-system)
+    (outputs '("out" "doc"))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("python-docutils" ,python-docutils)
+       ("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-xcffib" ,python-xcffib))) ; used at run time
+    (arguments
+     `(#:phases 
+       (alist-cons-after
+        'install 'install-doc
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                 (doc (string-append data "/doc/" ,name "-" ,version))
+                 (html (string-append doc "/html")))
+            (setenv "LD_LIBRARY_PATH" 
+                    (string-append (assoc-ref inputs "cairo") "/lib" ":"
+                                   (assoc-ref inputs "gdk-pixbuf") "/lib"))
+            (setenv "LANG" "en_US.UTF-8")
+            (mkdir-p html)
+            (for-each (lambda (file)
+                        (copy-file (string-append "." file)
+                                   (string-append doc file)))
+                      '("/README.rst" "/CHANGES" "/LICENSE"))
+            (system* "python" "setup.py" "build_sphinx")
+            (copy-recursively "docs/_build/html" html)))
+        %standard-phases)))
+    (home-page "https://github.com/SimonSapin/cairocffi")
+    (synopsis "Python bindings and object-oriented API for Cairo")
+    (description
+     "Cairocffi is a CFFI-based drop-in replacement for Pycairo, a set of
+Python bindings and object-oriented API for cairo.  Cairo is a 2D vector
+graphics library with support for multiple backends including image buffers,
+PNG, PostScript, PDF, and SVG file output.")
+    (license bsd-3)))
+
+(define-public python2-cairocffi
+  (package-with-python2 python-cairocffi))
+

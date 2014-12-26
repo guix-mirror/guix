@@ -42,7 +42,11 @@
             all-network-interfaces
             network-interfaces
             network-interface-flags
-            loopback-network-interface?))
+            loopback-network-interface?
+            network-interface-address
+            set-network-interface-flags
+            set-network-interface-address
+            configure-network-interface))
 
 ;;; Commentary:
 ;;;
@@ -230,6 +234,77 @@ user-land process."
 
 
 ;;;
+;;; Packed structures.
+;;;
+
+(define-syntax sizeof*
+  ;; XXX: This duplicates 'compile-time-value'.
+  (syntax-rules (int128)
+    ((_ int128)
+     16)
+    ((_ type)
+     (let-syntax ((v (lambda (s)
+                       (let ((val (sizeof type)))
+                         (syntax-case s ()
+                           (_ val))))))
+       v))))
+
+(define-syntax type-size
+  (syntax-rules (~)
+    ((_ (type ~ order))
+     (sizeof* type))
+    ((_ type)
+     (sizeof* type))))
+
+(define-syntax write-type
+  (syntax-rules (~)
+    ((_ bv offset (type ~ order) value)
+     (bytevector-uint-set! bv offset value
+                           (endianness order) (sizeof* type)))
+    ((_ bv offset type value)
+     (bytevector-uint-set! bv offset value
+                           (native-endianness) (sizeof* type)))))
+
+(define-syntax write-types
+  (syntax-rules ()
+    ((_ bv offset () ())
+     #t)
+    ((_ bv offset (type0 types ...) (field0 fields ...))
+     (begin
+       (write-type bv offset type0 field0)
+       (write-types bv (+ offset (type-size type0))
+                    (types ...) (fields ...))))))
+
+(define-syntax read-type
+  (syntax-rules (~)
+    ((_ bv offset (type ~ order))
+     (bytevector-uint-ref bv offset
+                          (endianness order) (sizeof* type)))
+    ((_ bv offset type)
+     (bytevector-uint-ref bv offset
+                          (native-endianness) (sizeof* type)))))
+
+(define-syntax read-types
+  (syntax-rules ()
+    ((_ bv offset ())
+     '())
+    ((_ bv offset (type0 types ...))
+     (cons (read-type bv offset type0)
+           (read-types bv (+ offset (type-size type0)) (types ...))))))
+
+(define-syntax define-c-struct
+  (syntax-rules ()
+    "Define READ as an optimized serializer and WRITE! as a deserializer for
+the C structure with the given TYPES."
+    ((_ name read write! (fields types) ...)
+     (begin
+       (define (write! bv offset fields ...)
+         (write-types bv offset (types ...) (fields ...)))
+       (define (read bv offset)
+         (read-types bv offset (types ...)))))))
+
+
+;;;
 ;;; Network interfaces.
 ;;;
 
@@ -241,6 +316,18 @@ user-land process."
   (if (string-contains %host-type "linux")
       #x8913                                      ;GNU/Linux
       #xc4804191))                                ;GNU/Hurd
+(define SIOCSIFFLAGS
+  (if (string-contains %host-type "linux")
+      #x8914                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCGIFADDR
+  (if (string-contains %host-type "linux")
+      #x8915                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
+(define SIOCSIFADDR
+  (if (string-contains %host-type "linux")
+      #x8916                                      ;GNU/Linux
+      -1))                                        ;FIXME: GNU/Hurd?
 
 ;; Flags and constants from <net/if.h>.
 
@@ -262,6 +349,56 @@ user-land process."
   (if (= 8 (sizeof '*))
       40
       32))
+
+(define-c-struct sockaddr-in                      ;<linux/in.h>
+  read-sockaddr-in
+  write-sockaddr-in!
+  (family    unsigned-short)
+  (port      (int16 ~ big))
+  (address   (int32 ~ big)))
+
+(define-c-struct sockaddr-in6                     ;<linux/in6.h>
+  read-sockaddr-in6
+  write-sockaddr-in6!
+  (family    unsigned-short)
+  (port      (int16 ~ big))
+  (flowinfo  (int32 ~ big))
+  (address   (int128 ~ big))
+  (scopeid   int32))
+
+(define (write-socket-address! sockaddr bv index)
+  "Write SOCKADDR, a socket address as returned by 'make-socket-address', to
+bytevector BV at INDEX."
+  (let ((family (sockaddr:fam sockaddr)))
+    (cond ((= family AF_INET)
+           (write-sockaddr-in! bv index
+                               family
+                               (sockaddr:port sockaddr)
+                               (sockaddr:addr sockaddr)))
+          ((= family AF_INET6)
+           (write-sockaddr-in6! bv index
+                                family
+                                (sockaddr:port sockaddr)
+                                (sockaddr:flowinfo sockaddr)
+                                (sockaddr:addr sockaddr)
+                                (sockaddr:scopeid sockaddr)))
+          (else
+           (error "unsupported socket address" sockaddr)))))
+
+(define (read-socket-address bv index)
+  "Read a socket address from bytevector BV at INDEX."
+  (let ((family (bytevector-u16-native-ref bv index)))
+    (cond ((= family AF_INET)
+           (match (read-sockaddr-in bv index)
+             ((family port address)
+              (make-socket-address family address port))))
+          ((= family AF_INET6)
+           (match (read-sockaddr-in6 bv index)
+             ((family port flowinfo address scopeid)
+              (make-socket-address family address port
+                                   flowinfo scopeid))))
+          (else
+           "unsupported socket address family" family))))
 
 (define %ioctl
   ;; The most terrible interface, live from Scheme.
@@ -353,5 +490,66 @@ interface NAME."
          (flags (network-interface-flags sock name)))
     (close-port sock)
     (not (zero? (logand flags IFF_LOOPBACK)))))
+
+(define (set-network-interface-flags socket name flags)
+  "Set the flag of network interface NAME to FLAGS."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    ;; Set the 'ifr_flags' field.
+    (bytevector-uint-set! req IF_NAMESIZE flags (native-endianness)
+                          (sizeof short))
+    (let* ((ret (%ioctl (fileno socket) SIOCSIFFLAGS
+                        (bytevector->pointer req)))
+           (err (errno)))
+      (unless (zero? ret)
+        (throw 'system-error "set-network-interface-flags"
+               "set-network-interface-flags on ~A: ~A"
+               (list name (strerror err))
+               (list err))))))
+
+(define (set-network-interface-address socket name sockaddr)
+  "Set the address of network interface NAME to SOCKADDR."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    ;; Set the 'ifr_addr' field.
+    (write-socket-address! sockaddr req IF_NAMESIZE)
+    (let* ((ret (%ioctl (fileno socket) SIOCSIFADDR
+                        (bytevector->pointer req)))
+           (err (errno)))
+      (unless (zero? ret)
+        (throw 'system-error "set-network-interface-address"
+               "set-network-interface-address on ~A: ~A"
+               (list name (strerror err))
+               (list err))))))
+
+(define (network-interface-address socket name)
+  "Return the address of network interface NAME.  The result is an object of
+the same type as that returned by 'make-socket-address'."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    (let* ((ret (%ioctl (fileno socket) SIOCGIFADDR
+                        (bytevector->pointer req)))
+           (err (errno)))
+      (if (zero? ret)
+          (read-socket-address req IF_NAMESIZE)
+          (throw 'system-error "network-interface-address"
+                 "network-interface-address on ~A: ~A"
+                 (list name (strerror err))
+                 (list err))))))
+
+(define (configure-network-interface name sockaddr flags)
+  "Configure network interface NAME to use SOCKADDR, an address as returned by
+'make-socket-address', and FLAGS, a bitwise-or of IFF_* constants."
+  (let ((sock (socket (sockaddr:fam sockaddr) SOCK_STREAM 0)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (set-network-interface-address sock name sockaddr)
+        (set-network-interface-flags sock name flags))
+      (lambda ()
+        (close-port sock)))))
 
 ;;; syscalls.scm ends here

@@ -414,7 +414,13 @@ INFO-DIR? is #f."
                                     (return #f))))
     (define inputs
       (if info-dir
-          (cons info-dir (manifest-inputs manifest))
+          ;; XXX: Here we use the tuple (INFO-DIR "out") just so that the list
+          ;; is unambiguous for the gexp code when MANIFEST has a single input
+          ;; denoted as a string (the pattern (DRV STRING) is normally
+          ;; interpreted in a gexp as "the STRING output of DRV".).  See
+          ;; <http://lists.gnu.org/archive/html/guix-devel/2014-12/msg00292.html>.
+          (cons (list info-dir "out")
+                (manifest-inputs manifest))
           (manifest-inputs manifest)))
 
     (define builder

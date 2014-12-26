@@ -33,8 +33,10 @@
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (root-file-system-service
             file-system-service
@@ -46,6 +48,16 @@
             console-font-service
             udev-service
             mingetty-service
+
+            %nscd-default-caches
+            %nscd-default-configuration
+
+            nscd-configuration
+            nscd-configuration?
+
+            nscd-cache
+            nscd-cache?
+
             nscd-service
             syslog-service
             guix-service
@@ -374,9 +386,110 @@ the ``message of the day''."
                                #:allow-empty-passwords? allow-empty-passwords?
                                #:motd motd)))))))
 
-(define* (nscd-service #:key (glibc (canonical-package glibc)))
-  "Return a service that runs libc's name service cache daemon (nscd)."
-  (with-monad %store-monad
+(define-record-type* <nscd-configuration> nscd-configuration
+  make-nscd-configuration
+  nscd-configuration?
+  (log-file    nscd-configuration-log-file        ;string
+               (default "/var/log/nscd.log"))
+  (debug-level nscd-debug-level                   ;integer
+               (default 0))
+  ;; TODO: See nscd.conf in glibc for other options to add.
+  (caches     nscd-configuration-caches           ;list of <nscd-cache>
+              (default %nscd-default-caches)))
+
+(define-record-type* <nscd-cache> nscd-cache make-nscd-cache
+  nscd-cache?
+  (database              nscd-cache-database)              ;symbol
+  (positive-time-to-live nscd-cache-positive-time-to-live) ;integer
+  (negative-time-to-live nscd-cache-negative-time-to-live
+                         (default 20))             ;integer
+  (suggested-size        nscd-cache-suggested-size ;integer ("default module
+                                                   ;of hash table")
+                         (default 211))
+  (check-files?          nscd-cache-check-files?  ;Boolean
+                         (default #t))
+  (persistent?           nscd-cache-persistent?   ;Boolean
+                         (default #t))
+  (shared?               nscd-cache-shared?       ;Boolean
+                         (default #t))
+  (max-database-size     nscd-cache-max-database-size ;integer
+                         (default (* 32 (expt 2 20))))
+  (auto-propagate?       nscd-cache-auto-propagate? ;Boolean
+                         (default #t)))
+
+(define %nscd-default-caches
+  ;; Caches that we want to enable by default.  Note that when providing an
+  ;; empty nscd.conf, all caches are disabled.
+  (list (nscd-cache (database 'hosts)
+
+                    ;; Aggressively cache the host name cache to improve
+                    ;; privacy and resilience.
+                    (positive-time-to-live (* 3600 12))
+                    (negative-time-to-live 20)
+                    (persistent? #t))
+
+        (nscd-cache (database 'services)
+
+                    ;; Services are unlikely to change, so we can be even more
+                    ;; aggressive.
+                    (positive-time-to-live (* 3600 24))
+                    (negative-time-to-live 3600)
+                    (check-files? #t)             ;check /etc/services changes
+                    (persistent? #t))))
+
+(define %nscd-default-configuration
+  ;; Default nscd configuration.
+  (nscd-configuration))
+
+(define (nscd.conf-file config)
+  "Return the @file{nscd.conf} configuration file for @var{config}, an
+@code{<nscd-configuration>} object."
+  (define cache->config
+    (match-lambda
+     (($ <nscd-cache> (= symbol->string database)
+                      positive-ttl negative-ttl size check-files?
+                      persistent? shared? max-size propagate?)
+      (string-append "\nenable-cache\t" database "\tyes\n"
+
+                     "positive-time-to-live\t" database "\t"
+                     (number->string positive-ttl) "\n"
+                     "negative-time-to-live\t" database "\t"
+                     (number->string negative-ttl) "\n"
+                     "suggested-size\t" database "\t"
+                     (number->string size) "\n"
+                     "check-files\t" database "\t"
+                     (if check-files? "yes\n" "no\n")
+                     "persistent\t" database "\t"
+                     (if persistent? "yes\n" "no\n")
+                     "shared\t" database "\t"
+                     (if shared? "yes\n" "no\n")
+                     "max-db-size\t" database "\t"
+                     (number->string max-size) "\n"
+                     "auto-propagate\t" database "\t"
+                     (if propagate? "yes\n" "no\n")))))
+
+  (match config
+    (($ <nscd-configuration> log-file debug-level caches)
+     (text-file "nscd.conf"
+                (string-append "\
+# Configuration of libc's name service cache daemon (nscd).\n\n"
+                               (if log-file
+                                   (string-append "logfile\t" log-file)
+                                   "")
+                               "\n"
+                               (if debug-level
+                                   (string-append "debug-level\t"
+                                                  (number->string debug-level))
+                                   "")
+                               "\n"
+                               (string-concatenate
+                                (map cache->config caches)))))))
+
+(define* (nscd-service #:optional (config %nscd-default-configuration)
+                       #:key (glibc (canonical-package glibc)))
+  "Return a service that runs libc's name service cache daemon (nscd) with the
+given @var{config}---an @code{<nscd-configuration>} object."
+  (mlet %store-monad ((nscd.conf (nscd.conf-file config)))
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
              (provision '(nscd))
@@ -388,7 +501,7 @@ the ``message of the day''."
 
              (start #~(make-forkexec-constructor
                        (list (string-append #$glibc "/sbin/nscd")
-                             "-f" "/dev/null" "--foreground")))
+                             "-f" #$nscd.conf "--foreground")))
              (stop #~(make-kill-destructor))
 
              (respawn? #f)))))
