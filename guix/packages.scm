@@ -398,7 +398,10 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
          (define (apply-patch input)
            (let ((patch* (assoc-ref %build-inputs input)))
              (format (current-error-port) "applying '~a'...~%" patch*)
-             (zero? (system* patch "--batch" ,@flags "--input" patch*))))
+
+             ;; Use '--force' so that patches that do not apply perfectly are
+             ;; rejected.
+             (zero? (system* patch "--force" ,@flags "--input" patch*))))
 
          (define (first-file directory)
            ;; Return the name of the first file in DIRECTORY.
