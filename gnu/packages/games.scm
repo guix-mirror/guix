@@ -611,14 +611,21 @@ buffers, and audio capture.")
                     (and (zero? (system* "unzip" source))
                          ;; The actual source is buried a few directories deep.
                          (chdir "irrlicht-1.8.1/source/Irrlicht/")))
-                  ;; No configure script
-                  (alist-delete 'configure %standard-phases)))
+                  (alist-cons-after
+                   'unpack 'apply-patch/mesa-10-fix
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (zero? (system* "patch" "--force" "-p3" "-i"
+                                     (assoc-ref inputs "patch/mesa-10-fix"))))
+                   ;; No configure script
+                   (alist-delete 'configure %standard-phases))))
        #:tests? #f ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("patch/mesa-10-fix" ,(search-patch "irrlicht-mesa-10.patch"))
+       ("unzip" ,unzip)))
     (inputs
-     `(("mesa" ,mesa)))
+     `(("mesa" ,mesa)
+       ("glu" ,glu)))
     (synopsis "3D game engine written in C++")
     (description
      "The Irrlicht Engine is a high performance realtime 3D engine written in
