@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
               ("readline" ,readline)
               ("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("gtkglext" ,gtkglext)
               ("sqlite" ,sqlite)
               ("libcanberra" ,libcanberra)))
