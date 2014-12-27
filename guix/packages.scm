@@ -171,18 +171,21 @@ representation."
 (define-record-type* <search-path-specification>
   search-path-specification make-search-path-specification
   search-path-specification?
-  (variable     search-path-specification-variable)
-  (files        search-path-specification-files)
-  (separator    search-path-specification-separator (default ":"))
-  (file-type    search-path-specification-file-type (default 'directory)))
+  (variable     search-path-specification-variable) ;string
+  (files        search-path-specification-files)    ;list of strings
+  (separator    search-path-specification-separator ;string
+                (default ":"))
+  (file-type    search-path-specification-file-type ;symbol
+                (default 'directory))
+  (file-pattern search-path-specification-file-pattern ;#f | string
+                (default #f)))
 
 (define (search-path-specification->sexp spec)
   "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
 corresponds to the arguments expected by `set-path-environment-variable'."
   (match spec
-    (($ <search-path-specification> variable files separator type)
-     ;; TODO: Add support for PATTERN.
-     `(,variable ,files ,separator ,type #f))))
+    (($ <search-path-specification> variable files separator type pattern)
+     `(,variable ,files ,separator ,type ,pattern))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
