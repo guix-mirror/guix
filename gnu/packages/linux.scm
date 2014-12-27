@@ -292,6 +292,11 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                  (alist-replace
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
+
+       ;; Use '--strip-debug', not '--strip-all', because the latter leads to
+       ;; unloadable modules (due to the lack of a symbol table.)
+       #:strip-flags '("--strip-debug")
+
        #:tests? #f))
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description

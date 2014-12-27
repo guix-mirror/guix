@@ -274,7 +274,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (parallel-tests? #t)
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
-                    (strip-flags ''("--strip-debug"))
+                    (strip-flags ''("--strip-all"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (phases '%standard-phases)
