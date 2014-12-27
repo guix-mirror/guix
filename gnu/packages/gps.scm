@@ -100,17 +100,7 @@ manipulate maps.")
                      (substitute* "Makefile"
                        (("prefix[[:blank:]]*=.*$")
                         (string-append "prefix = " (assoc-ref outputs "out")
-                                       "\n")))
-
-                     ;; Make sure the DocBook XML and XSL files are found.
-                     ;; Note: this is a space-separated list.
-                     (setenv "XML_CATALOG_FILES"
-                             (string-append (assoc-ref inputs "docbook-xml")
-                                            "/xml/dtd/docbook/catalog.xml "
-                                            (assoc-ref inputs "docbook-xsl")
-                                            "/xml/xsl/"
-                                            ,(package-full-name docbook-xsl)
-                                            "/catalog.xml")))
+                                       "\n"))))
                    %standard-phases)
          #:tests? #f))
       (inputs

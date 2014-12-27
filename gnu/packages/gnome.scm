@@ -143,17 +143,6 @@ The gnome-about program helps find which version of GNOME is installed.")
        (base32
         "19n4x25ndzngaciiyd8dd6s2mf9gv6nv3wv27ggns2smm7zkj1nb"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (alist-cons-before
-        'check 'pre-check
-        (lambda* (#:key inputs #:allow-other-keys #:rest args)
-          ;; This is needed, because without it, xmlint etc tries
-          ;; to download docbookx.dtd from the net
-          (setenv "XML_CATALOG_FILES" 
-                  (string-append (assoc-ref inputs "docbook-xml") 
-                                 "/xml/dtd/docbook/catalog.xml")))
-        %standard-phases)))
     (native-inputs
      `(("intltool" ,intltool)
        ("docbook-xml" ,docbook-xml-4.4)
