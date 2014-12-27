@@ -54,8 +54,7 @@ path value is appended."
                             value)))))
               (cons* (search-path-specification
                       (variable "PATH")
-                      (directories '("bin" "sbin"))
-                      (separator ":"))
+                      (files '("bin" "sbin")))
                      (delete-duplicates
                       (append-map package-native-search-paths inputs))))))
 

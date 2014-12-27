@@ -245,10 +245,10 @@ where the OS part is overloaded to denote a specific ABI---into GCC
       (native-search-paths
        (list (search-path-specification
               (variable "CPATH")
-              (directories '("include")))
+              (files '("include")))
              (search-path-specification
               (variable "LIBRARY_PATH")
-              (directories '("lib" "lib64")))))
+              (files '("lib" "lib64")))))
 
       (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
       (synopsis "GNU Compiler Collection")

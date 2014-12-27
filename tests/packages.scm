@@ -335,10 +335,10 @@
                            search-paths)))))))
          (x (list (search-path-specification
                    (variable "GUILE_LOAD_PATH")
-                   (directories '("share/guile/site/2.0")))
+                   (files '("share/guile/site/2.0")))
                   (search-path-specification
                    (variable "GUILE_LOAD_COMPILED_PATH")
-                   (directories '("share/guile/site/2.0")))))
+                   (files '("share/guile/site/2.0")))))
          (a (package (inherit (dummy-package "guile"))
               (build-system s)
               (native-search-paths x)))

@@ -178,7 +178,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
     (native-search-paths
      (list (search-path-specification
             (variable "ACLOCAL_PATH")
-            (directories '("share/aclocal")))))
+            (files '("share/aclocal")))))
     (arguments
      '(#:modules ((guix build gnu-build-system)
                   (guix build utils)

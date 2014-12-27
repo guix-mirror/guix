@@ -234,10 +234,10 @@ GCC that does not target a libc; otherwise, target that libc."
     (search-paths
      (list (search-path-specification
             (variable "CROSS_CPATH")
-            (directories '("include")))
+            (files '("include")))
            (search-path-specification
             (variable "CROSS_LIBRARY_PATH")
-            (directories '("lib" "lib64")))))
+            (files '("lib" "lib64")))))
     (native-search-paths '())))
 
 (define* (cross-libc target

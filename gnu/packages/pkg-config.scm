@@ -44,8 +44,7 @@
    (native-search-paths
     (list (search-path-specification
            (variable "PKG_CONFIG_PATH")
-           (directories '("lib/pkgconfig" "lib64/pkgconfig"
-                          "share/pkgconfig")))))
+           (files '("lib/pkgconfig" "lib64/pkgconfig" "share/pkgconfig")))))
    (home-page "http://www.freedesktop.org/wiki/Software/pkg-config")
    (license gpl2+)
    (synopsis "Helper tool used when compiling applications and libraries")

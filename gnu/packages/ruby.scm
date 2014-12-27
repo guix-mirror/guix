@@ -77,10 +77,9 @@
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
-            (directories
-             (list (string-append "lib/ruby/gems/"
-                                  (version-major+minor version)
-                                  ".0"))))))
+            (files (list (string-append "lib/ruby/gems/"
+                                        (version-major+minor version)
+                                        ".0"))))))
     (synopsis "Programming language interpreter")
     (description "Ruby is a dynamic object-oriented programming language with
 a focus on simplicity and productivity.")

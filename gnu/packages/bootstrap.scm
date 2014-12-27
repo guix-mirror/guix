@@ -409,10 +409,10 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (native-search-paths
      (list (search-path-specification
             (variable "CPATH")
-            (directories '("include")))
+            (files '("include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
-            (directories '("lib" "lib64")))))
+            (files '("lib" "lib64")))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
     (home-page #f)

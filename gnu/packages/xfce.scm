@@ -267,7 +267,7 @@ management D-Bus specification.")
     (native-search-paths
      (list (search-path-specification
             (variable "X_XFCE4_LIB_DIRS")
-            (directories '("lib/xfce4")))))
+            (files '("lib/xfce4")))))
     (home-page "http://www.xfce.org/")
     (synopsis "Xfce desktop panel")
     (description

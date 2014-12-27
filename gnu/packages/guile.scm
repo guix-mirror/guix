@@ -95,7 +95,7 @@
    (native-search-paths
     (list (search-path-specification
            (variable "GUILE_LOAD_PATH")
-           (directories '("share/guile/site")))))
+           (files '("share/guile/site")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
@@ -155,10 +155,10 @@ without requiring the source code to be rewritten.")
    (native-search-paths
     (list (search-path-specification
            (variable "GUILE_LOAD_PATH")
-           (directories '("share/guile/site/2.0")))
+           (files '("share/guile/site/2.0")))
           (search-path-specification
            (variable "GUILE_LOAD_COMPILED_PATH")
-           (directories '("share/guile/site/2.0")))))
+           (files '("share/guile/site/2.0")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description

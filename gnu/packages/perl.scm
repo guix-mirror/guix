@@ -66,7 +66,7 @@
         %standard-phases)))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
-                                (directories '("lib/perl5/site_perl")))))
+                                (files '("lib/perl5/site_perl")))))
     (synopsis "Implementation of the Perl programming language")
     (description
      "Perl 5 is a highly capable, feature-rich programming language with over

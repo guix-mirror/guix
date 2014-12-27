@@ -172,16 +172,16 @@ representation."
   search-path-specification make-search-path-specification
   search-path-specification?
   (variable     search-path-specification-variable)
-  (directories  search-path-specification-directories)
-  (separator    search-path-specification-separator (default ":")))
+  (files        search-path-specification-files)
+  (separator    search-path-specification-separator (default ":"))
+  (file-type    search-path-specification-file-type (default 'directory)))
 
 (define (search-path-specification->sexp spec)
   "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
 corresponds to the arguments expected by `set-path-environment-variable'."
   (match spec
-    (($ <search-path-specification> variable directories separator)
-     ;; TODO: Allow other values of TYPE.  See <http://bugs.gnu.org/18033>.
-     `(,variable ,directories ,separator directory))))
+    (($ <search-path-specification> variable files separator type)
+     `(,variable ,files ,separator ,type))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
