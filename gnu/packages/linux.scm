@@ -196,7 +196,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
-             (system* "patch" "-p1" "--batch"
+             (system* "patch" "-p1" "--force"
                       "-i" (assoc-ref inputs "patch/freedo+gnu"))
 
              (let ((arch (car (string-split system #\-))))
@@ -774,7 +774,7 @@ manpages.")
                  'unpack 'patch
                  (lambda* (#:key inputs #:allow-other-keys)
                    (define (apply-patch file)
-                     (zero? (system* "patch" "-p1" "--batch"
+                     (zero? (system* "patch" "-p1" "--force"
                                      "--input" file)))
 
                    (let ((patch.gz (assoc-ref inputs "patch")))

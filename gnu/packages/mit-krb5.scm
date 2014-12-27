@@ -62,7 +62,7 @@
                  ;; XXX The current patch system does not support unusual
                  ;; source unpack methods, so we have to apply this patch in a
                  ;; non-standard way.
-                 (zero? (system* "patch" "-p1" "--batch" "-i"
+                 (zero? (system* "patch" "-p1" "--force" "-i"
                                  (assoc-ref %build-inputs "patch/init-fix"))))))
         (alist-replace
          'check
