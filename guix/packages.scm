@@ -181,7 +181,8 @@ representation."
 corresponds to the arguments expected by `set-path-environment-variable'."
   (match spec
     (($ <search-path-specification> variable files separator type)
-     `(,variable ,files ,separator ,type))))
+     ;; TODO: Add support for PATTERN.
+     `(,variable ,files ,separator ,type #f))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we

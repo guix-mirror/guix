@@ -291,7 +291,7 @@ matches REGEXP."
 ;;;
 
 (define* (search-path-as-list files input-dirs
-                              #:key (type 'directory))
+                              #:key (type 'directory) pattern)
   "Return the list of directories among FILES of the given TYPE (a symbol as
 returned by 'stat:type') that exist in INPUT-DIRS.  Example:
 
@@ -300,13 +300,26 @@ returned by 'stat:type') that exist in INPUT-DIRS.  Example:
   => (\"/package1/share/emacs/site-lisp\"
       \"/package3/share/emacs/site-lisp\")
 
+When PATTERN is true, it is a regular expression denoting file names to look
+for under the directories designated by FILES.  For example:
+
+  (search-path-as-list '(\"xml\") (list docbook-xml docbook-xsl)
+                       #:type 'regular
+                       #:pattern \"^catalog\\\\.xml$\")
+  => (\"/…/xml/dtd/docbook/catalog.xml\"
+      \"/…/xml/xsl/docbook-xsl-1.78.1/catalog.xml\")
 "
   (append-map (lambda (input)
-                (filter-map (lambda (file)
-                              (let* ((file (string-append input "/" file))
-                                     (stat (stat file #f)))
-                                (and stat (eq? type (stat:type stat))
-                                     file)))
+                (append-map (lambda (file)
+                              (let ((file (string-append input "/" file)))
+                                ;; XXX: By using 'find-files', we implicitly
+                                ;; assume #:type 'regular.
+                                (if pattern
+                                    (find-files file pattern)
+                                    (let ((stat (stat file #f)))
+                                      (if (and stat (eq? type (stat:type stat)))
+                                          (list file)
+                                          '())))))
                             files))
               input-dirs))
 
@@ -319,7 +332,8 @@ returned by 'stat:type') that exist in INPUT-DIRS.  Example:
 (define* (set-path-environment-variable env-var files input-dirs
                                         #:key
                                         (separator ":")
-                                        (type 'directory))
+                                        (type 'directory)
+                                        pattern)
   "Look for each of FILES of the given TYPE (a symbol as returned by
 'stat:type') in INPUT-DIRS.  Set ENV-VAR to a SEPARATOR-separated path
 accordingly.  Example:
@@ -327,9 +341,19 @@ accordingly.  Example:
   (set-path-environment-variable \"PKG_CONFIG\"
                                  '(\"lib/pkgconfig\")
                                  (list package1 package2))
+
+When PATTERN is not #f, it must be a regular expression (really a string)
+denoting file names to look for under the directories designated by FILES:
+
+  (set-path-environment-variable \"XML_CATALOG_FILES\"
+                                 '(\"xml\")
+                                 (list docbook-xml docbook-xsl)
+                                 #:type 'regular
+                                 #:pattern \"^catalog\\\\.xml$\")
 "
   (let* ((path  (search-path-as-list files input-dirs
-                                     #:type type))
+                                     #:type type
+                                     #:pattern pattern))
          (value (list->search-path-as-string path separator)))
     (if (string-null? value)
         (begin
