@@ -458,6 +458,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/vpnc-script.patch			\
+  gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\

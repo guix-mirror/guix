@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl))
 
@@ -36,7 +38,8 @@
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "0d7shccdkyj4mbh2riilslgx3gd28in4c7xpm0lxa1ln8w5g2zdx"))))
+                "0d7shccdkyj4mbh2riilslgx3gd28in4c7xpm0lxa1ln8w5g2zdx"))
+              (patches (list (search-patch "vtk-mesa-10.patch")))))
     (build-system cmake-build-system)
     (arguments
      ;; Build without '-g' to save space.
@@ -46,7 +49,8 @@
      `(("libXt" ,libxt)
        ("xproto" ,xproto)
        ("libX11" ,libx11)
-       ("mesa" ,mesa)))
+       ("mesa" ,mesa)
+       ("glu" ,glu)))
     (home-page "http://www.vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
