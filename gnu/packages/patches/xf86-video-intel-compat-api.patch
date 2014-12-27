@@ -1,0 +1,13 @@
+This patch was copied from Debian.
+
+--- xserver-xorg-video-intel-2.21.15.orig/src/compat-api.h
++++ xserver-xorg-video-intel-2.21.15/src/compat-api.h
+@@ -158,4 +158,8 @@
+ 	if ((d)->pScreen->SourceValidate) (d)->pScreen->SourceValidate(d, x, y, w, h)
+ #endif
+ 
++#if XORG_VERSION_CURRENT >= XORG_VERSION_NUMERIC(1,14,99,2,0)
++#define DamageUnregister(d, dd) DamageUnregister(dd)
++#endif
++
+ #endif

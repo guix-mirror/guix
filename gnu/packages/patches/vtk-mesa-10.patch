@@ -1,0 +1,36 @@
+Fix build against new mesa.  See:
+
+  https://bugs.freedesktop.org/show_bug.cgi?id=83631
+  https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765938
+
+Description: fixes FTBFS against new libjpeg-turbo
+Author: Ondřej Surý <ondrej@debian.org>
+Bug-Debian: https://bugs.debian.org/765938
+Reviewed-By: Anton Gladky <gladk@debian.org>
+Last-Update: 2014-10-22
+
+Index: vtk6-6.1.0+dfsg2/Rendering/OpenGL/vtkOpenGL.h
+===================================================================
+--- vtk6-6.1.0+dfsg2.orig/Rendering/OpenGL/vtkOpenGL.h
++++ vtk6-6.1.0+dfsg2/Rendering/OpenGL/vtkOpenGL.h
+@@ -20,6 +20,7 @@
+ 
+ // To prevent gl.h to include glext.h provided by the system
+ #define GL_GLEXT_LEGACY
++#define GLX_GLEXT_LEGACY
+ #if defined(__APPLE__) && (defined(VTK_USE_CARBON) || defined(VTK_USE_COCOA))
+ # include <OpenGL/gl.h> // Include OpenGL API.
+ #else
+Index: vtk6-6.1.0+dfsg2/Rendering/OpenGL/vtkXOpenGLRenderWindow.cxx
+===================================================================
+--- vtk6-6.1.0+dfsg2.orig/Rendering/OpenGL/vtkXOpenGLRenderWindow.cxx
++++ vtk6-6.1.0+dfsg2/Rendering/OpenGL/vtkXOpenGLRenderWindow.cxx
+@@ -27,7 +27,7 @@
+ 
+ // define GLX_GLXEXT_LEGACY to prevent glx.h to include glxext.h provided by
+ // the system
+-//#define GLX_GLXEXT_LEGACY
++#define GLX_GLXEXT_LEGACY
+ #include "GL/glx.h"
+ 
+ #include "vtkgl.h"

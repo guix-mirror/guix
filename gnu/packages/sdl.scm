@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,8 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))))
+               "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))
+             (patches (list (search-patch "sdl-libx11-1.6.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(;; Explicitly link against Xext because SDL tries to dlopen it and

@@ -387,6 +387,7 @@ files.")
        ("hdf5-include" ,hdf5 "include")
        ("lapack" ,lapack)
        ("mesa" ,mesa)
+       ("glu" ,glu)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
     (arguments
