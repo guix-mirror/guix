@@ -45,6 +45,7 @@
             delete-file-recursively
             find-files
 
+            search-path-as-list
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
