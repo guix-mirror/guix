@@ -180,7 +180,8 @@ representation."
 corresponds to the arguments expected by `set-path-environment-variable'."
   (match spec
     (($ <search-path-specification> variable directories separator)
-     `(,variable ,directories ,separator))))
+     ;; TODO: Allow other values of TYPE.  See <http://bugs.gnu.org/18033>.
+     `(,variable ,directories ,separator directory))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we

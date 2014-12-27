@@ -73,19 +73,21 @@
                                              input-directories)))
 
   (for-each (match-lambda
-             ((env-var (directories ...) separator)
-              (set-path-environment-variable env-var directories
+             ((env-var (files ...) separator type)
+              (set-path-environment-variable env-var files
                                              input-directories
-                                             #:separator separator)))
+                                             #:separator separator
+                                             #:type type)))
             search-paths)
 
   (when native-search-paths
     ;; Search paths for native inputs, when cross building.
     (for-each (match-lambda
-               ((env-var (directories ...) separator)
-                (set-path-environment-variable env-var directories
+               ((env-var (files ...) separator type)
+                (set-path-environment-variable env-var files
                                                native-input-directories
-                                               #:separator separator)))
+                                               #:separator separator
+                                               #:type type)))
               native-search-paths))
 
   #t)

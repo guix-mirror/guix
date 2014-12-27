@@ -290,9 +290,10 @@ matches REGEXP."
 ;;; Search paths.
 ;;;
 
-(define (search-path-as-list sub-directories input-dirs)
-  "Return the list of directories among SUB-DIRECTORIES that exist in
-INPUT-DIRS.  Example:
+(define* (search-path-as-list files input-dirs
+                              #:key (type 'directory))
+  "Return the list of directories among FILES of the given TYPE (a symbol as
+returned by 'stat:type') that exist in INPUT-DIRS.  Example:
 
   (search-path-as-list '(\"share/emacs/site-lisp\" \"share/emacs/24.1\")
                        (list \"/package1\" \"/package2\" \"/package3\"))
@@ -301,12 +302,12 @@ INPUT-DIRS.  Example:
 
 "
   (append-map (lambda (input)
-                (filter-map (lambda (dir)
-                              (let ((dir (string-append input "/"
-                                                        dir)))
-                                (and (directory-exists? dir)
-                                     dir)))
-                            sub-directories))
+                (filter-map (lambda (file)
+                              (let* ((file (string-append input "/" file))
+                                     (stat (stat file #f)))
+                                (and stat (eq? type (stat:type stat))
+                                     file)))
+                            files))
               input-dirs))
 
 (define (list->search-path-as-string lst separator)
@@ -315,16 +316,20 @@ INPUT-DIRS.  Example:
 (define* (search-path-as-string->list path #:optional (separator #\:))
   (string-tokenize path (char-set-complement (char-set separator))))
 
-(define* (set-path-environment-variable env-var sub-directories input-dirs
-                                        #:key (separator ":"))
-  "Look for each of SUB-DIRECTORIES in INPUT-DIRS.  Set ENV-VAR to a
-SEPARATOR-separated path accordingly.  Example:
+(define* (set-path-environment-variable env-var files input-dirs
+                                        #:key
+                                        (separator ":")
+                                        (type 'directory))
+  "Look for each of FILES of the given TYPE (a symbol as returned by
+'stat:type') in INPUT-DIRS.  Set ENV-VAR to a SEPARATOR-separated path
+accordingly.  Example:
 
   (set-path-environment-variable \"PKG_CONFIG\"
                                  '(\"lib/pkgconfig\")
                                  (list package1 package2))
 "
-  (let* ((path  (search-path-as-list sub-directories input-dirs))
+  (let* ((path  (search-path-as-list files input-dirs
+                                     #:type type))
          (value (list->search-path-as-string path separator)))
     (if (string-null? value)
         (begin
