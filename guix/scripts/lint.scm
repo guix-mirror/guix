@@ -29,6 +29,11 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
+  #:use-module (web uri)
+  #:use-module ((guix build download)
+                #:select (open-connection-for-uri))
+  #:use-module (web request)
+  #:use-module (web response)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -201,6 +206,103 @@ the synopsis")
      (check-start-with-package-name synopsis)
      (check-synopsis-length synopsis))))
 
+(define (probe-uri uri)
+  "Probe URI, a URI object, and return two values: a symbol denoting the
+probing status, such as 'http-response' when we managed to get an HTTP
+response from URI, and additional details, such as the actual HTTP response."
+  (define headers
+    '((User-Agent . "GNU Guile")
+      (Accept . "*/*")))
+
+  (let loop ((uri     uri)
+             (visited '()))
+    (match (uri-scheme uri)
+      ((or 'http 'https)
+       (catch #t
+         (lambda ()
+           (let ((port    (open-connection-for-uri uri))
+                 (request (build-request uri #:headers headers)))
+             (define response
+               (dynamic-wind
+                 (const #f)
+                 (lambda ()
+                   (write-request request port)
+                   (force-output port)
+                   (read-response port))
+                 (lambda ()
+                   (close port))))
+
+             (case (response-code response)
+               ((301 302 307)
+                (let ((location (response-location response)))
+                  (if (or (not location) (member location visited))
+                      (values 'http-response response)
+                      (loop location (cons location visited))))) ;follow the redirect
+               (else
+                (values 'http-response response)))))
+         (lambda (key . args)
+           (case key
+             ((bad-header bad-header-component)
+              ;; This can happen if the server returns an invalid HTTP header,
+              ;; as is the case with the 'Date' header at sqlite.org.
+              (values 'invalid-http-response #f))
+             ((getaddrinfo-error system-error gnutls-error)
+              (values key args))
+             (else
+              (apply throw key args))))))
+      (_
+       (values 'not-http #f)))))
+
+(define (check-home-page package)
+  "Emit a warning if PACKAGE has an invalid 'home-page' field, or if that
+'home-page' is not reachable."
+  (let ((uri (and=> (package-home-page package) string->uri)))
+    (cond
+     ((uri? uri)
+      (let-values (((status argument)
+                    (probe-uri uri)))
+        (case status
+          ((http-response)
+           (unless (= 200 (response-code argument))
+             (emit-warning package
+                           (format #f
+                                   (_ "home page ~a not reachable: ~a (~s)")
+                                   (uri->string uri)
+                                   (response-code argument)
+                                   (response-reason-phrase argument))
+                           'home-page)))
+          ((getaddrinfo-error)
+           (emit-warning package
+                         (format #f
+                                 (_ "home page domain not found: ~a")
+                                 (gai-strerror (car argument)))
+                         'package))
+          ((system-error)
+           (emit-warning package
+                         (format #f
+                                 (_ "home page unreachable: ~a")
+                                 (strerror
+                                  (system-error-errno
+                                   (cons status argument))))
+                         'home-page))
+          ((invalid-http-response gnutls-error)
+           ;; Probably a misbehaving server; ignore.
+           #f)
+          ((not-http)                             ;nothing we can do
+           #f)
+          (else
+           (error "internal home-page linter error" status)))))
+     ((not (package-home-page package))
+      (unless (or (string-contains (package-name package) "bootstrap")
+                  (string=? (package-name package) "ld-wrapper"))
+        (emit-warning package
+                      (_ "invalid value for home page")
+                      'home-page)))
+     (else
+      (emit-warning package (format #f (_ "invalid home page URL: ~s")
+                                    (package-home-page package))
+                    'home-page)))))
+
 (define (check-patches package)
   ;; Emit a warning if the patches requires by PACKAGE are badly named.
   (let ((patches   (and=> (package-source package) origin-patches))
@@ -295,6 +397,10 @@ descriptions maintained upstream."
      (name        'patch-filenames)
      (description "Validate file names of patches")
      (check       check-patches))
+   (lint-checker
+     (name        'home-page)
+     (description "Validate home-page URLs")
+     (check       check-home-page))
    (lint-checker
      (name        'synopsis)
      (description "Validate package synopses")

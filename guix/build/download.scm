@@ -28,7 +28,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (url-fetch
+  #:export (open-connection-for-uri
+            url-fetch
             progress-proc
             uri-abbreviation))
 
