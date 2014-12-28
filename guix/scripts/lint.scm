@@ -408,9 +408,15 @@ descriptions maintained upstream."
 
 (define (run-checkers package checkers)
   ;; Run the given CHECKERS on PACKAGE.
-  (for-each (lambda (checker)
-              ((lint-checker-check checker) package))
-            checkers))
+  (let ((tty? (isatty? (current-error-port)))
+        (name (package-full-name package)))
+    (for-each (lambda (checker)
+                (when tty?
+                  (format (current-error-port) "checking ~a [~a]...\r"
+                          name (lint-checker-name checker))
+                  (force-output (current-error-port)))
+                ((lint-checker-check checker) package))
+              checkers)))
 
 
 ;;;
