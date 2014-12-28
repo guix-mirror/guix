@@ -170,6 +170,10 @@ identifier SYSTEM."
                    (ice-9 regex)
                    (srfi srfi-1)
                    (srfi srfi-26))
+
+        ;; Using '--strip-all' leads to a link failure while building libc.
+        #:strip-flags '("--strip-debug")
+
         ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))

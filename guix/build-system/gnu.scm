@@ -275,6 +275,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
                     (strip-flags ''("--strip-all"))
+                    (archive-strip-flags ''("--strip-debug"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (phases '%standard-phases)
@@ -338,6 +339,7 @@ are allowed to refer to."
                   #:patch-shebangs? ,patch-shebangs?
                   #:strip-binaries? ,strip-binaries?
                   #:strip-flags ,strip-flags
+                  #:archive-strip-flags ,archive-strip-flags
                   #:strip-directories ,strip-directories)))
 
   (define guile-for-build
