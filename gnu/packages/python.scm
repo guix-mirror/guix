@@ -358,7 +358,7 @@ API for locking files.")
          "0kzlsbki6q0awf89rc287f3aj8x431lrajf160a70z0ikhnxsfdq"))))
     (build-system python-build-system)
     (arguments '(#:test-target "check"))
-    (home-page "http://code.google.com/m/mock/")
+    (home-page "http://code.google.com/p/mock/")
     (synopsis "Python mocking and patching library for testing")
     (description
      "Mock is a library for testing in Python.  It allows you to replace parts

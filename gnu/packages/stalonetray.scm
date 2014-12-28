@@ -38,7 +38,7 @@
          "1wp8pnlv34w7xizj1vivnc3fkwqq4qgb9dbrsg15598iw85gi8ll"))))
     (inputs `(("libx11" ,libx11)))
     (build-system gnu-build-system)
-    (home-page "stalonetray")
+    (home-page "http://stalonetray.sourceforge.net")
     (synopsis "Standalone freedesktop.org and KDE systray implementation")
     (description
      "Stalonetray is a stand-alone freedesktop.org and KDE system

@@ -88,7 +88,7 @@
               ("libcanberra" ,libcanberra)))
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
-    (home-page "https://gnubg.org")
+    (home-page "http://gnubg.org")
     (synopsis "Backgammon game")
     (description "The GNU backgammon application can be used for playing, analyzing and
 teaching the game.  It has an advanced evaluation engine based on artificial
@@ -283,7 +283,7 @@ a C library, so they can easily be integrated into other programs.")
                                     (string-append "--prefix=" out)))))
                       %standard-phases)))
     (inputs `(("ncurses" ,ncurses)))
-    (home-page "http://wwww.asty.org/cmatrix")
+    (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
     (description "CMatrix simulates the display from \"The Matrix\" and is
 based on the screensaver from the movie's website.  It works with terminal
@@ -304,7 +304,7 @@ asynchronously and at a user-defined speed.")
         (base32
          "1jckpg1qi1vjr3pqs0dnip3rmn0mgklx63xflrpqiv3cx2qlz8kn"))))
     (build-system gnu-build-system)
-    (home-page "http://wwww.gnu.org/software/chess")
+    (home-page "http://www.gnu.org/software/chess")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal
