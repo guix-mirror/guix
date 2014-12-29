@@ -1008,7 +1008,9 @@ autotools system.")
     (description
      "This library provides an interface to shared-memory fences for
 synchronization between the X server and direct-rendering clients.")
-    (license license:x11-style)))
+
+    ;; Same license as libevdev.
+    (license (license:x11-style "file://COPYING"))))
 
 
 (define-public libfontenc
@@ -2182,7 +2184,7 @@ interface to the callers, thus avoiding erroneous ioctls, etc.
 
 The eventual goal is that libevdev wraps all ioctls available to evdev
 devices, thus making direct access unnecessary.")
-    (license license:x11-style)))
+    (license (license:x11-style "file://COPYING"))))
 
 
 (define-public xf86-input-evdev
