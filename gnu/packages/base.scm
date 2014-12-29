@@ -421,9 +421,6 @@ included.")
             ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
             "libc_cv_ssp=no")
 
-      ;; Using '--strip-all' on crt*.o breaks them.
-      #:strip-flags '("--strip-debug")
-
       #:tests? #f                                 ; XXX
       #:phases (alist-cons-before
                 'configure 'pre-configure

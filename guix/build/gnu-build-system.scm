@@ -297,13 +297,7 @@ makefiles."
                 (objcopy-command (if target
                                      (string-append target "-objcopy")
                                      "objcopy"))
-                (strip-flags '("--strip-all"))
-
-                ;; Using '--strip-all' on .a file would remove the archive
-                ;; index, leading to "Archive has no index" errors when
-                ;; linking against them.
-                (archive-strip-flags '("--strip-debug"))
-
+                (strip-flags '("--strip-debug"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
                 #:allow-other-keys)
@@ -359,10 +353,7 @@ makefiles."
                              (or (not debug-output)
                                  (make-debug-file path))
                              (zero? (apply system* strip-command
-                                           (append (if (ar-file? path)
-                                                       archive-strip-flags
-                                                       strip-flags)
-                                                   (list path))))
+                                           (append strip-flags (list path))))
                              (or (not debug-output)
                                  (add-debug-link path))))
                       (const #t)                  ; down
