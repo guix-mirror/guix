@@ -112,265 +112,241 @@ requests."
       (thunk))
     (get-output-string port)))
 
+(define-syntax-rule (with-warnings body ...)
+  (call-with-warnings (lambda () body ...)))
+
 (test-assert "description: not empty"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (description ""))))
-                          (check-description-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (description ""))))
+                        (check-description-style pkg)))
                     "description should not be empty")))
 
 (test-assert "description: does not start with an upper-case letter"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (description "bad description."))))
-                          (check-description-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (description "bad description."))))
+                        (check-description-style pkg)))
                     "description should start with an upper-case letter")))
 
 (test-assert "description: may start with a digit"
   (string-null?
-   (call-with-warnings
-    (lambda ()
-      (let ((pkg (dummy-package "x"
-                                (description "2-component library."))))
-        (check-description-style pkg))))))
+   (with-warnings
+     (let ((pkg (dummy-package "x"
+                  (description "2-component library."))))
+       (check-description-style pkg)))))
 
 (test-assert "description: may start with lower-case package name"
   (string-null?
-   (call-with-warnings
-    (lambda ()
-      (let ((pkg (dummy-package "x"
-                   (description "x is a dummy package."))))
-        (check-description-style pkg))))))
+   (with-warnings
+     (let ((pkg (dummy-package "x"
+                  (description "x is a dummy package."))))
+       (check-description-style pkg)))))
 
 (test-assert "description: two spaces after end of sentence"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (description "Bad. Quite bad."))))
-                          (check-description-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (description "Bad. Quite bad."))))
+                        (check-description-style pkg)))
                     "sentences in description should be followed by two spaces")))
 
 (test-assert "description: end-of-sentence detection with abbreviations"
   (string-null?
-   (call-with-warnings
-    (lambda ()
-      (let ((pkg (dummy-package "x"
-                   (description
-                    "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
-        (check-description-style pkg))))))
+   (with-warnings
+     (let ((pkg (dummy-package "x"
+                  (description
+                   "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
+       (check-description-style pkg)))))
 
 (test-assert "synopsis: not empty"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis ""))))
-                          (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis ""))))
+                        (check-synopsis-style pkg)))
                     "synopsis should not be empty")))
 
 (test-assert "synopsis: does not start with an upper-case letter"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "bad synopsis."))))
-                          (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis "bad synopsis."))))
+                        (check-synopsis-style pkg)))
                     "synopsis should start with an upper-case letter")))
 
 (test-assert "synopsis: may start with a digit"
   (string-null?
-   (call-with-warnings
-    (lambda ()
-      (let ((pkg (dummy-package "x"
-                   (synopsis "5-dimensional frobnicator"))))
-        (check-synopsis-style pkg))))))
+   (with-warnings
+     (let ((pkg (dummy-package "x"
+                  (synopsis "5-dimensional frobnicator"))))
+       (check-synopsis-style pkg)))))
 
 (test-assert "synopsis: ends with a period"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "Bad synopsis."))))
-                          (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis "Bad synopsis."))))
+                        (check-synopsis-style pkg)))
                     "no period allowed at the end of the synopsis")))
 
 (test-assert "synopsis: ends with 'etc.'"
-  (string-null? (call-with-warnings
-                 (lambda ()
-                   (let ((pkg (dummy-package "x"
-                                (synopsis "Foo, bar, etc."))))
-                     (check-synopsis-style pkg))))))
+  (string-null? (with-warnings
+                  (let ((pkg (dummy-package "x"
+                               (synopsis "Foo, bar, etc."))))
+                    (check-synopsis-style pkg)))))
 
 (test-assert "synopsis: starts with 'A'"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "A bad synopŝis"))))
-                          (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis "A bad synopŝis"))))
+                        (check-synopsis-style pkg)))
                     "no article allowed at the beginning of the synopsis")))
 
 (test-assert "synopsis: starts with 'An'"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "An awful synopsis"))))
-                        (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis "An awful synopsis"))))
+                        (check-synopsis-style pkg)))
                     "no article allowed at the beginning of the synopsis")))
 
 (test-assert "synopsis: starts with 'a'"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "a bad synopsis"))))
-                        (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis "a bad synopsis"))))
+                        (check-synopsis-style pkg)))
                     "no article allowed at the beginning of the synopsis")))
 
 (test-assert "synopsis: starts with 'an'"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis "an awful synopsis"))))
-                        (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis "an awful synopsis"))))
+                        (check-synopsis-style pkg)))
                     "no article allowed at the beginning of the synopsis")))
 
 (test-assert "synopsis: too long"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (synopsis (make-string 80 #\x)))))
-                          (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis (make-string 80 #\x)))))
+                        (check-synopsis-style pkg)))
                     "synopsis should be less than 80 characters long")))
 
 (test-assert "synopsis: start with package name"
   (->bool
-   (string-contains (call-with-warnings
-                      (lambda ()
-                        (let ((pkg (dummy-package "x"
-                                     (name "foo")
-                                     (synopsis "foo, a nice package"))))
-                          (check-synopsis-style pkg))))
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (name "foo")
+                                   (synopsis "foo, a nice package"))))
+                        (check-synopsis-style pkg)))
                     "synopsis should not start with the package name")))
 
 (test-assert "synopsis: start with package name prefix"
   (string-null?
-   (call-with-warnings
-    (lambda ()
-      (let ((pkg (dummy-package "arb"
-                   (synopsis "Arbitrary precision"))))
-        (check-synopsis-style pkg))))))
+   (with-warnings
+     (let ((pkg (dummy-package "arb"
+                  (synopsis "Arbitrary precision"))))
+       (check-synopsis-style pkg)))))
 
 (test-assert "synopsis: start with abbreviation"
   (string-null?
-   (call-with-warnings
-    (lambda ()
-      (let ((pkg (dummy-package "uucp"
-                   ;; Same problem with "APL interpreter", etc.
-                   (synopsis "UUCP implementation")
-                   (description "Imagine this is Taylor UUCP."))))
-        (check-synopsis-style pkg))))))
+   (with-warnings
+     (let ((pkg (dummy-package "uucp"
+                  ;; Same problem with "APL interpreter", etc.
+                  (synopsis "UUCP implementation")
+                  (description "Imagine this is Taylor UUCP."))))
+       (check-synopsis-style pkg)))))
 
 (test-assert "inputs: pkg-config is probably a native input"
   (->bool
    (string-contains
-     (call-with-warnings
-       (lambda ()
-         (let ((pkg (dummy-package "x"
-                      (inputs `(("pkg-config" ,pkg-config))))))
-              (check-inputs-should-be-native pkg))))
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (inputs `(("pkg-config" ,pkg-config))))))
+         (check-inputs-should-be-native pkg)))
          "pkg-config should probably be a native input")))
 
 (test-assert "patches: file names"
   (->bool
    (string-contains
-     (call-with-warnings
-       (lambda ()
-         (let ((pkg (dummy-package "x"
-                      (source
-                       (origin
-                        (method url-fetch)
-                        (uri "someurl")
-                        (sha256 "somesha")
-                        (patches (list "/path/to/y.patch")))))))
-              (check-patches pkg))))
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (source
+                     (origin
+                       (method url-fetch)
+                       (uri "someurl")
+                       (sha256 "somesha")
+                       (patches (list "/path/to/y.patch")))))))
+         (check-patches pkg)))
      "file names of patches should start with the package name")))
 
 (test-assert "home-page: wrong home-page"
   (->bool
    (string-contains
-    (call-with-warnings
-     (lambda ()
-       (let ((pkg (package
-                    (inherit (dummy-package "x"))
-                    (home-page #f))))
-         (check-home-page pkg))))
+    (with-warnings
+      (let ((pkg (package
+                   (inherit (dummy-package "x"))
+                   (home-page #f))))
+        (check-home-page pkg)))
     "invalid")))
 
 (test-assert "home-page: invalid URI"
   (->bool
    (string-contains
-    (call-with-warnings
-     (lambda ()
-       (let ((pkg (package
-                    (inherit (dummy-package "x"))
-                    (home-page "foobar"))))
-         (check-home-page pkg))))
+    (with-warnings
+      (let ((pkg (package
+                   (inherit (dummy-package "x"))
+                   (home-page "foobar"))))
+        (check-home-page pkg)))
     "invalid home page URL")))
 
 (test-assert "home-page: host not found"
   (->bool
    (string-contains
-    (call-with-warnings
-     (lambda ()
-       (let ((pkg (package
-                    (inherit (dummy-package "x"))
-                    (home-page "http://does-not-exist"))))
-         (check-home-page pkg))))
+    (with-warnings
+      (let ((pkg (package
+                   (inherit (dummy-package "x"))
+                   (home-page "http://does-not-exist"))))
+        (check-home-page pkg)))
     "domain not found")))
 
 (test-skip (if %http-server-socket 0 1))
 (test-assert "home-page: Connection refused"
   (->bool
    (string-contains
-    (call-with-warnings
-     (lambda ()
-       (let ((pkg (package
-                    (inherit (dummy-package "x"))
-                    (home-page %local-url))))
-         (check-home-page pkg))))
+    (with-warnings
+      (let ((pkg (package
+                   (inherit (dummy-package "x"))
+                   (home-page %local-url))))
+        (check-home-page pkg)))
     "Connection refused")))
 
 (test-skip (if %http-server-socket 0 1))
 (test-equal "home-page: 200"
   ""
-  (call-with-warnings
-   (lambda ()
-     (with-http-server 200
-       (let ((pkg (package
-                    (inherit (dummy-package "x"))
-                    (home-page %local-url))))
-         (check-home-page pkg))))))
+  (with-warnings
+   (with-http-server 200
+     (let ((pkg (package
+                  (inherit (dummy-package "x"))
+                  (home-page %local-url))))
+       (check-home-page pkg)))))
 
 (test-skip (if %http-server-socket 0 1))
 (test-assert "home-page: 404"
   (->bool
    (string-contains
-    (call-with-warnings
-     (lambda ()
-       (with-http-server 404
-         (let ((pkg (package
-                      (inherit (dummy-package "x"))
-                      (home-page %local-url))))
-           (check-home-page pkg)))))
+    (with-warnings
+      (with-http-server 404
+        (let ((pkg (package
+                     (inherit (dummy-package "x"))
+                     (home-page %local-url))))
+          (check-home-page pkg))))
     "not reachable: 404")))
 
 (test-end "lint")
@@ -380,4 +356,5 @@ requests."
 
 ;; Local Variables:
 ;; eval: (put 'with-http-server 'scheme-indent-function 1)
+;; eval: (put 'with-warnings 'scheme-indent-function 0)
 ;; End:
