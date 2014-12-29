@@ -19,6 +19,7 @@
 
 
 (define-module (test-packages)
+  #:use-module (guix tests)
   #:use-module (guix build download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
@@ -104,12 +105,6 @@ requests."
 
 
 (test-begin "lint")
-
-(define-syntax-rule (dummy-package name* extra-fields ...)
-  (package extra-fields ... (name name*) (version "0") (source #f)
-           (build-system gnu-build-system)
-           (synopsis #f) (description #f)
-           (home-page #f) (license #f) ))
 
 (define (call-with-warnings thunk)
   (let ((port (open-output-string)))

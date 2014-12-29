@@ -27,7 +27,8 @@
   #:export (open-connection-for-tests
             random-text
             random-bytevector
-            with-derivation-narinfo))
+            with-derivation-narinfo
+            dummy-package))
 
 ;;; Commentary:
 ;;;
@@ -119,6 +120,15 @@ substituter's viewpoint."
   (call-with-derivation-narinfo drv
     (lambda ()
       body ...)))
+
+(define-syntax-rule (dummy-package name* extra-fields ...)
+  "Return a \"dummy\" package called NAME*, with all its compulsory fields
+initialized with default values, and with EXTRA-FIELDS set as specified."
+  (package extra-fields ...
+           (name name*) (version "0") (source #f)
+           (build-system gnu-build-system)
+           (synopsis #f) (description #f)
+           (home-page #f) (license #f)))
 
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)
