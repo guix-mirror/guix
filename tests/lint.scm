@@ -26,9 +26,81 @@
   #:use-module (guix ui)
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
+  #:use-module (web server)
+  #:use-module (web server http)
+  #:use-module (web response)
+  #:use-module (ice-9 threads)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-64))
 
 ;; Test the linter.
+
+(define %http-server-port
+  ;; TCP port to use for the stub HTTP server.
+  9999)
+
+(define %local-url
+  ;; URL to use for 'home-page' tests.
+  (string-append "http://localhost:" (number->string %http-server-port)
+                 "/foo/bar"))
+
+(define %http-server-socket
+  ;; Socket used by the Web server.
+  (catch 'system-error
+    (lambda ()
+      (let ((sock (socket PF_INET SOCK_STREAM 0)))
+        (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
+        (bind sock
+              (make-socket-address AF_INET INADDR_LOOPBACK
+                                   %http-server-port))
+        sock))
+    (lambda args
+      (let ((err (system-error-errno args)))
+        (format (current-error-port)
+                "warning: cannot run Web server for tests: ~a~%"
+                (strerror err))
+        #f))))
+
+(define (http-write server client response body)
+  "Write RESPONSE."
+  (let* ((response (write-response response client))
+         (port     (response-port response)))
+    (cond
+     ((not body))                                 ;pass
+     (else
+      (write-response-body response body)))
+    (close-port port)
+    (quit #t)                                     ;exit the server thread
+    (values)))
+
+(define-server-impl stub-http-server
+  ;; Stripped-down version of Guile's built-in HTTP server.
+  (@@ (web server http) http-open)
+  (@@ (web server http) http-read)
+  http-write
+  (@@ (web server http) http-close))
+
+(define (call-with-http-server code thunk)
+  "Call THUNK with an HTTP server running and returning CODE on HTTP
+requests."
+  (define (server-body)
+    (define (handle request body)
+      (values (build-response #:code code
+                              #:reason-phrase "Such is life")
+              "Hello, world."))
+
+    (catch 'quit
+      (lambda ()
+        (run-server handle stub-http-server
+                    `(#:socket ,%http-server-socket)))
+      (const #t)))
+
+  (let* ((server (make-thread server-body)))
+    ;; Normally SERVER exits automatically once it has received a request.
+    (thunk)))
+
+(define-syntax-rule (with-http-server code body ...)
+  (call-with-http-server code (lambda () body ...)))
 
 
 (test-begin "lint")
@@ -235,9 +307,82 @@
                         (sha256 "somesha")
                         (patches (list "/path/to/y.patch")))))))
               (check-patches pkg))))
-         "file names of patches should start with the package name")))
+     "file names of patches should start with the package name")))
+
+(test-assert "home-page: wrong home-page"
+  (->bool
+   (string-contains
+    (call-with-warnings
+     (lambda ()
+       (let ((pkg (package
+                    (inherit (dummy-package "x"))
+                    (home-page #f))))
+         (check-home-page pkg))))
+    "invalid")))
+
+(test-assert "home-page: invalid URI"
+  (->bool
+   (string-contains
+    (call-with-warnings
+     (lambda ()
+       (let ((pkg (package
+                    (inherit (dummy-package "x"))
+                    (home-page "foobar"))))
+         (check-home-page pkg))))
+    "invalid home page URL")))
+
+(test-assert "home-page: host not found"
+  (->bool
+   (string-contains
+    (call-with-warnings
+     (lambda ()
+       (let ((pkg (package
+                    (inherit (dummy-package "x"))
+                    (home-page "http://does-not-exist"))))
+         (check-home-page pkg))))
+    "domain not found")))
+
+(test-skip (if %http-server-socket 0 1))
+(test-assert "home-page: Connection refused"
+  (->bool
+   (string-contains
+    (call-with-warnings
+     (lambda ()
+       (let ((pkg (package
+                    (inherit (dummy-package "x"))
+                    (home-page %local-url))))
+         (check-home-page pkg))))
+    "Connection refused")))
+
+(test-skip (if %http-server-socket 0 1))
+(test-equal "home-page: 200"
+  ""
+  (call-with-warnings
+   (lambda ()
+     (with-http-server 200
+       (let ((pkg (package
+                    (inherit (dummy-package "x"))
+                    (home-page %local-url))))
+         (check-home-page pkg))))))
+
+(test-skip (if %http-server-socket 0 1))
+(test-assert "home-page: 404"
+  (->bool
+   (string-contains
+    (call-with-warnings
+     (lambda ()
+       (with-http-server 404
+         (let ((pkg (package
+                      (inherit (dummy-package "x"))
+                      (home-page %local-url))))
+           (check-home-page pkg)))))
+    "not reachable: 404")))
 
 (test-end "lint")
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
+
+;; Local Variables:
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
+;; End:

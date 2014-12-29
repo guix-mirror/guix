@@ -42,7 +42,8 @@
             check-description-style
             check-inputs-should-be-native
             check-patches
-            check-synopsis-style))
+            check-synopsis-style
+            check-home-page))
 
 
 ;;;
