@@ -20,6 +20,7 @@
 
 (define-module (guix scripts lint)
   #:use-module (guix base32)
+  #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix ui)
@@ -31,12 +32,14 @@
   #:use-module (ice-9 format)
   #:use-module (web uri)
   #:use-module ((guix build download)
-                #:select (open-connection-for-uri))
+                #:select (maybe-expand-mirrors
+                          open-connection-for-uri))
   #:use-module (web request)
   #:use-module (web response)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:export (guix-lint
             check-description-style
@@ -254,45 +257,53 @@ response from URI, and additional details, such as the actual HTTP response."
       (_
        (values 'not-http #f)))))
 
+(define (validate-uri uri package field)
+  "Return #t if the given URI can be reached, otherwise emit a
+warning for PACKAGE mentionning the FIELD."
+  (let-values (((status argument)
+                (probe-uri uri)))
+    (case status
+      ((http-response)
+       (unless (= 200 (response-code argument))
+         (emit-warning package
+                       (format #f
+                               (_ "URI ~a not reachable: ~a (~s)")
+                               (uri->string uri)
+                               (response-code argument)
+                               (response-reason-phrase argument))
+                       field)))
+      ((getaddrinfo-error)
+       (emit-warning package
+                     (format #f
+                             (_ "URI ~a domain not found: ~a")
+                             (uri->string uri)
+                             (gai-strerror (car argument)))
+                     field))
+      ((system-error)
+       (emit-warning package
+                     (format #f
+                             (_ "URI ~a unreachable: ~a")
+                             (uri->string uri)
+                             (strerror
+                              (system-error-errno
+                               (cons status argument))))
+                     field))
+      ((invalid-http-response gnutls-error)
+       ;; Probably a misbehaving server; ignore.
+       #f)
+      ((not-http)                             ;nothing we can do
+       #f)
+      (else
+       (error "internal linter error" status)))
+    #t))
+
 (define (check-home-page package)
   "Emit a warning if PACKAGE has an invalid 'home-page' field, or if that
 'home-page' is not reachable."
   (let ((uri (and=> (package-home-page package) string->uri)))
     (cond
      ((uri? uri)
-      (let-values (((status argument)
-                    (probe-uri uri)))
-        (case status
-          ((http-response)
-           (unless (= 200 (response-code argument))
-             (emit-warning package
-                           (format #f
-                                   (_ "home page ~a not reachable: ~a (~s)")
-                                   (uri->string uri)
-                                   (response-code argument)
-                                   (response-reason-phrase argument))
-                           'home-page)))
-          ((getaddrinfo-error)
-           (emit-warning package
-                         (format #f
-                                 (_ "home page domain not found: ~a")
-                                 (gai-strerror (car argument)))
-                         'package))
-          ((system-error)
-           (emit-warning package
-                         (format #f
-                                 (_ "home page unreachable: ~a")
-                                 (strerror
-                                  (system-error-errno
-                                   (cons status argument))))
-                         'home-page))
-          ((invalid-http-response gnutls-error)
-           ;; Probably a misbehaving server; ignore.
-           #f)
-          ((not-http)                             ;nothing we can do
-           #f)
-          (else
-           (error "internal home-page linter error" status)))))
+      (validate-uri uri package 'home-page))
      ((not (package-home-page package))
       (unless (or (string-contains (package-name package) "bootstrap")
                   (string=? (package-name package) "ld-wrapper"))
@@ -375,6 +386,21 @@ descriptions maintained upstream."
                  (location->string loc) (package-full-name package)
                  (fill-paragraph (escape-quotes upstream) 77 7)))))))
 
+(define (check-source package)
+  "Emit a warning if PACKAGE has an invalid 'source' field, or if that
+'source' is not reachable."
+  (let ((origin (package-source package)))
+    (when (and origin
+               (eqv? (origin-method origin) url-fetch))
+      (let* ((strings (origin-uri origin))
+             (uris (if (list? strings)
+                       (map string->uri strings)
+                       (list (string->uri strings)))))
+       (for-each
+         (cut validate-uri <> package 'source)
+         (append-map (cut maybe-expand-mirrors <> %mirrors) uris))))))
+
+
 
 ;;;
 ;;; List of checkers.
@@ -402,6 +428,10 @@ descriptions maintained upstream."
      (name        'home-page)
      (description "Validate home-page URLs")
      (check       check-home-page))
+   (lint-checker
+     (name        'source)
+     (description "Validate source URLs")
+     (check       check-source))
    (lint-checker
      (name        'synopsis)
      (description "Validate package synopses")
