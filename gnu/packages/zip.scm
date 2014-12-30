@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (guix build-system perl)
