@@ -339,6 +339,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-dummy-man.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt1.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt2.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt3.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt4.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt5.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \

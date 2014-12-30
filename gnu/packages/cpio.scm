@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 (define-module (gnu packages cpio)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -34,8 +36,19 @@
              (sha256
               (base32
                "1gavgpzqwgkpagjxw72xgxz52y1ifgz0ckqh8g7cckz7jvyhp0mv"))
-             (patches (list (search-patch "cpio-gets-undeclared.patch")))))
+             (patches (list (search-patch "cpio-CVE-2014-9112-pt1.patch")
+                            (search-patch "cpio-CVE-2014-9112-pt2.patch")
+                            (search-patch "cpio-CVE-2014-9112-pt3.patch")
+                            (search-patch "cpio-CVE-2014-9112-pt4.patch")
+                            (search-patch "cpio-CVE-2014-9112-pt5.patch")
+                            (search-patch "cpio-gets-undeclared.patch")))))
     (build-system gnu-build-system)
+
+    ;; FIXME: autoconf is needed to run autom4te, to update to test suite
+    ;;        after the CVE-2014-9112 patches.  Remove this when cpio is
+    ;;        updated to post-2.11.
+    (native-inputs `(("autoconf" ,autoconf)))
+
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")
     (description
