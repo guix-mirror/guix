@@ -1,0 +1,23 @@
+Removes references to mibstore.h and miInitializeBackingStore, which
+have been removed from xorg-server.  Zack Rusin <zackr@vmware.com>
+wrote: "It was a noop for at least 5 years and it has been removed."
+See: http://patches.openembedded.org/patch/46133/
+
+--- xf86-video-ark-0.7.5/src/ark_driver.c.~1~	2012-07-17 00:51:36.000000000 -0400
++++ xf86-video-ark-0.7.5/src/ark_driver.c	2014-12-19 00:23:13.028931734 -0500
+@@ -39,7 +39,6 @@
+ #include "compiler.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+-#include "mibstore.h"
+ #include "fb.h"
+ #include "ark.h"
+ 
+@@ -538,7 +537,6 @@
+ 
+ 	fbPictureInit (pScreen, 0, 0);
+ 
+-	miInitializeBackingStore(pScreen);
+ 	xf86SetBackingStore(pScreen);
+ 
+ 	if (!pARK->NoAccel) {

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +43,7 @@
                    (substitute* "testit.sh"   ; don't expect old libtool names
                      (("lt-test1") "test1")))
                  %standard-phases)))
-    (home-page #f)
+    (home-page "http://rpm5.org/files/popt/")
     (synopsis "Command line option parsing library")
     (description
      "This is the popt(3) command line option parsing library.  While it is

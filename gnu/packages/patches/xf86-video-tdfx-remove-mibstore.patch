@@ -1,0 +1,26 @@
+Removes references to mibstore.h and miInitializeBackingStore, which
+have been removed from xorg-server.  Zack Rusin <zackr@vmware.com>
+wrote: "It was a noop for at least 5 years and it has been removed."
+See: http://patches.openembedded.org/patch/46133/
+
+--- xf86-video-tdfx-1.4.5/src/tdfx_driver.c.~1~	2012-07-17 01:21:16.000000000 -0400
++++ xf86-video-tdfx-1.4.5/src/tdfx_driver.c	2014-12-19 01:36:42.762798424 -0500
+@@ -62,10 +62,6 @@
+ 
+ #include "compiler.h"
+ 
+-/* Drivers using the mi implementation of backing store need: */
+-
+-#include "mibstore.h"
+-
+ /* All drivers using the vgahw module need this */
+ /* This driver needs to be modified to not use vgaHW for multihead operation */
+ #include "vgaHW.h"
+@@ -2373,7 +2369,6 @@
+     }
+   }
+ 
+-  miInitializeBackingStore(pScreen);
+   xf86SetBackingStore(pScreen);
+   xf86SetSilkenMouse(pScreen);
+ 

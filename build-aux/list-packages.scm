@@ -27,6 +27,8 @@ exec guile -l "$0"                              \
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix gnu-maintenance)
+  #:use-module ((guix download) #:select (%mirrors))
+  #:use-module ((guix build download) #:select (maybe-expand-mirrors))
   #:use-module (gnu packages)
   #:use-module (sxml simple)
   #:use-module (sxml fold)
@@ -107,9 +109,12 @@ decreasing, is 1."
          "http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/"
          (basename patch)))
        ((? origin? patch)
-        (match (origin-uri patch)
-          ((? string? uri) uri)
-          ((head . tail) head)))))
+        (uri->string
+         (first (maybe-expand-mirrors (string->uri
+                                       (match (origin-uri patch)
+                                         ((? string? uri) uri)
+                                         ((head . tail) head)))
+                                      %mirrors))))))
 
     (define patch-name
       (match-lambda

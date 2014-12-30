@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +57,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.8.10")
+    (version "1.8.12")
     (source (origin
              (method url-fetch)
              (uri
@@ -64,7 +65,7 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "13mgvwigm931r8n9363imnn0vn6dvc0m322k3p8fs5c8nvyqggqh"))
+               "07jhcalg00i2rx5zrgk73rg0vm7lzi5q5z2gscrbl999ipr2h569"))
              (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -118,7 +119,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.40.2")
+   (version "2.42.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -126,7 +127,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0ykcf99mhpkza3xwa3k79vgfml8mqiac9044802yi5q8jpr8mzz8"))
+              "16pqvikrps1fvwwqvk0qi4a13mfg7gw6w5qfhk7bhi8f51jhhgwg"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
                            (search-patch "glib-tests-prlimit.patch")
@@ -164,7 +165,12 @@ shared NFS home directories.")
                                  "glib/tests/utils.c"
                                  "tests/spawn-test.c")
                     (("/bin/sh")
-                     (string-append (assoc-ref inputs "bash") "/bin/sh"))))
+                     (string-append (assoc-ref inputs "bash") "/bin/sh")))
+
+                  ;; Disable a test that requires dbus.
+                  (substitute* "gio/tests/gdbus-serialization.c"
+                    (("g_test_add_func \\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
+                     (string-append "/* " all " */"))))
                 %standard-phases)
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
@@ -334,7 +340,7 @@ translated.")
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.100.2")
+    (version "0.102")
     (source (origin
              (method url-fetch)
              (uri
@@ -342,7 +348,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1ibav91yg70f2l3l18cr0hf4mna1h9d4mrg0c60w4l8zjbd45fx5"))))
+               "177j5p2vrvpmzk2xrrj6akn73kvpbvnmsjvlmca9l55qbdcfsr39"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
@@ -387,14 +393,15 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.37.7")
+    (version "2.42.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/glibmm/2.37/glibmm-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/glibmm/"
+                                 (version-major+minor version)
+                                 "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "0mms4yl5izsya1135772z4jkb184ss86x0wlg6dm7yvwxvb6bjlw"))))
+               "15rk3az8jh3rdwlc3lxjljbnh60drj3ka9574zd39lkqfgcq6l4q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before

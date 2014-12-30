@@ -130,7 +130,7 @@ following the mouse.")
 (define-public pixman
   (package
     (name "pixman")
-    (version "0.32.4")
+    (version "0.32.6")
     (source
       (origin
         (method url-fetch)
@@ -140,7 +140,7 @@ following the mouse.")
                ".tar.gz"))
         (sha256
           (base32
-           "113ycngcssbrps217dyajq96hm9xghsfch82h14yffla1r1fviw0"))))
+           "0129g4zdrw5hif5783li7rzcr4vpbc2cfia91azxmsk0h0xx3zix"))))
     (build-system gnu-build-system)
     (inputs
       `(("libpng" ,libpng)
@@ -158,7 +158,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.46")
+    (version "2.4.58")
     (source
       (origin
         (method url-fetch)
@@ -168,7 +168,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1wah4qmrrcv0gnx65lhrlxb6gprxch92wy8lhxv6102fml6k5krk"))))
+            "1pb5lfb3kh36p9axq620daclq68rqb3mhzxpz0pb18y9p7kglmdi"))))
     (build-system gnu-build-system)
     (inputs
       `(("libpciaccess" ,libpciaccess)

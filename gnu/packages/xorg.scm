@@ -125,17 +125,17 @@ autotools system.")
 (define-public bdftopcf
   (package
     (name "bdftopcf")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/bdftopcf-"
+               "mirror://xorg/individual/app/bdftopcf-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02hx981f7jfwylxj21s91yvv4h597nqqzz3vd6ar81zyn84b944w"))))
+            "1617zmgnx50n7vxlqyj84fl7vnk813jjqmi6jpigyz1xp9br1xga"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxfont" ,libxfont)))
@@ -155,7 +155,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/bigreqsproto-"
+               "mirror://xorg/individual/proto/bigreqsproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -177,7 +177,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/compositeproto-"
+               "mirror://xorg/individual/proto/compositeproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -202,7 +202,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/damageproto-"
+               "mirror://xorg/individual/proto/damageproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -224,7 +224,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/dmxproto-"
+               "mirror://xorg/individual/proto/dmxproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -241,17 +241,17 @@ autotools system.")
 (define-public dri2proto
   (package
     (name "dri2proto")
-    (version "2.6")
+    (version "2.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/dri2proto-"
+               "mirror://xorg/individual/proto/dri2proto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02drlfqvjm2q7dvkkwli3fs2crb6rdb3kyd13vwx7z0rijrc10md"))))
+            "015az1vfdqmil1yay5nlsmpf6cf7vcbpslxjb72cfkzlvrv59dgr"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
@@ -259,7 +259,6 @@ autotools system.")
     (license license:x11)))
 
 
-;; not part of X11R7.7, required for newer versions of mesa
 (define-public dri3proto
   (package
     (name "dri3proto")
@@ -290,7 +289,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/encodings-"
+               "mirror://xorg/individual/font/encodings-"
                version
                ".tar.bz2"))
         (sha256
@@ -315,7 +314,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-100dpi-"
+               "mirror://xorg/individual/font/font-adobe-100dpi-"
                version
                ".tar.bz2"))
         (sha256
@@ -347,7 +346,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-75dpi-"
+               "mirror://xorg/individual/font/font-adobe-75dpi-"
                version
                ".tar.bz2"))
         (sha256
@@ -383,7 +382,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-alias-"
+               "mirror://xorg/individual/font/font-alias-"
                version
                ".tar.bz2"))
         (sha256
@@ -405,7 +404,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-arabic-misc-"
+               "mirror://xorg/individual/font/font-arabic-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -442,7 +441,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-cronyx-cyrillic-"
+               "mirror://xorg/individual/font/font-cronyx-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -475,7 +474,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-dec-misc-"
+               "mirror://xorg/individual/font/font-dec-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -504,7 +503,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-isas-misc-"
+               "mirror://xorg/individual/font/font-isas-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -534,7 +533,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-micro-misc-"
+               "mirror://xorg/individual/font/font-micro-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -560,7 +559,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-cyrillic-"
+               "mirror://xorg/individual/font/font-misc-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -586,7 +585,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-ethiopic-"
+               "mirror://xorg/individual/font/font-misc-ethiopic-"
                version
                ".tar.bz2"))
         (sha256
@@ -615,7 +614,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-misc-"
+               "mirror://xorg/individual/font/font-misc-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -645,7 +644,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-mutt-misc-"
+               "mirror://xorg/individual/font/font-mutt-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -671,7 +670,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-schumacher-misc-"
+               "mirror://xorg/individual/font/font-schumacher-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -701,7 +700,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-screen-cyrillic-"
+               "mirror://xorg/individual/font/font-screen-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -727,7 +726,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-sony-misc-"
+               "mirror://xorg/individual/font/font-sony-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -753,7 +752,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-sun-misc-"
+               "mirror://xorg/individual/font/font-sun-misc-"
                version
                ".tar.bz2"))
         (sha256
@@ -779,7 +778,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-util-"
+               "mirror://xorg/individual/font/font-util-"
                version
                ".tar.bz2"))
         (sha256
@@ -801,7 +800,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-winitzki-cyrillic-"
+               "mirror://xorg/individual/font/font-winitzki-cyrillic-"
                version
                ".tar.bz2"))
         (sha256
@@ -827,7 +826,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-xfree86-type1-"
+               "mirror://xorg/individual/font/font-xfree86-type1-"
                version
                ".tar.bz2"))
         (sha256
@@ -847,17 +846,17 @@ autotools system.")
 (define-public fontsproto
   (package
     (name "fontsproto")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/fontsproto-"
+               "mirror://xorg/individual/proto/fontsproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ab8mbqxdwvdz4k5x4xb9c4n5w7i1xw276cbpk4z7a1nlpjrg746"))))
+            "1f2sdsd74y34nnaf4m1zlcbhyv8xb6irnisc99f84c4ivnq4d415"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -869,17 +868,17 @@ autotools system.")
 (define-public glproto
   (package
     (name "glproto")
-    (version "1.4.15")
+    (version "1.4.17")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/glproto-"
+               "mirror://xorg/individual/proto/glproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0wf1vq9g4pyzahb23ywx554pm5bpax49lz188fk6m5p8wbmmc0wr"))))
+            "0h5ykmcddwid5qj6sbrszgkcypwn3mslvswxpgy2n2iixnyr9amd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -891,17 +890,17 @@ autotools system.")
 (define-public iceauth
   (package
     (name "iceauth")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/iceauth-"
+               "mirror://xorg/individual/app/iceauth-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1aq6v671s2x5rc6zn0rgxb4wddg4vq94mckw3cpwl7ccrjjvd5hl"))))
+            "1x72y99dxf2fxnlyf0yrf9yzd8xzimxshy6l8mprwhrv6lvhi6dx"))))
     (build-system gnu-build-system)
     (inputs
       `(("libice" ,libice)))
@@ -916,17 +915,17 @@ autotools system.")
 (define-public inputproto
   (package
     (name "inputproto")
-    (version "2.2")
+    (version "2.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/inputproto-"
+               "mirror://xorg/individual/proto/inputproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1c5wqamfsd8g5i8kya5pjfmcac8q5zq1l3vclh6p96f24nmicxfy"))))
+            "1lf1jlxp0fc8h6fjdffhd084dqab94966l1zm3rwwsis0mifwiss"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -943,7 +942,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/kbproto-"
+               "mirror://xorg/individual/proto/kbproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -964,17 +963,17 @@ autotools system.")
 (define-public libdmx
   (package
     (name "libdmx")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libdmx-"
+               "mirror://xorg/individual/lib/libdmx-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1fiq73sfxcbyjval118ialwrzxhzb08xsxmg69adcs47i9j0p1x7"))))
+            "00djlxas38kbsrglcmwmxfbmxjdchlbj95pqwjvdg8jn5rns6zf9"))))
     (build-system gnu-build-system)
     (inputs
       `(("xextproto" ,xextproto)
@@ -989,20 +988,45 @@ autotools system.")
     (license license:x11)))
 
 
+(define-public libxshmfence
+  (package
+    (name "libxshmfence")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/lib/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gnfb1z8sbbdc3xpz1zmm94lv7yvfh4kvip9s5pj37ya4llxphnv"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("xproto" ,xproto)))
+    (home-page "http://xorg.freedesktop.org")
+    (synopsis "X shared memory fences")
+    (description
+     "This library provides an interface to shared-memory fences for
+synchronization between the X server and direct-rendering clients.")
+
+    ;; Same license as libevdev.
+    (license (license:x11-style "file://COPYING"))))
+
+
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libfontenc-"
+               "mirror://xorg/individual/lib/libfontenc-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0zq1483xy31sssq0h3xxf8y1v4q14cp8rv164ayn7fsn30pq2wny"))))
+            "0qign0ivqk166l9yfd51gw9lbhgs718bcrmvc40yicjr6gnyz959"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
@@ -1018,17 +1042,17 @@ autotools system.")
 (define-public libfs
   (package
     (name "libfs")
-    (version "1.0.4")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libFS-"
+               "mirror://xorg/individual/lib/libFS-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "05c3bqgn5m7j4kx8wvy0p36faq6f9jv5yq12m6033m4lflg7cwvh"))))
+            "1mxfsvj9m3pn8cdkcn4kg190zp665mf4pv0083g6xykvsgxzq1wh"))))
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
@@ -1045,17 +1069,17 @@ autotools system.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libpciaccess-"
+               "mirror://xorg/individual/lib/libpciaccess-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "11509lkgd5j4g5wy0g13z4sf31h50hqx3jfwb2i4q6k98pv6iar7"))))
+            "06fy43n3c450h7xqpn3094bnfn7ca1mrq3i856y8kyqa0lmqraxb"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)))
@@ -1075,7 +1099,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://xcb.freedesktop.org/dist/libpthread-stubs-"
+               "mirror://xorg/individual/xcb/libpthread-stubs-"
                version
                ".tar.bz2"))
         (sha256
@@ -1092,17 +1116,17 @@ autotools system.")
 (define-public libsm
   (package
     (name "libsm")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libSM-"
+               "mirror://xorg/individual/lib/libSM-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "07bzi6xwlhq36f60qfspjbz0qjj7zcgayi1vp4ihgx34kib1vhck"))))
+            "1gc7wavgs435g9qkp9jw4lhmaiq6ip9llv49f054ad6ryp4sib0b"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libice" ,libice))) ; SMlib.h includes ICElib.h
@@ -1125,7 +1149,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libWindowsWM-"
+               "mirror://xorg/individual/lib/libWindowsWM-"
                version
                ".tar.bz2"))
         (sha256
@@ -1148,17 +1172,17 @@ autotools system.")
 (define-public libxcomposite
   (package
     (name "libxcomposite")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXcomposite-"
+               "mirror://xorg/individual/lib/libXcomposite-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1b8sniijb85v4my6v30ma9yqnwl4hkclci9l1hqxnipfyhl4sa9j"))))
+            "0y21nfpa5s8qmx0srdlilyndas3sgl0c6rc26d5fx2vx436m1qpd"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xcomposite.pc refers to all these.
@@ -1182,7 +1206,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXdmcp-"
+               "mirror://xorg/individual/lib/libXdmcp-"
                version
                ".tar.bz2"))
         (sha256
@@ -1202,17 +1226,17 @@ autotools system.")
 (define-public libxft
   (package
     (name "libxft")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXft-"
+               "mirror://xorg/individual/lib/libXft-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1gdv6559cdz1lfw73x7wsvax1fkvphmayrymprljhyyb5nwk5kkz"))))
+            "0k6wzi5rzs0d0n338ms8n8lfyhq914hw4yl2j7553wqxfqjci8zm"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xft.pc refers to all these.
@@ -1238,7 +1262,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxkbfile-"
+               "mirror://xorg/individual/lib/libxkbfile-"
                version
                ".tar.bz2"))
         (sha256
@@ -1258,17 +1282,17 @@ autotools system.")
 (define-public libxmu
   (package
     (name "libxmu")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXmu-"
+               "mirror://xorg/individual/lib/libXmu-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1pbym8rrznxqd60zwf7w4xpf27sa72bky2knginqcfnca32q343h"))))
+            "02wx6jw7i0q5qwx87yf94fsn3h0xpz1k7dz1nkwfwm1j71ydqvkm"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
@@ -1285,17 +1309,17 @@ autotools system.")
 (define-public libxpm
   (package
     (name "libxpm")
-    (version "3.5.10")
+    (version "3.5.11")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXpm-"
+               "mirror://xorg/individual/lib/libXpm-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0dd737ch4q9gr151wff1m3q2j7wf3pip4y81601xdrsh8wipxnx6"))))
+            "07041q4k8m4nirzl7lrqn8by2zylx0xvh6n0za301qqs3njszgf5"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gnu-gettext)
@@ -1313,17 +1337,17 @@ autotools system.")
 (define-public libxres
   (package
     (name "libxres")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXres-"
+               "mirror://xorg/individual/lib/libXres-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1478pm70gdi6l70r4jpkyyg2am9wv6xh53z9ibwq5cg84p4n31pz"))))
+            "1rd0bzn67cpb2qkc946gch2183r4bdjfhs6cpqbipy47m9a91296"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
@@ -1346,7 +1370,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXScrnSaver-"
+               "mirror://xorg/individual/lib/libXScrnSaver-"
                version
                ".tar.bz2"))
         (sha256
@@ -1369,17 +1393,17 @@ autotools system.")
 (define-public libxxf86dga
   (package
     (name "libxxf86dga")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXxf86dga-"
+               "mirror://xorg/individual/lib/libXxf86dga-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
+            "0zn7aqj8x0951d8zb2h2andldvwkzbsc4cs7q023g6nzq6vd9v4f"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xf86dgaproto" ,xf86dgaproto)))
@@ -1402,7 +1426,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/luit-"
+               "mirror://xorg/individual/app/luit-"
                version
                ".tar.bz2"))
         (sha256
@@ -1425,17 +1449,17 @@ autotools system.")
 (define-public makedepend
   (package
     (name "makedepend")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/makedepend-"
+               "mirror://xorg/individual/util/makedepend-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1zpp2b9dfvlnfj2i1mzdyn785rpl7vih5lap7kcpiv80xspbhmmb"))))
+            "09alw99r6y2bbd1dc786n3jfgv4j520apblyn7cw6jkjydshba7p"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
@@ -1449,17 +1473,17 @@ autotools system.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/mkfontscale-"
+               "mirror://xorg/individual/app/mkfontscale-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1539h3ws66vcql6sf2831bcs0r4d9b05lcgpswkw33lvcxighmff"))))
+            "0cdpn1ii2iw1vg2ga4w62acrh78gzgf0vza4g8wx5kkp4jcifh14"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
@@ -1474,7 +1498,6 @@ autotools system.")
     (license license:x11)))
 
 
-;; not part of X11R7.7, required for newer versions of mesa
 (define-public presentproto
   (package
     (name "presentproto")
@@ -1496,7 +1519,6 @@ autotools system.")
     (license (license:x11-style "file://presentproto.h"
                                 "See 'presentproto.h' in the distribution."))))
 
-;; The package is missing from X11R7.7.
 (define-public printproto
   (package
     (name "printproto")
@@ -1522,17 +1544,17 @@ autotools system.")
 (define-public randrproto
   (package
     (name "randrproto")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/randrproto-"
+               "mirror://xorg/individual/proto/randrproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0wfwcq85wbm0g5r0snc7prgki1wi3kxrxhcxinyr54n45ihh03fr"))))
+            "1kq9h93qdnniiivry8jmhlgwn9fbx9xp5r9cmzfihlx5cs62xi45"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -1549,7 +1571,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/recordproto-"
+               "mirror://xorg/individual/proto/recordproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1571,7 +1593,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/renderproto-"
+               "mirror://xorg/individual/proto/renderproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1593,7 +1615,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/resourceproto-"
+               "mirror://xorg/individual/proto/resourceproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1615,7 +1637,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/scrnsaverproto-"
+               "mirror://xorg/individual/proto/scrnsaverproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1632,17 +1654,17 @@ autotools system.")
 (define-public sessreg
   (package
     (name "sessreg")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/sessreg-"
+               "mirror://xorg/individual/app/sessreg-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0lifgjxdvc6lwyjk90slddnr12fsv88ldy6qhklr5av409cfwd47"))))
+            "1hy4wvgawajf4qw2k51fkcjzxw0drx60ydzpmqhj7k1g4z3cqahf"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
@@ -1662,7 +1684,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/setxkbmap-"
+               "mirror://xorg/individual/app/setxkbmap-"
                version
                ".tar.bz2"))
         (sha256
@@ -1694,7 +1716,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/smproxy-"
+               "mirror://xorg/individual/app/smproxy-"
                version
                ".tar.bz2"))
         (sha256
@@ -1715,17 +1737,17 @@ autotools system.")
 (define-public util-macros
   (package
     (name "util-macros")
-    (version "1.17")
+    (version "1.19.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/util-macros-"
+               "mirror://xorg/individual/util/util-macros-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1vbmrcn5n3wp4pyw0n4c3pyvzlc4yf7jzgngavfdq5zwfbgfsybx"))))
+            "1fnhpryf55l0yqajxn0cxan3kvsjzi67nlanz8clwqzf54cb2d98"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -1753,17 +1775,17 @@ autotools system.")
 (define-public videoproto
   (package
     (name "videoproto")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/videoproto-"
+               "mirror://xorg/individual/proto/videoproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0nk3i6gwkqq1w8zwn7bxz344pi1dwcjrmf6hr330h7hxjcj6viry"))))
+            "1dnlkd9nb0m135lgd6hd61vc29sdyarsyya8aqpx7z10p261dbld"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -1780,7 +1802,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/windowswmproto-"
+               "mirror://xorg/individual/proto/windowswmproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1802,7 +1824,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/x11perf-"
+               "mirror://xorg/individual/app/x11perf-"
                version
                ".tar.bz2"))
         (sha256
@@ -1825,17 +1847,17 @@ autotools system.")
 (define-public xauth
   (package
     (name "xauth")
-    (version "1.0.7")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xauth-"
+               "mirror://xorg/individual/app/xauth-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1382wdfiakgckbw1xxavzh1nm34q21b1zzy96qp7ws66xc48rxw4"))))
+            "13y2invb0894b1in03jbglximbz6v31y2kr4yjjgica8xciibkjn"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -1844,6 +1866,10 @@ autotools system.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
+
+    ;; FIXME: The test suite needs http://liw.fi/cmdtest/
+    (arguments `(#:tests? #f))
+
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -1853,24 +1879,23 @@ autotools system.")
 (define-public xbacklight
   (package
     (name "xbacklight")
-    (version "1.1.2")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xbacklight-"
+               "mirror://xorg/individual/app/xbacklight-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02b5jfys2msla2yvg5s0knzyxg2104r25czkwd49i8g8kp804bxg"))))
+            "0arnd1j8vzhzmw72mqhjjcb2qwcbs9qphsy3ps593ajyld8wzxhp"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libx11" ,libx11)
-        ("libxrandr" ,libxrandr)
-        ("libxrender" ,libxrender)))
+     `(("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -1885,7 +1910,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xbitmaps-"
+               "mirror://xorg/individual/data/xbitmaps-"
                version
                ".tar.bz2"))
         (sha256
@@ -1907,7 +1932,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://xcb.freedesktop.org/dist/xcb-proto-"
+               "mirror://xorg/individual/xcb/xcb-proto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1930,7 +1955,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcmiscproto-"
+               "mirror://xorg/individual/proto/xcmiscproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -1952,7 +1977,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcmsdb-"
+               "mirror://xorg/individual/app/xcmsdb-"
                version
                ".tar.bz2"))
         (sha256
@@ -1972,17 +1997,17 @@ autotools system.")
 (define-public xcursor-themes
   (package
     (name "xcursor-themes")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcursor-themes-"
+               "mirror://xorg/individual/data/xcursor-themes-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1is4bak0qkkhv63mfa5l7492r475586y52yzfxyv3psppn662ilr"))))
+            "11mv661nj1p22sqkv87ryj2lcx4m68a04b0rs6iqh3fzp42jrzg3"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
@@ -2003,17 +2028,17 @@ autotools system.")
 (define-public xcursorgen
   (package
     (name "xcursorgen")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcursorgen-"
+               "mirror://xorg/individual/app/xcursorgen-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "10f5wk1326mm45gvgpf4m2p0j80fcd0i4c52zikahb91zah72wdw"))))
+            "0v7nncj3kaa8c0524j7ricdf4rvld5i7c3m6fj55l5zbah7r3j1i"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
@@ -2029,17 +2054,17 @@ autotools system.")
 (define-public xdpyinfo
   (package
     (name "xdpyinfo")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xdpyinfo-"
+               "mirror://xorg/individual/app/xdpyinfo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0gypsvpmay3lsh3b1dg29pjxv95pkrr21d4w6ys02mrbld24kvi3"))))
+            "154b29zlrq33lmni883jgwyrb2kx7z8h52jx1s3ys5x5d582iydf"))))
     (build-system gnu-build-system)
     (inputs
       `(("inputproto" ,inputproto)
@@ -2068,7 +2093,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xdriinfo-"
+               "mirror://xorg/individual/app/xdriinfo-"
                version
                ".tar.bz2"))
         (sha256
@@ -2089,17 +2114,17 @@ autotools system.")
 (define-public xev
   (package
     (name "xev")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xev-"
+               "mirror://xorg/individual/app/xev-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "13xk5z7vy87rnn4574z0jfzymdivyc7pl4axim81sx0pmdysg1ip"))))
+            "0hv296mysglcgkx6lj1wxc23kshb2kix1a8yqppxj5vz16mpzw8i"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -2117,17 +2142,17 @@ autotools system.")
 (define-public xextproto
   (package
     (name "xextproto")
-    (version "7.2.1")
+    (version "7.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xextproto-"
+               "mirror://xorg/individual/proto/xextproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "06kdanbnprxvgl56l5h0lqj4b0f1fbb1ndha33mv5wvy802v2lvw"))))
+            "1c2vma9gqgc2v06rfxdiqgwhxmzk2cbmknwf1ng3m76vr0xb5x7k"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -2136,23 +2161,50 @@ autotools system.")
     (license license:x11)))
 
 
+(define-public libevdev
+  (package
+    (name "libevdev")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/" name "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0iil4pnla0kjdx52ay7igq65sx32sjbzn1wx9q3v74m5g7712m16"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("python" ,python)))
+    (home-page "http://www.freedesktop.org/wiki/Software/libevdev/")
+    (synopsis "Wrapper library for evdev devices")
+    (description
+     "libevdev is a wrapper library for evdev devices. it moves the common
+tasks when dealing with evdev devices into a library and provides a library
+interface to the callers, thus avoiding erroneous ioctls, etc.
+
+The eventual goal is that libevdev wraps all ioctls available to evdev
+devices, thus making direct access unnecessary.")
+    (license (license:x11-style "file://COPYING"))))
+
+
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.7.0")
+    (version "2.8.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-evdev-"
+               "mirror://xorg/individual/driver/xf86-input-evdev-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
+            "030haki1h0m85h91c91812gdnk6znfamw5kpr010zxwwbsgxxyl5"))))
     (build-system gnu-build-system)
     (inputs
-      `(("udev" ,udev)
+      `(("udev" ,eudev)
+        ("libevdev" ,libevdev)
         ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -2169,17 +2221,17 @@ autotools system.")
 (define-public xf86-input-joystick
   (package
     (name "xf86-input-joystick")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-joystick-"
+               "mirror://xorg/individual/driver/xf86-input-joystick-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1xgpkdmfw4ahjlva97gs9sllzw8nlpa8mxj59g28fxhak67mvv8x"))))
+            "038mfqairyyqvz02rk7v3i070sab1wr0k6fkxvyvxdgkfbnqcfzf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2197,17 +2249,17 @@ autotools system.")
 (define-public xf86-input-keyboard
   (package
     (name "xf86-input-keyboard")
-    (version "1.6.1")
+    (version "1.8.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-keyboard-"
+               "mirror://xorg/individual/driver/xf86-input-keyboard-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1hwc1bjw5mxv186xbrxiky0agfglwqg8fsxqdh4br1vzgxpck7ma"))))
+            "0nyb61w30z32djrllgr2s1i13di3vsl6hg4pqjhxdal71971ria1"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2220,20 +2272,25 @@ autotools system.")
 (define-public xf86-input-mouse
   (package
     (name "xf86-input-mouse")
-    (version "1.7.2")
+    (version "1.9.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-mouse-"
+               "mirror://xorg/individual/driver/xf86-input-mouse-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0fs1lwnycyv3d0m6l2wrnlgvbs8qw66d93hwlnmrsswfq5bp6ark"))))
+            "1kn5kx3qyn9qqvd6s24a2l1wfgck2pgfvzl90xpl024wfxsx719l"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2243,22 +2300,21 @@ autotools system.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.6.1")
+    (version "1.8.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-synaptics-"
+               "mirror://xorg/individual/driver/xf86-input-synaptics-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))
-        (patches
-         (list (search-patch "xf86-input-synaptics-glibc-2.20.patch")))))
+            "16phzd7yhl4wns957c35qz2nahmjvnlx05jf975s524qkvrdlkyp"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
+              ("libevdev" ,libevdev)
               ("mtdev" ,mtdev)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2285,7 +2341,7 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-void-"
+               "mirror://xorg/individual/driver/xf86-input-void-"
                version
                ".tar.bz2"))
         (sha256
@@ -2303,17 +2359,18 @@ autotools system.")
 (define-public xf86-video-ark
   (package
     (name "xf86-video-ark")
-    (version "0.7.4")
+    (version "0.7.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-ark-"
+               "mirror://xorg/individual/driver/xf86-video-ark-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "194zc35ivfh3vcxcilf9nbi88c2di8kbh84x535cljlpiajdnk5x"))))
+           "07p5vdsj2ckxb6wh02s61akcv4qfg6s1d5ld3jn3lfaayd3f1466"))
+        (patches (list (search-patch "xf86-video-ark-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2331,12 +2388,13 @@ autotools system.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-ast-"
+               "mirror://xorg/individual/driver/xf86-video-ast-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))))
+           "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))
+        (patches (list (search-patch "xf86-video-ast-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2349,23 +2407,23 @@ autotools system.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "6.14.6")
+    (version "7.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               ;; FIXME: When updating, switch back to release uri.
                "mirror://xorg/individual/driver/xf86-video-ati-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0dpcdgw7vmx53l3byp900na5s980v1nw11a7y5yps67hwjrqclma"))))
+            "0dkrw036ikym8aacl43lnf04q0wbms5498xg5b3l16ngnq36ygpc"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments `(#:configure-flags `("--disable-glamor"))) ; TODO: Enable glamor
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2375,17 +2433,17 @@ autotools system.")
 (define-public xf86-video-cirrus
   (package
     (name "xf86-video-cirrus")
-    (version "1.4.0")
+    (version "1.5.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-cirrus-"
+               "mirror://xorg/individual/driver/xf86-video-cirrus-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0blnbspj4936wy46lp346s4b08dfcray6yicsxvv5b4699fzl1rb"))))
+            "1mycqgjp18b6adqj2h90vp324xh8ysyi5migfmjc914vbnkf2q9k"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2402,17 +2460,17 @@ autotools system.")
 (define-public xf86-video-fbdev
   (package
     (name "xf86-video-fbdev")
-    (version "0.4.2")
+    (version "0.4.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-fbdev-"
+               "mirror://xorg/individual/driver/xf86-video-fbdev-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
+            "06ym7yy017lanj730hfkpfk4znx3dsj8jq3qvyzsn8w294kb7m4x"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2422,28 +2480,28 @@ autotools system.")
     (license license:x11)))
 
 
-;; Compilation errors: Assembler messages operand size mismatch etc.
-;; (define-public xf86-video-geode
-;;   (package
-;;     (name "xf86-video-geode")
-;;     (version "2.11.13")
-;;     (source
-;;       (origin
-;;         (method url-fetch)
-;;         (uri (string-append
-;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-geode-"
-;;                version
-;;                ".tar.bz2"))
-;;         (sha256
-;;           (base32
-;;             "09p2cjd2fb7h32k9qs4wp7qvhfn2zv454spv5mfplv7w2jis4863"))))
-;;     (build-system gnu-build-system)
-;;     (inputs `(("pkg-config" ,pkg-config)
-;;               ("xorg-server" ,xorg-server)))
-;;     (home-page "http://www.x.org/wiki/")
-;;     (synopsis "Xorg implementation of the X Window System")
-;;     (description "X.org provides an implementation of the X Window System")
-;;     (license license:x11)))
+(define-public xf86-video-geode
+  (package
+    (name "xf86-video-geode")
+    (version "2.11.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/driver/xf86-video-geode-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+           "19y13xl7yfrgyis92rmxi0ld95ajgr5il0n9j1dridwzw9aizz1q"))
+        (patches (list (search-patch "xf86-video-geode-glibc-2.20.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)
+              ("xorg-server" ,xorg-server)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "Xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
 
 
 ;; Driver for obsolete graphics cards, depends on libglide:
@@ -2475,17 +2533,19 @@ autotools system.")
 (define-public xf86-video-glint
   (package
     (name "xf86-video-glint")
-    (version "1.2.7")
+    (version "1.2.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-glint-"
+               "mirror://xorg/individual/driver/xf86-video-glint-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0nf36jryabpncqq4m6sfsnmzk00f7gvfmjnl8l8sfy7w6sa6iacs"))))
+           "08a2aark2yn9irws9c78d9q44dichr03i9zbk61jgr54ncxqhzv5"))
+        (patches (list
+                  (search-patch "xf86-video-glint-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -2499,17 +2559,19 @@ autotools system.")
 (define-public xf86-video-i128
   (package
     (name "xf86-video-i128")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-i128-"
+               "mirror://xorg/individual/driver/xf86-video-i128-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1sik8ck410hb2885vy7rlc590hw5br8lr2fzxgmv55jyawgfpv9y"))))
+           "171b8lbxr56w3isph947dnw7x87hc46v6m3mcxdcz44gk167x0pq"))
+        (patches (list
+                  (search-patch "xf86-video-i128-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2522,19 +2584,22 @@ autotools system.")
 (define-public xf86-video-intel
   (package
     (name "xf86-video-intel")
-    (version "2.19.0")
+    (version "2.21.15")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-intel-"
+               "mirror://xorg/individual/driver/xf86-video-intel-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1g742szymajh88a5dw08sxcr45bmxgc4w3m6hddv9qscn5hks4rj"))))
+           "1z6ncmpszmwqi9xr590c4kp4gjjf7mndcr56r35x2bx7h87i8nkx"))
+        (patches (list (search-patch "xf86-video-intel-compat-api.patch")
+                       (search-patch "xf86-video-intel-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
+              ("udev" ,eudev)
               ("libx11" ,libx11)
               ("xorg-server" ,xorg-server)))
     (native-inputs
@@ -2548,17 +2613,18 @@ autotools system.")
 (define-public xf86-video-mach64
   (package
     (name "xf86-video-mach64")
-    (version "6.9.1")
+    (version "6.9.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-mach64-"
+               "mirror://xorg/individual/driver/xf86-video-mach64-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0kl3kvpc2ny48z89313i9fi4cxzwb2pllvxcr9j5ly680ygx8slz"))))
+           "0pl582vnc6hdxqhf5c0qdyanjqxb4crnhqlmxxml5a60syw0iwcp"))
+        (patches (list (search-patch "xf86-video-mach64-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -2574,17 +2640,18 @@ autotools system.")
 (define-public xf86-video-mga
   (package
     (name "xf86-video-mga")
-    (version "1.5.0")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-mga-"
+               "mirror://xorg/individual/driver/xf86-video-mga-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "03l3wz5kz0hmxmzqqbkgn7pf9d956jlag04rb701a0fr1mw3v66a"))))
+           "1my7y67sadjjmab1dyxckylrggi7p01yk4wwg9w6k1q96pmb213p"))
+        (patches (list (search-patch "xf86-video-mga-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -2609,10 +2676,7 @@ autotools system.")
          (base32
            "0p6pjn5bnd2wr3lmas4b12zcq12d9ilvssga93fzlg90fdahikwh"))))
     (build-system gnu-build-system)
-    (inputs `(;; FIXME: This is a libdrm version incompatible with that of
-              ;; MESA, which xorg-server uses.  Therefore, using this driver
-              ;; leads to "unresolved symbol drmModeSetCursor2".
-              ("libdrm" ,libdrm)
+    (inputs `(("libdrm" ,libdrm)
               ("xf86driproto" ,xf86driproto)
               ("libx11" ,libx11)
               ("xorg-server" ,xorg-server)))
@@ -2627,17 +2691,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")
-    (version "1.2.6")
+    (version "1.2.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-neomagic-"
+               "mirror://xorg/individual/driver/xf86-video-neomagic-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "124qci48xrk0w2jy91n7vqs7s6q397zyiqqszhmkx6ld7six57mi"))))
+            "0x48sxs1p3kmwk3pq1j7vl93y59gdmgkq1x5xbnh0yal0angdash"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -2656,7 +2720,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-newport-"
+               "mirror://xorg/individual/driver/xf86-video-newport-"
                version
                ".tar.bz2"))
         (sha256
@@ -2674,17 +2738,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-nv
   (package
     (name "xf86-video-nv")
-    (version "2.1.18")
+    (version "2.1.20")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-nv-"
+               "mirror://xorg/individual/driver/xf86-video-nv-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "05glbi9jc7j9nm4sf4qvl3z87s48ibm3i283lqz85kbphg62dxvc"))))
+           "1gqh1khc4zalip5hh2nksgs7i3piqq18nncgmsx9qvzi05azd5c3"))
+        (patches (list (search-patch "xf86-video-nv-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2697,18 +2762,19 @@ kernel mode setting (KMS).")
 (define-public xf86-video-openchrome
   (package
     (name "xf86-video-openchrome")
-    (version "0.2.906")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-openchrome-"
+               "mirror://xorg/individual/driver/xf86-video-openchrome-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))
-        (patches (list (search-patch "xf86-video-openchrome-includes.patch")))))
+           "1v8j4i1r268n4fc5gq54zg1x50j0rhw71f3lba7411mcblg2z7p4"))
+        (patches (list
+                  (search-patch "xf86-video-openchrome-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -2727,17 +2793,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-r128
   (package
     (name "xf86-video-r128")
-    (version "6.8.2")
+    (version "6.9.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-r128-"
+               "mirror://xorg/individual/driver/xf86-video-r128-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1c84x40k9qz9dnf5qs6nnjcgz7px6mpc3rbk8mj62zhp7mf16hbv"))))
+           "1q3fsc603k2yinphx5rrcl5356qkpywwz8axlw277l2231gjjbcb"))
+        (patches (list (search-patch "xf86-video-r128-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -2752,17 +2819,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-savage
   (package
     (name "xf86-video-savage")
-    (version "2.3.4")
+    (version "2.3.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-savage-"
+               "mirror://xorg/individual/driver/xf86-video-savage-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0jdy4wv3k3ylx3lajjcbsg37z2hf6366a1jvv16sv1ln6dk6lris"))))
+            "0i2aqp68rfkrz9c1p6d7ny9x7bjrlnby7q56zf01fb12r42l4784"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -2777,17 +2844,20 @@ kernel mode setting (KMS).")
 (define-public xf86-video-siliconmotion
   (package
     (name "xf86-video-siliconmotion")
-    (version "1.7.6")
+    (version "1.7.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-siliconmotion-"
+               "mirror://xorg/individual/driver/xf86-video-siliconmotion-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "01sdl6ky1vmvmfgx2d44i35rqafi0z07xdy40cvindcr2k91p7x5"))))
+           "1an321kqvsxq0z35acwl99lc8hpdkayw0q180744ypcl8ffvbf47"))
+        (patches
+         (list
+          (search-patch "xf86-video-siliconmotion-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2800,17 +2870,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.4")
+    (version "0.10.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-sis-"
+               "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "03diq0l93lfsipmwkpdb2ysgbxxryl6yakpghzc3fksjxa01112f"))))
+           "1l0w84x39gq4y9j81dny9r6rma1xkqvxpsavpkd8h7h8panbcbmy"))
+        (patches (list (search-patch "xf86-video-sis-update-api.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)
@@ -2827,17 +2898,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-suncg6
   (package
     (name "xf86-video-suncg6")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-suncg6-"
+               "mirror://xorg/individual/driver/xf86-video-suncg6-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "07w0hm63fiy5l3cpcjsl0ig8z84z9r36xm0cmnpiv3g75dy6q8fi"))))
+            "04fgwgk02m4nimlv67rrg1wnyahgymrn6rb2cjj1l8bmzkii4glr"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2850,17 +2921,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-sunffb
   (package
     (name "xf86-video-sunffb")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-sunffb-"
+               "mirror://xorg/individual/driver/xf86-video-sunffb-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "04byax4sc1fn183vyyq0q11q730k16h2by4ggjky7s36wgv7ldzx"))))
+            "07z3ngifwg2d4jgq8pms47n5lr2yn0ai72g86xxjnb3k20n5ym7s"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2873,17 +2944,19 @@ kernel mode setting (KMS).")
 (define-public xf86-video-tdfx
   (package
     (name "xf86-video-tdfx")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-tdfx-"
+               "mirror://xorg/individual/driver/xf86-video-tdfx-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "124gsi30rj547jjd7gvv7xykfnwlyrxw0gcacamby7pvl3g33fg0"))))
+           "0nfqf1c8939s21ci1g7gacwzlr4g4nnilahgz7j2bz30zfnzpmbh"))
+        (patches (list
+                  (search-patch "xf86-video-tdfx-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -2898,17 +2971,18 @@ kernel mode setting (KMS).")
 (define-public xf86-video-tga
   (package
     (name "xf86-video-tga")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-tga-"
+               "mirror://xorg/individual/driver/xf86-video-tga-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0mdqrn02zzkdnmhg4vh9djaawg6b2p82g5qbj66z8b30yr77b93h"))))
+           "0cb161lvdgi6qnf1sfz722qn38q7kgakcvj7b45ba3i0020828r0"))
+        (patches (list (search-patch "xf86-video-tga-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -2922,17 +2996,19 @@ kernel mode setting (KMS).")
 (define-public xf86-video-trident
   (package
     (name "xf86-video-trident")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-trident-"
+               "mirror://xorg/individual/driver/xf86-video-trident-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "02y5pzdp0a1c12jr8gghbrzgbyfbgq67x7kd7n4f323pmf8x1csb"))))
+           "0141qbfsm32i0pxjyx5czpa8x8m4lvapsp4amw1qigaa0gry6n3a"))
+        (patches (list
+                  (search-patch "xf86-video-trident-remove-mibstore.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -2950,17 +3026,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-vesa
   (package
     (name "xf86-video-vesa")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-vesa-"
+               "mirror://xorg/individual/driver/xf86-video-vesa-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0wqms28kkz2fvghqhqwp6w8zj7k5cgwnhzvkc7j4v268bf6h78g4"))))
+            "1y5fsg0c4bgmh1cfsbnaaf388fppyy02i7mcy9vax78flkjpb2yf"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2973,20 +3049,22 @@ kernel mode setting (KMS).")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "12.0.2")
+    (version "13.0.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-vmware-"
+               "mirror://xorg/individual/driver/xf86-video-vmware-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0isiwx516gww8hfk3vy7js83yziyjym9mq2zjadyq1a8v5gqf9y8"))))
+           "0m1wfsv34s4pyr5ry87yyjb2p6vmy6vyypdz5jx0sqnkx8n3vfn8"))
+        (patches (list (search-patch "xf86-video-vmware-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
+              ("mesa" ,mesa)            ; for xatracker
               ("xorg-server" ,xorg-server)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -2999,17 +3077,17 @@ kernel mode setting (KMS).")
 (define-public xf86-video-voodoo
   (package
     (name "xf86-video-voodoo")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-voodoo-"
+               "mirror://xorg/individual/driver/xf86-video-voodoo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0ha748yz92yzn6hp2rhin3il8f4j2rs4vkgdvqkagnv1ryxkh0ph"))))
+            "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -3032,7 +3110,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86bigfontproto-"
+               "mirror://xorg/individual/proto/xf86bigfontproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3053,7 +3131,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86dgaproto-"
+               "mirror://xorg/individual/proto/xf86dgaproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3074,7 +3152,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86driproto-"
+               "mirror://xorg/individual/proto/xf86driproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3095,7 +3173,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86vidmodeproto-"
+               "mirror://xorg/individual/proto/xf86vidmodeproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3116,7 +3194,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xgamma-"
+               "mirror://xorg/individual/app/xgamma-"
                version
                ".tar.bz2"))
         (sha256
@@ -3137,17 +3215,17 @@ kernel mode setting (KMS).")
 (define-public xhost
   (package
     (name "xhost")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xhost-"
+               "mirror://xorg/individual/app/xhost-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0l483y6wfrjh37j16b41kpi2nc7ss5rvndafpbaylrs87ygx2w18"))))
+            "1hlxm0is9nks1cx033s1733kkib9ivx2bxa3pb9yayqavwibkxd6"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3169,7 +3247,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xineramaproto-"
+               "mirror://xorg/individual/proto/xineramaproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3186,22 +3264,23 @@ kernel mode setting (KMS).")
 (define-public xinput
   (package
     (name "xinput")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xinput-"
+               "mirror://xorg/individual/app/xinput-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0zl4cdgnzh9shz20yn7hz889v4nkbyqwx0nb7dh6arn7abchgc2a"))))
+            "07w7zlpdhpwzzshg8q0y152cy3wl2fj7x1897glnp2la487jsqxp"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
         ("libxrandr" ,libxrandr)
         ("libxinerama" ,libxinerama)
+        ("libxext" ,libxext)
         ("libxi" ,libxi)
         ("libx11" ,libx11)
         ("inputproto" ,inputproto)))
@@ -3216,17 +3295,17 @@ kernel mode setting (KMS).")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.2.4")
+    (version "1.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkbcomp-"
+               "mirror://xorg/individual/app/xkbcomp-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0bas1d2wjiy5zy9d0g92d2p9pwv4aapfbfidi7hxy8ax8jmwkl4i"))))
+            "0aibcbhhjlwcrxh943xg2dswwx5bz1x0pmhs28b55gzsg0vrgb6g"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
@@ -3260,7 +3339,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkbevd-"
+               "mirror://xorg/individual/app/xkbevd-"
                version
                ".tar.bz2"))
         (sha256
@@ -3281,17 +3360,17 @@ kernel mode setting (KMS).")
 (define-public xkbutils
   (package
     (name "xkbutils")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkbutils-"
+               "mirror://xorg/individual/app/xkbutils-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ga913pw6chssf2016kjyjl6ar2lj83pa497w97ak2kq603sy2g4"))))
+            "0c412isxl65wplhl7nsk12vxlri29lk48g3p52hbrs3m0awqm8fj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
@@ -3309,17 +3388,17 @@ kernel mode setting (KMS).")
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.6")
+    (version "2.13")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkeyboard-config-"
-               version
-               ".tar.bz2"))
+              "mirror://xorg/individual/data/xkeyboard-config/xkeyboard-config-"
+              version
+              ".tar.bz2"))
         (sha256
           (base32
-            "1nmb7ma8rqryicc5xqrn2hm5pwp5lkf7nj28bwbf63mz2r0mk892"))))
+            "1klzbwabzd7bhbg23b14vy4l5xgpapn8lc0m5d8h40d3p7rfjnvv"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gnu-gettext)
@@ -3337,17 +3416,17 @@ kernel mode setting (KMS).")
 (define-public xkill
   (package
     (name "xkill")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xkill-"
+               "mirror://xorg/individual/app/xkill-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1ac110qbb9a4x1dim3vaghvdk3jc708i2p3f4rmag33458khg0xx"))))
+            "0bl1ky8ps9jg842j4mnmf4zbx8nkvk0h77w7bqjlpwij9wq2mvw8"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3368,7 +3447,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xlsatoms-"
+               "mirror://xorg/individual/app/xlsatoms-"
                version
                ".tar.bz2"))
         (sha256
@@ -3388,17 +3467,17 @@ kernel mode setting (KMS).")
 (define-public xlsclients
   (package
     (name "xlsclients")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xlsclients-"
+               "mirror://xorg/individual/app/xlsclients-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1l97j15mg4wfzpm81wlpzagfjff7v4fwn7s2z2rpksk3gfcg7r8w"))))
+            "0g9x7rrggs741x9xwvv1k9qayma980d88nhdqw7j3pn3qvy6d5jx"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
@@ -3413,17 +3492,17 @@ kernel mode setting (KMS).")
 (define-public xmodmap
   (package
     (name "xmodmap")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xmodmap-"
+               "mirror://xorg/individual/app/xmodmap-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1dg47lay4vhrl9mfq3cfc6741a0m2n8wd4ljagd21ix3qklys8pg"))
+            "1hwzm54m4ng09ls9i4bq0x84zbyhamgzasgrvhxxp8jqk34f7qpg"))
         (patches (list (search-patch "xmodmap-asprintf.patch")))))
     (build-system gnu-build-system)
     (inputs
@@ -3449,7 +3528,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xorg-sgml-doctools-"
+               "mirror://xorg/individual/doc/xorg-sgml-doctools-"
                version
                ".tar.bz2"))
         (sha256
@@ -3471,7 +3550,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xpr-"
+               "mirror://xorg/individual/app/xpr-"
                version
                ".tar.bz2"))
         (sha256
@@ -3493,17 +3572,17 @@ kernel mode setting (KMS).")
 (define-public xprop
   (package
     (name "xprop")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xprop-"
+               "mirror://xorg/individual/app/xprop-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "18zi2any13zlb7f34fzyw6lkiwkd6k2scp3b800a1f4rj0c7m407"))))
+            "1ilvhqfjcg6f1hqahjkp8qaay9rhvmv2blvj3w9asraq0aqqivlv"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
@@ -3519,17 +3598,17 @@ kernel mode setting (KMS).")
 (define-public xrandr
   (package
     (name "xrandr")
-    (version "1.3.5")
+    (version "1.4.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xrandr-"
+               "mirror://xorg/individual/app/xrandr-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "03lq1c1q4w5cf2ijs4b34v008lshibha9zv5lw08xpyhk9xgyn8h"))))
+            "06xy0kr6ih7ilrwl6b5g6ay75vm2j4lxnv1d5xlj6sdqhqsaqm3i"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -3547,17 +3626,17 @@ kernel mode setting (KMS).")
 (define-public xrdb
   (package
     (name "xrdb")
-    (version "1.0.9")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xrdb-"
+               "mirror://xorg/individual/app/xrdb-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1dza5a34nj68fzhlgwf18i5bk0n24ig28yihwpjy7vwn57hh2934"))))
+            "0nsnr90wazcdd50nc5dqswy0bmq6qcj14nnrhyi7rln9pxmpp0kk"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3573,17 +3652,17 @@ kernel mode setting (KMS).")
 (define-public xrefresh
   (package
     (name "xrefresh")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xrefresh-"
+               "mirror://xorg/individual/app/xrefresh-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0ywxzwa4kmnnmf8idr8ssgcil9xvbhnk155zpsh2i8ay93mh5586"))))
+            "1mlinwgvql6s1rbf46yckbfr9j22d3c3z7jx3n6ix7ca18dnf4rj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
@@ -3598,17 +3677,17 @@ kernel mode setting (KMS).")
 (define-public xset
   (package
     (name "xset")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xset-"
+               "mirror://xorg/individual/app/xset-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1s61mvscd0h7y6anljarj7nkii6plhs8ndx1fm8b1f1h00a1qdv1"))))
+            "0qw0iic27bz3yz2wynf1gxs70hhkcf9c4jrv7zhlg1mq57xz90j3"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
@@ -3626,17 +3705,17 @@ kernel mode setting (KMS).")
 (define-public xsetroot
   (package
     (name "xsetroot")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xsetroot-"
+               "mirror://xorg/individual/app/xsetroot-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1bazzsf9sy0q2bj4lxvh1kvyrhmpggzb7jg575i15sksksa3xwc8"))))
+            "1nf3ii31m1knimbidaaym8p61fq3blv8rrdr2775yhcclym5s8ds"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3653,17 +3732,17 @@ kernel mode setting (KMS).")
 (define-public xtrans
   (package
     (name "xtrans")
-    (version "1.2.7")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xtrans-"
+               "mirror://xorg/individual/lib/xtrans-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "19p1bw3qyn0ia1znx6q3gx92rr9rl88ylrfijjclm8vhpa8i30bz"))))
+            "00c3ph17acnsch3gbdmx33b9ifjnl5w7vx8hrmic1r1cjcv3pgdd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -3675,17 +3754,17 @@ kernel mode setting (KMS).")
 (define-public xvinfo
   (package
     (name "xvinfo")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xvinfo-"
+               "mirror://xorg/individual/app/xvinfo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "119rd93d7661ll1rfcdssn78l0b97326smziyr2f5wdwj2hlmiv0"))))
+            "1qsh7fszi727l3vwlaf9pb7bpikdv15smrx5qhlgg3kqzl7xklzf"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
@@ -3702,20 +3781,21 @@ kernel mode setting (KMS).")
 (define-public xwd
   (package
     (name "xwd")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xwd-"
+               "mirror://xorg/individual/app/xwd-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0fkg6msy2zg7rda2rpxb7j6vmrdmqmk72xsxnyhz97196ykjnx82"))))
+            "0ybx48agdvjp9lgwvcw79r1x6jbqbyl3fliy3i5xwy4d4si9dcrv"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
+        ("libxkbfile" ,libxkbfile)
         ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -3728,17 +3808,17 @@ kernel mode setting (KMS).")
 (define-public xwininfo
   (package
     (name "xwininfo")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xwininfo-"
+               "mirror://xorg/individual/app/xwininfo-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0fmcr5yl03xw7m8p9h1rk67rrj7gp5x16a547xhmg8idw2f6r9lg"))))
+            "1y1zn8ijqslb5lfpbq4bb78kllhch8in98ps7n8fg3dxjpmb13i1"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
@@ -3759,7 +3839,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xwud-"
+               "mirror://xorg/individual/app/xwud-"
                version
                ".tar.bz2"))
         (sha256
@@ -3788,7 +3868,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/fixesproto-"
+               "mirror://xorg/individual/proto/fixesproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -3808,17 +3888,17 @@ kernel mode setting (KMS).")
 (define-public libxdamage
   (package
     (name "libxdamage")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXdamage-"
+               "mirror://xorg/individual/lib/libXdamage-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1a678bwap74sqczbr2z4y4fvbr35km3inkm8bi1igjyk4v46jqdw"))))
+            "1bamagq7g6s0d23l8rb3nppj8ifqj05f7z9bhbs4fdg8az3ffgvw"))))
     (build-system gnu-build-system)
     (propagated-inputs  
       ;; These are all in the Requires or Requires.private field of xdamage.pc
@@ -3837,17 +3917,17 @@ kernel mode setting (KMS).")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.1")
+    (version "1.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXext-"
+               "mirror://xorg/individual/lib/libXext-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0ng8clhn7srbkadxjc7ih3z3v27v9ny0aa0dqkgddgxpgrhrq8jn"))))
+            "0dbfn5bznnrhqzvkrcmw4c44yvvpwdcsrvzxf4rk27r36b9x865m"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xextproto" ,xextproto)))
@@ -3865,17 +3945,17 @@ kernel mode setting (KMS).")
 (define-public libxinerama
   (package
     (name "libxinerama")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXinerama-"
+               "mirror://xorg/individual/lib/libXinerama-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1b3aq1762hxzchd9ndavdjlksq93991s0g2z6spf8wl3v0pprrx4"))))
+            "1qlqfvzw45gdzk9xirgwlp2qgj0hbsyiqj8yh8zml2bk2ygnjibs"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xineramaproto" ,xineramaproto)))
@@ -3890,11 +3970,10 @@ kernel mode setting (KMS).")
     (license license:x11)))
 
 
-;; The package is missing from X11R7.7.
 (define-public libxp
   (package
     (name "libxp")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
@@ -3904,7 +3983,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-            "1blwrr5zhmwwy87j0svmhv3hc13acyn5j14n5rv0anz81iav2r3y"))))
+            "1dfh5w8sjz5b5fl6dl4y63ckq99snslz7bir8zq2rg8ax6syabwm"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("printproto" ,printproto)))
@@ -3922,17 +4001,17 @@ kernel mode setting (KMS).")
 (define-public libxrender
   (package
     (name "libxrender")
-    (version "0.9.7")
+    (version "0.9.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXrender-"
+               "mirror://xorg/individual/lib/libXrender-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1rmvja2gkf5v0k2n1bcghw8v98m2kfn3af0rbmsda5dwr69npd7r"))))
+            "0qpwyjhbpp734vnhca992pjh4w7ijslidkzx1pcwbbk000pv050x"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("renderproto" ,renderproto)))
@@ -3950,17 +4029,17 @@ kernel mode setting (KMS).")
 (define-public libxtst
   (package
     (name "libxtst")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXtst-"
+               "mirror://xorg/individual/lib/libXtst-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1q750hjplq1rfyxkr4545z1y2a1wfnc828ynvbws7b4jwdk3xsky"))))
+            "1ngn161nq679ffmbwl81i2hn75jjg5b3ffv6n4jilpvyazypy2pg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("recordproto" ,recordproto)))
@@ -3979,17 +4058,17 @@ kernel mode setting (KMS).")
 (define-public libxv
   (package
     (name "libxv")
-    (version "1.0.7")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXv-"
+               "mirror://xorg/individual/lib/libXv-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "044hllz013afhzywwpxz007l4zjy99bv9im065rqd30zckmllrjx"))))
+            "09a5j6bisysiipd0nw6s352565bp0n6gbyhv5hp63s3cd3w95zjm"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("videoproto" ,videoproto)))
@@ -4013,7 +4092,7 @@ kernel mode setting (KMS).")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/mkfontdir-"
+               "mirror://xorg/individual/app/mkfontdir-"
                version
                ".tar.bz2"))
         (sha256
@@ -4033,17 +4112,17 @@ kernel mode setting (KMS).")
 (define-public xproto
   (package
     (name "xproto")
-    (version "7.0.23")
+    (version "7.0.26")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xproto-"
+               "mirror://xorg/individual/proto/xproto-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "17lkmi12f89qvg4jj5spqzwzc24fmsqq68dv6kpy7r7b944lmq5d"))))
+            "0ksi8vhfd916bx2f3xlyhn6azf6cvvzrsdja26haa1cqfp0n4qb3"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
@@ -4061,17 +4140,17 @@ kernel mode setting (KMS).")
 (define-public libice
   (package
     (name "libice")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libICE-"
+               "mirror://xorg/individual/lib/libICE-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "07mp13pb3s73kj7y490gnx619znzwk91mlf8kdw0rzq29ll93a94"))))
+            "00p2b6bsg6kcdbb39bv46339qcywxfl4hsrz8asm4hy6q7r34w4g"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xproto" ,xproto)))
@@ -4088,17 +4167,17 @@ kernel mode setting (KMS).")
 (define-public libxau
   (package
     (name "libxau")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXau-"
+               "mirror://xorg/individual/lib/libXau-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "12d4f7sdv2pjxhk0lcay0pahccddszkw579dc59daqi37r8bllvi"))))
+            "1wm4pv12f36cwzhldpp7vy3lhm3xdcnp4f184xkxsp7b18r7gm7x"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xproto" ,xproto)))
@@ -4112,17 +4191,17 @@ kernel mode setting (KMS).")
 (define-public libxfixes
   (package
     (name "libxfixes")
-    (version "5.0")
+    (version "5.0.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXfixes-"
+               "mirror://xorg/individual/lib/libXfixes-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1qx2rmwhmca2n7rgafy0arp15k5vwhdhhh6v6mx76hlj29328yjk"))))
+            "0rs7qgzr6dpr62db7sd91c1b47hzhzfr010qwnpcm8sg122w1gk3"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fixesproto" ,fixesproto)))
@@ -4140,17 +4219,17 @@ kernel mode setting (KMS).")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.4.5")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXfont-"
+               "mirror://xorg/individual/lib/libXfont-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "0w3irg00k6b6mziddnacln9q2rkf5848b04nvjqwv5bb1fw6zydv"))))
+            "0py2c498lrq6wrj9al6nj57v2ypid9cz0zzhc0hjndgrmp254g1s"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)
@@ -4171,22 +4250,23 @@ kernel mode setting (KMS).")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.6.1")
+    (version "1.7.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXi-"
+               "mirror://xorg/individual/lib/libXi-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "029ihw4jq8mng8rx7a3jdvq64jm1zdkqidca93zmxv4jf9yn5qzj"))))
+            "0i12lj973grlp9fa79v0vh9cahk3nf9csdjnf81iip0qcrlc5zrc"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
         ("libx11" ,libx11)
-        ("libxext" ,libxext)))
+        ("libxext" ,libxext)
+        ("libxfixes" ,libxfixes)))
     (inputs
       `(("xproto" ,xproto)))
     (native-inputs
@@ -4200,17 +4280,17 @@ kernel mode setting (KMS).")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.3.2")
+    (version "1.4.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXrandr-"
+               "mirror://xorg/individual/lib/libXrandr-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "10cvv78ws8jznma4s45dzqz0ldcxk30qgsqrc4wxfcsjmcba5b3y"))))
+            "1b95p3l84ppv6j7dbbmg0zrz6k8xdwvnag1l6ajm3gk9qwdb79ya"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
@@ -4230,17 +4310,17 @@ kernel mode setting (KMS).")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.7")
+    (version "1.0.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXvMC-"
+               "mirror://xorg/individual/lib/libXvMC-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "18yf6ysc01pqkbk9704914ghalq1sl2hfdjmwggxm8qqhpy8bw18"))))
+            "015jk3bxfmj6zaw99x282f9npi8qqaw34yg186frags3z8g406jy"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -4259,17 +4339,17 @@ kernel mode setting (KMS).")
 (define-public libxxf86vm
   (package
     (name "libxxf86vm")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXxf86vm-"
+               "mirror://xorg/individual/lib/libXxf86vm-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
+            "1f1pxj018nk7ybxv58jmn5y8gm2288p4q3l2dng9n1p25v1qcpns"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
@@ -4293,10 +4373,8 @@ kernel mode setting (KMS).")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "http://xcb.freedesktop.org/dist/libxcb-"
-               version
-               ".tar.bz2"))
+        (uri (string-append "mirror://xorg/individual/xcb/"
+                            name "-" version ".tar.bz2"))
         (sha256
           (base32
             "1xqgc81krx14f2c8yl5chzg5g2l26mhm2rwffy8dx7jv0iq5sqq3"))))
@@ -4322,35 +4400,41 @@ kernel mode setting (KMS).")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.12.2")
+    (version "1.16.2.901")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xorg-server-"
-               version
-               ".tar.bz2"))
+              "mirror://xorg/individual/xserver/"
+              name "-" version ".tar.bz2"))
         (sha256
-          (base32
-            "1xf57hcq6r17zxyfnx9r1wd0ir1bw13ff8bsiszwrw9jyhi9x7ya"))))
+         (base32
+          "19jb8v26wc332ramwjdg5vjh3s36kr7n46s6fdfaxrj1wif5m27g"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
+        ("dri3proto" ,dri3proto)
         ("fontsproto" ,fontsproto)
         ("inputproto" ,inputproto)
         ("kbproto" ,kbproto)
         ("libpciaccess" ,libpciaccess)
+        ("mesa" ,mesa)
         ("pixman" ,pixman)
+        ("presentproto" ,presentproto)
         ("randrproto" ,randrproto)
         ("renderproto" ,renderproto)
+        ("resourceproto" ,resourceproto)
+        ("scrnsaverproto" ,scrnsaverproto)
         ("videoproto" ,videoproto)
         ("xextproto" ,xextproto)
         ("xineramaproto" ,xineramaproto)
+        ("xf86driproto" ,xf86driproto)
         ("xproto" ,xproto)))
     (inputs
       `(("bigreqsproto" ,bigreqsproto)
         ("compositeproto" ,compositeproto)
         ("damageproto" ,damageproto)
+        ("udev" ,eudev)
         ("dbus" ,dbus)
         ("dmxproto" ,dmxproto)
         ("libdmx" ,libdmx)
@@ -4363,16 +4447,13 @@ kernel mode setting (KMS).")
         ("libxkbfile" ,libxkbfile)
         ("libxrender" ,libxrender)
         ("libxres" ,libxres)
+        ("libxshmfence" ,libxshmfence)
         ("libxt" ,libxt)
         ("libxv" ,libxv)
-        ("mesa" ,mesa)
         ("recordproto" ,recordproto)
-        ("resourceproto" ,resourceproto)
-        ("scrnsaverproto" ,scrnsaverproto)
         ("xcmiscproto" ,xcmiscproto)
         ("xf86bigfontproto" ,xf86bigfontproto)
         ("xf86dgaproto" ,xf86dgaproto)
-        ("xf86driproto" ,xf86driproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
         ("xkbcomp" ,xkbcomp)
         ("xkeyboard-config" ,xkeyboard-config)
@@ -4395,21 +4476,18 @@ kernel mode setting (KMS).")
 
              ;; For the log file, etc.
              "--localstatedir=/var")
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys #:rest args)
-           (let ((configure (assoc-ref %standard-phases 'configure)))
-             (substitute* (find-files "." "\\.c$")
-               (("/bin/sh") (which "sh")))
 
-             ;; Don't try to 'mkdir /var'.
-             (substitute* "hw/xfree86/Makefile.in"
-               (("mkdir(.*)logdir.*")
-                "true\n"))
+       #:phases (alist-cons-before
+                 'configure 'pre-configure
+                 (lambda _
+                   (substitute* (find-files "." "\\.c$")
+                     (("/bin/sh") (which "sh")))
 
-             (apply configure args)))
-         %standard-phases)))
+                   ;; Don't try to 'mkdir /var'.
+                   (substitute* "hw/xfree86/Makefile.in"
+                     (("\\$\\(MKDIR_P\\).*logdir.*")
+                      "true\n")))
+                 %standard-phases)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -4422,17 +4500,17 @@ kernel mode setting (KMS).")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.5.0")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libX11-"
+               "mirror://xorg/individual/lib/libX11-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "11jdpl15bxwpwv0knpkh990s8jvlybng3dx477pkrz1bx7byz0n3"))))
+            "05mx0s0vqzds3qjc1gmjr2s6x2ll37z4lfhgm7p2w7936zl2g81a"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("kbproto" ,kbproto)
@@ -4454,17 +4532,17 @@ kernel mode setting (KMS).")
 (define-public libxcursor
   (package
     (name "libxcursor")
-    (version "1.1.13")
+    (version "1.1.14")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXcursor-"
+               "mirror://xorg/individual/lib/libXcursor-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "13xd1dyb06gwdwb0bxb22fkgdlmis6wrljm2xk6fhz0v9bg2g27p"))))
+            "1prkdicl5y5yx32h1azh6gjfbijvjp415javv8dsakd13jrarilv"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)
@@ -4482,17 +4560,17 @@ kernel mode setting (KMS).")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXt-"
+               "mirror://xorg/individual/lib/libXt-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "1g85gwnhs7lg5f01gfi1cpb916xc3spm1fjlv2f4xz2zzk1r7dcd"))))
+            "0myxwbx9ylam5x3ia5b5f4x8azcqdm420h9ad1r4hrgmi2lrffl4"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libx11" ,libx11)
@@ -4511,17 +4589,17 @@ kernel mode setting (KMS).")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXaw-"
+               "mirror://xorg/individual/lib/libXaw-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "14ll7ndf5njc30hz2w197qvwp7fqj7y14wq4p1cyxlbipfn79a47"))))
+            "1xnv7jy86j9vhmw74frkzcraynqbw1p1s79jasargsgwfi433z4n"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
@@ -4544,8 +4622,8 @@ kernel mode setting (KMS).")
     (version "0.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "1sahmrgbpyki4bb72hxym0zvxwnycmswsxiisgqlln9vrdlr9r26"))))
@@ -4576,8 +4654,8 @@ event: Some utilities that have little to do with events any more.")
     (version "0.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "1z1gxacg7q4cw6jrd26gvi5y04npsyavblcdad1xccc8swvnmf9d"))))
@@ -4608,8 +4686,8 @@ image: Port of Xlib's XImage and XShmImage functions.")
     (version "0.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "1nbd45pzc1wm6v5drr5338j4nicbgxa5hcakvsvm5pnyy47lky0f"))))
@@ -4638,8 +4716,8 @@ keysyms: Standard X key constants and conversion to/from keycodes.")
     (version "0.3.9")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
                "0nza1csdvvxbmk8vgv8vpmq7q8h05xrw3cfx9lwxd1hjzd47xsf6"))))
@@ -4665,14 +4743,14 @@ renderutil: Convenience functions for the Render extension.")
 (define-public xcb-util-wm
   (package
     (name "xcb-util-wm")
-    (version "0.3.9")
+    (version "0.4.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://xcb.freedesktop.org/dist/xcb-util-wm-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://xorg/individual/xcb/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0c30fj33gvwzwhyz1dhsfwni0ai16bxpvxb4l6c6s7vvj7drp3q3"))))
+               "0gra7hfyxajic4mjd63cpqvd20si53j1q3rbdlkqkahfciwq3gr8"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxcb" ,libxcb)))

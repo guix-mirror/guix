@@ -28,7 +28,9 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (url-fetch
+  #:export (open-connection-for-uri
+            maybe-expand-mirrors
+            url-fetch
             progress-proc
             uri-abbreviation))
 
@@ -278,32 +280,34 @@ which is not available during bootstrap."
     (lambda (key . args)
       (print-exception (current-error-port) #f key args))))
 
+(define (uri-vicinity dir file)
+  "Concatenate DIR, slash, and FILE, keeping only one slash in between.
+This is required by some HTTP servers."
+  (string-append (string-trim-right dir #\/) "/"
+                 (string-trim file #\/)))
+
+(define (maybe-expand-mirrors uri mirrors)
+  "If URI uses the 'mirror' scheme, expand it according to the MIRRORS alist.
+Return a list of URIs."
+  (case (uri-scheme uri)
+    ((mirror)
+     (let ((kind (string->symbol (uri-host uri)))
+           (path (uri-path uri)))
+       (match (assoc-ref mirrors kind)
+         ((mirrors ..1)
+          (map (compose string->uri (cut uri-vicinity <> path))
+               mirrors))
+         (_
+          (error "unsupported URL mirror kind" kind uri)))))
+    (else
+     (list uri))))
+
 (define* (url-fetch url file #:key (mirrors '()))
   "Fetch FILE from URL; URL may be either a single string, or a list of
 string denoting alternate URLs for FILE.  Return #f on failure, and FILE
 on success."
-  (define (uri-vicinity dir file)
-    ;; Concatenate DIR, slash, and FILE, keeping only one slash in between.
-    ;; This is required by some HTTP servers.
-    (string-append (string-trim-right dir #\/) "/"
-                   (string-trim file #\/)))
-
-  (define (maybe-expand-mirrors uri)
-    (case (uri-scheme uri)
-      ((mirror)
-       (let ((kind (string->symbol (uri-host uri)))
-             (path (uri-path uri)))
-         (match (assoc-ref mirrors kind)
-           ((mirrors ..1)
-            (map (compose string->uri (cut uri-vicinity <> path))
-                 mirrors))
-           (_
-            (error "unsupported URL mirror kind" kind uri)))))
-      (else
-       (list uri))))
-
   (define uri
-    (append-map maybe-expand-mirrors
+    (append-map (cut maybe-expand-mirrors <> mirrors)
                 (match url
                   ((_ ...) (map string->uri url))
                   (_       (list (string->uri url))))))

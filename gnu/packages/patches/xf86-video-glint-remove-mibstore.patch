@@ -1,0 +1,24 @@
+Removes references to mibstore.h and miInitializeBackingStore, which
+have been removed from xorg-server.  Zack Rusin <zackr@vmware.com>
+wrote: "It was a noop for at least 5 years and it has been removed."
+See: http://patches.openembedded.org/patch/46133/
+
+--- xf86-video-glint-1.2.8/src/glint_driver.c.~1~	2012-07-15 22:50:47.000000000 -0400
++++ xf86-video-glint-1.2.8/src/glint_driver.c	2014-12-19 00:42:39.162714279 -0500
+@@ -52,8 +52,6 @@
+ #include "compiler.h"
+ #include "mipointer.h"
+ 
+-#include "mibstore.h"
+-
+ #include "pm3_regs.h"
+ #include "glint_regs.h"
+ #include "IBM.h"
+@@ -2904,7 +2902,6 @@
+         }
+     }
+ 
+-    miInitializeBackingStore(pScreen);
+     xf86SetBackingStore(pScreen);
+     xf86SetSilkenMouse(pScreen);
+ 

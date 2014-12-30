@@ -1,0 +1,90 @@
+Removes references to mibstore.h and miInitializeBackingStore, which
+have been removed from xorg-server.  Zack Rusin <zackr@vmware.com>
+wrote: "It was a noop for at least 5 years and it has been removed."
+See: http://patches.openembedded.org/patch/46133/
+
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_2dtool.c xf86-video-ast-0.93.10/src/ast_2dtool.c
+--- xf86-video-ast-0.93.10.orig/src/ast_2dtool.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_2dtool.c	2014-12-19 02:42:32.422383728 -0500
+@@ -27,7 +27,6 @@
+ #include "xf86_OSproc.h"
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_accel.c xf86-video-ast-0.93.10/src/ast_accel.c
+--- xf86-video-ast-0.93.10.orig/src/ast_accel.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_accel.c	2014-12-19 02:41:55.534200809 -0500
+@@ -27,7 +27,6 @@
+ #include "xf86_OSproc.h"
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_cursor.c xf86-video-ast-0.93.10/src/ast_cursor.c
+--- xf86-video-ast-0.93.10.orig/src/ast_cursor.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_cursor.c	2014-12-19 02:42:37.258407708 -0500
+@@ -27,7 +27,6 @@
+ #include "xf86_OSproc.h"
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_driver.c xf86-video-ast-0.93.10/src/ast_driver.c
+--- xf86-video-ast-0.93.10.orig/src/ast_driver.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_driver.c	2014-12-19 02:42:50.710474414 -0500
+@@ -31,7 +31,6 @@
+ #endif
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+@@ -865,7 +864,6 @@
+    }
+ #endif /* end of Accel_2D */
+      
+-   miInitializeBackingStore(pScreen);
+    xf86SetBackingStore(pScreen);
+    xf86SetSilkenMouse(pScreen);
+ 
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_mode.c xf86-video-ast-0.93.10/src/ast_mode.c
+--- xf86-video-ast-0.93.10.orig/src/ast_mode.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_mode.c	2014-12-19 02:42:24.894346398 -0500
+@@ -27,7 +27,6 @@
+ #include "xf86_OSproc.h"
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_tool.c xf86-video-ast-0.93.10/src/ast_tool.c
+--- xf86-video-ast-0.93.10.orig/src/ast_tool.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_tool.c	2014-12-19 02:42:03.930242443 -0500
+@@ -27,7 +27,6 @@
+ #include "xf86_OSproc.h"
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"
+diff -ru xf86-video-ast-0.93.10.orig/src/ast_vgatool.c xf86-video-ast-0.93.10/src/ast_vgatool.c
+--- xf86-video-ast-0.93.10.orig/src/ast_vgatool.c	2012-03-23 21:40:56.000000000 -0400
++++ xf86-video-ast-0.93.10/src/ast_vgatool.c	2014-12-19 02:42:18.406314226 -0500
+@@ -27,7 +27,6 @@
+ #include "xf86_OSproc.h"
+ #include "xf86cmap.h"
+ #include "compiler.h"
+-#include "mibstore.h"
+ #include "vgaHW.h"
+ #include "mipointer.h"
+ #include "micmap.h"

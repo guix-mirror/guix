@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,8 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
@@ -122,49 +125,60 @@ Polygon meshes, and Extruded polygon meshes")
 (define-public mesa
   (package
     (name "mesa")
-    ;; In newer versions (9.0.5, 9.1 and 9.2 tested), "make" results in an
-    ;; infinite configure loop, see
-    ;; https://bugs.freedesktop.org/show_bug.cgi?id=58812
-    (version "8.0.5")
+    (version "10.4.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "ftp://ftp.freedesktop.org/pub/mesa/older-versions/8.x/"
-               version
-               "/MesaLib-" version
-               ".tar.bz2"))
+        (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                            version "/MesaLib-" version ".tar.bz2"))
         (sha256
-          (base32
-            "0pjs8x51c0i6mawgd4w03lxpyx5fnx7rc8plr8jfsscf9yiqs6si"))))
+         (base32
+          "069j4ck51hc70gryhw3z0rkyhhl0bnhbks4xg1wqqw56l7rxz9wq"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
-        ("libdrm" ,libdrm-2.4.33)
+        ("libdrm" ,libdrm)
         ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
         ("libxxf86vm" ,libxxf86vm)))
     (inputs
-      `(("dri2proto" ,dri2proto)
+      `(("udev" ,eudev)
+        ("dri2proto" ,dri2proto)
+        ("dri3proto" ,dri3proto)
+        ("presentproto" ,presentproto)
+        ("libxshmfence" ,libxshmfence)
         ("expat" ,expat)
         ("libxfixes" ,libxfixes)
         ("libxml2" ,libxml2)
+        ;; TODO: Add 'libva'
+        ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("makedepend" ,makedepend)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
+        ("gettext" ,gnu-gettext)
         ("flex" ,flex)
         ("bison" ,bison)
         ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
     (arguments
-      `(#:configure-flags
-         `("--with-gallium-drivers=r600,svga,swrast") ; drop r300 from the default list as it requires llvm
-        #:phases
-         (alist-cons-after
-          'unpack 'remove-symlink
-          (lambda _
-            ;; remove dangling symlink to /usr/include/wine/windows
-            (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
-         %standard-phases)))
+     `(#:configure-flags
+       `(;; drop r300 from default gallium drivers, as it requires llvm
+         "--with-gallium-drivers=r600,svga,swrast"
+         "--enable-xa")
+       #:phases (alist-cons-after
+                 'unpack 'add-missing-m4-files
+                 (lambda _
+                   ;; When these files are missing, make tries to rebuild
+                   ;; several parts of the build system.
+                   (zero? (system* "touch" "--date=@0"
+                                   "m4/libtool.m4" "m4/ltoptions.m4"
+                                   "m4/ltsugar.m4" "m4/ltversion.m4"
+                                   "m4/lt~obsolete.m4")))
+                 (alist-cons-after
+                  'unpack 'patch-create_test_cases
+                  (lambda _
+                    (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
+                      (("/usr/bin/env bash") (which "bash"))))
+                  %standard-phases))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -

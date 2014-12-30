@@ -1,0 +1,17 @@
+Fix test compilation with exa.h in configure when using glibc 2.20.
+Inspired by a patch by Peter Hutterer <peter.hutterer@who-t.net>.
+See <https://raw.githubusercontent.com/openembedded/oe-core/master/meta/recipes-graphics/xorg-driver/xf86-input-synaptics/always_include_xorg_server.h.patch>.
+
+--- xf86-video-mga-1.6.3/configure.~1~	2013-12-04 21:10:25.000000000 -0500
++++ xf86-video-mga-1.6.3/configure	2014-12-19 01:06:23.005774736 -0500
+@@ -18464,7 +18464,9 @@
+ 
+     SAVE_CPPFLAGS="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $XORG_CFLAGS"
+-    ac_fn_c_check_header_mongrel "$LINENO" "exa.h" "ac_cv_header_exa_h" "$ac_includes_default"
++    ac_fn_c_check_header_mongrel "$LINENO" "exa.h" "ac_cv_header_exa_h" "$ac_includes_default
++#include <xorg-server.h>
++"
+ if test "x$ac_cv_header_exa_h" = xyes; then :
+   have_exa_h="yes"
+ else

@@ -48,13 +48,6 @@
 (define %store
   (open-connection-for-tests))
 
-(define-syntax-rule (dummy-package name* extra-fields ...)
-  (package (name name*) (version "0") (source #f)
-           (build-system gnu-build-system)
-           (synopsis #f) (description #f)
-           (home-page #f) (license #f)
-           extra-fields ...))
-
 
 (test-begin "packages")
 

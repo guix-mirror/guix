@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,12 +82,13 @@
               ("readline" ,readline)
               ("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("gtkglext" ,gtkglext)
               ("sqlite" ,sqlite)
               ("libcanberra" ,libcanberra)))
     (native-inputs `(("python-2" ,python-2)
                      ("pkg-config" ,pkg-config)))
-    (home-page "https://gnubg.org")
+    (home-page "http://gnubg.org")
     (synopsis "Backgammon game")
     (description "The GNU backgammon application can be used for playing, analyzing and
 teaching the game.  It has an advanced evaluation engine based on artificial
@@ -110,6 +112,7 @@ representation of the playing board.")
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("libx11" ,libx11)
               ("guile" ,guile-2.0)
               ("gtkglext" ,gtkglext)))
@@ -208,6 +211,7 @@ that beneath its ruins lay buried an ancient evil.")
               ("sdl-image" ,sdl-image)
               ("sdl-mixer" ,sdl-mixer)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("libpng" ,libpng)
               ("boost" ,boost)))
     (arguments
@@ -279,7 +283,7 @@ a C library, so they can easily be integrated into other programs.")
                                     (string-append "--prefix=" out)))))
                       %standard-phases)))
     (inputs `(("ncurses" ,ncurses)))
-    (home-page "http://wwww.asty.org/cmatrix")
+    (home-page "http://www.asty.org/cmatrix")
     (synopsis "Simulate the display from \"The Matrix\"")
     (description "CMatrix simulates the display from \"The Matrix\" and is
 based on the screensaver from the movie's website.  It works with terminal
@@ -300,7 +304,7 @@ asynchronously and at a user-defined speed.")
         (base32
          "1jckpg1qi1vjr3pqs0dnip3rmn0mgklx63xflrpqiv3cx2qlz8kn"))))
     (build-system gnu-build-system)
-    (home-page "http://wwww.gnu.org/software/chess")
+    (home-page "http://www.gnu.org/software/chess")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal
@@ -607,14 +611,21 @@ buffers, and audio capture.")
                     (and (zero? (system* "unzip" source))
                          ;; The actual source is buried a few directories deep.
                          (chdir "irrlicht-1.8.1/source/Irrlicht/")))
-                  ;; No configure script
-                  (alist-delete 'configure %standard-phases)))
+                  (alist-cons-after
+                   'unpack 'apply-patch/mesa-10-fix
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (zero? (system* "patch" "--force" "-p3" "-i"
+                                     (assoc-ref inputs "patch/mesa-10-fix"))))
+                   ;; No configure script
+                   (alist-delete 'configure %standard-phases))))
        #:tests? #f ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("patch/mesa-10-fix" ,(search-patch "irrlicht-mesa-10.patch"))
+       ("unzip" ,unzip)))
     (inputs
-     `(("mesa" ,mesa)))
+     `(("mesa" ,mesa)
+       ("glu" ,glu)))
     (synopsis "3D game engine written in C++")
     (description
      "The Irrlicht Engine is a high performance realtime 3D engine written in

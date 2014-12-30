@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,13 +41,13 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.22.0")
+   (version "0.28.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://poppler.freedesktop.org/poppler-"
-                                version ".tar.gz"))
+                                version ".tar.xz"))
             (sha256 (base32
-                     "1rmrspavldlpqi6g76fijcmshy80m0kxd01nc1dmy4id3h4las44"))))
+                     "01pxjdbhvpxf00ncf8d9wxc8gkcqcxz59lwrpa151ah988inxkrc"))))
    (build-system gnu-build-system)
    ;; FIXME: more dependencies could  be added
    ;;  cairo output:       no (requires cairo >= 1.10.0)

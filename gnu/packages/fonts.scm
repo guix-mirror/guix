@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -144,13 +144,13 @@ provide serif, sans and monospaced variants.")
     (native-inputs `(("source" ,source)
                      ("tar" ,tar)
                      ("bzip2" ,bzip2)))
-    (home-page "https://www-old.gnome.org/fonts/")
+    (home-page "http://www.gnome.org/fonts/")
     (synopsis "Bitstream Vera sans-serif typeface")
     (description "Vera is a sans-serif typeface from Bitstream, Inc.  This
 package provides the TrueType (TTF) files.")
     (license
      (license:x11-style
-      "https://www-old.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
+      "http://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
 
 (define-public font-gnu-freefont-ttf
   (package

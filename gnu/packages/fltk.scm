@@ -50,7 +50,7 @@
           (substitute* "makeinclude.in"
             (("/bin/sh") (which "sh"))))
         %standard-phases)))
-    (home-page "https://www.fltk.org")
+    (home-page "http://www.fltk.org")
     (synopsis "3D C++ GUI library")
     (description "FLTK is a C++ GUI toolkit providing modern GUI functionality
 without the bloat.  It supports 3D graphics via OpenGL and its built-in GLUT

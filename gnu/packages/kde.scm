@@ -153,7 +153,7 @@ and import their menus over DBus.")
     (build-system cmake-build-system)
     (inputs
      `(("qt" ,qt-4)))
-    (home-page "https://projects.kde.org/projects/kdesupport/attica")
+    (home-page "https://projects.kde.org/projects/frameworks/attica")
     (synopsis "Qt library for the Open Collaboration Services API")
     (description "Attica is a Qt library that implements the Open
 Collaboration Services API version 1.6.  It grants easy access to the

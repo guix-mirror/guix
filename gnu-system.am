@@ -386,7 +386,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-CVE-2014-1592.patch		\
   gnu/packages/patches/icecat-CVE-2014-1593.patch		\
   gnu/packages/patches/icecat-CVE-2014-1594.patch		\
-  gnu/packages/patches/inkscape-stray-comma.patch               \
+  gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
@@ -440,6 +440,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ripperx-libm.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
+  gnu/packages/patches/sdl-libx11-1.6.patch			\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
@@ -454,10 +455,27 @@ dist_patch_DATA =						\
   gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/vpnc-script.patch			\
+  gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
-  gnu/packages/patches/xf86-input-synaptics-glibc-2.20.patch	\
-  gnu/packages/patches/xf86-video-openchrome-includes.patch	\
+  gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-geode-glibc-2.20.patch	\
+  gnu/packages/patches/xf86-video-glint-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-i128-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-intel-compat-api.patch	\
+  gnu/packages/patches/xf86-video-intel-glibc-2.20.patch	\
+  gnu/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
+  gnu/packages/patches/xf86-video-mga-glibc-2.20.patch		\
+  gnu/packages/patches/xf86-video-nv-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-openchrome-glibc-2.20.patch	\
+  gnu/packages/patches/xf86-video-r128-glibc-2.20.patch		\
+  gnu/packages/patches/xf86-video-siliconmotion-remove-mibstore.patch \
+  gnu/packages/patches/xf86-video-sis-update-api.patch		\
+  gnu/packages/patches/xf86-video-tdfx-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-tga-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-trident-remove-mibstore.patch	\
+  gnu/packages/patches/xf86-video-vmware-glibc-2.20.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
   gnu/packages/patches/xmodmap-asprintf.patch
 
