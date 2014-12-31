@@ -531,7 +531,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (native-inputs `(("texinfo" ,texinfo-boot0)
                      ,@(package-native-inputs gcc-boot0)))
 
-    (inputs `(("gmp-source" ,(package-source gmp))
+    (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp)))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
               ("binutils" ,binutils-final)

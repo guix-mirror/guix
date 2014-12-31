@@ -372,6 +372,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-mips-dangling-vfork-ref.patch	\
+  gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gnunet-fix-scheduler.patch		\
   gnu/packages/patches/gnunet-fix-tests.patch    		\
   gnu/packages/patches/gobject-introspection-cc.patch		\
