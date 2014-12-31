@@ -1,0 +1,45 @@
+Avoid a dangling `vfork@GLIBC_2.0' reference on MIPS.
+
+Note: Here the ChangeLog and NEWS updates are removed from Maciej's
+      patch, since they depend on other earlier commits.
+
+From: Maciej W. Rozycki <macro@codesourcery.com>
+Date: Wed, 22 Oct 2014 14:20:37 +0000 (+0100)
+Subject: MIPS: Avoid a dangling `vfork@GLIBC_2.0' reference
+X-Git-Url: https://sourceware.org/git/?p=glibc.git;a=commitdiff_plain;h=c14e752fc73d34c75d4f84f37fea8e0b1734cf98
+
+MIPS: Avoid a dangling `vfork@GLIBC_2.0' reference
+
+This satisfies a symbol reference created with:
+
+	.symver	__libc_vfork, vfork@GLIBC_2.0
+
+where `__libc_vfork' has not been defined or referenced.  In this case
+the `vfork@GLIBC_2.0' reference is supposed to be discarded, however a
+bug present in GAS since forever causes an undefined symbol table entry
+to be created.  This in turn triggers a problem in the linker that can
+manifest itself by link errors such as:
+
+ld: libpthread.so: invalid string offset 2765592330 >= 5154 for section `.dynstr'
+
+The GAS and linker bugs need to be resolved, but we can avoid them too
+by providing a `__libc_vfork' definition just like our other platforms.
+
+	[BZ #17485]
+	* sysdeps/unix/sysv/linux/mips/vfork.S (__libc_vfork): Define.
+
+(cherry picked from commit b5af9297d51a43f96c5be1bafab032184690dd6f)
+
+Conflicts:
+	NEWS
+---
+
+diff --git a/sysdeps/unix/sysv/linux/mips/vfork.S b/sysdeps/unix/sysv/linux/mips/vfork.S
+index 80c362d..2c1a747 100644
+--- a/sysdeps/unix/sysv/linux/mips/vfork.S
++++ b/sysdeps/unix/sysv/linux/mips/vfork.S
+@@ -108,3 +108,4 @@ L(error):
+ 
+ libc_hidden_def(__vfork)
+ weak_alias (__vfork, vfork)
++strong_alias (__vfork, __libc_vfork)

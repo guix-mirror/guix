@@ -377,6 +377,7 @@ included.")
             (modules '((guix build utils)))
             (patches (list (search-patch "glibc-CVE-2014-7817.patch")
                            (search-patch "glibc-CVE-2012-3406.patch")
+                           (search-patch "glibc-mips-dangling-vfork-ref.patch")
                            (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
