@@ -264,8 +264,15 @@ $out/bin/guile --version~%"
                               ("mips64el-linux"
                                (base32
                                 "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
-                        "true"                    ; the program to test
-                        "Bootstrap binaries of Coreutils, Awk, etc."))
+                        "fgrep"                    ; the program to test
+                        "Bootstrap binaries of Coreutils, Awk, etc."
+                        #:snippet
+                        '(let ((path (list (string-append (getcwd) "/bin"))))
+                           (chmod "bin" #o755)
+                           (patch-shebang "bin/egrep" path)
+                           (patch-shebang "bin/fgrep" path)
+                           (chmod "bin" #o555)
+                           #t)))
 
 (define %bootstrap-binutils
   (package-from-tarball "binutils-bootstrap"
