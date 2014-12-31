@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,10 +88,13 @@
                      (patch patch))
                     (origin-patches source))))))
 
-(define (package-from-tarball name source program-to-test description)
+(define* (package-from-tarball name source program-to-test description
+                               #:key snippet)
   "Return a package that correspond to the extraction of SOURCE.
 PROGRAM-TO-TEST is a program to run after extraction of SOURCE, to
-check whether everything is alright."
+check whether everything is alright.  If SNIPPET is provided, it is
+evaluated after extracting SOURCE.  SNIPPET should return true if
+successful, or false to signal an error."
   (package
     (name name)
     (version "0")
@@ -112,6 +116,7 @@ check whether everything is alright."
            (with-directory-excursion out
              (and (zero? (system* tar "xvf"
                                   (string-append builddir "/binaries.tar")))
+                  ,@(if snippet (list snippet) '())
                   (zero? (system* (string-append "bin/" ,program-to-test)
                                   "--version"))))))))
     (inputs
