@@ -122,19 +122,6 @@
     ("file" ,file-boot0)
     ,@%bootstrap-inputs))
 
-(define* (nix-system->gnu-triplet
-          #:optional (system (%current-system)) (vendor "unknown"))
-  "Return an a guess of the GNU triplet corresponding to Nix system
-identifier SYSTEM."
-  (let* ((dash (string-index system #\-))
-         (arch (substring system 0 dash))
-         (os   (substring system (+ 1 dash))))
-    (string-append arch
-                   "-" vendor "-"
-                   (if (string=? os "linux")
-                       "linux-gnu"
-                       os))))
-
 (define* (boot-triplet #:optional (system (%current-system)))
   ;; Return the triplet used to create the cross toolchain needed in the
   ;; first bootstrapping stage.
