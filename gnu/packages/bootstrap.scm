@@ -192,7 +192,11 @@ successful, or false to signal an error."
          (xz    (->store "xz"))
          (mkdir (->store "mkdir"))
          (bash  (->store "bash"))
-         (guile (->store "guile-2.0.9.tar.xz"))
+         (guile (->store (match system
+                           ("armhf-linux"
+                            "guile-2.0.11.tar.xz")
+                           (_
+                            "guile-2.0.9.tar.xz"))))
          (builder
           (add-text-to-store store
                              "build-bootstrap-guile.sh"
@@ -252,7 +256,11 @@ $out/bin/guile --version~%"
                           (origin
                            (method url-fetch)
                            (uri (map (cut string-append <> "/" system
-                                          "/20131110/static-binaries.tar.xz")
+                                          (match system
+                                            ("armhf-linux"
+                                             "/20150101/static-binaries.tar.xz")
+                                            (_
+                                             "/20131110/static-binaries.tar.xz")))
                                      %bootstrap-base-urls))
                            (sha256
                             (match system
@@ -262,6 +270,9 @@ $out/bin/guile --version~%"
                               ("i686-linux"
                                (base32
                                 "0s5b3jb315n13m1k8095l0a5hfrsz8g0fv1b6riyc5hnxqyphlak"))
+                              ("armhf-linux"
+                               (base32
+                                "0gf0fn2kbpxkjixkmx5f4z6hv6qpmgixl69zgg74dbsfdfj8jdv5"))
                               ("mips64el-linux"
                                (base32
                                 "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
@@ -281,7 +292,11 @@ $out/bin/guile --version~%"
                           (origin
                            (method url-fetch)
                            (uri (map (cut string-append <> "/" system
-                                          "/20131110/binutils-2.23.2.tar.xz")
+                                          (match system
+                                            ("armhf-linux"
+                                             "/20150101/binutils-2.25.tar.xz")
+                                            (_
+                                             "/20131110/binutils-2.23.2.tar.xz")))
                                      %bootstrap-base-urls))
                            (sha256
                             (match system
@@ -291,6 +306,9 @@ $out/bin/guile --version~%"
                               ("i686-linux"
                                (base32
                                 "14jgwf9gscd7l2pnz610b1zia06dvcm2qyzvni31b8zpgmcai2v9"))
+                              ("armhf-linux"
+                               (base32
+                                "1v7dj6bzn6m36f20gw31l99xaabq4xrhrx3gwqkhhig0mdlmr69q"))
                               ("mips64el-linux"
                                (base32
                                 "1x8kkhcxmfyzg1ddpz2pxs6fbdl6412r7x0nzbmi5n7mj8zw2gy7"))))))
@@ -335,7 +353,11 @@ $out/bin/guile --version~%"
                     (origin
                      (method url-fetch)
                      (uri (map (cut string-append <> "/" (%current-system)
-                                    "/20131110/glibc-2.18.tar.xz")
+                                    (match (%current-system)
+                                      ("armhf-linux"
+                                       "/20150101/glibc-2.20.tar.xz")
+                                      (_
+                                       "/20131110/glibc-2.18.tar.xz")))
                                %bootstrap-base-urls))
                      (sha256
                       (match (%current-system)
@@ -345,6 +367,9 @@ $out/bin/guile --version~%"
                         ("i686-linux"
                          (base32
                           "1hgrccw1zqdc7lvgivwa54d9l3zsim5pqm0dykxg0z522h6gr05w"))
+                        ("armhf-linux"
+                         (base32
+                          "18cmgvpllqfpn6khsmivqib7ys8ymnq0hdzi3qp24prik0ykz8gn"))
                         ("mips64el-linux"
                          (base32
                           "0k97a3whzx3apsi9n2cbsrr79ad6lh00klxph9hw4fqyp1abkdsg")))))))))
@@ -406,7 +431,11 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                     (origin
                      (method url-fetch)
                      (uri (map (cut string-append <> "/" (%current-system)
-                                    "/20131110/gcc-4.8.2.tar.xz")
+                                    (match (%current-system)
+                                      ("armhf-linux"
+                                       "/20150101/gcc-4.8.4.tar.xz")
+                                      (_
+                                       "/20131110/gcc-4.8.2.tar.xz")))
                                %bootstrap-base-urls))
                      (sha256
                       (match (%current-system)
@@ -416,6 +445,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                         ("i686-linux"
                          (base32
                           "150c1arrf2k8vfy6dpxh59vcgs4p1bgiz2av5m19dynpks7rjnyw"))
+                        ("armhf-linux"
+                         (base32
+                          "0ghz825yzp43fxw53kd6afm8nkz16f7dxi9xi40bfwc8x3nbbr8v"))
                         ("mips64el-linux"
                          (base32
                           "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))

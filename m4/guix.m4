@@ -1,5 +1,6 @@
 dnl GNU Guix --- Functional package management for GNU
 dnl Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl
 dnl This file is part of GNU Guix.
 dnl
@@ -50,6 +51,16 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
 	  machine_name="i686";;
        amd64)
 	  machine_name="x86_64";;
+       arm*)
+          # TODO: If not cross-compiling, add a sanity check to make
+          #       sure this build machine has the needed features to
+          #       support executables compiled using our armhf gcc,
+          #       configured with:
+          #         --with-arch=armv7-a
+          #         --with-float=hard
+          #         --with-mode=thumb
+          #         --with-fpu=vfpv3-d16
+	  machine_name="armhf";;
        *)
 	  machine_name="$host_cpu";;
      esac
@@ -86,7 +97,7 @@ courageous and port the GNU System distribution to it (see
   # Currently only Linux-based systems are supported, and only on some
   # platforms.
   case "$guix_system" in
-    x86_64-linux|i686-linux|mips64el-linux)
+    x86_64-linux|i686-linux|armhf-linux|mips64el-linux)
       ;;
     *)
       if test "x$guix_courageous" = "xyes"; then

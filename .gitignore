@@ -67,6 +67,7 @@ config.cache
 /doc/version.texi
 /gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz
 /gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz
+/gnu/packages/bootstrap/armhf-linux/guile-2.0.11.tar.xz
 /gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz
 /guix/config.scm
 /nix/nix-daemon/nix-daemon.cc
