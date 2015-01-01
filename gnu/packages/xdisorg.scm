@@ -189,28 +189,6 @@ and Matrox.")
     (license license:x11)))
 
 
-;; old version, required by old mesa, see
-;; http://www.mail-archive.com/nouveau@lists.freedesktop.org/msg10098.html
-(define-public libdrm-2.4.33
-  (package (inherit libdrm)
-    (version "2.4.33")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "http://dri.freedesktop.org/libdrm/libdrm-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1slgi61n4dlsfli47ql354fd1ppj7n40jd94wvnsdqx0mna9syrd"))))
-    (arguments
-      `(#:configure-flags
-         ;; create libdrm_nouveau.so, needed by mesa, see
-         ;; http://comments.gmane.org/gmane.linux.lfs.beyond.support/43261
-         `("--enable-nouveau-experimental-api")))))
-
-
 (define-public mtdev
   (package
     (name "mtdev")
