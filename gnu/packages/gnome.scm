@@ -312,6 +312,18 @@ for settings shared by various components of the GNOME desktop.")
     (inputs
      `(("perl" ,perl)
        ("perl-xml-simple" ,perl-xml-simple)))
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'install 'set-load-paths
+        ;; Tell 'icon-name-mapping' where XML::Simple is.
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((out  (assoc-ref outputs "out"))
+                 (prog (string-append out "/libexec/icon-name-mapping")))
+            (wrap-program
+             prog
+             `("PERL5LIB" = ,(list (getenv "PERL5LIB"))))))
+        %standard-phases)))
     (home-page "http://tango.freedesktop.org/Standard_Icon_Naming_Specification")
     (synopsis
      "Utility to implement the Freedesktop Icon Naming Specification")
