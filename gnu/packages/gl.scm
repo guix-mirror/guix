@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gl)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -161,9 +162,17 @@ Polygon meshes, and Extruded polygon meshes")
         ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
     (arguments
      `(#:configure-flags
-       `(;; drop r300 from default gallium drivers, as it requires llvm
+       '(;; drop r300 from default gallium drivers, as it requires llvm
          "--with-gallium-drivers=r600,svga,swrast"
-         "--enable-xa")
+         "--enable-xa"
+
+         ;; on non-intel systems, drop i915 and i965
+         ;; from the default dri drivers
+         ,@(match (%current-system)
+             ((or "x86_64-linux" "i686-linux")
+              '())
+             (_
+              '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases (alist-cons-after
                  'unpack 'add-missing-m4-files
                  (lambda _
