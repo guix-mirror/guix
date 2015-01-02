@@ -430,7 +430,19 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libquadmath"
                        "--disable-decimal-float")
                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
-                              ,flags))))))
+                              ,flags)))
+            ((#:phases phases)
+             `(alist-cons-after
+               'pre-configure 'remove-lgcc_s
+               (lambda _
+                 ;; Remove the '-lgcc_s' added to GNU_USER_TARGET_LIB_SPEC in
+                 ;; the 'pre-configure phase of our main gcc package, because
+                 ;; that shared library is not present in this static gcc.  See
+                 ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
+                 (substitute* (find-files "gcc/config"
+                                          "^gnu-user.*\\.h$")
+                   ((" -lgcc_s}}") "}}")))
+               ,phases)))))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both

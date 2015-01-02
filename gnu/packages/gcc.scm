@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,6 +208,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    ;; libgcc_s.so when pthread_cancel support is needed, but
                    ;; having it in the application's RUNPATH isn't enough; see
                    ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
+                   ;;
+                   ;; NOTE: The '-lgcc_s' added below needs to be removed in a
+                   ;; later phase of %gcc-static.  If you change the string
+                   ;; below, make sure to update the relevant code in
+                   ;; %gcc-static package as needed.
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
 \"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
                            libc libc libdir libdir suffix))
