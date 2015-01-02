@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -201,14 +202,15 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (substitute* (find-files "gcc/config"
                                          "^gnu-user.*\\.h$")
                   (("#define GNU_USER_TARGET_LIB_SPEC (.*)$" _ suffix)
-                   ;; Help libgcc_s.so be found (see also below.)  Always use
-                   ;; '-lgcc_s' so that libgcc_s.so is always found by those
-                   ;; programs that use 'pthread_cancel' (glibc dlopens
-                   ;; libgcc_s.so when pthread_cancel support is needed, but
-                   ;; having it in the application's RUNPATH isn't enough; see
+                   ;; Help libgcc_s.so be found (see also below.)  When
+                   ;; -pthread is given, use '-lgcc_s' so that libgcc_s.so is
+                   ;; always found by those programs that use 'pthread_cancel'
+                   ;; (glibc dlopens libgcc_s.so when pthread_cancel support
+                   ;; is needed, but having it in the application's RUNPATH
+                   ;; isn't enough; see
                    ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
-\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
+\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib %{pthread:-lgcc_s}}} \" ~a"
                            libc libc libdir libdir suffix))
                   (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
