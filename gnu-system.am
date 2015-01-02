@@ -415,7 +415,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
-  gnu/packages/patches/minetest-subgame-env-var.patch		\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
