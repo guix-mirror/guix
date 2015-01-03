@@ -19,6 +19,7 @@
 (define-module (test-packages)
   #:use-module (guix tests)
   #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module ((guix utils)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
@@ -31,10 +32,13 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix profiles)
+  #:use-module (guix scripts package)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -526,6 +530,53 @@
   (match (find-packages-by-name "hello" (package-version hello))
     (((? (cut eq? hello <>))) #t)
     (wrong (pk 'find-packages-by-name wrong #f))))
+
+(test-assert "--search-paths with pattern"
+  ;; Make sure 'guix package --search-paths' correctly reports environment
+  ;; variables when file patterns are used (in particular, it must follow
+  ;; symlinks when looking for 'catalog.xml'.)  To do that, we rely on the
+  ;; libxml2 package specification, which contains such a definition.
+  (let* ((p1 (package
+               (name "foo") (version "0") (source #f)
+               (build-system trivial-build-system)
+               (arguments
+                `(#:guile ,%bootstrap-guile
+                  #:modules ((guix build utils))
+                  #:builder (begin
+                              (use-modules (guix build utils))
+                              (let ((out (assoc-ref %outputs "out")))
+                                (mkdir-p (string-append out "/xml/bar/baz"))
+                                (call-with-output-file
+                                    (string-append out "/xml/bar/baz/catalog.xml")
+                                  (lambda (port)
+                                    (display "xml? wat?!" port)))))))
+               (synopsis #f) (description #f)
+               (home-page #f) (license #f)))
+         (p2 (package
+               ;; Provide a fake libxml2 to avoid building the real one.  This
+               ;; is OK because 'guix package' gets search path specifications
+               ;; from the same-named package found in the distro.
+               (name "libxml2") (version "0.0.0") (source #f)
+               (build-system trivial-build-system)
+               (arguments
+                `(#:guile ,%bootstrap-guile
+                  #:builder (mkdir (assoc-ref %outputs "out"))))
+               (native-search-paths (package-native-search-paths libxml2))
+               (synopsis #f) (description #f)
+               (home-page #f) (license #f)))
+         (prof (run-with-store %store
+                 (profile-derivation
+                  (manifest (map package->manifest-entry
+                                 (list p1 p2)))
+                  #:info-dir? #f)
+                 #:guile-for-build (%guile-for-build))))
+    (build-derivations %store (list prof))
+    (string-match (format #f "^export XML_CATALOG_FILES=\"~a/xml/+bar/baz/catalog\\.xml\"\n"
+                          (derivation->output-path prof))
+                  (with-output-to-string
+                    (lambda ()
+                      (guix-package "-p" (derivation->output-path prof)
+                                    "--search-paths"))))))
 
 (test-end "packages")
 

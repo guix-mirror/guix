@@ -365,12 +365,17 @@ current settings and report only settings not already effective."
       (match-lambda
        (($ <search-path-specification> variable files separator
                                        type pattern)
-        (let ((values (or (and=> (getenv variable)
-                                 (cut string-tokenize* <> separator))
-                          '()))
-              (path   (search-path-as-list files (list profile)
-                                           #:type type
-                                           #:pattern pattern)))
+        (let* ((values (or (and=> (getenv variable)
+                                  (cut string-tokenize* <> separator))
+                           '()))
+               ;; Add a trailing slash to force symlinks to be treated as
+               ;; directories when 'find-files' traverses them.
+               (files  (if pattern
+                           (map (cut string-append <> "/") files)
+                           files))
+               (path   (search-path-as-list files (list profile)
+                                            #:type type
+                                            #:pattern pattern)))
           (if (every (cut member <> values) path)
               #f
               (format #f "export ~a=\"~a\""
