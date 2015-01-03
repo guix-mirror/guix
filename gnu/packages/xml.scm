@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -72,12 +72,12 @@ things the parser might find in the XML document (like start tags).")
 
     ;; $XML_CATALOG_FILES lists 'catalog.xml' files found in under the 'xml'
     ;; sub-directory of any given package.
-    (native-search-paths (search-path-specification
-                          (variable "XML_CATALOG_FILES")
-                          (separator " ")
-                          (files '("xml"))
-                          (file-pattern "^catalog\\.xml$")
-                          (file-type 'regular)))
+    (native-search-paths (list (search-path-specification
+                                (variable "XML_CATALOG_FILES")
+                                (separator " ")
+                                (files '("xml"))
+                                (file-pattern "^catalog\\.xml$")
+                                (file-type 'regular))))
     (search-paths native-search-paths)
 
     (arguments
