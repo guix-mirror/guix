@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,7 +82,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.3.2")
+    (version "5.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -91,7 +92,14 @@ X11 (yet).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1w4v53889kqpwxw45wcqz5bi6zx8xp434jpafk1vlmyb8hrzjnvz"))))
+               "176351k8ngczb324i8bbkrsz9pby7cvy2qnixfjwybzxp53xzndj"))
+             (snippet
+              '(begin
+                 ;; Remove broken symlinks.
+                 (delete-file "qtwebengine/src/3rdparty/chromium/third_party/\
+mesa/src/src/gallium/state_trackers/d3d1x/w32api")
+                 (delete-file "qtwebengine/src/3rdparty/chromium/third_party/\
+webrtc/tools/e2e_quality/audio/perf")))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -129,7 +137,9 @@ X11 (yet).")
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* '("configure" "qtbase/configure")
-                           (("/bin/pwd") (which "pwd")))
+                (("/bin/pwd") (which "pwd")))
+              (substitute* "qtbase/src/corelib/global/global.pri"
+                (("/bin/ls") (which "ls")))
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
               (zero? (system*
