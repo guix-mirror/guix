@@ -1,0 +1,24 @@
+Because our GCC 'lib' spec automatically adds '-rpath' for each '-L'
+and a couple more '-rpath, there are two test failures:
+one in demo.test, and one in destdir.at.  Disable these.
+
+--- libtool-2.4.4/tests/testsuite	2014-11-29 17:43:11.000000000 +0100
++++ libtool-2.4.4/tests/testsuite	2015-01-03 23:00:09.367775122 +0100
+@@ -9185,7 +9185,7 @@ read at_status <"$at_status_file"
+ #AT_START_33
+ at_fn_group_banner 33 'demo.at:548' \
+   "hardcoding library path" "                        " 3
+-at_xfail=no
++at_xfail=yes
+       test no = "$ACLOCAL" && at_xfail=yes
+       test no = "$AUTOHEADER" && at_xfail=yes
+       test no = "$AUTOMAKE" && at_xfail=yes
+@@ -27052,7 +27052,7 @@ read at_status <"$at_status_file"
+ #AT_START_97
+ at_fn_group_banner 97 'destdir.at:75' \
+   "DESTDIR with in-package deplibs" "                " 7
+-at_xfail=no
++at_xfail=yes
+       eval `$LIBTOOL --config | $GREP '^fast_install='`
+            case $fast_install in no) :;; *) false;; esac && at_xfail=yes
+ (
