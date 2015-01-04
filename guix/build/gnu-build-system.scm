@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -265,7 +265,7 @@ makefiles."
 (define* (install #:key (make-flags '()) #:allow-other-keys)
   (zero? (apply system* "make" "install" make-flags)))
 
-(define* (patch-shebangs #:key outputs (patch-shebangs? #t)
+(define* (patch-shebangs #:key inputs outputs (patch-shebangs? #t)
                          #:allow-other-keys)
   (define (list-of-files dir)
     (map (cut string-append dir "/" <>)
@@ -274,20 +274,26 @@ makefiles."
                               (eq? 'regular (stat:type s)))))
              '())))
 
-  (define bindirs
-    (append-map (match-lambda
-                 ((_ . dir)
-                  (list (string-append dir "/bin")
-                        (string-append dir "/sbin"))))
-                outputs))
+  (define bin-directories
+    (match-lambda
+     ((_ . dir)
+      (list (string-append dir "/bin")
+            (string-append dir "/sbin")))))
+
+  (define output-bindirs
+    (append-map bin-directories outputs))
+
+  (define input-bindirs
+    ;; Shebangs should refer to binaries of the target system---i.e., from
+    ;; "inputs", not from "native-inputs".
+    (append-map bin-directories inputs))
 
   (when patch-shebangs?
-    (let ((path (append bindirs
-                        (search-path-as-string->list (getenv "PATH")))))
+    (let ((path (append output-bindirs input-bindirs)))
       (for-each (lambda (dir)
                   (let ((files (list-of-files dir)))
                     (for-each (cut patch-shebang <> path) files)))
-                bindirs)))
+                output-bindirs)))
   #t)
 
 (define* (strip #:key target outputs (strip-binaries? #t)
