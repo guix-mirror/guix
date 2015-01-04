@@ -10,7 +10,7 @@
 @include version.texi
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov
 
@@ -830,16 +830,15 @@ current generation of the user's default profile.  Thus, users can add
 @file{$HOME/.guix-profile/bin} to their @code{PATH} environment
 variable, and so on.
 
-In a multi-user setup, user profiles must be stored in a place
-registered as a @dfn{garbage-collector root}, which
-@file{$HOME/.guix-profile} points to (@pxref{Invoking guix gc}).  That
-directory is normally
+In a multi-user setup, user profiles are stored in a place registered as
+a @dfn{garbage-collector root}, which @file{$HOME/.guix-profile} points
+to (@pxref{Invoking guix gc}).  That directory is normally
 @code{@var{localstatedir}/profiles/per-user/@var{user}}, where
 @var{localstatedir} is the value passed to @code{configure} as
-@code{--localstatedir}, and @var{user} is the user name.  It must be
-created by @code{root}, with @var{user} as the owner.  When it does not
-exist, or is not owned by @var{user}, @command{guix package} emits an
-error about it.
+@code{--localstatedir}, and @var{user} is the user name.  The
+@file{per-user} directory is created when @command{guix-daemon} is
+started, and the @var{user} sub-directory is created by @command{guix
+package}.
 
 The @var{options} can be among the following:
 
