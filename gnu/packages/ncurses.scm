@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -98,11 +98,6 @@
           ;; what users expect.
           ,(string-append "--includedir=" (assoc-ref %outputs "out")
                           "/include")
-
-          ;; By default man pages land in PREFIX/man, but we want them
-          ;; in PREFIX/share/man.
-          ,(string-append "--mandir=" (assoc-ref %outputs "out")
-                          "/share/man")
 
           ;; Make sure programs like 'tic', 'reset', and 'clear' have a
           ;; correct RUNPATH.

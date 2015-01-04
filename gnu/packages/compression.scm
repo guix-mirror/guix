@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -115,13 +115,7 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
    (home-page "http://www.gnu.org/software/gzip/")))
 
 (define-public bzip2
-  (let ((fix-man-dir
-         ;; Move man pages to $out/share/.
-         '(lambda* (#:key outputs #:allow-other-keys)
-            (with-directory-excursion (assoc-ref outputs "out")
-              (mkdir "share")
-              (rename-file "man" "share/man"))))
-        (build-shared-lib
+  (let ((build-shared-lib
          ;; Build a shared library.
          '(lambda* (#:key inputs #:allow-other-keys)
             (patch-makefile-SHELL "Makefile-libbz2_so")
@@ -171,20 +165,16 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
               `(alist-cons-before
                 'build 'build-shared-lib ,build-shared-lib
                 (alist-cons-after
-                 'install 'fix-man-dir ,fix-man-dir
-                 (alist-cons-after
-                  'install 'install-shared-lib ,install-shared-lib
-                  (alist-replace 'configure ,set-cross-environment
-                                 %standard-phases))))
+                 'install 'install-shared-lib ,install-shared-lib
+                 (alist-replace 'configure ,set-cross-environment
+                                %standard-phases)))
 
               ;; Native compilation: build the shared library.
               `(alist-cons-before
                 'build 'build-shared-lib ,build-shared-lib
                 (alist-cons-after
-                 'install 'fix-man-dir ,fix-man-dir
-                 (alist-cons-after
-                  'install 'install-shared-lib ,install-shared-lib
-                  (alist-delete 'configure %standard-phases)))))
+                 'install 'install-shared-lib ,install-shared-lib
+                 (alist-delete 'configure %standard-phases))))
 
          #:make-flags (list (string-append "PREFIX="
                                            (assoc-ref %outputs "out")))
