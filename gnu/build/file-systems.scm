@@ -287,13 +287,6 @@ run a file system check."
        (mount source mount-point type (mount-flags->bit-mask flags)
               (if options
                   (string->pointer options)
-                  %null-pointer))
-
-       ;; Update /etc/mtab.
-       (mkdir-p (string-append root "/etc"))
-       (let ((port (open-file (string-append root "/etc/mtab") "a")))
-         (format port "~a ~a ~a ~a 0 0~%"
-                 source mount-point type (or options "rw"))
-         (close-port port))))))
+                  %null-pointer))))))
 
 ;;; file-systems.scm ends here

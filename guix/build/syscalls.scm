@@ -130,7 +130,7 @@
   (let* ((ptr  (dynamic-func "mount" (dynamic-link)))
          (proc (pointer->procedure int ptr `(* * * ,unsigned-long *))))
     (lambda* (source target type #:optional (flags 0) options
-                     #:key (update-mtab? #t))
+                     #:key (update-mtab? #f))
       "Mount device SOURCE on TARGET as a file system TYPE.  Optionally, FLAGS
 may be a bitwise-or of the MS_* <sys/mount.h> constants, and OPTIONS may be a
 string.  When FLAGS contains MS_REMOUNT, SOURCE and TYPE are ignored.  When
@@ -159,7 +159,7 @@ error."
   (let* ((ptr  (dynamic-func "umount2" (dynamic-link)))
          (proc (pointer->procedure int ptr `(* ,int))))
     (lambda* (target #:optional (flags 0)
-                     #:key (update-mtab? #t))
+                     #:key (update-mtab? #f))
       "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
 constants from <sys/mount.h>."
       (let ((ret (proc (string->pointer target) flags))

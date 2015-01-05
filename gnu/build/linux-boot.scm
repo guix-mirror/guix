@@ -275,7 +275,10 @@ UNIONFS."
         (check-file-system root type)
         (mount root "/root" type)))
 
-  (copy-file "/proc/mounts" "/root/etc/mtab"))
+  ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
+  (when (file-exists? "/root/etc/mtab")
+    (delete-file "/root/etc/mtab"))
+  (symlink "/proc/self/mounts" "/root/etc/mtab"))
 
 (define (switch-root root)
   "Switch to ROOT as the root file system, in a way similar to what
