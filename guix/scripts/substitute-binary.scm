@@ -309,12 +309,16 @@ NARINFO, doesn't match HASH, a bytevector containing the hash of NARINFO."
       (corrupt-signature
        (leave (_ "signature on '~a' is corrupt~%") uri)))))
 
-(define* (read-narinfo port #:optional url)
+(define* (read-narinfo port #:optional url
+                       #:key size)
   "Read a narinfo from PORT.  If URL is true, it must be a string used to
-build full URIs from relative URIs found while reading PORT.
+build full URIs from relative URIs found while reading PORT.  When SIZE is
+true, read at most SIZE bytes from PORT; otherwise, read as much as possible.
 
 No authentication and authorization checks are performed here!"
-  (let ((str (utf8->string (get-bytevector-all port))))
+  (let ((str (utf8->string (if size
+                               (get-bytevector-n port size)
+                               (get-bytevector-all port)))))
     (alist->record (call-with-input-string str fields->alist)
                    (narinfo-maker str url)
                    '("StorePath" "URL" "Compression"
