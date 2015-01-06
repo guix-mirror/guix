@@ -95,6 +95,7 @@ as well as the classic centralized workflow.")
     (license gpl2+)))
 
 (define-public git
+  ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
    (version "2.2.1")
@@ -209,6 +210,52 @@ as well as the classic centralized workflow.")
 everything from small to very large projects with speed and efficiency.")
    (license gpl2)
    (home-page "http://git-scm.com/")))
+
+(define-public git-manpages
+  ;; Keep in sync with 'git'!
+
+  ;; Granted, we could build the man pages from the 'git' package itself,
+  ;; which contains the real source.  However, it would add a dependency on a
+  ;; full XML tool chain, and building it actually takes ages.  So we use this
+  ;; lazy approach.
+  (package
+    (name "git-manpages")
+    (version (package-version git))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/software/scm/git/git-manpages-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0f75n5yfrzb55qbg5wq4bmv43lay806v51yhglwkp7mbv1zkby00"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let* ((xz    (assoc-ref %build-inputs "xz"))
+                (tar   (assoc-ref %build-inputs "tar"))
+                (out   (assoc-ref %outputs "out"))
+                (share (string-append out "/share")))
+           (setenv "PATH" (string-append tar "/bin:" xz "/bin"))
+
+           (mkdir-p share)
+           (with-directory-excursion share
+             (zero? (system* "tar" "xvf"
+                             (assoc-ref %build-inputs "source"))))))))
+
+    (native-inputs `(("tar" ,tar)
+                     ("xz" ,xz)))
+    (home-page (package-home-page git))
+    (license (package-license git))
+    (synopsis "Man pages of the Git version control system")
+    (description
+     "This package provides the man pages of the Git version control system.
+This is the documentation displayed when using the '--help' option of a 'git'
+command.")))
 
 (define-public shflags
   (package
