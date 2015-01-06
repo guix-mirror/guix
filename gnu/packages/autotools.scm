@@ -238,31 +238,38 @@ Makefile, simplifying the entire process for the developer.")
 (define-public libtool
   (package
     (name "libtool")
-    (version "2.4.2")
+    (version "2.4.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/libtool/libtool-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))
-             (patches
-              (list (search-patch "libtool-skip-tests.patch")
-                    (search-patch "libtool-skip-tests-for-mips.patch")))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/libtool/libtool-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0v3zq08qxv7k5067mpqrkjkjl3wphhg06i696mka90mzadc5nad8"))
+              (patches
+               (list (search-patch "libtool-skip-tests.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("m4" ,m4)
-                     ("perl" ,perl)))
+                     ("perl" ,perl)
+                     ("automake" ,automake)      ;some tests rely on 'aclocal'
+                     ("autoconf" ,(autoconf-wrapper)))) ;others on 'autom4te'
 
     ;; Separate binaries from the rest.  During bootstrap, only ltdl is
     ;; used; not depending on the binaries allows us to avoid retaining
     ;; a reference to the bootstrap bash.
-    (outputs '("bin"                         ; libtoolize, libtool, etc.
-               "out"))                       ; libltdl.so, ltdl.h, etc.
+    (outputs '("bin"                              ;libtoolize, libtool, etc.
+               "out"))                            ;libltdl.so, ltdl.h, etc.
 
     (arguments
      (if (%current-target-system)
-         '()                            ; no `check' phase when cross-building
-         '(#:phases (alist-cons-before
+         '()                             ;no `check' phase when cross-building
+         `(;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
+           ;; <http://hydra.gnu.org/build/181662>.
+           #:tests? ,(not (string-prefix? "mips64"
+                                          (or (%current-target-system)
+                                              (%current-system))))
+
+           #:phases (alist-cons-before
                      'check 'pre-check
                      (lambda* (#:key inputs #:allow-other-keys)
                        ;; Run the test suite in parallel, if possible.
@@ -284,32 +291,6 @@ presenting a single consistent, portable interface that hides the usual
 complexity of working with shared libraries across platforms.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/libtool/")))
-
-(define-public libtool-2.4.4
-  (package (inherit libtool)
-    (version "2.4.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/libtool/libtool-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0v3zq08qxv7k5067mpqrkjkjl3wphhg06i696mka90mzadc5nad8"))
-              (patches
-               (list (search-patch "libtool-2.4-skip-tests.patch")))))
-
-    (native-inputs `(("automake" ,automake)      ;some tests rely on 'aclocal'
-                     ("autoconf" ,(autoconf-wrapper)) ;others on 'autom4te'
-                     ,@(package-native-inputs libtool)))
-
-    (arguments
-     ;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
-     ;; <http://hydra.gnu.org/build/181662>.
-     (if (string-prefix? "mips64el"
-                         (or (%current-target-system) (%current-system)))
-         `(#:tests? #f
-           ,@(package-arguments libtool))
-         (package-arguments libtool)))))
 
 (define-public libltdl
   ;; This is a libltdl package separate from the libtool package.  This is
