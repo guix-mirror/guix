@@ -638,7 +638,7 @@ for common mesh file formats, and collision detection.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.10")
+    (version "0.4.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -646,7 +646,7 @@ for common mesh file formats, and collision detection.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "09mr71kl7mf4ihszqz1vnwk814p7fvqknad150iic2340a7qzf0i"))))
+                "0hzb27srv6f2j84dpxx2p0p0aaq9vdp5jvbrfpklb5q5ssdjxvc6"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -678,7 +678,7 @@ for common mesh file formats, and collision detection.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.10")
+    (version "0.4.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -686,10 +686,7 @@ for common mesh file formats, and collision detection.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1xxv0g83iqszjgwnbdcbsprqg76cb6jnbsh5qhm7lcwx4wy2y2k2"))
-              ;; This patch will be included in future upstream releases.
-              ;; See: https://github.com/minetest/minetest/commit/fd5eaae2babb322f8a3e2acab55a12e218814c8e
-              (patches (list (search-patch "minetest-subgame-env-var.patch")))))
+                "0h223svzkvp63b77nqfxy7k8whw4543gahs3kxd3x4myi5ax5z5f"))))
     (build-system cmake-build-system)
     (arguments
      '(#:modules ((guix build utils)

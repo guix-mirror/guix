@@ -73,7 +73,7 @@ if test "x$guix_build_daemon" = "xyes"; then
 
   dnl Chroot support.
   AC_CHECK_FUNCS([chroot unshare])
-  AC_CHECK_HEADERS([sched.h sys/param.h sys/mount.h])
+  AC_CHECK_HEADERS([sched.h sys/param.h sys/mount.h tr1/unordered_set])
 
   dnl lutimes and lchown: used when canonicalizing store items.
   dnl posix_fallocate: used when extracting archives.

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -64,11 +64,6 @@
 ;; and an extra environment variable.  One advantage of this setup is
 ;; that everything just works in an auto-compilation setting.
 
-(define %patch-path
-  (make-parameter
-   (map (cut string-append <> "/gnu/packages/patches")
-        %load-path)))
-
 (define %bootstrap-binaries-path
   (make-parameter
    (map (cut string-append <> "/gnu/packages/bootstrap")
@@ -103,6 +98,16 @@
 
     (make-parameter
      (append environment `((,%distro-root-directory . "gnu/packages"))))))
+
+(define %patch-path
+  ;; Define it after '%package-module-path' so that '%load-path' contains user
+  ;; directories, allowing patches in $GUIX_PACKAGE_PATH to be found.
+  (make-parameter
+   (map (lambda (directory)
+          (if (string=? directory %distro-root-directory)
+              (string-append directory "/gnu/packages/patches")
+              directory))
+        %load-path)))
 
 (define* (scheme-files directory)
   "Return the list of Scheme files found under DIRECTORY, recursively.  The

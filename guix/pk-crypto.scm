@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -254,9 +254,9 @@ Return #f if that element does not exist, or if it's a list."
                                 #:optional
                                 (hash-algo "sha256")
                                 #:key (key-type 'ecc))
-  "Given BV, a bytevector containing a hash, return an s-expression suitable
-for use as the data for 'sign'.  KEY-TYPE must be a symbol: 'dsa, 'ecc, or
-'rsa."
+  "Given BV, a bytevector containing a hash of type HASH-ALGO, return an
+s-expression suitable for use as the 'data' argument for 'sign'.  KEY-TYPE
+must be a symbol: 'dsa, 'ecc, or 'rsa."
   (string->canonical-sexp
    (format #f "(data (flags ~a) (hash \"~a\" #~a#))"
            (case key-type
@@ -289,8 +289,10 @@ Return #f if DATA does not conform."
   (let* ((ptr  (libgcrypt-func "gcry_pk_sign"))
          (proc (pointer->procedure int ptr '(* * *))))
     (lambda (data secret-key)
-      "Sign DATA (an s-expression) with SECRET-KEY (an s-expression whose car
-is 'private-key'.)"
+      "Sign DATA, a canonical s-expression representing a suitable hash, with
+SECRET-KEY (a canonical s-expression whose car is 'private-key'.)  Note that
+DATA must be a 'data' s-expression, as returned by
+'bytevector->hash-data' (info \"(gcrypt) Cryptographic Functions\")."
       (let* ((sig (bytevector->pointer (make-bytevector (sizeof '*))))
              (err (proc sig (canonical-sexp->pointer data)
                         (canonical-sexp->pointer secret-key))))

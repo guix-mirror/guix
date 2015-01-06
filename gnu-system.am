@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 # Copyright © 2013, 2014 Mark H Weaver <mhw@netris.org>
 #
@@ -339,6 +339,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-dummy-man.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt1.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt2.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt3.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt4.patch		\
+  gnu/packages/patches/cpio-CVE-2014-9112-pt5.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
@@ -402,6 +407,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libtool-skip-tests-for-mips.patch	\
+  gnu/packages/patches/libtool-2.4-skip-tests.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/luit-posix.patch				\
@@ -410,11 +416,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
-  gnu/packages/patches/minetest-subgame-env-var.patch		\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
   gnu/packages/patches/mupdf-buildsystem-fix.patch		\
+  gnu/packages/patches/mutt-CVE-2014-9116.patch			\
   gnu/packages/patches/net-tools-bitrot.patch			\
   gnu/packages/patches/nvi-assume-preserve-path.patch           \
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
@@ -456,6 +462,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/texi2html-document-encoding.patch	\
   gnu/packages/patches/texi2html-i18n.patch			\
   gnu/packages/patches/udev-gir-libtool.patch			\
+  gnu/packages/patches/unzip-CVE-2014-8139.patch		\
+  gnu/packages/patches/unzip-CVE-2014-8140.patch		\
+  gnu/packages/patches/unzip-CVE-2014-8141.patch		\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\

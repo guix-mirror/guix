@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -289,10 +289,29 @@ GUIX_PACKAGE_PATH="$module_dir"
 export GUIX_PACKAGE_PATH
 guix package -A emacs-foo-bar | grep 42
 guix package -i emacs-foo-bar-42 -n
+
+# Make sure patches that live under $GUIX_PACKAGE_PATH are found.
+cat > "$module_dir/emacs.patch"<<EOF
+This is a fake patch.
+EOF
+cat > "$module_dir/foo.scm"<<EOF
+(define-module (foo)
+  #:use-module (guix packages)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages emacs))
+
+(define-public x
+  (package (inherit emacs)
+    (source (origin (inherit (package-source emacs))
+              (patches (list (search-patch "emacs.patch")))))
+    (name "emacs-foo-bar-patched")
+    (version "42")))
+EOF
+guix package -i emacs-foo-bar-patched -n
+
 unset GUIX_PACKAGE_PATH
 
 # Using 'GUIX_BUILD_OPTIONS'.
-
 available="`guix package -A | sort`"
 GUIX_BUILD_OPTIONS="--dry-run"
 export GUIX_BUILD_OPTIONS

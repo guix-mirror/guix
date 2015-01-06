@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -161,14 +161,14 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
 (define-public automake
   (package
     (name "automake")
-    (version "1.14.1")
+    (version "1.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0s86rzdayj1licgj35q0mnynv5xa8f4p32m36blc5jk9id5z1d59"))
+               "0dl6vfi2lzz8alnklwxzfz624b95hb1ipjvd3mk177flmddcf24r"))
              (patches
               (list (search-patch "automake-skip-amhello-tests.patch")))))
     (build-system gnu-build-system)
@@ -291,3 +291,29 @@ presenting a single consistent, portable interface that hides the usual
 complexity of working with shared libraries across platforms.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/libtool/")))
+
+(define-public libtool-2.4.4
+  (package (inherit libtool)
+    (version "2.4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/libtool/libtool-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0v3zq08qxv7k5067mpqrkjkjl3wphhg06i696mka90mzadc5nad8"))
+              (patches
+               (list (search-patch "libtool-2.4-skip-tests.patch")))))
+
+    (native-inputs `(("automake" ,automake)      ;some tests rely on 'aclocal'
+                     ("autoconf" ,(autoconf-wrapper)) ;others on 'autom4te'
+                     ,@(package-native-inputs libtool)))
+
+    (arguments
+     ;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
+     ;; <http://hydra.gnu.org/build/181662>.
+     (if (string-prefix? "mips64el"
+                         (or (%current-target-system) (%current-system)))
+         `(#:tests? #f
+           ,@(package-arguments libtool))
+         (package-arguments libtool)))))

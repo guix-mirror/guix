@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -95,16 +95,17 @@ as well as the classic centralized workflow.")
     (license gpl2+)))
 
 (define-public git
+  ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
-   (version "2.1.2")
+   (version "2.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "12x1qycc0rii6fqpiizp9v9ysdmj6lpi9imqqbrkdx6cifbwh9vv"))))
+              "0l7l9rv1ww474rm4whj7dhjjacgdw5qlqqxqsnyzdpdxl34jshh9"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -209,6 +210,52 @@ as well as the classic centralized workflow.")
 everything from small to very large projects with speed and efficiency.")
    (license gpl2)
    (home-page "http://git-scm.com/")))
+
+(define-public git-manpages
+  ;; Keep in sync with 'git'!
+
+  ;; Granted, we could build the man pages from the 'git' package itself,
+  ;; which contains the real source.  However, it would add a dependency on a
+  ;; full XML tool chain, and building it actually takes ages.  So we use this
+  ;; lazy approach.
+  (package
+    (name "git-manpages")
+    (version (package-version git))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/software/scm/git/git-manpages-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0f75n5yfrzb55qbg5wq4bmv43lay806v51yhglwkp7mbv1zkby00"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let* ((xz  (assoc-ref %build-inputs "xz"))
+                (tar (assoc-ref %build-inputs "tar"))
+                (out (assoc-ref %outputs "out"))
+                (man (string-append out "/share/man")))
+           (setenv "PATH" (string-append tar "/bin:" xz "/bin"))
+
+           (mkdir-p man)
+           (with-directory-excursion man
+             (zero? (system* "tar" "xvf"
+                             (assoc-ref %build-inputs "source"))))))))
+
+    (native-inputs `(("tar" ,tar)
+                     ("xz" ,xz)))
+    (home-page (package-home-page git))
+    (license (package-license git))
+    (synopsis "Man pages of the Git version control system")
+    (description
+     "This package provides the man pages of the Git version control system.
+This is the documentation displayed when using the '--help' option of a 'git'
+command.")))
 
 (define-public shflags
   (package

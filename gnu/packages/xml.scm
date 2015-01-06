@@ -191,7 +191,7 @@ module.")
               (base32
                "0jj3jiray1l4pi9wkjcpxjc3v431whdwx5aqnhgdm4i7h3817zsw"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
     (license (package-license perl))
     (synopsis "Perl module for easy reading/writing of XML files")
