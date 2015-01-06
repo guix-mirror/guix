@@ -87,7 +87,7 @@
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
    (propagated-inputs `(("gmp" ,gmp)
-                        ("libtool" ,libtool)))
+                        ("libltdl" ,libltdl)))
 
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
@@ -131,7 +131,10 @@ without requiring the source code to be rewritten.")
        ;; `-L' flags.  As for why the `.la' file lacks the `-L' flags, see
        ;; <http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/18903>.
       ("libunistring" ,libunistring)
-      ("libtool" ,libtool)
+
+      ;; Depend on LIBLTDL, not LIBTOOL.  That way, we avoid some the extra
+      ;; dependencies that LIBTOOL has, which is helpful during bootstrap.
+      ("libltdl" ,libltdl)
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
