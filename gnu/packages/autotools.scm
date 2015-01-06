@@ -266,17 +266,10 @@ Makefile, simplifying the entire process for the developer.")
                      'check 'pre-check
                      (lambda* (#:key inputs #:allow-other-keys)
                        ;; Run the test suite in parallel, if possible.
-                       (let ((ncores
-                              (cond
-                               ((getenv "NIX_BUILD_CORES")
-                                =>
-                                (lambda (n)
-                                  (if (zero? (string->number n))
-                                      (number->string (current-processor-count))
-                                      n)))
-                               (else "1"))))
-                         (setenv "TESTSUITEFLAGS"
-                                 (string-append "-j" ncores)))
+                       (setenv "TESTSUITEFLAGS"
+                               (string-append
+                                "-j"
+                                (number->string (parallel-job-count))))
 
                        ;; Path references to /bin/sh.
                        (let ((bash (assoc-ref inputs "bash")))
