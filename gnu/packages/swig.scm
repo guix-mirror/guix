@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,18 @@
               ;; The python part probably never worked and does not seem to
               ;; be needed for currently dependent packages.
 ;;               ("python" ,python-wrapper)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'check 'install-locales
+        (lambda _
+          ;; One of the tests requires the availability of a UTF-8
+          ;; locale and otherwise fails.
+          (setenv "LOCPATH" (getcwd))
+          (zero? (system* "localedef" "--no-archive"
+                          "--prefix" (getcwd) "-i" "en_US"
+                          "-f" "UTF-8" "./en_US.utf8")))
+        %standard-phases)))
     (home-page "http://swig.org/")
     (synopsis
      "Interface compiler that connects C/C++ code to higher-level languages")
