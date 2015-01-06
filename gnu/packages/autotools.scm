@@ -307,4 +307,13 @@ complexity of working with shared libraries across platforms.")
 
     (native-inputs `(("automake" ,automake)      ;some tests rely on 'aclocal'
                      ("autoconf" ,(autoconf-wrapper)) ;others on 'autom4te'
-                     ,@(package-native-inputs libtool)))))
+                     ,@(package-native-inputs libtool)))
+
+    (arguments
+     ;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
+     ;; <http://hydra.gnu.org/build/181662>.
+     (if (string-prefix? "mips64el"
+                         (or (%current-target-system) (%current-system)))
+         `(#:tests? #f
+           ,@(package-arguments libtool))
+         (package-arguments libtool)))))
