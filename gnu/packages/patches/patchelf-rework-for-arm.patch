@@ -1,0 +1,473 @@
+Rework the growing algorithm in patchelf to support ARM systems.
+See <https://github.com/NixOS/patchelf/issues/8>.
+This patch copied from:
+<https://github.com/sriemer/patchelf/commit/0a96239cea6b97b9a0fff80da576e58ca2dfb2a2>
+
+From 0a96239cea6b97b9a0fff80da576e58ca2dfb2a2 Mon Sep 17 00:00:00 2001
+From: Sebastian Parschauer <s.parschauer@gmx.de>
+Date: Sat, 28 Jun 2014 01:24:57 +0200
+Subject: [PATCH] Rework the growing algorithm
+
+On ARM systems there is no space in virtual memory for another LOAD
+area in front of the code LOAD area. So insert data to its end
+instead. At this location there should be enough space in virtual
+memory due to alignment. We can extend it until the end of the
+alignment but the file shift may be greater as it must be aligned
+to the page size. Do the same for the data LOAD area.
+---
+ src/patchelf.cc | 357 ++++++++++++++++++++++----------------------------------
+ 1 file changed, 142 insertions(+), 215 deletions(-)
+
+diff --git a/src/patchelf.cc b/src/patchelf.cc
+index dcbfd38..4fce9e6 100644
+--- a/src/patchelf.cc
++++ b/src/patchelf.cc
+@@ -116,7 +116,11 @@ private:
+ 
+     void sortShdrs();
+ 
+-    void shiftFile(unsigned int extraPages, Elf_Addr startPage);
++    void shiftFileSingle(size_t fileShift, Elf_Off insertOff);
++
++    void shiftFile(size_t neededCode, size_t neededData,
++                   Elf_Off codeOff[], Elf_Off dataOff[],
++                   Elf_Addr *codePage, Elf_Addr *dataPage);
+ 
+     string getSectionName(const Elf_Shdr & shdr);
+ 
+@@ -130,13 +134,11 @@ private:
+         unsigned int size);
+ 
+     void writeReplacedSections(Elf_Off & curOff,
+-        Elf_Addr startAddr, Elf_Off startOffset);
++        Elf_Addr startAddr, Elf_Off startOffset, bool isData);
+ 
+     void rewriteHeaders(Elf_Addr phdrAddress);
+ 
+-    void rewriteSectionsLibrary();
+-
+-    void rewriteSectionsExecutable();
++    void rewriteSectionsBinary();
+ 
+ public:
+ 
+@@ -391,46 +393,119 @@ static unsigned int roundUp(unsigned int n, unsigned int m)
+ 
+ 
+ template<ElfFileParams>
+-void ElfFile<ElfFileParamNames>::shiftFile(unsigned int extraPages, Elf_Addr startPage)
++void ElfFile<ElfFileParamNames>::shiftFileSingle(size_t fileShift,
++        Elf_Off insertOff)
+ {
+-    /* Move the entire contents of the file `extraPages' pages
+-       further. */
+     unsigned int oldSize = fileSize;
+-    unsigned int shift = extraPages * pageSize;
+-    growFile(fileSize + extraPages * pageSize);
+-    memmove(contents + extraPages * pageSize, contents, oldSize);
+-    memset(contents + sizeof(Elf_Ehdr), 0, shift - sizeof(Elf_Ehdr));
++
++    /* Grow at the end */
++    growFile(fileSize + fileShift);
++
++    /* move the data from the insertion point
++       to the end and zero inserted space */
++    memmove(contents + insertOff + fileShift,
++            contents + insertOff, oldSize - insertOff);
++    memset(contents + insertOff, 0, fileShift);
+ 
+     /* Adjust the ELF header. */
+     wri(hdr->e_phoff, sizeof(Elf_Ehdr));
+-    wri(hdr->e_shoff, rdi(hdr->e_shoff) + shift);
++    if (rdi(hdr->e_shoff) >= insertOff)
++        wri(hdr->e_shoff, rdi(hdr->e_shoff) + fileShift);
+ 
+     /* Update the offsets in the section headers. */
+-    for (int i = 1; i < rdi(hdr->e_shnum); ++i)
+-        wri(shdrs[i].sh_offset, rdi(shdrs[i].sh_offset) + shift);
++    for (int i = 1; i < rdi(hdr->e_shnum); ++i) {
++        if (rdi(shdrs[i].sh_offset) >= insertOff)
++            wri(shdrs[i].sh_offset, rdi(shdrs[i].sh_offset) + fileShift);
++    }
+ 
+     /* Update the offsets in the program headers. */
+     for (int i = 0; i < rdi(hdr->e_phnum); ++i) {
+-        wri(phdrs[i].p_offset, rdi(phdrs[i].p_offset) + shift);
+-        if (rdi(phdrs[i].p_align) != 0 &&
+-            (rdi(phdrs[i].p_vaddr) - rdi(phdrs[i].p_offset)) % rdi(phdrs[i].p_align) != 0) {
+-            debug("changing alignment of program header %d from %d to %d\n", i,
+-                rdi(phdrs[i].p_align), pageSize);
+-            wri(phdrs[i].p_align, pageSize);
++        if (rdi(phdrs[i].p_offset) >= insertOff)
++            wri(phdrs[i].p_offset, rdi(phdrs[i].p_offset) + fileShift);
++        /* Check for ELF load command alignment issue the same
++           way as glibc/elf/dl-load.c does. This gives us the
++           chance to run an interpreter explicitly. */
++        if (rdi(phdrs[i].p_type) == PT_LOAD && ((rdi(phdrs[i].p_vaddr) -
++          rdi(phdrs[i].p_offset)) & (rdi(phdrs[i].p_align) - 1)) != 0) {
++             debug("changing alignment of program header %d from %d to %d\n",
++                   i, rdi(phdrs[i].p_align), pageSize);
++             wri(phdrs[i].p_align, pageSize);
+         }
+     }
++}
++
++template<ElfFileParams>
++void ElfFile<ElfFileParamNames>::shiftFile(size_t neededCode,
++        size_t neededData, Elf_Off codeOff[], Elf_Off dataOff[],
++        Elf_Addr *codePage, Elf_Addr *dataPage)
++{
++    /* Move some contents of the file further. The binary has one LOAD area
++     * for code and one for data. There is virtual memory space between
++     * these which we can use due to alignment.
++     */
++    unsigned int memShift = neededCode;
++    unsigned int fileShift = roundUp(neededCode, pageSize);
++    unsigned int maxMemShift = 0;
++
++    if (neededCode > 0) {
++        /* find the LOAD program header for code and extend it */
++        for (int i = 0; i < rdi(hdr->e_phnum); ++i) {
++            if (rdi(phdrs[i].p_type) == PT_LOAD &&
++              rdi(phdrs[i].p_flags) & PF_X) {
++                codeOff[1] = rdi(phdrs[i].p_filesz);
++                codeOff[0] = codeOff[1] + rdi(phdrs[i].p_offset);
++                maxMemShift = rdi(phdrs[i].p_memsz) % rdi(phdrs[i].p_align);
++                if (maxMemShift == 0)
++                    continue;
++                maxMemShift = rdi(phdrs[i].p_align) - maxMemShift;
++                if (maxMemShift == 0 || memShift > maxMemShift)
++                    continue;
++                *codePage = rdi(phdrs[i].p_vaddr);
++                wri(phdrs[i].p_filesz, rdi(phdrs[i].p_filesz) + memShift);
++                wri(phdrs[i].p_memsz, rdi(phdrs[i].p_memsz) + memShift);
++                break;
++            }
++        }
++        debug("codeOff: %#lx, memShift: %d, maxMemShift: %d, fileShift: %d\n",
++              codeOff[1], memShift, maxMemShift, fileShift);
++        if (codeOff[1] == 0 || maxMemShift == 0)
++            goto out;
++
++        shiftFileSingle(fileShift, codeOff[0]);
++    }
++
++    /* +++ Do the same for the data LOAD area  +++ */
++    memShift = neededData;
++    fileShift = roundUp(neededData, pageSize);
++    maxMemShift = 0;
++    if (neededData > 0) {
++        /* find the LOAD program header for data and extend it */
++        for (int i = 0; i < rdi(hdr->e_phnum); ++i) {
++            if (rdi(phdrs[i].p_type) == PT_LOAD &&
++              rdi(phdrs[i].p_flags) & PF_W) {
++                dataOff[1] = rdi(phdrs[i].p_filesz);
++                dataOff[0] = dataOff[1] + rdi(phdrs[i].p_offset);
++                maxMemShift = rdi(phdrs[i].p_memsz) % rdi(phdrs[i].p_align);
++                if (maxMemShift == 0)
++                    continue;
++                maxMemShift = rdi(phdrs[i].p_align) - maxMemShift;
++                if (maxMemShift == 0 || memShift > maxMemShift)
++                    continue;
++                *dataPage = rdi(phdrs[i].p_vaddr);
++                wri(phdrs[i].p_filesz, rdi(phdrs[i].p_filesz) + memShift);
++                wri(phdrs[i].p_memsz, rdi(phdrs[i].p_memsz) + memShift);
++                break;
++            }
++        }
++        debug("dataOff: %#lx, memShift: %d, maxMemShift: %d, fileShift: %d\n",
++              dataOff[1], memShift, maxMemShift, fileShift);
++        if (dataOff[1] == 0 || maxMemShift == 0)
++            goto out;
+ 
+-    /* Add a segment that maps the new program/section headers and
+-       PT_INTERP segment into memory.  Otherwise glibc will choke. */
+-    phdrs.resize(rdi(hdr->e_phnum) + 1);
+-    wri(hdr->e_phnum, rdi(hdr->e_phnum) + 1);
+-    Elf_Phdr & phdr = phdrs[rdi(hdr->e_phnum) - 1];
+-    wri(phdr.p_type, PT_LOAD);
+-    wri(phdr.p_offset, 0);
+-    wri(phdr.p_vaddr, wri(phdr.p_paddr, startPage));
+-    wri(phdr.p_filesz, wri(phdr.p_memsz, shift));
+-    wri(phdr.p_flags, PF_R | PF_W);
+-    wri(phdr.p_align, pageSize);
++        shiftFileSingle(fileShift, dataOff[0]);
++    }
++out:
++    return;
+ }
+ 
+ 
+@@ -491,7 +566,7 @@ string & ElfFile<ElfFileParamNames>::replaceSection(const SectionName & sectionN
+ 
+ template<ElfFileParams>
+ void ElfFile<ElfFileParamNames>::writeReplacedSections(Elf_Off & curOff,
+-    Elf_Addr startAddr, Elf_Off startOffset)
++    Elf_Addr startAddr, Elf_Off startOffset, bool isData = false)
+ {
+     /* Overwrite the old section contents with 'X's.  Do this
+        *before* writing the new section contents (below) to prevent
+@@ -501,6 +576,9 @@ void ElfFile<ElfFileParamNames>::writeReplacedSections(Elf_Off & curOff,
+     {
+         string sectionName = i->first;
+         Elf_Shdr & shdr = findSection(sectionName);
++        if ((!isData && rdi(shdr.sh_flags) & SHF_WRITE) ||
++         (isData && ~(rdi(shdr.sh_flags)) & SHF_WRITE))
++            continue;
+         memset(contents + rdi(shdr.sh_offset), 'X', rdi(shdr.sh_size));
+     }
+ 
+@@ -509,6 +587,9 @@ void ElfFile<ElfFileParamNames>::writeReplacedSections(Elf_Off & curOff,
+     {
+         string sectionName = i->first;
+         Elf_Shdr & shdr = findSection(sectionName);
++        if ((!isData && rdi(shdr.sh_flags) & SHF_WRITE) ||
++         (isData && ~(rdi(shdr.sh_flags)) & SHF_WRITE))
++            continue;
+         debug("rewriting section `%s' from offset 0x%x (size %d) to offset 0x%x (size %d)\n",
+             sectionName.c_str(), rdi(shdr.sh_offset), rdi(shdr.sh_size), curOff, i->second.size());
+ 
+@@ -546,201 +627,47 @@ void ElfFile<ElfFileParamNames>::writeReplacedSections(Elf_Off & curOff,
+         curOff += roundUp(i->second.size(), sectionAlignment);
+     }
+ 
+-    replacedSections.clear();
++    if (isData)
++        replacedSections.clear();
+ }
+ 
+ 
+ template<ElfFileParams>
+-void ElfFile<ElfFileParamNames>::rewriteSectionsLibrary()
++void ElfFile<ElfFileParamNames>::rewriteSectionsBinary()
+ {
+-    /* For dynamic libraries, we just place the replacement sections
+-       at the end of the file.  They're mapped into memory by a
+-       PT_LOAD segment located directly after the last virtual address
+-       page of other segments. */
+-    Elf_Addr startPage = 0;
+-    for (unsigned int i = 0; i < phdrs.size(); ++i) {
+-        Elf_Addr thisPage = roundUp(rdi(phdrs[i].p_vaddr) + rdi(phdrs[i].p_memsz), pageSize);
+-        if (thisPage > startPage) startPage = thisPage;
+-    }
+-
+-    debug("last page is 0x%llx\n", (unsigned long long) startPage);
++    Elf_Off codeOff[2] = {0}, dataOff[2] = {0};
++    Elf_Addr codePage = 0, dataPage = 0;
++    size_t neededCode = 0, neededData = 0, oldCode = 0, oldData = 0;
++    Elf_Shdr shdr = findSection(".text");
++    Elf_Addr firstPage = rdi(shdr.sh_addr) - rdi(shdr.sh_offset);
+ 
++    debug("first page is 0x%llx\n", (unsigned long long) firstPage);
+ 
+-    /* Compute the total space needed for the replaced sections and
+-       the program headers. */
+-    off_t neededSpace = (phdrs.size() + 1) * sizeof(Elf_Phdr);
++    /* Compute the total space needed for the replaced sections */
+     for (ReplacedSections::iterator i = replacedSections.begin();
+-         i != replacedSections.end(); ++i)
+-        neededSpace += roundUp(i->second.size(), sectionAlignment);
+-    debug("needed space is %d\n", neededSpace);
+-
+-
+-    size_t startOffset = roundUp(fileSize, pageSize);
+-
+-    growFile(startOffset + neededSpace);
+-
+-
+-    /* Even though this file is of type ET_DYN, it could actually be
+-       an executable.  For instance, Gold produces executables marked
+-       ET_DYN.  In that case we can still hit the kernel bug that
+-       necessitated rewriteSectionsExecutable().  However, such
+-       executables also tend to start at virtual address 0, so
+-       rewriteSectionsExecutable() won't work because it doesn't have
+-       any virtual address space to grow downwards into.  As a
+-       workaround, make sure that the virtual address of our new
+-       PT_LOAD segment relative to the first PT_LOAD segment is equal
+-       to its offset; otherwise we hit the kernel bug.  This may
+-       require creating a hole in the executable.  The bigger the size
+-       of the uninitialised data segment, the bigger the hole. */
+-    if (isExecutable) {
+-        if (startOffset >= startPage) {
+-            debug("shifting new PT_LOAD segment by %d bytes to work around a Linux kernel bug\n", startOffset - startPage);
+-        } else {
+-            size_t hole = startPage - startOffset;
+-            /* Print a warning, because the hole could be very big. */
+-            fprintf(stderr, "warning: working around a Linux kernel bug by creating a hole of %zu bytes in ‘%s’\n", hole, fileName.c_str());
+-            assert(hole % pageSize == 0);
+-            /* !!! We could create an actual hole in the file here,
+-               but it's probably not worth the effort. */
+-            growFile(fileSize + hole);
+-            startOffset += hole;
+-        }
+-        startPage = startOffset;
+-    }
+-
+-
+-    /* Add a segment that maps the replaced sections and program
+-       headers into memory. */
+-    phdrs.resize(rdi(hdr->e_phnum) + 1);
+-    wri(hdr->e_phnum, rdi(hdr->e_phnum) + 1);
+-    Elf_Phdr & phdr = phdrs[rdi(hdr->e_phnum) - 1];
+-    wri(phdr.p_type, PT_LOAD);
+-    wri(phdr.p_offset, startOffset);
+-    wri(phdr.p_vaddr, wri(phdr.p_paddr, startPage));
+-    wri(phdr.p_filesz, wri(phdr.p_memsz, neededSpace));
+-    wri(phdr.p_flags, PF_R | PF_W);
+-    wri(phdr.p_align, pageSize);
+-
+-
+-    /* Write out the replaced sections. */
+-    Elf_Off curOff = startOffset + phdrs.size() * sizeof(Elf_Phdr);
+-    writeReplacedSections(curOff, startPage, startOffset);
+-    assert((off_t) curOff == startOffset + neededSpace);
+-
+-
+-    /* Move the program header to the start of the new area. */
+-    wri(hdr->e_phoff, startOffset);
+-
+-    rewriteHeaders(startPage);
+-}
+-
+-
+-template<ElfFileParams>
+-void ElfFile<ElfFileParamNames>::rewriteSectionsExecutable()
+-{
+-    /* Sort the sections by offset, otherwise we won't correctly find
+-       all the sections before the last replaced section. */
+-    sortShdrs();
+-
+-
+-    /* What is the index of the last replaced section? */
+-    unsigned int lastReplaced = 0;
+-    for (unsigned int i = 1; i < rdi(hdr->e_shnum); ++i) {
+-        string sectionName = getSectionName(shdrs[i]);
+-        if (replacedSections.find(sectionName) != replacedSections.end()) {
+-            debug("using replaced section `%s'\n", sectionName.c_str());
+-            lastReplaced = i;
+-        }
+-    }
+-
+-    assert(lastReplaced != 0);
+-
+-    debug("last replaced is %d\n", lastReplaced);
+-
+-    /* Try to replace all sections before that, as far as possible.
+-       Stop when we reach an irreplacable section (such as one of type
+-       SHT_PROGBITS).  These cannot be moved in virtual address space
+-       since that would invalidate absolute references to them. */
+-    assert(lastReplaced + 1 < shdrs.size()); /* !!! I'm lazy. */
+-    size_t startOffset = rdi(shdrs[lastReplaced + 1].sh_offset);
+-    Elf_Addr startAddr = rdi(shdrs[lastReplaced + 1].sh_addr);
+-    string prevSection;
+-    for (unsigned int i = 1; i <= lastReplaced; ++i) {
+-        Elf_Shdr & shdr(shdrs[i]);
+-        string sectionName = getSectionName(shdr);
+-        debug("looking at section `%s'\n", sectionName.c_str());
+-        /* !!! Why do we stop after a .dynstr section? I can't
+-           remember! */
+-        if ((rdi(shdr.sh_type) == SHT_PROGBITS && sectionName != ".interp")
+-            || prevSection == ".dynstr")
+-        {
+-            startOffset = rdi(shdr.sh_offset);
+-            startAddr = rdi(shdr.sh_addr);
+-            lastReplaced = i - 1;
+-            break;
++         i != replacedSections.end(); ++i) {
++        shdr = findSection(i->first);
++        if (rdi(shdr.sh_flags) & SHF_WRITE) {
++            oldData += rdi(shdr.sh_size);
++            neededData += roundUp(i->second.size(), sectionAlignment);
+         } else {
+-            if (replacedSections.find(sectionName) == replacedSections.end()) {
+-                debug("replacing section `%s' which is in the way\n", sectionName.c_str());
+-                replaceSection(sectionName, rdi(shdr.sh_size));
+-            }
++            oldCode += rdi(shdr.sh_size);
++            neededCode += roundUp(i->second.size(), sectionAlignment);
+         }
+-        prevSection = sectionName;
+     }
+ 
+-    debug("first reserved offset/addr is 0x%x/0x%llx\n",
+-        startOffset, (unsigned long long) startAddr);
+-
+-    assert(startAddr % pageSize == startOffset % pageSize);
+-    Elf_Addr firstPage = startAddr - startOffset;
+-    debug("first page is 0x%llx\n", (unsigned long long) firstPage);
+-
+-    /* Right now we assume that the section headers are somewhere near
+-       the end, which appears to be the case most of the time.
+-       Therefore they're not accidentally overwritten by the replaced
+-       sections. !!!  Fix this. */
+-    assert((off_t) rdi(hdr->e_shoff) >= startOffset);
+-
+-
+-    /* Compute the total space needed for the replaced sections, the
+-       ELF header, and the program headers. */
+-    size_t neededSpace = sizeof(Elf_Ehdr) + phdrs.size() * sizeof(Elf_Phdr);
+-    for (ReplacedSections::iterator i = replacedSections.begin();
+-         i != replacedSections.end(); ++i)
+-        neededSpace += roundUp(i->second.size(), sectionAlignment);
+-
+-    debug("needed space is %d\n", neededSpace);
+-
+-    /* If we need more space at the start of the file, then grow the
+-       file by the minimum number of pages and adjust internal
+-       offsets. */
+-    if (neededSpace > startOffset) {
+-
+-        /* We also need an additional program header, so adjust for that. */
+-        neededSpace += sizeof(Elf_Phdr);
+-        debug("needed space is %d\n", neededSpace);
+-
+-        unsigned int neededPages = roundUp(neededSpace - startOffset, pageSize) / pageSize;
+-        debug("needed pages is %d\n", neededPages);
+-        if (neededPages * pageSize > firstPage)
+-            error("virtual address space underrun!");
+-
+-        firstPage -= neededPages * pageSize;
+-        startOffset += neededPages * pageSize;
+-
+-        shiftFile(neededPages, firstPage);
+-    }
+-
+-
+-    /* Clear out the free space. */
+-    Elf_Off curOff = sizeof(Elf_Ehdr) + phdrs.size() * sizeof(Elf_Phdr);
+-    debug("clearing first %d bytes\n", startOffset - curOff);
+-    memset(contents + curOff, 0, startOffset - curOff);
++    debug("needed space is C: %d, D: %d\n", neededCode, neededData);
+ 
++    /* If we need more space within the file, then grow the
++       file and adjust internal offsets. */
++    shiftFile(neededCode, neededData, codeOff, dataOff, &codePage,
++              &dataPage);
++    assert(codeOff[0] > 0);
+ 
+     /* Write out the replaced sections. */
+-    writeReplacedSections(curOff, firstPage, 0);
+-    assert((off_t) curOff == neededSpace);
+-
++    debug("codePage: %#lx, dataPage: %#lx\n", codePage, dataPage);
++    writeReplacedSections(codeOff[0], codePage + codeOff[1], codeOff[0]);
++    writeReplacedSections(dataOff[0], dataPage + dataOff[1], dataOff[0], true);
+ 
+     rewriteHeaders(firstPage + rdi(hdr->e_phoff));
+ }
+@@ -758,10 +685,10 @@ void ElfFile<ElfFileParamNames>::rewriteSections()
+ 
+     if (rdi(hdr->e_type) == ET_DYN) {
+         debug("this is a dynamic library\n");
+-        rewriteSectionsLibrary();
++        rewriteSectionsBinary();
+     } else if (rdi(hdr->e_type) == ET_EXEC) {
+         debug("this is an executable\n");
+-        rewriteSectionsExecutable();
++        rewriteSectionsBinary();
+     } else error("unknown ELF type");
+ }
+ 
+-- 
+2.1.2
+
