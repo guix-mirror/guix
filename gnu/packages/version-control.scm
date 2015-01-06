@@ -236,14 +236,14 @@ everything from small to very large projects with speed and efficiency.")
        (begin
          (use-modules (guix build utils))
 
-         (let* ((xz    (assoc-ref %build-inputs "xz"))
-                (tar   (assoc-ref %build-inputs "tar"))
-                (out   (assoc-ref %outputs "out"))
-                (share (string-append out "/share")))
+         (let* ((xz  (assoc-ref %build-inputs "xz"))
+                (tar (assoc-ref %build-inputs "tar"))
+                (out (assoc-ref %outputs "out"))
+                (man (string-append out "/share/man")))
            (setenv "PATH" (string-append tar "/bin:" xz "/bin"))
 
-           (mkdir-p share)
-           (with-directory-excursion share
+           (mkdir-p man)
+           (with-directory-excursion man
              (zero? (system* "tar" "xvf"
                              (assoc-ref %build-inputs "source"))))))))
 
