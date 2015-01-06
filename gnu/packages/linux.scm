@@ -1337,55 +1337,9 @@ kmod.  The aim is to be compatible with tools, configurations and indices
 from the module-init-tools project.")
     (license gpl2+))) ; library under lgpl2.1+
 
-(define-public udev
-  ;; The last pre-systemd version.
-  (package
-    (name "udev")
-    (version "182")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/utils/kernel/hotplug/udev-"
-                   version ".tar.xz"))
-             (sha256
-              (base32
-               "1awp7p07gi083w0dwqhhbbas68a7fx2sbm1yf1ip2jwf7cpqkf5d"))
-             (patches (list (search-patch "udev-gir-libtool.patch")))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags (list (string-append
-                                "--with-pci-ids-path="
-                                (assoc-ref %build-inputs "pciutils")
-                                "/share/pci.ids.gz")
-
-                               "--with-firmware-path=/no/firmware"
-
-                               ;; Work around undefined reference to
-                               ;; 'mq_getattr' in sc-daemon.c.
-                               "LDFLAGS=-lrt")))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gperf" ,gperf)
-       ("glib" ,glib "bin")                       ; glib-genmarshal, etc.
-       ("perl" ,perl)                             ; for the tests
-       ("python" ,python-2)))                     ; ditto
-    (inputs
-     `(("kmod" ,kmod)
-       ("pciutils" ,pciutils)
-       ("usbutils" ,usbutils)
-       ("util-linux" ,util-linux)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
-    (home-page "http://www.freedesktop.org/software/systemd/libudev/")
-    (synopsis "Userspace device management")
-    (description "Udev is a daemon which dynamically creates and removes
-device nodes from /dev/, handles hotplug events and loads drivers at boot
-time.")
-    (license gpl2+))) ; libudev is under lgpl2.1+
-
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
-  (package (inherit udev)
+  (package
     (name "eudev")
     (version "1.10")
     (source (origin
@@ -1406,11 +1360,39 @@ time.")
                '(substitute* "configure"
                   (("linux/btrfs\\.h")
                    "")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gperf" ,gperf)
+       ("glib" ,glib "bin")                       ; glib-genmarshal, etc.
+       ("perl" ,perl)                             ; for the tests
+       ("python" ,python-2)))                     ; ditto
+    (inputs
+     `(("kmod" ,kmod)
+       ("pciutils" ,pciutils)
+       ("usbutils" ,usbutils)
+       ("util-linux" ,util-linux)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
     (arguments
-     (substitute-keyword-arguments (package-arguments udev)
-       ((#:configure-flags flags)
-        `(cons "--enable-libkmod" ,flags))))
-    (home-page "http://www.gentoo.org/proj/en/eudev/")))
+     `(#:configure-flags (list "--enable-libkmod"
+
+                               (string-append
+                                "--with-pci-ids-path="
+                                (assoc-ref %build-inputs "pciutils")
+                                "/share/pci.ids.gz")
+
+                               "--with-firmware-path=/no/firmware"
+
+                               ;; Work around undefined reference to
+                               ;; 'mq_getattr' in sc-daemon.c.
+                               "LDFLAGS=-lrt")))
+    (home-page "http://www.gentoo.org/proj/en/eudev/")
+    (synopsis "Userspace device management")
+    (description "Udev is a daemon which dynamically creates and removes
+device nodes from /dev/, handles hotplug events and loads drivers at boot
+time.")
+    (license gpl2+)))
 
 (define-public lvm2
   (package
