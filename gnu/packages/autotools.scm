@@ -310,3 +310,26 @@ complexity of working with shared libraries across platforms.")
          `(#:tests? #f
            ,@(package-arguments libtool))
          (package-arguments libtool)))))
+
+(define-public libltdl
+  ;; This is a libltdl package separate from the libtool package.  This is
+  ;; useful because, unlike libtool, it has zero extra dependencies (making it
+  ;; readily usable during bootstrap), and it builds very quickly since
+  ;; Libtool's extensive test suite isn't run.
+  (package
+    (name "libltdl")
+    (version (package-version libtool))
+    (source (package-source libtool))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-ltdl-install") ;really install it
+       #:phases (alist-cons-before
+                 'configure 'change-directory
+                 (lambda _
+                   (chdir "libltdl"))
+                 %standard-phases)))
+
+    (synopsis "System-independent dlopen wrapper of GNU libtool")
+    (description (package-description libtool))
+    (home-page (package-home-page libtool))
+    (license lgpl2.1+)))
