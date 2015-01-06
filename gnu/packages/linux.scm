@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1439,7 +1439,7 @@ time.")
      `(("pkg-config" ,pkg-config)
        ("procps" ,procps)))                       ;tests use 'pgrep'
     (inputs
-     `(("udev" ,udev)))
+     `(("udev" ,eudev)))
     (arguments
      '(#:phases (alist-cons-after
                  'configure 'set-makefile-shell
