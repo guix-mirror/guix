@@ -102,7 +102,7 @@ details.)"
      (let ((version (gnu-release-version release)))
        (match (find-packages (regexp-quote name))
          ((info . _)
-          (gnu-package->sexp info release))
+          (gnu-package->sexp info release #:key-download key-download))
          (()
           (raise (condition
                   (&message
