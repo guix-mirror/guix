@@ -178,6 +178,16 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; The following is not performed for `--without-headers'
                 ;; cross-compiler builds.
 
+                ;; Join multi-line definitions of GLIBC_DYNAMIC_LINKER* into a
+                ;; single line, to allow the next step to work properly.
+                (for-each
+                 (lambda (x)
+                   (substitute* (find-files "gcc/config"
+                                            "^linux(64|-elf)?\\.h$")
+                     (("(#define GLIBC_DYNAMIC_LINKER.*)\\\\\n$" _ line)
+                      line)))
+                 '(1 2 3))
+
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
                                          "^linux(64|-elf)?\\.h$")
@@ -279,29 +289,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))
-
-    ;; TODO: In core-updates, improve the 'pre-configure phase of the main
-    ;; 'gcc' package so that the 'join-two-line-dynamic-linker-defns phase is
-    ;; no longer needed here.  Then the entire 'arguments' override below can
-    ;; be removed.
-    (arguments
-     (substitute-keyword-arguments (package-arguments gcc-4.7)
-       ((#:phases phases)
-        `(alist-cons-before
-          'pre-configure 'join-two-line-dynamic-linker-defns
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((libc (assoc-ref inputs "libc")))
-              (when libc
-                ;; Join two-line definitions of GLIBC_DYNAMIC_LINKER* into a
-                ;; single line, to allow the 'pre-configure phase to work
-                ;; properly.
-                (substitute* (find-files "gcc/config"
-                                         "^linux(64|-elf)?\\.h$")
-                  (("(#define GLIBC_DYNAMIC_LINKER[^ ]*.*)\\\\\n$" _ line)
-                   line)))
-              #t))
-          ,phases))))))
+               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
