@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -62,6 +62,14 @@
                              (symlink (car (find-files "." "tclsh"))
                                       "tclsh")))))
                   %standard-phases))
+
+       ;; By default, man pages are put in PREFIX/man, but we want them in
+       ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
+       ;; not able to fix this up because the default install populates both
+       ;; PREFIX/man and PREFIX/share/man.
+       #:configure-flags (list (string-append "--mandir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/man"))
 
        ;; XXX: There are a few test failures (related to HTTP, most
        ;; likely related to name resolution), but that doesn't cause
