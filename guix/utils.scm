@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
@@ -481,14 +481,18 @@ previous value of the keyword argument."
           #:optional (system (%current-system)) (vendor "unknown"))
   "Return a guess of the GNU triplet corresponding to Nix system
 identifier SYSTEM."
-  (let* ((dash (string-index system #\-))
-         (arch (substring system 0 dash))
-         (os   (substring system (+ 1 dash))))
-    (string-append arch
-                   "-" vendor "-"
-                   (if (string=? os "linux")
-                       "linux-gnu"
-                       os))))
+  (match system
+    ("armhf-linux"
+     (string-append "arm-" vendor "-linux-gnueabihf"))
+    (_
+     (let* ((dash (string-index system #\-))
+            (arch (substring system 0 dash))
+            (os   (substring system (+ 1 dash))))
+       (string-append arch
+                      "-" vendor "-"
+                      (if (string=? os "linux")
+                          "linux-gnu"
+                          os))))))
 
 (define (gnu-triplet->nix-system triplet)
   "Return the Nix system type corresponding to TRIPLET, a GNU triplet as
@@ -498,7 +502,9 @@ returned by `config.guess'."
                         (lambda (m)
                           (string-append "i686-" (match:substring m 1))))
                        (else triplet))))
-    (cond ((string-match "^([^-]+)-([^-]+-)?linux-gnu.*" triplet)
+    (cond ((string-match "^arm[^-]*-([^-]+-)?linux-gnueabihf" triplet)
+           "armhf-linux")
+          ((string-match "^([^-]+)-([^-]+-)?linux-gnu.*" triplet)
            =>
            (lambda (m)
              ;; Nix omits `-gnu' for GNU/Linux.

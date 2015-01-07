@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -321,6 +322,12 @@ XBINUTILS and the cross tool chain."
 (define-public xgcc-xtensa
   ;; Bare-bones Xtensa cross-compiler, used to build the Atheros firmware.
   (cross-gcc "xtensa-elf"))
+
+(define-public xgcc-armhf
+  (let ((triplet "arm-linux-gnueabihf"))
+    (cross-gcc triplet
+               (cross-binutils triplet)
+               (cross-libc triplet))))
 
 ;; (define-public xgcc-armel
 ;;   (let ((triplet "armel-linux-gnueabi"))

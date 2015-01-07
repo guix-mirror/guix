@@ -46,8 +46,17 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          ;; Triplets recognized by glibc as denoting the N64 ABI; see
          ;; ports/sysdeps/mips/preconfigure.
          '("--with-abi=64"))
+
+        ((string-match "^arm.*-gnueabihf$" target)
+         '("--with-arch=armv7-a"
+           "--with-float=hard"
+           "--with-mode=thumb"
+
+           ;; See <https://wiki.debian.org/ArmHardFloatPort/VfpComparison#FPU>
+           "--with-fpu=vfpv3-d16"))
+
         (else
-         ;; TODO: Add `armel.*gnueabi', `hf', etc.
+         ;; TODO: Add `arm.*-gnueabi', etc.
          '())))
 
 (define-public gcc-4.7
@@ -184,14 +193,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (for-each
                  (lambda (x)
                    (substitute* (find-files "gcc/config"
-                                            "^linux(64|-elf)?\\.h$")
+                                            "^linux(64|-elf|-eabi)?\\.h$")
                      (("(#define GLIBC_DYNAMIC_LINKER.*)\\\\\n$" _ line)
                       line)))
                  '(1 2 3))
 
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
-                                         "^linux(64|-elf)?\\.h$")
+                                         "^linux(64|-elf|-eabi)?\\.h$")
                   (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
                    (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
                            suffix
