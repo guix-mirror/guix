@@ -221,6 +221,19 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://code.google.com/p/openjpeg/")
     (license license:bsd-2)))
 
+(define-public openjpeg-1
+  (package (inherit openjpeg)
+    (name "openjpeg")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "11waq9w215zvzxrpv40afyd18qf79mxc28fda80bm3ax98cpppqm"))))))
+
 (define-public giflib
   (package
     (name "giflib")
