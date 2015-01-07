@@ -2,8 +2,39 @@ Because our GCC 'lib' spec automatically adds '-rpath' for each '-L'
 and a couple more '-rpath, there are two test failures:
 one in demo.test, and one in destdir.at.  Disable these.
 
---- libtool-2.4.4/tests/testsuite	2014-11-29 17:43:11.000000000 +0100
-+++ libtool-2.4.4/tests/testsuite	2015-01-03 23:00:09.367775122 +0100
+Also skip the nopic test on ARM and MIPS systems.
+
+--- libtool-2.4.4/tests/demo.at.orig	2014-11-19 07:28:51.000000000 -0500
++++ libtool-2.4.4/tests/demo.at	2015-01-07 17:30:46.482247718 -0500
+@@ -510,7 +510,7 @@
+ AT_SETUP([force non-PIC objects])
+ 
+ AT_CHECK([case $host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+--- libtool-2.4.4/tests/testsuite.orig	2014-11-29 11:43:11.000000000 -0500
++++ libtool-2.4.4/tests/testsuite	2015-01-07 17:24:51.424672582 -0500
+@@ -8633,7 +8633,7 @@
+ 
+ { set +x
+ $as_echo "$at_srcdir/demo.at:535: case \$host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+@@ -8658,7 +8658,7 @@
+ "
+ at_fn_check_prepare_notrace 'a `...` command substitution' "demo.at:535"
+ ( $at_check_trace; case $host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
 @@ -9185,7 +9185,7 @@ read at_status <"$at_status_file"
  #AT_START_33
  at_fn_group_banner 33 'demo.at:548' \
