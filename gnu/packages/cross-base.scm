@@ -88,7 +88,6 @@ may be either a libc package or #f.)"
     (substitute-keyword-arguments (package-arguments gcc-4.8)
       ((#:configure-flags flags)
        `(append (list ,(string-append "--target=" target)
-                      ,@(gcc-configure-flags-for-triplet target)
                       ,@(if libc
                             '()
                             `( ;; Disable features not needed at this stage.

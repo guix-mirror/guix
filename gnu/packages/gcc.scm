@@ -36,7 +36,7 @@
   ;; Base URL for GCC's infrastructure.
   "ftp://gcc.gnu.org/pub/gcc/infrastructure/")
 
-(define-public (gcc-configure-flags-for-triplet target)
+(define (gcc-configure-flags-for-triplet target)
   "Return a list of additional GCC `configure' flags for TARGET, a GNU triplet.
 
 The purpose of this procedure is to translate extended GNU triplets---e.g.,
@@ -102,11 +102,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                                            "/include")
                             "--without-headers")))
 
-                   ;; When cross-compiling GCC, pass the right options for the
-                   ;; target triplet.
-                   (or (and=> (%current-target-system)
-                              gcc-configure-flags-for-triplet)
-                       '())
+                   ;; Pass the right options for the target triplet.
+                   (let ((triplet
+                          (or (%current-target-system)
+                              (nix-system->gnu-triplet (%current-system)))))
+                     (gcc-configure-flags-for-triplet triplet))
 
                    (maybe-target-tools))))))
     (package
