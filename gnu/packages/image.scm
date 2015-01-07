@@ -188,16 +188,15 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
       (origin
         (method url-fetch)
         (uri
-          (string-append "http://openjpeg.googlecode.com/files/" name "-"
-                         version ".tar.gz"))
+         (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
+                        version ".tar.gz"))
         (sha256
-          (base32 "1n05yrmscpgksrh2kfh12h18l0lw9j03mgmvwcg3hm8m0lwgak9k"))))
-
+         (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
