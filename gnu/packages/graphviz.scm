@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +69,7 @@
        ("pango" ,pango)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("libltdl" ,libtool)
+       ("libltdl" ,libltdl)
        ("libXaw" ,libxaw)
        ("expat" ,expat)
        ("libjpeg" ,libjpeg)

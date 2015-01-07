@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -231,8 +231,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                      ("automake" ,automake)
                      ("gettext"  ,gnu-gettext)
                      ("which"    ,which)
-                     ("libtool"  ,libtool)
-                     ("libtool"  ,libtool "bin")))
+                     ("libtool"  ,libtool)))
     (arguments
      `(#:phases (alist-cons-before
                  'bootstrap 'fix-autogen-shebang

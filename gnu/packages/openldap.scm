@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -52,8 +52,8 @@
              ;; FIXME: currently, openldap requires openssl or gnutls<3, see
              ;; http://www.openldap.org/its/index.cgi/Incoming?id=7430;page=17
              ;; Once this is fixed, switch to gnutls.
-             ("libtool" ,libtool "bin")
              ("zlib" ,zlib)))
+   (native-inputs `(("libtool" ,libtool)))
    (arguments
     `(#:tests? #f
       #:phases

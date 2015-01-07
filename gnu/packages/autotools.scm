@@ -254,36 +254,31 @@ Makefile, simplifying the entire process for the developer.")
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
                      ("autoconf" ,(autoconf-wrapper)))) ;others on 'autom4te'
 
-    ;; Separate binaries from the rest.  During bootstrap, only ltdl is
-    ;; used; not depending on the binaries allows us to avoid retaining
-    ;; a reference to the bootstrap bash.
-    (outputs '("bin"                              ;libtoolize, libtool, etc.
-               "out"))                            ;libltdl.so, ltdl.h, etc.
-
     (arguments
-     (if (%current-target-system)
-         '()                             ;no `check' phase when cross-building
-         `(;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
-           ;; <http://hydra.gnu.org/build/181662>.
-           #:tests? ,(not (string-prefix? "mips64"
-                                          (or (%current-target-system)
-                                              (%current-system))))
+     `(;; Libltdl is provided as a separate package, so don't install it here.
+       #:configure-flags '("--disable-ltdl-install")
 
-           #:phases (alist-cons-before
-                     'check 'pre-check
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       ;; Run the test suite in parallel, if possible.
-                       (setenv "TESTSUITEFLAGS"
-                               (string-append
-                                "-j"
-                                (number->string (parallel-job-count))))
+       ;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
+       ;; <http://hydra.gnu.org/build/181662>.
+       #:tests? ,(not (string-prefix? "mips64"
+                                      (or (%current-target-system)
+                                          (%current-system))))
 
-                       ;; Path references to /bin/sh.
-                       (let ((bash (assoc-ref inputs "bash")))
-                         (substitute* "tests/testsuite"
-                           (("/bin/sh")
-                            (string-append bash "/bin/bash")))))
-                     %standard-phases))))
+       #:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Run the test suite in parallel, if possible.
+                   (setenv "TESTSUITEFLAGS"
+                           (string-append
+                            "-j"
+                            (number->string (parallel-job-count))))
+
+                   ;; Path references to /bin/sh.
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* "tests/testsuite"
+                       (("/bin/sh")
+                        (string-append bash "/bin/bash")))))
+                 %standard-phases)))
     (synopsis "Generic shared library support tools")
     (description
      "GNU Libtool helps in the creation and use of shared libraries, by
