@@ -34,7 +34,6 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 threads)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 binary-ports)
@@ -95,15 +94,6 @@ disabled!~%"))
 (define %narinfo-expired-cache-entry-removal-delay
   ;; How often we want to remove files corresponding to expired cache entries.
   (* 7 24 3600))
-
-;; In Guile 2.0.9, `regexp-exec' is thread-unsafe, so work around it.
-;; See <http://bugs.gnu.org/14404>.
-(set! regexp-exec
-      (let ((real regexp-exec)
-            (lock (make-mutex)))
-        (lambda (rx str . rest)
-          (with-mutex lock
-            (apply real rx str rest)))))
 
 (define fields->alist
   ;; The narinfo format is really just like recutils.
