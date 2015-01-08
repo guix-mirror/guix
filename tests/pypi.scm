@@ -20,16 +20,9 @@
   #:use-module (guix import pypi)
   #:use-module (guix base32)
   #:use-module (guix hash)
+  #:use-module (guix tests)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
-
-(define-syntax-rule (mock (module proc replacement) body ...)
-  (let* ((m (resolve-module 'module))
-         (original (module-ref m 'proc)))
-    (dynamic-wind
-      (lambda () (module-set! m 'proc replacement))
-      (lambda () body ...)
-      (lambda () (module-set! m 'proc original)))))
 
 (define test-json
   "{

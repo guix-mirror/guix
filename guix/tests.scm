@@ -27,6 +27,7 @@
   #:export (open-connection-for-tests
             random-text
             random-bytevector
+            mock
             with-derivation-narinfo
             dummy-package))
 
@@ -69,6 +70,16 @@
             (bytevector-u8-set! bv i (random 256 %seed))
             (loop (1+ i)))
           bv))))
+
+(define-syntax-rule (mock (module proc replacement) body ...)
+  "Within BODY, replace the definition of PROC from MODULE with the definition
+given by REPLACEMENT."
+  (let* ((m (resolve-module 'module))
+         (original (module-ref m 'proc)))
+    (dynamic-wind
+      (lambda () (module-set! m 'proc replacement))
+      (lambda () body ...)
+      (lambda () (module-set! m 'proc original)))))
 
 
 ;;;
