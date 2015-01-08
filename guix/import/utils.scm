@@ -20,7 +20,16 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
-  #:export (factorize-uri))
+  #:use-module (guix hash)
+  #:use-module (guix utils)
+  #:use-module ((guix build download) #:prefix build:)
+  #:export (factorize-uri
+
+            hash-table->alist
+            flatten
+            assoc-ref*
+
+            url-fetch))
 
 (define (factorize-uri uri version)
   "Factorize URI, a package tarball URI as a string, such that any occurrences
@@ -49,3 +58,40 @@ of the string VERSION is replaced by the symbol 'version."
                            result))))
                '()
                indices))))))
+
+(define (hash-table->alist table)
+  "Return an alist represenation of TABLE."
+  (map (match-lambda
+        ((key . (lst ...))
+         (cons key
+               (map (lambda (x)
+                      (if (hash-table? x)
+                          (hash-table->alist x)
+                          x))
+                    lst)))
+        ((key . (? hash-table? table))
+         (cons key (hash-table->alist table)))
+        (pair pair))
+       (hash-map->list cons table)))
+
+(define (flatten lst)
+  "Return a list that recursively concatenates all sub-lists of LST."
+  (fold-right
+   (match-lambda*
+    (((sub-list ...) memo)
+     (append (flatten sub-list) memo))
+    ((elem memo)
+     (cons elem memo)))
+   '() lst))
+
+(define (assoc-ref* alist key . rest)
+  "Return the value for KEY from ALIST.  For each additional key specified,
+recursively apply the procedure to the sub-list."
+  (if (null? rest)
+      (assoc-ref alist key)
+      (apply assoc-ref* (assoc-ref alist key) rest)))
+
+(define (url-fetch url file-name)
+  "Save the contents of URL to FILE-NAME.  Return #f on failure."
+  (parameterize ((current-output-port (current-error-port)))
+    (build:url-fetch url file-name)))

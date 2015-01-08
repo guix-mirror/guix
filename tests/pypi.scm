@@ -60,7 +60,7 @@
 
 (test-assert "pypi->guix-package"
   ;; Replace network resources with sample data.
-  (mock ((guix import pypi) url-fetch
+  (mock ((guix import utils) url-fetch
          (lambda (url file-name)
            (with-output-to-file file-name
              (lambda ()

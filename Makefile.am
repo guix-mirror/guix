@@ -174,6 +174,7 @@ SCM_TESTS =					\
 if HAVE_GUILE_JSON
 
 MODULES +=					\
+  guix/import/json.scm				\
   guix/import/pypi.scm				\
   guix/scripts/import/pypi.scm
 

@@ -26,6 +26,7 @@
   #:export (sha256
             open-sha256-port
             port-sha256
+            file-sha256
             open-sha256-input-port))
 
 ;;; Commentary:
@@ -128,6 +129,10 @@ output port."
     (dump-port port out)
     (close-port out)
     (get)))
+
+(define (file-sha256 file)
+  "Return the SHA256 hash (a bytevector) of FILE."
+  (call-with-input-file file port-sha256))
 
 (define (open-sha256-input-port port)
   "Return an input port that wraps PORT and a thunk to get the hash of all the
