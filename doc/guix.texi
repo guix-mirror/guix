@@ -258,10 +258,10 @@ interest primarily for developers and not for casual users.
 @item
 Installing @uref{http://gnutls.org/, GnuTLS-Guile} will
 allow you to access @code{https} URLs with the @command{guix download}
-command (@pxref{Invoking guix download}) and the @command{guix import
-pypi} command.  This is primarily of interest to developers.
-@xref{Guile Preparations, how to install the GnuTLS bindings for Guile,,
-gnutls-guile, GnuTLS-Guile}.
+command (@pxref{Invoking guix download}), the @command{guix import pypi}
+command, and the @command{guix import cpan} command.  This is primarily
+of interest to developers.  @xref{Guile Preparations, how to install the
+GnuTLS bindings for Guile,, gnutls-guile, GnuTLS-Guile}.
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
@@ -2955,6 +2955,22 @@ package:
 
 @example
 guix import pypi itsdangerous
+@end example
+
+@item cpan
+@cindex CPAN
+Import meta-data from @uref{https://www.metacpan.org/, MetaCPAN}.
+Information is taken from the JSON-formatted meta-data provided through
+@uref{https://api.metacpan.org/, MetaCPAN's API} and includes most
+relevant information.  License information should be checked closely.
+Package dependencies are included but may in some cases needlessly
+include core Perl modules.
+
+The command command below imports meta-data for the @code{Acme::Boolean}
+Perl module:
+
+@example
+guix import cpan Acme::Boolean
 @end example
 
 @item nix

@@ -176,9 +176,13 @@ if HAVE_GUILE_JSON
 MODULES +=					\
   guix/import/json.scm				\
   guix/import/pypi.scm				\
-  guix/scripts/import/pypi.scm
+  guix/scripts/import/pypi.scm			\
+  guix/import/cpan.scm				\
+  guix/scripts/import/cpan.scm
 
-SCM_TESTS += tests/pypi.scm
+SCM_TESTS += 					\
+  tests/pypi.scm				\
+  tests/cpan.scm
 
 endif
 
