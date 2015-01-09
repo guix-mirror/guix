@@ -58,6 +58,7 @@
             derivation-input-output-paths
 
             derivation-name
+            derivation-output-names
             fixed-output-derivation?
             offloadable-derivation?
             substitutable-derivation?
@@ -135,6 +136,12 @@
   (let ((base (store-path-package-name (derivation-file-name drv))))
     (string-drop-right base 4)))
 
+(define (derivation-output-names drv)
+  "Return the names of the outputs of DRV."
+  (match (derivation-outputs drv)
+    (((names . _) ...)
+     names)))
+
 (define (fixed-output-derivation? drv)
   "Return #t if DRV is a fixed-output derivation, such as the result of a
 download with a fixed hash (aka. `fetchurl')."
@@ -180,9 +187,7 @@ download with a fixed hash (aka. `fetchurl')."
 (define* (derivation-prerequisites-to-build store drv
                                             #:key
                                             (outputs
-                                             (map
-                                              car
-                                              (derivation-outputs drv)))
+                                             (derivation-output-names drv))
                                             (use-substitutes? #t))
   "Return two values: the list of derivation-inputs required to build the
 OUTPUTS of DRV and not already available in STORE, recursively, and the list
@@ -844,7 +849,7 @@ recursively."
                                                        replacements))))
                                     (derivation-builder-environment-vars drv))
                     #:inputs (append (map list sources) inputs)
-                    #:outputs (map car (derivation-outputs drv))
+                    #:outputs (derivation-output-names drv)
                     #:hash (match (derivation-outputs drv)
                              ((($ <derivation-output> _ algo hash))
                               hash)
