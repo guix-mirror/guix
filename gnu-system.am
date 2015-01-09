@@ -191,6 +191,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
+  gnu/packages/ninja.scm			\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
   gnu/packages/ntp.scm				\
