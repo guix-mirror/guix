@@ -115,29 +115,15 @@ working directory."
 (define* (patch-usr-bin-file #:key native-inputs inputs
                              (patch-/usr/bin/file? #t)
                              #:allow-other-keys)
-  "Patch occurrences of /usr/bin/file in configure, if present."
+  "Patch occurrences of \"/usr/bin/file\" in all the executable 'configure'
+files found in the source tree.  This works around Libtool's Autoconf macros,
+which generates invocations of \"/usr/bin/file\" that are used to determine
+things like the ABI being used."
   (when patch-/usr/bin/file?
-    (let ((file "configure")
-          (file-command (or (and=> (assoc-ref (or native-inputs inputs) "file")
-                                   (cut string-append <> "/bin/file"))
-                            (which "file"))))
-      (cond ((not (file-exists? file))
-             (format (current-error-port)
-                     "patch-usr-bin-file: warning: `~a' not found~%"
-                     file))
-            ((not file-command)
-             (format (current-error-port)
-                     "patch-usr-bin-file: warning: `file' not found in PATH~%"))
-            (else
-             (let ((st (stat file)))
-               (substitute* file
-                 (("/usr/bin/file")
-                  (begin
-                    (format (current-error-port)
-                            "patch-usr-bin-file: ~a: changing `~a' to `~a'~%"
-                            file "/usr/bin/file" file-command)
-                    file-command)))
-               (set-file-time file st))))))
+    (for-each (lambda (file)
+                (when (executable-file? file)
+                  (patch-/usr/bin/file file)))
+              (find-files "." "^configure$")))
   #t)
 
 (define* (patch-source-shebangs #:key source #:allow-other-keys)

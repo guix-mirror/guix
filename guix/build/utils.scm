@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -61,6 +61,7 @@
             set-file-time
             patch-shebang
             patch-makefile-SHELL
+            patch-/usr/bin/file
             fold-port-matches
             remove-store-references
             wrap-program))
@@ -680,6 +681,29 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
    (when keep-mtime?
      (set-file-time file st))))
+
+(define* (patch-/usr/bin/file file
+                              #:key
+                              (file-command (which "file"))
+                              (keep-mtime? #t))
+  "Patch occurrences of \"/usr/bin/file\" in FILE, replacing them with
+FILE-COMMAND.  When KEEP-MTIME? is true, keep FILE's modification time
+unchanged."
+  (if (not file-command)
+      (format (current-error-port)
+              "patch-/usr/bin/file: warning: \
+no replacement 'file' command, doing nothing~%")
+      (let ((st (stat file)))
+        (substitute* file
+          (("/usr/bin/file")
+           (begin
+             (format (current-error-port)
+                     "patch-/usr/bin/file: ~a: changing `~a' to `~a'~%"
+                     file "/usr/bin/file" file-command)
+             file-command)))
+
+        (when keep-mtime?
+          (set-file-time file st)))))
 
 (define* (fold-port-matches proc init pattern port
                             #:optional (unmatched (lambda (_ r) r)))
