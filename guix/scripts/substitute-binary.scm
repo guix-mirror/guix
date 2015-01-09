@@ -241,7 +241,7 @@ failure."
     ((version _ sig)
      (let ((maybe-number (string->number version)))
        (cond ((not (number? maybe-number))
-              (leave (_ "signature version must be a number: ~a~%")
+              (leave (_ "signature version must be a number: ~s~%")
                      version))
              ;; Currently, there are no other versions.
              ((not (= 1 maybe-number))
@@ -313,18 +313,15 @@ No authentication and authorization checks are performed here!"
                      "References" "Deriver" "System"
                      "Signature"))))
 
-(define %signature-line-rx
-  ;; Regexp matching a signature line in a narinfo.
-  (make-regexp "(.+)^[[:blank:]]*Signature:[[:blank:]].+$"))
-
 (define (narinfo-sha256 narinfo)
   "Return the sha256 hash of NARINFO as a bytevector, or #f if NARINFO lacks a
 'Signature' field."
   (let ((contents (narinfo-contents narinfo)))
-    (match (regexp-exec %signature-line-rx contents)
+    (match (string-contains contents "Signature:")
       (#f #f)
-      ((= (cut match:substring <> 1) above-signature)
-       (sha256 (string->utf8 above-signature))))))
+      (index
+       (let ((above-signature (string-take contents index)))
+         (sha256 (string->utf8 above-signature)))))))
 
 (define* (assert-valid-narinfo narinfo
                                #:optional (acl (current-acl))
