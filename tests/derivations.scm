@@ -589,7 +589,8 @@
                     (derivation-prerequisites-to-build store drv))
                    ((build* download*)
                     (derivation-prerequisites-to-build store drv
-                                                       #:use-substitutes? #f)))
+                                                       #:substitutable?
+                                                       (const #f))))
         (and (null? build)
              (equal? download (list output))
              (null? download*)

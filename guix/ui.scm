@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -299,21 +299,27 @@ error."
 derivations listed in DRV.  Return #t if there's something to build, #f
 otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
 available for download."
+  (define substitutable?
+    ;; Call 'substitutation-oracle' upfront so we don't end up launching the
+    ;; substituter many times.  This makes a big difference, especially when
+    ;; DRV is a long list as is the case with 'guix environment'.
+    (if use-substitutes?
+        (substitution-oracle store drv)
+        (const #f)))
+
   (define (built-or-substitutable? drv)
     (let ((out (derivation->output-path drv)))
       ;; If DRV has zero outputs, OUT is #f.
       (or (not out)
           (or (valid-path? store out)
-              (and use-substitutes?
-                   (has-substitutes? store out))))))
+              (substitutable? out)))))
 
   (let*-values (((build download)
                  (fold2 (lambda (drv build download)
                           (let-values (((b d)
                                         (derivation-prerequisites-to-build
                                          store drv
-                                         #:use-substitutes?
-                                         use-substitutes?)))
+                                         #:substitutable? substitutable?)))
                             (values (append b build)
                                     (append d download))))
                         '() '()
