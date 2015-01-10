@@ -550,6 +550,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/pt-scotch-build-parallelism.patch	\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pulseaudio-longer-test-timeout.patch	\
   gnu/packages/patches/pycairo-wscript.patch			\

@@ -1,0 +1,13 @@
+Building with -j may cause the esmumps_main target to fail with a "no rule for
+dependency libptesmumps.a" error.  Fix the dependency name.
+
+--- scotch_6.0.4/src/esmumps/Makefile	2012-12-01 08:29:29.000000000 -0600
++++ scotch_6.0.4/src/esmumps/Makefile	2015-06-15 17:29:23.279605734 -0500
+@@ -160,6 +160,6 @@
+ 					order.h					\
+ 					symbol.h				\
+ 					esmumps.h				\
+-					lib$(ESMUMPSLIB)$(LIB)			\
++					libesmumps$(LIB)			\
+ 					$(libdir)/lib$(SCOTCHLIB)$(LIB)		\
+ 					$(libdir)/lib$(SCOTCHLIB)errexit$(LIB)

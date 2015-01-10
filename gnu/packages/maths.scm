@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -785,15 +785,16 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.0.0")
+    (version "6.0.4")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://gforge.inria.fr/frs/download.php/31831/"
+      (uri (string-append "https://gforge.inria.fr/frs/download.php/34618/"
                           "scotch_" version ".tar.gz"))
       (sha256
-       (base32 "0yfqf9lk7chb3h42777x42x4adx0v3n0b41q0cdqrdmscp4iczp5"))
-      (patches (list (search-patch "scotch-test-threading.patch")))))
+       (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
+      (patches (list (search-patch "scotch-test-threading.patch")
+                     (search-patch "pt-scotch-build-parallelism.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -820,7 +821,7 @@ CCS = gcc
 CCP = mpicc
 CCD = gcc
 CPPFLAGS =~{ -D~a~}
-CFLAGS = -O2 -g $(CPPFLAGS)
+CFLAGS = -O2 -g -fPIC $(CPPFLAGS)
 LDFLAGS = -lz -lm -lrt -lpthread
 CP = cp
 LEX = flex -Pscotchyy -olex.yy.c
@@ -833,8 +834,7 @@ YACC = bison -pscotchyy -y -b y
                        '("COMMON_FILE_COMPRESS_GZ"
                          "COMMON_PTHREAD"
                          "COMMON_RANDOM_FIXED_SEED"
-                         ;; TODO: Define once our MPI supports
-                         ;; MPI_THREAD_MULTIPLE
+                         ;; XXX: Causes invalid frees in superlu-dist tests
                          ;; "SCOTCH_PTHREAD"
                          ;; "SCOTCH_PTHREAD_NUMBER=2"
                          "restrict=__restrict")))))
