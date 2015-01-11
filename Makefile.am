@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 #
 # This file is part of GNU Guix.
@@ -34,6 +34,7 @@ MODULES =					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\
   guix/utils.scm				\
+  guix/sets.scm					\
   guix/download.scm				\
   guix/git-download.scm				\
   guix/monads.scm				\
@@ -153,6 +154,7 @@ SCM_TESTS =					\
   tests/hash.scm				\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
+  tests/sets.scm				\
   tests/substitute-binary.scm			\
   tests/builders.scm				\
   tests/derivations.scm				\
