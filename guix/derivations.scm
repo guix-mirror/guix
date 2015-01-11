@@ -217,8 +217,8 @@ substituter many times."
                            (append self deps result)))
                        '()
                        drv)))
-         (subst (substitutable-paths store paths)))
-    (cut member <> subst)))
+         (subst (list->set (substitutable-paths store paths))))
+    (cut set-contains? subst <>)))
 
 (define* (derivation-prerequisites-to-build store drv
                                             #:key
