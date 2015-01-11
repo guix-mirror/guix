@@ -348,6 +348,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
+  gnu/packages/patches/curl-gss-api-fix.patch			\
   gnu/packages/patches/cursynth-wave-rand.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
