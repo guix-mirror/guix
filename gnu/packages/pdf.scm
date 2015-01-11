@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,12 +56,13 @@
    ;;    introspection:    no
    ;;  use gtk-doc:        no
    ;;  use libcurl:        no
-   ;;  use libopenjpeg:    no
    (inputs `(("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
              ("libjpeg-8" ,libjpeg-8)
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
+             ("lcms" ,lcms)
+             ("openjpeg-1" ,openjpeg-1)
              ("zlib" ,zlib)
 
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
@@ -75,8 +77,18 @@
    (arguments
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags
-       '("--enable-xpdf-headers" ; to install header files
-         "--enable-zlib")))
+      '("--enable-libopenjpeg"
+        "--enable-xpdf-headers" ; to install header files
+        "--enable-zlib")
+      #:phases
+      (alist-cons-before
+       'configure 'setenv
+       (lambda _
+         (setenv "CPATH"
+                 (string-append (assoc-ref %build-inputs "openjpeg-1")
+                                "/include/openjpeg-1.5"
+                                ":" (or (getenv "CPATH") ""))))
+        %standard-phases)))
    (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")

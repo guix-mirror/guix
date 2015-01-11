@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,9 +58,11 @@
             derivation-input-output-paths
 
             derivation-name
+            derivation-output-names
             fixed-output-derivation?
             offloadable-derivation?
             substitutable-derivation?
+            substitution-oracle
             derivation-hash
 
             read-derivation
@@ -135,6 +137,12 @@
   (let ((base (store-path-package-name (derivation-file-name drv))))
     (string-drop-right base 4)))
 
+(define (derivation-output-names drv)
+  "Return the names of the outputs of DRV."
+  (match (derivation-outputs drv)
+    (((names . _) ...)
+     names)))
+
 (define (fixed-output-derivation? drv)
   "Return #t if DRV is a fixed-output derivation, such as the result of a
 download with a fixed hash (aka. `fetchurl')."
@@ -177,40 +185,51 @@ download with a fixed hash (aka. `fetchurl')."
   ;; synonymous, see <http://bugs.gnu.org/18747>.
   offloadable-derivation?)
 
+(define (derivation-output-paths drv sub-drvs)
+  "Return the output paths of outputs SUB-DRVS of DRV."
+  (match drv
+    (($ <derivation> outputs)
+     (map (lambda (sub-drv)
+            (derivation-output-path (assoc-ref outputs sub-drv)))
+          sub-drvs))))
+
+(define* (substitution-oracle store drv)
+  "Return a one-argument procedure that, when passed a store file name,
+returns #t if it's substitutable and #f otherwise.  The returned procedure
+knows about all substitutes for all the derivations listed in DRV and their
+prerequisites.
+
+Creating a single oracle (thus making a single 'substitutable-paths' call) and
+reusing it is much more efficient than calling 'has-substitutes?' or similar
+repeatedly, because it avoids the costs associated with launching the
+substituter many times."
+  (let* ((paths (delete-duplicates
+                 (fold (lambda (drv result)
+                         (let ((self (match (derivation->output-paths drv)
+                                       (((names . paths) ...)
+                                        paths)))
+                               (deps (append-map derivation-input-output-paths
+                                                 (derivation-prerequisites
+                                                  drv))))
+                           (append self deps result)))
+                       '()
+                       drv)))
+         (subst (substitutable-paths store paths)))
+    (cut member <> subst)))
+
 (define* (derivation-prerequisites-to-build store drv
                                             #:key
                                             (outputs
-                                             (map
-                                              car
-                                              (derivation-outputs drv)))
-                                            (use-substitutes? #t))
+                                             (derivation-output-names drv))
+                                            (substitutable?
+                                             (substitution-oracle store
+                                                                  (list drv))))
   "Return two values: the list of derivation-inputs required to build the
 OUTPUTS of DRV and not already available in STORE, recursively, and the list
-of required store paths that can be substituted.  When USE-SUBSTITUTES? is #f,
-that second value is the empty list."
-  (define (derivation-output-paths drv sub-drvs)
-    (match drv
-      (($ <derivation> outputs)
-       (map (lambda (sub-drv)
-              (derivation-output-path (assoc-ref outputs sub-drv)))
-            sub-drvs))))
-
+of required store paths that can be substituted.  SUBSTITUTABLE? must be a
+one-argument procedure similar to that returned by 'substitution-oracle'."
   (define built?
     (cut valid-path? store <>))
-
-  (define substitutable?
-    ;; Return true if the given path is substitutable.  Call
-    ;; `substitutable-paths' upfront, to benefit from parallelism in the
-    ;; substituter.
-    (if use-substitutes?
-        (let ((s (substitutable-paths store
-                                      (append
-                                       (derivation-output-paths drv outputs)
-                                       (append-map
-                                        derivation-input-output-paths
-                                        (derivation-prerequisites drv))))))
-          (cut member <> s))
-        (const #f)))
 
   (define input-built?
     (compose (cut any built? <>) derivation-input-output-paths))
@@ -844,7 +863,7 @@ recursively."
                                                        replacements))))
                                     (derivation-builder-environment-vars drv))
                     #:inputs (append (map list sources) inputs)
-                    #:outputs (map car (derivation-outputs drv))
+                    #:outputs (derivation-output-names drv)
                     #:hash (match (derivation-outputs drv)
                              ((($ <derivation-output> _ algo hash))
                               hash)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,6 +177,14 @@
   "foo-0.0"
   (let ((drv (derivation %store "foo-0.0" %bash '())))
     (derivation-name drv)))
+
+(test-equal "derivation-output-names"
+  '(("out") ("bar" "chbouib"))
+  (let ((drv1 (derivation %store "foo-0.0" %bash '()))
+        (drv2 (derivation %store "foo-0.0" %bash '()
+                          #:outputs '("bar" "chbouib"))))
+    (list (derivation-output-names drv1)
+          (derivation-output-names drv2))))
 
 (test-assert "offloadable-derivation?"
   (and (offloadable-derivation? (derivation %store "foo" %bash '()))
@@ -581,7 +589,8 @@
                     (derivation-prerequisites-to-build store drv))
                    ((build* download*)
                     (derivation-prerequisites-to-build store drv
-                                                       #:use-substitutes? #f)))
+                                                       #:substitutable?
+                                                       (const #f))))
         (and (null? build)
              (equal? download (list output))
              (null? download*)

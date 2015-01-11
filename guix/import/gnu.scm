@@ -18,6 +18,7 @@
 
 (define-module (guix import gnu)
   #:use-module (guix gnu-maintenance)
+  #:use-module (guix import utils)
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (guix hash)
@@ -37,10 +38,6 @@
 ;;; package, using meta-data available upstream for the package.
 ;;;
 ;;; Code:
-
-(define (file-sha256 file)
-  "Return the SHA256 hash of FILE as a bytevector."
-  (call-with-input-file file port-sha256))
 
 (define (qualified-url url)
   "Return a fully-qualified URL based on URL."
@@ -102,7 +99,7 @@ details.)"
      (let ((version (gnu-release-version release)))
        (match (find-packages (regexp-quote name))
          ((info . _)
-          (gnu-package->sexp info release))
+          (gnu-package->sexp info release #:key-download key-download))
          (()
           (raise (condition
                   (&message

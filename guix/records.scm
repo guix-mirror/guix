@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -267,15 +267,12 @@ PORT, according to FIELDS.  FIELDS must be a list of field name/getter pairs."
        (format port "~a: ~a~%" field (get object))
        (loop rest)))))
 
-(define %recutils-field-rx
-  (make-regexp "^([[:graph:]]+): (.*)$"))
-
-(define %recutils-comment-rx
-  ;; info "(recutils) Comments"
-  (make-regexp "^#"))
-
-(define %recutils-plus-rx
-  (make-regexp "^\\+ ?(.*)$"))
+(define %recutils-field-charset
+  ;; Valid characters starting a recutils field.
+  ;; info "(recutils) Fields"
+  (char-set-union char-set:upper-case
+                  char-set:lower-case
+                  (char-set #\%)))
 
 (define (recutils->alist port)
   "Read a recutils-style record from PORT and return it as a list of key/value
@@ -288,25 +285,29 @@ pairs.  Stop upon an empty line (after consuming it) or EOF."
            (if (null? result)
                (loop (read-line port) result)     ; leading space: ignore it
                (reverse result)))                 ; end-of-record marker
-          ((regexp-exec %recutils-comment-rx line)
-           (loop (read-line port) result))
-          ((regexp-exec %recutils-plus-rx line)
-           =>
-           (lambda (m)
-             (match result
-               (((field . value) rest ...)
-                (loop (read-line port)
-                      `((,field . ,(string-append value "\n"
-                                                  (match:substring m 1)))
-                        ,@rest))))))
-          ((regexp-exec %recutils-field-rx line)
-           =>
-           (lambda (match)
-             (loop (read-line port)
-                   (alist-cons (match:substring match 1)
-                               (match:substring match 2)
-                               result))))
           (else
-           (error "unmatched line" line)))))
+           ;; Now check the first character of LINE, since that's what the
+           ;; recutils manual says is enough.
+           (let ((first (string-ref line 0)))
+             (cond
+              ((char-set-contains? %recutils-field-charset first)
+               (let* ((colon (string-index line #\:))
+                      (field (string-take line colon))
+                      (value (string-trim (string-drop line (+ 1 colon)))))
+                 (loop (read-line port)
+                       (alist-cons field value result))))
+              ((eqv? first #\#)                   ;info "(recutils) Comments"
+               (loop (read-line port) result))
+              ((eqv? first #\+)                   ;info "(recutils) Fields"
+               (let ((new-line (if (string-prefix? "+ " line)
+                                   (string-drop line 2)
+                                   (string-drop line 1))))
+                (match result
+                  (((field . value) rest ...)
+                   (loop (read-line port)
+                         `((,field . ,(string-append value "\n" new-line))
+                           ,@rest))))))
+              (else
+               (error "unmatched line" line))))))))
 
 ;;; records.scm ends here

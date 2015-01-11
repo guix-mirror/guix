@@ -27,39 +27,14 @@
   #:use-module (web uri)
   #:use-module (guix utils)
   #:use-module (guix import utils)
+  #:use-module (guix import json)
   #:use-module (guix base32)
   #:use-module (guix hash)
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix build-system python)
-  #:use-module ((guix build download) #:prefix build:)
   #:use-module (gnu packages python)
   #:export (pypi->guix-package))
-
-(define (hash-table->alist table)
-  "Return an alist represenation of TABLE."
-  (map (match-lambda
-        ((key . (lst ...))
-         (cons key
-               (map (lambda (x)
-                      (if (hash-table? x)
-                          (hash-table->alist x)
-                          x))
-                    lst)))
-        ((key . (? hash-table? table))
-         (cons key (hash-table->alist table)))
-        (pair pair))
-       (hash-map->list cons table)))
-
-(define (flatten lst)
-  "Return a list that recursively concatenates all sub-lists of LIST."
-  (fold-right
-   (match-lambda*
-    (((sub-list ...) memo)
-     (append (flatten sub-list) memo))
-    ((elem memo)
-     (cons elem memo)))
-   '() lst))
 
 (define (join lst delimiter)
   "Return a list that contains the elements of LST, each separated by
@@ -71,13 +46,6 @@ DELIMETER."
     ((elem . rest)
      (cons* elem delimiter (join rest delimiter)))))
 
-(define (assoc-ref* alist key . rest)
-  "Return the value for KEY from ALIST.  For each additional key specified,
-recursively apply the procedure to the sub-list."
-  (if (null? rest)
-      (assoc-ref alist key)
-      (apply assoc-ref* (assoc-ref alist key) rest)))
-
 (define string->license
   (match-lambda
    ("GNU LGPL" lgpl2.0)
@@ -87,19 +55,6 @@ recursively apply the procedure to the sub-list."
    ("Public domain" public-domain)
    ("Apache License, Version 2.0" asl2.0)
    (_ #f)))
-
-(define (url-fetch url file-name)
-  "Save the contents of URL to FILE-NAME.  Return #f on failure."
-  (parameterize ((current-output-port (current-error-port)))
-    (build:url-fetch url file-name)))
-
-(define (json-fetch url)
-  "Return an alist representation of the JSON resource URL, or #f on failure."
-  (call-with-temporary-output-file
-   (lambda (temp port)
-     (and (url-fetch url temp)
-          (hash-table->alist
-           (call-with-input-file temp json->scm))))))
 
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,

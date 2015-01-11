@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,16 +188,15 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
       (origin
         (method url-fetch)
         (uri
-          (string-append "http://openjpeg.googlecode.com/files/" name "-"
-                         version ".tar.gz"))
+         (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
+                        version ".tar.gz"))
         (sha256
-          (base32 "1n05yrmscpgksrh2kfh12h18l0lw9j03mgmvwcg3hm8m0lwgak9k"))))
-
+         (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -217,8 +217,21 @@ In addition to the basic codec, various other features are under
 development, among them the JP2 and MJ2 (Motion JPEG 2000) file formats,
 an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
-    (home-page "http://jbig2dec.sourceforge.net/")
+    (home-page "https://code.google.com/p/openjpeg/")
     (license license:bsd-2)))
+
+(define-public openjpeg-1
+  (package (inherit openjpeg)
+    (name "openjpeg")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "11waq9w215zvzxrpv40afyd18qf79mxc28fda80bm3ax98cpppqm"))))))
 
 (define-public giflib
   (package

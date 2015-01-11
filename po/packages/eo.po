@@ -1,27 +1,127 @@
 # Esperanto messages for GNU Guix
-# Copyright (C) 2013, 2014 Free Software Foundation, Inc.
+# Copyright (C) 2013, 2014, 2015 Free Software Foundation, Inc.
 # This file is distributed under the same license as the guix package.
-# Felipe Castro <fefcas@gmail.com>, 2013, 2014.
+# Felipe Castro <fefcas@gmail.com>, 2013, 2014, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: guix-packages 0.7-pre1\n"
+"Project-Id-Version: guix-packages 0.8\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-07-14 11:59+0200\n"
-"PO-Revision-Date: 2014-07-14 11:28-0300\n"
+"POT-Creation-Date: 2014-11-10 15:37+0100\n"
+"PO-Revision-Date: 2015-01-09 09:14-0300\n"
 "Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.6.10\n"
 
-#: gnu/packages/base.scm:65
+#: gnu/packages/aspell.scm:42
+msgid "Spell checker"
+msgstr "Literumilo"
+
+#: gnu/packages/aspell.scm:44
+msgid ""
+"Aspell is a spell-checker which can be used either as a library or as\n"
+"a standalone program.  Notable features of Aspell include its full support of\n"
+"documents written in the UTF-8 encoding and its ability to use multiple\n"
+"dictionaries, including personal ones."
+msgstr ""
+
+#: gnu/packages/aspell.scm:84
+msgid "This package provides a dictionary for the GNU Aspell spell checker."
+msgstr "Tiu ĉi pako provizas vortaron por la literumilo GNU Aspell."
+
+#: gnu/packages/backup.scm:87
+msgid "Encrypted backup using rsync algorithm"
+msgstr "Ĉifrita savkopio uzanta algoritmon rsync"
+
+#: gnu/packages/backup.scm:89
+msgid ""
+"Duplicity backs up directories by producing encrypted tar-format volumes\n"
+"and uploading them to a remote or local file server.  Because duplicity uses\n"
+"librsync, the incremental archives are space efficient and only record the\n"
+"parts of files that have changed since the last backup.  Because duplicity\n"
+"uses GnuPG to encrypt and/or sign these archives, they will be safe from\n"
+"spying and/or modification by the server."
+msgstr ""
+
+#: gnu/packages/backup.scm:123
+msgid "Simple incremental backup tool"
+msgstr "Simpla alkrementa savkopiilo"
+
+#: gnu/packages/backup.scm:125
+msgid ""
+"Hdup2 is a backup utilty, its aim is to make backup really simple.  The\n"
+"backup scheduling is done by means of a cron job.  It supports an\n"
+"include/exclude mechanism, remote backups, encrypted backups and split\n"
+"backups (called chunks) to allow easy burning to CD/DVD."
+msgstr ""
+
+#: gnu/packages/backup.scm:178
+msgid "Multi-format archive and compression library"
+msgstr "Mult-forma biblioteko por arĥivi kaj densigi"
+
+#: gnu/packages/backup.scm:180
+msgid ""
+"Libarchive provides a flexible interface for reading and writing\n"
+"archives in various formats such as tar and cpio.  Libarchive also supports\n"
+"reading and writing archives compressed using various compression filters such\n"
+"as gzip and bzip2.  The library is inherently stream-oriented; readers\n"
+"serially iterate through the archive, writers serially add things to the\n"
+"archive.  In particular, note that there is currently no built-in support for\n"
+"random access nor for in-place modification."
+msgstr ""
+
+#: gnu/packages/backup.scm:243
+msgid "Provide a list of files to backup"
+msgstr "Provizas liston da dosieroj por savkopii"
+
+#: gnu/packages/backup.scm:245
+msgid ""
+"Rdup is a utility inspired by rsync and the plan9 way of doing backups.\n"
+"Rdup itself does not backup anything, it only print a list of absolute\n"
+"filenames to standard output.  Auxiliary scripts are needed that act on this\n"
+"list and implement the backup strategy."
+msgstr ""
+
+#: gnu/packages/backup.scm:275
+msgid "Tar-compatible archiver"
+msgstr "Arĥivilo kongrua al tar"
+
+#: gnu/packages/backup.scm:277
+msgid ""
+"Btar is a tar-compatible archiver which allows arbitrary compression and\n"
+"ciphering, redundancy, differential backup, indexed extraction, multicore\n"
+"compression, input and output serialisation, and tolerance to partial archive\n"
+"errors."
+msgstr ""
+
+#: gnu/packages/backup.scm:305
+msgid "Local/remote mirroring+incremental backup"
+msgstr "Loka/demalproksima spegula+alkrementa savkopio"
+
+#: gnu/packages/backup.scm:307
+msgid ""
+"Rdiff-backup backs up one directory to another, possibly over a network.\n"
+"The target directory ends up a copy of the source directory, but extra reverse\n"
+"diffs are stored in a special subdirectory of that target directory, so you\n"
+"can still recover files lost some time ago.  The idea is to combine the best\n"
+"features of a mirror and an incremental backup.  Rdiff-backup also preserves\n"
+"subdirectories, hard links, dev files, permissions, uid/gid ownership,\n"
+"modification times, extended attributes, acls, and resource forks.  Also,\n"
+"rdiff-backup can operate in a bandwidth efficient manner over a pipe, like\n"
+"rsync.  Thus you can use rdiff-backup and ssh to securely back a hard drive up\n"
+"to a remote location, and only the differences will be transmitted.  Finally,\n"
+"rdiff-backup is easy to use and settings have sensical defaults."
+msgstr ""
+
+#: gnu/packages/base.scm:56
 msgid "Hello, GNU world: An example GNU package"
 msgstr "Saluton, mondo GNU: ekzemplo de pako GNU"
 
-#: gnu/packages/base.scm:67
+#: gnu/packages/base.scm:58
 msgid ""
 "GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
 "serves as an example of standard GNU coding practices.  As such, it supports\n"
@@ -31,11 +131,11 @@ msgstr ""
 "funkcias kiel ekzemplo de norma kodumada tradicio de GNU.  Tiel, ĝi subtenas\n"
 "komand-liniajn argumentojn, plurajn lingvojn, kaj tiel plu."
 
-#: gnu/packages/base.scm:85
+#: gnu/packages/base.scm:76
 msgid "Print lines matching a pattern"
 msgstr "Montri liniojn kongruajn al ŝablono"
 
-#: gnu/packages/base.scm:87
+#: gnu/packages/base.scm:78
 msgid ""
 "grep is a tool for finding text inside files.  Text is found by\n"
 "matching a pattern provided by the user in one or many files.  The pattern\n"
@@ -53,11 +153,11 @@ msgstr ""
 "ekzemple, lini-numerojn.  GNU grep oferaj multajn aldonojn kompare al la\n"
 "originala aplikaĵo, inkluzive, ekzemple, rikuran serĉadon en dosierujoj."
 
-#: gnu/packages/base.scm:109
+#: gnu/packages/base.scm:100
 msgid "Stream editor"
 msgstr "Flu-redaktilo"
 
-#: gnu/packages/base.scm:124
+#: gnu/packages/base.scm:115
 msgid ""
 "Sed is a non-interactive, text stream editor.  It receives a text\n"
 "input from a file or from standard input and it then applies a series of text\n"
@@ -70,11 +170,11 @@ msgstr ""
 "Ĝi estas ofte uzata por anstataŭigi teksto-ŝablonojn en fluo.  La GNU-a \n"
 "realigo oferas plurajn aldonojn kompare al la ordinara aplikaĵo."
 
-#: gnu/packages/base.scm:144
+#: gnu/packages/base.scm:135
 msgid "Managing tar archives"
 msgstr "Administrado de arĥivoj tar"
 
-#: gnu/packages/base.scm:146
+#: gnu/packages/base.scm:137
 msgid ""
 "Tar provides the ability to create tar archives, as well as the\n"
 "ability to extract, update or list files in an existing archive.  It is\n"
@@ -90,11 +190,11 @@ msgstr ""
 "dato de kreo/modifo.  GNU tar oferas multajn aldonojn kompare\n"
 "al la ordinara aplikaĵo."
 
-#: gnu/packages/base.scm:173
+#: gnu/packages/base.scm:161
 msgid "Apply differences to originals, with optional backups"
 msgstr "Apliki malsamojn al originaloj, kun nedevigaj savkopioj"
 
-#: gnu/packages/base.scm:175
+#: gnu/packages/base.scm:163
 msgid ""
 "Patch is a program that applies changes to files based on differences\n"
 "laid out as by the program \"diff\".  The changes may be applied to one or more\n"
@@ -103,11 +203,11 @@ msgid ""
 "differences."
 msgstr ""
 
-#: gnu/packages/base.scm:195
+#: gnu/packages/base.scm:183
 msgid "Comparing and merging files"
 msgstr "Komparo kaj kunmikso de dosieroj"
 
-#: gnu/packages/base.scm:197
+#: gnu/packages/base.scm:185
 msgid ""
 "GNU Diffutils is a package containing tools for finding the\n"
 "differences between files.  The \"diff\" command is used to show how two files\n"
@@ -116,11 +216,11 @@ msgid ""
 "interactive means to merge two files."
 msgstr ""
 
-#: gnu/packages/base.scm:224
+#: gnu/packages/base.scm:212
 msgid "Operating on files matching given criteria"
 msgstr "Operacio sur dosieroj kongruantaj al indikita kriterio"
 
-#: gnu/packages/base.scm:226
+#: gnu/packages/base.scm:214
 msgid ""
 "Findutils supplies the basic file directory searching utilities of the\n"
 "GNU system.  It consists of two primary searching utilities: \"find\"\n"
@@ -130,11 +230,11 @@ msgid ""
 "used to apply commands with arbitrarily long arguments."
 msgstr ""
 
-#: gnu/packages/base.scm:278
+#: gnu/packages/base.scm:264
 msgid "Core GNU utilities (file, text, shell)"
 msgstr "Nukleaj utilaĵoj GNU (file, text, shell)"
 
-#: gnu/packages/base.scm:280
+#: gnu/packages/base.scm:266
 msgid ""
 "GNU Coreutils includes all of the basic command-line tools that are\n"
 "expected in a POSIX system.  These provide the basic file, shell and text\n"
@@ -142,11 +242,11 @@ msgid ""
 "functionality beyond that which is outlined in the POSIX standard."
 msgstr ""
 
-#: gnu/packages/base.scm:314
+#: gnu/packages/base.scm:300
 msgid "Remake files automatically"
 msgstr "Reprocezi dosierojn aŭtomate"
 
-#: gnu/packages/base.scm:316
+#: gnu/packages/base.scm:302
 msgid ""
 "Make is a program that is used to control the production of\n"
 "executables or other files from their source files.  The process is\n"
@@ -156,24 +256,25 @@ msgid ""
 "change.  GNU make offers many powerful extensions over the standard utility."
 msgstr ""
 
-#: gnu/packages/base.scm:361
+#: gnu/packages/base.scm:347
 msgid "Binary utilities: bfd gas gprof ld"
 msgstr "Duumaj utilaĵoj: bfd gas gprof ld"
 
-#: gnu/packages/base.scm:363
+#: gnu/packages/base.scm:349
 msgid ""
 "GNU Binutils is a collection of tools for working with binary files.\n"
-"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. Other\n"
-"tools include programs to display binary profiling information, list the\n"
-"strings in a binary file, and utilities for working with archives.  The \"bfd\"\n"
-"library for working with executable and object formats is also included."
+"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler.\n"
+"Other tools include programs to display binary profiling information, list\n"
+"the strings in a binary file, and utilities for working with archives.  The\n"
+"\"bfd\" library for working with executable and object formats is also\n"
+"included."
 msgstr ""
 
-#: gnu/packages/base.scm:504
+#: gnu/packages/base.scm:491
 msgid "The GNU C Library"
 msgstr "La Biblioteko GNU C"
 
-#: gnu/packages/base.scm:506
+#: gnu/packages/base.scm:493
 msgid ""
 "Any Unix-like operating system needs a C library: the library which\n"
 "defines the \"system calls\" and other basic facilities such as open, malloc,\n"
@@ -183,50 +284,186 @@ msgid ""
 "with the Linux kernel."
 msgstr ""
 
-#: gnu/packages/base.scm:575
+#: gnu/packages/base.scm:562
 msgid "Database of current and historical time zones"
 msgstr "Datumbazo de nuna kaj pasintaj temp-zonoj"
 
-#: gnu/packages/base.scm:576
+#: gnu/packages/base.scm:563
 msgid ""
 "The Time Zone Database (often called tz or zoneinfo)\n"
 "contains code and data that represent the history of local time for many\n"
-"representative locations around the globe. It is updated periodically to\n"
+"representative locations around the globe.  It is updated periodically to\n"
 "reflect changes made by political bodies to time zone boundaries, UTC offsets,\n"
 "and daylight-saving rules."
 msgstr ""
 
-#: gnu/packages/base.scm:1004
-msgid "GNU C++ standard library (intermediate)"
-msgstr "GNU C++ norma biblioteko (intermeza)"
+#: gnu/packages/databases.scm:83
+msgid "Berkeley database"
+msgstr "Datumbazo de Berkeley"
 
-#: gnu/packages/base.scm:1098
-msgid "The linker wrapper"
-msgstr "La ligila ĉirkaŭanto"
-
-#: gnu/packages/base.scm:1100
+#: gnu/packages/databases.scm:85
 msgid ""
-"The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
-"missing `-rpath' flags, and to detect any misuse of libraries outside of the\n"
-"store."
+"Berkeley DB is an embeddable database allowing developers the choice of\n"
+"SQL, Key/Value, XML/XQuery or Java Object storage for their data model."
 msgstr ""
 
-#: gnu/packages/base.scm:1264
-msgid "Complete GCC tool chain for C/C++ development"
-msgstr "Kompleta ilaro GCC por kodumado en C/C++"
+#: gnu/packages/databases.scm:143
+msgid "Fast, easy to use, and popular database"
+msgstr "Rapida, faciluzebla, kaj populara datumbazo"
 
-#: gnu/packages/base.scm:1266
+#: gnu/packages/databases.scm:145
 msgid ""
-"This package provides a complete GCC tool chain for C/C++ development to\n"
-"be installed in user profiles.  This includes GCC, as well as libc (headers\n"
-"and binaries, plus debugging symbols in the 'debug' output), and Binutils."
+"MySQL is a fast, reliable, and easy to use relational database\n"
+"management system that supports the standardized Structured Query\n"
+"Language."
 msgstr ""
 
-#: gnu/packages/guile.scm:99 gnu/packages/guile.scm:166
+#: gnu/packages/databases.scm:166
+msgid "Powerful object-relational database system"
+msgstr "Potenca objekt-rilata datumbaza sistemo"
+
+#: gnu/packages/databases.scm:168
+msgid ""
+"PostgreSQL is a powerful object-relational database system.  It is fully\n"
+"ACID compliant, has full support for foreign keys, joins, views, triggers, and\n"
+"stored procedures (in multiple languages).  It includes most SQL:2008 data\n"
+"types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and\n"
+"TIMESTAMP.  It also supports storage of binary large objects, including\n"
+"pictures, sounds, or video."
+msgstr ""
+
+#: gnu/packages/databases.scm:203
+msgid "Manipulate plain text files as databases"
+msgstr "Manipuli simplajn tekst-dosierojn kiel datumbazojn"
+
+#: gnu/packages/databases.scm:205
+msgid ""
+"GNU Recutils is a set of tools and libraries for creating and\n"
+"manipulating text-based, human-editable databases.  Despite being text-based,\n"
+"databases created with Recutils carry all of the expected features such as\n"
+"unique fields, primary keys, time stamps and more.  Many different field\n"
+"types are supported, as is encryption."
+msgstr ""
+
+#: gnu/packages/databases.scm:243
+msgid "The SQLite database management system"
+msgstr "La datumbaza administra sistemo SQLite"
+
+#: gnu/packages/databases.scm:245
+msgid ""
+"SQLite is a software library that implements a self-contained, serverless,\n"
+"zero-configuration, transactional SQL database engine.  SQLite is the most\n"
+"widely deployed SQL database engine in the world.  The source code for SQLite\n"
+"is in the public domain."
+msgstr ""
+
+#: gnu/packages/databases.scm:280
+msgid "Trivial database"
+msgstr "Ordinara datumbazo"
+
+#: gnu/packages/databases.scm:282
+msgid ""
+"TDB is a Trivial Database.  In concept, it is very much like GDBM,\n"
+"and BSD's DB except that it allows multiple simultaneous writers and uses\n"
+"locking internally to keep writers from trampling on each other.  TDB is also\n"
+"extremely small."
+msgstr ""
+
+#: gnu/packages/databases.scm:301
+msgid "Database independent interface for Perl"
+msgstr "Datumbaz-sendependa interfaco por Perl"
+
+#: gnu/packages/databases.scm:302
+msgid "This package provides an database interface for Perl."
+msgstr "Tiu ĉi pako provizas datumbazan interfacon por Perl."
+
+#: gnu/packages/databases.scm:321
+msgid "SQlite interface for Perl"
+msgstr "Interfaco de SQLite por Perl"
+
+#: gnu/packages/databases.scm:322
+msgid ""
+"DBD::SQLite is a Perl DBI driver for SQLite, that includes\n"
+"the entire thing in the distribution.  So in order to get a fast transaction\n"
+"capable RDBMS working for your Perl project you simply have to install this\n"
+"module, and nothing else."
+msgstr ""
+
+#: gnu/packages/databases.scm:342
+msgid "Data source abstraction library"
+msgstr "Datumar-fonta abstrakta biblioteko"
+
+#: gnu/packages/databases.scm:343
+msgid ""
+"Unixodbc is a library providing an API with which to access\n"
+"data sources.  Data sources include SQL Servers and any software with an ODBC\n"
+"Driver."
+msgstr ""
+
+#: gnu/packages/gcc.scm:254
+msgid "GNU Compiler Collection"
+msgstr "GNU-a kompila kolekto"
+
+#: gnu/packages/gcc.scm:256
+msgid ""
+"GCC is the GNU Compiler Collection.  It provides compiler front-ends\n"
+"for several languages, including C, C++, Objective-C, Fortran, Java, Ada, and\n"
+"Go.  It also includes runtime support libraries for these languages."
+msgstr ""
+
+#: gnu/packages/gcc.scm:340
+msgid "Manipulating sets and relations of integer points bounded by linear constraints"
+msgstr "Manipulo de aroj kaj rilatoj de entjeraj punktoj ligataj per linearaj limigoj"
+
+#: gnu/packages/gcc.scm:343
+msgid ""
+"isl is a library for manipulating sets and relations of integer points\n"
+"bounded by linear constraints.  Supported operations on sets include\n"
+"intersection, union, set difference, emptiness check, convex hull, (integer)\n"
+"affine hull, integer projection, computing the lexicographic minimum using\n"
+"parametric integer programming, coalescing and parametric vertex\n"
+"enumeration.  It also includes an ILP solver based on generalized basis\n"
+"reduction, transitive closures on maps (which may encode infinite graphs),\n"
+"dependence analysis and bounds on piecewise step-polynomials."
+msgstr ""
+
+#: gnu/packages/gcc.scm:375
+msgid "Library to generate code for scanning Z-polyhedra"
+msgstr "Biblioteko por krei kodumaron por skani Z-pluredrojn"
+
+#: gnu/packages/gcc.scm:377
+msgid ""
+"CLooG is a free software library to generate code for scanning\n"
+"Z-polyhedra.  That is, it finds a code (e.g., in C, FORTRAN...) that\n"
+"reaches each integral point of one or more parameterized polyhedra.\n"
+"CLooG has been originally written to solve the code generation problem\n"
+"for optimizing compilers based on the polytope model.  Nevertheless it\n"
+"is used now in various area e.g., to build control automata for\n"
+"high-level synthesis or to find the best polynomial approximation of a\n"
+"function.  CLooG may help in any situation where scanning polyhedra\n"
+"matters.  While the user has full control on generated code quality,\n"
+"CLooG is designed to avoid control overhead and to produce a very\n"
+"effective code."
+msgstr ""
+
+#: gnu/packages/gettext.scm:74
+msgid "Tools and documentation for translation"
+msgstr "Iloj kaj dokumentado por tradukado"
+
+#: gnu/packages/gettext.scm:76
+msgid ""
+"GNU Gettext is a package providing a framework for translating the\n"
+"textual output of programs into multiple languages.  It provides translators\n"
+"with the means to create message catalogs, as well as an Emacs mode to work\n"
+"with them, and a runtime library to load translated messages from the\n"
+"catalogs.  Nearly all GNU packages use Gettext."
+msgstr ""
+
+#: gnu/packages/guile.scm:100 gnu/packages/guile.scm:163
 msgid "Scheme implementation intended especially for extensions"
 msgstr "Realigo de Scheme celata speciale por aldonoj"
 
-#: gnu/packages/guile.scm:101 gnu/packages/guile.scm:168
+#: gnu/packages/guile.scm:102 gnu/packages/guile.scm:165
 msgid ""
 "Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
 "official extension language of the GNU system.  It is an implementation of\n"
@@ -235,18 +472,18 @@ msgid ""
 "without requiring the source code to be rewritten."
 msgstr ""
 
-#: gnu/packages/guile.scm:211
+#: gnu/packages/guile.scm:208
 msgid "Framework for building readers for GNU Guile"
 msgstr "Framo por konstrui legilojn por GNU Guile"
 
-#: gnu/packages/guile.scm:213
+#: gnu/packages/guile.scm:210
 msgid ""
 "Guile-Reader is a simple framework for building readers for GNU Guile.\n"
 "\n"
 "The idea is to make it easy to build procedures that extend Guile’s read\n"
-"procedure. Readers supporting various syntax variants can easily be written,\n"
+"procedure.  Readers supporting various syntax variants can easily be written,\n"
 "possibly by re-using existing “token readers” of a standard Scheme\n"
-"readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
+"readers.  For example, it is used to implement Skribilo’s R5RS-derived\n"
 "document syntax.\n"
 "\n"
 "Guile-Reader’s approach is similar to Common Lisp’s “read table”, but\n"
@@ -254,21 +491,23 @@ msgid ""
 "many readers as needed)."
 msgstr ""
 
-#: gnu/packages/guile.scm:267
+#: gnu/packages/guile.scm:263
 msgid "Guile bindings to ncurses"
 msgstr "Bindoj de Guile por ncurses"
 
-#: gnu/packages/guile.scm:269
+#: gnu/packages/guile.scm:265
 msgid ""
 "guile-ncurses provides Guile language bindings for the ncurses\n"
 "library."
 msgstr ""
+"guile-ncurses provizas lingvo-bindojn de Guile por la biblioteko\n"
+"ncurses."
 
-#: gnu/packages/guile.scm:289
+#: gnu/packages/guile.scm:285
 msgid "Run jobs at scheduled times"
 msgstr "Lanĉi taskojn je antaŭplanitaj horoj"
 
-#: gnu/packages/guile.scm:291
+#: gnu/packages/guile.scm:287
 msgid ""
 "GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
 "tasks on a schedule, such as every hour or every Monday.  Mcron is written in\n"
@@ -276,39 +515,470 @@ msgid ""
 "format is also supported."
 msgstr ""
 
-#: gnu/packages/guile.scm:319
+#: gnu/packages/guile.scm:315
 msgid "Collection of useful Guile Scheme modules"
 msgstr "Aro da utilaj moduloj de Guile Scheme"
 
-#: gnu/packages/guile.scm:321
+#: gnu/packages/guile.scm:317
 msgid ""
-"guile-lib is intended as an accumulation place for pure-scheme Guile\n"
+"Guile-Lib is intended as an accumulation place for pure-scheme Guile\n"
 "modules, allowing for people to cooperate integrating their generic Guile\n"
 "modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN\n"
 "for Guile\"."
 msgstr ""
 
-#: gnu/packages/guile.scm:352
+#: gnu/packages/guile.scm:348
 msgid "JSON module for Guile"
 msgstr "Modulo JSON por Guile"
 
-#: gnu/packages/guile.scm:354
+#: gnu/packages/guile.scm:350
 msgid ""
 "Guile-json supports parsing and building JSON documents according to the\n"
-"http:://json.org specification. These are the main features:\n"
+"http:://json.org specification.  These are the main features:\n"
 "- Strictly complies to http://json.org specification.\n"
 "- Build JSON documents programmatically via macros.\n"
 "- Unicode support for strings.\n"
 "- Allows JSON pretty printing."
 msgstr ""
 
+#: gnu/packages/guile.scm:381
+msgid "Create charts and graphs in Guile"
+msgstr "Krei diagramojn kaj grafikaĵojn en Guile"
+
+#: gnu/packages/guile.scm:383
+msgid ""
+"Guile-Charting is a Guile Scheme library to create bar charts and graphs\n"
+"using the Cairo drawing library."
+msgstr ""
+
+#: gnu/packages/inkscape.scm:78
+msgid "Vector graphics editor"
+msgstr "Vektor-grafika redaktilo"
+
+#: gnu/packages/inkscape.scm:79
+msgid ""
+"Inkscape is a vector graphics editor.  What sets Inkscape\n"
+"apart is its use of Scalable Vector Graphics (SVG), an XML-based W3C standard,\n"
+"as the native format."
+msgstr ""
+
+#: gnu/packages/linux.scm:131
+msgid "GNU Linux-Libre kernel headers"
+msgstr "GNU Linux-Libre kernaj kapdosieroj"
+
+#: gnu/packages/linux.scm:132
+msgid "Headers of the Linux-Libre kernel."
+msgstr "Kapdosieroj de la kerno Linux-Libre."
+
+#: gnu/packages/linux.scm:163
+msgid "Tools for loading and managing Linux kernel modules"
+msgstr "Iloj por ŝargi kaj administri linuks-kernajn modulojn"
+
+#: gnu/packages/linux.scm:165
+msgid ""
+"Tools for loading and managing Linux kernel modules, such as `modprobe',\n"
+"`insmod', `lsmod', and more."
+msgstr ""
+
+#: gnu/packages/linux.scm:296
+msgid "100% free redistribution of a cleaned Linux kernel"
+msgstr "100% libera redistribuo de purigita Linuks-kerno"
+
+#: gnu/packages/linux.scm:298
+msgid ""
+"GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.\n"
+"It has been modified to remove all non-free binary blobs."
+msgstr ""
+
+#: gnu/packages/linux.scm:341
+msgid "Pluggable authentication modules for Linux"
+msgstr "Konekteblaj aŭtentikigaj moduloj por Linukso"
+
+#: gnu/packages/linux.scm:343
+msgid ""
+"A *Free* project to implement OSF's RFC 86.0.\n"
+"Pluggable authentication modules are small shared object files that can\n"
+"be used through the PAM API to perform tasks, like authenticating a user\n"
+"at login.  Local and dynamic reconfiguration are its key features"
+msgstr ""
+
+#: gnu/packages/linux.scm:370
+msgid "Small utilities that use the proc filesystem"
+msgstr "Etaj utilaĵoj kiuj uzas la dosiersistemon proc"
+
+#: gnu/packages/linux.scm:372
+msgid ""
+"This PSmisc package is a set of some small useful utilities that\n"
+"use the proc filesystem.  We're not about changing the world, but\n"
+"providing the system administrator with some help in common tasks."
+msgstr ""
+
+#: gnu/packages/linux.scm:416
+msgid "Collection of utilities for the Linux kernel"
+msgstr "Aro da utilaĵoj por la Linuks-kerno"
+
+#: gnu/packages/linux.scm:418
+msgid "Util-linux is a random collection of utilities for the Linux kernel."
+msgstr "Util-linux estas hazarda aro da utilaĵoj por la Linuks-kerno."
+
+#: gnu/packages/linux.scm:472
+msgid "Utilities that give information about processes"
+msgstr "Utilaĵoj kiuj informas pri procezoj"
+
+#: gnu/packages/linux.scm:474
+msgid ""
+"Procps is the package that has a bunch of small useful utilities\n"
+"that give information about processes using the Linux /proc file system.\n"
+"The package includes the programs ps, top, vmstat, w, kill, free,\n"
+"slabtop, and skill."
+msgstr ""
+
+#: gnu/packages/linux.scm:499
+msgid "Tools for working with USB devices, such as lsusb"
+msgstr "Iloj por labori kun USB-aparatoj, kiel lsusb"
+
+#: gnu/packages/linux.scm:501
+msgid "Tools for working with USB devices, such as lsusb."
+msgstr "Iloj por labori kun USB-aparatoj, kiel lsusb."
+
+#: gnu/packages/linux.scm:542
+msgid "Creating and checking ext2/ext3/ext4 file systems"
+msgstr "Kreo kaj kontrolo de dosiersistemoj ext2/ext3/ext4"
+
+#: gnu/packages/linux.scm:544
+msgid "This package provides tools for manipulating ext2/ext3/ext4 file systems."
+msgstr "Tiu ĉi pako provizas ilojn por manipuli dosiersistemojn ext2/ext3/ext4."
+
+#: gnu/packages/linux.scm:575
+msgid "Statically-linked fsck.* commands from e2fsprogs"
+msgstr "Statik-ligitaj komandoj fsck.* el e2fsprogs"
+
+#: gnu/packages/linux.scm:577
+msgid ""
+"This package provides statically-linked command of fsck.ext[234] taken\n"
+"from the e2fsprogs package.  It is meant to be used in initrds."
+msgstr ""
+
+#: gnu/packages/linux.scm:596
+msgid "System call tracer for Linux"
+msgstr "Sistem-voka ŝpursekvilo por Linukso"
+
+#: gnu/packages/linux.scm:598
+msgid ""
+"strace is a system call tracer, i.e. a debugging tool which prints out a\n"
+"trace of all the system calls made by a another process/program."
+msgstr ""
+
+#: gnu/packages/linux.scm:617
+msgid "The Advanced Linux Sound Architecture libraries"
+msgstr "La bibliotekoj de Altnivela Linuksa Sona Arkitekturo"
+
+#: gnu/packages/linux.scm:619 gnu/packages/linux.scm:661
+msgid ""
+"The Advanced Linux Sound Architecture (ALSA) provides audio and\n"
+"MIDI functionality to the Linux-based operating system."
+msgstr ""
+"La Altnivela Linuksa Sona Arkitekturo (ALSA) provizas sonan kaj\n"
+"MIDI-an funkciojn por linuks-surbazita operaci-sistemo."
+
+#: gnu/packages/linux.scm:659
+msgid "Utilities for the Advanced Linux Sound Architecture (ALSA)"
+msgstr "Utilaĵoj por la Altnivela Linuksa Sona Arkitekturo (ALSA)"
+
+#: gnu/packages/linux.scm:683
+msgid "Program to configure the Linux IP packet filtering rules"
+msgstr "Programo por agordi la IP-pakajn filtrajn regulojn de Linukso"
+
+#: gnu/packages/linux.scm:685
+msgid ""
+"iptables is the userspace command line program used to configure the\n"
+"Linux 2.4.x and later IPv4 packet filtering ruleset.  It is targeted towards\n"
+"system administrators.  Since Network Address Translation is also configured\n"
+"from the packet filter ruleset, iptables is used for this, too.  The iptables\n"
+"package also includes ip6tables.  ip6tables is used for configuring the IPv6\n"
+"packet filter."
+msgstr ""
+
+# # Parou aqui!!!!
+#: gnu/packages/linux.scm:733
+msgid "Utilities for controlling TCP/IP networking and traffic in Linux"
+msgstr "Utilaĵoj por regi reton TCP/IP kaj trafikon en Linukso"
+
+#: gnu/packages/linux.scm:735
+msgid ""
+"Iproute2 is a collection of utilities for controlling TCP/IP\n"
+"networking and traffic with the Linux kernel.\n"
+"\n"
+"Most network configuration manuals still refer to ifconfig and route as the\n"
+"primary network configuration tools, but ifconfig is known to behave\n"
+"inadequately in modern network environments.  They should be deprecated, but\n"
+"most distros still include them.  Most network configuration systems make use\n"
+"of ifconfig and thus provide a limited feature set.  The /etc/net project aims\n"
+"to support most modern network technologies, as it doesn't use ifconfig and\n"
+"allows a system administrator to make use of all iproute2 features, including\n"
+"traffic control.\n"
+"\n"
+"iproute2 is usually shipped in a package called iproute or iproute2 and\n"
+"consists of several tools, of which the most important are ip and tc.  ip\n"
+"controls IPv4 and IPv6 configuration and tc stands for traffic control.  Both\n"
+"tools print detailed usage messages and are accompanied by a set of\n"
+"manpages."
+msgstr ""
+
+#: gnu/packages/linux.scm:827
+msgid "Tools for controlling the network subsystem in Linux"
+msgstr "Iloj por regi la retan subsistemon en Linukso"
+
+#: gnu/packages/linux.scm:829
+msgid ""
+"This package includes the important tools for controlling the network\n"
+"subsystem of the Linux kernel.  This includes arp, hostname, ifconfig,\n"
+"netstat, rarp and route.  Additionally, this package contains utilities\n"
+"relating to particular network hardware types (plipconfig, slattach) and\n"
+"advanced aspects of IP configuration (iptunnel, ipmaddr)."
+msgstr ""
+
+#: gnu/packages/linux.scm:862
+msgid "Library for working with POSIX capabilities"
+msgstr "Biblioteko por labori kun kapabloj POSIX"
+
+#: gnu/packages/linux.scm:864
+msgid ""
+"Libcap2 provides a programming interface to POSIX capabilities on\n"
+"Linux-based operating systems."
+msgstr ""
+"Libcap2 provizas program-interfacon por kapabloj POSIX en\n"
+"operaciumaj sistemoj bazitaj sur Linukso."
+
+#: gnu/packages/linux.scm:896
+msgid "Manipulate Ethernet bridges"
+msgstr "Manipuli pontojn Ethernet"
+
+#: gnu/packages/linux.scm:898
+msgid ""
+"Utilities for Linux's Ethernet bridging facilities.  A bridge is a way\n"
+"to connect two Ethernet segments together in a protocol independent way.\n"
+"Packets are forwarded based on Ethernet address, rather than IP address (like\n"
+"a router).  Since forwarding is done at Layer 2, all protocols can go\n"
+"transparently through a bridge."
+msgstr ""
+
+#: gnu/packages/linux.scm:920
+msgid "NetLink protocol library suite"
+msgstr "Biblioteka programaro por la protokolo NetLink"
+
+#: gnu/packages/linux.scm:922
+msgid ""
+"The libnl suite is a collection of libraries providing APIs to netlink\n"
+"protocol based Linux kernel interfaces.  Netlink is an IPC mechanism primarly\n"
+"between the kernel and user space processes.  It was designed to be a more\n"
+"flexible successor to ioctl to provide mainly networking related kernel\n"
+"configuration and monitoring interfaces."
+msgstr ""
+
+#: gnu/packages/linux.scm:955
+msgid "Analyze power consumption on Intel-based laptops"
+msgstr "Analizi konsumon de potenco en tekkomputiloj bazitaj sur Intel"
+
+#: gnu/packages/linux.scm:957
+msgid ""
+"PowerTOP is a Linux tool to diagnose issues with power consumption and\n"
+"power management.  In addition to being a diagnostic tool, PowerTOP also has\n"
+"an interactive mode where the user can experiment various power management\n"
+"settings for cases where the operating system has not enabled these\n"
+"settings."
+msgstr ""
+
+#: gnu/packages/linux.scm:979
+msgid "Audio mixer for X and the console"
+msgstr "Son-miksilo por X kaj la konzolo"
+
+#: gnu/packages/linux.scm:981
+msgid ""
+"Aumix adjusts an audio mixer from X, the console, a terminal,\n"
+"the command line or a script."
+msgstr ""
+
+#: gnu/packages/linux.scm:1005
+msgid "Displays the IO activity of running processes"
+msgstr "Montri la en/eligan aktivaĵon de rulantaj procezoj"
+
+#: gnu/packages/linux.scm:1007
+msgid ""
+"Iotop is a Python program with a top like user interface to show the\n"
+"processes currently causing I/O."
+msgstr ""
+
+#: gnu/packages/linux.scm:1058
+msgid "Support file systems implemented in user space"
+msgstr "Subteni dosiersistemojn realigatajn en la uzant-spaco"
+
+#: gnu/packages/linux.scm:1060
+msgid ""
+"As a consequence of its monolithic design, file system code for Linux\n"
+"normally goes into the kernel itself---which is not only a robustness issue,\n"
+"but also an impediment to system extensibility.  FUSE, for \"file systems in\n"
+"user space\", is a kernel module and user-space library that tries to address\n"
+"part of this problem by allowing users to run file system implementations as\n"
+"user-space processes."
+msgstr ""
+
+#: gnu/packages/linux.scm:1085
+msgid "User-space union file system"
+msgstr "Uzant-spaca unuiga dosiersistemo"
+
+#: gnu/packages/linux.scm:1087
+msgid ""
+"UnionFS-FUSE is a flexible union file system implementation in user\n"
+"space, using the FUSE library.  Mounting a union file system allows you to\n"
+"\"aggregate\" the contents of several directories into a single mount point.\n"
+"UnionFS-FUSE additionally supports copy-on-write."
+msgstr ""
+
+#: gnu/packages/linux.scm:1112
+msgid "User-space union file system (statically linked)"
+msgstr "Uzant-spaca unuiga dosiersistemo (statike ligita)"
+
+#: gnu/packages/linux.scm:1154
+msgid "Mount remote file systems over SSH"
+msgstr "Munti demalproksimajn dosiersistemojn per SSH"
+
+#: gnu/packages/linux.scm:1156
+msgid ""
+"This is a file system client based on the SSH File Transfer Protocol.\n"
+"Since most SSH servers already support this protocol it is very easy to set\n"
+"up: on the server side there's nothing to do; on the client side mounting the\n"
+"file system is as easy as logging into the server with an SSH client."
+msgstr ""
+
+#: gnu/packages/linux.scm:1204
+msgid "Tools for non-uniform memory access (NUMA) machines"
+msgstr "Iloj por maŝinoj kun ne-kontinua memor-aliro (NUMA)"
+
+#: gnu/packages/linux.scm:1206
+msgid ""
+"NUMA stands for Non-Uniform Memory Access, in other words a system whose\n"
+"memory is not all in one place.  The numactl program allows you to run your\n"
+"application program on specific CPU's and memory nodes.  It does this by\n"
+"supplying a NUMA memory policy to the operating system before running your\n"
+"program.\n"
+"\n"
+"The package contains other commands, such as numademo, numastat and memhog.\n"
+"The numademo command provides a quick overview of NUMA performance on your\n"
+"system."
+msgstr ""
+
+#: gnu/packages/linux.scm:1269
+msgid "Linux keyboard utilities and keyboard maps"
+msgstr "Linuksaj klavar-utilaĵoj kaj klavar-mapoj"
+
+#: gnu/packages/linux.scm:1271
+msgid ""
+"This package contains keytable files and keyboard utilities compatible\n"
+"for systems using the Linux kernel.  This includes commands such as\n"
+"'loadkeys', 'setfont', 'kbdinfo', and 'chvt'."
+msgstr ""
+
+#: gnu/packages/linux.scm:1290
+msgid "Monitor file accesses"
+msgstr "Observi dosier-alirojn"
+
+#: gnu/packages/linux.scm:1292
+msgid ""
+"The inotify-tools packages provides a C library and command-line tools\n"
+"to use Linux' inotify mechanism, which allows file accesses to be monitored."
+msgstr ""
+
+#: gnu/packages/linux.scm:1330
+msgid "Kernel module tools"
+msgstr "Iloj por kerno-moduloj"
+
+#: gnu/packages/linux.scm:1331
+msgid ""
+"Kmod is a set of tools to handle common tasks with Linux\n"
+"kernel modules like insert, remove, list, check properties, resolve\n"
+"dependencies and aliases.\n"
+"\n"
+"These tools are designed on top of libkmod, a library that is shipped with\n"
+"kmod.  The aim is to be compatible with tools, configurations and indices\n"
+"from the module-init-tools project."
+msgstr ""
+
+#: gnu/packages/linux.scm:1380
+msgid "Userspace device management"
+msgstr "Administro de uzant-spaca aparato"
+
+#: gnu/packages/linux.scm:1381
+msgid ""
+"Udev is a daemon which dynamically creates and removes\n"
+"device nodes from /dev/, handles hotplug events and loads drivers at boot\n"
+"time."
+msgstr ""
+
+#: gnu/packages/linux.scm:1470
+msgid "Logical volume management for Linux"
+msgstr "Administro de logika volumo por Linukso"
+
+#: gnu/packages/linux.scm:1472
+msgid ""
+"LVM2 is the logical volume management tool set for Linux-based systems.\n"
+"This package includes the user-space libraries and tools, including the device\n"
+"mapper.  Kernel components are part of Linux-libre."
+msgstr ""
+
+#: gnu/packages/linux.scm:1499
+msgid "Tools for manipulating Linux Wireless Extensions"
+msgstr "Iloj por manipuli linuksan \"Wireless Extensions\""
+
+#: gnu/packages/linux.scm:1500
+msgid ""
+"Wireless Tools are used to manipulate the Linux Wireless\n"
+"Extensions.  The Wireless Extension is an interface allowing you to set\n"
+"Wireless LAN specific parameters and get the specific stats."
+msgstr ""
+
+#: gnu/packages/linux.scm:1572
+msgid "Utilities to read temperature/voltage/fan sensors"
+msgstr "Utilaĵoj por legi temperaturan/tensian/ventolilan sensilojn"
+
+#: gnu/packages/linux.scm:1574
+msgid ""
+"Lm-sensors is a hardware health monitoring package for Linux.  It allows\n"
+"you to access information from temperature, voltage, and fan speed sensors.\n"
+"It works with most newer systems."
+msgstr ""
+
+#: gnu/packages/linux.scm:1609
+msgid "Hardware health information viewer"
+msgstr "Montrilo de informoj pri la aparatara sano"
+
+#: gnu/packages/linux.scm:1611
+msgid ""
+"Xsensors reads data from the libsensors library regarding hardware\n"
+"health such as temperature, voltage and fan speed and displays the information\n"
+"in a digital read-out."
+msgstr ""
+
+#: gnu/packages/linux.scm:1654
+msgid "Linux profiling with performance counters"
+msgstr "Linuksa trajt-esplorado kun rendiment-akumuliloj"
+
+#: gnu/packages/linux.scm:1656
+msgid ""
+"perf is a tool suite for profiling using hardware performance counters,\n"
+"with support in the Linux kernel.  perf can instrument CPU performance\n"
+"counters, tracepoints, kprobes, and uprobes (dynamic tracing).  It is capable\n"
+"of lightweight profiling.  This package contains the user-land tools and in\n"
+"particular the 'perf' command."
+msgstr ""
+
 #: gnu/packages/lout.scm:109
-msgid "Lout, a document layout system similar in style to LaTeX"
-msgstr "Lout, dokument-aranĝa sistemo simila al LaTeX, laŭ stilo"
+msgid "Document layout system"
+msgstr "Dokument-aranĵa sistemo"
 
 #: gnu/packages/lout.scm:111
 msgid ""
-"The Lout document formatting system is now reads a high-level description of\n"
+"The Lout document formatting system reads a high-level description of\n"
 "a document similar in style to LaTeX and produces a PostScript or plain text\n"
 "output file.\n"
 "\n"
@@ -325,15 +995,292 @@ msgid ""
 "beginning."
 msgstr ""
 
-#: gnu/packages/recutils.scm:58
-msgid "Manipulate plain text files as databases"
-msgstr "Manipuli simplajn tekst-dosierojn kiel datumbazojn"
+#: gnu/packages/mpd.scm:62
+msgid "Music Player Daemon client library"
+msgstr "Klienta biblioteko por \"Music Player Daemon\""
 
-#: gnu/packages/recutils.scm:60
+#: gnu/packages/mpd.scm:63
 msgid ""
-"GNU Recutils is a set of tools and libraries for creating and\n"
-"manipulating text-based, human-editable databases.  Despite being text-based,\n"
-"databases created with Recutils carry all of the expected features such as\n"
-"unique fields, primary keys, time stamps and more. Many different field types\n"
-"are supported, as is encryption."
+"A stable, documented, asynchronous API library for\n"
+"interfacing MPD in the C, C++ & Objective C languages."
 msgstr ""
+
+#: gnu/packages/mpd.scm:121
+msgid "Music Player Daemon"
+msgstr "Music Player Daemon (muzik-ludila demono)"
+
+#: gnu/packages/mpd.scm:122
+msgid ""
+"Music Player Daemon (MPD) is a flexible, powerful,\n"
+"server-side application for playing music.  Through plugins and libraries it\n"
+"can play a variety of sound files while being controlled by its network\n"
+"protocol."
+msgstr ""
+
+#: gnu/packages/mpd.scm:147
+msgid "Curses Music Player Daemon client"
+msgstr "Kliento por \"Curses Music Player Daemon\""
+
+#: gnu/packages/mpd.scm:148
+msgid ""
+"ncmpc is a fully featured MPD client, which runs in a\n"
+"terminal using ncurses."
+msgstr ""
+
+#: gnu/packages/mpd.scm:169
+msgid "Featureful ncurses based MPD client inspired by ncmpc"
+msgstr "Riĉa MPD-kliento bazita sur ncurses kaj inspirita de ncmpc"
+
+#: gnu/packages/mpd.scm:170
+msgid ""
+"Ncmpcpp is an mpd client with a UI very similar to ncmpc,\n"
+"but it provides new useful features such as support for regular expressions\n"
+"for library searches, extended song format, items filtering, the ability to\n"
+"sort playlists, and a local filesystem browser."
+msgstr ""
+
+#: gnu/packages/pdf.scm:79
+msgid "PDF rendering library"
+msgstr "PDF-bildiga biblioteko"
+
+#: gnu/packages/pdf.scm:81
+msgid "Poppler is a PDF rendering library based on the xpdf-3.0 code base."
+msgstr "Poppler estas PDF-bildiga biblioteko bazita sur la kodum-bazo de xpdf-3.0"
+
+#: gnu/packages/pdf.scm:124
+msgid "Viewer for PDF files based on the Motif toolkit"
+msgstr "Montrilo por PDF-dosieroj bazitaj sur la ilaro Motif"
+
+#: gnu/packages/pdf.scm:126
+msgid "Xpdf is a viewer for Portable Document Format (PDF) files"
+msgstr "Xpdf estas montrilo por dosieroj PDF (portebla dokument-formo)"
+
+#: gnu/packages/pdf.scm:154
+msgid "Tools to work with the PDF file format"
+msgstr "Iloj por labori kun la PDF dosierformo"
+
+#: gnu/packages/pdf.scm:156
+msgid ""
+"PoDoFo is a C++ library and set of command-line tools to work with the\n"
+"PDF file format.  It can parse PDF files and load them into memory, and makes\n"
+"it easy to modify them and write the changes to disk.  It is primarily useful\n"
+"for applications that wish to do lower level manipulation of PDF, such as\n"
+"extracting content or merging files."
+msgstr ""
+
+#: gnu/packages/pdf.scm:217
+msgid "Lightweight PDF viewer and toolkit"
+msgstr "Malpeza PDF-montrilo kaj ilaro"
+
+#: gnu/packages/pdf.scm:219
+msgid ""
+"MuPDF is a C library that implements a PDF and XPS parsing and\n"
+"rendering engine.  It is used primarily to render pages into bitmaps,\n"
+"but also provides support for other operations such as searching and\n"
+"listing the table of contents and hyperlinks.\n"
+"\n"
+"The library ships with a rudimentary X11 viewer, and a set of command\n"
+"line tools for batch rendering (pdfdraw), examining the file structure\n"
+"(pdfshow), and rewriting files (pdfclean)."
+msgstr ""
+
+#: gnu/packages/ratpoison.scm:60
+msgid "Simple mouse-free tiling window manager"
+msgstr "Simpla mus-libera kaheleca fenestr-administrilo"
+
+#: gnu/packages/ratpoison.scm:62
+msgid ""
+"Ratpoison is a simple window manager with no fat library\n"
+"dependencies, no fancy graphics, no window decorations, and no\n"
+"rodent dependence.  It is largely modelled after GNU Screen which\n"
+"has done wonders in the virtual terminal market.\n"
+"\n"
+"The screen can be split into non-overlapping frames.  All windows\n"
+"are kept maximized inside their frames to take full advantage of\n"
+"your precious screen real estate.\n"
+"\n"
+"All interaction with the window manager is done through keystrokes.\n"
+"Ratpoison has a prefix map to minimize the key clobbering that\n"
+"cripples Emacs and other quality pieces of software."
+msgstr ""
+
+#: gnu/packages/scanner.scm:52
+msgid "Raster image scanner library and drivers"
+msgstr "Rastruma bild-skanila biblioteko kaj peliloj"
+
+#: gnu/packages/scanner.scm:53
+msgid ""
+"SANE stands for \"Scanner Access Now Easy\" and is an API\n"
+"proving access to any raster image scanner hardware (flatbed scanner,\n"
+"hand-held scanner, video- and still-cameras, frame-grabbers, etc.).  The\n"
+"package contains the library and drivers."
+msgstr ""
+
+#: gnu/packages/scheme.scm:126
+msgid "A Scheme implementation with integrated editor and debugger"
+msgstr "Realigo de Scheme kun integrita redaktilo kaj erarserĉilo"
+
+#: gnu/packages/scheme.scm:128
+msgid ""
+"GNU/MIT Scheme is an implementation of the Scheme programming\n"
+"language.  It provides an interpreter, a compiler and a debugger.  It also\n"
+"features an integrated Emacs-like editor and a large runtime library."
+msgstr ""
+
+#: gnu/packages/scheme.scm:208
+msgid "Efficient Scheme compiler"
+msgstr "Efika kompililo Scheme"
+
+#: gnu/packages/scheme.scm:210
+msgid ""
+"Bigloo is a Scheme implementation devoted to one goal: enabling\n"
+"Scheme based programming style where C(++) is usually\n"
+"required.  Bigloo attempts to make Scheme practical by offering\n"
+"features usually presented by traditional programming languages\n"
+"but not offered by Scheme and functional programming.  Bigloo\n"
+"compiles Scheme modules.  It delivers small and fast stand alone\n"
+"binary executables.  Bigloo enables full connections between\n"
+"Scheme and C programs and between Scheme and Java programs."
+msgstr ""
+
+#: gnu/packages/scheme.scm:281
+msgid "Multi-tier programming language for the Web 2.0"
+msgstr "Plurtavola programlingvo por la Web 2.0"
+
+#: gnu/packages/scheme.scm:283
+msgid ""
+"HOP is a multi-tier programming language for the Web 2.0 and the\n"
+"so-called diffuse Web.  It is designed for programming interactive web\n"
+"applications in many fields such as multimedia (web galleries, music players,\n"
+"...), ubiquitous and house automation (SmartPhones, personal appliance),\n"
+"mashups, office (web agendas, mail clients, ...), etc."
+msgstr ""
+
+#: gnu/packages/scheme.scm:323
+msgid "R5RS Scheme implementation that compiles native code via C"
+msgstr "Realigo R5RS de Scheme kiu kompilas originalan kodumaron per C"
+
+#: gnu/packages/scheme.scm:325
+msgid ""
+"CHICKEN is a compiler for the Scheme programming language.  CHICKEN\n"
+"produces portable and efficient C, supports almost all of the R5RS Scheme\n"
+"language standard, and includes many enhancements and extensions."
+msgstr ""
+
+#: gnu/packages/scheme.scm:344
+msgid "Scheme implementation using a bytecode interpreter"
+msgstr "Realigo de Scheme, kiu uzas bajtkodan interpretilon"
+
+#: gnu/packages/scheme.scm:346
+msgid ""
+"Scheme 48 is an implementation of Scheme based on a byte-code\n"
+"interpreter and is designed to be used as a testbed for experiments in\n"
+"implementation techniques and as an expository tool."
+msgstr ""
+
+#: gnu/packages/scheme.scm:419
+msgid "Implementation of Scheme and related languages"
+msgstr "Realigo de Scheme kaj rilataj program-lingvoj"
+
+#: gnu/packages/scheme.scm:421
+msgid ""
+"Racket is an implementation of the Scheme programming language (R5RS and\n"
+"R6RS) and related languages, such as Typed Racket.  It features a compiler and\n"
+"a virtual machine with just-in-time native compilation, as well as a large set\n"
+"of libraries."
+msgstr ""
+
+#: gnu/packages/wordnet.scm:79
+msgid "Lexical database for the English language"
+msgstr "Leksika datumbazo por la angla lingvo"
+
+#: gnu/packages/wordnet.scm:81
+msgid ""
+"WordNet® is a large lexical database of English.  Nouns, verbs,\n"
+"adjectives and adverbs are grouped into sets of cognitive synonyms\n"
+"(synsets), each expressing a distinct concept.  Synsets are interlinked by\n"
+"means of conceptual-semantic and lexical relations.  The resulting network of\n"
+"meaningfully related words and concepts can be navigated with the browser.\n"
+"WordNet is also freely and publicly available for download.  WordNet's\n"
+"structure makes it a useful tool for computational linguistics and natural\n"
+"language processing."
+msgstr ""
+
+#: gnu/packages/zip.scm:56
+msgid "Compression and file packing utility"
+msgstr "Utilaĵo por densigi kaj pakigi dosierojn"
+
+#: gnu/packages/zip.scm:58
+msgid ""
+"Zip is a compression and file packaging/archive utility.  Zip is useful\n"
+"for packaging a set of files for distribution, for archiving files, and for\n"
+"saving disk space by temporarily compressing unused files or directories.\n"
+"Zip puts one or more compressed files into a single ZIP archive, along with\n"
+"information about the files (name, path, date, time of last modification,\n"
+"protection, and check information to verify file integrity).  An entire\n"
+"directory structure can be packed into a ZIP archive with a single command.\n"
+"\n"
+"Zip has one compression method (deflation) and can also store files without\n"
+"compression.  Zip automatically chooses the better of the two for each file.\n"
+"Compression ratios of 2:1 to 3:1 are common for text files."
+msgstr ""
+
+#: gnu/packages/zip.scm:98
+msgid "Decompression and file extraction utility"
+msgstr "Utilaĵo por maldensigi kaj malpakigi dosierojn"
+
+#: gnu/packages/zip.scm:100
+msgid ""
+"UnZip is an extraction utility for archives compressed in .zip format,\n"
+"also called \"zipfiles\".\n"
+"\n"
+"UnZip lists, tests, or extracts files from a .zip archive.  The default\n"
+"behaviour (with no options) is to extract into the current directory, and\n"
+"subdirectories below it, all files from the specified zipfile.  UnZip\n"
+"recreates the stored directory structure by default."
+msgstr ""
+
+#: gnu/packages/zip.scm:134
+msgid "Library for accessing zip files"
+msgstr "Biblioteko por aliri zip-dosierojn"
+
+#: gnu/packages/zip.scm:136
+msgid "ZZipLib is a library based on zlib for accessing zip files."
+msgstr "ZZipLib estas biblioteko bazita sur zlib por aliri zip-dosierojn."
+
+#: gnu/packages/zip.scm:154
+msgid "Provides an interface to ZIP archive files"
+msgstr "Provizas interfacon por arĥiv-dosierojn ZIP"
+
+#: gnu/packages/zip.scm:155
+msgid ""
+"The Archive::Zip module allows a Perl program to create,\n"
+"manipulate, read, and write Zip archive files."
+msgstr ""
+"La modulo Archive::Zip ebligas al Perl-programo krei,\n"
+"manipuli, legi, kaj skribi arĥiv-dosierojn ZIP."
+
+#: gnu/packages/zsh.scm:63
+msgid "Powerful shell for interactive use and scripting"
+msgstr "Potenca ŝelo por interaga uzo kaj por skriptoj"
+
+#: gnu/packages/zsh.scm:64
+msgid ""
+"The Z shell (zsh) is a Unix shell that can be used\n"
+"as an interactive login shell and as a powerful command interpreter\n"
+"for shell scripting.  Zsh can be thought of as an extended Bourne shell\n"
+"with a large number of improvements, including some features of bash,\n"
+"ksh, and tcsh."
+msgstr ""
+
+#~ msgid "GNU C++ standard library (intermediate)"
+#~ msgstr "GNU C++ norma biblioteko (intermeza)"
+
+#~ msgid "The linker wrapper"
+#~ msgstr "La ligila ĉirkaŭanto"
+
+#~ msgid "Complete GCC tool chain for C/C++ development"
+#~ msgstr "Kompleta ilaro GCC por kodumado en C/C++"
+
+#~ msgid "Lout, a document layout system similar in style to LaTeX"
+#~ msgstr "Lout, dokument-aranĝa sistemo simila al LaTeX, laŭ stilo"

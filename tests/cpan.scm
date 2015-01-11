@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,8 +16,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-pypi)
-  #:use-module (guix import pypi)
+(define-module (test-cpan)
+  #:use-module (guix import cpan)
   #:use-module (guix base32)
   #:use-module (guix hash)
   #:use-module (guix tests)
@@ -26,70 +26,82 @@
 
 (define test-json
   "{
-  \"info\": {
-    \"version\": \"1.0.0\",
-    \"name\": \"foo\",
-    \"license\": \"GNU LGPL\",
-    \"summary\": \"summary\",
-    \"home_page\": \"http://example.com\",
-  },
-  \"releases\": {
-    \"1.0.0\": [
-      {
-        \"url\": \"https://example.com/foo-1.0.0.egg\",
-        \"packagetype\": \"bdist_egg\",
-      }, {
-        \"url\": \"https://example.com/foo-1.0.0.tar.gz\",
-        \"packagetype\": \"sdist\",
+  \"metadata\" : {
+    \"prereqs\" : {
+      \"configure\" : {
+        \"requires\" : {
+          \"ExtUtils::MakeMaker\" : \"0\",
+          \"Module::Build\" : \"0.28\"
+        }
+      },
+      \"runtime\" : {
+        \"requires\" : {
+          \"Getopt::Std\" : \"0\",
+          \"Test::Script\" : \"1.05\",
+        }
       }
-    ]
+    }
+    \"name\" : \"Foo-Bar\",
+    \"version\" : \"0.1\"
   }
+  \"name\" : \"Foo-Bar-0.1\",
+  \"distribution\" : \"Foo-Bar\",
+  \"license\" : [
+    \"perl_5\"
+  ],
+  \"abstract\" : \"Fizzle Fuzz\",
+  \"download_url\" : \"http://example.com/Foo-Bar-0.1.tar.gz\",
+  \"author\" : \"GUIX\",
+  \"version\" : \"0.1\"
 }")
 
 (define test-source
   "foobar")
 
-(test-begin "pypi")
+(test-begin "cpan")
 
-(test-assert "pypi->guix-package"
+(test-assert "cpan->guix-package"
   ;; Replace network resources with sample data.
-  (mock ((guix import utils) url-fetch
-         (lambda (url file-name)
+  (mock ((guix build download) url-fetch
+         (lambda* (url file-name #:key (mirrors '()))
            (with-output-to-file file-name
              (lambda ()
                (display
                 (match url
-                  ("https://pypi.python.org/pypi/foo/json"
+                  ("http://api.metacpan.org/release/Foo-Bar"
                    test-json)
-                  ("https://example.com/foo-1.0.0.tar.gz"
+                  ("http://example.com/Foo-Bar-0.1.tar.gz"
                    test-source)
                   (_ (error "Unexpected URL: " url))))))))
-    (match (pypi->guix-package "foo")
+    (match (cpan->guix-package "Foo::Bar")
       (('package
-         ('name "python-foo")
-         ('version "1.0.0")
+         ('name "perl-foo-bar")
+         ('version "0.1")
          ('source ('origin
                     ('method 'url-fetch)
-                    ('uri ('string-append "https://example.com/foo-"
+                    ('uri ('string-append "http://example.com/Foo-Bar-"
                                           'version ".tar.gz"))
                     ('sha256
                      ('base32
                       (? string? hash)))))
-         ('build-system 'python-build-system)
+         ('build-system 'perl-build-system)
+         ('native-inputs
+          ('quasiquote
+           (("perl-module-build" ('unquote 'perl-module-build)))))
          ('inputs
           ('quasiquote
-           (("python-setuptools" ('unquote 'python-setuptools)))))
-         ('home-page "http://example.com")
-         ('synopsis "summary")
-         ('description "summary")
-         ('license 'lgpl2.0))
+           (("perl-test-script" ('unquote 'perl-test-script)))))
+         ('home-page "http://search.cpan.org/dist/Foo-Bar")
+         ('synopsis "Fizzle Fuzz")
+         ('description 'fill-in-yourself!)
+         ('license 'gpl1+))
        (string=? (bytevector->nix-base32-string
                   (call-with-input-string test-source port-sha256))
                  hash))
       (x
        (pk 'fail x #f)))))
 
-(test-end "pypi")
+(test-end "cpan")
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))

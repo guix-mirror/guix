@@ -4,6 +4,8 @@
 ;; (guix base64) by Nikita Karetnikov <nikita@karetnikov.org> on
 ;; February 12, 2014.
 ;;
+;; Some optimizations made by Ludovic Courtès <ludo@gnu.org>, 2015.
+;;
 ;; Copyright © 2009, 2010 Göran Weinholt <goran@weinholt.se>
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -33,7 +35,23 @@
           (only (srfi :13 strings)
                 string-index
                 string-prefix? string-suffix?
-                string-concatenate string-trim-both))
+                string-concatenate string-trim-both)
+          (only (guile) ash logior))
+
+
+  (define-syntax define-alias
+    (syntax-rules ()
+      ((_ new old)
+       (define-syntax new (identifier-syntax old)))))
+
+  ;; Force the use of Guile's own primitives to avoid the overhead of its 'fx'
+  ;; procedures.
+  (define-alias fxbit-field bitwise-bit-field)
+  (define-alias fxarithmetic-shift ash)
+  (define-alias fxarithmetic-shift-left ash)
+  (define-alias fxand logand)
+  (define-alias fxior logior)
+  (define-alias fxxor logxor)
 
   (define base64-alphabet
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")

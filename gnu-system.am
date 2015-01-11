@@ -191,6 +191,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
+  gnu/packages/ninja.scm			\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
   gnu/packages/ntp.scm				\
@@ -422,6 +423,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mupdf-buildsystem-fix.patch		\
   gnu/packages/patches/mutt-CVE-2014-9116.patch			\
   gnu/packages/patches/net-tools-bitrot.patch			\
+  gnu/packages/patches/nss-pkgconfig.patch			\
   gnu/packages/patches/nvi-assume-preserve-path.patch           \
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/ots-no-include-missing-file.patch	\
