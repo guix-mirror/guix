@@ -249,6 +249,7 @@ Makefile, simplifying the entire process for the developer.")
               (patches
                (list (search-patch "libtool-skip-tests.patch")))))
     (build-system gnu-build-system)
+    (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
