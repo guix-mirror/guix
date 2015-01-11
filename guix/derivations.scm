@@ -31,6 +31,7 @@
   #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix records)
+  #:use-module (guix sets)
   #:export (<derivation>
             derivation?
             derivation-outputs
@@ -162,16 +163,18 @@ download with a fixed hash (aka. `fetchurl')."
 
 (define (derivation-prerequisites drv)
   "Return the list of derivation-inputs required to build DRV, recursively."
-  (let loop ((drv    drv)
-             (result '()))
-    (let ((inputs (remove (cut member <> result)  ; XXX: quadratic
+  (let loop ((drv       drv)
+             (result    '())
+             (input-set (set)))
+    (let ((inputs (remove (cut set-contains? input-set <>)
                           (derivation-inputs drv))))
-      (fold loop
-            (append inputs result)
-            (map (lambda (i)
-                   (call-with-input-file (derivation-input-path i)
-                     read-derivation))
-                 inputs)))))
+      (fold2 loop
+             (append inputs result)
+             (fold set-insert input-set inputs)
+             (map (lambda (i)
+                    (call-with-input-file (derivation-input-path i)
+                      read-derivation))
+                  inputs)))))
 
 (define (offloadable-derivation? drv)
   "Return true if DRV can be offloaded, false otherwise."
