@@ -27,19 +27,27 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages ninja)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ruby)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xml))
 
 (define-public libxkbcommon
   (package
@@ -106,21 +114,34 @@ webrtc/tools/e2e_quality/audio/perf")))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
+       ("expat" ,expat)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)
+       ("libpci" ,pciutils)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxcursor" ,libxcursor)
+       ("libxfixes" ,libxfixes)
        ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
        ("libxkbcommon" ,libxkbcommon)
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
+       ("libxslt" ,libxslt)
+       ("libxtst" ,libxtst)
+       ("mtdev" ,mtdev)
        ("mysql" ,mysql)
+       ("nss" ,nss)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("python-wrapper" ,python-wrapper)
-       ("ruby" ,ruby)
+       ("pcre" ,pcre)
+       ("sqlite" ,sqlite)
+       ("udev" ,eudev)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
@@ -128,8 +149,15 @@ webrtc/tools/e2e_quality/audio/perf")))))
        ("xcb-util-wm" ,xcb-util-wm)
        ("zlib" ,zlib)))
     (native-inputs
-      `(("perl" ,perl)
-        ("pkg-config" ,pkg-config)))
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gperf" ,gperf)
+       ("ninja" ,ninja)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("ruby" ,ruby)
+       ("which" ,(@ (gnu packages which) which))))
     (arguments
      `(#:phases
          (alist-replace
@@ -140,6 +168,12 @@ webrtc/tools/e2e_quality/audio/perf")))))
                 (("/bin/pwd") (which "pwd")))
               (substitute* "qtbase/src/corelib/global/global.pri"
                 (("/bin/ls") (which "ls")))
+              (substitute* "qtwebengine/src/3rdparty/chromium/build/common.gypi"
+                (("/bin/echo") (which "echo")))
+              (substitute* "qtwebengine/src/3rdparty/chromium/third_party/\
+WebKit/Source/build/scripts/scripts.gypi"
+                (("/usr/bin/gcc") (which "gcc")))
+              (setenv "NINJA_PATH" (which "ninja"))
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
               (zero? (system*
@@ -148,6 +182,9 @@ webrtc/tools/e2e_quality/audio/perf")))))
                       "-prefix" out
                       "-opensource"
                       "-confirm-license"
+                      "-system-sqlite"
+                      ;; explicitly link with openssl instead of dlopening it
+                      "-openssl-linked"
                       ;; explicitly link with dbus instead of dlopening it
                       "-dbus-linked"
                       ;; drop special machine instructions not supported
