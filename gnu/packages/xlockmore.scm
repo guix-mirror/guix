@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,16 +27,20 @@
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.42")
+    (version "5.45")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.tux.org/~bagleyd/xlock/xlockmore-"
                                  version "/xlockmore-" version ".tar.bz2"))
              (sha256
               (base32
-               "17xicps92ah9377zk65k9l1bmvzzj3bpxzzwxx21g9696l71gr0z"))))
+               "1xqm61bbfn5q056w57vp16gvai8nqpcw570ysxlm5h46nh6ai0bz"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                 ; no such thing as a test suite
+    (arguments
+     '(#:configure-flags (list (string-append "--enable-appdefaultdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/X11/app-defaults"))
+       #:tests? #f))                            ;no such thing as a test suite
     (inputs
      `(("libX11" ,libx11)
        ("libXext" ,libxext)
