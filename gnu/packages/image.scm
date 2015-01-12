@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -39,7 +39,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.5.17")
+   (version "1.5.21")
    (source (origin
             (method url-fetch)
 
@@ -50,7 +50,7 @@
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src"
                         "/libpng15/libpng-" version ".tar.xz")))
             (sha256
-             (base32 "19wj293r4plbfgb43yhrc2qx8bsch9gbazazfqrj9haa7lsk29jp"))))
+             (base32 "19yvzw6sf9gf7v25ha9bla8bw1nijh82wj8ag6brjj3hpij1q5dm"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
