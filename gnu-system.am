@@ -277,7 +277,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wv.scm				\
   gnu/packages/xfig.scm				\
   gnu/packages/xiph.scm				\
-  gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/xnee.scm				\
   gnu/packages/xdisorg.scm			\

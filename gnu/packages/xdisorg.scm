@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -359,3 +361,34 @@ invisible cursor.  This allows you to see all the text in an xterm or
 xedit, for example.  The human factors crowd would agree it should make
 things less distracting.")
     (license license:public-domain)))
+
+(define-public xlockmore
+  (package
+    (name "xlockmore")
+    (version "5.45")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.tux.org/~bagleyd/xlock/xlockmore-"
+                                 version "/xlockmore-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1xqm61bbfn5q056w57vp16gvai8nqpcw570ysxlm5h46nh6ai0bz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "--enable-appdefaultdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/X11/app-defaults"))
+       #:tests? #f))                            ;no such thing as a test suite
+    (inputs
+     `(("libX11" ,libx11)
+       ("libXext" ,libxext)
+       ("libXt" ,libxt)
+       ("linux-pam" ,linux-pam)))
+    (home-page "http://www.tux.org/~bagleyd/xlockmore.html")
+    (synopsis "Screen locker for the X Window System")
+    (description
+     "XLockMore is a classic screen locker and screen saver for the
+X Window System.")
+    (license (license:bsd-style #f "See xlock.c.")
+             ;; + GPLv2 in modes/glx/biof.c.
+             )))
