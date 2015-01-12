@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -83,14 +83,14 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.7.1")
+   (version "2.7.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "1gj1rddi22hinzwy7r6hljgbi252wwwyd6gapg4hvcn0ycc7jqyc"))))
+                     "1b0hzyhafpxhmiljyhnsh6c27ydsvb2599fshwq2fjfm96awjxmc"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("perl" ,perl)
