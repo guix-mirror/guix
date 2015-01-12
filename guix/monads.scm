@@ -389,26 +389,6 @@ cross-compilation target triplet."
           (string-append out "/" file)
           out))))
 
-(define (lower-inputs inputs)
-  "Turn any package from INPUTS into a derivation; return the corresponding
-input list as a monadic value."
-  ;; XXX: This procedure is bound to disappear with 'derivation-expression'.
-  (with-monad %store-monad
-    (sequence %store-monad
-              (map (match-lambda
-                    ((name (? package? package) sub-drv ...)
-                     (mlet %store-monad ((drv (package->derivation package)))
-                       (return `(,name ,drv ,@sub-drv))))
-                    ((name (? string? file))
-                     (return `(,name ,file)))
-                    (tuple
-                     (return tuple)))
-                   inputs))))
-
-(define derivation-expression
-  ;; XXX: This procedure is superseded by 'gexp->derivation'.
-  (store-lift build-expression->derivation))
-
 (define package->derivation
   (store-lift package-derivation))
 

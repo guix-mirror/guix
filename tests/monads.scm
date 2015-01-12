@@ -156,27 +156,6 @@
                       (call-with-input-file b get-string-all))))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
 
-(define derivation-expression
-  (@@ (guix monads) derivation-expression))
-
-(test-assert "mlet* + derivation-expression"
-  (run-with-store %store
-    (mlet* %store-monad ((guile  (package-file %bootstrap-guile "bin/guile"))
-                         (gdrv   (package->derivation %bootstrap-guile))
-                         (exp -> `(let ((out (assoc-ref %outputs "out")))
-                                    (mkdir out)
-                                    (symlink ,guile
-                                             (string-append out "/guile-rocks"))))
-                         (drv    (derivation-expression "rocks" exp
-                                                        #:inputs
-                                                        `(("g" ,gdrv))))
-                         (out -> (derivation->output-path drv))
-                         (built? (built-derivations (list drv))))
-      (return (and built?
-                   (equal? guile
-                           (readlink (string-append out "/guile-rocks"))))))
-    #:guile-for-build (package-derivation %store %bootstrap-guile)))
-
 (test-assert "mapm"
   (every (lambda (monad run)
            (with-monad monad
