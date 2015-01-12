@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -905,7 +905,7 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.2.13")
+    (version "3.2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -913,7 +913,7 @@ transparently through a bridge.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ydw42lsd572qwrfgws97n76hyvjdpanwrxm03lysnhfxkna1ssd"))))
+                "1icfrv8yihcb74as1gcgmp0wfpdq632q2zvbvqqvjms9cy87bswb"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex) ("bison" ,bison)))
     (home-page "http://www.infradead.org/~tgr/libnl/")
