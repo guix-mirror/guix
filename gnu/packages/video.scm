@@ -199,14 +199,14 @@ audio/video codec library.")
 ;; We need this older ffmpeg because vlc-2.1.5 doesn't work with ffmpeg-2.4.
 (define-public ffmpeg-2.2
   (package (inherit ffmpeg)
-    (version "2.2.10")
+    (version "2.2.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14d83ijp5lxdr6nl9rqhc4598jp020paxrg64r9ifxqhbigl0yqm"))))))
+               "06sli7xvihh97ss6a2mkdq4dcj3rg1w8zffrmjfc1hvyjxhc8f2r"))))))
 
 (define-public vlc
   (package
