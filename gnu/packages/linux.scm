@@ -929,6 +929,32 @@ configuration and monitoring interfaces.")
     ;; 'nl-addr-add.c'), so the result is GPLv2-only.
     (license gpl2)))
 
+(define-public iw
+  (package
+    (name "iw")
+    (version "3.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.kernel.org/pub/software/network/iw/iw-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "14zsapqhivk0ws5z21y1ys2c2czi05mzk7bl2yb7qxcfrnsjx9j8"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libnl" ,libnl)))
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://wireless.kernel.org/en/users/Documentation/iw")
+    (synopsis "Tool for configuring wireless devices")
+    (description
+     "iw is a new nl80211 based CLI configuration utility for wireless
+devices.  It replaces 'iwconfig', which is deprecated.")
+    (license isc)))
+
 (define-public powertop
   (package
     (name "powertop")
