@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +33,8 @@
             gexp?
             gexp->derivation
             gexp->file
-            gexp->script))
+            gexp->script
+            text-file*))
 
 ;;; Commentary:
 ;;;
@@ -521,6 +522,18 @@ its search path."
                        (lambda (port)
                          (write '(ungexp exp) port))))
                     #:local-build? #t))
+
+(define* (text-file* name #:rest text)
+  "Return as a monadic value a derivation that builds a text file containing
+all of TEXT.  TEXT may list, in addition to strings, packages, derivations,
+and store file names; the resulting store file holds references to all these."
+  (define builder
+    (gexp (call-with-output-file (ungexp output "out")
+            (lambda (port)
+              (display (string-append (ungexp-splicing text)) port)))))
+
+  (gexp->derivation name builder))
+
 
 
 ;;;
