@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -1529,9 +1529,11 @@ mapper.  Kernel components are part of Linux-libre.")
                  %standard-phases)
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
-    (description "Wireless Tools are used to manipulate the Linux Wireless
-Extensions.  The Wireless Extension is an interface allowing you to set
-Wireless LAN specific parameters and get the specific stats.")
+    (description "Wireless Tools are used to manipulate the now-deprecated
+Linux Wireless Extensions; consider using 'iw' instead.  The Wireless
+Extension was an interface allowing you to set Wireless LAN specific
+parameters and get the specific stats.  It is deprecated in favor the nl80211
+interface.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     (license gpl2+)))
 
