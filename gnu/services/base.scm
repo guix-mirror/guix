@@ -193,7 +193,7 @@ in KNOWN-MOUNT-POINTS when it is stopped."
   ;; the system.  Typical example is user-space file systems.
   "/etc/dmd/do-not-kill")
 
-(define* (user-processes-service requirements #:key (grace-delay 5))
+(define* (user-processes-service requirements #:key (grace-delay 4))
   "Return the service that is responsible for terminating all the processes so
 that the root file system can be re-mounted read-only, just before
 rebooting/halting.  Processes still running GRACE-DELAY seconds after SIGTERM
@@ -230,6 +230,18 @@ stopped before 'kill' is called."
                                              (@ (ice-9 rdelim) read-string))))
                              '()))
 
+                       (define (now)
+                         (car (gettimeofday)))
+
+                       (define (sleep* n)
+                         ;; Really sleep N seconds.
+                         ;; Work around <http://bugs.gnu.org/19581>.
+                         (define start (now))
+                         (let loop ((elapsed 0))
+                           (when (> n elapsed)
+                             (sleep (- n elapsed))
+                             (loop (- (now) start)))))
+
                        (define lset= (@ (srfi srfi-1) lset=))
 
                        (display "sending all processes the TERM signal\n")
@@ -238,7 +250,7 @@ stopped before 'kill' is called."
                            (begin
                              ;; Easy: terminate all of them.
                              (kill -1 SIGTERM)
-                             (sleep #$grace-delay)
+                             (sleep* #$grace-delay)
                              (kill -1 SIGKILL))
                            (begin
                              ;; Kill them all except OMITTED-PIDS.  XXX: We
@@ -246,7 +258,7 @@ stopped before 'kill' is called."
                              ;; list of processes, like 'killall5' does, but
                              ;; that seems unreliable.
                              (kill-except omitted-pids SIGTERM)
-                             (sleep #$grace-delay)
+                             (sleep* #$grace-delay)
                              (kill-except omitted-pids SIGKILL)
                              (delete-file #$%do-not-kill-file)))
 
@@ -256,7 +268,7 @@ stopped before 'kill' is called."
                              (format #t "waiting for process termination\
  (processes left: ~s)~%"
                                      pids)
-                             (sleep 2)
+                             (sleep* 2)
                              (wait))))
 
                        (display "all processes have been terminated\n")
