@@ -217,22 +217,23 @@ needed."
           ((output . directory)
            (let ((iconsdir (string-append directory
                                             "/share/icons")))
-             (with-directory-excursion iconsdir
-               (for-each
-                (lambda (dir)
-                  (unless (file-exists?
-                           (string-append iconsdir "/" dir "/"
-                                          "icon-theme.cache"))
-                    (system* "gtk-update-icon-cache"
-                             "--ignore-theme-index"
-                             (string-append iconsdir "/" dir))))
-                (scandir "."
-                         (lambda (name)
-                           (and
-                            (not (equal? name "."))
-                            (not (equal? name ".."))
-                            (equal? 'directory
-                                    (stat:type (stat name))))))))
+             (when (file-exists? iconsdir)
+               (with-directory-excursion iconsdir
+                 (for-each
+                  (lambda (dir)
+                    (unless (file-exists?
+                             (string-append iconsdir "/" dir "/"
+                                            "icon-theme.cache"))
+                      (system* "gtk-update-icon-cache"
+                               "--ignore-theme-index"
+                               (string-append iconsdir "/" dir))))
+                  (scandir "."
+                           (lambda (name)
+                             (and
+                              (not (equal? name "."))
+                              (not (equal? name ".."))
+                              (equal? 'directory
+                                      (stat:type (stat name)))))))))
              #t)))
          outputs))
 
