@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -332,7 +332,12 @@ explicitly appear in OS."
          (@ (gnu packages admin) dmd) guix
          lsof                                 ;for Guix's 'list-runtime-roots'
          pciutils usbutils
-         util-linux inetutils isc-dhcp wireless-tools
+         util-linux inetutils isc-dhcp
+
+         ;; wireless-tools is deprecated in favor of iw, but it's still what
+         ;; many people are familiar with, so keep it around.
+         iw wireless-tools
+
          net-tools                        ; XXX: remove when Inetutils suffices
          man-db
 
