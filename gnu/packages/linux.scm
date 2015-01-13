@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1474,7 +1475,18 @@ from the module-init-tools project.")
 
                                ;; Work around undefined reference to
                                ;; 'mq_getattr' in sc-daemon.c.
-                               "LDFLAGS=-lrt")))
+                               "LDFLAGS=-lrt")
+       #:phases 
+       (alist-cons-before
+        'build 'pre-build
+        ;; The program 'g-ir-scanner' (part of the package
+        ;; 'gobject-introspection'), to generate .gir files, makes some
+        ;; library pre-processing.  During that phase it looks for the C
+        ;; compiler as either 'cc' or as defined by the environment variable
+        ;; 'CC' (with code in 'giscanner/dumper.py').
+        (lambda* _
+          (setenv "CC" "gcc"))
+        %standard-phases)))
     (home-page "http://www.gentoo.org/proj/en/eudev/")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
