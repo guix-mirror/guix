@@ -22,6 +22,7 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -41,6 +42,9 @@
   (fold (lambda (s p) (or (string-ci=? s directory) p))
         #f directories-list))
 
+;; We do not include $HOME/.guix-profile/gtk-v.0 (v=2 or 3) because we do not
+;; want to mix gtk+-2 and gtk+-3 modules.  See
+;; https://developer.gnome.org/gtk3/stable/gtk-running.html
 (define (gtk-module-directories inputs)
   "Check for the existence of \"libdir/gtk-v.0\" in INPUTS.  Return a list
 with all found directories."
@@ -64,20 +68,60 @@ with all found directories."
                   prev)))))
     (fold gtk-module '() inputs)))
 
-(define (schemas-directories inputs)
-  "Check for the existence of \"datadir/glib-2.0/schemas\" in INPUTS.  Return
-a list with all found directories."
-  (define (glib-schemas input previous)
+;; See
+;; http://www.freedesktop.org/wiki/DesktopThemeSpec
+;; http://freedesktop.org/wiki/Specifications/sound-theme-spec
+;; http://freedesktop.org/wiki/Specifications/icon-theme-spec
+;; 
+;; Currently desktop themes are not well supported and do not honor
+;; XDG_DATA_DIRS.  One example is evince which only looks for desktop themes
+;; in $HOME/.themes (for backward compatibility) and in XDG_DATA_HOME (which
+;; defaults to $HOME/.local/share).  One way to handle these applications
+;; appears to be by making $HOME/.themes a symlink to
+;; $HOME/.guix-profile/share/themes.
+(define (data-directories inputs)
+  "Check for the existence of \"$datadir/glib-2.0/schemas\" or XDG themes data
+in INPUTS.  Return a list with all found directories."
+  (define (data-directory input previous)
     (let* ((in (match input
                  ((_ . dir) dir)
                  (_ "")))
            (datadir (string-append in "/share")))
-      (if (and (subdirectory-exists? datadir "/glib-2.0/schemas")
+      (if (and (or (subdirectory-exists? datadir "/glib-2.0/schemas")
+                   (subdirectory-exists? datadir "/sounds")
+                   (subdirectory-exists? datadir "/themes")
+                   (subdirectory-exists? datadir "/cursors")
+                   (subdirectory-exists? datadir "/wallpapers")
+                   (subdirectory-exists? datadir "/icons"))                   
                (not (directory-included? datadir previous)))
           (cons datadir previous)
           previous)))
 
-  (fold glib-schemas '() inputs))
+  (fold data-directory '() inputs))
+
+;; All GIO modules are expected to be installed in GLib's $libdir/gio/modules
+;; directory.  That directory has to include a file called giomodule.cache
+;; listing all available modules.  GIO can be made aware of modules in other
+;; directories with the help of the environment variable GIO_EXTRA_MODULES.
+;; The official GIO documentation states that this environment variable should
+;; only be used for testing and not in a production environment.  However, it
+;; appears that there is no other way of specifying multiple modules
+;; directories (NIXOS also does use this variable). See
+;; https://developer.gnome.org/gio/stable/running-gio-apps.html
+(define (gio-module-directories inputs)
+  "Check for the existence of \"$libdir/gio/modules\" in the INPUTS and
+returns a list with all found directories."
+  (define (gio-module-directory input previous)
+    (let* ((in (match input
+                 ((_ . dir) dir)
+                 (_ "")))
+           (gio-mod-dir (string-append in "/lib/gio/modules")))
+      (if (and (directory-exists? gio-mod-dir)
+               (not (directory-included? gio-mod-dir previous)))
+          (cons gio-mod-dir previous)
+          previous)))
+
+  (fold gio-module-directory '() inputs))
 
 (define* (wrap-all-programs #:key inputs outputs
                             (glib-or-gtk-wrap-excluded-outputs '())
@@ -96,27 +140,57 @@ add a dependency of that output on GLib and GTK+."
       (unless (member output glib-or-gtk-wrap-excluded-outputs)
         (let* ((bindir       (string-append directory "/bin"))
                (bin-list     (find-files bindir ".*"))
-               (schemas      (schemas-directories
+               (datadirs     (data-directories
                               (alist-cons output directory inputs)))
                (gtk-mod-dirs (gtk-module-directories
                               (alist-cons output directory inputs)))
-               (schemas-env-var
-                (if (not (null? schemas))
-                    `("XDG_DATA_DIRS" ":" prefix ,schemas)
+               (gio-mod-dirs (gio-module-directories
+                              (alist-cons output directory inputs)))
+               (data-env-var
+                (if (not (null? datadirs))
+                    `("XDG_DATA_DIRS" ":" prefix ,datadirs)
                     #f))
                (gtk-mod-env-var
                 (if (not (null? gtk-mod-dirs))
                     `("GTK_PATH" ":" prefix ,gtk-mod-dirs)
+                    #f))
+               (gio-mod-env-var 
+                (if (not (null? gio-mod-dirs))
+                    `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-dirs)
                     #f)))
           (cond
-           ((and schemas-env-var gtk-mod-env-var)
-            (for-each (cut wrap-program <> schemas-env-var gtk-mod-env-var)
+           ((and data-env-var gtk-mod-env-var gio-mod-env-var)
+            (for-each (cut wrap-program <>
+                           data-env-var
+                           gtk-mod-env-var
+                           gio-mod-env-var)
                       bin-list))
-           (schemas-env-var
-            (for-each (cut wrap-program <> schemas-env-var)
+           ((and data-env-var gtk-mod-env-var (not gio-mod-env-var))
+            (for-each (cut wrap-program <>
+                           data-env-var
+                           gtk-mod-env-var)
                       bin-list))
-           (gtk-mod-env-var
-            (for-each (cut wrap-program <> gtk-mod-env-var)
+           ((and data-env-var (not gtk-mod-env-var) gio-mod-env-var)
+            (for-each (cut wrap-program <>
+                           data-env-var
+                           gio-mod-env-var)
+                      bin-list))
+           ((and (not data-env-var) gtk-mod-env-var gio-mod-env-var)
+            (for-each (cut wrap-program <>
+                           gio-mod-env-var
+                           gtk-mod-env-var)
+                      bin-list))
+           ((and data-env-var (not gtk-mod-env-var) (not gio-mod-env-var))
+            (for-each (cut wrap-program <>
+                           data-env-var)
+                      bin-list))
+           ((and (not data-env-var) gtk-mod-env-var (not gio-mod-env-var))
+            (for-each (cut wrap-program <>
+                           gtk-mod-env-var)
+                      bin-list))
+           ((and (not data-env-var) (not gtk-mod-env-var) gio-mod-env-var)
+            (for-each (cut wrap-program <>
+                           gio-mod-env-var)
                       bin-list))))))))
 
   (for-each handle-output outputs)
@@ -136,12 +210,41 @@ if needed."
                  #t))))
          outputs))
 
+(define* (generate-icon-cache #:key outputs #:allow-other-keys)
+  "Implement phase \"glib-or-gtk-icon-cache\": generate icon cache if
+needed."
+  (every (match-lambda
+          ((output . directory)
+           (let ((iconsdir (string-append directory
+                                            "/share/icons")))
+             (when (file-exists? iconsdir)
+               (with-directory-excursion iconsdir
+                 (for-each
+                  (lambda (dir)
+                    (unless (file-exists?
+                             (string-append iconsdir "/" dir "/"
+                                            "icon-theme.cache"))
+                      (system* "gtk-update-icon-cache"
+                               "--ignore-theme-index"
+                               (string-append iconsdir "/" dir))))
+                  (scandir "."
+                           (lambda (name)
+                             (and
+                              (not (equal? name "."))
+                              (not (equal? name ".."))
+                              (equal? 'directory
+                                      (stat:type (stat name)))))))))
+             #t)))
+         outputs))
+
 (define %standard-phases
   (alist-cons-after
    'install 'glib-or-gtk-wrap wrap-all-programs
    (alist-cons-after
-    'install 'glib-or-gtk-compile-schemas compile-glib-schemas
-    gnu:%standard-phases)))
+    'install 'glib-or-gtk-icon-cache generate-icon-cache
+    (alist-cons-after
+     'install 'glib-or-gtk-compile-schemas compile-glib-schemas
+     gnu:%standard-phases))))
 
 (define* (glib-or-gtk-build #:key inputs (phases %standard-phases)
                             #:allow-other-keys #:rest args)

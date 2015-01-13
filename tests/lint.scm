@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,9 +75,20 @@
     (quit #t)                                     ;exit the server thread
     (values)))
 
+;; Mutex and condition variable to synchronize with the HTTP server.
+(define %http-server-lock (make-mutex))
+(define %http-server-ready (make-condition-variable))
+
+(define (http-open . args)
+  "Start listening for HTTP requests and signal %HTTP-SERVER-READY."
+  (with-mutex %http-server-lock
+    (let ((result (apply (@@ (web server http) http-open) args)))
+      (signal-condition-variable %http-server-ready)
+      result)))
+
 (define-server-impl stub-http-server
   ;; Stripped-down version of Guile's built-in HTTP server.
-  (@@ (web server http) http-open)
+  http-open
   (@@ (web server http) http-read)
   http-write
   (@@ (web server http) http-close))
@@ -97,9 +108,11 @@ requests."
                     `(#:socket ,%http-server-socket)))
       (const #t)))
 
-  (let* ((server (make-thread server-body)))
-    ;; Normally SERVER exits automatically once it has received a request.
-    (thunk)))
+  (with-mutex %http-server-lock
+    (let ((server (make-thread server-body)))
+      (wait-condition-variable %http-server-ready %http-server-lock)
+      ;; Normally SERVER exits automatically once it has received a request.
+      (thunk))))
 
 (define-syntax-rule (with-http-server code body ...)
   (call-with-http-server code (lambda () body ...)))

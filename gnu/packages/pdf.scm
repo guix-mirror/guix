@@ -37,6 +37,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (srfi srfi-1))
 
 (define-public poppler
@@ -238,3 +240,43 @@ The library ships with a rudimentary X11 viewer, and a set of command
 line tools for batch rendering (pdfdraw), examining the file structure
 (pdfshow), and rewriting files (pdfclean).")
     (license license:agpl3+)))
+
+(define-public qpdf
+  (package
+   (name "qpdf")
+   (version "5.1.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/qpdf/qpdf-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "1zbvhrp0zjzbi6q2bnbxbg6399r47pq5gw3kspzph81j19fqvpg9"))))
+   (build-system gnu-build-system)
+   (arguments
+      '(#:phases (alist-cons-before
+                  'configure 'patch-paths
+                  (lambda _
+                    (substitute* "make/libtool.mk"
+                      (("SHELL=/bin/bash")
+                       (string-append "SHELL=" (which "bash"))))
+                    (substitute* (append
+                                  '("qtest/bin/qtest-driver")
+                                  (find-files "." "\\.test"))
+                      (("/usr/bin/env") (which "env"))))
+                  %standard-phases)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (propagated-inputs
+    `(("pcre" ,pcre)))
+   (inputs
+    `(("zlib" ,zlib)
+      ("perl" ,perl)))
+   (synopsis "Command-line tools and library for transforming PDF files")
+   (description
+    "QPDF is a command-line program that does structural, content-preserving
+transformations on PDF files.  It could have been called something like
+pdf-to-pdf.  It includes support for merging and splitting PDFs and to
+manipulate the list of pages in a PDF file.  It is not a PDF viewer or a
+program capable of converting PDF into other formats.")
+   (license license:clarified-artistic)
+   (home-page "http://qpdf.sourceforge.net/")))

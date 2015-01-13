@@ -905,7 +905,7 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.2.13")
+    (version "3.2.25")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -913,7 +913,7 @@ transparently through a bridge.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ydw42lsd572qwrfgws97n76hyvjdpanwrxm03lysnhfxkna1ssd"))))
+                "1icfrv8yihcb74as1gcgmp0wfpdq632q2zvbvqqvjms9cy87bswb"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex) ("bison" ,bison)))
     (home-page "http://www.infradead.org/~tgr/libnl/")
@@ -928,6 +928,32 @@ configuration and monitoring interfaces.")
     ;; Most files are LGPLv2.1-only, but some are GPLv2-only (like
     ;; 'nl-addr-add.c'), so the result is GPLv2-only.
     (license gpl2)))
+
+(define-public iw
+  (package
+    (name "iw")
+    (version "3.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.kernel.org/pub/software/network/iw/iw-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "14zsapqhivk0ws5z21y1ys2c2czi05mzk7bl2yb7qxcfrnsjx9j8"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libnl" ,libnl)))
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://wireless.kernel.org/en/users/Documentation/iw")
+    (synopsis "Tool for configuring wireless devices")
+    (description
+     "iw is a new nl80211 based CLI configuration utility for wireless
+devices.  It replaces 'iwconfig', which is deprecated.")
+    (license isc)))
 
 (define-public powertop
   (package

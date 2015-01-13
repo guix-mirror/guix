@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -232,13 +232,7 @@ stopped before 'kill' is called."
 
                        (define lset= (@ (srfi srfi-1) lset=))
 
-                       ;; When this happens, all the processes have been
-                       ;; killed, including 'deco', so DMD-OUTPUT-PORT and
-                       ;; thus CURRENT-OUTPUT-PORT are dangling.
-                       (call-with-output-file "/dev/console"
-                         (lambda (port)
-                           (display "sending all processes the TERM signal\n"
-                                    port)))
+                       (display "sending all processes the TERM signal\n")
 
                        (if (null? omitted-pids)
                            (begin

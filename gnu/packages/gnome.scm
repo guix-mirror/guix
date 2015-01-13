@@ -209,19 +209,7 @@ and keep up to date translations of documentation.")
        ;; FIXME: Tests fail with:
        ;;   ImportError: No module named gi.repository
        ;; Where should that module come from?
-       #:tests? #f
-
-       #:phases (alist-cons-after
-                 'install 'set-mime-search-path
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   ;; Wrap 'evince' so that it knows where MIME info is.
-                   (let ((out  (assoc-ref outputs "out"))
-                         (mime (assoc-ref inputs "shared-mime-info")))
-                     (wrap-program (string-append out "/bin/evince")
-                                   `("XDG_DATA_DIRS" ":" prefix
-                                     ,(list (string-append mime "/share")
-                                            (string-append out "/share"))))))
-                 %standard-phases)))
+       #:tests? #f))
     (inputs
      `(("libspectre" ,libspectre)
        ;; ("djvulibre" ,djvulibre)
@@ -240,7 +228,9 @@ and keep up to date translations of documentation.")
        ("libsm" ,libsm)
        ("libice" ,libice)
        ("shared-mime-info" ,shared-mime-info)
-
+       ("dconf" ,dconf)
+       ("libcanberra" ,libcanberra)
+       
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
@@ -1381,3 +1371,56 @@ editors, IDEs, etc.")
     (propagated-inputs
      `(("gtk+" ,gtk+-2)         ; required by libvte.pc
        ("ncurses" ,ncurses))))) ; required by libvte.la
+
+(define-public dconf
+  (package
+    (name "dconf")
+    (version "0.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" 
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32 "13jb49504bir814v8n8vjip5sazwfwsrnniw87cpg7phqfq7q9qa"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("dbus" ,dbus)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("libxslt" ,libxslt)
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
+                   ; or /etc/machine-id.
+       #:configure-flags
+       ;; Set the correct RUNPATH in binaries.
+       (list (string-append "LDFLAGS=-Wl,-rpath=" 
+                            (assoc-ref %outputs "out") "/lib")
+             "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
+       #:phases
+       (alist-cons-before
+        'configure 'fix-docbook
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "docs/Makefile.in"
+            (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+             (string-append (assoc-ref inputs "docbook-xsl") 
+                            "/xml/xsl/docbook-xsl-"
+                            ,(package-version docbook-xsl)
+                            "/manpages/docbook.xsl")))
+          (setenv "XML_CATALOG_FILES" 
+                  (string-append (assoc-ref inputs "docbook-xml") 
+                                 "/xml/dtd/docbook/catalog.xml")))
+        %standard-phases)))
+    (home-page "https://developer.gnome.org/dconf")
+    (synopsis "Low-level GNOME configuration system")
+    (description "Dconf is a low-level configuration system.  Its main purpose
+is to provide a backend to GSettings on platforms that don't already have
+configuration storage systems.")
+    (license license:lgpl2.1)))

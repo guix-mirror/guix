@@ -124,7 +124,7 @@ Utilities
 GNU Distribution
 
 * System Installation::         Installing the whole operating system.
-* System Configuration::        Configuring a GNU system.
+* System Configuration::        Configuring the operating system.
 * Installing Debugging Files::  Feeding the debugger.
 * Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
@@ -3233,13 +3233,23 @@ build} supports (@pxref{Invoking guix build, common build options}).
 @node GNU Distribution
 @chapter GNU Distribution
 
+@cindex Guixotic
 Guix comes with a distribution of free software@footnote{The term
 ``free'' here refers to the
 @url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
-users of that software}.} that forms the basis of the GNU system.  This
-includes core GNU packages such as GNU libc, GCC, and Binutils, as well
-as many GNU and non-GNU applications.  The complete list of available
-packages can be browsed
+users of that software}.} that forms the basis of the GNU system.  The
+distribution can be installed on its own (@pxref{System Installation}),
+but it is also possible to install Guix as a package manager on top of
+an installed GNU/Linux system (@pxref{Installation}).  To distinguish
+between the two, we refer to the standalone distribution as
+``Guixotic''@footnote{``How am I going to pronounce that name?'', you
+may ask.  Well, we would pronounce it like ``geeks-otic'', for
+consistency with Guix---which is quite different from the usual
+pronunciation of ``quixotic''.}.
+
+The distribution provides core GNU packages such as GNU libc, GCC, and
+Binutils, as well as many GNU and non-GNU applications.  The complete
+list of available packages can be browsed
 @url{http://www.gnu.org/software/guix/package-list.html,on-line} or by
 running @command{guix package} (@pxref{Invoking guix package}):
 
@@ -3247,7 +3257,7 @@ running @command{guix package} (@pxref{Invoking guix package}):
 guix package --list-available
 @end example
 
-Our goal is to build a practical 100% free software distribution of
+Our goal has been to provide a practical 100% free software distribution of
 Linux-based and other variants of GNU, with a focus on the promotion and
 tight integration of GNU components, and an emphasis on programs and
 tools that help users exert that freedom.
@@ -3278,7 +3288,7 @@ For information on porting to other architectures or kernels,
 
 @menu
 * System Installation::         Installing the whole operating system.
-* System Configuration::        Configuring a GNU system.
+* System Configuration::        Configuring the operating system.
 * Installing Debugging Files::  Feeding the debugger.
 * Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
@@ -3293,9 +3303,11 @@ to join!  @xref{Contributing}, for information about how you can help.
 @node System Installation
 @section System Installation
 
-This section explains how to install the complete GNU operating system
-on a machine.  The Guix package manager can also be installed on top of
-a running GNU/Linux system, @pxref{Installation}.
+@cindex Guixotic
+This section explains how to install the standalone distribution,
+code-named ``Guixotic'', on a machine.  The Guix package manager can
+also be installed on top of a running GNU/Linux system,
+@pxref{Installation}.
 
 @ifinfo
 @c This paragraph is for people reading this from tty2 of the
@@ -3308,13 +3320,13 @@ link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
 
 @subsection Limitations
 
-As of version @value{VERSION}, GNU@tie{}Guix and the GNU system
-distribution are alpha software.  It may contain bugs and lack important
+As of version @value{VERSION}, GNU@tie{}Guix and Guixotic are
+not production-ready.  They may contain bugs and lack important
 features.  Thus, if you are looking for a stable production system that
 respects your freedom as a computer user, a good solution at this point
 is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
 more established GNU/Linux distributions}.  We hope you can soon switch
-to the GNU system without fear, of course.  In the meantime, you can
+to Guixotic without fear, of course.  In the meantime, you can
 also keep using your distribution and try out the package manager on top
 of it (@pxref{Installation}).
 
@@ -3498,7 +3510,7 @@ about the installation image.
 @section System Configuration
 
 @cindex system configuration
-The GNU system supports a consistent whole-system configuration
+Guixotic supports a consistent whole-system configuration
 mechanism.  By that we mean that all aspects of the global system
 configuration---such as the available system services, timezone and
 locale settings, user accounts---are declared in a single place.  Such
@@ -4639,7 +4651,7 @@ The type of an entry in the GRUB boot menu.
 @table @asis
 
 @item @code{label}
-The label to show in the menu---e.g., @code{"GNU System"}.
+The label to show in the menu---e.g., @code{"GNU"}.
 
 @item @code{linux}
 The Linux kernel to boot.
@@ -4709,7 +4721,7 @@ This action does not actually install anything.
 @item init
 Populate the given directory with all the files necessary to run the
 operating system specified in @var{file}.  This is useful for first-time
-installations of the GNU system.  For instance:
+installations of Guixotic.  For instance:
 
 @example
 guix system init my-os-config.scm /mnt
