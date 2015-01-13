@@ -511,16 +511,28 @@ slabtop, and skill.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0ibkkvp6kan0hn0d1anq4n2md70j5gcm7mwna515w82xwyr02rfw"))))
+               "0ibkkvp6kan0hn0d1anq4n2md70j5gcm7mwna515w82xwyr02rfw"))
+             (modules '((guix build utils)))
+             (snippet
+              '(substitute* "MCONFIG.in"
+                 (("INSTALL_SYMLINK = /bin/sh")
+                  "INSTALL_SYMLINK = sh")))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("texinfo" ,texinfo)))    ; for the libext2fs Info manual
+                     ("texinfo" ,texinfo)))     ;for the libext2fs Info manual
     (arguments
      '(;; The 'blkid' command and library are already provided by util-linux,
        ;; which is the preferred source for them (see, e.g.,
        ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b336339909c90559b7db40b455f172>.)
-       #:configure-flags '("--disable-blkid")
+       #:configure-flags '("--disable-blkid"
+
+                           ;; Install libext2fs et al.
+                           "--enable-elf-shlibs")
+
+       #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib"))
 
        #:phases (alist-cons-before
                  'configure 'patch-shells
