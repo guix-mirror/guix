@@ -544,7 +544,11 @@ slabtop, and skill.")
                    (substitute* (find-files "." "^Makefile.in$")
                      (("#!/bin/sh")
                       (string-append "#!" (which "sh")))))
-                 %standard-phases)
+                 (alist-cons-after
+                  'install 'install-libs
+                  (lambda _
+                    (zero? (system* "make" "install-libs")))
+                  %standard-phases))
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
        ;; they fail because we get an extra line that says "Can't check if
@@ -590,6 +594,41 @@ slabtop, and skill.")
 from the e2fsprogs package.  It is meant to be used in initrds.")
     (home-page (package-home-page e2fsprogs))
     (license (package-license e2fsprogs))))
+
+(define-public zerofree
+  (package
+    (name "zerofree")
+    (version "1.0.3")
+    (home-page "http://intgat.tigress.co.uk/rmy/uml/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page name "-" version
+                                  ".tgz"))
+              (sha256
+               (base32
+                "1xncw3dn2cp922ly42m96p6fh7jv8ysg6bwqbk5xvw701f3dmkrs"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (bin (string-append out "/bin")))
+                     (mkdir-p bin)
+                     (copy-file "zerofree"
+                                (string-append bin "/zerofree"))
+                     (chmod (string-append bin "/zerofree")
+                            #o555)
+                     #t))
+                 (alist-delete 'configure %standard-phases))
+       #:tests? #f))                              ;no tests
+    (inputs `(("libext2fs" ,e2fsprogs)))
+    (synopsis "Zero non-allocated regions in ext2/ext3/ext4 file systems")
+    (description
+     "The zerofree command scans the free blocks in an ext2 file system and
+fills any non-zero blocks with zeroes.  This is a useful way to make disk
+images more compressible.")
+    (license gpl2)))
 
 (define-public strace
   (package
