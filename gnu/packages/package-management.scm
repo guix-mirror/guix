@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,42 +118,23 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "3b09332"))
+  (let ((commit "4655005"))
     (package (inherit guix-0.8)
       (version (string-append "0.8." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "git://git.sv.gnu.org/guix.git")
-                      (commit commit)
-                      (recursive? #t)))
+                      (commit commit)))
                 (sha256
                  (base32
-                  "1szlyhpy688ca96kfyjb6cdy5zhxvqmdig4m7ql7rjqfmz0gvka1"))))
+                  "04dmmnr88mwpsl0mmv03hpllyinn9cs4mmly8k0jm2acwnsni3ii"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8)
          ((#:phases phases)
           `(alist-cons-before
             'configure 'bootstrap
             (lambda _
-              ;; Comment out `git' invocations, since 'git-fetch' provides us
-              ;; with a checkout that includes sub-modules.
-              (substitute* "bootstrap"
-                (("git ")
-                 "true git "))
-
-              ;; Keep a list of the files already available under nix/...
-              (call-with-output-file "ls-R"
-                (lambda (port)
-                  (for-each (lambda (file)
-                              (format port "~a~%" file))
-                            (find-files "nix" ""))))
-
-              ;; ... and use that as a substitute to 'git ls-tree'.
-              (substitute* "nix/sync-with-upstream"
-                (("git ls-tree HEAD -- [[:graph:]]+")
-                 "cat ls-R"))
-
               ;; Make sure 'msgmerge' can modify the PO files.
               (for-each (lambda (po)
                           (chmod po #o666))
