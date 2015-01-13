@@ -196,6 +196,50 @@ allows Mesa to be used in many different environments ranging from software
 emulation to complete hardware acceleration for modern GPUs.")
     (license l:x11)))
 
+(define-public glew
+  (package
+    (name "glew")
+    (version "1.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/glew/glew-"
+                    version
+                    ".tgz"))
+              (sha256
+               (base32
+                "1mhkllxz49l1x680dmzrv2i82qjrq017sykah3xc90f2d8qcxfv9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "config/Makefile.linux"
+                  (("= cc") "= gcc")
+                  (("/lib64") "/lib")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:make-flags (list (string-append "GLEW_PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "GLEW_DEST="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f))                              ;no 'check' target
+    (inputs
+     `(("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)))
+
+    ;; <GL/glew.h> includes <GL/glu.h>.
+    (propagated-inputs `(("glu" ,glu)))
+
+    (home-page "http://glew.sourceforge.net/")
+    (synopsis "OpenGL extension loading library for C and C++")
+    (description
+     "The OpenGL Extension Wrangler Library (GLEW) is a C/C++ extension
+loading library.  GLEW provides efficient run-time mechanisms for determining
+which OpenGL extensions are supported on the target platform.  OpenGL core and
+extension functionality is exposed in a single header file.")
+    (license l:bsd-3)))
+
 (define-public guile-opengl
   (package
     (name "guile-opengl")
