@@ -331,6 +331,7 @@ derivations."
   (let ((distro (resolve-interface '(gnu packages commencement))))
     (module-ref distro 'guile-final)))
 
+;; TODO: Rewrite using %STORE-MONAD and gexps.
 (define* (patch-and-repack store source patches
                            #:key
                            (inputs '())
@@ -475,37 +476,6 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                                  #:system system
                                  #:modules modules
                                  #:guile-for-build guile-for-build)))
-
-(define* (package-source-derivation store source
-                                    #:optional (system (%current-system)))
-  "Return the derivation path for SOURCE, a package source, for SYSTEM."
-  (match source
-    (($ <origin> uri method sha256 name () #f)
-     ;; No patches, no snippet: this is a fixed-output derivation.
-     (method store uri 'sha256 sha256 name
-             #:system system))
-    (($ <origin> uri method sha256 name (patches ...) snippet
-        (flags ...) inputs (modules ...) (imported-modules ...)
-        guile-for-build)
-     ;; Patches and/or a snippet.
-     (let ((source (method store uri 'sha256 sha256 name
-                           #:system system))
-           (guile  (match (or guile-for-build (default-guile))
-                     ((? package? p)
-                      (package-derivation store p system
-                                          #:graft? #f)))))
-       (patch-and-repack store source patches
-                         #:inputs inputs
-                         #:snippet snippet
-                         #:flags flags
-                         #:system system
-                         #:modules modules
-                         #:imported-modules modules
-                         #:guile-for-build guile)))
-    ((and (? string?) (? direct-store-path?) file)
-     file)
-    ((? string? file)
-     (add-to-store store (basename file) #t "sha256" file))))
 
 (define (transitive-inputs inputs)
   (let loop ((inputs  inputs)
@@ -949,5 +919,42 @@ cross-compilation target triplet."
 (define package->cross-derivation
   (store-lift package-cross-derivation))
 
-(define origin->derivation
-  (store-lift package-source-derivation))
+(define patch-and-repack*
+  (store-lift patch-and-repack))
+
+(define* (origin->derivation source
+                             #:optional (system (%current-system)))
+  "When SOURCE is an <origin> object, return its derivation for SYSTEM.  When
+SOURCE is a file name, return either the interned file name (if SOURCE is
+outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
+  (match source
+    (($ <origin> uri method sha256 name () #f)
+     ;; No patches, no snippet: this is a fixed-output derivation.
+     (method uri 'sha256 sha256 name #:system system))
+    (($ <origin> uri method sha256 name (patches ...) snippet
+        (flags ...) inputs (modules ...) (imported-modules ...)
+        guile-for-build)
+     ;; Patches and/or a snippet.
+     (mlet %store-monad ((source (method uri 'sha256 sha256 name
+                                         #:system system))
+                         (guile  (package->derivation (or guile-for-build
+                                                          (default-guile))
+                                                      system
+                                                      #:graft? #f)))
+       (patch-and-repack* source patches
+                          #:inputs inputs
+                          #:snippet snippet
+                          #:flags flags
+                          #:system system
+                          #:modules modules
+                          #:imported-modules modules
+                          #:guile-for-build guile)))
+    ((and (? string?) (? direct-store-path?) file)
+     (with-monad %store-monad
+       (return file)))
+    ((? string? file)
+     (interned-file file (basename file)
+                    #:recursive? #t))))
+
+(define package-source-derivation
+  (store-lower origin->derivation))

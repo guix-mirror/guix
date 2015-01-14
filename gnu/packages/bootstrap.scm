@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,9 +58,9 @@
   "Return a variant of SOURCE, an <origin> instance, whose method uses
 %BOOTSTRAP-GUILE to do its job."
   (define (boot fetch)
-    (lambda* (store url hash-algo hash
+    (lambda* (url hash-algo hash
               #:optional name #:key system)
-      (fetch store url hash-algo hash
+      (fetch url hash-algo hash
              #:guile %bootstrap-guile
              #:system system)))
 

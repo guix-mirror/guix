@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +59,9 @@
 (define network-reachable?
   (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
 
+(define url-fetch*
+  (store-lower url-fetch))
+
 
 (test-begin "builders")
 
@@ -68,8 +71,8 @@
                      "ftp://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz"))
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
-         (drv      (url-fetch %store url 'sha256 hash
-                              #:guile %bootstrap-guile))
+         (drv      (url-fetch* %store url 'sha256 hash
+                               #:guile %bootstrap-guile))
          (out-path (derivation->output-path drv)))
     (and (build-derivations %store (list drv))
          (file-exists? out-path)
@@ -78,16 +81,16 @@
 (test-assert "url-fetch, file"
   (let* ((file (search-path %load-path "guix.scm"))
          (hash (call-with-input-file file port-sha256))
-         (out  (url-fetch %store file 'sha256 hash)))
+         (out  (url-fetch* %store file 'sha256 hash)))
     (and (file-exists? out)
          (valid-path? %store out))))
 
 (test-assert "url-fetch, file URI"
   (let* ((file (search-path %load-path "guix.scm"))
          (hash (call-with-input-file file port-sha256))
-         (out  (url-fetch %store
-                          (string-append "file://" (canonicalize-path file))
-                          'sha256 hash)))
+         (out  (url-fetch* %store
+                           (string-append "file://" (canonicalize-path file))
+                           'sha256 hash)))
     (and (file-exists? out)
          (valid-path? %store out))))
 
@@ -99,8 +102,8 @@
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
-         (tarball  (url-fetch %store url 'sha256 hash
-                              #:guile %bootstrap-guile))
+         (tarball  (url-fetch* %store url 'sha256 hash
+                               #:guile %bootstrap-guile))
          (build    (gnu-build %store "hello-2.8"
                               `(("source" ,tarball)
                                 ,@%bootstrap-inputs)

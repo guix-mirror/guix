@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -178,10 +178,10 @@
   (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
                                           (%current-system)))
          (sha256 (call-with-input-file file port-sha256))
-         (fetch  (lambda* (store url hash-algo hash
+         (fetch  (lambda* (url hash-algo hash
                            #:optional name #:key system)
                    (pk 'fetch url hash-algo hash name system)
-                   (add-to-store store (basename url) #f "sha256" url)))
+                   (interned-file url)))
          (source (bootstrap-origin
                   (origin
                     (method fetch)

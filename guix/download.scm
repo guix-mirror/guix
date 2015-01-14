@@ -197,27 +197,22 @@
   (let ((module (resolve-interface '(gnu packages gnutls))))
     (module-ref module 'gnutls)))
 
-(define* (url-fetch store url hash-algo hash
+(define* (url-fetch url hash-algo hash
                     #:optional name
-                    #:key (system (%current-system)) guile
+                    #:key (system (%current-system))
+                    (guile (default-guile))
                     (mirrors %mirrors))
-  "Return the path of a fixed-output derivation in STORE that fetches
-URL (a string, or a list of strings denoting alternate URLs), which is
-expected to have hash HASH of type HASH-ALGO (a symbol).  By default,
-the file name is the base name of URL; optionally, NAME can specify a
-different file name.
+  "Return a fixed-output derivation that fetches URL (a string, or a list of
+strings denoting alternate URLs), which is expected to have hash HASH of type
+HASH-ALGO (a symbol).  By default, the file name is the base name of URL;
+optionally, NAME can specify a different file name.
 
 When one of the URL starts with mirror://, then its host part is
 interpreted as the name of a mirror scheme, taken from MIRRORS; MIRRORS
-must be a list of symbol/URL-list pairs."
-  (define guile-for-build
-    (package-derivation store
-                        (or guile
-                            (let ((distro (resolve-interface
-                                           '(gnu packages commencement))))
-                              (module-ref distro 'guile-final)))
-                        system))
+must be a list of symbol/URL-list pairs.
 
+Alternately, when URL starts with file://, return the corresponding file name
+in the store."
   (define file-name
     (match url
       ((head _ ...)
@@ -254,26 +249,24 @@ must be a list of symbol/URL-list pairs."
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))
             (and uri (memq (uri-scheme uri) '(#f file))))
-        (add-to-store store (or name file-name)
-                      #f "sha256" (if uri (uri-path uri) url))
-        (run-with-store store
+        (interned-file (if uri (uri-path uri) url)
+                       (or name file-name))
+        (mlet %store-monad ((guile (package->derivation guile system)))
           (gexp->derivation (or name file-name) builder
+                            #:guile-for-build guile
                             #:system system
                             #:hash-algo hash-algo
                             #:hash hash
                             #:modules '((guix build download)
                                         (guix build utils)
                                         (guix ftp-client))
-                            #:guile-for-build guile-for-build
 
                             ;; In general, offloading downloads is not a good idea.
                             ;;#:local-build? #t
                             ;; FIXME: The above would also disable use of
                             ;; substitutes, so comment it out; see
                             ;; <https://bugs.gnu.org/18747>.
-                            )
-          #:guile-for-build guile-for-build
-          #:system system))))
+                            )))))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)))

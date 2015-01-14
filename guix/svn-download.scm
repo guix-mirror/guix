@@ -49,23 +49,13 @@
   (let ((distro (resolve-interface '(gnu packages version-control))))
     (module-ref distro 'subversion)))
 
-(define* (svn-fetch store ref hash-algo hash
+(define* (svn-fetch ref hash-algo hash
                     #:optional name
-                    #:key (system (%current-system)) guile
+                    #:key (system (%current-system)) (guile (default-guile))
                     (svn (subversion-package)))
-  "Return a fixed-output derivation in STORE that fetches REF, a
-<svn-reference> object.  The output is expected to have recursive hash HASH of
-type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
-#f."
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
-
+  "Return a fixed-output derivation that fetches REF, a <svn-reference>
+object.  The output is expected to have recursive hash HASH of type
+HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   (define build
     #~(begin
         (use-modules (guix build svn))
@@ -74,7 +64,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
                    #$output
                    #:svn-command (string-append #$svn "/bin/svn"))))
 
-  (run-with-store store
+  (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "svn-checkout") build
                       #:system system
                       ;; FIXME: See <https://bugs.gnu.org/18747>.
@@ -84,9 +74,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
                       #:recursive? #t
                       #:modules '((guix build svn)
                                   (guix build utils))
-                      #:guile-for-build guile-for-build
-                      #:local-build? #t)
-    #:guile-for-build guile-for-build
-    #:system system))
+                      #:guile-for-build guile
+                      #:local-build? #t)))
 
 ;;; svn-download.scm ends here

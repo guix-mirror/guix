@@ -53,23 +53,13 @@
   (let ((distro (resolve-interface '(gnu packages version-control))))
     (module-ref distro 'git)))
 
-(define* (git-fetch store ref hash-algo hash
+(define* (git-fetch ref hash-algo hash
                     #:optional name
-                    #:key (system (%current-system)) guile
+                    #:key (system (%current-system)) (guile (default-guile))
                     (git (git-package)))
-  "Return a fixed-output derivation in STORE that fetches REF, a
-<git-reference> object.  The output is expected to have recursive hash HASH of
-type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
-#f."
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
-
+  "Return a fixed-output derivation that fetches REF, a <git-reference>
+object.  The output is expected to have recursive hash HASH of type
+HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   (define inputs
     ;; When doing 'git clone --recursive', we need sed, grep, etc. to be
     ;; available so that 'git submodule' works.
@@ -96,7 +86,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
                    #:recursive? '#$(git-reference-recursive? ref)
                    #:git-command (string-append #$git "/bin/git"))))
 
-  (run-with-store store
+  (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "git-checkout") build
                       #:system system
                       ;; FIXME: See <https://bugs.gnu.org/18747>.
@@ -106,9 +96,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
                       #:recursive? #t
                       #:modules '((guix build git)
                                   (guix build utils))
-                      #:guile-for-build guile-for-build
-                      #:local-build? #t)
-    #:guile-for-build guile-for-build
-    #:system system))
+                      #:guile-for-build guile
+                      #:local-build? #t)))
 
 ;;; git-download.scm ends here
