@@ -4,7 +4,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2271,30 +2271,18 @@ toolkits.")
          ,@(alist-delete "python-numpydoc" 
                          (package-inputs matplotlib)))))))
 
-;; Scipy 0.14.0 with Numpy 0.19.X fails several tests.  This is known and
-;; planned to be fixed in 0.14.1.  It is claimed that the failures can safely
-;; be ignored:
-;; http://mail.scipy.org/pipermail/scipy-dev/2014-September/020043.html
-;; https://github.com/scipy/scipy/issues/3853 
-;;
-;; The main test suite procedure prints the summary message:
-;;
-;; Ran 16412 tests in 245.033s
-;; FAILED (KNOWNFAIL=277, SKIP=921, errors=327, failures=42)
-;; 
-;; However, it still does return normally.
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "0.14.0")
+    (version "0.15.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/scipy"
-                           "/scipy-" version ".tar.gz"))
+                           "/scipy-" version ".tar.xz"))
        (sha256
         (base32
-         "053bmz4qmnk4dmxvspfak8r10rpmy6mzwfzgy33z338ppzka6hab"))))
+         "0fsqi05s035d7p6s8h3h2pvk1axias16chy17rw9l1bxvrfhmncf"))))
     (build-system python-build-system)
     (inputs
      `(("python-numpy" ,python-numpy)
