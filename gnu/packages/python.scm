@@ -2170,13 +2170,6 @@ that client code uses to construct the grammar directly in Python code.")
        ;; at run-time the user must set this variable as follows:
        ;;
        ;; export GI_TYPELIB_PATH=~/.guix-profile/lib/girepository-1.0
-       ;;
-       ;; 'typelib' files include references to dynamic libraries. Currently
-       ;; the references do not include the full path to the libraries. For
-       ;; this reason the user must set the LD_LIBRARY_PATH to the location of 
-       ;; 'libgtk-3.so.0', 'libgdk-3.so.0' and 'libatk-1.0.so.0':
-       ;;
-       ;; export LD_LIBRARY_PATH=~/.guix-profile/lib
        ("gtk+" ,gtk+)
        ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
        ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
@@ -2217,10 +2210,6 @@ that client code uses to construct the grammar directly in Python code.")
                 (gtk+ (assoc-ref inputs "gtk+")))
             ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
             ;; has not effect.
-            ;;
-            ;; FIXME: setting LD_LIBRARY_PATH should be removed once we patch
-            ;; gobject-introspection to include the full path of shared
-            ;; libraries in 'typelib' files.
             (setenv "LD_LIBRARY_PATH"
                     (string-append cairo "/lib:" gtk+ "/lib"))
             (setenv "HOME" (getcwd))
