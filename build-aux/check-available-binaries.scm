@@ -37,18 +37,18 @@
                            %bootstrap-tarballs <>)
                       '("mips64el-linux-gnuabi64")))
          (total  (append native cross)))
-    (define (warn proc)
-      (lambda (drv)
-        (or (proc drv)
-            (begin
-              (format (current-error-port) "~a is not substitutable~%"
-                      drv)
-              #f))))
+    (define (warn item system)
+      (format (current-error-port) "~a (~a) is not substitutable~%"
+              item system)
+      #f)
 
     (set-build-options store #:use-substitutes? #t)
-    (let ((result (every (compose (warn (cut has-substitutes? store <>))
-                                  derivation->output-path)
-                         total)))
+    (let* ((substitutable? (substitution-oracle store total))
+           (result         (every (lambda (drv)
+                                    (let ((out (derivation->output-path drv)))
+                                      (or (substitutable? out)
+                                          (warn out (derivation-system drv)))))
+                                  total)))
       (when result
         (format (current-error-port) "~a packages found substitutable~%"
                 (length total)))
