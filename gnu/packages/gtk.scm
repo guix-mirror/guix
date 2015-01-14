@@ -45,7 +45,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.10.0")
+   (version "2.15.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -53,7 +53,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
+              "177a9x6lz2im0mfgxv2crv0l740wy7rg5vlnb8wyyf4fmnh0q19f")))) ; 2.15.3
    (build-system gnu-build-system)
    (inputs `(("glib" ,glib)))
    (native-inputs
