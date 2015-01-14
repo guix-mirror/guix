@@ -99,6 +99,7 @@
             store-bind
             store-return
             store-lift
+            store-lower
             run-with-store
             %guile-for-build
             text-file
@@ -880,6 +881,12 @@ in the store monad."
   (set-object-property! result 'documentation
                         (procedure-property proc 'documentation))
   result)
+
+(define (store-lower proc)
+  "Lower PROC, a monadic procedure in %STORE-MONAD, to a \"normal\" procedure
+taking the store as its first argument."
+  (lambda (store . args)
+    (run-with-store store (apply proc args))))
 
 ;;
 ;; Store monad operators.
