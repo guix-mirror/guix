@@ -28,28 +28,28 @@
              (srfi srfi-1)
              (srfi srfi-26))
 
-(let* ((store  (open-connection))
-       (native (append-map (lambda (system)
-                             (map (cut package-derivation store <> system)
-                                  (list %bootstrap-tarballs emacs)))
-                           %supported-systems))
-       (cross  (map (cut package-cross-derivation store
-                         %bootstrap-tarballs <>)
-                    '("mips64el-linux-gnuabi64")))
-       (total  (append native cross)))
-  (define (warn proc)
-    (lambda (drv)
-      (or (proc drv)
-          (begin
-            (format (current-error-port) "~a is not substitutable~%"
-                    drv)
-            #f))))
+(with-store store
+  (let* ((native (append-map (lambda (system)
+                               (map (cut package-derivation store <> system)
+                                    (list %bootstrap-tarballs emacs)))
+                             %supported-systems))
+         (cross  (map (cut package-cross-derivation store
+                           %bootstrap-tarballs <>)
+                      '("mips64el-linux-gnuabi64")))
+         (total  (append native cross)))
+    (define (warn proc)
+      (lambda (drv)
+        (or (proc drv)
+            (begin
+              (format (current-error-port) "~a is not substitutable~%"
+                      drv)
+              #f))))
 
-  (set-build-options store #:use-substitutes? #t)
-  (let ((result (every (compose (warn (cut has-substitutes? store <>))
-                                derivation->output-path)
-                       total)))
-    (when result
-      (format (current-error-port) "~a packages found substitutable~%"
-              (length total)))
-    (exit result)))
+    (set-build-options store #:use-substitutes? #t)
+    (let ((result (every (compose (warn (cut has-substitutes? store <>))
+                                  derivation->output-path)
+                         total)))
+      (when result
+        (format (current-error-port) "~a packages found substitutable~%"
+                (length total)))
+      (exit result))))
