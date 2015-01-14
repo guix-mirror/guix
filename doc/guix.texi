@@ -2194,8 +2194,8 @@ scheme@@(guile-user)>
 Note that non-monadic values cannot be returned in the
 @code{store-monad} REPL.
 
-The main syntactic forms to deal with monads in general are described
-below.
+The main syntactic forms to deal with monads in general are provided by
+the @code{(guix monads)} module and are described below.
 
 @deffn {Scheme Syntax} with-monad @var{monad} @var{body} ...
 Evaluate any @code{>>=} or @code{return} forms in @var{body} as being
@@ -2235,8 +2235,8 @@ monadic expressions are ignored.  In that sense, it is analogous to
 @code{begin}, but applied to monadic expressions.
 @end deffn
 
-The interface to the store monad provided by @code{(guix monads)} is as
-follows.
+The main interface to the store monad, provided by the @code{(guix
+store)} module, is as follows.
 
 @defvr {Scheme Variable} %store-monad
 The store monad.  Values in the store monad encapsulate accesses to the
@@ -2277,6 +2277,9 @@ The example below adds a file to the store, under two different names:
 @end example
 
 @end deffn
+
+The @code{(guix packages)} module exports the following package-related
+monadic procedures:
 
 @deffn {Monadic Procedure} package-file @var{package} [@var{file}] @
        [#:system (%current-system)] [#:target #f] @

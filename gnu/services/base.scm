@@ -17,8 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services base)
-  #:use-module ((guix store)
-                #:select (%store-prefix))
+  #:use-module (guix store)
   #:use-module (gnu services)
   #:use-module (gnu services networking)
   #:use-module (gnu system shadow)                ; 'user-account', etc.

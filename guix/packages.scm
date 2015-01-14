@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
@@ -108,7 +109,15 @@
             bag-transitive-inputs
             bag-transitive-host-inputs
             bag-transitive-build-inputs
-            bag-transitive-target-inputs))
+            bag-transitive-target-inputs
+
+            default-guile
+
+            set-guile-for-build
+            package-file
+            package->derivation
+            package->cross-derivation
+            origin->derivation))
 
 ;;; Commentary:
 ;;;
@@ -317,7 +326,8 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("patch" ,(ref '(gnu packages base) 'patch)))))
 
 (define (default-guile)
-  "Return the default Guile package for SYSTEM."
+  "Return the default Guile package used to run the build code of
+derivations."
   (let ((distro (resolve-interface '(gnu packages commencement))))
     (module-ref distro 'guile-final)))
 
@@ -899,3 +909,45 @@ symbolic output name, such as \"out\".  Note that this procedure calls
 `package-derivation', which is costly."
   (let ((drv (package-derivation store package system)))
     (derivation->output-path drv output)))
+
+
+;;;
+;;; Monadic interface.
+;;;
+
+(define (set-guile-for-build guile)
+  "This monadic procedure changes the Guile currently used to run the build
+code of derivations to GUILE, a package object."
+  (lambda (store)
+    (let ((guile (package-derivation store guile)))
+      (%guile-for-build guile))))
+
+(define* (package-file package
+                       #:optional file
+                       #:key
+                       system (output "out") target)
+  "Return as a monadic value the absolute file name of FILE within the
+OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
+OUTPUT directory of PACKAGE.  When TARGET is true, use it as a
+cross-compilation target triplet."
+  (lambda (store)
+    (define compute-derivation
+      (if target
+          (cut package-cross-derivation <> <> target <>)
+          package-derivation))
+
+    (let* ((system (or system (%current-system)))
+           (drv    (compute-derivation store package system))
+           (out    (derivation->output-path drv output)))
+      (if file
+          (string-append out "/" file)
+          out))))
+
+(define package->derivation
+  (store-lift package-derivation))
+
+(define package->cross-derivation
+  (store-lift package-cross-derivation))
+
+(define origin->derivation
+  (store-lift package-source-derivation))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,7 @@
 (define-module (guix svn-download)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (ice-9 match)

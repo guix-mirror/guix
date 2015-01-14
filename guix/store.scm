@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix serialization)
+  #:use-module (guix monads)
   #:autoload   (guix base32) (bytevector->base32-string)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
@@ -93,6 +94,15 @@
             current-build-output-port
 
             register-path
+
+            %store-monad
+            store-bind
+            store-return
+            store-lift
+            run-with-store
+            %guile-for-build
+            text-file
+            interned-file
 
             %store-prefix
             store-path?
@@ -833,6 +843,80 @@ be used internally by the daemon's build hook."
     (lambda args
       ;; Failed to run %GUIX-REGISTER-PROGRAM.
       #f)))
+
+
+;;;
+;;; Store monad.
+;;;
+
+;; return:: a -> StoreM a
+(define-inlinable (store-return value)
+  "Return VALUE from a monadic function."
+  ;; The monadic value is just this.
+  (lambda (store)
+    value))
+
+;; >>=:: StoreM a -> (a -> StoreM b) -> StoreM b
+(define-inlinable (store-bind mvalue mproc)
+  "Bind MVALUE in MPROC."
+  (lambda (store)
+    (let* ((value   (mvalue store))
+           (mresult (mproc value)))
+      (mresult store))))
+
+;; This is essentially a state monad
+(define-monad %store-monad
+  (bind   store-bind)
+  (return store-return))
+
+(define (store-lift proc)
+  "Lift PROC, a procedure whose first argument is a connection to the store,
+in the store monad."
+  (define result
+    (lambda args
+      (lambda (store)
+        (apply proc store args))))
+
+  (set-object-property! result 'documentation
+                        (procedure-property proc 'documentation))
+  result)
+
+;;
+;; Store monad operators.
+;;
+
+(define* (text-file name text)
+  "Return as a monadic value the absolute file name in the store of the file
+containing TEXT, a string."
+  (lambda (store)
+    (add-text-to-store store name text '())))
+
+(define* (interned-file file #:optional name
+                        #:key (recursive? #t))
+  "Return the name of FILE once interned in the store.  Use NAME as its store
+name, or the basename of FILE if NAME is omitted.
+
+When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
+designates a flat file and RECURSIVE? is true, its contents are added, and its
+permission bits are kept."
+  (lambda (store)
+    (add-to-store store (or name (basename file))
+                  recursive? "sha256" file)))
+
+(define %guile-for-build
+  ;; The derivation of the Guile to be used within the build environment,
+  ;; when using 'gexp->derivation' and co.
+  (make-parameter #f))
+
+(define* (run-with-store store mval
+                         #:key
+                         (guile-for-build (%guile-for-build))
+                         (system (%current-system)))
+  "Run MVAL, a monadic value in the store monad, in STORE, an open store
+connection."
+  (parameterize ((%guile-for-build guile-for-build)
+                 (%current-system system))
+    (mval store)))
 
 
 ;;;

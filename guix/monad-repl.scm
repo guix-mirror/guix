@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,8 @@
 (define-module (guix monad-repl)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix utils)
+  #:use-module (guix packages)
   #:use-module (ice-9 pretty-print)
   #:use-module (system repl repl)
   #:use-module (system repl common)
@@ -54,20 +56,30 @@
                    #:make-default-environment
                    (language-make-default-environment scheme))))
 
+(define* (default-guile-derivation store #:optional (system (%current-system)))
+  "Return the derivation of the default "
+  (package-derivation store (default-guile) system))
+
 (define (store-monad-language)
   "Return a compiler language for the store monad."
-  (let ((store (open-connection)))
+  (let* ((store (open-connection))
+         (guile (or (%guile-for-build)
+                    (default-guile-derivation store))))
     (monad-language %store-monad
-                    (cut run-with-store store <>)
+                    (cut run-with-store store <>
+                         #:guile-for-build guile)
                     'store-monad)))
 
 (define-meta-command ((run-in-store guix) repl (form))
   "run-in-store EXP
 Run EXP through the store monad."
-  (let ((value (with-store store
-                 (run-with-store store (repl-eval repl form)))))
-    (run-hook before-print-hook value)
-    (pretty-print value)))
+  (with-store store
+    (let* ((guile (or (%guile-for-build)
+                      (default-guile-derivation store)))
+           (value (run-with-store store (repl-eval repl form)
+                                  #:guile-for-build guile)))
+      (run-hook before-print-hook value)
+      (pretty-print value))))
 
 (define-meta-command ((enter-store-monad guix) repl)
   "enter-store-monad

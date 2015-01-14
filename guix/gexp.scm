@@ -17,12 +17,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix gexp)
-  #:use-module ((guix store)
-                #:select (direct-store-path?))
+  #:use-module (guix store)
   #:use-module (guix monads)
-  #:use-module ((guix derivations)
-                #:select (derivation? derivation->output-path
-                          %guile-for-build derivation))
+  #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -553,18 +553,20 @@ Build the operating system declared in FILE according to ACTION.\n"))
       (set-build-options-from-command-line store opts)
 
       (run-with-store store
-        (perform-action action os
-                        #:dry-run? dry?
-                        #:use-substitutes? (assoc-ref opts 'substitutes?)
-                        #:image-size (assoc-ref opts 'image-size)
-                        #:full-boot? (assoc-ref opts 'full-boot?)
-                        #:mappings (filter-map (match-lambda
-                                                (('file-system-mapping . m)
-                                                 m)
-                                                (_ #f))
-                                               opts)
-                        #:grub? grub?
-                        #:target target #:device device)
+        (mbegin %store-monad
+          (set-guile-for-build (default-guile))
+          (perform-action action os
+                          #:dry-run? dry?
+                          #:use-substitutes? (assoc-ref opts 'substitutes?)
+                          #:image-size (assoc-ref opts 'image-size)
+                          #:full-boot? (assoc-ref opts 'full-boot?)
+                          #:mappings (filter-map (match-lambda
+                                                  (('file-system-mapping . m)
+                                                   m)
+                                                  (_ #f))
+                                                 opts)
+                          #:grub? grub?
+                          #:target target #:device device))
         #:system system))))
 
 ;;; system.scm ends here

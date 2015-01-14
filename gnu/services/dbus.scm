@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages glib)
   #:use-module (guix monads)
+  #:use-module (guix store)
   #:use-module (guix gexp)
   #:export (dbus-service))
 

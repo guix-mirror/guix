@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -147,14 +147,18 @@ system.")
   (if (member system '("x86_64-linux" "i686-linux"))
       (list (->job 'qemu-image
                    (run-with-store store
-                     (system-qemu-image (demo-os)
-                                        #:disk-image-size
-                                        (* 1400 MiB)))) ; 1.4 GiB
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-qemu-image (demo-os)
+                                          #:disk-image-size
+                                          (* 1400 MiB))))) ; 1.4 GiB
             (->job 'usb-image
                    (run-with-store store
-                     (system-disk-image installation-os
-                                        #:disk-image-size
-                                        (* 800 MiB)))))
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-disk-image installation-os
+                                          #:disk-image-size
+                                          (* 800 MiB))))))
       '()))
 
 (define job-name

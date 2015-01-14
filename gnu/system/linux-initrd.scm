@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,7 @@
 
 (define-module (gnu system linux-initrd)
   #:use-module (guix monads)
+  #:use-module (guix store)
   #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module ((guix store)

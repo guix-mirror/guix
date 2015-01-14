@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages ntp)
   #:use-module (guix gexp)
+  #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (srfi srfi-26)
   #:export (%facebook-host-aliases

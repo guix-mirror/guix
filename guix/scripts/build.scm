@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -347,12 +347,18 @@ packages."
            ((? package? p)
             `(argument . ,p))
            ((? procedure? proc)
-            (let ((drv (run-with-store store (proc) #:system system)))
+            (let ((drv (run-with-store store
+                         (mbegin %store-monad
+                           (set-guile-for-build (default-guile))
+                           (proc))
+                         #:system system)))
               `(argument . ,drv)))
            ((? gexp? gexp)
             (let ((drv (run-with-store store
-                         (gexp->derivation "gexp" gexp
-                                           #:system system))))
+                         (mbegin %store-monad
+                           (set-guile-for-build (default-guile))
+                           (gexp->derivation "gexp" gexp
+                                             #:system system)))))
               `(argument . ,drv)))))
         (opt opt))
        opts))

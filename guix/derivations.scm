@@ -28,6 +28,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix monads)
   #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix records)
@@ -84,11 +85,16 @@
 
             map-derivation
 
-            %guile-for-build
+            built-derivations
             imported-modules
             compiled-modules
+
             build-expression->derivation
             imported-files)
+
+  ;; Re-export it from here for backward compatibility.
+  #:re-export (%guile-for-build)
+
   #:replace (build-derivations))
 
 ;;;
@@ -895,11 +901,6 @@ recursively."
 ;;; Guile-based builders.
 ;;;
 
-(define %guile-for-build
-  ;; The derivation of the Guile to be used within the build environment,
-  ;; when using `build-expression->derivation'.
-  (make-parameter #f))
-
 (define (parent-directories file-name)
   "Return the list of parent dirs of FILE-NAME, in the order in which an
 `mkdir -p' implementation would make them."
@@ -956,11 +957,11 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
   ;; up looking for the same files over and over again.
   (memoize search-path))
 
-(define* (imported-modules store modules
-                           #:key (name "module-import")
-                           (system (%current-system))
-                           (guile (%guile-for-build))
-                           (module-path %load-path))
+(define* (%imported-modules store modules
+                            #:key (name "module-import")
+                            (system (%current-system))
+                            (guile (%guile-for-build))
+                            (module-path %load-path))
   "Return a derivation that contains the source files of MODULES, a list of
 module names such as `(ice-9 q)'.  All of MODULES must be in the MODULE-PATH
 search path."
@@ -975,18 +976,18 @@ search path."
     (imported-files store files #:name name #:system system
                     #:guile guile)))
 
-(define* (compiled-modules store modules
-                           #:key (name "module-import-compiled")
-                           (system (%current-system))
-                           (guile (%guile-for-build))
-                           (module-path %load-path))
+(define* (%compiled-modules store modules
+                            #:key (name "module-import-compiled")
+                            (system (%current-system))
+                            (guile (%guile-for-build))
+                            (module-path %load-path))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
-  (let* ((module-drv (imported-modules store modules
-                                       #:system system
-                                       #:guile guile
-                                       #:module-path module-path))
+  (let* ((module-drv (%imported-modules store modules
+                                        #:system system
+                                        #:guile guile
+                                        #:module-path module-path))
          (module-dir (derivation->output-path module-drv))
          (files      (map (lambda (m)
                             (let ((f (string-join (map symbol->string m)
@@ -1218,15 +1219,15 @@ ALLOWED-REFERENCES, and LOCAL-BUILD?."
                                       (filter-map source-path inputs)))
 
          (mod-drv  (and (pair? modules)
-                        (imported-modules store modules
-                                          #:guile guile-drv
-                                          #:system system)))
+                        (%imported-modules store modules
+                                           #:guile guile-drv
+                                           #:system system)))
          (mod-dir  (and mod-drv
                         (derivation->output-path mod-drv)))
          (go-drv   (and (pair? modules)
-                        (compiled-modules store modules
-                                          #:guile guile-drv
-                                          #:system system)))
+                        (%compiled-modules store modules
+                                           #:guile guile-drv
+                                           #:system system)))
          (go-dir   (and go-drv
                         (derivation->output-path go-drv))))
     (derivation store name guile
@@ -1255,3 +1256,17 @@ ALLOWED-REFERENCES, and LOCAL-BUILD?."
                 #:references-graphs references-graphs
                 #:allowed-references allowed-references
                 #:local-build? local-build?)))
+
+
+;;;
+;;; Monadic interface.
+;;;
+
+(define built-derivations
+  (store-lift build-derivations))
+
+(define imported-modules
+  (store-lift %imported-modules))
+
+(define compiled-modules
+  (store-lift %compiled-modules))

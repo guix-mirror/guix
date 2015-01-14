@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,10 +18,11 @@
 
 (define-module (gnu services ssh)
   #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (gnu services)
   #:use-module (gnu system linux)                 ; 'pam-service'
   #:use-module (gnu packages lsh)
-  #:use-module (guix monads)
   #:export (lsh-service))
 
 ;;; Commentary:

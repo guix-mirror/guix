@@ -17,9 +17,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix monads)
-  #:use-module (guix store)
-  #:use-module (guix derivations)
-  #:use-module (guix packages)
   #:use-module ((system syntax)
                 #:select (syntax-local-binding))
   #:use-module (ice-9 match)
@@ -49,22 +46,7 @@
             anym
 
             ;; Concrete monads.
-            %identity-monad
-
-            %store-monad
-            store-bind
-            store-return
-            store-lift
-            run-with-store
-            text-file
-            interned-file
-            package-file
-            origin->derivation
-            package->derivation
-            package->cross-derivation
-            built-derivations)
-  #:replace (imported-modules
-             compiled-modules))
+            %identity-monad))
 
 ;;; Commentary:
 ;;;
@@ -308,122 +290,5 @@ lifted in MONAD, for which PROC returns true."
 (define-monad %identity-monad
   (bind   identity-bind)
   (return identity-return))
-
-
-;;;
-;;; Store monad.
-;;;
-
-;; return:: a -> StoreM a
-(define-inlinable (store-return value)
-  "Return VALUE from a monadic function."
-  ;; The monadic value is just this.
-  (lambda (store)
-    value))
-
-;; >>=:: StoreM a -> (a -> StoreM b) -> StoreM b
-(define-inlinable (store-bind mvalue mproc)
-  "Bind MVALUE in MPROC."
-  (lambda (store)
-    (let* ((value   (mvalue store))
-           (mresult (mproc value)))
-      (mresult store))))
-
-(define-monad %store-monad
-  (bind   store-bind)
-  (return store-return))
-
-
-(define (store-lift proc)
-  "Lift PROC, a procedure whose first argument is a connection to the store,
-in the store monad."
-  (define result
-    (lambda args
-      (lambda (store)
-        (apply proc store args))))
-
-  (set-object-property! result 'documentation
-                        (procedure-property proc 'documentation))
-  result)
-
-;;;
-;;; Store monad operators.
-;;;
-
-(define* (text-file name text)
-  "Return as a monadic value the absolute file name in the store of the file
-containing TEXT, a string."
-  (lambda (store)
-    (add-text-to-store store name text '())))
-
-(define* (interned-file file #:optional name
-                        #:key (recursive? #t))
-  "Return the name of FILE once interned in the store.  Use NAME as its store
-name, or the basename of FILE if NAME is omitted.
-
-When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
-designates a flat file and RECURSIVE? is true, its contents are added, and its
-permission bits are kept."
-  (lambda (store)
-    (add-to-store store (or name (basename file))
-                  recursive? "sha256" file)))
-
-(define* (package-file package
-                       #:optional file
-                       #:key
-                       system (output "out") target)
-  "Return as a monadic value the absolute file name of FILE within the
-OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
-OUTPUT directory of PACKAGE.  When TARGET is true, use it as a
-cross-compilation target triplet."
-  (lambda (store)
-    (define compute-derivation
-      (if target
-          (cut package-cross-derivation <> <> target <>)
-          package-derivation))
-
-    (let* ((system (or system (%current-system)))
-           (drv    (compute-derivation store package system))
-           (out    (derivation->output-path drv output)))
-      (if file
-          (string-append out "/" file)
-          out))))
-
-(define package->derivation
-  (store-lift package-derivation))
-
-(define package->cross-derivation
-  (store-lift package-cross-derivation))
-
-(define origin->derivation
-  (store-lift package-source-derivation))
-
-(define imported-modules
-  (store-lift (@ (guix derivations) imported-modules)))
-
-(define compiled-modules
-  (store-lift (@ (guix derivations) compiled-modules)))
-
-(define built-derivations
-  (store-lift build-derivations))
-
-(define* (run-with-store store mval
-                         #:key
-                         (guile-for-build (%guile-for-build))
-                         (system (%current-system)))
-  "Run MVAL, a monadic value in the store monad, in STORE, an open store
-connection."
-  (define (default-guile)
-    ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
-    ;; modules directly, to avoid circular dependencies, hence this hack.
-    (module-ref (resolve-interface '(gnu packages commencement))
-                'guile-final))
-
-  (parameterize ((%guile-for-build (or guile-for-build
-                                       (package-derivation store
-                                                           (default-guile)
-                                                           system)))
-                 (%current-system system))
-    (mval store)))
 
 ;;; monads.scm end here

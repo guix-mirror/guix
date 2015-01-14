@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,7 +170,10 @@ derivation of a package."
                       (package-name p))))
          (package-derivation store p system)))
     ((? procedure? proc)
-     (run-with-store store (proc) #:system system))))
+     (run-with-store store
+       (mbegin %store-monad
+         (set-guile-for-build (default-guile))
+         (proc)) #:system system))))
 
 (define (options->derivations+files store opts)
   "Given OPTS, the result of 'args-fold', return a list of derivations to

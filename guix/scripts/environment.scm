@@ -232,7 +232,10 @@ packages."
            (command (assoc-ref opts 'exec))
            (inputs (packages->transitive-inputs
                     (pick-all (options/resolve-packages opts) 'package)))
-           (drvs (run-with-store store (build-inputs inputs opts))))
+           (drvs (run-with-store store
+                   (mbegin %store-monad
+                     (set-guile-for-build (default-guile))
+                     (build-inputs inputs opts)))))
       (cond ((assoc-ref opts 'dry-run?)
              #t)
             ((assoc-ref opts 'search-paths)
