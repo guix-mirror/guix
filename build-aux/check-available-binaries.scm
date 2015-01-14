@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,9 +27,6 @@
              (gnu packages make-bootstrap)
              (srfi srfi-1)
              (srfi srfi-26))
-
-(define %supported-systems
-  '("x86_64-linux" "i686-linux"))
 
 (let* ((store  (open-connection))
        (native (append-map (lambda (system)
