@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -308,10 +308,15 @@ XBINUTILS and the cross tool chain."
 ;;;
 
 (define-public xgcc-mips64el
-  (let ((triplet "mips64el-linux-gnuabi64"))      ; N64 ABI
-    (cross-gcc triplet
-               (cross-binutils triplet)
-               (cross-libc triplet))))
+  (let* ((triplet "mips64el-linux-gnuabi64")      ;N64 ABI
+         (xgcc    (cross-gcc triplet
+                             (cross-binutils triplet)
+                             (cross-libc triplet))))
+    ;; Don't attempt to build this cross-compiler on i686;
+    ;; see <http://bugs.gnu.org/19598>.
+    (package (inherit xgcc)
+      (supported-systems (delete "i686-linux"
+                                 (package-supported-systems xgcc))))))
 
 (define-public xgcc-avr
   ;; AVR cross-compiler, used to build AVR-Libc.
