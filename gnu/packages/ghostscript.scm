@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 
 (define-module (gnu packages ghostscript)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
@@ -162,6 +164,49 @@ file format.  It also includes a C library that implements the graphics
 capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
    (license license:agpl3+)
+   (home-page "http://www.gnu.org/software/ghostscript/")))
+
+(define-public ijs
+  (package
+   (name "ijs")
+   (version "9.14.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
+                                version ".tar.xz"))
+            (sha256 (base32
+                     "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("libtool"    ,libtool)
+      ("automake"   ,automake)
+      ("autoconf"   ,autoconf)))
+   (arguments
+    `(#:phases
+      (alist-cons-after
+       'unpack 'autogen
+       (lambda _
+         ;; need to regenerate macros
+         (system* "autoreconf" "-if")
+         ;; do not run configure
+         (substitute* "autogen.sh"
+           (("^.*\\$srcdir/configure.*") ""))
+         (system* "bash" "autogen.sh")
+
+         ;; create configure script in ./ijs/
+         (chdir "ijs")
+         ;; do not run configure
+         (substitute* "autogen.sh"
+           (("^.*\\$srcdir/configure.*") "")
+           (("^ + && echo Now type.*$")  ""))
+         (zero? (system* "bash" "autogen.sh")))
+       %standard-phases)))
+   (synopsis "IJS driver framework for inkjet and other raster devices")
+   (description
+    "IJS is a protocol for transmission of raster page images.  This package
+provides the reference implementation of the raster printer driver
+architecture.")
+   (license license:expat)
    (home-page "http://www.gnu.org/software/ghostscript/")))
 
 (define-public gs-fonts
