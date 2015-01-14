@@ -315,8 +315,9 @@ XBINUTILS and the cross tool chain."
     ;; Don't attempt to build this cross-compiler on i686;
     ;; see <http://bugs.gnu.org/19598>.
     (package (inherit xgcc)
-      (supported-systems (delete "i686-linux"
-                                 (package-supported-systems xgcc))))))
+      (supported-systems (fold delete
+                               (package-supported-systems xgcc)
+                               '("mips64el-linux" "i686-linux"))))))
 
 (define-public xgcc-avr
   ;; AVR cross-compiler, used to build AVR-Libc.
@@ -329,10 +330,12 @@ XBINUTILS and the cross tool chain."
   (cross-gcc "xtensa-elf"))
 
 (define-public xgcc-armhf
-  (let ((triplet "arm-linux-gnueabihf"))
-    (cross-gcc triplet
-               (cross-binutils triplet)
-               (cross-libc triplet))))
+  (let* ((triplet "arm-linux-gnueabihf")
+         (xgcc    (cross-gcc triplet
+                             (cross-binutils triplet)
+                             (cross-libc triplet))))
+    (package (inherit xgcc)
+      (supported-systems (delete "armhf-linux" %supported-systems)))))
 
 ;; (define-public xgcc-armel
 ;;   (let ((triplet "armel-linux-gnueabi"))
