@@ -2199,7 +2199,7 @@ that client code uses to construct the grammar directly in Python code.")
        ("freetype" ,freetype)
        ("cairo" ,cairo)
        ("glib" ,glib)
-       ("python-pillow" ,python-pillow)
+       ;("python-pillow" ,python-pillow)
        ;; FIXME: Add backends when available.
        ;("python-wxpython" ,python-wxpython)
        ;("python-pyqt" ,python-pyqt)
