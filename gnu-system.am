@@ -422,6 +422,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mupdf-buildsystem-fix.patch		\
   gnu/packages/patches/mutt-CVE-2014-9116.patch			\
   gnu/packages/patches/net-tools-bitrot.patch			\
+  gnu/packages/patches/ninja-tests.patch			\
   gnu/packages/patches/nss-pkgconfig.patch			\
   gnu/packages/patches/nvi-assume-preserve-path.patch           \
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\

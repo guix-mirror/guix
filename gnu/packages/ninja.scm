@@ -34,7 +34,8 @@
                                   "archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))))
+                "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))
+              (patches (list (search-patch "ninja-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -52,18 +53,7 @@
           (lambda _
             (and (zero? (system* "./configure.py"))
                  (zero? (system* "./ninja" "ninja_test"))
-                 ;; SubprocessTest.SetWithLots fails with:
-                 ;;   Raise [ulimit -n] well above 1025 to make this test go.
-                 ;; Skip it.
-                 ;;
-                 ;; SubprocessTest.InterruptChild fails when using 'system*':
-                 ;;   *** Failure in src/subprocess_test.cc:83
-                 ;;   ExitInterrupted == subproc->Finish()
-                 ;; Pass it by using 'system' instead of 'system*'.
-                 (zero? (system (string-append
-                                 "./ninja_test "
-                                 "--gtest_filter="
-                                 "-SubprocessTest.SetWithLots")))))
+                 (zero? (system* "./ninja_test"))))
           (alist-replace
            'install
            (lambda* (#:key outputs #:allow-other-keys)
