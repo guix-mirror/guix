@@ -158,14 +158,14 @@ the Nix package manager.")
 (define-public nix
   (package
     (name "nix")
-    (version "1.7")
+    (version "1.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "14nc7mnma5sffqk9mglbf99w3jm4ck8pxnmkgyhy3qra9xjn749l"))))
+               "077hircacgi9y4n6kf48qp4laz1h3ab6sif3rcci1jy13f05w2m3"))))
     (build-system gnu-build-system)
     ;; XXX: Should we pass '--with-store-dir=/gnu/store'?  But then we'd also
     ;; need '--localstatedir=/var'.  But then!  The thing would use /var/nix
