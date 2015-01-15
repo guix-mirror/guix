@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages pkg-config)
   #:use-module ((guix licenses) #:select (bsd-style)))
 
 (define-public gd
@@ -31,25 +33,21 @@
     (name "gd")
 
     ;; Note: With libgd.org now pointing to bitbucket.org, genuine old
-    ;; tarballs are no longer available.  Notably, versions 2.0.34 and .35 are
+    ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.0.33")
+    (version "2.1.1")
 
     (source (origin
              (method url-fetch)
-             (uri "https://bitbucket.org/libgd/gd-libgd/get/GD_2_0_33.tar.gz")
+             (uri (string-append
+                   "https://bitbucket.org/libgd/gd-libgd/downloads/"
+                   "libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "0yrbx8mj9pykyzm0zl1q86xlkdvkajcsf5jmg688vhw9yc5wmbbw"))
-             (patches
-              (list (search-patch "gd-mips64-deplibs-fix.patch")))))
+               "11djy9flzxczphigqgp7fbbblbq35gqwwhn9xfcckawlapa1xnls"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'chdir
-                 (lambda _
-                   (chdir "src"))
-                 %standard-phases)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freetype" ,freetype)
        ("libpng" ,libpng)
