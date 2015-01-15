@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,14 +36,21 @@
              (sha256
               (base32
                "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))
-             (patches (list (search-patch "plotutils-libpng-jmpbuf.patch")))))
+             (patches (list (search-patch "plotutils-libpng-jmpbuf.patch")))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Force the use of libXaw7 instead of libXaw.  When not doing
+              ;; that, libplot.la ends up containing just "-lXaw" (without
+              ;; "-L/path/to/Xaw"), due to the fact that there is no
+              ;; libXaw.la, which forces us to propagate libXaw.
+              '(substitute* "configure"
+                 (("-lXaw")
+                  "-lXaw7")))))
     (build-system gnu-build-system)
     (inputs `(("libpng" ,libpng)
               ("libx11" ,libx11)
-              ("libxt" ,libxt)))
-
-    ;; libplot.la has '-lXaw'.
-    (propagated-inputs `(("libxaw" ,libxaw)))
+              ("libxt" ,libxt)
+              ("libxaw" ,libxaw)))
 
     (home-page
      "http://www.gnu.org/software/plotutils/")
