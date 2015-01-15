@@ -147,10 +147,19 @@ X11-system or any other graphical user interface.")
    (version "2.5.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append
+            (uri (list
+                  (string-append
                    "http://scripts.sil.org/svn-view/teckit/TAGS/TECkit_"
                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
-                   ".tar.gz"))
+                   ".tar.gz")
+                  "http://pkgs.fedoraproject.org/repo/pkgs/teckit/TECkit_2_5_1.tar.gz/4913f71f0f42bfd9cf8f161688b35dea/TECkit_2_5_1.tar.gz"
+                  ;; This used to be the canonical URL but it vanished.
+                  ;; See <http://bugs.gnu.org/19600>.
+                  ;; (string-append
+                  ;;  "http://scripts.sil.org/svn-view/teckit/TAGS/TECkit_"
+                  ;;  (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
+                  ;;  ".tar.gz")
+                  ))
             (sha256 (base32
                      "0fjiwvic8mdxpkyccfp7zh26y9xnvkp0skqbyfkrjiacd191k82r"))
             (patches (list (search-patch "teckit-cstdio.patch")))))
