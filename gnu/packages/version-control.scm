@@ -384,14 +384,14 @@ also walk each side of a merge and test those changes individually.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "2.7.1")
+    (version "3.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://mercurial.selenic.com/release/mercurial-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "121m8f7vmipmdg00cnzdz2rjkgydh28mwfirqkrbs5fv089vywl4"))))
+               "1g7nfvapxj5k44dyp0p08v37s0zmrj2vl0rjgfd8297x0afidm08"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
