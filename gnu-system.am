@@ -122,6 +122,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gperf.scm			\
   gnu/packages/gprolog.scm			\
   gnu/packages/gps.scm				\
+  gnu/packages/graphics.scm			\
   gnu/packages/graphviz.scm			\
   gnu/packages/groff.scm			\
   gnu/packages/grub.scm				\
