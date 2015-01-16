@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix utils))
 
 
@@ -345,3 +346,57 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
+
+(define-public eigen
+  (package
+    (name "eigen")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "14l5hlgxxymwyava5mx97ipyk3ma3alaj586aaz1xh1r700a7sxm"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; There are 3 test failures in the "unsupported" directory,
+               ;; but maintainers say it's a known issue and it's unsupported
+               ;; anyway, so just skip them.
+               '(substitute* "CMakeLists.txt"
+                  (("add_subdirectory\\(unsupported\\)")
+                   "# Do not build the tests for unsupported features.\n")))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; Turn off debugging symbols to save space.
+       #:build-type "Release"
+
+       ;; Use 'make check', as per
+       ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
+       #:test-target "check"
+
+       #:phases (alist-cons-before
+                 'check 'build-tests
+                 (lambda _
+                   ;; First build the tests, in parallel.
+                   ;; See <http://eigen.tuxfamily.org/index.php?title=Tests>.
+                   (let* ((cores  (current-processor-count))
+                          (dash-j (format #f "-j~a" cores)))
+                     ;; These variables are supposed to be honored.
+                     (setenv "EIGEN_MAKE_ARGS" dash-j)
+                     (setenv "EIGEN_CTEST_ARGS" dash-j)
+
+                     (zero? (system* "make" "buildtests" dash-j))))
+                 %standard-phases)))
+    (home-page "http://eigen.tuxfamily.org")
+    (synopsis "C++ template library for linear algebra")
+    (description
+     "Eigen is a C++ template library for linear algebra: matrices, vectors,
+numerical solvers, and related algorithms.  It provides an elegant API based
+on \"expression templates\".  It is versatile: it supports all matrix sizes,
+all standard numeric types, various matrix decompositions and geometry
+features, and more.")
+
+    ;; Most of the code is MPLv2, with a few files under LGPLv2.1+ or BSD-3.
+    ;; See 'COPYING.README' for details.
+    (license mpl2.0)))
