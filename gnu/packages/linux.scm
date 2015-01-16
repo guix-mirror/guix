@@ -562,6 +562,17 @@ slabtop, and skill.")
                    lgpl2.0                        ; libext2fs
                    x11))))                        ; libuuid
 
+(define e2fsprogs/static
+  (static-package
+   (package (inherit e2fsprogs)
+            (arguments
+             ;; Do not build shared libraries.
+             (substitute-keyword-arguments (package-arguments e2fsprogs)
+               ((#:configure-flags _)
+                '(list "--disable-blkid"))
+               ((#:make-flags _)
+                '(list)))))))
+
 (define-public e2fsck/static
   (package
     (name "e2fsck-static")
@@ -587,7 +598,7 @@ slabtop, and skill.")
                          (remove-store-references file)
                          (chmod file #o555))
                        (scandir source (cut string-prefix? "fsck." <>))))))))
-    (inputs `(("e2fsprogs" ,(static-package e2fsprogs))))
+    (inputs `(("e2fsprogs" ,e2fsprogs/static)))
     (synopsis "Statically-linked fsck.* commands from e2fsprogs")
     (description
      "This package provides statically-linked command of fsck.ext[234] taken
