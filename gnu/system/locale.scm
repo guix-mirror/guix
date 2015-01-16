@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,38 +89,43 @@
                   (utf8-locales (syntax-rules ()
                                   ((_ name ...)
                                    (list (utf8-locale name) ...)))))
-    (utf8-locales "ca_ES"
-                  "cs_CZ"
-                  "da_DK"
-                  "de_DE"
-                  "el_GR"
-                  "en_AU"
-                  "en_CA"
-                  "en_GB"
-                  "en_US"
-                  "es_AR"
-                  "es_CL"
-                  "es_ES"
-                  "es_MX"
-                  "fi_FI"
-                  "fr_BE"
-                  "fr_CA"
-                  "fr_CH"
-                  "fr_FR"
-                  "ga_IE"
-                  "it_IT"
-                  "ja_JP"
-                  "ko_KR"
-                  "nb_NO"
-                  "nl_NL"
-                  "pl_PL"
-                  "pt_PT"
-                  "ro_RO"
-                  "ru_RU"
-                  "sv_SE"
-                  "tr_TR"
-                  "uk_UA"
-                  "vi_VN"
-                  "zh_CN")))
+    ;; Add "en_US.UTF-8" for compatibility with Guix 0.8.
+    (cons (locale-definition
+           (name "en_US.UTF-8")
+           (source "en_US")
+           (charset "UTF-8"))
+          (utf8-locales "ca_ES"
+                        "cs_CZ"
+                        "da_DK"
+                        "de_DE"
+                        "el_GR"
+                        "en_AU"
+                        "en_CA"
+                        "en_GB"
+                        "en_US"
+                        "es_AR"
+                        "es_CL"
+                        "es_ES"
+                        "es_MX"
+                        "fi_FI"
+                        "fr_BE"
+                        "fr_CA"
+                        "fr_CH"
+                        "fr_FR"
+                        "ga_IE"
+                        "it_IT"
+                        "ja_JP"
+                        "ko_KR"
+                        "nb_NO"
+                        "nl_NL"
+                        "pl_PL"
+                        "pt_PT"
+                        "ro_RO"
+                        "ru_RU"
+                        "sv_SE"
+                        "tr_TR"
+                        "uk_UA"
+                        "vi_VN"
+                        "zh_CN"))))
 
 ;;; locale.scm ends here
