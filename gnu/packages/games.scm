@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -60,6 +60,9 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -820,3 +823,56 @@ playing interactive fiction.  It was designed by Andrew Plotkin to relieve
 some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using Glk API.")
    (license (license:fsf-free "file://README"))))
+
+(define-public retroarch
+  (package
+    (name "retroarch")
+    (version "1.0.0.3-beta")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/libretro/RetroArch/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1iqcrb076xiih20sk8n1w79xsp4fb8pj4vkmdc1xn562h56y4nxx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases
+       (alist-replace
+        'configure
+        (lambda _
+          (substitute* "qb/qb.libs.sh"
+            (("/bin/true") (which "true")))
+          (zero? (system*
+                  "./configure"
+                  (string-append "--prefix=" %output)
+                  (string-append "--global-config-dir=" %output "/etc"))))
+        %standard-phases)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("libxinerama" ,libxinerama)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxml2" ,libxml2)
+       ("libxv" ,libxv)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("pulseaudio" ,pulseaudio)
+       ("python" ,python)
+       ("sdl" ,sdl2)
+       ("udev" ,eudev)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (home-page "http://www.libretro.com/")
+    (synopsis "Reference frontend for the libretro API")
+    (description
+     "Libretro is a simple but powerful development interface that allows for
+the easy creation of emulators, games and multimedia applications that can plug
+straight into any libretro-compatible frontend.  RetroArch is the official
+reference frontend for the libretro API, currently used by most as a modular
+multi-system game/emulator system.")
+    (license license:gpl3+)))
