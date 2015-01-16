@@ -184,10 +184,11 @@
         (lambda* (#:key outputs #:allow-other-keys)
           (let* ((out (assoc-ref outputs "out"))
                  (lib (string-append out "/lib")))
-            ;; Add LIB to the RUNPATH of all the executables.
+            ;; Add LIB to the RUNPATH of all the executables and libraries.
             (with-directory-excursion out
               (for-each (cut augment-rpath <> lib)
-                        (find-files "bin" ".*")))))
+                        (append (find-files "bin" ".*")
+                                (find-files "lib" "\\.so\\..*\\."))))))
           %standard-phases))))
     (home-page "http://www.ffmpeg.org/")
     (synopsis "Audio and video framework")
