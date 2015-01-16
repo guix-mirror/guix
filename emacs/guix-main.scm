@@ -853,7 +853,9 @@ OUTPUTS is a list of package outputs (may be an empty list)."
     (unless (and (null? install) (null? remove))
       (with-store store
         (let* ((derivation (run-with-store store
-                             (profile-derivation new-manifest)))
+                             (mbegin %store-monad
+                               (set-guile-for-build (default-guile))
+                               (profile-derivation new-manifest))))
                (derivations (list derivation))
                (new-profile (derivation->output-path derivation)))
           (set-build-options store
