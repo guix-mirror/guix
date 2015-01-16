@@ -1,0 +1,25 @@
+From 06198585dae1e4079b4b52b49827fd5b826030b7 Mon Sep 17 00:00:00 2001
+From: Douglas Crosher <dtc-moz@scieneer.com>
+Date: Sun, 16 Nov 2014 00:29:23 +1100
+Subject: [PATCH] Bug 1050258 - ARM hard-float XPCOM: correct argument passing.
+ r=mjrosenb, a=bkerensa
+
+---
+ xpcom/reflect/xptcall/src/md/unix/xptcinvoke_arm.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/xpcom/reflect/xptcall/src/md/unix/xptcinvoke_arm.cpp b/xpcom/reflect/xptcall/src/md/unix/xptcinvoke_arm.cpp
+index 946b7e3..c1c536b 100644
+--- a/xpcom/reflect/xptcall/src/md/unix/xptcinvoke_arm.cpp
++++ b/xpcom/reflect/xptcall/src/md/unix/xptcinvoke_arm.cpp
+@@ -224,6 +224,7 @@ static inline void copy_dword(uint32_t* &ireg_args,
+     *(uint64_t *)ireg_args = data;
+     ireg_args += 2;
+   } else {
++    ireg_args = end;
+     if ((uint32_t)stack_args & 4) {
+       stack_args++;
+     }
+-- 
+2.1.2
+

@@ -387,6 +387,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
+  gnu/packages/patches/icecat-armhf-xpcom.patch			\
   gnu/packages/patches/icecat-CVE-2014-1587-bug-1042567.patch	\
   gnu/packages/patches/icecat-CVE-2014-1587-bug-1072847.patch	\
   gnu/packages/patches/icecat-CVE-2014-1587-bug-1079729.patch	\
@@ -396,6 +397,12 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-CVE-2014-1592.patch		\
   gnu/packages/patches/icecat-CVE-2014-1593.patch		\
   gnu/packages/patches/icecat-CVE-2014-1594.patch		\
+  gnu/packages/patches/icecat-CVE-2014-8634-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2014-8634-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2014-8638-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2014-8638-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2014-8639.patch		\
+  gnu/packages/patches/icecat-CVE-2014-8641.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\

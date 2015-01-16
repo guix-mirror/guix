@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -231,7 +231,14 @@ standards.")
                       "icecat-CVE-2014-1590.patch"
                       "icecat-CVE-2014-1592.patch"
                       "icecat-CVE-2014-1593.patch"
-                      "icecat-CVE-2014-1594.patch")))))
+                      "icecat-CVE-2014-1594.patch"
+                      "icecat-armhf-xpcom.patch"
+                      "icecat-CVE-2014-8639.patch"
+                      "icecat-CVE-2014-8634-pt1.patch"
+                      "icecat-CVE-2014-8634-pt2.patch"
+                      "icecat-CVE-2014-8641.patch"
+                      "icecat-CVE-2014-8638-pt1.patch"
+                      "icecat-CVE-2014-8638-pt2.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
