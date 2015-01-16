@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -75,14 +75,14 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.10.93")
+   (version "2.11.92")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "http://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "172j5vsgx2xplsk5mrxrspbn5lrswq6gnxkxjgcrx0j8i0kiz47a"))))
+                     "18r45dcnaj93izwfr082qiwg8ka7ll6j0c9yf1slblm542d5pmd9"))))
    (build-system gnu-build-system)
    (inputs `(("expat" ,expat)
              ("freetype" ,freetype)
