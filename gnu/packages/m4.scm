@@ -33,8 +33,7 @@
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))
-            (patches (list (search-patch "m4-readlink-EINVAL.patch")))))
+              "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))))
    (build-system gnu-build-system)
    (arguments
     ;; XXX: Disable tests on those platforms with know issues.

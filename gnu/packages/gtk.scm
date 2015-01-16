@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -418,18 +418,9 @@ application suites.")
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
-
-      ;; FIXME: The Xorg server is needed to run the tests, but it currently
-      ;; fails to build on mips64el, so remove it in the meantime.
-      ,@(if (string=? (or (%current-target-system) (%current-system))
-                      "mips64el-linux")
-            '()
-            `(("xorg-server" ,xorg-server)))))
+      ("xorg-server" ,xorg-server)))
    (arguments
-    `(;; FIXME: See above.
-      #:tests? ,(not (string=? (or (%current-target-system) (%current-system))
-                               "mips64el-linux"))
-      #:phases
+    `(#:phases
       (alist-replace
        'configure
        (lambda* (#:key inputs #:allow-other-keys #:rest args)

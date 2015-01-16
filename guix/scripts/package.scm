@@ -29,7 +29,8 @@
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix scripts build)
-  #:use-module ((guix build utils) #:select (directory-exists? mkdir-p))
+  #:use-module ((guix build utils)
+                #:select (directory-exists? mkdir-p search-path-as-list))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -362,19 +363,24 @@ current settings and report only settings not already effective."
 
     (define search-path-definition
       (match-lambda
-       (($ <search-path-specification> variable directories separator)
-        (let ((values      (or (and=> (getenv variable)
-                                      (cut string-tokenize* <> separator))
-                               '()))
-              (directories (filter file-exists?
-                                   (map (cut string-append profile
-                                             "/" <>)
-                                        directories))))
-          (if (every (cut member <> values) directories)
+       (($ <search-path-specification> variable files separator
+                                       type pattern)
+        (let* ((values (or (and=> (getenv variable)
+                                  (cut string-tokenize* <> separator))
+                           '()))
+               ;; Add a trailing slash to force symlinks to be treated as
+               ;; directories when 'find-files' traverses them.
+               (files  (if pattern
+                           (map (cut string-append <> "/") files)
+                           files))
+               (path   (search-path-as-list files (list profile)
+                                            #:type type
+                                            #:pattern pattern)))
+          (if (every (cut member <> values) path)
               #f
               (format #f "export ~a=\"~a\""
                       variable
-                      (string-join directories separator)))))))
+                      (string-join path separator)))))))
 
     (let* ((packages     (filter-map manifest-entry->package entries))
            (search-paths (delete-duplicates

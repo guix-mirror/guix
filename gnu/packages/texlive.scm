@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,7 +124,7 @@
 
       ;; Disable tests on mips64 to cope with a failure of luajiterr.test.
       ;; XXX FIXME fix luajit properly on mips64.
-      #:tests? ,(not (equal? "mips64el-linux" (or (%current-target-system)
+      #:tests? ,(not (string-prefix? "mips64" (or (%current-target-system)
                                                   (%current-system))))
       #:phases
        (alist-cons-after

@@ -202,12 +202,7 @@ OpenBSD's sndio.")
               "1p0hh190kqvpkbk1bbajd81jfbmkyl4fn2i7pggk2zppq6m68bgs"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:parallel-tests? #f
-      ;; By default, man pages are put in PREFIX/man,
-      ;; but we want them in PREFIX/share/man.
-      #:configure-flags (list (string-append "--mandir="
-                                             (assoc-ref %outputs "out")
-                                             "/share/man"))))
+    `(#:parallel-tests? #f))
    ;; FIXME: configure also looks for xmms, input could be added once it exists
    (inputs `(("libogg" ,libogg)))
    (synopsis "Free lossless audio codec")

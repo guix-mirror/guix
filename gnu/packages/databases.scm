@@ -3,7 +3,7 @@
 ;;; Copyright © 2012, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,7 +213,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.4.3")
+   (version "3.8.7.4")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -233,9 +233,7 @@ types are supported, as is encryption.")
                     "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0rcdsk5sz34w8vy0g5yhfms4saiq81i872jxx5m5sjij7bi9bsg0"))
-            (patches
-             (list (search-patch "sqlite-large-page-size-fix.patch")))))
+              "1v2rhgsx27in6dcvxk0pkxc0zrbl38biimjg6c1zxz85jh9hydw6"))))
    (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline)))

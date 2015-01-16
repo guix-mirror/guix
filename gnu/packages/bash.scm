@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,8 +81,10 @@
    (27 "1gnsfvq6bhb3srlbh0cannj2hackdsipcg7z0ds7zlk1hp96mdqy")
    (28 "17a65c4fn4c5rgsiw9gqqnzhznh3gwnd2xzzv2dppyi48znxpc78") ;CVE-2014-7186
    (29 "14k27p28r5l2fz3r03kd0x72vvsq8bja8c6hjz5kxikbzsbs7i2c") ;CVE-2014-6277
-   (30 "0nrqb0m7s89qsrbfaffpilc5gcf82bx9yvgzld4hr79p5y54yhw5"))) ;CVE-2014-6278
-
+   (30 "0nrqb0m7s89qsrbfaffpilc5gcf82bx9yvgzld4hr79p5y54yhw5") ;CVE-2014-6278
+   (31 "07d62bl3z7qa8v6kgk47vzzazw563mlk9zhrsr4xsbqgvmcrylnd")
+   (32 "0jjgapfq4qhmndfrw8c3q3lva8xjdhlbd9cc631v41b0kb95g4w8")
+   (33 "05ma5rlxiadnfh925p4y7s0vvk917kmsdb1mfdx05gizl63pfapv")))
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
 number/base32-hash tuples, directly usable in the 'patch-series' form."

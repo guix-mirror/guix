@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,12 @@
   (match (string-tokenize file (char-set-complement (char-set #\/)))
     ((_ ... system basename)
      (string->uri (string-append %url-base "/" system
-                                 "/20131110/" basename)))))
+                                 (match system
+                                   ("armhf-linux"
+                                    "/20150101/")
+                                   (_
+                                    "/20131110/"))
+                                 basename)))))
 
 (match (command-line)
   ((_ file expected-hash)

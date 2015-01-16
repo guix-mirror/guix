@@ -717,7 +717,7 @@ for common mesh file formats, and collision detection.")
     (native-search-paths
      (list (search-path-specification
             (variable "MINETEST_SUBGAME_PATH")
-            (directories '("share/minetest/games")))))
+            (files '("share/minetest/games")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

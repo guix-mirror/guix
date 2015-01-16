@@ -4400,7 +4400,7 @@ kernel mode setting (KMS).")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.16.2.901")
+    (version "1.16.3")
     (source
       (origin
         (method url-fetch)
@@ -4409,7 +4409,7 @@ kernel mode setting (KMS).")
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "19jb8v26wc332ramwjdg5vjh3s36kr7n46s6fdfaxrj1wif5m27g"))))
+          "1yxhc3aw2cadf77w48d2glc5j6w6hairiskfiys7h45g70r483sy"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)

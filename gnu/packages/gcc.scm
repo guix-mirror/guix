@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
   ;; Base URL for GCC's infrastructure.
   "ftp://gcc.gnu.org/pub/gcc/infrastructure/")
 
-(define-public (gcc-configure-flags-for-triplet target)
+(define (gcc-configure-flags-for-triplet target)
   "Return a list of additional GCC `configure' flags for TARGET, a GNU triplet.
 
 The purpose of this procedure is to translate extended GNU triplets---e.g.,
@@ -45,8 +46,17 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          ;; Triplets recognized by glibc as denoting the N64 ABI; see
          ;; ports/sysdeps/mips/preconfigure.
          '("--with-abi=64"))
+
+        ((string-match "^arm.*-gnueabihf$" target)
+         '("--with-arch=armv7-a"
+           "--with-float=hard"
+           "--with-mode=thumb"
+
+           ;; See <https://wiki.debian.org/ArmHardFloatPort/VfpComparison#FPU>
+           "--with-fpu=vfpv3-d16"))
+
         (else
-         ;; TODO: Add `armel.*gnueabi', `hf', etc.
+         ;; TODO: Add `arm.*-gnueabi', etc.
          '())))
 
 (define-public gcc-4.7
@@ -101,11 +111,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                                            "/include")
                             "--without-headers")))
 
-                   ;; When cross-compiling GCC, pass the right options for the
-                   ;; target triplet.
-                   (or (and=> (%current-target-system)
-                              gcc-configure-flags-for-triplet)
-                       '())
+                   ;; Pass the right options for the target triplet.
+                   (let ((triplet
+                          (or (%current-target-system)
+                              (nix-system->gnu-triplet (%current-system)))))
+                     (gcc-configure-flags-for-triplet triplet))
 
                    (maybe-target-tools))))))
     (package
@@ -178,9 +188,19 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; The following is not performed for `--without-headers'
                 ;; cross-compiler builds.
 
+                ;; Join multi-line definitions of GLIBC_DYNAMIC_LINKER* into a
+                ;; single line, to allow the next step to work properly.
+                (for-each
+                 (lambda (x)
+                   (substitute* (find-files "gcc/config"
+                                            "^linux(64|-elf|-eabi)?\\.h$")
+                     (("(#define GLIBC_DYNAMIC_LINKER.*)\\\\\n$" _ line)
+                      line)))
+                 '(1 2 3))
+
                 ;; Fix the dynamic linker's file name.
                 (substitute* (find-files "gcc/config"
-                                         "^linux(64|-elf)?\\.h$")
+                                         "^linux(64|-elf|-eabi)?\\.h$")
                   (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
                    (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
                            suffix
@@ -197,6 +217,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    ;; libgcc_s.so when pthread_cancel support is needed, but
                    ;; having it in the application's RUNPATH isn't enough; see
                    ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
+                   ;;
+                   ;; NOTE: The '-lgcc_s' added below needs to be removed in a
+                   ;; later phase of %gcc-static.  If you change the string
+                   ;; below, make sure to update the relevant code in
+                   ;; %gcc-static package as needed.
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
 \"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
                            libc libc libdir libdir suffix))
@@ -245,10 +270,10 @@ where the OS part is overloaded to denote a specific ABI---into GCC
       (native-search-paths
        (list (search-path-specification
               (variable "CPATH")
-              (directories '("include")))
+              (files '("include")))
              (search-path-specification
               (variable "LIBRARY_PATH")
-              (directories '("lib" "lib64")))))
+              (files '("lib" "lib64")))))
 
       (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
       (synopsis "GNU Compiler Collection")
@@ -261,15 +286,14 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-4.8
   (package (inherit gcc-4.7)
-    (version "4.8.3")
+    (version "4.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gcc/gcc-"
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "07hg10zs7gnqz58my10ch0zygizqh0z0bz6pv4pgxx45n48lz3ka"))
-             (patches (list (search-patch "gcc-fix-pr61801.patch")))))))
+               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
@@ -280,29 +304,7 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))
-
-    ;; TODO: In core-updates, improve the 'pre-configure phase of the main
-    ;; 'gcc' package so that the 'join-two-line-dynamic-linker-defns phase is
-    ;; no longer needed here.  Then the entire 'arguments' override below can
-    ;; be removed.
-    (arguments
-     (substitute-keyword-arguments (package-arguments gcc-4.7)
-       ((#:phases phases)
-        `(alist-cons-before
-          'pre-configure 'join-two-line-dynamic-linker-defns
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((libc (assoc-ref inputs "libc")))
-              (when libc
-                ;; Join two-line definitions of GLIBC_DYNAMIC_LINKER* into a
-                ;; single line, to allow the 'pre-configure phase to work
-                ;; properly.
-                (substitute* (find-files "gcc/config"
-                                         "^linux(64|-elf)?\\.h$")
-                  (("(#define GLIBC_DYNAMIC_LINKER[^ ]*.*)\\\\\n$" _ line)
-                   line)))
-              #t))
-          ,phases))))))
+               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."

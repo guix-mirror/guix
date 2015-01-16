@@ -30,7 +30,7 @@
 (define-public %pkg-config
   (package
    (name "pkg-config")
-   (version "0.27.1")
+   (version "0.28")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -38,14 +38,13 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "05wc5nwkqz7saj2v33ydmz1y6jdg659dll4jjh91n41m63gx0qsg"))))
+              "0igqq5m204w71m11y0nipbdf5apx87hwfll6axs12hn4dqfb6vkb"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--with-internal-glib")))
    (native-search-paths
     (list (search-path-specification
            (variable "PKG_CONFIG_PATH")
-           (directories '("lib/pkgconfig" "lib64/pkgconfig"
-                          "share/pkgconfig")))))
+           (files '("lib/pkgconfig" "lib64/pkgconfig" "share/pkgconfig")))))
    (home-page "http://www.freedesktop.org/wiki/Software/pkg-config")
    (license gpl2+)
    (synopsis "Helper tool used when compiling applications and libraries")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (gnu packages m4)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 (define-public gmp
@@ -35,7 +37,8 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))))
+              "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
+            (patches (list (search-patch "gmp-arm-asm-nothumb.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
@@ -43,7 +46,15 @@
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
                   "--enable-fat"
-                  "--enable-cxx")))
+                  "--enable-cxx"
+
+                  ;; FIXME: gmp-6.0.0a's config.guess fails on
+                  ;; multi-core armhf systems.
+                  ,@(if (%current-target-system)
+                        '()
+                        (let ((triplet
+                               (nix-system->gnu-triplet (%current-system))))
+                          (list (string-append "--build=" triplet)))))))
    (synopsis "Multiple-precision arithmetic library")
    (description
     "GMP is a library for arbitrary precision arithmetic, operating on

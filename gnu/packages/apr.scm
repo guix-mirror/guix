@@ -48,7 +48,7 @@
      '(#:parallel-build? #f
        #:parallel-tests? #f))
     (inputs `(("perl" ,perl)
-              ("libtool" ,libtool)))
+              ("libltdl" ,libltdl)))
     (home-page "http://apr.apache.org/")
     (synopsis "The Apache Portable Runtime Library")
     (description

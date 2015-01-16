@@ -45,17 +45,15 @@ path value is appended."
                (($ <search-path-specification>
                    variable directories separator)
                 (let* ((current (getenv variable))
-                       (path ((@@ (guix build utils) search-path-as-list)
-                              directories paths))
-                       (value (list->search-path-as-string path separator)))
+                       (path    (search-path-as-list directories paths))
+                       (value   (list->search-path-as-string path separator)))
                   (proc variable
                         (if (and current (not pure?))
                             (string-append value separator current)
                             value)))))
               (cons* (search-path-specification
                       (variable "PATH")
-                      (directories '("bin" "sbin"))
-                      (separator ":"))
+                      (files '("bin" "sbin")))
                      (delete-duplicates
                       (append-map package-native-search-paths inputs))))))
 

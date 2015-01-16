@@ -281,8 +281,7 @@ smooth contours with constant curvature at the spline joins.")
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
-                     ("libtool"  ,libtool)
-                     ("libtool-bin" ,libtool "bin")))
+                     ("libtool" ,libtool)))
     (arguments
      `(#:phases (alist-cons-before
                  'configure 'bootstrap

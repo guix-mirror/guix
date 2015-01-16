@@ -1,7 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-# Copyright © 2013, 2014 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
 #
@@ -347,6 +347,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
+  gnu/packages/patches/curl-gss-api-fix.patch			\
   gnu/packages/patches/cursynth-wave-rand.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
@@ -356,21 +357,22 @@ dist_patch_DATA =						\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
   gnu/packages/patches/eudev-rules-directory.patch		\
-  gnu/packages/patches/file-CVE-2014-3587.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
-  gnu/packages/patches/gcc-fix-pr61801.patch			\
-  gnu/packages/patches/gd-mips64-deplibs-fix.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glib-tests-gapplication.patch		\
+  gnu/packages/patches/glibc-CVE-2012-3406.patch		\
+  gnu/packages/patches/glibc-CVE-2014-7817.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
+  gnu/packages/patches/glibc-mips-dangling-vfork-ref.patch	\
+  gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gnunet-fix-scheduler.patch		\
   gnu/packages/patches/gnunet-fix-tests.patch    		\
   gnu/packages/patches/gobject-introspection-cc.patch		\
@@ -378,6 +380,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gstreamer-0.10-bison3.patch		\
   gnu/packages/patches/gstreamer-0.10-silly-test.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
+  gnu/packages/patches/guile-arm-fixes.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
@@ -405,13 +408,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests.patch			\
-  gnu/packages/patches/libtool-skip-tests-for-mips.patch	\
-  gnu/packages/patches/libtool-2.4-skip-tests.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
-  gnu/packages/patches/m4-readlink-EINVAL.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
@@ -428,6 +428,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/ots-no-include-missing-file.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
+  gnu/packages/patches/patchelf-rework-for-arm.patch		\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
@@ -457,7 +458,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/slim-sigusr1.patch			\
   gnu/packages/patches/soprano-find-clucene.patch		\
   gnu/packages/patches/source-highlight-regexrange-test.patch	\
-  gnu/packages/patches/sqlite-large-page-size-fix.patch		\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
@@ -496,6 +496,7 @@ dist_patch_DATA =						\
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
+bootstrap_armhf_linuxdir = $(bootstrapdir)/armhf-linux
 bootstrap_mips64el_linuxdir = $(bootstrapdir)/mips64el-linux
 
 dist_bootstrap_x86_64_linux_DATA =		\
@@ -510,6 +511,12 @@ dist_bootstrap_i686_linux_DATA =		\
   gnu/packages/bootstrap/i686-linux/tar		\
   gnu/packages/bootstrap/i686-linux/xz
 
+dist_bootstrap_armhf_linux_DATA =		\
+  gnu/packages/bootstrap/armhf-linux/bash	\
+  gnu/packages/bootstrap/armhf-linux/mkdir	\
+  gnu/packages/bootstrap/armhf-linux/tar	\
+  gnu/packages/bootstrap/armhf-linux/xz
+
 dist_bootstrap_mips64el_linux_DATA =		\
   gnu/packages/bootstrap/mips64el-linux/bash	\
   gnu/packages/bootstrap/mips64el-linux/mkdir	\
@@ -522,6 +529,8 @@ nodist_bootstrap_x86_64_linux_DATA =					\
   gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz
 nodist_bootstrap_i686_linux_DATA =					\
   gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz
+nodist_bootstrap_armhf_linux_DATA =					\
+  gnu/packages/bootstrap/armhf-linux/guile-2.0.11.tar.xz
 nodist_bootstrap_mips64el_linux_DATA =					\
   gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz
 
@@ -533,6 +542,7 @@ set-bootstrap-executable-permissions:
 DISTCLEANFILES =				\
   $(nodist_bootstrap_x86_64_linux_DATA)		\
   $(nodist_bootstrap_i686_linux_DATA)		\
+  $(nodist_bootstrap_armhf_linux_DATA)		\
   $(nodist_bootstrap_mips64el_linux_DATA)
 
 # Method to download a file from an external source.
@@ -547,6 +557,9 @@ gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz:
 gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "b757cd46bf13ecac83fb8e955fb50096ac2d17bb610ca8eb816f29302a00a846"
+gnu/packages/bootstrap/armhf-linux/guile-2.0.11.tar.xz:
+	$(MKDIR_P) `dirname "$@"`
+	$(DOWNLOAD_FILE) "$@" "e551d05d4d385d6706ab8d574856a087758294dc90ab4c06e70a157a685e23d6"
 gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "994680f0001346864aa2c2cc5110f380ee7518dcd701c614291682b8e948f73b"

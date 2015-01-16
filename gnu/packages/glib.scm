@@ -189,7 +189,7 @@ shared NFS home directories.")
     ;; by 'glib-compile-schemas'.
     (list (search-path-specification
            (variable "XDG_DATA_DIRS")
-           (directories '("share")))))
+           (files '("share")))))
    (search-paths native-search-paths)
 
    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
@@ -231,7 +231,7 @@ dynamic loading, and an object system.")
     (native-search-paths
      (list (search-path-specification
             (variable "GI_TYPELIB_PATH")
-            (directories '("lib/girepository-1.0")))))
+            (files '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
     (arguments
      `(#:phases

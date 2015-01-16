@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,7 +89,6 @@ may be either a libc package or #f.)"
     (substitute-keyword-arguments (package-arguments gcc-4.8)
       ((#:configure-flags flags)
        `(append (list ,(string-append "--target=" target)
-                      ,@(gcc-configure-flags-for-triplet target)
                       ,@(if libc
                             '()
                             `( ;; Disable features not needed at this stage.
@@ -234,10 +234,10 @@ GCC that does not target a libc; otherwise, target that libc."
     (search-paths
      (list (search-path-specification
             (variable "CROSS_CPATH")
-            (directories '("include")))
+            (files '("include")))
            (search-path-specification
             (variable "CROSS_LIBRARY_PATH")
-            (directories '("lib" "lib64")))))
+            (files '("lib" "lib64")))))
     (native-search-paths '())))
 
 (define* (cross-libc target
@@ -308,10 +308,16 @@ XBINUTILS and the cross tool chain."
 ;;;
 
 (define-public xgcc-mips64el
-  (let ((triplet "mips64el-linux-gnuabi64"))      ; N64 ABI
-    (cross-gcc triplet
-               (cross-binutils triplet)
-               (cross-libc triplet))))
+  (let* ((triplet "mips64el-linux-gnuabi64")      ;N64 ABI
+         (xgcc    (cross-gcc triplet
+                             (cross-binutils triplet)
+                             (cross-libc triplet))))
+    ;; Don't attempt to build this cross-compiler on i686;
+    ;; see <http://bugs.gnu.org/19598>.
+    (package (inherit xgcc)
+      (supported-systems (fold delete
+                               (package-supported-systems xgcc)
+                               '("mips64el-linux" "i686-linux"))))))
 
 (define-public xgcc-avr
   ;; AVR cross-compiler, used to build AVR-Libc.
@@ -322,6 +328,14 @@ XBINUTILS and the cross tool chain."
 (define-public xgcc-xtensa
   ;; Bare-bones Xtensa cross-compiler, used to build the Atheros firmware.
   (cross-gcc "xtensa-elf"))
+
+(define-public xgcc-armhf
+  (let* ((triplet "arm-linux-gnueabihf")
+         (xgcc    (cross-gcc triplet
+                             (cross-binutils triplet)
+                             (cross-libc triplet))))
+    (package (inherit xgcc)
+      (supported-systems (delete "armhf-linux" %supported-systems)))))
 
 ;; (define-public xgcc-armel
 ;;   (let ((triplet "armel-linux-gnueabi"))

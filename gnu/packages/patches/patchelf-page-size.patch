@@ -28,42 +28,43 @@ Patch by Mark H Weaver <mhw@netris.org>.
  #endif
  
  
---- patchelf/tests/no-rpath.sh.orig	1969-12-31 19:00:01.000000000 -0500
-+++ patchelf/tests/no-rpath.sh	2014-02-16 20:44:12.036376953 -0500
-@@ -1,22 +1,22 @@
+--- patchelf/tests/no-rpath.sh.orig	2014-01-14 08:17:47.000000000 -0500
++++ patchelf/tests/no-rpath.sh	2015-01-06 18:31:53.418172797 -0500
+@@ -1,23 +1,23 @@
  #! /bin/sh -e
+ SCRATCH=scratch/$(basename $0 .sh)
  
--rm -rf scratch
--mkdir -p scratch
+-rm -rf ${SCRATCH}
+-mkdir -p ${SCRATCH}
 +if [ "$(uname -m)" = i686 -a "$(uname -s)" = Linux ]; then
-+    rm -rf scratch
-+    mkdir -p scratch
++    rm -rf ${SCRATCH}
++    mkdir -p ${SCRATCH}
  
--cp no-rpath scratch/
-+    cp no-rpath scratch/
+-cp ${srcdir}/no-rpath ${SCRATCH}/
++    cp ${srcdir}/no-rpath ${SCRATCH}/
  
--oldRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
+-oldRPath=$(../src/patchelf --print-rpath ${SCRATCH}/no-rpath)
 -if test -n "$oldRPath"; then exit 1; fi
 -../src/patchelf \
 -  --set-interpreter "$(../src/patchelf --print-interpreter ../src/patchelf)" \
--  --set-rpath /foo:/bar:/xxxxxxxxxxxxxxx scratch/no-rpath
-+    oldRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
+-  --set-rpath /foo:/bar:/xxxxxxxxxxxxxxx ${SCRATCH}/no-rpath
++    oldRPath=$(../src/patchelf --print-rpath ${SCRATCH}/no-rpath)
 +    if test -n "$oldRPath"; then exit 1; fi
 +    ../src/patchelf \
 +      --set-interpreter "$(../src/patchelf --print-interpreter ../src/patchelf)" \
-+      --set-rpath /foo:/bar:/xxxxxxxxxxxxxxx scratch/no-rpath
++      --set-rpath /foo:/bar:/xxxxxxxxxxxxxxx ${SCRATCH}/no-rpath
  
--newRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
+-newRPath=$(../src/patchelf --print-rpath ${SCRATCH}/no-rpath)
 -if ! echo "$newRPath" | grep -q '/foo:/bar'; then
 -    echo "incomplete RPATH"
 -    exit 1
 -fi
-+    newRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
++    newRPath=$(../src/patchelf --print-rpath ${SCRATCH}/no-rpath)
 +    if ! echo "$newRPath" | grep -q '/foo:/bar'; then
 +        echo "incomplete RPATH"
 +        exit 1
 +    fi
  
 -if [ "$(uname -m)" = i686 -a "$(uname -s)" = Linux ]; then
-     cd scratch && ./no-rpath
+     cd ${SCRATCH} && ./no-rpath
  fi

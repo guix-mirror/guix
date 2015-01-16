@@ -198,7 +198,7 @@
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
-            (directories '("lib/python2.7/site-packages")))))
+            (files '("lib/python2.7/site-packages")))))
     (home-page "http://python.org")
     (synopsis
      "High-level, dynamically-typed programming language")
@@ -237,7 +237,7 @@ data types.")
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
-            (directories '("lib/python3.3/site-packages")))))))
+            (files '("lib/python3.3/site-packages")))))))
 
 (define-public python-wrapper
   (package (inherit python)

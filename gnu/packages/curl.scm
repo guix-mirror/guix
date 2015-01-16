@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,14 +37,15 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.37.1")
+   (version "7.40.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "10yfh4hy8wbkj43la238hg6h8i9wyp1cvvk8kl0giac1020imn5d"))))
+              "1a15fdc26b3vwwmchzzpd3l1hfyhx06dn7b6lkikqd7kgwvg5ps7"))
+            (patches (list (search-patch "curl-gss-api-fix.patch")))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)

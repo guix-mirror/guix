@@ -35,14 +35,14 @@
 (define-public gnu-gettext
   (package
     (name "gettext")
-    (version "0.19.3")
+    (version "0.19.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1xmkxviqnq60h4wmh3bi6b1zkc9qsk3l1lv91k0iwfrxb982v5ck"))))
+               "0gvz86m4cs8bdf3mwmwsyx6lrq4ydfxgadrgd9jlx32z3bnz3jca"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)))

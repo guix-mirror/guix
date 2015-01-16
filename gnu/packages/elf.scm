@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,7 +88,7 @@ addr2line, and more.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.6")
+    (version "0.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -96,9 +97,30 @@ addr2line, and more.")
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "00bw29vdsscsili65wcb5ay0gvg1w0ljd00sb5xc6br8bylpyzpw"))
+               "1rqpg84wrd3fa16wa9vqdvasnc05yz49w207cz1l0wrl4k8q97y9"))
              (patches (list (search-patch "patchelf-page-size.patch")))))
     (build-system gnu-build-system)
+
+    ;; XXX: The upstream 'patchelf' doesn't support ARM.  The only available
+    ;;      patch makes significant changes to the algorithm, possibly
+    ;;      introducing bugs.  So, we apply the patch only on ARM systems.
+    (inputs
+     (if (string-prefix? "arm" (or (%current-target-system) (%current-system)))
+         `(("patch/rework-for-arm" ,(search-patch
+                                     "patchelf-rework-for-arm.patch")))
+         '()))
+    (arguments
+     (if (string-prefix? "arm" (or (%current-target-system) (%current-system)))
+         `(#:phases (alist-cons-after
+                     'unpack 'patch/rework-for-arm
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (let ((patch-file
+                              (assoc-ref inputs "patch/rework-for-arm")))
+                         (zero? (system* "patch" "--force" "-p1"
+                                         "--input" patch-file))))
+                     %standard-phases))
+         '()))
+
     (home-page "http://nixos.org/patchelf.html")
     (synopsis "Modify the dynamic linker and RPATH of ELF executables")
     (description

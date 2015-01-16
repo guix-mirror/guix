@@ -11,7 +11,7 @@ main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
 exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +30,7 @@ exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "
 
 (define-module (gnu build-support ld-wrapper)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:export (ld-wrapper))
 
 ;;; Commentary:
@@ -103,58 +104,62 @@ exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "
                    (< depth %max-symlink-depth)
                    (loop (readlink file) (+ 1 depth))))))))
 
-(define (switch-arguments switch args)
-  ;; Return the arguments passed for the occurrences of SWITCH--e.g.,
-  ;; "-L"--in ARGS.
-  (let ((prefix-len (string-length switch)))
-    (fold-right (lambda (arg path)
-                  (if (string-prefix? switch arg)
-                      (cons (substring arg prefix-len) path)
-                      path))
-                '()
-                args)))
-
-(define (library-path args)
-  ;; Return the library search path extracted from `-L' switches in ARGS.
-  ;; Note: allow references to out-of-store directories.  When this leads to
-  ;; actual impurities, this is caught later.
-  (switch-arguments "-L" args))
-
 (define (library-files-linked args)
   ;; Return the file names of shared libraries explicitly linked against via
-  ;; `-l' in ARGS.
-  (map (lambda (lib)
-         (string-append "lib" lib ".so"))
-       (switch-arguments "-l" args)))
+  ;; `-l' or with an absolute file name in ARGS.
+  (define path+files
+    (fold (lambda (argument result)
+            (match result
+              ((library-path . library-files)
+               (cond ((string-prefix? "-L" argument) ;augment the search path
+                      (cons (append library-path
+                                    (list (string-drop argument 2)))
+                            library-files))
+                     ((string-prefix? "-l" argument) ;add library
+                      (let* ((lib  (string-append "lib"
+                                                  (string-drop argument 2)
+                                                  ".so"))
+                             (full (search-path library-path lib)))
+                        (if full
+                            (cons library-path
+                                  (cons full library-files))
+                            result)))
+                     ((and (string-prefix? %store-directory argument)
+                           (string-suffix? ".so" argument)) ;add library
+                      (cons library-path
+                            (cons argument library-files)))
+                     (else
+                      result)))))
+          (cons '() '())
+          args))
 
-(define (rpath-arguments lib-path library-files)
-  ;; Return the `-rpath' argument list for each of LIBRARY-FILES found in
-  ;; LIB-PATH.
+  (match path+files
+    ((path . files)
+     (reverse files))))
+
+(define (rpath-arguments library-files)
+  ;; Return the `-rpath' argument list for each of LIBRARY-FILES, a list of
+  ;; absolute file names.
   (fold-right (lambda (file args)
-                (let ((absolute (search-path lib-path file)))
-                  (if absolute
-                      (if (or %allow-impurities?
-                              (pure-file-name? absolute))
-                          (cons* "-rpath" (dirname absolute)
-                                 args)
-                          (begin
-                            (format (current-error-port)
-                                    "ld-wrapper: error: attempt to use impure library ~s~%"
-                                    absolute)
-                            (exit 1)))
-                      args)))
+                (if (or %allow-impurities?
+                        (pure-file-name? file))
+                    (cons* "-rpath" (dirname file) args)
+                    (begin
+                      (format (current-error-port)
+                              "ld-wrapper: error: attempt to use impure library ~s~%"
+                              file)
+                      (exit 1))))
               '()
               library-files))
 
 (define (ld-wrapper . args)
   ;; Invoke the real `ld' with ARGS, augmented with `-rpath' switches.
-  (let* ((lib-path (library-path args))
-         (libs     (library-files-linked args))
-         (args     (append args (rpath-arguments lib-path libs))))
-    (if %debug?
-        (format (current-error-port)
-                "ld-wrapper: invoking `~a' with ~s~%"
-                %real-ld args))
+  (let* ((libs (library-files-linked args))
+         (args (append args (rpath-arguments libs))))
+    (when %debug?
+      (format (current-error-port)
+              "ld-wrapper: invoking `~a' with ~s~%"
+              %real-ld args))
     (apply execl %real-ld (basename %real-ld) args)))
 
 ;;; ld-wrapper.scm ends here

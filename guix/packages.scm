@@ -180,16 +180,21 @@ representation."
 (define-record-type* <search-path-specification>
   search-path-specification make-search-path-specification
   search-path-specification?
-  (variable     search-path-specification-variable)
-  (directories  search-path-specification-directories)
-  (separator    search-path-specification-separator (default ":")))
+  (variable     search-path-specification-variable) ;string
+  (files        search-path-specification-files)    ;list of strings
+  (separator    search-path-specification-separator ;string
+                (default ":"))
+  (file-type    search-path-specification-file-type ;symbol
+                (default 'directory))
+  (file-pattern search-path-specification-file-pattern ;#f | string
+                (default #f)))
 
 (define (search-path-specification->sexp spec)
   "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
 corresponds to the arguments expected by `set-path-environment-variable'."
   (match spec
-    (($ <search-path-specification> variable directories separator)
-     `(,variable ,directories ,separator))))
+    (($ <search-path-specification> variable files separator type pattern)
+     `(,variable ,files ,separator ,type ,pattern))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
@@ -410,7 +415,10 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
          (define (apply-patch input)
            (let ((patch* (assoc-ref %build-inputs input)))
              (format (current-error-port) "applying '~a'...~%" patch*)
-             (zero? (system* patch "--batch" ,@flags "--input" patch*))))
+
+             ;; Use '--force' so that patches that do not apply perfectly are
+             ;; rejected.
+             (zero? (system* patch "--force" ,@flags "--input" patch*))))
 
          (define (first-file directory)
            ;; Return the name of the first file in DIRECTORY.

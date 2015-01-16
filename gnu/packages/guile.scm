@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,7 +87,7 @@
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
    (propagated-inputs `(("gmp" ,gmp)
-                        ("libtool" ,libtool)))
+                        ("libltdl" ,libltdl)))
 
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
@@ -95,7 +95,7 @@
    (native-search-paths
     (list (search-path-specification
            (variable "GUILE_LOAD_PATH")
-           (directories '("share/guile/site")))))
+           (files '("share/guile/site")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
@@ -117,7 +117,8 @@ without requiring the source code to be rewritten.")
                                 ".tar.xz"))
             (sha256
              (base32
-              "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))))
+              "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))
+            (patches (list (search-patch "guile-arm-fixes.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -130,7 +131,10 @@ without requiring the source code to be rewritten.")
        ;; `-L' flags.  As for why the `.la' file lacks the `-L' flags, see
        ;; <http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/18903>.
       ("libunistring" ,libunistring)
-      ("libtool" ,libtool)
+
+      ;; Depend on LIBLTDL, not LIBTOOL.  That way, we avoid some the extra
+      ;; dependencies that LIBTOOL has, which is helpful during bootstrap.
+      ("libltdl" ,libltdl)
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
@@ -155,10 +159,10 @@ without requiring the source code to be rewritten.")
    (native-search-paths
     (list (search-path-specification
            (variable "GUILE_LOAD_PATH")
-           (directories '("share/guile/site/2.0")))
+           (files '("share/guile/site/2.0")))
           (search-path-specification
            (variable "GUILE_LOAD_COMPILED_PATH")
-           (directories '("share/guile/site/2.0")))))
+           (files '("share/guile/site/2.0")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
@@ -258,7 +262,16 @@ many readers as needed).")
                       (("\"libguile-ncurses\"")
                        (format #f "\"~a/lib/libguile-ncurses\""
                                out)))))
-                 %standard-phases)))
+                 (alist-cons-before
+                  'check 'install-locales
+                  (lambda _
+                    ;; One of the tests requires the availability of a UTF-8
+                    ;; locale and otherwise fails.
+                    (setenv "LOCPATH" (getcwd))
+                    (zero? (system* "localedef" "--no-archive"
+                                    "--prefix" (getcwd) "-i" "en_US"
+                                    "-f" "UTF-8" "./en_US.utf8")))
+                  %standard-phases))))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description

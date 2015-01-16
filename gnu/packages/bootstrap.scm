@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,10 +88,13 @@
                      (patch patch))
                     (origin-patches source))))))
 
-(define (package-from-tarball name source program-to-test description)
+(define* (package-from-tarball name source program-to-test description
+                               #:key snippet)
   "Return a package that correspond to the extraction of SOURCE.
 PROGRAM-TO-TEST is a program to run after extraction of SOURCE, to
-check whether everything is alright."
+check whether everything is alright.  If SNIPPET is provided, it is
+evaluated after extracting SOURCE.  SNIPPET should return true if
+successful, or false to signal an error."
   (package
     (name name)
     (version "0")
@@ -112,6 +116,7 @@ check whether everything is alright."
            (with-directory-excursion out
              (and (zero? (system* tar "xvf"
                                   (string-append builddir "/binaries.tar")))
+                  ,@(if snippet (list snippet) '())
                   (zero? (system* (string-append "bin/" ,program-to-test)
                                   "--version"))))))))
     (inputs
@@ -157,6 +162,7 @@ check whether everything is alright."
   "Return the name of Glibc's dynamic linker for SYSTEM."
   (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
+        ((string=? system "armhf-linux") "/lib/ld-linux-armhf.so.3")
         ((string=? system "mips64el-linux") "/lib/ld.so.1")
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case
@@ -186,7 +192,11 @@ check whether everything is alright."
          (xz    (->store "xz"))
          (mkdir (->store "mkdir"))
          (bash  (->store "bash"))
-         (guile (->store "guile-2.0.9.tar.xz"))
+         (guile (->store (match system
+                           ("armhf-linux"
+                            "guile-2.0.11.tar.xz")
+                           (_
+                            "guile-2.0.9.tar.xz"))))
          (builder
           (add-text-to-store store
                              "build-bootstrap-guile.sh"
@@ -246,7 +256,11 @@ $out/bin/guile --version~%"
                           (origin
                            (method url-fetch)
                            (uri (map (cut string-append <> "/" system
-                                          "/20131110/static-binaries.tar.xz")
+                                          (match system
+                                            ("armhf-linux"
+                                             "/20150101/static-binaries.tar.xz")
+                                            (_
+                                             "/20131110/static-binaries.tar.xz")))
                                      %bootstrap-base-urls))
                            (sha256
                             (match system
@@ -256,11 +270,21 @@ $out/bin/guile --version~%"
                               ("i686-linux"
                                (base32
                                 "0s5b3jb315n13m1k8095l0a5hfrsz8g0fv1b6riyc5hnxqyphlak"))
+                              ("armhf-linux"
+                               (base32
+                                "0gf0fn2kbpxkjixkmx5f4z6hv6qpmgixl69zgg74dbsfdfj8jdv5"))
                               ("mips64el-linux"
                                (base32
                                 "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
-                        "true"                    ; the program to test
-                        "Bootstrap binaries of Coreutils, Awk, etc."))
+                        "fgrep"                    ; the program to test
+                        "Bootstrap binaries of Coreutils, Awk, etc."
+                        #:snippet
+                        '(let ((path (list (string-append (getcwd) "/bin"))))
+                           (chmod "bin" #o755)
+                           (patch-shebang "bin/egrep" path)
+                           (patch-shebang "bin/fgrep" path)
+                           (chmod "bin" #o555)
+                           #t)))
 
 (define %bootstrap-binutils
   (package-from-tarball "binutils-bootstrap"
@@ -268,7 +292,11 @@ $out/bin/guile --version~%"
                           (origin
                            (method url-fetch)
                            (uri (map (cut string-append <> "/" system
-                                          "/20131110/binutils-2.23.2.tar.xz")
+                                          (match system
+                                            ("armhf-linux"
+                                             "/20150101/binutils-2.25.tar.xz")
+                                            (_
+                                             "/20131110/binutils-2.23.2.tar.xz")))
                                      %bootstrap-base-urls))
                            (sha256
                             (match system
@@ -278,6 +306,9 @@ $out/bin/guile --version~%"
                               ("i686-linux"
                                (base32
                                 "14jgwf9gscd7l2pnz610b1zia06dvcm2qyzvni31b8zpgmcai2v9"))
+                              ("armhf-linux"
+                               (base32
+                                "1v7dj6bzn6m36f20gw31l99xaabq4xrhrx3gwqkhhig0mdlmr69q"))
                               ("mips64el-linux"
                                (base32
                                 "1x8kkhcxmfyzg1ddpz2pxs6fbdl6412r7x0nzbmi5n7mj8zw2gy7"))))))
@@ -322,7 +353,11 @@ $out/bin/guile --version~%"
                     (origin
                      (method url-fetch)
                      (uri (map (cut string-append <> "/" (%current-system)
-                                    "/20131110/glibc-2.18.tar.xz")
+                                    (match (%current-system)
+                                      ("armhf-linux"
+                                       "/20150101/glibc-2.20.tar.xz")
+                                      (_
+                                       "/20131110/glibc-2.18.tar.xz")))
                                %bootstrap-base-urls))
                      (sha256
                       (match (%current-system)
@@ -332,6 +367,9 @@ $out/bin/guile --version~%"
                         ("i686-linux"
                          (base32
                           "1hgrccw1zqdc7lvgivwa54d9l3zsim5pqm0dykxg0z522h6gr05w"))
+                        ("armhf-linux"
+                         (base32
+                          "18cmgvpllqfpn6khsmivqib7ys8ymnq0hdzi3qp24prik0ykz8gn"))
                         ("mips64el-linux"
                          (base32
                           "0k97a3whzx3apsi9n2cbsrr79ad6lh00klxph9hw4fqyp1abkdsg")))))))))
@@ -393,7 +431,11 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                     (origin
                      (method url-fetch)
                      (uri (map (cut string-append <> "/" (%current-system)
-                                    "/20131110/gcc-4.8.2.tar.xz")
+                                    (match (%current-system)
+                                      ("armhf-linux"
+                                       "/20150101/gcc-4.8.4.tar.xz")
+                                      (_
+                                       "/20131110/gcc-4.8.2.tar.xz")))
                                %bootstrap-base-urls))
                      (sha256
                       (match (%current-system)
@@ -403,16 +445,19 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                         ("i686-linux"
                          (base32
                           "150c1arrf2k8vfy6dpxh59vcgs4p1bgiz2av5m19dynpks7rjnyw"))
+                        ("armhf-linux"
+                         (base32
+                          "0ghz825yzp43fxw53kd6afm8nkz16f7dxi9xi40bfwc8x3nbbr8v"))
                         ("mips64el-linux"
                          (base32
                           "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "CPATH")
-            (directories '("include")))
+            (files '("include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
-            (directories '("lib" "lib64")))))
+            (files '("lib" "lib64")))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
     (home-page #f)

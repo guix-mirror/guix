@@ -65,14 +65,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.20")
+   (version "2.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0rcs0spsxdmh6yz8y4frkqp6f5iw19mdbdl9s2v6956hq0mlbbzh"))))
+              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
@@ -312,14 +312,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.24")
+   (version "2.25")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0ds1y7qa0xqihw4ihnsgg6bxanmb228r228ddvwzgrv4jszcbs75"))
+              "08r9i26b05zcwb9zxb6zllpfdiiicdfsgbpsjlrjmvx3rxjzrpi2"))
             (patches (list (search-patch "binutils-ld-new-dtags.patch")
                            (search-patch "binutils-loongson-workaround.patch")))))
    (build-system gnu-build-system)
@@ -375,32 +375,37 @@ included.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (list (search-patch "glibc-CVE-2014-7817.patch")
+                           (search-patch "glibc-CVE-2012-3406.patch")
+                           (search-patch "glibc-mips-dangling-vfork-ref.patch")
+                           (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
    ;; users should automatically pull Linux headers as well.
    (propagated-inputs `(("linux-headers" ,linux-libre-headers)))
 
-   ;; Store the locales separately (~100 MiB).  Note that "out" retains a
-   ;; reference to them anyway, so there's no space savings here.
-   ;; TODO: Eventually we may want to add a $LOCALE_ARCHIVE search path like
-   ;; Nixpkgs does.
-   (outputs '("out" "locales" "debug"))
+   (outputs '("out" "debug"))
 
    (arguments
     `(#:out-of-source? #t
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
-            (string-append "--localedir=" (assoc-ref %outputs "locales")
-                           "/share/locale")
 
+            ;; Installing a locale archive with all the locales is to
+            ;; expensive (~100 MiB), so we rely on users to install the
+            ;; locales they really want.
+            ;;
+            ;; Set the default locale path.  In practice, $LOCPATH may be
+            ;; defined to point whatever locales users want.  However, setuid
+            ;; binaries don't honor $LOCPATH, so they'll instead look into
+            ;; $libc_cv_localedir; we choose /run/current-system/locale, with
+            ;; the idea that it is going to be populated by the sysadmin.
+            ;;
             ;; `--localedir' is not honored, so work around it.
             ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
-            (string-append "libc_cv_localedir="
-                           (assoc-ref %outputs "locales")
-                           "/share/locale")
+            (string-append "libc_cv_localedir=/run/current-system/locale")
 
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
@@ -477,11 +482,7 @@ included.")
                        "")
                       (("exec @PERL@")
                        "exec perl"))))
-                (alist-cons-after
-                 'install 'install-locales
-                 (lambda _
-                   (zero? (system* "make" "localedata/install-locales")))
-                 %standard-phases))))
+                %standard-phases)))
 
    (inputs `(("static-bash" ,(static-package bash-light))))
 

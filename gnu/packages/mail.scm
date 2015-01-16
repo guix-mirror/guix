@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -113,7 +113,7 @@
        ("readline" ,readline-6.2)
 
        ("linux-pam" ,linux-pam)
-       ("libtool" ,libtool)
+       ("libltdl" ,libltdl)
        ("gdbm" ,gdbm)))
     (home-page "http://www.gnu.org/software/mailutils/")
     (synopsis "Utilities and library for reading and serving mail")
@@ -419,7 +419,7 @@ useful features.")
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
-                     ("libtool" ,libtool "bin")
+                     ("libtool" ,libtool)
                      ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; 'libetpan-config --libs' returns '-lssl -lcrypto -lsasl2', so these

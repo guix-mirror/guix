@@ -41,11 +41,7 @@
     (native-inputs
      `(("patch/init-fix" ,(search-patch "mit-krb5-init-fix.patch"))
        ("bison" ,bison)
-       ("perl" ,perl)
-
-       ;; XXX: When built with GCC 4.8, the 'db_test' test program enters an
-       ;; infinite loop.  As a stopgap measure, build with GCC 4.7.
-       ("gcc" ,gcc-4.7)))
+       ("perl" ,perl)))
     (arguments
      '(#:phases
        (alist-replace
@@ -62,7 +58,7 @@
                  ;; XXX The current patch system does not support unusual
                  ;; source unpack methods, so we have to apply this patch in a
                  ;; non-standard way.
-                 (zero? (system* "patch" "-p1" "--batch" "-i"
+                 (zero? (system* "patch" "-p1" "--force" "-i"
                                  (assoc-ref %build-inputs "patch/init-fix"))))))
         (alist-replace
          'check

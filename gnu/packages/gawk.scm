@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,16 +55,18 @@
                           '((substitute* "extension/Makefile.in"
                               (("^.*: check-for-shared-lib-support" match)
                                (string-append "### " match))))
-                          '())
-
-                    ;; XXX FIXME prerelease libtool fails on MIPS in the
-                    ;; absence of /usr/bin/file.
-                    ,@(if (equal? "mips64el-linux" (or (%current-target-system)
-                                                       (%current-system)))
-                          '((substitute* "extension/configure"
-                              (("/usr/bin/file") (which "file"))))
                           '())))
-                %standard-phases)))
+
+                (alist-cons-before
+                 'check 'install-locales
+                 (lambda _
+                   ;; A bunch of tests require the availability of a UTF-8
+                   ;; locale and otherwise fail.  Give them what they want.
+                   (setenv "LOCPATH" (getcwd))
+                   (zero? (system* "localedef" "--no-archive"
+                                   "--prefix" (getcwd) "-i" "en_US"
+                                   "-f" "UTF-8" "./en_US.UTF-8")))
+                 %standard-phases))))
    (inputs `(("libsigsegv" ,libsigsegv)
 
              ,@(if (%current-target-system)

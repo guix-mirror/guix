@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,7 +67,7 @@
      `(("alsa-lib" ,alsa-lib)
        ("gstreamer" ,gstreamer)
        ("gtk+" ,gtk+)
-       ("libtool" ,libtool)
+       ("libltdl" ,libltdl)
        ("libvorbis" ,libvorbis)
        ("pulseaudio" ,pulseaudio)
        ("udev" ,eudev)

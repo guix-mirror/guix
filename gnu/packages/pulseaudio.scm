@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,7 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
-  #:use-module ((gnu packages autotools) #:select (libtool))
+  #:use-module ((gnu packages autotools) #:select (libltdl))
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gdbm)
@@ -157,7 +157,7 @@ rates. ")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("m4" ,m4)
-       ("libtool" ,libtool)
+       ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
        ("check" ,check)))

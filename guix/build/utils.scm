@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -31,15 +31,21 @@
   #:re-export (alist-cons
                alist-delete)
   #:export (%store-directory
+            parallel-job-count
+
             directory-exists?
             executable-file?
+            symbolic-link?
             call-with-ascii-input-file
+            elf-file?
+            ar-file?
             with-directory-excursion
             mkdir-p
             copy-recursively
             delete-file-recursively
             find-files
 
+            search-path-as-list
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
@@ -55,6 +61,7 @@
             set-file-time
             patch-shebang
             patch-makefile-SHELL
+            patch-/usr/bin/file
             fold-port-matches
             remove-store-references
             wrap-program))
@@ -69,6 +76,14 @@
   (or (getenv "NIX_STORE")
       "/gnu/store"))
 
+(define parallel-job-count
+  ;; Number of processes to be passed next to GNU Make's `-j' argument.
+  (make-parameter
+   (match (getenv "NIX_BUILD_CORES")              ;set by the daemon
+     (#f  1)
+     ("0" (current-processor-count))
+     (x   (or (string->number x) 1)))))
+
 (define (directory-exists? dir)
   "Return #t if DIR exists and is a directory."
   (let ((s (stat dir #f)))
@@ -80,6 +95,10 @@
   (let ((s (stat file #f)))
     (and s
          (not (zero? (logand (stat:mode s) #o100))))))
+
+(define (symbolic-link? file)
+  "Return #t if FILE is a symbolic link (aka. \"symlink\".)"
+  (eq? (stat:type (lstat file)) 'symlink))
 
 (define (call-with-ascii-input-file file proc)
   "Open FILE as an ASCII or binary file, and pass the resulting port to
@@ -95,6 +114,42 @@ return values of applying PROC to the port."
         (proc port))
       (lambda ()
         (close-input-port port)))))
+
+(define (file-header-match header)
+  "Return a procedure that returns true when its argument is a file starting
+with the bytes in HEADER, a bytevector."
+  (define len
+    (bytevector-length header))
+
+  (lambda (file)
+    "Return true if FILE starts with the right magic bytes."
+    (define (get-header)
+      (call-with-input-file file
+        (lambda (port)
+          (get-bytevector-n port len))
+        #:binary #t #:guess-encoding #f))
+
+    (catch 'system-error
+      (lambda ()
+        (equal? (get-header) header))
+      (lambda args
+        (if (= EISDIR (system-error-errno args))
+            #f                                    ;FILE is a directory
+            (apply throw args))))))
+
+(define %elf-magic-bytes
+  ;; Magic bytes of ELF files.  See <elf.h>.
+  (u8-list->bytevector (map char->integer (string->list "\x7FELF"))))
+
+(define elf-file?
+  (file-header-match %elf-magic-bytes))
+
+(define %ar-magic-bytes
+  ;; Magic bytes of archives created by 'ar'.  See <ar.h>.
+  (u8-list->bytevector (map char->integer (string->list "!<arch>\n"))))
+
+(define ar-file?
+  (file-header-match %ar-magic-bytes))
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
@@ -237,23 +292,37 @@ matches REGEXP."
 ;;; Search paths.
 ;;;
 
-(define (search-path-as-list sub-directories input-dirs)
-  "Return the list of directories among SUB-DIRECTORIES that exist in
-INPUT-DIRS.  Example:
+(define* (search-path-as-list files input-dirs
+                              #:key (type 'directory) pattern)
+  "Return the list of directories among FILES of the given TYPE (a symbol as
+returned by 'stat:type') that exist in INPUT-DIRS.  Example:
 
   (search-path-as-list '(\"share/emacs/site-lisp\" \"share/emacs/24.1\")
                        (list \"/package1\" \"/package2\" \"/package3\"))
   => (\"/package1/share/emacs/site-lisp\"
       \"/package3/share/emacs/site-lisp\")
 
+When PATTERN is true, it is a regular expression denoting file names to look
+for under the directories designated by FILES.  For example:
+
+  (search-path-as-list '(\"xml\") (list docbook-xml docbook-xsl)
+                       #:type 'regular
+                       #:pattern \"^catalog\\\\.xml$\")
+  => (\"/…/xml/dtd/docbook/catalog.xml\"
+      \"/…/xml/xsl/docbook-xsl-1.78.1/catalog.xml\")
 "
   (append-map (lambda (input)
-                (filter-map (lambda (dir)
-                              (let ((dir (string-append input "/"
-                                                        dir)))
-                                (and (directory-exists? dir)
-                                     dir)))
-                            sub-directories))
+                (append-map (lambda (file)
+                              (let ((file (string-append input "/" file)))
+                                ;; XXX: By using 'find-files', we implicitly
+                                ;; assume #:type 'regular.
+                                (if pattern
+                                    (find-files file pattern)
+                                    (let ((stat (stat file #f)))
+                                      (if (and stat (eq? type (stat:type stat)))
+                                          (list file)
+                                          '())))))
+                            files))
               input-dirs))
 
 (define (list->search-path-as-string lst separator)
@@ -262,16 +331,31 @@ INPUT-DIRS.  Example:
 (define* (search-path-as-string->list path #:optional (separator #\:))
   (string-tokenize path (char-set-complement (char-set separator))))
 
-(define* (set-path-environment-variable env-var sub-directories input-dirs
-                                        #:key (separator ":"))
-  "Look for each of SUB-DIRECTORIES in INPUT-DIRS.  Set ENV-VAR to a
-SEPARATOR-separated path accordingly.  Example:
+(define* (set-path-environment-variable env-var files input-dirs
+                                        #:key
+                                        (separator ":")
+                                        (type 'directory)
+                                        pattern)
+  "Look for each of FILES of the given TYPE (a symbol as returned by
+'stat:type') in INPUT-DIRS.  Set ENV-VAR to a SEPARATOR-separated path
+accordingly.  Example:
 
   (set-path-environment-variable \"PKG_CONFIG\"
                                  '(\"lib/pkgconfig\")
                                  (list package1 package2))
+
+When PATTERN is not #f, it must be a regular expression (really a string)
+denoting file names to look for under the directories designated by FILES:
+
+  (set-path-environment-variable \"XML_CATALOG_FILES\"
+                                 '(\"xml\")
+                                 (list docbook-xml docbook-xsl)
+                                 #:type 'regular
+                                 #:pattern \"^catalog\\\\.xml$\")
 "
-  (let* ((path  (search-path-as-list sub-directories input-dirs))
+  (let* ((path  (search-path-as-list files input-dirs
+                                     #:type type
+                                     #:pattern pattern))
          (value (list->search-path-as-string path separator)))
     (if (string-null? value)
         (begin
@@ -365,10 +449,11 @@ PROC's result is returned."
         (false-if-exception (delete-file template))))))
 
 (define (substitute file pattern+procs)
-  "PATTERN+PROCS is a list of regexp/two-argument procedure.  For each line
-of FILE, and for each PATTERN that it matches, call the corresponding PROC
-as (PROC LINE MATCHES); PROC must return the line that will be written as a
-substitution of the original line."
+  "PATTERN+PROCS is a list of regexp/two-argument-procedure pairs.  For each
+line of FILE, and for each PATTERN that it matches, call the corresponding
+PROC as (PROC LINE MATCHES); PROC must return the line that will be written as
+a substitution of the original line.  Be careful about using '$' to match the
+end of a line; by itself it won't match the terminating newline of a line."
   (let ((rx+proc  (map (match-lambda
                         (((? regexp? pattern) . proc)
                          (cons pattern proc))
@@ -428,7 +513,10 @@ When one of the MATCH-VAR is `_', no variable is bound to the corresponding
 match substring.
 
 Alternatively, FILE may be a list of file names, in which case they are
-all subject to the substitutions."
+all subject to the substitutions.
+
+Be careful about using '$' to match the end of a line; by itself it won't
+match the terminating newline of a line."
     ((substitute* file ((regexp match-var ...) body ...) ...)
      (let ()
        (define (substitute-one-file file-name)
@@ -572,9 +660,7 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
   ;; XXX: Unlike with `patch-shebang', FILE is always touched.
 
   (define (find-shell name)
-    (let ((shell
-           (search-path (search-path-as-string->list (getenv "PATH"))
-                        name)))
+    (let ((shell (which name)))
       (unless shell
         (format (current-error-port)
                 "patch-makefile-SHELL: warning: no binary for shell `~a' found in $PATH~%"
@@ -583,7 +669,7 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
   (let ((st (stat file)))
    (substitute* file
-     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
+     (("^ *SHELL[[:blank:]]*:?=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
        _ dir shell args)
       (let* ((old (string-append dir shell))
              (new (or (find-shell shell) old)))
@@ -595,6 +681,29 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
    (when keep-mtime?
      (set-file-time file st))))
+
+(define* (patch-/usr/bin/file file
+                              #:key
+                              (file-command (which "file"))
+                              (keep-mtime? #t))
+  "Patch occurrences of \"/usr/bin/file\" in FILE, replacing them with
+FILE-COMMAND.  When KEEP-MTIME? is true, keep FILE's modification time
+unchanged."
+  (if (not file-command)
+      (format (current-error-port)
+              "patch-/usr/bin/file: warning: \
+no replacement 'file' command, doing nothing~%")
+      (let ((st (stat file)))
+        (substitute* file
+          (("/usr/bin/file")
+           (begin
+             (format (current-error-port)
+                     "patch-/usr/bin/file: ~a: changing `~a' to `~a'~%"
+                     file "/usr/bin/file" file-command)
+             file-command)))
+
+        (when keep-mtime?
+          (set-file-time file st)))))
 
 (define* (fold-port-matches proc init pattern port
                             #:optional (unmatched (lambda (_ r) r)))
@@ -707,7 +816,7 @@ contents:
   #!location/of/bin/bash
   export PATH=\"/gnu/.../bar/bin\"
   export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/gnu/.../baz/certs:/qux/certs\"
-  exec location/of/.foo-real
+  exec -a location/of/foo location/of/.foo-real \"$@\"
 
 This is useful for scripts that expect particular programs to be in $PATH, for
 programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
@@ -731,6 +840,7 @@ the previous wrapper."
           (copy-file prog prog-real)
           prog-real)
         (wrapper-file-name number)))
+
   (let* ((number   (next-wrapper-number))
          (target   (wrapper-target number))
          (wrapper  (wrapper-file-name (1+ number)))
@@ -760,10 +870,11 @@ the previous wrapper."
     (with-output-to-file prog-tmp
       (lambda ()
         (format #t
-                "#!~a~%~a~%exec \"~a\" \"$@\"~%"
+                "#!~a~%~a~%exec -a \"~a\" \"~a\" \"$@\"~%"
                 (which "bash")
                 (string-join (map export-variable vars)
                              "\n")
+                (canonicalize-path prog)
                 (canonicalize-path target))))
 
     (chmod prog-tmp #o755)
@@ -773,6 +884,7 @@ the previous wrapper."
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
+;;; eval: (put 'call-with-ascii-input-file 'scheme-indent-function 1)
 ;;; eval: (put 'with-throw-handler 'scheme-indent-function 1)
 ;;; eval: (put 'let-matches 'scheme-indent-function 3)
 ;;; eval: (put 'with-atomic-file-replacement 'scheme-indent-function 1)

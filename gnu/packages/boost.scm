@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +53,7 @@
               ;; Boost's 'context' library is not yet supported on mips64, so
               ;; we disable it.  The 'coroutine' library depends on 'context',
               ;; so we disable that too.
-              ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+              ,@(if (string-prefix? "mips64" (or (%current-target-system)
                                                  (%current-system)))
                     '("--without-context" "--without-coroutine")
                     '()))))

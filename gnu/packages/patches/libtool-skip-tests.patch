@@ -1,37 +1,55 @@
-Because our GCC `lib' spec automatically adds `-rpath' for each `-L'
-and a couple more `-rpath, there are two test failures:
-demo-hardcode.test, and destdir.at.  Disable these.
+Because our GCC 'lib' spec automatically adds '-rpath' for each '-L'
+and a couple more '-rpath, there are two test failures:
+one in demo.test, and one in destdir.at.  Disable these.
 
---- libtool-2.4.2/Makefile.in	2011-10-17 12:18:55.000000000 +0200
-+++ libtool-2.4.2/Makefile.in	2012-09-13 23:50:37.000000000 +0200
-@@ -909,7 +908,7 @@ COMMON_TESTS = \
- # but they depend on the other tests being run beforehand.
- INTERACTIVE_TESTS = tests/demo-shared.test tests/demo-shared-make.test \
- 	tests/demo-shared-exec.test tests/demo-shared-inst.test \
--	tests/demo-hardcode.test tests/demo-relink.test \
-+	tests/demo-relink.test \
- 	tests/demo-noinst-link.test tests/demo-shared-unst.test \
- 	tests/depdemo-shared.test tests/depdemo-shared-make.test \
- 	tests/depdemo-shared-exec.test tests/depdemo-shared-inst.test \
-@@ -2580,8 +2579,7 @@ tests/cdemo-static-make.log:	tests/cdemo
+Also skip the nopic test on ARM and MIPS systems.
+
+--- libtool-2.4.4/tests/demo.at.orig	2014-11-19 07:28:51.000000000 -0500
++++ libtool-2.4.4/tests/demo.at	2015-01-07 17:30:46.482247718 -0500
+@@ -510,7 +510,7 @@
+ AT_SETUP([force non-PIC objects])
  
- tests/demo-shared-unst.log:	tests/demo-noinst-link.log
- tests/demo-noinst-link.log:	tests/demo-relink.log
--tests/demo-relink.log:		tests/demo-hardcode.log
--tests/demo-hardcode.log:	tests/demo-shared-inst.log
-+tests/demo-relink.log:		tests/demo-shared-inst.log
- tests/demo-shared-inst.log:	tests/demo-shared-exec.log
- tests/demo-shared-exec.log:	tests/demo-shared-make.log
- tests/demo-shared-make.log:	tests/demo-shared.log
-
---- libtool-2.4.2/tests/testsuite	2011-10-17 12:19:52.000000000 +0200
-+++ libtool-2.4.2/tests/testsuite	2012-09-14 00:28:45.000000000 +0200
-@@ -14443,6 +14443,6 @@ read at_status <"$at_status_file"
- #AT_START_69
- at_fn_group_banner 69 'destdir.at:75' \
-   "DESTDIR with in-package deplibs" "                " 4
+ AT_CHECK([case $host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+--- libtool-2.4.4/tests/testsuite.orig	2014-11-29 11:43:11.000000000 -0500
++++ libtool-2.4.4/tests/testsuite	2015-01-07 17:24:51.424672582 -0500
+@@ -8633,7 +8633,7 @@
+ 
+ { set +x
+ $as_echo "$at_srcdir/demo.at:535: case \$host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+@@ -8658,7 +8658,7 @@
+ "
+ at_fn_check_prepare_notrace 'a `...` command substitution' "demo.at:535"
+ ( $at_check_trace; case $host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+@@ -9185,7 +9185,7 @@ read at_status <"$at_status_file"
+ #AT_START_33
+ at_fn_group_banner 33 'demo.at:548' \
+   "hardcoding library path" "                        " 3
 -at_xfail=no
 +at_xfail=yes
-       eval `$LIBTOOL --config | grep '^fast_install='`
+       test no = "$ACLOCAL" && at_xfail=yes
+       test no = "$AUTOHEADER" && at_xfail=yes
+       test no = "$AUTOMAKE" && at_xfail=yes
+@@ -27052,7 +27052,7 @@ read at_status <"$at_status_file"
+ #AT_START_97
+ at_fn_group_banner 97 'destdir.at:75' \
+   "DESTDIR with in-package deplibs" "                " 7
+-at_xfail=no
++at_xfail=yes
+       eval `$LIBTOOL --config | $GREP '^fast_install='`
             case $fast_install in no) :;; *) false;; esac && at_xfail=yes
-
+ (

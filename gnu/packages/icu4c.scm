@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,6 @@
 
 (define-module (gnu packages icu4c)
   #:use-module (gnu packages)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages perl)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -40,16 +40,14 @@
              (base32 "1cwapgjmvrcv1n2wjspj3vahidg596gjfp4jn1gcb4baralcjayl"))))
    (build-system gnu-build-system)
    (inputs
-    `(("patchelf" ,patchelf)
-      ("perl" ,perl)))
+    `(("perl" ,perl)))
    (arguments
-    `(#:modules ((guix build gnu-build-system)
-                 (guix build utils)
-                 (guix build rpath)
-                 (srfi srfi-26))
-      #:imported-modules ((guix build gnu-build-system)
-                          (guix build utils)
-                          (guix build rpath))
+    `(#:configure-flags
+      '("--enable-rpath"
+        ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                        (%current-system)))
+              '("--with-data-packaging=archive")
+              '()))
       #:phases
       (alist-cons-after
        'unpack 'chdir-to-source
@@ -62,18 +60,7 @@
           (substitute* "configure"
             (("`/bin/sh")
              (string-append "`" (which "bash")))))
-       (alist-cons-after
-        'strip 'add-lib-to-runpath
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (lib (string-append out "/lib")))
-            ;; Add LIB to the RUNPATH of all the libraries and binaries.
-            (with-directory-excursion out
-              (for-each (cut augment-rpath <> lib)
-                        (append (find-files "lib" ".*")
-                                (find-files "bin" ".*")
-                                (find-files "sbin" ".*"))))))
-        %standard-phases)))))
+        %standard-phases))))
    (synopsis "International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and

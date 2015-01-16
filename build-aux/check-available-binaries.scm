@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,31 +28,28 @@
              (srfi srfi-1)
              (srfi srfi-26))
 
-(define %supported-systems
-  '("x86_64-linux" "i686-linux"))
+(with-store store
+  (let* ((native (append-map (lambda (system)
+                               (map (cut package-derivation store <> system)
+                                    (list %bootstrap-tarballs emacs)))
+                             %supported-systems))
+         (cross  (map (cut package-cross-derivation store
+                           %bootstrap-tarballs <>)
+                      '("mips64el-linux-gnuabi64")))
+         (total  (append native cross)))
+    (define (warn item system)
+      (format (current-error-port) "~a (~a) is not substitutable~%"
+              item system)
+      #f)
 
-(let* ((store  (open-connection))
-       (native (append-map (lambda (system)
-                             (map (cut package-derivation store <> system)
-                                  (list %bootstrap-tarballs emacs)))
-                           %supported-systems))
-       (cross  (map (cut package-cross-derivation store
-                         %bootstrap-tarballs <>)
-                    '("mips64el-linux-gnuabi64")))
-       (total  (append native cross)))
-  (define (warn proc)
-    (lambda (drv)
-      (or (proc drv)
-          (begin
-            (format (current-error-port) "~a is not substitutable~%"
-                    drv)
-            #f))))
-
-  (set-build-options store #:use-substitutes? #t)
-  (let ((result (every (compose (warn (cut has-substitutes? store <>))
-                                derivation->output-path)
-                       total)))
-    (when result
-      (format (current-error-port) "~a packages found substitutable~%"
-              (length total)))
-    (exit result)))
+    (set-build-options store #:use-substitutes? #t)
+    (let* ((substitutable? (substitution-oracle store total))
+           (result         (every (lambda (drv)
+                                    (let ((out (derivation->output-path drv)))
+                                      (or (substitutable? out)
+                                          (warn out (derivation-system drv)))))
+                                  total)))
+      (when result
+        (format (current-error-port) "~a packages found substitutable~%"
+                (length total)))
+      (exit result))))

@@ -105,7 +105,7 @@ a flexible and convenient way.")
     (native-search-paths
      (list (search-path-specification
             (variable "MANPATH")
-            (directories '("share/man")))))
+            (files '("share/man")))))
     (home-page "http://man-db.nongnu.org/")
     (synopsis "Standard Unix documentation system")
     (description

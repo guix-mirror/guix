@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +38,7 @@
                "0j828dg2cjf77rx71cw68jpk7jl119v6nyb0kyvirr5i1860j1fx"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
-              ("libtool" ,libtool)))
+              ("libltdl" ,libltdl)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ncurses="

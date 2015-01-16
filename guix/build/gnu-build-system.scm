@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -72,19 +73,23 @@
                                              input-directories)))
 
   (for-each (match-lambda
-             ((env-var (directories ...) separator)
-              (set-path-environment-variable env-var directories
+             ((env-var (files ...) separator type pattern)
+              (set-path-environment-variable env-var files
                                              input-directories
-                                             #:separator separator)))
+                                             #:separator separator
+                                             #:type type
+                                             #:pattern pattern)))
             search-paths)
 
   (when native-search-paths
     ;; Search paths for native inputs, when cross building.
     (for-each (match-lambda
-               ((env-var (directories ...) separator)
-                (set-path-environment-variable env-var directories
+               ((env-var (files ...) separator type pattern)
+                (set-path-environment-variable env-var files
                                                native-input-directories
-                                               #:separator separator)))
+                                               #:separator separator
+                                               #:type type
+                                               #:pattern pattern)))
               native-search-paths))
 
   #t)
@@ -110,29 +115,15 @@ working directory."
 (define* (patch-usr-bin-file #:key native-inputs inputs
                              (patch-/usr/bin/file? #t)
                              #:allow-other-keys)
-  "Patch occurrences of /usr/bin/file in configure, if present."
+  "Patch occurrences of \"/usr/bin/file\" in all the executable 'configure'
+files found in the source tree.  This works around Libtool's Autoconf macros,
+which generates invocations of \"/usr/bin/file\" that are used to determine
+things like the ABI being used."
   (when patch-/usr/bin/file?
-    (let ((file "configure")
-          (file-command (or (and=> (assoc-ref (or native-inputs inputs) "file")
-                                   (cut string-append <> "/bin/file"))
-                            (which "file"))))
-      (cond ((not (file-exists? file))
-             (format (current-error-port)
-                     "patch-usr-bin-file: warning: `~a' not found~%"
-                     file))
-            ((not file-command)
-             (format (current-error-port)
-                     "patch-usr-bin-file: warning: `file' not found in PATH~%"))
-            (else
-             (let ((st (stat file)))
-               (substitute* file
-                 (("/usr/bin/file")
-                  (begin
-                    (format (current-error-port)
-                            "patch-usr-bin-file: ~a: changing `~a' to `~a'~%"
-                            file "/usr/bin/file" file-command)
-                    file-command)))
-               (set-file-time file st))))))
+    (for-each (lambda (file)
+                (when (executable-file? file)
+                  (patch-/usr/bin/file file)))
+              (find-files "." "^configure$")))
   #t)
 
 (define* (patch-source-shebangs #:key source #:allow-other-keys)
@@ -236,18 +227,11 @@ makefiles."
                   (string-append srcdir "/configure")
                   flags))))
 
-(define %parallel-job-count
-  ;; String to be passed next to GNU Make's `-j' argument.
-  (match (getenv "NIX_BUILD_CORES")
-    (#f "1")
-    ("0" (number->string (current-processor-count)))
-    (x x)))
-
 (define* (build #:key (make-flags '()) (parallel-build? #t)
                 #:allow-other-keys)
   (zero? (apply system* "make"
                 `(,@(if parallel-build?
-                        `("-j" ,%parallel-job-count)
+                        `("-j" ,(number->string (parallel-job-count)))
                         '())
                   ,@make-flags))))
 
@@ -257,7 +241,7 @@ makefiles."
   (if tests?
       (zero? (apply system* "make" test-target
                     `(,@(if parallel-tests?
-                            `("-j" ,%parallel-job-count)
+                            `("-j" ,(number->string (parallel-job-count)))
                             '())
                       ,@make-flags)))
       (begin
@@ -267,7 +251,7 @@ makefiles."
 (define* (install #:key (make-flags '()) #:allow-other-keys)
   (zero? (apply system* "make" "install" make-flags)))
 
-(define* (patch-shebangs #:key outputs (patch-shebangs? #t)
+(define* (patch-shebangs #:key inputs outputs (patch-shebangs? #t)
                          #:allow-other-keys)
   (define (list-of-files dir)
     (map (cut string-append dir "/" <>)
@@ -276,20 +260,26 @@ makefiles."
                               (eq? 'regular (stat:type s)))))
              '())))
 
-  (define bindirs
-    (append-map (match-lambda
-                 ((_ . dir)
-                  (list (string-append dir "/bin")
-                        (string-append dir "/sbin"))))
-                outputs))
+  (define bin-directories
+    (match-lambda
+     ((_ . dir)
+      (list (string-append dir "/bin")
+            (string-append dir "/sbin")))))
+
+  (define output-bindirs
+    (append-map bin-directories outputs))
+
+  (define input-bindirs
+    ;; Shebangs should refer to binaries of the target system---i.e., from
+    ;; "inputs", not from "native-inputs".
+    (append-map bin-directories inputs))
 
   (when patch-shebangs?
-    (let ((path (append bindirs
-                        (search-path-as-string->list (getenv "PATH")))))
+    (let ((path (append output-bindirs input-bindirs)))
       (for-each (lambda (dir)
                   (let ((files (list-of-files dir)))
                     (for-each (cut patch-shebang <> path) files)))
-                bindirs)))
+                output-bindirs)))
   #t)
 
 (define* (strip #:key target outputs (strip-binaries? #t)
@@ -350,7 +340,9 @@ makefiles."
               debug-output objcopy-command))
     (file-system-fold (const #t)
                       (lambda (path stat result)  ; leaf
-                        (and (or (not debug-output)
+                        (and (file-exists? path)  ;discard dangling symlinks
+                             (or (elf-file? path) (ar-file? path))
+                             (or (not debug-output)
                                  (make-debug-file path))
                              (zero? (apply system* strip-command
                                            (append strip-flags (list path))))
@@ -377,6 +369,85 @@ makefiles."
                                        strip-directories)))
                          outputs))))
 
+(define* (validate-documentation-location #:key outputs
+                                          #:allow-other-keys)
+  "Documentation should go to 'share/info' and 'share/man', not just 'info/'
+and 'man/'.  This phase moves directories to the right place if needed."
+  (define (validate-sub-directory output sub-directory)
+    (let ((directory (string-append output "/" sub-directory)))
+      (when (directory-exists? directory)
+        (let ((target (string-append output "/share/" sub-directory)))
+          (format #t "moving '~a' to '~a'~%" directory target)
+          (mkdir-p (dirname target))
+          (rename-file directory target)))))
+
+  (define (validate-output output)
+    (for-each (cut validate-sub-directory output <>)
+              '("man" "info")))
+
+  (match outputs
+    (((names . directories) ...)
+     (for-each validate-output directories)))
+  #t)
+
+(define* (compress-documentation #:key outputs
+                                 (compress-documentation? #t)
+                                 (documentation-compressor "gzip")
+                                 (documentation-compressor-flags
+                                  '("--best" "--no-name"))
+                                 (compressed-documentation-extension ".gz")
+                                 #:allow-other-keys)
+  "When COMPRESS-DOCUMENTATION? is true, compress man pages and Info files
+found in OUTPUTS using DOCUMENTATION-COMPRESSOR, called with
+DOCUMENTATION-COMPRESSOR-FLAGS."
+  (define (retarget-symlink link)
+    (let ((target (readlink link)))
+      (delete-file link)
+      (symlink (string-append target compressed-documentation-extension)
+               link)))
+
+  (define (has-links? file)
+    ;; Return #t if FILE has hard links.
+    (> (stat:nlink (lstat file)) 1))
+
+  (define (maybe-compress-directory directory regexp)
+    (or (not (directory-exists? directory))
+        (match (find-files directory regexp)
+          (()                                     ;nothing to compress
+           #t)
+          ((files ...)                            ;one or more files
+           (format #t
+                   "compressing documentation in '~a' with ~s and flags ~s~%"
+                   directory documentation-compressor
+                   documentation-compressor-flags)
+           (call-with-values
+               (lambda ()
+                 (partition symbolic-link? files))
+             (lambda (symlinks regular-files)
+               ;; Compress the non-symlink files, and adjust symlinks to refer
+               ;; to the compressed files.  Leave files that have hard links
+               ;; unchanged ('gzip' would refuse to compress them anyway.)
+               (and (zero? (apply system* documentation-compressor
+                                  (append documentation-compressor-flags
+                                          (remove has-links? regular-files))))
+                    (every retarget-symlink
+                           (filter (cut string-match regexp <>)
+                                   symlinks)))))))))
+
+  (define (maybe-compress output)
+    (and (maybe-compress-directory (string-append output "/share/man")
+                                   "\\.[0-9]+$")
+         (maybe-compress-directory (string-append output "/share/info")
+                                   "\\.info(-[0-9]+)?$")))
+
+  (if compress-documentation?
+      (match outputs
+        (((names . directories) ...)
+         (every maybe-compress directories)))
+      (begin
+        (format #t "not compressing documentation~%")
+        #t)))
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -385,7 +456,9 @@ makefiles."
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
-            patch-shebangs strip)))
+            patch-shebangs strip
+            validate-documentation-location
+            compress-documentation)))
 
 
 (define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)

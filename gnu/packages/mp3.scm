@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,7 +231,7 @@ pre-defined or user-specifiable output format.")
    (inputs `(("libid3tag" ,libid3tag)
              ("libmad" ,libmad)
              ("libogg" ,libogg)
-             ("libtool" ,libtool)
+             ("libltdl" ,libltdl)
              ("libvorbid" ,libvorbis)
              ("pcre" ,pcre)))
    (native-inputs

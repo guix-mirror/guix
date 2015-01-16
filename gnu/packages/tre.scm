@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright 2014 John Darrington
+;;; Copyright © 2014 John Darrington
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,17 @@
           (base32 "0n36cgqys59r2gmb7jzbqiwsy790v8nbxk82d2n2saz0rp145ild"))))
 
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-cons-before
+                 'check 'install-locales
+                  (lambda _
+                    ;; The tests require the availability of the
+                    ;; 'en_US.ISO-8859-1' locale.
+                    (setenv "LOCPATH" (getcwd))
+                    (zero? (system* "localedef" "--no-archive"
+                                    "--prefix" (getcwd) "-i" "en_US"
+                                    "-f" "ISO-8859-1" "./en_US.ISO-8859-1")))
+                 %standard-phases)))
     (synopsis "Approximate regex matching library and agrep utility")
     (description "Superset of the POSIX regex API, enabling approximate
 matching.  Also ships a version of the agrep utility which behaves similar to
