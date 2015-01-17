@@ -552,6 +552,39 @@ Deriver: ~a~%"
                 (equal? (list file0) (references %store file1))
                 (equal? (list file1) (references %store file2)))))))
 
+(test-assert "export/import incomplete"
+  (let* ((file0 (add-text-to-store %store "baz" (random-text)))
+         (file1 (add-text-to-store %store "foo" (random-text)
+                                   (list file0)))
+         (file2 (add-text-to-store %store "bar" (random-text)
+                                   (list file1)))
+         (dump  (call-with-bytevector-output-port
+                 (cute export-paths %store (list file2) <>))))
+    (delete-paths %store (list file0 file1 file2))
+    (guard (c ((nix-protocol-error? c)
+               (and (not (zero? (nix-protocol-error-status c)))
+                    (string-contains (nix-protocol-error-message c)
+                                     "not valid"))))
+      ;; Here we get an exception because DUMP does not include FILE0 and
+      ;; FILE1, which are dependencies of FILE2.
+      (import-paths %store (open-bytevector-input-port dump)))))
+
+(test-assert "export/import recursive"
+  (let* ((file0 (add-text-to-store %store "baz" (random-text)))
+         (file1 (add-text-to-store %store "foo" (random-text)
+                                   (list file0)))
+         (file2 (add-text-to-store %store "bar" (random-text)
+                                   (list file1)))
+         (dump  (call-with-bytevector-output-port
+                 (cute export-paths %store (list file2) <>
+                       #:recursive? #t))))
+    (delete-paths %store (list file0 file1 file2))
+    (let ((imported (import-paths %store (open-bytevector-input-port dump))))
+      (and (equal? imported (list file0 file1 file2))
+           (every file-exists? (list file0 file1 file2))
+           (equal? (list file0) (references %store file1))
+           (equal? (list file1) (references %store file2))))))
+
 (test-assert "import corrupt path"
   (let* ((text (random-text))
          (file (add-text-to-store %store "text" text))

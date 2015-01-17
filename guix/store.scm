@@ -795,13 +795,16 @@ is raised if the set of paths read from PORT is not signed (as per
       (or done? (loop (process-stderr server port))))
     (= 1 (read-int s))))
 
-(define* (export-paths server paths port #:key (sign? #t))
+(define* (export-paths server paths port #:key (sign? #t) recursive?)
   "Export the store paths listed in PATHS to PORT, in topological order,
-signing them if SIGN? is true."
+signing them if SIGN? is true.  When RECURSIVE? is true, export the closure of
+PATHS---i.e., PATHS and all their dependencies."
   (define ordered
-    ;; Sort PATHS, but don't include their references.
-    (filter (cut member <> paths)
-            (topologically-sorted server paths)))
+    (let ((sorted (topologically-sorted server paths)))
+      ;; When RECURSIVE? is #f, filter out the references of PATHS.
+      (if recursive?
+          sorted
+          (filter (cut member <> paths) sorted))))
 
   (let ((s (nix-server-socket server)))
     (let loop ((paths ordered))
