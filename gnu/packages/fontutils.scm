@@ -84,9 +84,9 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
             (sha256 (base32
                      "18r45dcnaj93izwfr082qiwg8ka7ll6j0c9yf1slblm542d5pmd9"))))
    (build-system gnu-build-system)
-   (inputs `(("expat" ,expat)
-             ("freetype" ,freetype)
-             ("gs-fonts" ,gs-fonts)))
+   (propagated-inputs `(("expat" ,expat)
+                        ("freetype" ,freetype)))
+   (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
       `(("pkg-config" ,pkg-config)))
    (arguments
