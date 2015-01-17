@@ -1438,8 +1438,10 @@ generate the key pair.
 
 The generated key pair is typically stored under @file{/etc/guix}, in
 @file{signing-key.pub} (public key) and @file{signing-key.sec} (private
-key, which must be kept secret.)  When @var{parameters} is omitted, it
-is a 4096-bit RSA key.  Alternately, @var{parameters} can specify
+key, which must be kept secret.)  When @var{parameters} is omitted,
+an ECDSA key using the Ed25519 curve is generated, or, for Libgcrypt
+versions before 1.6.0, it is a 4096-bit RSA key.
+Alternately, @var{parameters} can specify
 @code{genkey} parameters suitable for Libgcrypt (@pxref{General
 public-key related Functions, @code{gcry_pk_genkey},, gcrypt, The
 Libgcrypt Reference Manual}).
