@@ -57,6 +57,8 @@ Export/import one or more packages from/to the store.\n"))
   (display (_ "
       --export           export the specified files/packages to stdout"))
   (display (_ "
+  -r, --recursive        combined with '--export', include dependencies"))
+  (display (_ "
       --import           import from the archive passed on stdin"))
   (display (_ "
       --missing          print the files from stdin that are missing"))
@@ -107,6 +109,9 @@ Export/import one or more packages from/to the store.\n"))
          (option '("export") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'export #t result)))
+         (option '(#\r "recursive") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'export-recursive? #t result)))
          (option '("import") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'import #t result)))
@@ -230,7 +235,8 @@ resulting archive to the standard output port."
 
     (if (or (assoc-ref opts 'dry-run?)
             (build-derivations store drv))
-        (export-paths store files (current-output-port))
+        (export-paths store files (current-output-port)
+                      #:recursive? (assoc-ref opts 'export-recursive?))
         (leave (_ "unable to export the given packages~%")))))
 
 (define (generate-key-pair parameters)

@@ -1386,14 +1386,24 @@ to another machine's store.  For example, to transfer the @code{emacs}
 package to a machine connected over SSH, one would run:
 
 @example
-guix archive --export emacs | ssh the-machine guix archive --import
+guix archive --export -r emacs | ssh the-machine guix archive --import
 @end example
 
 @noindent
-However, note that, in this example, all of @code{emacs} and its
-dependencies are transferred, regardless of what is already available in
-the target machine's store.  The @code{--missing} option can help figure
-out which items are missing from the target's store.
+Similarly, a complete user profile may be transferred from one machine
+to another like this:
+
+@example
+guix archive --export -r $(readlink -f ~/.guix-profile) | \
+  ssh the-machine guix-archive --import
+@end example
+
+@noindent
+However, note that, in both examples, all of @code{emacs} and the
+profile as well as all of their dependencies are transferred (due to
+@code{-r}), regardless of what is already available in the target
+machine's store.  The @code{--missing} option can help figure out which
+items are missing from the target's store.
 
 Archives are stored in the ``Nix archive'' or ``Nar'' format, which is
 comparable in spirit to `tar', but with a few noteworthy differences
@@ -1417,6 +1427,16 @@ The main options are:
 @item --export
 Export the specified store files or packages (see below.)  Write the
 resulting archive to the standard output.
+
+Dependencies are @emph{not} included in the output, unless
+@code{--recursive} is passed.
+
+@item -r
+@itemx --recursive
+When combined with @code{--export}, this instructs @command{guix
+archive} to include dependencies of the given items in the archive.
+Thus, the resulting archive is self-contained: it contains the closure
+of the exported store items.
 
 @item --import
 Read an archive from the standard input, and import the files listed
