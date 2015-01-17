@@ -107,14 +107,14 @@ Java Lucene text search engine API to C++.")
 (define-public rasqal
   (package
     (name "rasqal")
-    (version "0.9.32")
+    (version "0.9.33")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.librdf.org/source/" name
                                  "-" version ".tar.gz"))
              (sha256
               (base32
-               "13rfprkk7d74065c7bafyshajwa6lshj7m9l741zlz9viqhh7fpf"))))
+               "0z6rrwn4jsagvarg8d5zf0j352kjgi33py39jqd29gbhcnncj939"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
