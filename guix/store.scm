@@ -806,15 +806,14 @@ PATHS---i.e., PATHS and all their dependencies."
           sorted
           (filter (cut member <> paths) sorted))))
 
-  (let ((s (nix-server-socket server)))
-    (let loop ((paths ordered))
-      (match paths
-        (()
-         (write-int 0 port))
-        ((head tail ...)
-         (write-int 1 port)
-         (and (export-path server head port #:sign? sign?)
-              (loop tail)))))))
+  (let loop ((paths ordered))
+    (match paths
+      (()
+       (write-int 0 port))
+      ((head tail ...)
+       (write-int 1 port)
+       (and (export-path server head port #:sign? sign?)
+            (loop tail))))))
 
 (define* (register-path path
                         #:key (references '()) deriver prefix
