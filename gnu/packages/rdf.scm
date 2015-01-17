@@ -40,14 +40,14 @@
 (define-public raptor2
   (package
     (name "raptor2")
-    (version "2.0.11")
+    (version "2.0.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.librdf.org/source/" name
                                  "-" version ".tar.gz"))
              (sha256
               (base32
-               "1z3i4fs32wcq5y9l7gdn7262h6r0ppdpvx4gw6jgsym8z083w0xf"))))
+               "1vc02im4mpc28zxzgli68k6j0dakh0k3s389bm436yvqajxg19xd"))))
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
