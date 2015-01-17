@@ -60,7 +60,7 @@
 ;;; Commentary:
 ;;;
 ;;; This module implements the general mechanism of monads, and provides in
-;;; particular an instance of the "store" monad.  The API was inspired by that
+;;; particular an instance of the "state" monad.  The API was inspired by that
 ;;; of Racket's "better-monads" module (see
 ;;; <http://planet.racket-lang.org/package-source/toups/functional.plt/1/1/planet-docs/better-monads-guide/index.html>).
 ;;; The implementation and use case were influenced by Oleg Kysielov's

@@ -2148,7 +2148,7 @@ provides a framework for working with @dfn{monads}, and a particularly
 useful monad for our uses, the @dfn{store monad}.  Monads are a
 construct that allows two things: associating ``context'' with values
 (in our case, the context is the store), and building sequences of
-computations (here computations includes accesses to the store.)  Values
+computations (here computations include accesses to the store.)  Values
 in a monad---values that carry this additional context---are called
 @dfn{monadic values}; procedures that return such values are called
 @dfn{monadic procedures}.
@@ -2257,14 +2257,68 @@ monadic expressions are ignored.  In that sense, it is analogous to
 @code{begin}, but applied to monadic expressions.
 @end deffn
 
+@cindex state monad
+The @code{(guix monads)} module provides the @dfn{state monad}, which
+allows an additional value---the state---to be @emph{threaded} through
+monadic procedure calls.
+
+@defvr {Scheme Variable} %state-monad
+The state monad.  Procedures in the state monad can access and change
+the state that is threaded.
+
+Consider the example below.  The @code{square} procedure returns a value
+in the state monad.  It returns the square of its argument, but also
+increments the current state value:
+
+@example
+(define (square x)
+  (mlet %state-monad ((count (current-state)))
+    (mbegin %state-monad
+      (set-current-state (+ 1 count))
+      (return (* x x)))))
+
+(run-with-state (sequence %state-monad (map square (iota 3))) 0)
+@result{} (0 1 4)
+@result{} 3
+@end example
+
+When ``run'' through @var{%state-monad}, we obtain that additional state
+value, which is the number of @code{square} calls.
+@end defvr
+
+@deffn {Monadic Procedure} current-state
+Return the current state as a monadic value.
+@end deffn
+
+@deffn {Monadic Procedure} set-current-state @var{value}
+Set the current state to @var{value} and return the previous state as a
+monadic value.
+@end deffn
+
+@deffn {Monadic Procedure} state-push @var{value}
+Push @var{value} to the current state, which is assumed to be a list,
+and return the previous state as a monadic value.
+@end deffn
+
+@deffn {Monadic Procedure} state-pop
+Pop a value from the current state and return it as a monadic value.
+The state is assumed to be a list.
+@end deffn
+
+@deffn {Scheme Procedure} run-with-state @var{mval} [@var{state}]
+Run monadic value @var{mval} starting with @var{state} as the initial
+state.  Return two values: the resulting value, and the resulting state.
+@end deffn
+
 The main interface to the store monad, provided by the @code{(guix
 store)} module, is as follows.
 
 @defvr {Scheme Variable} %store-monad
-The store monad.  Values in the store monad encapsulate accesses to the
-store.  When its effect is needed, a value of the store monad must be
-``evaluated'' by passing it to the @code{run-with-store} procedure (see
-below.)
+The store monad---an alias for @var{%state-monad}.
+
+Values in the store monad encapsulate accesses to the store.  When its
+effect is needed, a value of the store monad must be ``evaluated'' by
+passing it to the @code{run-with-store} procedure (see below.)
 @end defvr
 
 @deffn {Scheme Procedure} run-with-store @var{store} @var{mval} [#:guile-for-build] [#:system (%current-system)]
