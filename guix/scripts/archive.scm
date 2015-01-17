@@ -148,9 +148,6 @@ Export/import one or more packages from/to the store.\n"))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
-         (option '(#\r "root") #t #f
-                 (lambda (opt name arg result)
-                   (alist-cons 'gc-root arg result)))
 
          %standard-build-options))
 
