@@ -67,10 +67,6 @@
 ;;; "Monadic Programming in Scheme" (see
 ;;; <http://okmij.org/ftp/Scheme/monad-in-Scheme.html>).
 ;;;
-;;; The store monad allows us to (1) build sequences of operations in the
-;;; store, and (2) make the store an implicit part of the execution context,
-;;; rather than a parameter of every single function.
-;;;
 ;;; Code:
 
 ;; Record type for monads manipulated at run time.

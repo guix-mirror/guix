@@ -852,25 +852,15 @@ be used internally by the daemon's build hook."
 ;;; Store monad.
 ;;;
 
-;; return:: a -> StoreM a
-(define-inlinable (store-return value)
-  "Return VALUE from a monadic function."
-  ;; The monadic value is just this.
-  (lambda (store)
-    value))
+(define-syntax-rule (define-alias new old)
+  (define-syntax new (identifier-syntax old)))
 
-;; >>=:: StoreM a -> (a -> StoreM b) -> StoreM b
-(define-inlinable (store-bind mvalue mproc)
-  "Bind MVALUE in MPROC."
-  (lambda (store)
-    (let* ((value   (mvalue store))
-           (mresult (mproc value)))
-      (mresult store))))
-
-;; This is essentially a state monad
-(define-monad %store-monad
-  (bind   store-bind)
-  (return store-return))
+;; The store monad allows us to (1) build sequences of operations in the
+;; store, and (2) make the store an implicit part of the execution context,
+;; rather than a parameter of every single function.
+(define-alias %store-monad %state-monad)
+(define-alias store-return state-return)
+(define-alias store-bind state-bind)
 
 (define (store-lift proc)
   "Lift PROC, a procedure whose first argument is a connection to the store,
@@ -878,7 +868,7 @@ in the store monad."
   (define result
     (lambda args
       (lambda (store)
-        (apply proc store args))))
+        (values (apply proc store args) store))))
 
   (set-object-property! result 'documentation
                         (procedure-property proc 'documentation))
@@ -898,7 +888,8 @@ taking the store as its first argument."
   "Return as a monadic value the absolute file name in the store of the file
 containing TEXT, a string."
   (lambda (store)
-    (add-text-to-store store name text '())))
+    (values (add-text-to-store store name text '())
+            store)))
 
 (define* (interned-file file #:optional name
                         #:key (recursive? #t))
@@ -909,8 +900,9 @@ When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
 designates a flat file and RECURSIVE? is true, its contents are added, and its
 permission bits are kept."
   (lambda (store)
-    (add-to-store store (or name (basename file))
-                  recursive? "sha256" file)))
+    (values (add-to-store store (or name (basename file))
+                          recursive? "sha256" file)
+            store)))
 
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,
@@ -925,7 +917,7 @@ permission bits are kept."
 connection."
   (parameterize ((%guile-for-build guile-for-build)
                  (%current-system system))
-    (mval store)))
+    (run-with-state mval store)))
 
 
 ;;;

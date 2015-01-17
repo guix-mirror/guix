@@ -898,7 +898,7 @@ symbolic output name, such as \"out\".  Note that this procedure calls
 code of derivations to GUILE, a package object."
   (lambda (store)
     (let ((guile (package-derivation store guile)))
-      (%guile-for-build guile))))
+      (values (%guile-for-build guile) store))))
 
 (define* (package-file package
                        #:optional file
@@ -917,9 +917,10 @@ cross-compilation target triplet."
     (let* ((system (or system (%current-system)))
            (drv    (compute-derivation store package system))
            (out    (derivation->output-path drv output)))
-      (if file
-          (string-append out "/" file)
-          out))))
+      (values (if file
+                  (string-append out "/" file)
+                  out)
+              store))))
 
 (define package->derivation
   (store-lift package-derivation))
