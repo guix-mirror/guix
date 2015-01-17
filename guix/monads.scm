@@ -46,7 +46,16 @@
             anym
 
             ;; Concrete monads.
-            %identity-monad))
+            %identity-monad
+
+            %state-monad
+            state-return
+            state-bind
+            current-state
+            set-current-state
+            state-push
+            state-pop
+            run-with-state))
 
 ;;; Commentary:
 ;;;
@@ -290,5 +299,59 @@ lifted in MONAD, for which PROC returns true."
 (define-monad %identity-monad
   (bind   identity-bind)
   (return identity-return))
+
+
+;;;
+;;; State monad.
+;;;
+
+(define-inlinable (state-return value)
+  (lambda (state)
+    (values value state)))
+
+(define-inlinable (state-bind mvalue mproc)
+  "Bind MVALUE, a value in the state monad, and pass it to MPROC."
+  (lambda (state)
+    (call-with-values
+        (lambda ()
+          (mvalue state))
+      (lambda (value state)
+        ;; Note: as of Guile 2.0.11, declaring a variable to hold the result
+        ;; of (mproc value) prevents a bit of unfolding/inlining.
+        ((mproc value) state)))))
+
+(define-monad %state-monad
+  (bind state-bind)
+  (return state-return))
+
+(define* (run-with-state mval #:optional (state '()))
+  "Run monadic value MVAL starting with STATE as the initial state.  Return
+two values: the resulting value, and the resulting state."
+  (mval state))
+
+(define-inlinable (current-state)
+  "Return the current state as a monadic value."
+  (lambda (state)
+    (values state state)))
+
+(define-inlinable (set-current-state value)
+  "Set the current state to VALUE and return the previous state as a monadic
+value."
+  (lambda (state)
+    (values state value)))
+
+(define (state-pop)
+  "Pop a value from the current state and return it as a monadic value.  The
+state is assumed to be a list."
+  (lambda (state)
+    (match state
+      ((head . tail)
+       (values head tail)))))
+
+(define (state-push value)
+  "Push VALUE to the current state, which is assumed to be a list, and return
+the previous state as a monadic value."
+  (lambda (state)
+    (values state (cons value state))))
 
 ;;; monads.scm end here

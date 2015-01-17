@@ -37,11 +37,16 @@
   (open-connection-for-tests))
 
 (define %monads
-  (list %identity-monad %store-monad))
+  (list %identity-monad %store-monad %state-monad))
 
 (define %monad-run
   (list identity
-        (cut run-with-store %store <>)))
+        (cut run-with-store %store <>)
+        (cut run-with-state <> '())))
+
+(define-syntax-rule (values->list exp)
+  (call-with-values (lambda () exp)
+    list))
 
 
 (test-begin "monads")
@@ -205,6 +210,32 @@
                 'odd!))
          %monads
          %monad-run))
+
+(test-equal "set-current-state"
+  (list '(a a d) 'd)
+  (values->list
+   (run-with-state
+       (mlet* %state-monad ((init  (current-state))
+                            (init2 (set-current-state 'b)))
+         (mbegin %state-monad
+           (set-current-state 'c)
+           (set-current-state 'd)
+           (mlet %state-monad ((last (current-state)))
+             (return (list init init2 last)))))
+     'a)))
+
+(test-equal "state-push etc."
+  (list '((z . 2) (p . (1)) (a . (1))) '(2 1))
+  (values->list
+   (run-with-state
+       (mbegin %state-monad
+         (state-push 1)    ;(1)
+         (state-push 2)    ;(2 1)
+         (mlet* %state-monad ((z (state-pop))        ;(1)
+                              (p (current-state))
+                              (a (state-push z)))    ;(2 1)
+           (return `((z . ,z) (p . ,p) (a . ,a)))))
+     '())))
 
 (test-end "monads")
 
