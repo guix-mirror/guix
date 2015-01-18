@@ -60,6 +60,7 @@ MODULES =					\
   guix/gnupg.scm				\
   guix/elf.scm					\
   guix/store.scm				\
+  guix/cvs-download.scm				\
   guix/svn-download.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
@@ -76,6 +77,7 @@ MODULES =					\
   guix/build/union.scm				\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
+  guix/build/cvs.scm				\
   guix/build/svn.scm				\
   guix/build/syscalls.scm			\
   guix/build/emacs-utils.scm			\
