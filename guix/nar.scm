@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -211,7 +211,9 @@ s-expression"))
                 (_ "importing file or directory '~a'...~%")
                 file)
 
-        (let ((sig (and has-sig? (read-string port))))
+        ;; The signature may contain characters that are meant to be
+        ;; interpreted as bytes in a 'char *', so read them as a ISO-8859-1.
+        (let ((sig (and has-sig? (read-latin1-string port))))
           (when verify-signature?
             (if sig
                 (begin
