@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,10 +102,16 @@
 (define (read-latin1-string p)
   (let* ((len (read-int p))
          (m   (modulo len 8))
-         (str (get-string-n p len)))
+         ;; Note: do not use 'get-string-n' to work around Guile bug
+         ;; <http://bugs.gnu.org/19621>.  See <http://bugs.gnu.org/19610> for
+         ;; a discussion.
+         (str (get-bytevector-n p len)))
     (or (zero? m)
         (get-bytevector-n p (- 8 m)))
-    str))
+
+    ;; XXX: Rewrite using (ice-9 iconv) when the minimum requirement is
+    ;; upgraded to Guile >= 2.0.9.
+    (list->string (map integer->char (bytevector->u8-list str)))))
 
 (define (write-string-list l p)
   (write-int (length l) p)
