@@ -580,7 +580,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.2")
+    (version "2.40.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -588,7 +588,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "071959yjb2i1bja7ciy4bmpnd6fn2is9jjqsvvvnsqwl69j9n128"))))
+                "01jgb11779080b80k2ncrhdphgillqrrnszal6vh8yv787r4kwwa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -600,7 +600,7 @@ dealing with different structured file formats.")
             ;; gdk-pixbuf's prefix.  Work around that.
             (("gdk_pixbuf_moduledir = .*$")
              (string-append "gdk_pixbuf_moduledir = "
-                            "$(prefix)/lib/gdk-pixbuf-2.0/2.0.10/"
+                            "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
                              "loaders\n"))
             ;; Likewise, create a separate 'loaders.cache' file.
             (("gdk_pixbuf_cache_file = .*$")
@@ -610,7 +610,7 @@ dealing with different structured file formats.")
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let ((loaders-directory 
                   (string-append (assoc-ref outputs "out")
-                                 "/lib/gdk-pixbuf-2.0/2.0.10/loaders")))
+                                 "/lib/gdk-pixbuf-2.0/2.10.0/loaders")))
              (zero?
               (system 
                (string-append 
@@ -619,7 +619,11 @@ dealing with different structured file formats.")
                 (string-join (find-files (assoc-ref inputs "gdk-pixbuf") 
                                          "libpixbufloader-.*\\.so") " ")
                 "> " loaders-directory ".cache")))))
-         %standard-phases))))
+         (alist-cons-before
+          'build 'pre-build
+          (lambda* _
+            (setenv "CC" "gcc"))
+          %standard-phases)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
