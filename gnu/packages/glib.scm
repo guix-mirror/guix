@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -52,7 +52,8 @@
             intltool
             itstool
             libsigc++
-            glibmm))
+            glibmm
+            telepathy-glib))
 
 (define dbus
   (package
@@ -512,4 +513,39 @@ useful for C++.")
     (synopsis "Python bindings for GObject")
     (description
      "Python bindings for GLib, GObject, and GIO.")
+    (license license:lgpl2.1+)))
+
+(define telepathy-glib
+  (package
+    (name "telepathy-glib")
+    (version "0.24.1")
+    (source
+     (origin
+      (method url-fetch)
+       (uri
+        (string-append
+         "http://telepathy.freedesktop.org/releases/telepathy-glib/"
+         "telepathy-glib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin") ; uses glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libxslt" ,libxslt)))
+    (home-page "http://telepathy.freedesktop.org/wiki/")
+    (synopsis "GLib Real-time communications framework over D-Bus")
+    (description "Telepathy is a flexible, modular communications framework
+that enables real-time communication over D-Bus via pluggable protocol
+backends.  Telepathy is a communications service that can be accessed by
+many applications simultaneously.
+
+This package provides the library for GLib applications.")
     (license license:lgpl2.1+)))
