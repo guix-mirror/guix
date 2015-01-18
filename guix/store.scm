@@ -862,23 +862,26 @@ be used internally by the daemon's build hook."
 (define-alias store-return state-return)
 (define-alias store-bind state-bind)
 
+(define (preserve-documentation original proc)
+  "Return PROC with documentation taken from ORIGINAL."
+  (set-object-property! proc 'documentation
+                        (procedure-property original 'documentation))
+  proc)
+
 (define (store-lift proc)
   "Lift PROC, a procedure whose first argument is a connection to the store,
 in the store monad."
-  (define result
-    (lambda args
-      (lambda (store)
-        (values (apply proc store args) store))))
-
-  (set-object-property! result 'documentation
-                        (procedure-property proc 'documentation))
-  result)
+  (preserve-documentation proc
+                          (lambda args
+                            (lambda (store)
+                              (values (apply proc store args) store)))))
 
 (define (store-lower proc)
   "Lower PROC, a monadic procedure in %STORE-MONAD, to a \"normal\" procedure
 taking the store as its first argument."
-  (lambda (store . args)
-    (run-with-store store (apply proc args))))
+  (preserve-documentation proc
+                          (lambda (store . args)
+                            (run-with-store store (apply proc args)))))
 
 ;;
 ;; Store monad operators.
