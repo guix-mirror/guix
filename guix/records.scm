@@ -78,7 +78,8 @@ It is possible to copy an object 'x' created with 'thing' like this:
 This expression returns a new object equal to 'x' except for its 'name'
 field."
 
-    (define (make-syntactic-constructor type name ctor fields thunked defaults)
+    (define* (make-syntactic-constructor type name ctor fields
+                                         #:key thunked defaults)
       "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
 expects all of FIELDS to be initialized.  DEFAULTS is the list of
 FIELD/DEFAULT-VALUE tuples, and THUNKED is the list of identifiers of
@@ -219,7 +220,10 @@ thunked fields."
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
           (field get options ...) ...)
-       (let* ((field-spec #'((field get options ...) ...)))
+       (let* ((field-spec #'((field get options ...) ...))
+              (thunked    (filter-map thunked-field? field-spec))
+              (defaults   (filter-map field-default-value
+                                      #'((field options ...) ...))))
          (with-syntax (((field-spec* ...)
                         (map field-spec->srfi-9 field-spec))
                        ((thunked-field-accessor ...)
@@ -236,10 +240,8 @@ thunked fields."
                (begin thunked-field-accessor ...)
                #,(make-syntactic-constructor #'type #'syntactic-ctor #'ctor
                                              #'(field ...)
-                                             (filter-map thunked-field? field-spec)
-                                             (filter-map field-default-value
-                                                         #'((field options ...)
-                                                            ...))))))))))
+                                             #:thunked thunked
+                                             #:defaults defaults))))))))
 
 (define* (alist->record alist make keys
                         #:optional (multiple-value-keys '()))
