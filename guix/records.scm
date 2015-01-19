@@ -42,6 +42,95 @@
                        (format #f fmt args ...)
                        form))))
 
+(define* (make-syntactic-constructor type name ctor fields
+                                     #:key thunked defaults)
+  "Make the syntactic constructor NAME for TYPE, that calls CTOR, and expects
+all of FIELDS to be initialized.  DEFAULTS is the list of FIELD/DEFAULT-VALUE
+tuples, and THUNKED is the list of identifiers of thunked fields."
+  (with-syntax ((type     type)
+                (name     name)
+                (ctor     ctor)
+                (expected fields)
+                (defaults defaults))
+    #`(define-syntax name
+        (lambda (s)
+          (define (record-inheritance orig-record field+value)
+            ;; Produce code that returns a record identical to ORIG-RECORD,
+            ;; except that values for the FIELD+VALUE alist prevail.
+            (define (field-inherited-value f)
+              (and=> (find (lambda (x)
+                             (eq? f (car (syntax->datum x))))
+                           field+value)
+                     car))
+
+            ;; Make sure there are no unknown field names.
+            (let* ((fields     (map (compose car syntax->datum) field+value))
+                   (unexpected (lset-difference eq? fields 'expected)))
+              (when (pair? unexpected)
+                (record-error 'name s "extraneous field initializers ~a"
+                              unexpected)))
+
+            #`(make-struct type 0
+                           #,@(map (lambda (field index)
+                                     (or (field-inherited-value field)
+                                         #`(struct-ref #,orig-record
+                                                       #,index)))
+                                   'expected
+                                   (iota (length 'expected)))))
+
+          (define (thunked-field? f)
+            (memq (syntax->datum f) '#,thunked))
+
+          (define (field-bindings field+value)
+            ;; Return field to value bindings, for use in 'let*' below.
+            (map (lambda (field+value)
+                   (syntax-case field+value ()
+                     ((field value)
+                      #`(field
+                         #,(if (thunked-field? #'field)
+                               #'(lambda () value)
+                               #'value)))))
+                 field+value))
+
+          (syntax-case s (inherit #,@fields)
+            ((_ (inherit orig-record) (field value) (... ...))
+             #`(let* #,(field-bindings #'((field value) (... ...)))
+                 #,(record-inheritance #'orig-record
+                                       #'((field value) (... ...)))))
+            ((_ (field value) (... ...))
+             (let ((fields (map syntax->datum #'(field (... ...))))
+                   (dflt   (map (match-lambda
+                                 ((f v)
+                                  (list (syntax->datum f) v)))
+                                #'defaults)))
+
+               (define (field-value f)
+                 (or (and=> (find (lambda (x)
+                                    (eq? f (car (syntax->datum x))))
+                                  #'((field value) (... ...)))
+                            car)
+                     (let ((value
+                            (car (assoc-ref dflt (syntax->datum f)))))
+                       (if (thunked-field? f)
+                           #`(lambda () #,value)
+                           value))))
+
+               (let ((fields (append fields (map car dflt))))
+                 (cond ((lset= eq? fields 'expected)
+                        #`(let* #,(field-bindings
+                                   #'((field value) (... ...)))
+                            (ctor #,@(map field-value 'expected))))
+                       ((pair? (lset-difference eq? fields 'expected))
+                        (record-error 'name s
+                                      "extraneous field initializers ~a"
+                                      (lset-difference eq? fields
+                                                       'expected)))
+                       (else
+                        (record-error 'name s
+                                      "missing field initializers ~a"
+                                      (lset-difference eq? 'expected
+                                                       fields))))))))))))
+
 (define-syntax define-record-type*
   (lambda (s)
     "Define the given record type such that an additional \"syntactic
@@ -77,99 +166,6 @@ It is possible to copy an object 'x' created with 'thing' like this:
 
 This expression returns a new object equal to 'x' except for its 'name'
 field."
-
-    (define* (make-syntactic-constructor type name ctor fields
-                                         #:key thunked defaults)
-      "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
-expects all of FIELDS to be initialized.  DEFAULTS is the list of
-FIELD/DEFAULT-VALUE tuples, and THUNKED is the list of identifiers of
-thunked fields."
-      (with-syntax ((type     type)
-                    (name     name)
-                    (ctor     ctor)
-                    (expected fields)
-                    (defaults defaults))
-        #`(define-syntax name
-            (lambda (s)
-              (define (record-inheritance orig-record field+value)
-                ;; Produce code that returns a record identical to
-                ;; ORIG-RECORD, except that values for the FIELD+VALUE alist
-                ;; prevail.
-                (define (field-inherited-value f)
-                  (and=> (find (lambda (x)
-                                 (eq? f (car (syntax->datum x))))
-                               field+value)
-                         car))
-
-                ;; Make sure there are no unknown field names.
-                (let* ((fields     (map (compose car syntax->datum)
-                                        field+value))
-                       (unexpected (lset-difference eq? fields 'expected)))
-                  (when (pair? unexpected)
-                    (record-error 'name s "extraneous field initializers ~a"
-                                  unexpected)))
-
-                #`(make-struct type 0
-                               #,@(map (lambda (field index)
-                                         (or (field-inherited-value field)
-                                             #`(struct-ref #,orig-record
-                                                           #,index)))
-                                       'expected
-                                       (iota (length 'expected)))))
-
-              (define (thunked-field? f)
-                (memq (syntax->datum f) '#,thunked))
-
-              (define (field-bindings field+value)
-                ;; Return field to value bindings, for use in 'let*' below.
-                (map (lambda (field+value)
-                       (syntax-case field+value ()
-                         ((field value)
-                          #`(field
-                             #,(if (thunked-field? #'field)
-                                   #'(lambda () value)
-                                   #'value)))))
-                     field+value))
-
-              (syntax-case s (inherit #,@fields)
-                ((_ (inherit orig-record) (field value) (... ...))
-                 #`(let* #,(field-bindings #'((field value) (... ...)))
-                     #,(record-inheritance #'orig-record
-                                           #'((field value) (... ...)))))
-                ((_ (field value) (... ...))
-                 (let ((fields (map syntax->datum #'(field (... ...))))
-                       (dflt   (map (match-lambda
-                                     ((f v)
-                                      (list (syntax->datum f) v)))
-                                    #'defaults)))
-
-                   (define (field-value f)
-                     (or (and=> (find (lambda (x)
-                                        (eq? f (car (syntax->datum x))))
-                                      #'((field value) (... ...)))
-                                car)
-                         (let ((value
-                                (car (assoc-ref dflt
-                                                (syntax->datum f)))))
-                           (if (thunked-field? f)
-                               #`(lambda () #,value)
-                               value))))
-
-                   (let ((fields (append fields (map car dflt))))
-                     (cond ((lset= eq? fields 'expected)
-                            #`(let* #,(field-bindings
-                                       #'((field value) (... ...)))
-                                (ctor #,@(map field-value 'expected))))
-                           ((pair? (lset-difference eq? fields 'expected))
-                            (record-error 'name s
-                                          "extraneous field initializers ~a"
-                                          (lset-difference eq? fields
-                                                           'expected)))
-                           (else
-                            (record-error 'name s
-                                          "missing field initializers ~a"
-                                          (lset-difference eq? 'expected
-                                                           fields))))))))))))
 
     (define (field-default-value s)
       (syntax-case s (default)
