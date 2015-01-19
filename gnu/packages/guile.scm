@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,7 +34,6 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages which)
-  #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -367,34 +366,5 @@ http:://json.org specification.  These are the main features:
 - Unicode support for strings.
 - Allows JSON pretty printing.")
     (license lgpl3+)))
-
-(define-public guile-charting
-  (package
-    (name "guile-charting")
-    (version "0.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://wingolog.org/pub/guile-charting/"
-                                  "guile-charting-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0w5qiyv9v0ip5li22x762bm48g8xnw281w66iyw094zdw611pb2m"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Use the standard location for modules.
-                  (substitute* "Makefile.in"
-                    (("godir = .*$")
-                     "godir = $(moddir)\n"))))))
-    (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0)))
-    (propagated-inputs `(("guile-cairo" ,guile-cairo)))
-    (home-page "http://wingolog.org/software/guile-charting/")
-    (synopsis "Create charts and graphs in Guile")
-    (description
-     "Guile-Charting is a Guile Scheme library to create bar charts and graphs
-using the Cairo drawing library.")
-    (license lgpl2.1+)))
 
 ;;; guile.scm ends here
