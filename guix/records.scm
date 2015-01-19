@@ -43,10 +43,12 @@
                        form))))
 
 (define* (make-syntactic-constructor type name ctor fields
-                                     #:key (thunked '()) (defaults '()))
+                                     #:key (thunked '()) (defaults '())
+                                     (delayed '()))
   "Make the syntactic constructor NAME for TYPE, that calls CTOR, and expects
 all of FIELDS to be initialized.  DEFAULTS is the list of FIELD/DEFAULT-VALUE
-tuples, and THUNKED is the list of identifiers of thunked fields."
+tuples, THUNKED is the list of identifiers of thunked fields, and DELAYED is
+the list of identifiers of delayed fields."
   (with-syntax ((type     type)
                 (name     name)
                 (ctor     ctor)
@@ -81,10 +83,15 @@ tuples, and THUNKED is the list of identifiers of thunked fields."
           (define (thunked-field? f)
             (memq (syntax->datum f) '#,thunked))
 
+          (define (delayed-field? f)
+            (memq (syntax->datum f) '#,delayed))
+
           (define (wrap-field-value f value)
-            (if (thunked-field? f)
-                #`(lambda () #,value)
-                value))
+            (cond ((thunked-field? f)
+                   #`(lambda () #,value))
+                  ((delayed-field? f)
+                   #`(delay #,value))
+                  (else value)))
 
           (define (field-bindings field+value)
             ;; Return field to value bindings, for use in 'let*' below.
@@ -161,6 +168,9 @@ The 'port' field is \"thunked\", meaning that calls like '(thing-port x)' will
 actually compute the field's value in the current dynamic extent, which is
 useful when referring to fluids in a field's value.
 
+A field can also be marked as \"delayed\" instead of \"thunked\", in which
+case its value is effectively wrapped in a (delay …) form.
+
 It is possible to copy an object 'x' created with 'thing' like this:
 
   (thing (inherit x) (name \"bar\"))
@@ -176,6 +186,15 @@ field."
          (field-default-value #'(field options ...)))
         (_ #f)))
 
+    (define (delayed-field? s)
+      ;; Return the field name if the field defined by S is delayed.
+      (syntax-case s (delayed)
+        ((field (delayed) _ ...)
+         #'field)
+        ((field _ options ...)
+         (delayed-field? #'(field options ...)))
+        (_ #f)))
+
     (define (thunked-field? s)
       ;; Return the field name if the field defined by S is thunked.
       (syntax-case s (thunked)
@@ -185,9 +204,12 @@ field."
          (thunked-field? #'(field options ...)))
         (_ #f)))
 
-    (define (thunked-field-accessor-name field)
+    (define (wrapped-field? s)
+      (or (thunked-field? s) (delayed-field? s)))
+
+    (define (wrapped-field-accessor-name field)
       ;; Return the name (an unhygienic syntax object) of the "real"
-      ;; getter for field, which is assumed to be a thunked field.
+      ;; getter for field, which is assumed to be a wrapped field.
       (syntax-case field ()
         ((field get options ...)
          (let* ((getter      (syntax->datum #'get))
@@ -200,8 +222,8 @@ field."
       (syntax-case field ()
         ((name get options ...)
          #`(name
-            #,(if (thunked-field? field)
-                  (thunked-field-accessor-name field)
+            #,(if (wrapped-field? field)
+                  (wrapped-field-accessor-name field)
                   #'get)))))
 
     (define (thunked-field-accessor-definition field)
@@ -209,16 +231,27 @@ field."
       ;; thunked field.
       (syntax-case field ()
         ((name get _ ...)
-         (with-syntax ((real-get (thunked-field-accessor-name field)))
+         (with-syntax ((real-get (wrapped-field-accessor-name field)))
            #'(define-inlinable (get x)
                ;; The real value of that field is a thunk, so call it.
                ((real-get x)))))))
+
+    (define (delayed-field-accessor-definition field)
+      ;; Return the real accessor for FIELD, which is assumed to be a
+      ;; delayed field.
+      (syntax-case field ()
+        ((name get _ ...)
+         (with-syntax ((real-get (wrapped-field-accessor-name field)))
+           #'(define-inlinable (get x)
+               ;; The real value of that field is a promise, so force it.
+               (force (real-get x)))))))
 
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
           (field get options ...) ...)
        (let* ((field-spec #'((field get options ...) ...))
               (thunked    (filter-map thunked-field? field-spec))
+              (delayed    (filter-map delayed-field? field-spec))
               (defaults   (filter-map field-default-value
                                       #'((field options ...) ...))))
          (with-syntax (((field-spec* ...)
@@ -228,16 +261,24 @@ field."
                                       (and (thunked-field? field)
                                            (thunked-field-accessor-definition
                                             field)))
+                                    field-spec))
+                       ((delayed-field-accessor ...)
+                        (filter-map (lambda (field)
+                                      (and (delayed-field? field)
+                                           (delayed-field-accessor-definition
+                                            field)))
                                     field-spec)))
            #`(begin
                (define-record-type type
                  (ctor field ...)
                  pred
                  field-spec* ...)
-               (begin thunked-field-accessor ...)
+               (begin thunked-field-accessor ...
+                      delayed-field-accessor ...)
                #,(make-syntactic-constructor #'type #'syntactic-ctor #'ctor
                                              #'(field ...)
                                              #:thunked thunked
+                                             #:delayed delayed
                                              #:defaults defaults))))))))
 
 (define* (alist->record alist make keys

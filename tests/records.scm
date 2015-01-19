@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,6 +138,51 @@
                (eq? (foo-bar y) (mark)))
              (parameterize ((mark (cons 'a 'b)))
                (eq? (foo-baz y) (mark))))))))
+
+(test-assert "define-record-type* & delayed"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar (delayed)))
+
+    (let* ((calls 0)
+           (x     (foo (bar (begin (set! calls (1+ calls)) 3)))))
+      (and (zero? calls)
+           (equal? (foo-bar x) 3) (= 1 calls)
+           (equal? (foo-bar x) 3) (= 1 calls)
+           (equal? (foo-bar x) 3) (= 1 calls)))))
+
+(test-assert "define-record-type* & delayed & default"
+  (let ((mark #f))
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar (delayed) (default mark)))
+
+    (let ((x (foo)))
+      (set! mark 42)
+      (and (equal? (foo-bar x) 42)
+           (begin
+             (set! mark 7)
+             (equal? (foo-bar x) 42))))))
+
+(test-assert "define-record-type* & delayed & inherited"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar (delayed))
+      (baz foo-baz (delayed)))
+
+    (let* ((m 1)
+           (n #f)
+           (x (foo (bar m) (baz n)))
+           (y (foo (inherit x) (baz 'b))))
+      (set! n 'a)
+      (and (equal? (foo-bar x) 1)
+           (eq? (foo-baz x) 'a)
+           (begin
+             (set! m 777)
+             (equal? (foo-bar y) 1))              ;promise was already forced
+           (eq? (foo-baz y) 'b)))))
 
 (test-assert "define-record-type* & missing initializers"
   (catch 'syntax-error
