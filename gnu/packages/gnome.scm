@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -1011,6 +1011,8 @@ widgets built in the loading process.")
     (license license:gpl2+))) ; This is correct.  GPL not LGPL
 
 (define-public libgnomeprint
+  ;; This library has been deprecated since 2006; see
+  ;; <https://mail.gnome.org/archives/devel-announce-list/2006-August/msg00005.html>.
   (package
     (name "libgnomeprint")
     (version "2.8.2")
@@ -1034,11 +1036,14 @@ widgets built in the loading process.")
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
     (synopsis "Printing framework for GNOME")
-    (description "Gnome-print is a high-quality printing framework for GNOME.")
+    (description
+     "GNOME-print was a printing framework for GNOME.  It has been deprecated
+since ca. 2006, when GTK+ itself incorporated printing support.")
     (license license:lgpl2.0+)))
 
 
 (define-public libgnomeprintui
+  ;; Deprecated; see libgnomeprint.
   (package
     (name "libgnomeprintui")
     (version "2.8.2")
@@ -1063,9 +1068,8 @@ widgets built in the loading process.")
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
     (synopsis "Printing framework for GNOME")
-    (description  "Gnome-print is a high-quality printing framework for GNOME.")
+    (description (package-description libgnomeprint))
     (license license:lgpl2.0+)))
-
 
 (define-public libbonoboui
   (package
