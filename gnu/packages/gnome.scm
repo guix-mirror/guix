@@ -1344,6 +1344,13 @@ libraries written in C.")
        ("xmllint" ,libxml2)))
     (propagated-inputs
      `(("gtk+" ,gtk+))) ; required by libvte-2.91.pc
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'pre-build
+        (lambda* _
+          (setenv "CC" "gcc"))
+        %standard-phases)))
     (home-page "http://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
