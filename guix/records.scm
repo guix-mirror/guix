@@ -81,15 +81,18 @@ tuples, and THUNKED is the list of identifiers of thunked fields."
           (define (thunked-field? f)
             (memq (syntax->datum f) '#,thunked))
 
+          (define (wrap-field-value f value)
+            (if (thunked-field? f)
+                #`(lambda () #,value)
+                value))
+
           (define (field-bindings field+value)
             ;; Return field to value bindings, for use in 'let*' below.
             (map (lambda (field+value)
                    (syntax-case field+value ()
                      ((field value)
                       #`(field
-                         #,(if (thunked-field? #'field)
-                               #'(lambda () value)
-                               #'value)))))
+                         #,(wrap-field-value #'field #'value)))))
                  field+value))
 
           (syntax-case s (inherit #,@fields)
@@ -111,9 +114,7 @@ tuples, and THUNKED is the list of identifiers of thunked fields."
                             car)
                      (let ((value
                             (car (assoc-ref dflt (syntax->datum f)))))
-                       (if (thunked-field? f)
-                           #`(lambda () #,value)
-                           value))))
+                       (wrap-field-value f value))))
 
                (let ((fields (append fields (map car dflt))))
                  (cond ((lset= eq? fields 'expected)
