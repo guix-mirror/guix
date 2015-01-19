@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,15 +91,15 @@
            (system-error-errno args)))))
 
 (test-skip (if (zero? (getuid)) 1 0))
-(test-equal "set-network-interface-flags"
-  EPERM
+(test-assert "set-network-interface-flags"
   (let ((sock (socket AF_INET SOCK_STREAM 0)))
     (catch 'system-error
       (lambda ()
         (set-network-interface-flags sock "lo" IFF_UP))
       (lambda args
         (close-port sock)
-        (system-error-errno args)))))
+        ;; We get EPERM with Linux 3.18ish and EACCES with 2.6.32.
+        (memv (system-error-errno args) (list EPERM EACCES))))))
 
 (test-equal "network-interface-address lo"
   (make-socket-address AF_INET (inet-pton AF_INET "127.0.0.1") 0)
@@ -108,8 +108,7 @@
     (close-port sock)
     addr))
 
-(test-equal "set-network-interface-address"
-  EPERM
+(test-assert "set-network-interface-address"
   (let ((sock (socket AF_INET SOCK_STREAM 0)))
     (catch 'system-error
       (lambda ()
@@ -120,7 +119,8 @@
                                         0)))
       (lambda args
         (close-port sock)
-        (system-error-errno args)))))
+        ;; We get EPERM with Linux 3.18ish and EACCES with 2.6.32.
+        (memv (system-error-errno args) (list EPERM EACCES))))))
 
 (test-end)
 
