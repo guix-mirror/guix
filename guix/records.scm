@@ -43,7 +43,7 @@
                        form))))
 
 (define* (make-syntactic-constructor type name ctor fields
-                                     #:key thunked defaults)
+                                     #:key (thunked '()) (defaults '()))
   "Make the syntactic constructor NAME for TYPE, that calls CTOR, and expects
 all of FIELDS to be initialized.  DEFAULTS is the list of FIELD/DEFAULT-VALUE
 tuples, and THUNKED is the list of identifiers of thunked fields."
