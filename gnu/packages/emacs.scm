@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
@@ -482,13 +482,12 @@ operations.")
                  (alist-cons-before
                   'install 'pre-install
                   (lambda* (#:key outputs #:allow-other-keys)
-                    ;; The 'install' rule expects 'emms-print-metadata.1' to
-                    ;; be already installed.
+                    ;; The 'install' rule expects the target directory to
+                    ;; exist.
                     (let* ((out  (assoc-ref outputs "out"))
                            (man1 (string-append out "/share/man/man1")))
                       (mkdir-p man1)
-                      (copy-file "emms-print-metadata.1"
-                                 (string-append man1 "/emms-print-metadata.1"))))
+                      #t))
                   (alist-cons-after
                    'install 'post-install
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -505,8 +504,7 @@ operations.")
        #:tests? #f))
     (native-inputs `(("emacs" ,emacs)            ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
-    (inputs `(;("perl" ,perl)                     ;for 'emms-print-metadata.pl'
-              ("alsa-utils" ,alsa-utils)
+    (inputs `(("alsa-utils" ,alsa-utils)
               ("vorbis-tools" ,vorbis-tools)
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
