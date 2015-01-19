@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -1424,3 +1424,31 @@ editors, IDEs, etc.")
 is to provide a backend to GSettings on platforms that don't already have
 configuration storage systems.")
     (license license:lgpl2.1)))
+
+(define-public json-glib
+  (package
+    (name "json-glib")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02k66lpc4cmgygj66n8zcy59bggy7yzm3v4hni9xqplgva9d2yw8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin") ; for glib-mkenums and glib-genmarshal
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; according to json-glib-1.0.pc
+    (home-page "https://wiki.gnome.org/Projects/JsonGlib")
+    (synopsis "Compiler for the GObject type system")
+    (description "JSON-GLib is a C library based on GLib providing
+serialization and deserialization support for the JavaScript Object Notation
+(JSON) format described by RFC 4627.  It provides parser and generator
+GObject classes and various wrappers for the complex data types employed by
+JSON, such as arrays and objects.")
+    (license license:lgpl2.1+)))
