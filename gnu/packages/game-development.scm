@@ -53,14 +53,14 @@ is used in some video games and movies.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "0.10.2")
+    (version "0.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0p4p3lv4nw11fkfvvyjirb93r2x4w2rrc2w650gl2k57k92jpiij"))))
+                "03a15vbzjfwc8dpifbjvd0gnr208mzmdkgs2nlc8zq6z0a4h4jqd"))))
     (build-system gnu-build-system)
     (inputs `(("qt" ,qt)
               ("zlib" ,zlib)))
