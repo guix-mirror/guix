@@ -520,40 +520,6 @@ alternative layouts Dvorak and Colemak, as well as for the numpad.  Tutorials
 are primarily in English, however some in other languages are provided.")
     (license license:gpl3+)))
 
-(define-public tiled
-  (package
-    (name "tiled")
-    (version "0.10.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bjorn/tiled/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0p4p3lv4nw11fkfvvyjirb93r2x4w2rrc2w650gl2k57k92jpiij"))))
-    (build-system gnu-build-system)
-    (inputs `(("qt" ,qt)
-              ("zlib" ,zlib)))
-    (arguments
-     '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (system* "qmake"
-                     (string-append "PREFIX=" out))))
-        %standard-phases)))
-    (home-page "http://www.mapeditor.org/")
-    (synopsis "Tile map editor")
-    (description
-     "Tiled is a general purpose tile map editor.  It is meant to be used for
-editing maps of any tile-based game, be it an RPG, a platformer or a Breakout
-clone.")
-
-    ;; As noted in 'COPYING', part of it is under GPLv2+, while the rest is
-    ;; under BSD-2.
-    (license license:gpl2+)))
-
 (define-public openal
   (package
     (name "openal")
