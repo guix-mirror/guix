@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
@@ -2811,3 +2811,32 @@ computing.")
          ,@(alist-delete "python-numpydoc"
                          (alist-delete "python-matplotlib"
                                        (package-inputs ipython))))))))
+
+(define-public python-isodate
+  (package
+    (name "python-isodate")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/i/isodate/isodate-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1yqjn0is0p64cmk9xhq4hc6q06jk86d60kg2jws58d78q0qysami"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page
+      "http://cheeseshop.python.org/pypi/isodate")
+    (synopsis
+      "Python date parser and formatter")
+    (description
+      "Python-isodate is a python module for parsing and formatting
+ISO 8601 dates, time and duration.")
+    (license bsd-3)))
+
+(define-public python2-isodate
+  (package-with-python2 python-isodate))
