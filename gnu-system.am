@@ -327,6 +327,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/abiword-pass-no-undefined-to-linker.patch	\
   gnu/packages/patches/abiword-use-proper-png-api.patch		\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
+  gnu/packages/patches/aegis-constness-error.patch         	\
+  gnu/packages/patches/aegis-perl-tempdir1.patch           	\
+  gnu/packages/patches/aegis-perl-tempdir2.patch           	\
+  gnu/packages/patches/aegis-test-fixup-1.patch            	\
+  gnu/packages/patches/aegis-test-fixup-2.patch            	\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
@@ -350,6 +355,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
+  gnu/packages/patches/clucene-contribs-lib.patch               \
   gnu/packages/patches/curl-gss-api-fix.patch			\
   gnu/packages/patches/cursynth-wave-rand.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
@@ -413,6 +419,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libarchive-fix-lzo-test-case.patch	\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
+  gnu/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
@@ -420,6 +427,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
+  gnu/packages/patches/lua51-liblua-so.patch                    \
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
