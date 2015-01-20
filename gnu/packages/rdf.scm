@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,11 +17,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rdf)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses)
+                #:select (bsd-style lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages boost)
@@ -34,6 +36,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xml))
 
@@ -198,3 +201,32 @@ provides a highly usable object-oriented C++/Qt4 framework for RDF data.  It
 uses different RDF storage solutions as backends through a simple plugin
 system.")
     (license lgpl2.0+)))
+
+(define-public python-rdflib
+  (package
+    (name "python-rdflib")
+    (version "4.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/r/rdflib/rdflib-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-htm5lib" ,python-html5lib)
+        ("python-isodate" ,python-isodate)
+        ("python-pyparsing" ,python-pyparsing)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/RDFLib/rdflib")
+    (synopsis
+      "Python RDF library")
+    (description
+      "RDFLib is a Python library for working with RDF, a simple yet
+powerful language for representing information.")
+    (license (bsd-style "file://LICENSE"
+                        "See LICENSE in the distribution."))))
