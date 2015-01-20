@@ -135,7 +135,13 @@
   (method    origin-method)                       ; procedure
   (sha256    origin-sha256)                       ; bytevector
   (file-name origin-file-name (default #f))       ; optional file name
-  (patches   origin-patches (default '()))        ; list of file names
+
+  ;; Patches are delayed so that the 'search-patch' calls are made lazily,
+  ;; which reduces I/O on startup and allows patch-not-found errors to be
+  ;; gracefully handled at run time.
+  (patches   origin-patches                       ; list of file names
+             (default '()) (delayed))
+
   (snippet   origin-snippet (default #f))         ; sexp or #f
   (patch-flags  origin-patch-flags                ; list of strings
                 (default '("-p1")))
@@ -157,7 +163,7 @@
     (($ <origin> uri method sha256 file-name patches)
      (simple-format port "#<origin ~s ~a ~s ~a>"
                     uri (bytevector->base32-string sha256)
-                    patches
+                    (force patches)
                     (number->string (object-address origin) 16)))))
 
 (set-record-type-printer! <origin> print-origin)
@@ -937,10 +943,10 @@ cross-compilation target triplet."
 SOURCE is a file name, return either the interned file name (if SOURCE is
 outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
   (match source
-    (($ <origin> uri method sha256 name () #f)
+    (($ <origin> uri method sha256 name (= force ()) #f)
      ;; No patches, no snippet: this is a fixed-output derivation.
      (method uri 'sha256 sha256 name #:system system))
-    (($ <origin> uri method sha256 name (patches ...) snippet
+    (($ <origin> uri method sha256 name (= force (patches ...)) snippet
         (flags ...) inputs (modules ...) (imported-modules ...)
         guile-for-build)
      ;; Patches and/or a snippet.
