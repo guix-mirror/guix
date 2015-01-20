@@ -42,6 +42,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 regex)
@@ -247,6 +248,25 @@
     (and (derivation? drv)
          (string=? (derivation->output-path drv)
                    (package-output %store package "out")))))
+
+(test-assert "patch not found yields a run-time error"
+  (guard (c ((condition-has-type? c &message)
+             (and (string-contains (condition-message c)
+                                   "does-not-exist.patch")
+                  (string-contains (condition-message c)
+                                   "not found"))))
+    (let ((p (package
+               (inherit (dummy-package "p"))
+               (source (origin
+                         (method (const #f))
+                         (uri "http://whatever")
+                         (patches
+                          (list (search-patch "does-not-exist.patch")))
+                         (sha256
+                          (base32
+                           "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks4")))))))
+      (package-derivation %store p)
+      #f)))
 
 (test-assert "trivial"
   (let* ((p (package (inherit (dummy-package "trivial"))
