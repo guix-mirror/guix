@@ -2840,3 +2840,34 @@ ISO 8601 dates, time and duration.")
 
 (define-public python2-isodate
   (package-with-python2 python-isodate))
+
+(define-public python-html5lib
+  (package
+    (name "python-html5lib")
+    (version "1.0b3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/h/html5lib/html5lib-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1l5i6xzckzx4hnh9qzv9q3kyhkgjx2hsi2k9srgci3qizjmvp6ln"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:test-target "check"))
+    (home-page
+      "https://github.com/html5lib/html5lib-python")
+    (synopsis
+      "Python HTML parser based on the WHATWG HTML specifcation")
+    (description
+      "Html5lib is an HTML parser based on the WHATWG HTML specifcation
+and written in Python.")
+    (license expat)))
+
+(define-public python2-html5lib
+  (package-with-python2 python-html5lib))
