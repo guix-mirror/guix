@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -331,6 +331,11 @@ an output path different than CURRENT-PATH."
 ;;; Search paths.
 ;;;
 
+(define-syntax-rule (with-null-error-port exp)
+  "Evaluate EXP with the error port pointing to the bit bucket."
+  (with-error-to-port (%make-void-port "w")
+    (lambda () exp)))
+
 (define* (search-path-environment-variables entries profile
                                             #:optional (getenv getenv))
   "Return environment variable definitions that may be needed for the use of
@@ -373,9 +378,14 @@ current settings and report only settings not already effective."
                (files  (if pattern
                            (map (cut string-append <> "/") files)
                            files))
-               (path   (search-path-as-list files (list profile)
-                                            #:type type
-                                            #:pattern pattern)))
+
+               ;; XXX: Silence 'find-files' when it stumbles upon non-existent
+               ;; directories (see
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
+               (path   (with-null-error-port
+                        (search-path-as-list files (list profile)
+                                             #:type type
+                                             #:pattern pattern))))
           (if (every (cut member <> values) path)
               #f
               (format #f "export ~a=\"~a\""
