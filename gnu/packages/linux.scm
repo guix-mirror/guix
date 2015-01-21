@@ -1719,6 +1719,7 @@ in a digital read-out.")
     (inputs
      `(;; ("slang" ,slang)
        ;; ("newt" ,newt)
+       ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
 
        ;; FIXME: Documentation.
