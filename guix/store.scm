@@ -917,10 +917,14 @@ permission bits are kept."
                          (guile-for-build (%guile-for-build))
                          (system (%current-system)))
   "Run MVAL, a monadic value in the store monad, in STORE, an open store
-connection."
+connection, and return the result."
   (parameterize ((%guile-for-build guile-for-build)
                  (%current-system system))
-    (run-with-state mval store)))
+    (call-with-values (lambda ()
+                        (run-with-state mval store))
+      (lambda (result store)
+        ;; Discard the state.
+        result))))
 
 
 ;;;
