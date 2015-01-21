@@ -1,0 +1,25 @@
+--- a/girepository/gitypelib.c.orig
++++ b/girepository/gitypelib.c
+@@ -2296,7 +2296,22 @@ _g_typelib_do_dlopen (GITypelib *typelib)
+         {
+           GModule *module;
+ 
++          /* 'gobject-introspection' doesn't store the path of shared
++             libraries into '.typelib' and '.gir' files.  Shared
++             libraries are searched for in the dynamic linker search
++             path.  In Guix we patch 'gobject-introspection' such that
++             it stores the absolute path of shared libraries in
++             '.typelib' and '.gir' files.  Here, in order to minimize
++             side effects, we make sure that if the library is not
++             found at the indicated path location, we try with just
++             the basename and the system dynamic library
++             infrastructure, as per default behaviour of the
++             library. */
+           module = load_one_shared_library (shlibs[i]);
++          if (module == NULL && g_path_is_absolute (shlibs[i]))
++            {
++              module = load_one_shared_library (g_basename(shlibs[i]));
++            }
+ 
+           if (module == NULL)
+             {

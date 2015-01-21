@@ -213,6 +213,8 @@ dynamic loading, and an object system.")
               (base32 "1xwm7wmr9r9wp6xljb3bckx3a4siybavaq39w46ly7gpskxfv8iv"))
              (patches (list 
                        (search-patch "gobject-introspection-cc.patch")
+                       (search-patch
+                        "gobject-introspection-girepository.patch")
                        (search-patch 
                         "gobject-introspection-absolute-shlib-path.patch")))))
     (build-system gnu-build-system)
