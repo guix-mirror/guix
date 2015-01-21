@@ -31,6 +31,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -70,16 +71,16 @@
               (base32
                "05nshngk03ln90vsjz44dx8al576f4vd5fvhs1l0jmx13jb9q551"))))
     (build-system cmake-build-system)
-    ;; FIXME: Add interpreter ruby once available.
-    ;; Add optional input libqtzeitgeist.
-    (inputs
-     `(("automoc4" ,automoc4)
-       ("glib" ,glib)
-       ("libx11" ,libx11)
-       ("pulseaudio" ,pulseaudio)
-       ("qt" ,qt-4)))
+    ;; FIXME: Add optional input libqzeitgeist once available.
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("automoc4" ,automoc4)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libx11" ,libx11)
+       ("pulseaudio" ,pulseaudio)))
+    (propagated-inputs
+     `(("qt" ,qt-4))) ; according to phonon.pc
     (arguments
      `(#:tests? #f)) ; no test target
     (home-page "http://phonon.kde.org/")
