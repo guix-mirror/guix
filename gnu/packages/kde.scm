@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,15 +60,15 @@
 (define-public phonon
   (package
     (name "phonon")
-    (version "4.8.2")
+    (version "4.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.kde.org/stable/" name
-                                "/" version "/"
+                                "/" version "/src/"
                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0xnjz7bbw393q77n4s6y9frd7l2s90635w03w9a2jr85zr89fnfg"))))
+               "05nshngk03ln90vsjz44dx8al576f4vd5fvhs1l0jmx13jb9q551"))))
     (build-system cmake-build-system)
     ;; FIXME: Add interpreter ruby once available.
     ;; Add optional input libqtzeitgeist.
