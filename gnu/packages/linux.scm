@@ -1709,7 +1709,11 @@ in a digital read-out.")
                  %standard-phases)
        #:make-flags (list (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
-                          "WERROR=0")
+                          "WERROR=0"
+
+                          ;; By default, 'config/Makefile' uses lib64 on
+                          ;; x86_64.  Work around that.
+                          "lib=lib")
        #:tests? #f))                              ;no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)
