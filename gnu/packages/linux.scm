@@ -35,6 +35,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages slang)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -1719,7 +1720,7 @@ in a digital read-out.")
        ("perl" ,perl)
        ("python" ,python-2)))
     (inputs
-     `(;; ("slang" ,slang)
+     `(("slang" ,slang)                        ;for the interactive TUI
        ;; ("newt" ,newt)
        ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
