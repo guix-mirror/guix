@@ -49,6 +49,8 @@
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages asciidoc)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -1722,13 +1724,13 @@ in a digital read-out.")
        ("python" ,python-2)                    ;'perf' links against libpython
        ("elfutils" ,elfutils)
 
-       ;; FIXME: Documentation.
-       ;; ("libxslt" ,libxslt)
-       ;; ("docbook-xml" ,docbook-xml)
-       ;; ("docbook-xsl" ,docbook-xsl)
-       ;; ("xmlto" ,xmlto)
-       ;; ("asciidoc" ,asciidoc)
-       ))
+       ;; Documentation.
+       ("libxml2" ,libxml2)                       ;for $XML_CATALOG_FILES
+       ("libxslt" ,libxslt)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xmlto" ,xmlto)
+       ("asciidoc" ,asciidoc)))
     (home-page "https://perf.wiki.kernel.org/")
     (synopsis "Linux profiling with performance counters")
     (description
