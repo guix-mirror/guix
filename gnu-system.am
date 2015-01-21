@@ -244,6 +244,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/serveez.scm			\
   gnu/packages/shishi.scm			\
   gnu/packages/skribilo.scm			\
+  gnu/packages/slang.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
   gnu/packages/socat.scm			\
