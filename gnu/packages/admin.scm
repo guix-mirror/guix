@@ -631,7 +631,10 @@ system administrator.")
                 "002l6h27pnhb77b65frhazbhknsxvrsnkpi43j7i0qw1lrgi7nkf"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-logpath=/var/log/sudo.log")
+     `(#:configure-flags '("--with-logpath=/var/log/sudo.log"
+                           "--with-rundir=/run/sudo"
+                           "--with-vardir=/var/db/sudo"
+                           "--with-iologdir=/var/log/sudo-io")
        #:phases (alist-cons-before
                  'configure 'pre-configure
                  (lambda _
@@ -645,7 +648,13 @@ system administrator.")
                       "")
                      (("^install: (.*)install-sudoers(.*)" _ before after)
                       ;; Don't try to create /etc/sudoers.
-                      (string-append "install: " before after "\n"))))
+                      (string-append "install: " before after "\n"))
+                     (("\\$\\(DESTDIR\\)\\$\\(rundir\\)")
+                      ;; Don't try to create /run/sudo.
+                      "$(TMPDIR)/dummy")
+                     (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
+                      ;; Don't try to create /var/db/sudo.
+                      "$(TMPDIR)/dummy")))
                  %standard-phases)
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
