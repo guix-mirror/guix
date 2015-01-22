@@ -151,6 +151,7 @@ the Nix package manager.")
          ,@(package-native-inputs guix-0.8)))
       (propagated-inputs
        `(("guile-json" ,guile-json)
+         ("geiser" ,geiser)                       ;for guix.el
          ,@(package-propagated-inputs guix-0.8))))))
 
 (define-public guix guix-devel)
