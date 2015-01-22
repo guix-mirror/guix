@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,7 +17,10 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu))
+(define-module (gnu)
+  #:export (use-package-modules
+            use-service-modules
+            use-system-modules))
 
 ;;; Commentary:
 ;;;
@@ -43,5 +47,14 @@
                 (lambda (m)
                   (module-use! i (resolve-interface m))))
               %public-modules)))
+
+(define-syntax-rule (use-package-modules module ...)
+  (use-modules (gnu packages module) ...))
+
+(define-syntax-rule (use-service-modules module ...)
+  (use-modules (gnu services module) ...))
+
+(define-syntax-rule (use-system-modules module ...)
+  (use-modules (gnu system module) ...))
 
 ;;; gnu.scm ends here
