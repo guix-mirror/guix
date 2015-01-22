@@ -2,7 +2,7 @@
 
 #+TITLE: Tentative GNU Guix Road Map
 
-Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -17,56 +17,66 @@ The goals of the GNU Guix project are two-fold:
     GNU/Linux and possibly other GNU variants, with a focus on the
     promotion and tight integration of GNU components–the GNU system.
 
-This document lists milestones toward these goals.
+Since its inception, the project has gone a long way towards that goal.  Below
+is a list of items we want for version "1.0" of the Guix System Distribution.
+There will be a few 0.x releases by then to give the new features more
+exposure and testing.
 
-The timeline below was written at the end of Dec. 2012.  An updated and more
-detailed list of the remaining milestones was posted at
-https://lists.gnu.org/archive/html/guix-devel/2013-12/msg00120.html .
+You're welcome to discuss this road map on guix-devel@gnu.org or #guix on
+Freenode!
 
-The actual timeline was of course slightly different than initially
-envisioned, and so was the feature set–things like cross-compilation support
-and the MIPS64 port were not planned back then.  See the news section at
-http://www.gnu.org/software/guix/ and ‘NEWS’ for the release history.
+* Features scheduled for 1.0
 
-* GNU Guix 0.1: Jan. 2013 (was: Dec. 2012)
+  - larger & more robust build farm
+    + we need a powerful, dedicated front-end
+    + armhf-linux build machine
+    + leave Hydra in favor of 'guix publish' + custom code?
+  - more OS features
+    + LVM support
+    + encrypted root
+    + configurable name service switch
+    + whole-system unit tests, using VMs
+  - more service definitions
+    + mcron, postfix(?), wicd(?), etc.
+  - better 'guix system'
+    + 'reconfigure' should be able to restart non-essential services
+    + support for '--list-generations' and '--delete-generations'
+  - better 'guix pull'
+    + using Git to fetch the source instead of re-downloading everything
+    + build more quickly
+    + install new .mo files and new manual
+    + authentication of the Guix source: use signed commits?
+  - simplified, purely declarative service list in 'operating-system'
+    + it should be possible to inspect the service instance declarations and
+      settings
+  - GUIs
+    + integrate guix-web?
+    + guile-ncurses installer?
+  - 'guix publish'?
 
-** basic package management facilities
+* Features for later
 
-Including install, upgrade, remove, roll-back, and search.
-
-** self-contained user-land distribution
-
-  - GNU/Linux-only, i686 and x86_64; optionally mipsel64
-  - ~100 non-X11 packages
-
-** maybe integrated Nix code
-
-* GNU Guix 0.2: Feb./Mar. 2013
-
-** improved package management features
-
-  - user-environment hooks
-  - sophisticated handling of collisions when building a union (package
-    priorities, etc.)
-
-** [[file:TODO::*add%20guix-pull][guix-pull tool]] to quickly update Guix and GNU for normal users
-** support for fetching pre-built binaries
-
-  - this is known as the "binary-cache substituter" in Nix parlance
-
-** auto-update facility available for GNU packages
-
-** more packages
-
-  - Xorg
-  - Emacs
-
-* GNU Guix 0.9: June 2013
-
-** bootable GNU/Linux-Libre distro
-** high-level OS configuration descriptive EDSL, à la NixOS
-
-* GNU Guix 1.0: September 2013 (GNU anniversary release)
-
-** bootable GNU/Linux-Libre distro with non-GUI installer
-** usable for a range of hacker-style uses
+  - complete GNU/Hurd port
+  - use content-based addressing when downloading substitutes to reduce
+    bandwidth requirements
+    + design nar v2 format where file contents are replaced by their hashes
+    + leverage /gnu/store/.links
+  - binary origin tracking
+    + keep signatures in sqlite.db
+    + preserve signatures upon import/export
+  - peer-to-peer distribution of updates (GNUnet?)
+  - more deterministic builds
+    + identify & fix sources of non-determinism in builds
+    + strengthen guix-daemon containers to further increase reproducibility
+    + trusting-trust: bootstrap with different tool chains
+    + fixed-point: re-bootstrap until fixed point is reached
+    + distributed validation: compare contents of store items with others
+      * resist a hydra.gnu.org compromise
+  - reproducible containers: mix of 'guix environment' and 'guix system vm'
+  - execute code with least privilege
+    + build containers like guix-daemon does
+    + provide a Plash-like interface in Bash
+  - daemon rewritten in Guile
+  - more dmd integration
+    + monitor network interfaces and start/stop events based on that
+    + include a DHCP client written in Scheme
