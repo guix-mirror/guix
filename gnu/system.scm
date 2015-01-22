@@ -372,6 +372,36 @@ This is the GNU system.  Welcome.\n")
   "Return the default /etc/hosts file."
   (text-file "hosts" (local-host-aliases host-name)))
 
+(define (emacs-site-file)
+  "Return the Emacs 'site-start.el' file.  That file contains the necessary
+settings for 'guix.el' to work out-of-the-box."
+  (gexp->file "site-start.el"
+              #~(progn
+                 ;; Add the "normal" elisp directory to the search path;
+                 ;; guix.el may be there.
+                 (add-to-list
+                  'load-path
+                  "/run/current-system/profile/share/emacs/site-lisp")
+
+                 ;; Attempt to load guix.el.
+                 (require 'guix-init nil t)
+
+                 (when (require 'geiser-guile nil t)
+                   ;; Make sure Geiser's Scheme modules are in Guile's search
+                   ;; path.
+                   (add-to-list
+                    'geiser-guile-load-path
+                    "/run/current-system/profile/share/geiser/guile")))))
+
+(define (emacs-site-directory)
+  "Return the Emacs site directory, aka. /etc/emacs."
+  (mlet %store-monad ((file (emacs-site-file)))
+    (gexp->derivation "emacs"
+                      #~(begin
+                          (mkdir #$output)
+                          (chdir #$output)
+                          (symlink #$file "site-start.el")))))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (issue "Hello!\n")
@@ -390,6 +420,7 @@ This is the GNU system.  Welcome.\n")
 /bin/sh
 /run/current-system/profile/bin/sh
 /run/current-system/profile/bin/bash\n"))
+       (emacs      (emacs-site-directory))
        (issue      (text-file "issue" issue))
 
        ;; For now, generate a basic config so that /etc/hosts is honored.
@@ -410,12 +441,16 @@ export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
 export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
+
+# Append the directory of 'site-start.el' to the search path.
+export EMACSLOADPATH=:/etc/emacs
 "))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
                   ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
                   ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
+                  ("emacs" ,#~#$emacs)
                   ("pam.d" ,#~#$pam.d)
                   ("login.defs" ,#~#$login.defs)
                   ("issue" ,#~#$issue)
