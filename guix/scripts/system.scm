@@ -76,11 +76,14 @@
                   file (strerror err))))
         (('syntax-error proc message properties form . rest)
          (let ((loc (source-properties->location properties)))
-           (leave (_ "~a: ~a~%")
-                  (location->string loc) message)))
-        (_
-         (leave (_ "failed to load operating system file '~a': ~s~%")
-                file args))))))
+           (format (current-error-port) (_ "~a: error: ~a~%")
+                   (location->string loc) message)
+           (exit 1)))
+        ((error args ...)
+         (report-error (_ "failed to load operating system file '~a':~%")
+                       file)
+         (apply display-error #f (current-error-port) args)
+         (exit 1))))))
 
 
 ;;;

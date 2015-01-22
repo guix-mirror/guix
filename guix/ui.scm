@@ -43,6 +43,7 @@
   #:export (_
             N_
             P_
+            report-error
             leave
             show-version-and-exit
             show-bug-report-information
