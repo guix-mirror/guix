@@ -443,7 +443,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/net-tools-bitrot.patch			\
   gnu/packages/patches/ninja-tests.patch			\
   gnu/packages/patches/nss-pkgconfig.patch			\
-  gnu/packages/patches/nvi-assume-preserve-path.patch           \
+  gnu/packages/patches/nvi-assume-preserve-path.patch		\
+  gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
+  gnu/packages/patches/nvi-db4.patch				\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/ots-no-include-missing-file.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\

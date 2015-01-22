@@ -37,7 +37,9 @@
                          ".tar.bz2"))
         (sha256
           (base32 "0nbbs1inyrqds0ywn3ln5slv54v5zraq7lszkg8nsavv4kivhh9l"))
-        (patches (list (search-patch "nvi-assume-preserve-path.patch")))
+        (patches (list (search-patch "nvi-assume-preserve-path.patch")
+                       (search-patch "nvi-dbpagesize-binpower.patch")
+                       (search-patch "nvi-db4.patch")))
         (snippet
           ;; Create a wrapper for the configure script, make it executable.
           '(let ((conf-wrap (open-output-file "configure")))
