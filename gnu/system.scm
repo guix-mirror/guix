@@ -444,6 +444,10 @@ export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share
 
 # Append the directory of 'site-start.el' to the search path.
 export EMACSLOADPATH=:/etc/emacs
+
+# By default, applications that use D-Bus, such as Emacs, abort at startup
+# when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
+export DBUS_FATAL_WARNINGS=0
 "))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
