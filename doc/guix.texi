@@ -3447,7 +3447,7 @@ to report issues (and success stories!), and join us in improving it.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@url{ftp://alpha.gnu.org/gnu/guix/gnu-usb-install-@value{VERSION}.@var{system}.xz},
+@url{ftp://alpha.gnu.org/gnu/guix/guix-usb-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
