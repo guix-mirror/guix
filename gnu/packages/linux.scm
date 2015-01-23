@@ -393,11 +393,11 @@ providing the system administrator with some help in common tasks.")
               (patches (list (search-patch "util-linux-tests.patch")))
               (modules '((guix build utils)))
               (snippet
-               ;; We take the 'logger' program from GNU Inetutils, so remove
-               ;; it from here.  There's no '--disable-logger', hence this
-               ;; hack.
+               ;; We take the 'logger' program from GNU Inetutils and 'kill'
+               ;; from GNU Coreutils.
                '(substitute* "configure"
-                  (("build_logger=yes") "build_logger=no")))))
+                  (("build_logger=yes") "build_logger=no")
+                  (("build_kill=yes") "build_kill=no")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-use-tty-group"
