@@ -103,14 +103,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.38")
+   (version "0.9.39")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "08g7p4l0p2fsjj8ayl68zq1bqgrn0pck19bm8yd7k61whvfv9wld"))))
+              "0wz3sw62z3wsqivrssh0xb3yn064ix5x5cc6prvdfrn3cmh7p4sg"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
