@@ -27,7 +27,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20141122")
+    (version "20150122")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +35,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1kpd4ayd4lb867nfnpkam4b3mh86jl6cdy386x1rich938gbrg38"))))
+        "14g9pka59vln19rg6y8lyvrsc4nb3jk8y26hv3hdrf44rgwpds7d"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/parallel/")
