@@ -1894,12 +1894,20 @@ parameter.
 
 @defvr {Scheme Variable} perl-build-system
 This variable is exported by @code{(guix build-system perl)}.  It
-implements the standard build procedure for Perl packages, which
-consists in running @code{perl Makefile.PL PREFIX=/gnu/store/@dots{}},
-followed by @code{make} and @code{make install}.
+implements the standard build procedure for Perl packages, which either
+consists in running @code{perl Build.PL --prefix=/gnu/store/@dots{}},
+followed by @code{Build} and @code{Build install}; or in running
+@code{perl Makefile.PL PREFIX=/gnu/store/@dots{}}, followed by
+@code{make} and @code{make install}; depending on which of
+@code{Build.PL} or @code{Makefile.PL} is present in the package
+distribution.  Preference is given to the former if both @code{Build.PL}
+and @code{Makefile.PL} exist in the package distribution.  This
+preference can be reversed by specifying @code{#t} for the
+@code{#:make-maker?} parameter.
 
-The initial @code{perl Makefile.PL} invocation passes flags specified by
-the @code{#:make-maker-flags} parameter.
+The initial @code{perl Makefile.PL} or @code{perl Build.PL} invocation
+passes flags specified by the @code{#:make-maker-flags} or
+@code{#:module-build-flags} parameter, respectively.
 
 Which Perl package is used can be specified with @code{#:perl}.
 @end defvr

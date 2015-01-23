@@ -29,22 +29,57 @@
 ;;
 ;; Code:
 
-(define* (configure #:key outputs (make-maker-flags '())
+(define* (configure #:key outputs make-maker?
+                    (make-maker-flags '()) (module-build-flags '())
                     #:allow-other-keys)
   "Configure the given Perl package."
-  (let ((out (assoc-ref outputs "out")))
-    (if (file-exists? "Makefile.PL")
-        (let ((args `("Makefile.PL" ,(string-append "PREFIX=" out)
-                      "INSTALLDIRS=site" ,@make-maker-flags)))
-          (format #t "running `perl' with arguments ~s~%" args)
-          (zero? (apply system* "perl" args)))
-        (error "no Makefile.PL found"))))
+  (let* ((out (assoc-ref outputs "out"))
+         (args (cond
+                ;; Prefer to use Module::Build unless otherwise told
+                ((and (file-exists? "Build.PL")
+                      (not make-maker?))
+                 `("Build.PL" ,(string-append "--prefix=" out)
+                   "--installdirs=site" ,@module-build-flags))
+                ((file-exists? "Makefile.PL")
+                 `("Makefile.PL" ,(string-append "PREFIX=" out)
+                   "INSTALLDIRS=site" ,@make-maker-flags))
+                (else (error "no Build.PL or Makefile.PL found")))))
+    (format #t "running `perl' with arguments ~s~%" args)
+    (zero? (apply system* "perl" args))))
+
+(define-syntax-rule (define-w/gnu-fallback* (name args ...) body ...)
+  (define* (name args ... #:rest rest)
+    (if (access? "Build" X_OK)
+        (begin body ...)
+        (apply (assoc-ref gnu:%standard-phases 'name) rest))))
+
+(define-w/gnu-fallback* (build)
+  (zero? (system* "./Build")))
+
+(define-w/gnu-fallback* (check #:key target
+                               (tests? (not target)) (test-flags '())
+                               #:allow-other-keys)
+  (if tests?
+      (zero? (apply system* "./Build" "test" test-flags))
+      (begin
+        (format #t "test suite not run~%")
+        #t)))
+
+(define-w/gnu-fallback* (install)
+  (zero? (system* "./Build" "install")))
 
 (define %standard-phases
-  ;; Everything is as with the GNU Build System except for the `configure'
-  ;; phase.
-  (alist-replace 'configure configure
-                 gnu:%standard-phases))
+  ;; Everything is as with the GNU Build System except for the `configure',
+  ;; `build', `check', and `install' phases.
+  (alist-replace
+   'configure configure
+   (alist-replace
+    'build build
+    (alist-replace
+     'check check
+     (alist-replace
+      'install install
+      gnu:%standard-phases)))))
 
 (define* (perl-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
