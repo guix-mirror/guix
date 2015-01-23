@@ -29,6 +29,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages compression)
   #:export (installation-os))
 
 ;;; Commentary:
@@ -42,10 +43,14 @@
   "Return a script that spawns the Info reader on the right section of the
 manual."
   (gexp->script "log-to-info"
-                #~(execl (string-append #$texinfo-4 "/bin/info") "info"
-                         "-d" "/run/current-system/profile/share/info"
-                         "-f" (string-append #$guix "/share/info/guix.info")
-                         "-n" "System Installation")))
+                #~(begin
+                    ;; 'gunzip' is needed to decompress the doc.
+                    (setenv "PATH" (string-append #$gzip "/bin"))
+
+                    (execl (string-append #$texinfo-4 "/bin/info") "info"
+                           "-d" "/run/current-system/profile/share/info"
+                           "-f" (string-append #$guix "/share/info/guix.info")
+                           "-n" "System Installation"))))
 
 (define %backing-directory
   ;; Sub-directory used as the backing store for copy-on-write.
