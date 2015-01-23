@@ -488,7 +488,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
-  gnu/packages/patches/util-linux-perl.patch			\
+  gnu/packages/patches/util-linux-tests.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\

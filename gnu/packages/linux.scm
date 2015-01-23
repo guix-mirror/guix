@@ -27,6 +27,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages ncurses)
@@ -380,41 +381,43 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.21")
+    (version "2.25.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
-                                  name "/v" version "/"
-                                  name "-" version ".2" ".tar.xz"))
+                                  name "/v" (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))
-              (patches (list (search-patch "util-linux-perl.patch")))
+                "1miwwdq1zwvhf0smrxx3fjddq3mz22s8rc5cw54s7x3kbdqpyig0"))
+              (patches (list (search-patch "util-linux-tests.patch")))
               (modules '((guix build utils)))
               (snippet
                ;; We take the 'logger' program from GNU Inetutils, so remove
-               ;; it from here.
-               '(substitute* "misc-utils/Makefile.in"
-                  (("PROGRAMS =(.*) logger(.*)" _ before after)
-                   (string-append "PROGRAMS =" before " " after))
-                  (("MANS =(.*) logger\\.1(.*)" _ before after)
-                   (string-append "MANS =" before " " after))))))
+               ;; it from here.  There's no '--disable-logger', hence this
+               ;; hack.
+               '(substitute* "configure"
+                  (("build_logger=yes") "build_logger=no")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-use-tty-group"
                            "--enable-ddate")
-       #:phases (alist-cons-after
-                 'install 'patch-chkdupexe
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* (string-append out "/bin/chkdupexe")
-                       ;; Allow 'patch-shebang' to do its work.
-                       (("@PERL@") "/bin/perl"))))
+       #:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out"))
+                         (net (assoc-ref inputs "net-base")))
+                     ;; Change the test to refer to the right file.
+                     (substitute* "tests/ts/misc/mcookie"
+                       (("/etc/services")
+                        (string-append net "/etc/services")))
+                     #t))
                  %standard-phases)))
     (inputs `(("zlib" ,guix:zlib)
               ("ncurses" ,ncurses)))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("net-base" ,net-base)))                   ;for tests
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description
