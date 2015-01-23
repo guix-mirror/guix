@@ -1,6 +1,8 @@
 ;; This is an operating system configuration template.
 
 (use-modules (gnu))
+(use-service-modules xorg networking dbus avahi)
+(use-package-modules avahi)
 
 (operating-system
   (host-name "antelope")
@@ -31,4 +33,12 @@
                 ;; and access the webcam.
                 (supplementary-groups '("wheel"
                                         "audio" "video"))
-                (home-directory "/home/alice")))))
+                (home-directory "/home/alice"))))
+
+  ;; Add services to the baseline: the SLiM log-in manager
+  ;; for Xorg sessions, a DHCP client, Avahi, and D-Bus.
+  (services (cons* (slim-service)
+                   (dhcp-client-service)
+                   (avahi-service)
+                   (dbus-service (list avahi))
+                   %base-services)))
