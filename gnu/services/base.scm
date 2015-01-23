@@ -598,7 +598,7 @@ GUIX."
 failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
-                       (build-accounts 10) authorize-hydra-key?
+                       (build-accounts 10) (authorize-hydra-key? #t)
                        (use-substitutes? #t)
                        (extra-options '()))
   "Return a service that runs the build daemon from @var{guix}, and has
