@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,30 +22,32 @@
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xorg))
 
 (define-public xnee
   (package
     (name "xnee")
-    (version "3.18")
+    (version "3.19")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xnee/xnee-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0j6b27ry0w765040089ppwwdl313xfgn31yh3fpqy4gk0jv23m94"))))
+               "04n2lac0vgpv8zsn7nmb50hf3qb56pmj90dmwnivg09gyrf1x92j"))))
     (build-system gnu-build-system)
     (inputs
-     `(("recordproto" ,recordproto)
+     `(("gtk+", gtk+-2)
        ("inputproto" ,inputproto)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
+       ("recordproto" ,recordproto)
        ("xextproto" ,xextproto)
-       ("libxext" ,libxext)
-       ("xproto" ,xproto)
-       ("libx11" ,libx11)))
+       ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/xnee/")
