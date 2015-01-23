@@ -208,9 +208,15 @@ garbage collection of packages (@pxref{Features}).
 Guix has a command-line interface, which allows users to build, install,
 upgrade, and remove packages, as well as a Scheme programming interface.
 
+@cindex Guix System Distribution
+@cindex GSD
 Last but not least, Guix is used to build a distribution of the GNU
-system, with many GNU and non-GNU free software packages.  @xref{GNU
-Distribution}.
+system, with many GNU and non-GNU free software packages.  The Guix
+System Distribution, or GNU@tie{}GSD, takes advantage of the core
+properties of Guix at the system level.  With GNU@tie{}GSD, users
+@emph{declare} all aspects of the operating system configuration, and
+Guix takes care of instantiating that configuration in a reproducible,
+stateless fashion.  @xref{GNU Distribution}.
 
 @c *********************************************************************
 @node Installation
@@ -3312,19 +3318,17 @@ build} supports (@pxref{Invoking guix build, common build options}).
 @node GNU Distribution
 @chapter GNU Distribution
 
-@cindex Guixotic
-Guix comes with a distribution of free software@footnote{The term
-``free'' here refers to the
+@cindex Guix System Distribution
+@cindex GSD
+Guix comes with a distribution of the GNU system consisting entirely of
+free software@footnote{The term ``free'' here refers to the
 @url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
-users of that software}.} that forms the basis of the GNU system.  The
+users of that software}.}.  The
 distribution can be installed on its own (@pxref{System Installation}),
 but it is also possible to install Guix as a package manager on top of
 an installed GNU/Linux system (@pxref{Installation}).  To distinguish
-between the two, we refer to the standalone distribution as
-``Guixotic''@footnote{``How am I going to pronounce that name?'', you
-may ask.  Well, we would pronounce it like ``geeks-otic'', for
-consistency with Guix---which is quite different from the usual
-pronunciation of ``quixotic''.}.
+between the two, we refer to the standalone distribution as the Guix
+System Distribution, or GNU@tie{}GSD.
 
 The distribution provides core GNU packages such as GNU libc, GCC, and
 Binutils, as well as many GNU and non-GNU applications.  The complete
@@ -3341,7 +3345,7 @@ Linux-based and other variants of GNU, with a focus on the promotion and
 tight integration of GNU components, and an emphasis on programs and
 tools that help users exert that freedom.
 
-The GNU distribution is currently available on the following platforms:
+Packages are currently available on the following platforms:
 
 @table @code
 
@@ -3360,6 +3364,8 @@ little-endian 64-bit MIPS processors, specifically the Loongson series,
 n32 application binary interface (ABI), and Linux-Libre kernel.
 
 @end table
+
+GSD itself is currently only available on @code{i686} and @code{x86_64}.
 
 @noindent
 For information on porting to other architectures or kernels,
@@ -3382,9 +3388,9 @@ to join!  @xref{Contributing}, for information about how you can help.
 @node System Installation
 @section System Installation
 
-@cindex Guixotic
-This section explains how to install the standalone distribution,
-code-named ``Guixotic'', on a machine.  The Guix package manager can
+@cindex Guix System Distribution
+This section explains how to install the Guix System Distribution
+on a machine.  The Guix package manager can
 also be installed on top of a running GNU/Linux system,
 @pxref{Installation}.
 
@@ -3399,13 +3405,13 @@ link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
 
 @subsection Limitations
 
-As of version @value{VERSION}, GNU@tie{}Guix and Guixotic are
-not production-ready.  They may contain bugs and lack important
+As of version @value{VERSION}, the Guix System Distribution (GSD) is
+not production-ready.  It may contain bugs and lack important
 features.  Thus, if you are looking for a stable production system that
 respects your freedom as a computer user, a good solution at this point
 is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
 more established GNU/Linux distributions}.  We hope you can soon switch
-to Guixotic without fear, of course.  In the meantime, you can
+to the GSD without fear, of course.  In the meantime, you can
 also keep using your distribution and try out the package manager on top
 of it (@pxref{Installation}).
 
@@ -3589,7 +3595,7 @@ about the installation image.
 @section System Configuration
 
 @cindex system configuration
-Guixotic supports a consistent whole-system configuration
+The Guix System Distribution supports a consistent whole-system configuration
 mechanism.  By that we mean that all aspects of the global system
 configuration---such as the available system services, timezone and
 locale settings, user accounts---are declared in a single place.  Such
@@ -4800,7 +4806,7 @@ This action does not actually install anything.
 @item init
 Populate the given directory with all the files necessary to run the
 operating system specified in @var{file}.  This is useful for first-time
-installations of Guixotic.  For instance:
+installations of GSD.  For instance:
 
 @example
 guix system init my-os-config.scm /mnt
