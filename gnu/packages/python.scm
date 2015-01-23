@@ -2064,7 +2064,7 @@ capabilities.")
 (define-public python-pyparsing
   (package
     (name "python-pyparsing")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
@@ -2072,7 +2072,7 @@ capabilities.")
                            "/pyparsing-" version ".tar.gz"))
        (sha256
         (base32
-         "01lasib0n2fp2k99c988qhz16lm9hcwmnmrmhybdb3jq2xmkvr0p"))))
+         "0kw4py7gn45j93q8r7bzajfrjdc3xlsn2yzln41lf9zmrghjkrq6"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (arguments
