@@ -34,19 +34,16 @@
 (define-public netpbm
   (package
    (name "netpbm")
-   (version "10.61.01")
+   (version "10.69.04")
    (source (origin
             (method svn-fetch)
             ;; At the time of first packaging, the "super-stable" and
             ;; "stable" versions did not compile with newer libpng;
             ;; we needed the "advanced" version.
-            ;; The currently highest stable version is 10.47.53,
-            ;; the currently highest advanced version is 10.69.4,
-            ;; svn release 2397.
             ;; To determine the correct release: "svn log version.mk".
             (uri (svn-reference
                    (url "http://svn.code.sf.net/p/netpbm/code/advanced")
-                   (revision 1832)))
+                   (revision 2397)))
             (sha256
               (base32
                 "1mj1pqq18yj0yb6l24zfjls7axhqmiv0pvcaabl5xvc4a0dm543j"))))
