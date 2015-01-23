@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +72,7 @@ with all found directories."
 ;; http://www.freedesktop.org/wiki/DesktopThemeSpec
 ;; http://freedesktop.org/wiki/Specifications/sound-theme-spec
 ;; http://freedesktop.org/wiki/Specifications/icon-theme-spec
-;; 
+;;
 ;; Currently desktop themes are not well supported and do not honor
 ;; XDG_DATA_DIRS.  One example is evince which only looks for desktop themes
 ;; in $HOME/.themes (for backward compatibility) and in XDG_DATA_HOME (which
@@ -92,7 +92,8 @@ in INPUTS.  Return a list with all found directories."
                    (subdirectory-exists? datadir "/themes")
                    (subdirectory-exists? datadir "/cursors")
                    (subdirectory-exists? datadir "/wallpapers")
-                   (subdirectory-exists? datadir "/icons"))                   
+                   (subdirectory-exists? datadir "/icons")
+                   (subdirectory-exists? datadir "/mime")) ;shared-mime-info
                (not (directory-included? datadir previous)))
           (cons datadir previous)
           previous)))
