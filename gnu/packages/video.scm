@@ -413,3 +413,26 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
      "youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
     (license public-domain)))
+
+(define-public libdvdread
+  (package
+    (name "libdvdread")
+    (version "5.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.videolan.org/videolan/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "052z62l3x8ka5jpf5bi1mzp5p323n1z9rxj74nq5c35a88x1myv6"))))
+    (build-system gnu-build-system)
+    (home-page "http://dvdnav.mplayerhq.hu/")
+    (synopsis "Library for reading video DVDs")
+    (description
+     "Libdvdread provides a simple foundation for reading DVD video
+disks.  It provides the functionality that is required to access many
+DVDs.  It parses IFO files, reads NAV-blocks, and performs CSS
+authentication and descrambling (if an external libdvdcss library is
+installed).")
+    (license gpl2+)))
