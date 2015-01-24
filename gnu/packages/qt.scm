@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -18,11 +18,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages qt)
-  #:use-module ((guix licenses) #:select (lgpl2.1 x11-style))
+  #:use-module ((guix licenses) #:select (gpl3 lgpl2.1 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
@@ -272,3 +274,63 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-no-avx"
                       "-no-neon"))))
           %standard-phases)))))
+
+(define-public python-sip
+  (package
+    (name "python-sip")
+    (version "4.16.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append "mirror://sourceforge/pyqt/sip/"
+                         "sip-" version "/sip-"
+                         version ".tar.gz"))
+        (sha256
+         (base32
+          "11qy1z88py2q7rz68rm7214pbd37538hpcbfj5hhzp5y616a62x0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+         (alist-replace
+          'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin"))
+                   (include (string-append out "/include"))
+                   (python-version
+                     (string-take
+                       (string-take-right (assoc-ref inputs "python") 5)
+                       3))
+                   (lib (string-append out "/lib/python"
+                                       python-version
+                                       "/site-packages")))
+              (zero?
+                (system* "python" "configure.py"
+                         "--bindir" bin
+                          "--destdir" lib
+                         "--incdir" include))))
+          %standard-phases)))
+    (home-page "http://www.riverbankcomputing.com/software/sip/intro")
+    (synopsis "Python binding creator for C and C++ libraries")
+    (description
+     "SIP is a tool to create Python bindings for C and C++ libraries.  It
+was originally developed to create PyQt, the Python bindings for the Qt
+toolkit, but can be used to create bindings for any C or C++ library.
+
+SIP comprises a code generator and a Python module.  The code generator
+processes a set of specification files and generates C or C++ code, which
+is then compiled to create the bindings extension module.  The SIP Python
+module provides support functions to the automatically generated code.")
+    ;; There is a choice between a python like license, gpl2 and gpl3.
+    ;; For compatibility with pyqt, we need gpl3.
+    (license gpl3)))
+
+(define-public python2-sip
+  (package (inherit python-sip)
+    (name "python2-sip")
+    (native-inputs
+     `(("python" ,python-2)))))
