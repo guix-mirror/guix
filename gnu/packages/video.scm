@@ -436,3 +436,35 @@ DVDs.  It parses IFO files, reads NAV-blocks, and performs CSS
 authentication and descrambling (if an external libdvdcss library is
 installed).")
     (license gpl2+)))
+
+(define-public libdvdnav
+  (package
+    (name "libdvdnav")
+    (version "5.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.videolan.org/videolan/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ad2lkkiydgwiyqfysra9lkwjv9yqnvcg4hv92hx8qzics1cpcbj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdvdread" ,libdvdread)))
+    (home-page "http://dvdnav.mplayerhq.hu/")
+    (synopsis "Library for video DVD navigation features")
+    (description
+     "Libdvdnav is a library for developers of multimedia
+applications.  It allows easy use of sophisticated DVD navigation features
+such as DVD menus, multiangle playback and even interactive DVD games.  All
+this functionality is provided through a simple API which provides the DVD
+playback as a single logical stream of blocks, intermitted by special
+dvdnav events to report certain conditions.  The main usage of libdvdnav is
+a loop regularly calling a function to get the next block, surrounded by
+additional calls to tell the library of user interaction.  The whole
+DVD virtual machine and internal playback states are completely
+encapsulated.")
+    (license gpl2+)))
