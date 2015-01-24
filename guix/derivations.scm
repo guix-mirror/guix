@@ -21,6 +21,8 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -59,6 +61,13 @@
             derivation-input-sub-derivations
             derivation-input-output-paths
 
+            &derivation-error
+            derivation-error?
+            derivation-error-derivation
+            &derivation-missing-output-error
+            derivation-missing-output-error?
+            derivation-missing-output
+
             derivation-name
             derivation-output-names
             fixed-output-derivation?
@@ -96,6 +105,18 @@
   #:re-export (%guile-for-build)
 
   #:replace (build-derivations))
+
+;;;
+;;; Error conditions.
+;;;
+
+(define-condition-type &derivation-error &nix-error
+  derivation-error?
+  (derivation derivation-error-derivation))
+
+(define-condition-type &derivation-missing-output-error &derivation-error
+  derivation-missing-output-error?
+  (output derivation-missing-output))
 
 ;;;
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
@@ -509,9 +530,15 @@ that form."
         (cut write-derivation drv <>))))))
 
 (define* (derivation->output-path drv #:optional (output "out"))
-  "Return the store path of its output OUTPUT."
-  (let ((outputs (derivation-outputs drv)))
-    (and=> (assoc-ref outputs output) derivation-output-path)))
+  "Return the store path of its output OUTPUT.  Raise a
+'&derivation-missing-output-error' condition if OUTPUT is not an output of
+DRV."
+  (let ((output* (assoc-ref (derivation-outputs drv) output)))
+    (if output*
+        (derivation-output-path output*)
+        (raise (condition (&derivation-missing-output-error
+                           (derivation drv)
+                           (output output)))))))
 
 (define (derivation->output-paths drv)
   "Return the list of name/path pairs of the outputs of DRV."

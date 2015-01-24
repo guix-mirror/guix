@@ -268,6 +268,17 @@
       (package-derivation %store p)
       #f)))
 
+(test-assert "reference to non-existent output"
+  ;; See <http://bugs.gnu.org/19630>.
+  (let* ((dep (dummy-package "dep"))
+         (p   (dummy-package "p"
+                (inputs `(("dep" ,dep "non-existent"))))))
+    (guard (c ((derivation-missing-output-error? c)
+               (and (string=? (derivation-missing-output c) "non-existent")
+                    (equal? (package-derivation %store dep)
+                            (derivation-error-derivation c)))))
+      (package-derivation %store p))))
+
 (test-assert "trivial"
   (let* ((p (package (inherit (dummy-package "trivial"))
               (build-system trivial-build-system)

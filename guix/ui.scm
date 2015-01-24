@@ -249,6 +249,10 @@ interpreted."
              ;; FIXME: Server-provided error messages aren't i18n'd.
              (leave (_ "build failed: ~a~%")
                     (nix-protocol-error-message c)))
+            ((derivation-missing-output-error? c)
+             (leave (_ "reference to invalid output '~a' of derivation '~a'~%")
+                    (derivation-missing-output c)
+                    (derivation-file-name (derivation-error-derivation c))))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
              (leave (_ "~a~%")
@@ -309,9 +313,8 @@ available for download."
         (const #f)))
 
   (define (built-or-substitutable? drv)
-    (let ((out (derivation->output-path drv)))
-      ;; If DRV has zero outputs, OUT is #f.
-      (or (not out)
+    (or (null? (derivation-outputs drv))
+        (let ((out (derivation->output-path drv))) ;XXX: assume "out" exists
           (or (valid-path? store out)
               (substitutable? out)))))
 
