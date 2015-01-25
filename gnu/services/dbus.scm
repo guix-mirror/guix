@@ -40,15 +40,18 @@
 @var{services}."
   (define build
     #~(begin
-        (use-modules (sxml simple))
+        (use-modules (sxml simple)
+                     (srfi srfi-1))
 
         (define (services->sxml services)
           ;; Return the SXML 'includedir' clauses for DIRS.
           `(busconfig
-            ,@(map (lambda (dir)
-                     `(includedir ,(string-append dir
-                                                  "/etc/dbus-1/system.d")))
-                   services)))
+            ,@(append-map (lambda (dir)
+                            `((includedir
+                               ,(string-append dir "/etc/dbus-1/system.d"))
+                              (servicedir         ;for '.service' files
+                               ,(string-append dir "/share/dbus-1/services"))))
+                          services)))
 
         (mkdir #$output)
         (copy-file (string-append #$dbus "/etc/dbus-1/system.conf")
