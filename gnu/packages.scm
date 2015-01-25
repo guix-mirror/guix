@@ -79,9 +79,16 @@
                                          file-name)))))))
 
 (define (search-bootstrap-binary file-name system)
-  "Search the bootstrap binary FILE-NAME for SYSTEM."
-  (search-path (%bootstrap-binaries-path)
-               (string-append system "/" file-name)))
+  "Search the bootstrap binary FILE-NAME for SYSTEM.  Raise an error if not
+found."
+  (or (search-path (%bootstrap-binaries-path)
+                   (string-append system "/" file-name))
+      (raise (condition
+              (&message
+               (message
+                (format #f (_ "could not find bootstrap binary '~a' \
+for system '~a'")
+                        file-name system)))))))
 
 (define %distro-root-directory
   ;; Absolute file name of the module hierarchy.
