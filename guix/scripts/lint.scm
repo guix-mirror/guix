@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -264,21 +264,22 @@ warning for PACKAGE mentionning the FIELD."
                 (probe-uri uri)))
     (case status
       ((http-response)
-       (unless (= 200 (response-code argument))
-         (emit-warning package
-                       (format #f
-                               (_ "URI ~a not reachable: ~a (~s)")
-                               (uri->string uri)
-                               (response-code argument)
-                               (response-reason-phrase argument))
-                       field)))
+       (or (= 200 (response-code argument))
+           (emit-warning package
+                         (format #f
+                                 (_ "URI ~a not reachable: ~a (~s)")
+                                 (uri->string uri)
+                                 (response-code argument)
+                                 (response-reason-phrase argument))
+                         field)))
       ((getaddrinfo-error)
        (emit-warning package
                      (format #f
                              (_ "URI ~a domain not found: ~a")
                              (uri->string uri)
                              (gai-strerror (car argument)))
-                     field))
+                     field)
+       #f)
       ((system-error)
        (emit-warning package
                      (format #f
@@ -287,15 +288,15 @@ warning for PACKAGE mentionning the FIELD."
                              (strerror
                               (system-error-errno
                                (cons status argument))))
-                     field))
+                     field)
+       #f)
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
        #f)
       ((not-http)                             ;nothing we can do
        #f)
       (else
-       (error "internal linter error" status)))
-    #t))
+       (error "internal linter error" status)))))
 
 (define (check-home-page package)
   "Emit a warning if PACKAGE has an invalid 'home-page' field, or if that
@@ -396,9 +397,10 @@ descriptions maintained upstream."
              (uris (if (list? strings)
                        (map string->uri strings)
                        (list (string->uri strings)))))
-       (for-each
-         (cut validate-uri <> package 'source)
-         (append-map (cut maybe-expand-mirrors <> %mirrors) uris))))))
+        ;; Just make sure that at least one of the URIs is valid.
+        (any (cut validate-uri <> package 'source)
+             (append-map (cut maybe-expand-mirrors <> %mirrors)
+                         uris))))))
 
 
 
