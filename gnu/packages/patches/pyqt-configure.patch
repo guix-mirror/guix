@@ -1,0 +1,15 @@
+Have configure.py modify internal variables depending on the --qml-plugindir
+configure option.
+diff -u PyQt-gpl-5.4.alt/configure.py PyQt-gpl-5.4/configure.py
+--- PyQt-gpl-5.4.alt/configure.py	2015-01-25 17:27:50.000000000 +0100
++++ PyQt-gpl-5.4/configure.py	2015-01-25 17:56:41.000000000 +0100
+@@ -904,6 +904,9 @@
+         if opts.pyuicinterpreter is not None:
+             self.pyuic_interpreter = opts.pyuicinterpreter
+ 
++        if opts.qmlplugindir is not None:
++            self.qml_plugin_dir = opts.qmlplugindir
++
+         if opts.qsciapidir is not None:
+             self.qsci_api_dir = opts.qsciapidir
+ 

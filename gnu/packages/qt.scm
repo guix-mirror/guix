@@ -334,3 +334,67 @@ module provides support functions to the automatically generated code.")
     (name "python2-sip")
     (native-inputs
      `(("python" ,python-2)))))
+
+(define-public python-pyqt
+  (package
+    (name "python-pyqt")
+    (version "5.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append "mirror://sourceforge/pyqt/PyQt5/"
+                         "PyQt-" version "/PyQt-gpl-"
+                         version ".tar.gz"))
+        (sha256
+         (base32
+          "0cbpa63whi8a5akff4pcnfwzpzx7ycac2ynj00ly52m6zbsn80kn"))
+       (patches (list (search-patch "pyqt-configure.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python-sip" ,python-sip)
+       ("qt" ,qt))) ; for qmake
+    (inputs
+     `(("python" ,python-wrapper)))
+    (arguments
+     `(#:phases
+         (alist-replace
+         'configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (bin (string-append out "/bin"))
+                  (sip (string-append out "/share/sip"))
+                  (plugins (string-append out "/plugins"))
+                  (designer (string-append plugins "/designer"))
+                  (qml (string-append plugins "/PyQt5"))
+                  (python-version
+                    (string-take
+                      (string-take-right (assoc-ref inputs "python") 5)
+                      3))
+                  (lib (string-append out "/lib/python"
+                                      python-version
+                                      "/site-packages")))
+             (zero? (system* "python" "configure.py"
+                             "--confirm-license"
+                             "--bindir" bin
+                             "--destdir" lib
+                             "--designer-plugindir" designer
+                             "--qml-plugindir" qml
+                             "--sipdir" sip))))
+         %standard-phases)))
+    (home-page "http://www.riverbankcomputing.com/software/pyqt/intro")
+    (synopsis "Python bindings for Qt")
+    (description
+     "PyQt is a set of Python v2 and v3 bindings for the Qt application
+framework.  The bindings are implemented as a set of Python modules and
+contain over 620 classes.")
+    (license gpl3)))
+
+(define-public python2-pyqt
+  (package (inherit python-pyqt)
+    (name "python2-pyqt")
+    (native-inputs
+     `(("python-sip" ,python2-sip)
+       ("qt" ,qt)))
+    (inputs
+     `(("python" ,python-2)))))
