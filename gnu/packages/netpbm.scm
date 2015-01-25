@@ -46,7 +46,7 @@
                    (revision 2397)))
             (sha256
               (base32
-                "13hfc8qh4nryrs51x0hmz4b1zpgw03vahxw7c2c893qisw9yk2q0"))))
+                "1mj1pqq18yj0yb6l24zfjls7axhqmiv0pvcaabl5xvc4a0dm543j"))))
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)
              ("libjpeg" ,libjpeg)
