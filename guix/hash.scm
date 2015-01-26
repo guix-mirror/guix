@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix hash)
-  #:use-module (guix config)
+  #:use-module (guix gcrypt)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (system foreign)
@@ -46,8 +46,7 @@
 
 (define sha256
   (let ((hash (pointer->procedure void
-                                  (dynamic-func "gcry_md_hash_buffer"
-                                                (dynamic-link %libgcrypt))
+                                  (libgcrypt-func "gcry_md_hash_buffer")
                                   `(,int * * ,size_t))))
     (lambda (bv)
       "Return the SHA256 of BV as a bytevector."
@@ -58,8 +57,7 @@
 
 (define open-sha256-md
   (let ((open (pointer->procedure int
-                                  (dynamic-func "gcry_md_open"
-                                                (dynamic-link %libgcrypt))
+                                  (libgcrypt-func "gcry_md_open")
                                   `(* ,int ,unsigned-int))))
     (lambda ()
       (let* ((md  (bytevector->pointer (make-bytevector (sizeof '*))))
@@ -70,20 +68,17 @@
 
 (define md-write
   (pointer->procedure void
-                      (dynamic-func "gcry_md_write"
-                                    (dynamic-link %libgcrypt))
+                      (libgcrypt-func "gcry_md_write")
                       `(* * ,size_t)))
 
 (define md-read
   (pointer->procedure '*
-                      (dynamic-func "gcry_md_read"
-                                    (dynamic-link %libgcrypt))
+                      (libgcrypt-func "gcry_md_read")
                       `(* ,int)))
 
 (define md-close
   (pointer->procedure void
-                      (dynamic-func "gcry_md_close"
-                                    (dynamic-link %libgcrypt))
+                      (libgcrypt-func "gcry_md_close")
                       '(*)))
 
 
