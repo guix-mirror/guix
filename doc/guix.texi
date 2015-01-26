@@ -3212,8 +3212,25 @@ Use @var{host} as the OpenPGP key server when importing a public key.
 @node Invoking guix lint
 @section Invoking @command{guix lint}
 The @command{guix lint} is meant to help package developers avoid common
-errors and use a consistent style.  It runs a few checks on a given set of
-packages in order to find common mistakes in their definitions.
+errors and use a consistent style.  It runs a number of checks on a
+given set of packages in order to find common mistakes in their
+definitions.  Available @dfn{checkers} include (see
+@code{--list-checkers} for a complete list):
+
+@table @code
+@item synopsis
+@itemx description
+Validate certain typographical and stylistic rules about package
+descriptions and synopses.
+
+@item inputs-should-be-native
+Identify inputs that should most likely be native inputs.
+
+@item source
+@itemx home-page
+Probe @code{home-page} and @code{source} URLs and report those that are
+invalid.
+@end table
 
 The general syntax is:
 
