@@ -30,6 +30,7 @@ MODULES =					\
   guix/base32.scm				\
   guix/base64.scm				\
   guix/records.scm				\
+  guix/gcrypt.scm				\
   guix/hash.scm					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\

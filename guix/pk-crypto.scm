@@ -17,15 +17,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix pk-crypto)
-  #:use-module (guix config)
   #:use-module ((guix utils)
                 #:select (bytevector->base16-string
                           base16-string->bytevector))
+  #:use-module (guix gcrypt)
+
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
-  #:export (gcrypt-version
-            canonical-sexp?
+  #:export (canonical-sexp?
             error-source
             error-string
             string->canonical-sexp
@@ -46,7 +46,8 @@
             generate-key
             find-sexp-token
             canonical-sexp->sexp
-            sexp->canonical-sexp))
+            sexp->canonical-sexp)
+  #:re-export (gcrypt-version))
 
 
 ;;; Commentary:
@@ -80,23 +81,6 @@
             (number->string (object-address obj) 16)
             (number->string (pointer-address (canonical-sexp->pointer obj))
                             16))))
-
-(define libgcrypt-func
-  (let ((lib (dynamic-link %libgcrypt)))
-    (lambda (func)
-      "Return a pointer to symbol FUNC in libgcrypt."
-      (dynamic-func func lib))))
-
-(define gcrypt-version
-  ;; According to the manual, this function must be called before any other,
-  ;; and it's not clear whether it can be called more than once.  So call it
-  ;; right here from the top level.
-  (let* ((ptr     (libgcrypt-func "gcry_check_version"))
-         (proc    (pointer->procedure '* ptr '(*)))
-         (version (pointer->string (proc %null-pointer))))
-    (lambda ()
-      "Return the version number of libgcrypt as a string."
-      version)))
 
 (define finalize-canonical-sexp!
   (libgcrypt-func "gcry_sexp_release"))
