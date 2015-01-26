@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -212,6 +212,15 @@ failure."
            (alist->record properties
                           (cut %make-cache url <...>)
                           '("StoreDir" "WantMassQuery")))))
+
+(define-syntax-rule (open-cache* url)
+  "Delayed variant of 'open-cache' that also lets the user know that they're
+gonna have to wait."
+  (delay (begin
+           (format (current-error-port)
+                   (_ "updating list of substitutes from '~a'...~%")
+                   url)
+           (open-cache url))))
 
 (define-record-type <narinfo>
   (%make-narinfo path uri uri-base compression file-hash file-size nar-hash nar-size
@@ -668,7 +677,7 @@ substituter disabled~%")
    (with-error-handling                           ; for signature errors
      (match args
        (("--query")
-        (let ((cache (delay (open-cache %cache-url)))
+        (let ((cache (open-cache* %cache-url))
               (acl   (current-acl)))
           (define (valid? obj)
             (and (narinfo? obj) (valid-narinfo? obj acl)))
@@ -719,7 +728,7 @@ substituter disabled~%")
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
         ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-        (let* ((cache   (delay (open-cache %cache-url)))
+        (let* ((cache   (open-cache* %cache-url))
                (narinfo (lookup-narinfo cache store-path))
                (uri     (narinfo-uri narinfo)))
           ;; Make sure it is signed and everything.
