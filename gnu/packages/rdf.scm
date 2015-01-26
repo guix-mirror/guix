@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,21 +19,24 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (bsd-style lgpl2.0+ lgpl2.1 lgpl2.1+))
+                #:select (bsd-style gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -106,6 +110,58 @@ HTML and JSON.")
 full-featured indexing and searching API.  It is a port of the very popular
 Java Lucene text search engine API to C++.")
     (license lgpl2.1)))
+
+(define-public lrdf
+  (package
+    (name "lrdf")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/swh/LRDF/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "18p2flb2sv2hq6w2qkd29z9c7knnwqr3f12i2srshlzx6vwkm05s"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'unpack 'remove-out-of-tree-references
+                 (lambda _
+                   ;; remove symlinks to files in /usr/
+                   (delete-file-recursively "m4")
+                   (for-each delete-file '("config.guess"
+                                           "config.sub"
+                                           "depcomp"
+                                           "install-sh"
+                                           "ltmain.sh"
+                                           "missing"))
+                   ;; remove_test depends on an out-of-tree RDF file
+                   (substitute* "examples/Makefile.am"
+                     (("instances_test remove_test") "instances_test")
+                     (("\\$\\(TESTS\\) remove_test") "$(TESTS)")))
+                 (alist-cons-before
+                  'configure 'autoreconf
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (zero? (system* "autoreconf" "-vfi")))
+                  %standard-phases))))
+    (inputs
+     `(("raptor" ,raptor2)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/swh/LRDF")
+    (synopsis "Lightweight RDF library for accessing LADSPA plugin metadata")
+    (description
+     "LRDF is a library to make it easy to manipulate RDF files describing
+LADSPA plugins.  It can also be used for general RDF manipulation.  It can
+read RDF/XLM and N3 files and export N3 files, and it also has a light
+taxonomic inference capablility.")
+    (license gpl2)))
 
 (define-public rasqal
   (package
