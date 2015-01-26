@@ -33,11 +33,18 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
+  #:use-module (guix records)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (xorg-start-command
             %default-xsessions
+            %ratpoison-session-type
+            %windowmaker-session-type
+
+            session-type?
+            session-type-name
+
             %default-slim-theme
             %default-slim-theme-name
             slim-service))
@@ -172,34 +179,45 @@ which should be passed to this script as the first argument.  If not, the
 ;;; SLiM log-in manager.
 ;;;
 
+(define-record-type* <session-type> session-type make-session-type
+  session-type?
+  (name         session-type-name)                ;string
+  (executable   session-type-executable))         ;string-valued gexp
+
+(define %windowmaker-session-type
+  (session-type
+   (name "WindowMaker")
+   (executable #~(string-append #$windowmaker "/bin/wmaker"))))
+
+(define %ratpoison-session-type
+  (session-type
+   (name "Ratpoison")
+   (executable #~(string-append #$ratpoison "/bin/ratpoison"))))
+
 (define %default-xsessions
-  ;; Default xsessions available for log-in manager, representing as a list of
-  ;; monadic desktop entries.
-  (list (text-file* "wmaker.desktop" "
-[Desktop Entry]
-Name=Window Maker
-Exec=" windowmaker "/bin/wmaker
-Type=Application
-")
-        (text-file* "ratpoison.desktop" "
-[Desktop Entry]
-Name=Ratpoison
-Exec=" ratpoison "/bin/ratpoison
-Type=Application
-")))
+  ;; Default session types available to the log-in manager.
+  (list %windowmaker-session-type %ratpoison-session-type))
 
 (define (xsessions-directory sessions)
-  "Return a directory containing SESSIONS, which should be a list of monadic
-desktop entries."
-  (mlet %store-monad ((sessions (sequence %store-monad sessions)))
-    (define builder
-      #~(begin
-          (mkdir #$output)
-          (for-each (lambda (session)
-                      (symlink session (string-append #$output "/"
-                                                      (basename session))))
-                    '#$sessions)))
-    (gexp->derivation "xsessions-dir" builder)))
+  "Return a directory containing SESSIONS, a list of <session-type> objects."
+  (define builder
+    #~(begin
+        (mkdir #$output)
+        (chdir #$output)
+        (for-each (lambda (name executable)
+                    (let ((file (string-append (string-downcase name)
+                                               ".desktop")))
+                      (call-with-output-file file
+                        (lambda (port)
+                          (format port "[Desktop Entry]
+Name=~a
+Exec=~a
+Type=Application~%"
+                                  name executable)))))
+                  '#$(map session-type-name sessions)
+                  (list #$@(map session-type-executable sessions)))))
+
+  (gexp->derivation "xsessions-dir" builder))
 
 (define %default-slim-theme
   ;; Theme based on work by Felipe López.
@@ -231,7 +249,10 @@ password.  When @var{auto-login?} is true, log in automatically as
 If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
 @var{theme} must be a gexp denoting the name of a directory containing the
 theme to use.  In that case, @var{theme-name} specifies the name of the
-theme."
+theme.
+
+Last, @var{session} is a list of @code{<session-type>} objects denoting the
+available session types that can be chosen from the log-in screen."
 
   (define (slim.cfg)
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))
