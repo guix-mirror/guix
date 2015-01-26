@@ -331,7 +331,8 @@ dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 sync-descriptions:
-	-$(top_builddir)/pre-inst-env guix lint --checkers=gnu-description
+	-GUIX_PACKAGE_PATH= \
+	 $(top_builddir)/pre-inst-env guix lint --checkers=gnu-description
 
 gen-ChangeLog:
 	if test -d .git; then				\
