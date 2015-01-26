@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +47,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.10.0")
+   (version "2.15.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -54,7 +55,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
+              "177a9x6lz2im0mfgxv2crv0l740wy7rg5vlnb8wyyf4fmnh0q19f")))) ; 2.15.3
    (build-system gnu-build-system)
    (inputs `(("glib" ,glib)))
    (native-inputs
@@ -151,14 +152,15 @@ affine transformation (scale, rotation, shear, etc.)")
 (define-public pango
   (package
    (name "pango")
-   (version "1.34.1")
+   (version "1.36.8")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/pango/1.34/pango-"
-                                version ".tar.xz"))
+            (uri (string-append "mirror://gnome/sources/pango/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0k7662qix7zzh7mf6ikdj594n8jpbfm25z8swz64zbm86kgk1shs"))))
+              "01rdzjh68w8l5zn0648yibyarj8p6g7yfn59nw5awaz1i8dvbnqq"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
@@ -265,7 +267,7 @@ printing and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.28.2")
+   (version "2.31.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -273,7 +275,7 @@ printing and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "05s6ksvy1yan6h6zny9n3bmvygcnzma6ljl6i0z9cci2xg116c8q"))))
+              "1kajvfckn88bzcdnl73b933gmjhwjm3dhsj1yrpixhfsc4y5x9r5"))))
    (build-system gnu-build-system)
    (propagated-inputs ; required by gdk-pixbuf-2.0.pc
     `(("glib" ,glib)
@@ -394,7 +396,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.10.1")
+   (version "3.14.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -402,7 +404,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1f3a7r3z7i9xh5imlfpfcgyydzkj2fnd0v6ylvqxij0yzfbnhbn1"))))
+              "0vm40n6nf0w3vv54wqy67jcxddka7hplksi093xim3119yq196gv"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -584,7 +586,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.9.16")
+    (version "3.14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -592,7 +594,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0yf8wwv4w02p70nrxsbs0nhm0w4gkn2wggdjygd8vif062anf1rs"))))
+               "12z4g2in82nk92nfjs2hmrdcwbav8v3laz1813x2dhkf5jk2ixfr"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs

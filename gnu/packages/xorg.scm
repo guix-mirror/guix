@@ -4463,7 +4463,8 @@ kernel mode setting (KMS).")
        `(("python" ,python-wrapper)
          ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags
+     `(#:parallel-tests? #f
+       #:configure-flags
        (list (string-append "--with-xkb-path="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb")

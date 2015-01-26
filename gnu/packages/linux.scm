@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1437,7 +1438,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "1.10")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1445,7 +1446,7 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1l907bvz6dcykvaq8d4iklvfpb9fyrnh1a29g3c28gkx2hlyn7j0"))
+                "0shf5vqiz9fdxl95aa1a8vh0xjxwim3psc39wr2xr8lnahf11vva"))
               (patches (list (search-patch "eudev-rules-directory.patch")))
               (modules '((guix build utils)))
               (snippet
@@ -1482,7 +1483,18 @@ from the module-init-tools project.")
 
                                ;; Work around undefined reference to
                                ;; 'mq_getattr' in sc-daemon.c.
-                               "LDFLAGS=-lrt")))
+                               "LDFLAGS=-lrt")
+       #:phases 
+       (alist-cons-before
+        'build 'pre-build
+        ;; The program 'g-ir-scanner' (part of the package
+        ;; 'gobject-introspection'), to generate .gir files, makes some
+        ;; library pre-processing.  During that phase it looks for the C
+        ;; compiler as either 'cc' or as defined by the environment variable
+        ;; 'CC' (with code in 'giscanner/dumper.py').
+        (lambda* _
+          (setenv "CC" "gcc"))
+        %standard-phases)))
     (home-page "http://www.gentoo.org/proj/en/eudev/")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes

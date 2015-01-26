@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -427,7 +428,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.9.0")
+    (version "1.12.1")
     (source
      (origin
       (method url-fetch)
@@ -436,7 +437,7 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "13fzyzv6c0cfdj83z1s16lv8k997wpnzyzr0wfwcfkcmvz64g1q0"))))
+        "1mjjjjwphc83bjznmbsm7x0jg7ql261nys6qnl7mi0nkr4qvw476"))))
     (build-system gnu-build-system)
     (inputs
      `(("atk" ,atk)
@@ -449,6 +450,13 @@ some form of information without getting in the user's way.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
+    (arguments
+     `(#:phases 
+       (alist-cons-before
+        'build 'pre-build
+        (lambda* _
+          (setenv "CC" "gcc"))
+        %standard-phases)))
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
@@ -457,7 +465,6 @@ every application the chance to assume its own extensibility.  It also has a
 set of features including, but not limited to: multiple extension points; on
 demand (lazy) programming language support for C, Python and JS; simplicity of
 the API")
-
     (license license:lgpl2.0+)))
 
 (define-public gtkglext
@@ -580,7 +587,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.2")
+    (version "2.40.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -588,7 +595,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "071959yjb2i1bja7ciy4bmpnd6fn2is9jjqsvvvnsqwl69j9n128"))))
+                "01jgb11779080b80k2ncrhdphgillqrrnszal6vh8yv787r4kwwa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -600,7 +607,7 @@ dealing with different structured file formats.")
             ;; gdk-pixbuf's prefix.  Work around that.
             (("gdk_pixbuf_moduledir = .*$")
              (string-append "gdk_pixbuf_moduledir = "
-                            "$(prefix)/lib/gdk-pixbuf-2.0/2.0.10/"
+                            "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
                              "loaders\n"))
             ;; Likewise, create a separate 'loaders.cache' file.
             (("gdk_pixbuf_cache_file = .*$")
@@ -610,7 +617,7 @@ dealing with different structured file formats.")
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let ((loaders-directory 
                   (string-append (assoc-ref outputs "out")
-                                 "/lib/gdk-pixbuf-2.0/2.0.10/loaders")))
+                                 "/lib/gdk-pixbuf-2.0/2.10.0/loaders")))
              (zero?
               (system 
                (string-append 
@@ -619,7 +626,11 @@ dealing with different structured file formats.")
                 (string-join (find-files (assoc-ref inputs "gdk-pixbuf") 
                                          "libpixbufloader-.*\\.so") " ")
                 "> " loaders-directory ".cache")))))
-         %standard-phases))))
+         (alist-cons-before
+          'build 'pre-build
+          (lambda* _
+            (setenv "CC" "gcc"))
+          %standard-phases)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -1344,6 +1355,13 @@ libraries written in C.")
        ("xmllint" ,libxml2)))
     (propagated-inputs
      `(("gtk+" ,gtk+))) ; required by libvte-2.91.pc
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'pre-build
+        (lambda* _
+          (setenv "CC" "gcc"))
+        %standard-phases)))
     (home-page "http://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
