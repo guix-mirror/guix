@@ -4772,6 +4772,33 @@ ewmh: Both client and window-manager helpers for EWMH.
 icccm: Both client and window-manager helpers for ICCCM.")
     (license license:x11)))
 
+(define-public xinit
+  (package
+    (name "xinit")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/app/xinit-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1cq2g469mb2cfgr8k57960yrn90bl33vfqri4pdh2zm0jxrqvn3m"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("xproto" ,xproto)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("xauth" ,xauth)))
+    (home-page "http://x.org")
+    (synopsis "Commands to start the X Window server")
+    (description
+     "The xinit program is used to start the X Window System server and a
+first client program on systems that are not using a display manager such as
+xdm.  This package also provides the 'startx' command, which provides a
+user-friendly mechanism to start the X server.")
+    (license license:x11)))
 
 ;; package outside the x.org system proper of height 5
 
