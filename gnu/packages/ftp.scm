@@ -30,14 +30,14 @@
 (define-public lftp
   (package
     (name "lftp")
-    (version "4.4.15")
+    (version "4.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://lftp.yar.ru/ftp/lftp-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0s38vc2ij869dwx3i1c7sk96mqv0hknf3cqf86av59rqnix0px3m"))))
+                "1grmp8zg7cjgjinz66mrh53whigkqzl90nlxj05hapnhk3ns3vni"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
