@@ -29,13 +29,13 @@
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.0.6")
+    (version "5.0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.zsh.org/pub/zsh-" version
                                  ".tar.gz"))
              (sha256
-              (base32 "0f9y2lkv6xs5nxgj7ld7sbncy454sgamz21fm4109mxqlqa32fph"))))
+              (base32 "06drwywxa0zm8mizk32wc6ijhpzlyy2mcmskj66bnyggg70s9w23"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases (alist-cons-before
