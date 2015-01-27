@@ -64,14 +64,14 @@ around or take advantage of platform-specific deficiencies or features.")
 (define-public apr-util
   (package
     (name "apr-util")
-    (version "1.5.3")
+    (version "1.5.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-util-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0s1rpqjy5xr03k9s4xrsm5wvhj5286vlkf6jvqayw99yy5sb3vbq"))))
+               "06achip1m7g1dgs1makpj3m8jhn73j2f0yqxl8sdd1n2kfji4slp"))))
     (build-system gnu-build-system)
     (inputs
       `(("apr" ,apr)))
