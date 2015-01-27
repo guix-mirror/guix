@@ -3442,8 +3442,8 @@ requires familiarity with GNU/Linux (see the following subsections to
 get a feel of what that means.)
 
 @item
-The system does not yet provide graphical desktop environments such as
-GNOME and KDE.
+The system does not yet provide GNOME and KDE; it provides Xfce, though,
+if graphical desktop environments are your thing.
 
 @item
 Support for the Logical Volume Manager (LVM) is missing.
@@ -3453,7 +3453,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-On the order of 1,000 packages are available, which means that you may
+On the order of 1,200 packages are available, which means that you may
 occasionally find that a useful package is missing.
 @end itemize
 
