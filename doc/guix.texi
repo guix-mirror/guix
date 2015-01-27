@@ -3464,7 +3464,7 @@ to report issues (and success stories!), and join us in improving it.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@url{ftp://alpha.gnu.org/gnu/guix/guix-usb-install-@value{VERSION}.@var{system}.xz},
+@url{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
@@ -3486,7 +3486,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d gnu-usb-install-@value{VERSION}.@var{system}.xz
+xz -d gsd-usb-install-@value{VERSION}.@var{system}.xz
 @end example
 
 @item
@@ -3495,7 +3495,7 @@ its device name.  Assuming that USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=gnu-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
+dd if=gsd-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
