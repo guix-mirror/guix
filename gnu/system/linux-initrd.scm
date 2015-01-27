@@ -184,8 +184,10 @@ loaded at boot time in the order in which they appear."
 
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    `("ahci"                                   ;for SATA controllers
-      "pata_acpi" "pata_atiixp"                ;for ATA controllers
+    `("ahci"                                  ;for SATA controllers
+      "pata_acpi" "pata_atiixp"               ;for ATA controllers
+      "usb-storage" "uas"                     ;for the installation image etc.
+      "usbkbd" "usbhid"                       ;USB keyboards, for debugging
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())

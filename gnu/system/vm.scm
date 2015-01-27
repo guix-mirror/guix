@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -278,12 +278,11 @@ to USB sticks meant to be read-only."
 
   (let ((os (operating-system (inherit os)
               ;; Since this is meant to be used on real hardware, don't
-              ;; install QEMU networking or anything like that, but make sure
-              ;; USB mass storage devices are available.
+              ;; install QEMU networking or anything like that.  Assume USB
+              ;; mass storage devices (usb-storage.ko) are available.
               (initrd (lambda (file-systems . rest)
                         (apply base-initrd file-systems
                                #:volatile-root? #t
-                               #:extra-modules '("usb-storage.ko")
                                rest)))
 
               ;; Force our own root file system.
