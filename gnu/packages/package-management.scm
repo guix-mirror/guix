@@ -40,6 +40,16 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages bdw-gc))
 
+(define (boot-guile-uri arch)
+  "Return the URI for the bootstrap Guile tarball for ARCH."
+  (if (string=? "armhf" arch)
+      (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
+                     arch "-linux"
+                     "/20150101/guile-2.0.11.tar.xz")
+      (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
+                     arch "-linux"
+                     "/20131110/guile-2.0.9.tar.xz")))
+
 (define-public guix-0.8
   (package
     (name "guix")
@@ -62,18 +72,26 @@
        #:phases (alist-cons-before
                  'configure 'copy-bootstrap-guile
                  (lambda* (#:key system inputs #:allow-other-keys)
+                   (define (boot-guile-version arch)
+                     (if (string=? "armhf" arch)
+                         "2.0.11"
+                         "2.0.9"))
+
                    (define (copy arch)
                      (let ((guile  (assoc-ref inputs
                                               (string-append "boot-guile/"
                                                              arch)))
                            (target (string-append "gnu/packages/bootstrap/"
                                                   arch "-linux/"
-                                                  "/guile-2.0.9.tar.xz")))
+                                                  "/guile-"
+                                                  (boot-guile-version arch)
+                                                  ".tar.xz")))
                        (copy-file guile target)))
 
                    (copy "i686")
                    (copy "x86_64")
                    (copy "mips64el")
+                   (copy "armhf")
                    #t)
                  %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -82,10 +100,7 @@
      (let ((boot-guile (lambda (arch hash)
                          (origin
                           (method url-fetch)
-                          (uri (string-append
-                                "http://alpha.gnu.org/gnu/guix/bootstrap/"
-                                arch "-linux"
-                                "/20131110/guile-2.0.9.tar.xz"))
+                          (uri (boot-guile-uri arch))
                           (sha256 hash)))))
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
@@ -105,7 +120,11 @@
          ("boot-guile/mips64el"
           ,(boot-guile "mips64el"
                        (base32
-                        "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr"))))))
+                        "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr")))
+         ("boot-guile/armhf"
+          ,(boot-guile "armhf"
+                       (base32
+                        "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))))))
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
     (description
@@ -118,7 +137,7 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "4655005"))
+  (let ((commit "4ad8789"))
     (package (inherit guix-0.8)
       (version (string-append "0.8." commit))
       (source (origin
@@ -128,7 +147,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "04dmmnr88mwpsl0mmv03hpllyinn9cs4mmly8k0jm2acwnsni3ii"))))
+                  "058gf7fg5k8ldchz63j5ssqr2lx8dn1wa1rllg7krrfr6g8abi34"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8)
          ((#:phases phases)
