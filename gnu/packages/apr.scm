@@ -71,7 +71,7 @@ around or take advantage of platform-specific deficiencies or features.")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "06achip1m7g1dgs1makpj3m8jhn73j2f0yqxl8sdd1n2kfji4slp"))))
+               "0bn81pfscy9yjvbmyx442svf43s6dhrdfcsnkpxz43fai5qk5kx6"))))
     (build-system gnu-build-system)
     (inputs
       `(("apr" ,apr)))
