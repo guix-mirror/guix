@@ -366,8 +366,9 @@ the ``message of the day''."
       (provision (list (symbol-append 'term- (string->symbol tty))))
 
       ;; Since the login prompt shows the host name, wait for the 'host-name'
-      ;; service to be done.
-      (requirement '(user-processes host-name))
+      ;; service to be done.  Also wait for udev essentially so that the tty
+      ;; text is not lost in the middle of kernel messages (XXX).
+      (requirement '(user-processes host-name udev))
 
       (start  #~(make-forkexec-constructor
                  (list (string-append #$mingetty "/sbin/mingetty")
