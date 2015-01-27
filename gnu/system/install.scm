@@ -162,7 +162,7 @@ configuration template file in the installation system."
 (define (installation-services)
   "Return the list services for the installation image."
   (let ((motd (text-file "motd" "
-Welcome to the installation of the GNU operating system!
+Welcome to the installation of the Guix System Distribution!
 
 There is NO WARRANTY, to the extent permitted by law.  In particular, you may
 LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
