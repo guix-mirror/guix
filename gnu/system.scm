@@ -442,6 +442,9 @@ export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
 
+export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
+export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
+
 # Append the directory of 'site-start.el' to the search path.
 export EMACSLOADPATH=:/etc/emacs
 
