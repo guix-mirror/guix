@@ -21,6 +21,7 @@
 (define-module (guix scripts lint)
   #:use-module (guix base32)
   #:use-module (guix download)
+  #:use-module (guix ftp-client)
   #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix ui)
@@ -254,8 +255,29 @@ response from URI, and additional details, such as the actual HTTP response."
               (values key args))
              (else
               (apply throw key args))))))
+      ('ftp
+       (catch #t
+         (lambda ()
+           (let ((port (ftp-open (uri-host uri) 21)))
+             (define response
+               (dynamic-wind
+                 (const #f)
+                 (lambda ()
+                   (ftp-chdir port (dirname (uri-path uri)))
+                   (ftp-size port (basename (uri-path uri))))
+                 (lambda ()
+                   (ftp-close port))))
+             (values 'ftp-response #t)))
+         (lambda (key . args)
+           (case key
+             ((or ftp-error)
+              (values 'ftp-response #f))
+             ((getaddrinfo-error system-error gnutls-error)
+              (values key args))
+             (else
+              (apply throw key args))))))
       (_
-       (values 'not-http #f)))))
+       (values 'unknown-protocol #f)))))
 
 (define (validate-uri uri package field)
   "Return #t if the given URI can be reached, otherwise emit a
@@ -272,6 +294,12 @@ warning for PACKAGE mentionning the FIELD."
                                  (response-code argument)
                                  (response-reason-phrase argument))
                          field)))
+      ((ftp-response)
+       (when (not argument)
+         (emit-warning package
+                       (format #f
+                               (_ "URI ~a not reachable")
+                               (uri->string uri)))))
       ((getaddrinfo-error)
        (emit-warning package
                      (format #f
@@ -293,7 +321,7 @@ warning for PACKAGE mentionning the FIELD."
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
        #f)
-      ((not-http)                             ;nothing we can do
+      ((unknown-protocol)                             ;nothing we can do
        #f)
       (else
        (error "internal linter error" status)))))
