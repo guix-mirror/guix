@@ -2932,6 +2932,49 @@ The returned source tarball is the result of applying any patches and
 code snippets specified in the package's @code{origin} (@pxref{Defining
 Packages}).
 
+@item --sources
+Fetch and return the source of @var{package-or-derivation} and all their
+dependencies, recursively.  This is a handy way to obtain a local copy
+of all the source code needed to build @var{packages}, allowing you to
+eventually build them even without network access.  It is an extension
+of the @code{--source} option and can accept one of the following
+optional argument values:
+
+@table @code
+@item package
+This value causes the @code{--sources} option to behave in the same way
+as the @code{--source} option.
+
+@item all
+Build all packages' source derivations, including any source that might
+be listed as @code{inputs}.  This is the default value.
+
+@example
+$ guix build --sources tzdata
+The following derivations will be built:
+   /gnu/store/@dots{}-tzdata2015b.tar.gz.drv
+   /gnu/store/@dots{}-tzcode2015b.tar.gz.drv
+@end example
+
+@item transitive
+Build all packages' source derivations, as well as all source
+derivations for packages' transitive inputs.  This can be used e.g. to
+prefetch package source for later offline building.
+
+@example
+$ guix build --sources=transitive tzdata
+The following derivations will be built:
+   /gnu/store/@dots{}-tzcode2015b.tar.gz.drv
+   /gnu/store/@dots{}-findutils-4.4.2.tar.xz.drv
+   /gnu/store/@dots{}-grep-2.21.tar.xz.drv
+   /gnu/store/@dots{}-coreutils-8.23.tar.xz.drv
+   /gnu/store/@dots{}-make-4.1.tar.xz.drv
+   /gnu/store/@dots{}-bash-4.3.tar.xz.drv
+@dots{}
+@end example
+
+@end table
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of

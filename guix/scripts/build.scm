@@ -228,6 +228,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
   (display (_ "
+  --sources[=TYPE]       build source derivations; TYPE may optionally be one
+                         of \"package\", \"all\" (default), or \"transitive\""))
+  (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
@@ -262,10 +265,22 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix build")))
-
          (option '(#\S "source") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'source? #t result)))
+                   (alist-cons 'source #t result)))
+         (option '("sources") #f #t
+                 (lambda (opt name arg result)
+                   (match arg
+                     ("package"
+                      (alist-cons 'source #t result))
+                     ((or "all" #f)
+                      (alist-cons 'source package-direct-sources result))
+                     ("transitive"
+                      (alist-cons 'source package-transitive-sources result))
+                     (else
+                      (leave (_ "invalid argument: '~a' option argument: ~a, ~
+must be one of 'package', 'all', or 'transitive'~%")
+                             name arg)))))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -308,28 +323,34 @@ build."
       (triplet
        (cut package-cross-derivation <> <> triplet <>))))
 
-  (define src?   (assoc-ref opts 'source?))
+  (define src    (assoc-ref opts 'source))
   (define sys    (assoc-ref opts 'system))
   (define graft? (assoc-ref opts 'graft?))
 
   (parameterize ((%graft? graft?))
     (let ((opts (options/with-source store
                                      (options/resolve-packages store opts))))
-      (filter-map (match-lambda
-                   (('argument . (? package? p))
-                    (if src?
+      (concatenate
+       (filter-map (match-lambda
+                    (('argument . (? package? p))
+                     (match src
+                       (#f
+                        (list (package->derivation store p sys)))
+                       (#t
                         (let ((s (package-source p)))
-                          (package-source-derivation store s))
-                        (package->derivation store p sys)))
-                   (('argument . (? derivation? drv))
-                    drv)
-                   (('argument . (? derivation-path? drv))
-                    (call-with-input-file drv read-derivation))
-                   (('argument . (? store-path?))
-                    ;; Nothing to do; maybe for --log-file.
-                    #f)
-                   (_ #f))
-                  opts))))
+                          (list (package-source-derivation store s))))
+                       (proc
+                        (map (cut package-source-derivation store <>)
+                             (proc p)))))
+                    (('argument . (? derivation? drv))
+                     (list drv))
+                    (('argument . (? derivation-path? drv))
+                     (list (call-with-input-file drv read-derivation)))
+                    (('argument . (? store-path?))
+                     ;; Nothing to do; maybe for --log-file.
+                     #f)
+                    (_ #f))
+                   opts)))))
 
 (define (options/resolve-packages store opts)
   "Return OPTS with package specification strings replaced by actual
