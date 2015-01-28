@@ -50,17 +50,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.8
+(define-public guix-0.8.1
   (package
     (name "guix")
-    (version "0.8")
+    (version "0.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1p7yqbnhjc1yjzinbjzphgj6wasc7p8ki9yj0vql5bsz01dp28zv"))))
+               "12h5ldj1yf0za6ladlr8h7nx2gqrv2dxcsiwyqayvrza93lijkf5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -125,6 +125,10 @@
           ,(boot-guile "armhf"
                        (base32
                         "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))))))
+    (propagated-inputs
+     `(("guile-json" ,guile-json)
+       ("geiser" ,geiser)))                       ;for guix.el
+
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
     (description
@@ -138,8 +142,8 @@ the Nix package manager.")
 (define guix-devel
   ;; Development version of Guix.
   (let ((commit "4ad8789"))
-    (package (inherit guix-0.8)
-      (version (string-append "0.8." commit))
+    (package (inherit guix-0.8.1)
+      (version (string-append "0.8.0." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -149,7 +153,7 @@ the Nix package manager.")
                  (base32
                   "058gf7fg5k8ldchz63j5ssqr2lx8dn1wa1rllg7krrfr6g8abi34"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.8)
+       (substitute-keyword-arguments (package-arguments guix-0.8.1)
          ((#:phases phases)
           `(alist-cons-before
             'configure 'bootstrap
@@ -167,13 +171,9 @@ the Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix-0.8)))
-      (propagated-inputs
-       `(("guile-json" ,guile-json)
-         ("geiser" ,geiser)                       ;for guix.el
-         ,@(package-propagated-inputs guix-0.8))))))
+         ,@(package-native-inputs guix-0.8.1))))))
 
-(define-public guix guix-devel)
+(define-public guix guix-0.8.1)
 
 (define-public nix
   (package
