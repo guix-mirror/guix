@@ -482,7 +482,7 @@ Run a set of checkers on the specified package; if none is specified, run the ch
   ;; * --certainty=[low,medium,high]: only run checkers that have at least this
   ;;                                  'certainty'.
   (list (option '(#\c "checkers") #t #f
-                (lambda (opt name arg result arg-handler)
+                (lambda (opt name arg result)
                   (let ((names (map string->symbol (string-split arg #\,))))
                     (for-each (lambda (c)
                                 (unless (memq c
@@ -490,13 +490,12 @@ Run a set of checkers on the specified package; if none is specified, run the ch
                                                    %checkers))
                                   (leave (_ "~a: invalid checker~%") c)))
                               names)
-                    (values (alist-cons 'checkers
-                             (filter (lambda (checker)
-                                       (member (lint-checker-name checker)
-                                               names))
-                                     %checkers)
-                             result)
-                            #f))))
+                    (alist-cons 'checkers
+                                (filter (lambda (checker)
+                                          (member (lint-checker-name checker)
+                                                  names))
+                                        %checkers)
+                                result))))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -517,11 +516,11 @@ Run a set of checkers on the specified package; if none is specified, run the ch
   (define (parse-options)
     ;; Return the alist of option values.
     (args-fold* args %options
-                (lambda (opt name arg result arg-handler)
+                (lambda (opt name arg result)
                   (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result arg-handler)
+                (lambda (arg result)
                   (alist-cons 'argument arg result))
-                %default-options #f))
+                %default-options))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda

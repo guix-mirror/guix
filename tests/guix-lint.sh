@@ -73,3 +73,6 @@ then false; else true; fi
 if guix lint -c synopsis,invalid-checker dummy 2>&1 | \
    grep -q 'invalid-checker: invalid checker'
 then true; else false; fi
+
+# Make sure specifying multiple packages works.
+guix lint -c inputs-should-be-native dummy dummy-42 dummy
