@@ -2605,6 +2605,11 @@ devices, thus making direct access unnecessary.")
               ("xorg-server" ,xorg-server)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (supported-systems
+     ;; This driver is only supported on Intel systems.
+     (filter (lambda (system) (or (string-prefix? "i686-" system)
+                                  (string-prefix? "x86_64-" system)))
+             %supported-systems))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
