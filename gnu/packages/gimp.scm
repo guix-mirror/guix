@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -117,19 +118,19 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.8.10")
+    (version "2.8.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.gimp.org/pub/gimp/v2.8/gimp-"
-                                        version ".tar.bz2"))
+                                  version ".tar.bz2"))
               (sha256
                (base32
-                "1rha8yx0pplfjziqczjrxxp16vsvpmb5ziq3c218s4w9z4cqpzg7"))))
+                "0bdj0l7a94jqhjnj40m9rqaf622wj905iximivb55iy98639aanq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags       
+     `(#:configure-flags
        ;; We don't have pygtk which seems to be needed for this feature
-       `("--disable-python" ))) 
+       `("--disable-python")))
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
