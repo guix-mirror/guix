@@ -451,6 +451,9 @@ export EMACSLOADPATH=:/etc/emacs
 # By default, applications that use D-Bus, such as Emacs, abort at startup
 # when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
 export DBUS_FATAL_WARNINGS=0
+
+# Allow Aspell to find dictionaries installed in the user profile.
+export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 "))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
