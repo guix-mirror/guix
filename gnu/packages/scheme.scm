@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages elf)
@@ -34,6 +35,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (ice-9 match))
 
@@ -353,18 +355,17 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "5.3.4")
+    (version "6.1.1")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append "http://download.racket-lang.org/installers/"
-                                       version "/racket/racket-" version
-                                       "-src-unix.tgz")
+             (uri (list (string-append "http://mirror.racket-lang.org/installers/"
+                                       version "/racket-" version "-src.tgz")
                         (string-append
                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
                          version "/racket/racket-" version "-src-unix.tgz")))
              (sha256
-              ;; XXX: Used to be 1xhnx3yd74zrvn6sfcqmk57kxj51cwvm660dwiaxr1qxnm5lq0v7.
-              (base32 "0yrdmpdvzf092869y6zjjjxl6j2kypgiv7qrfkv7lj8w01pbh7sd"))))
+              (base32
+               "0xfsfdqkngz0xw2lqmc7bsznwx25cw91l9fjhp7abrr05m96j0h9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -378,7 +379,9 @@ implementation techniques and as an expository tool.")
                        (lib "pango")
                        (lib "libjpeg")
                        (lib "gtk")
-                       (lib "gdk-pixbuf")))))
+                       (lib "gdk-pixbuf")
+                       (lib "fontconfig")
+                       (lib "sqlite")))))         ;to build the doc
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs #:allow-other-keys)
@@ -413,8 +416,10 @@ implementation techniques and as an expository tool.")
               ("cairo" ,cairo)
               ("pango" ,pango)
               ("libjpeg" ,libjpeg-8)
+              ("fontconfig" ,fontconfig)
               ("gdk-pixbuf" ,gdk-pixbuf)
-              ("gtk" ,gtk+-2)))
+              ("gtk" ,gtk+-2)
+              ("sqlite" ,sqlite)))                ;needed to build the doc
     (home-page "http://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
