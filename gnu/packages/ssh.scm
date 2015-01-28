@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,8 +197,8 @@ Additionally, various channel-specific options can be negotiated.")
                 "1sbxhmynmpwfjwb3dp6lrc3cxi5kffqmb6klhx7wnkgqxvs61lsw"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'autoreconf
+     '(#:phases (alist-cons-after
+                 'unpack 'autoreconf
                  (lambda* (#:key inputs #:allow-other-keys)
                    (chmod "doc/version.texi" #o777) ;make it writable
                    (zero? (system* "autoreconf" "-vfi")))
