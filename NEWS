@@ -2,13 +2,184 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes in 0.8.1 (since 0.8)
+
+** Package management
+
+*** New ‘--share’ and ‘--expose’ options for ‘guix system vm’
+
+See “Invoking guix system” in the manual.
+
+*** Emacs mode now automatically loads newly installed Emacs packages
+
+See “Emacs Initial Setup” in the manual.
+
+*** ‘guix-daemon’ now defaults to ‘--cores=0 --jobs=1’
+
+In other words, at any given time, only one derivation is being built or
+substituted, and it can use as many cores as available.  Before, there could
+be N derivations using N cores, which was obviously not desirable.
+
+*** Command-line tools support the ‘GUIX_BUILD_OPTIONS’ environment variable
+
+See “Invoking guix build” in the manual.
+
+*** ‘guix environment’ is faster
+
+*** New ‘--recursive’ option for ‘guix archive’
+
+See “Invoking guix archive” in the manual.
+
+*** Missing patches required by a package definition are gracefully reported
+
+*** ‘guix lint’ supports additional checkers
+
+The new checkers are ‘gnu-description’, ‘home-page’, and ‘source’.
+See “Invoking guix lint” in the manual.
+
+*** New CPAN importer for ‘guix import’
+
+See “Invoking guix import” in the manual.
+
+
+** Distribution
+
+*** USB installation image has more tools
+
+Tools added since 0.8: wpa_supplicant, cryptsetup, and iw.
+
+*** Linux kernel module dependencies are automatically handled
+
+Before that, all the modules needed in the initrd would need to be explicitly
+listed, including their dependencies, and in topological order.
+
+*** Font packages now all have a name starting with ‘font-’
+
+See “Fonts” in the manual.
+
+*** Shell startup files have been cleaned up
+
+/etc/profile contains only environment variable definitions, which may also be
+used when running a different shell.  The skeletons for user’s ‘.bash_profile’
+and ‘.bashrc’ files behave as documented in the Bash manual.  Zsh is supported.
+
+*** The ‘root’ account gets a copy of the account skeleton files
+
+Before that, the skeleton files would only be copied to non-root accounts.
+
+*** The name service cache daemon (nscd) is configurable
+
+By default it aggressively caches host and service lookups.  See “Base
+Services” in the manual.
+
+*** Available locale definitions are now declared in ‘operating-system’
+
+Before, the ‘glibc’ package would contain all the existing locales, as well as
+the ‘locale-archive’ file, amounting to 110 MiB.  See “Locales” in the manual.
+
+*** SLiM sessions are configurable
+
+Pressing F1 in the SLiM graphical log-in screen allows users to choose among
+the pre-configured session types.  See “X Window” in the manual.
+
+*** Man pages and Info files are systematically gzip-compressed
+
+*** ‘gnu-build-system’ ensures that documentation is in share/{man,info}
+
+If a package installs to $prefix/{man,info}, this is automatically fixed to be
+$prefix/share/{man,info}.
+
+*** ‘strip’ is invoked only on ELF files and ‘ar’ archives
+
+*** ‘libtool’ and ‘libltdl’ are now separate packages
+
+*** Emacs mode is readily usable on the Guix System Distribution
+
+*** Substitutes are now enabled by default on freshly installed systems
+
+** Programming interfaces
+
+*** New (guix elf) and (gnu build linux-modules) modules
+
+These provide resolution of Linux kernel module dependencies.  See
+<https://lists.gnu.org/archive/html/guix-devel/2014-11/msg00670.html>.
+
+*** ‘glib-or-gtk-build-system’ has been extended
+
+It now handles GIO and XDG themes, takes care of generating the icon cache,
+and has a new #:glib-or-gtk-wrap-excluded-outputs parameter.
+
+*** ‘search-path-specification’ can now specify non-directory items
+
+For example, the ‘search-path-specification’ attached to libxml2 specifies a
+file pattern, which allows all the ‘catalog.xml’ files to be added to the
+‘XML_CATALOG_FILES’ environment variable.
+
+*** (guix build syscalls) has more network-related procedures
+
+‘set-network-interface-flags’, ‘set-network-interface-address’,
+‘network-interface-address’, and ‘configure-network-interface’ are ioctl
+bindings used by network-handling dmd services.
+
+*** (guix monads) refactoring
+
+‘%store-monad’ is now in (guix store) and is an alias for the new
+‘%state-monad’ provided by (guix monads).  Monadic procedures dealing with the
+store, with derivations, and with packages have been moved from (guix monads)
+to (guix store), (guix derivations), and (guix packages).  See “The Store
+Monad” in the manual.
+
+*** (guix build utils) provides ‘parallel-job-count’
+
+*** ‘wrap-program’ preserves the original argv[0]
+
+*** New (guix sets) module
+
+*** ‘define-record-type*’ now support “delayed” fields
+
+** Noteworthy bug fixes
+
+*** X session is executed from a login shell (<http://bugs.gnu.org/19119>)
+*** grub.cfg is now a garbage-collector root (<http://bugs.gnu.org/19160>)
+*** Substituter progress report properly formatted 
+    (<http://bugs.gnu.org/19313>)
+*** Document permissions for /gnu/store (<http://bugs.gnu.org/19316>)
+*** Make sure config.go is newer than config.scm
+    (<http://bugs.gnu.org/19317>)
+*** Emacs knows where to find its GLib schemas (<http://bugs.gnu.org/19138>)
+*** Adjust 'grub.cfg' to work on systems with a separate /boot
+    (<http://bugs.gnu.org/19220>)
+*** Fix removal of next-to-last item in a profile
+    (<http://lists.gnu.org/archive/html/guix-devel/2014-12/msg00292.html>)
+*** Apply patches with "patch --force" (<http://bugs.gnu.org/19402>)
+*** Extend ‘search-path-specification’ for libxml2-style use cases
+    (<http://bugs.gnu.org/18033>)
+*** Search for patches under $GUIX_PACKAGE_PATH (<http://bugs.gnu.org/19364>)
+*** Use executables from the target inputs in 'patch-shebangs'
+    (<http://bugs.gnu.org/18895>)
+*** guix-daemon now automatically creates '…/profiles/per-user'
+    (<http://bugs.gnu.org/19315>)
+*** Make /etc/mtab a symlink to /proc/self/mounts
+    (<http://bugs.gnu.org/19491>)
+*** Don't build the mips64el-linux-gnuabi64 cross-compiler on i686
+    (<http://bugs.gnu.org/19598>)
+*** Read archive signatures as Latin-1 strings (<http://bugs.gnu.org/19610>)
+*** Raise an error for references to non-existent outputs
+    (<http://bugs.gnu.org/19630>)
+*** Initialize libgcrypt before use (<http://bugs.gnu.org/19677>)
+
+** Native language support
+
+*** New translations: fr (French), hu (Hungarian)
+*** Updated translation: eo
 
 * Changes in 0.8 (since 0.7)
 
