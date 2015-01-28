@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 
 (define-module (gnu packages gnunet)
   #:use-module (gnu packages)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -56,7 +58,14 @@
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0zvv7wd011npcx7yphw9bpgivyxz6mlp87a57n96nv85k96dd2l6"))))
+              "0zvv7wd011npcx7yphw9bpgivyxz6mlp87a57n96nv85k96dd2l6"))
+            (modules '((guix build utils)))
+            (snippet
+             ;; Nowadays libmagic (from 'file') returns 'audio/ogg' and not
+             ;; 'application/ogg'.  Adjust accordingly.
+             '(substitute* "src/plugins/test_mime.c"
+                (("application/ogg")
+                 "audio/ogg")))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
@@ -78,7 +87,7 @@
     `(("exiv2" ,exiv2)
       ("flac" ,flac)
       ("ffmpeg" ,ffmpeg)
-      ("gettext" ,gnu-gettext)
+      ("file" ,file)                           ;libmagic, for the MIME plug-in
       ("glib" ,glib)
       ("gstreamer" ,gstreamer)
       ("gst-plugins-base" ,gst-plugins-base)
