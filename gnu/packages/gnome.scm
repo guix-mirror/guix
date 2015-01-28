@@ -1460,12 +1460,20 @@ configuration storage systems.")
                (base32
                 "02k66lpc4cmgygj66n8zcy59bggy7yzm3v4hni9xqplgva9d2yw8"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'build 'set-cc
+                 (lambda _
+                   ;; Set $CC so that g-ir-scanner works.
+                   (setenv "CC" "gcc")
+                   #t)
+                 %standard-phases)))
     (native-inputs
-     `(("glib" ,glib "bin") ; for glib-mkenums and glib-genmarshal
+     `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("glib" ,glib))) ; according to json-glib-1.0.pc
+     `(("glib" ,glib)))                         ;according to json-glib-1.0.pc
     (home-page "https://wiki.gnome.org/Projects/JsonGlib")
     (synopsis "Compiler for the GObject type system")
     (description "JSON-GLib is a C library based on GLib providing

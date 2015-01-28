@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -536,6 +536,14 @@ useful for C++.")
         (base32
          "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'build 'set-cc
+                 (lambda _
+                   ;; Set $CC so that g-ir-scanner works.
+                   (setenv "CC" "gcc")
+                   #t)
+                 %standard-phases)))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("pkg-config" ,pkg-config)
