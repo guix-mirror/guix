@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2379,29 +2379,30 @@ devices, thus making direct access unnecessary.")
     (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
-
-(define-public xf86-video-ast
-  (package
-    (name "xf86-video-ast")
-    (version "0.93.10")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-ast-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-           "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))
-        (patches (list (search-patch "xf86-video-ast-remove-mibstore.patch")))))
-    (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
+;; This driver depends on XAA which has been removed from xorg-server.
+;;
+;; (define-public xf86-video-ast
+;;   (package
+;;     (name "xf86-video-ast")
+;;     (version "0.93.10")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/individual/driver/xf86-video-ast-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;            "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))
+;;         (patches (list (search-patch "xf86-video-ast-remove-mibstore.patch")))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("xorg-server" ,xorg-server)))
+;;     (native-inputs `(("pkg-config" ,pkg-config)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "Xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:x11)))
 
 
 (define-public xf86-video-ati
@@ -2712,27 +2713,29 @@ kernel mode setting (KMS).")
     (license license:x11)))
 
 
-(define-public xf86-video-newport
-  (package
-    (name "xf86-video-newport")
-    (version "0.2.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-newport-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1yafmp23jrfdmc094i6a4dsizapsc9v0pl65cpc8w1kvn7343k4i"))))
-    (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
+;; This driver depends on XAA which has been removed from xorg-server.
+;;
+;; (define-public xf86-video-newport
+;;   (package
+;;     (name "xf86-video-newport")
+;;     (version "0.2.4")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/individual/driver/xf86-video-newport-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "1yafmp23jrfdmc094i6a4dsizapsc9v0pl65cpc8w1kvn7343k4i"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("xorg-server" ,xorg-server)))
+;;     (native-inputs `(("pkg-config" ,pkg-config)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "Xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:x11)))
 
 
 (define-public xf86-video-nv
