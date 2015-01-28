@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -276,7 +276,7 @@ UNIONFS."
         (mount root "/root" type)))
 
   ;; Make sure /root/etc/mtab is a symlink to /proc/self/mounts.
-  (when (file-exists? "/root/etc/mtab")
+  (false-if-exception
     (delete-file "/root/etc/mtab"))
   (symlink "/proc/self/mounts" "/root/etc/mtab"))
 
