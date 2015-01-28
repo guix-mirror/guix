@@ -141,9 +141,9 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "4ad8789"))
+  (let ((commit "f1082ec"))
     (package (inherit guix-0.8.1)
-      (version (string-append "0.8.0." commit))
+      (version (string-append "0.8.1." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -151,7 +151,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "058gf7fg5k8ldchz63j5ssqr2lx8dn1wa1rllg7krrfr6g8abi34"))))
+                  "0mmwmv3wbrgzs49gnxraj11fp1mxfry4r0n222l3p4yga27vzw6d"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.1)
          ((#:phases phases)
@@ -173,7 +173,7 @@ the Nix package manager.")
          ("graphviz" ,graphviz)
          ,@(package-native-inputs guix-0.8.1))))))
 
-(define-public guix guix-0.8.1)
+(define-public guix guix-devel)
 
 (define-public nix
   (package
