@@ -2499,6 +2499,10 @@ devices, thus making direct access unnecessary.")
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)
               ("xorg-server" ,xorg-server)))
+    (supported-systems
+     ;; This driver is only supported on i686 systems.
+     (filter (lambda (system) (string-prefix? "i686-" system))
+             %supported-systems))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
