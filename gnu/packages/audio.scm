@@ -22,9 +22,16 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages glib) ;dbus
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml))
 
 (define-public jack-1
   (package
@@ -54,4 +61,34 @@ professional audio work.  This means that it focuses on two key areas:
 synchronous execution of all clients, and low latency operation.")
     ;; Most files are licensed under the GPL. However, the libjack/ tree is
     ;; licensed under the LGPL in order to allow for proprietary usage.
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public jack-2
+  (package (inherit jack-1)
+    (name "jack")
+    (version "1.9.10")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/jackaudio/jack2/archive/v"
+                   version
+                   ".tar.gz"))
+             (sha256
+              (base32
+               "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f  ; no check target
+       #:configure-flags '("--dbus"
+                           "--alsa")))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dbus" ,dbus)
+       ("expat" ,expat)
+       ("libsamplerate" ,libsamplerate)
+       ("opus" ,opus)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    ;; Most files are under GPLv2+, but some headers are under LGPLv2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))
