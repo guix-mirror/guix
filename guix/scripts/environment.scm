@@ -40,7 +40,12 @@
 Use the output paths of DERIVATIONS to build each search path.  When PURE? is
 #t, the existing search path value is ignored.  Otherwise, the existing search
 path value is appended."
-  (let ((paths (map derivation->output-path derivations)))
+  (let ((paths (append-map (lambda (drv)
+                             (map (match-lambda
+                                   ((_ . output)
+                                    (derivation-output-path output)))
+                                  (derivation-outputs drv)))
+                           derivations)))
     (for-each (match-lambda
                (($ <search-path-specification>
                    variable directories separator)
@@ -177,7 +182,9 @@ packages."
   "Return a list of the transitive inputs for all PACKAGES."
   (define (transitive-inputs package)
     (filter-map (match-lambda
-                 ((_ (? package? package)) package)
+                 ((or (_ (? package? package))
+                      (_ (? package? package) _))
+                  package)
                  (_ #f))
                 (bag-transitive-inputs
                  (package->bag package))))
