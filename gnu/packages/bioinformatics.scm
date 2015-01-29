@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,7 +95,8 @@ BED, GFF/GTF, VCF.")
                   (("^CPP = .*$") "CPP = g++")
                   ;; replace BUILD_HOST and BUILD_TIME for deterministic build
                   (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
+                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))
+              (patches (list (search-patch "bowtie-fix-makefile.patch")))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("perl-clone" ,perl-clone)
@@ -133,6 +134,7 @@ aligning to relatively long (e.g. mammalian) genomes.  Bowtie 2 indexes the
 genome with an FM Index to keep its memory footprint small: for the human
 genome, its memory footprint is typically around 3.2 GB.  Bowtie 2 supports
 gapped, local, and paired-end alignment modes.")
+    (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
 
 (define-public samtools

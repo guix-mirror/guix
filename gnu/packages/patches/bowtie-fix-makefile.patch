@@ -1,0 +1,31 @@
+From 4a99b0023bdfbbe486b9649489a32ea184c18c9a Mon Sep 17 00:00:00 2001
+From: Valentin Antonescu <valentin@jhu.edu>
+Date: Tue, 2 Dec 2014 11:19:13 -0500
+Subject: [PATCH] Make sure the Mavericks test happens only under Darwin.
+
+---
+ Makefile | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index d74f7c8..a4cdfa7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -54,12 +54,11 @@ endif
+ MACOS = 0
+ ifneq (,$(findstring Darwin,$(shell uname)))
+ 	MACOS = 1
+-endif
+-
+-ifneq (,$(findstring 13,$(shell uname -r)))
+-	CPP = clang++
+-	CC = clang
+-	EXTRA_FLAGS += -stdlib=libstdc++
++	ifneq (,$(findstring 13,$(shell uname -r)))
++		CPP = clang++
++		CC = clang
++		EXTRA_FLAGS += -stdlib=libstdc++
++	endif
+ endif
+ 
+ POPCNT_CAPABILITY ?= 1

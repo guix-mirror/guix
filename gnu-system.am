@@ -346,6 +346,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
+  gnu/packages/patches/bowtie-fix-makefile.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
