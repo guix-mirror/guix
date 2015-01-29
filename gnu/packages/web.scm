@@ -60,7 +60,8 @@
     (inputs `(("apr" ,apr)
               ("apr-util" ,apr-util)
               ("openssl" ,openssl)
-              ("pcre" ,pcre)))
+              ("pcre" ,pcre)
+              ("perl" ,perl))) ; needed to run bin/apxs
     (arguments
      `(#:test-target "test"
        #:configure-flags (list "--enable-rewrite"
