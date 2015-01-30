@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,6 +142,26 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;   * The 'nginx-development-kit' module is mostly covered by bsd-3,
     ;;     except for two source files which are bsd-4 licensed.
     (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
+
+(define-public jansson
+  (package
+    (name "jansson")
+    (version "2.7")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append "http://www.digip.org/jansson/releases/jansson-"
+                             version ".tar.gz"))
+             (sha256
+              (base32
+               "1mvq9p85khsl818i4vbszyfab0fd45mdrwrxjkzw05mk1xcyc1br"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.digip.org/jansson/")
+    (synopsis "JSON C library")
+    (description
+     "Jansson is a C library for encoding, decoding and manipulating JSON
+data.")
+    (license l:expat)))
 
 (define-public json-c
   (package
