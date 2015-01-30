@@ -48,6 +48,58 @@
   #:use-module (gnu packages zip)
   #:use-module (gnu packages texinfo))
 
+(define-public ant
+  (package
+    (name "ant")
+    (version "1.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.apache.org/dist/ant/source/apache-ant-"
+                    version "-src.tar.gz"))
+              (sha256
+               (base32
+                "09kf5s1ir0rdrclsy174bsvbdcbajza9fja490w4mmvcpkw3zpak"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (alist-cons-after
+        'unpack 'remove-scripts
+        ;; Remove bat / cmd scripts for DOS as well as the antRun and runant
+        ;; wrappers.
+        (lambda _
+          (for-each delete-file
+                    (find-files "src/script"
+                                "(.*\\.(bat|cmd)|runant.*|antRun.*)")))
+        (alist-replace
+         'build
+         (lambda _
+           (setenv "JAVA_HOME"
+                   (assoc-ref %build-inputs "icedtea6"))
+           ;; Disable tests to avoid dependency on hamcrest-core, which needs
+           ;; Ant to build.  This is necessary in addition to disabling the
+           ;; "check" phase, because the dependency on "test-jar" would always
+           ;; result in the tests to be run.
+           (substitute* "build.xml"
+             (("depends=\"jars,test-jar\"") "depends=\"jars\""))
+           (zero? (system* "bash" "bootstrap.sh"
+                           (string-append "-Ddist.dir="
+                                          (assoc-ref %outputs "out")))))
+         (alist-delete
+          'configure
+          (alist-delete 'install %standard-phases))))))
+    (native-inputs
+     `(("icedtea6" ,icedtea6)))
+    (home-page "http://ant.apache.org")
+    (synopsis "Build tool for Java")
+    (description
+     "Ant is a platform-independent build tool for Java.  It is similar to
+make but is implemented using the Java language, requires the Java platform,
+and is best suited to building Java projects.  Ant uses XML to describe the
+build process and its dependencies, whereas Make uses Makefile format.")
+    (license license:asl2.0)))
+
 (define-public icedtea6
   (package
     (name "icedtea6")
