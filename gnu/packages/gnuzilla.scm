@@ -229,8 +229,8 @@ standards.")
        ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("glib" ,glib)
-       ("gstreamer" ,gstreamer-0.10)
-       ("gst-plugins-base" ,gst-plugins-base-0.10)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+-2)
        ("pango" ,pango)
        ("freetype" ,freetype)
@@ -259,7 +259,7 @@ standards.")
                            "--disable-debug-symbols"
 
                            "--enable-pulseaudio"
-                           "--disable-webrtc"     ; webrtc fails to build
+                           "--enable-gstreamer=1.0"
 
                            "--with-system-zlib"
                            "--with-system-bz2"    ; FIXME: not used
