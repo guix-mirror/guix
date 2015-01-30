@@ -54,4 +54,4 @@ professional audio work.  This means that it focuses on two key areas:
 synchronous execution of all clients, and low latency operation.")
     ;; Most files are licensed under the GPL. However, the libjack/ tree is
     ;; licensed under the LGPL in order to allow for proprietary usage.
-    (license '(license:gpl2+ license:lgpl2.1+))))
+    (license (list license:gpl2+ license:lgpl2.1+))))
