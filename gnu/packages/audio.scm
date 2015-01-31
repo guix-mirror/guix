@@ -92,3 +92,28 @@ synchronous execution of all clients, and low latency operation.")
      `(("pkg-config" ,pkg-config)))
     ;; Most files are under GPLv2+, but some headers are under LGPLv2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public liblo
+  (package
+    (name "liblo")
+    (version "0.28")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://sourceforge/liblo/liblo-"
+                   version
+                   ".tar.gz"))
+             (sha256
+              (base32
+               "02drgnpirvl2ihvzgsmn02agr5sj3vipzzw9vma56qlkgfvak56s"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; liblo test FAILED
+       ;; liblo server error 19 in setsockopt(IP_ADD_MEMBERSHIP): No such device
+       #:tests? #f))
+    (home-page "http://liblo.sourceforge.net")
+    (synopsis "Implementation of the Open Sound Control protocol")
+    (description
+     "liblo is a lightweight library that provides an easy to use
+implementation of the Open Sound Control (OSC) protocol.")
+    (license license:lgpl2.1+)))
