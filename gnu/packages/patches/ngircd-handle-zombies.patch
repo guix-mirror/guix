@@ -1,0 +1,36 @@
+The Guile process taking the role of PID 1 during Guix builds does not reap
+zombie processes, which makes them continue responding to "kill -0".
+
+--- a/src/testsuite/stop-server.sh	2015-02-05 11:24:00.535908842 +0100
++++ b/src/testsuite/stop-server.sh	2015-02-05 11:25:00.264351349 +0100
+@@ -1,6 +1,21 @@
+ #!/bin/sh
+ # ngIRCd Test Suite
+ 
++process_is_alive(){
++    ! process_is_dead "$1" && ! process_is_undead "$1"
++}
++
++process_is_dead(){
++    ! kill -0 "$1"
++}
++
++process_is_undead(){
++    case $(ps -p "$1" -o state=) in
++        (Z*) true ;;
++        (*) false ;;
++    esac
++}
++
+ [ -z "$srcdir" ] && srcdir=`dirname $0`
+ 
+ # read in functions
+@@ -24,7 +40,7 @@
+ 
+ # waiting ...
+ for i in 1 2 3 4 5; do
+-  kill -0 $pid > /dev/null 2>&1; r=$?
++  process_is_alive $pid > /dev/null 2>&1; r=$?
+   if [ $r -ne 0 ]; then
+     echo " ok".
+     exit 0

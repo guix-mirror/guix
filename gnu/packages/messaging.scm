@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,8 +37,11 @@
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages check))
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages linux))
 
 (define-public libotr
   (package
@@ -157,6 +161,56 @@ conversation and the list of users.  It uses colors to differentiate between
 users and to highlight messages.  It checks spelling using available
 dictionaries.  HexChat can be extended with multiple addons.")
     (home-page "http://hexchat.net/")
+    (license gpl2+)))
+
+(define-public ngircd
+  (package
+    (name "ngircd")
+    (version "22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://arthur.barton.de/pub/ngircd/ngircd-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "17k3g9qd9d010czk5846qxvzkmw4fihv8l6m2a2287crbxm3xhd4"))
+              (patches (list (search-patch "ngircd-no-dns-in-tests.patch")
+                             (search-patch "ngircd-handle-zombies.patch")))))
+    (build-system gnu-build-system)
+    ;; Needed for the test suite.
+    (native-inputs `(("procps" ,procps)
+                     ("expect" ,expect)
+                     ("inetutils" ,inetutils)))
+    ;; XXX Add libident, libwrap.
+    (inputs `(("zlib" ,zlib)
+              ("gnutls" ,gnutls)
+              ,@(if (string-suffix? "-linux"
+                                    (or (%current-target-system)
+                                        (%current-system)))
+                    `(("linux-pam" ,linux-pam))
+                    '())))
+    (arguments
+     `(#:configure-flags
+       '("--with-gnutls" "--with-iconv" "--enable-ipv6"
+         ,@(if (string-suffix? "-linux"
+                               (or (%current-target-system)
+                                   (%current-system)))
+               '("--with-pam")
+               '()))
+       #:phases
+       ;; Necessary for the test suite.
+       (alist-cons-after
+        'configure 'post-configure
+        (lambda _
+          (substitute* "src/ngircd/Makefile"
+            (("/bin/sh") (which "sh"))))
+        %standard-phases)))
+    (home-page "http://ngircd.barton.de/")
+    (synopsis "Lightweight Internet Relay Chat server for small networks")
+    (description
+     "ngIRCd is a lightweight Internet Relay Chat server for small or private
+networks.  It is easy to configure, can cope with dynamic IP addresses, and
+supports IPv6, SSL-protected connections as well as PAM for authentication.")
     (license gpl2+)))
 
 ;;; messaging.scm ends here
