@@ -42,6 +42,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages yasm)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages zip))
 
 (define-public mozjs
@@ -238,6 +241,9 @@ standards.")
        ("libevent" ,libevent)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
+       ("libvpx" ,libvpx)
+       ("icu4c" ,icu4c)
+       ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
        ("unzip" ,unzip)
@@ -264,6 +270,22 @@ standards.")
                            "--with-system-zlib"
                            "--with-system-bz2"    ; FIXME: not used
                            "--with-system-libevent"
+                           "--with-system-libvpx"
+                           "--with-system-icu"
+                           "--enable-system-pixman"
+
+                           ;; XXX unsure whether to use these.
+                           ;; "--with-system-nspr"
+                           ;; "--with-system-nss"
+
+                           ;; Fails with "configure: error: Library requirements
+                           ;; (cairo-tee >= 1.10) not met".
+                           ;; "--enable-system-cairo"
+
+                           ;; Fails with "configure: error: System
+                           ;; SQLite library is not compiled with
+                           ;; SQLITE_SECURE_DELETE."
+                           ;; "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
                            ;; the system's libpng doesn't have APNG support".
