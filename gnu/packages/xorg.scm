@@ -4054,10 +4054,10 @@ kernel mode setting (KMS).")
             "1ngn161nq679ffmbwl81i2hn75jjg5b3ffv6n4jilpvyazypy2pg"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("recordproto" ,recordproto)))
+      `(("recordproto" ,recordproto)
+        ("libxi" ,libxi)))
     (inputs
-      `(("libxi" ,libxi)
-        ("libx11" ,libx11)
+      `(("libx11" ,libx11)
         ("inputproto" ,inputproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
