@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +42,8 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages texinfo))
 
 (define-public httpd
   (package
@@ -727,3 +729,36 @@ SSL-aware without much effort, at least if you do blocking I/O and don't use
 select or poll.")
     (license (package-license perl))
     (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
+
+(define-public polipo
+  (package
+    (name "polipo")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.pps.univ-paris-diderot.fr/~jch/software/files/polipo/polipo-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "05g09sg9qkkhnc2mxldm1w1xkxzs2ylybkjzs28w8ydbjc3pand2"))))
+    (native-inputs `(("texinfo" ,texinfo)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-delete 'configure %standard-phases)
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "LOCAL_ROOT="
+                                           out "/share/polipo/www")
+                            "CC=gcc"))
+       ;; No 'check' target.
+       #:tests? #f))
+    (home-page "http://www.pps.univ-paris-diderot.fr/~jch/software/polipo/")
+    (synopsis "Small caching web proxy")
+    (description
+     "Polipo is a small caching web proxy (web cache, HTTP proxy, and proxy
+server).  It was primarily designed to be used by one person or a small group
+of people.")
+    (license l:expat)))
