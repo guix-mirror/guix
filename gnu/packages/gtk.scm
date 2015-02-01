@@ -277,12 +277,15 @@ printing and other features typical of a source code editor.")
              (base32
               "1kajvfckn88bzcdnl73b933gmjhwjm3dhsj1yrpixhfsc4y5x9r5"))))
    (build-system gnu-build-system)
+   (arguments
+    '(#:configure-flags '("--with-x11")))
    (propagated-inputs ; required by gdk-pixbuf-2.0.pc
     `(("glib" ,glib)
       ("libpng" ,libpng)))
    (inputs
     `(("libjpeg" ,libjpeg)
-      ("libtiff" ,libtiff)))
+      ("libtiff" ,libtiff)
+      ("libx11"  ,libx11)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
