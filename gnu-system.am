@@ -191,6 +191,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/miscfiles.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
+  gnu/packages/moreutils.scm			\
   gnu/packages/mpd.scm				\
   gnu/packages/mp3.scm				\
   gnu/packages/mpi.scm				\
