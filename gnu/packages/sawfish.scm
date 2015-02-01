@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
@@ -63,4 +64,36 @@ was originally written to be mostly-compatible with Emacs Lisp, but has
 subsequently diverged markedly.  Its aim is to combine the best features of
 Scheme and Common Lisp and provide an environment that is comfortable for
 implementing both small and large scale systems.")
+    (license gpl2+)))
+
+(define-public rep-gtk
+  (package
+    (name "rep-gtk")
+    (version "0.90.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.tuxfamily.org/librep/"
+                                  name "/" name "_" version ".tar.xz"))
+              (sha256
+               (base32
+                "0qslm2isyv22hffdpw0nh7xk8jw8cj3h5y7d40c9h5r833w7j6sz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile.in"
+                  (("installdir=\\$\\(repexecdir\\)")
+                   ;; Install libraries for librep to $out/lib/rep.
+                   "installdir=$(libdir)/rep")))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; required by rep-gtk.pc.
+     `(("gtk+"   ,gtk+-2)
+       ("librep" ,librep)))
+    (home-page "http://sawfish.wikia.com/wiki/Rep-GTK")
+    (synopsis "GTK+ binding for librep")
+    (description
+     "Rep-GTK is a GTK+ (and GLib, GDK) binding to the librep, and one of the
+backend of Sawfish.")
     (license gpl2+)))
