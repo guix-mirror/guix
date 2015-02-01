@@ -296,90 +296,90 @@
                    (log-file %store o)))))
 
 (test-assert "no substitutes"
-  (let* ((s  (open-connection))
-         (d1 (package-derivation s %bootstrap-guile (%current-system)))
-         (d2 (package-derivation s %bootstrap-glibc (%current-system)))
-         (o  (map derivation->output-path (list d1 d2))))
-    (set-build-options s #:use-substitutes? #f)
-    (and (not (has-substitutes? s (derivation-file-name d1)))
-         (not (has-substitutes? s (derivation-file-name d2)))
-         (null? (substitutable-paths s o))
-         (null? (substitutable-path-info s o)))))
+  (with-store s
+    (let* ((d1 (package-derivation s %bootstrap-guile (%current-system)))
+           (d2 (package-derivation s %bootstrap-glibc (%current-system)))
+           (o  (map derivation->output-path (list d1 d2))))
+      (set-build-options s #:use-substitutes? #f)
+      (and (not (has-substitutes? s (derivation-file-name d1)))
+           (not (has-substitutes? s (derivation-file-name d2)))
+           (null? (substitutable-paths s o))
+           (null? (substitutable-path-info s o))))))
 
 (test-skip (if (getenv "GUIX_BINARY_SUBSTITUTE_URL") 0 1))
 
 (test-assert "substitute query"
-  (let* ((s   (open-connection))
-         (d   (package-derivation s %bootstrap-guile (%current-system)))
-         (o   (derivation->output-path d))
-         (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                     (compose uri-path string->uri))))
-    ;; Create fake substituter data, to be read by `substitute-binary'.
-    (call-with-output-file (string-append dir "/nix-cache-info")
-      (lambda (p)
-        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
-                (%store-prefix))))
-    (call-with-output-file (string-append dir "/" (store-path-hash-part o)
-                                          ".narinfo")
-      (lambda (p)
-        (format p "StorePath: ~a
+  (with-store s
+    (let* ((d   (package-derivation s %bootstrap-guile (%current-system)))
+           (o   (derivation->output-path d))
+           (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                       (compose uri-path string->uri))))
+      ;; Create fake substituter data, to be read by `substitute-binary'.
+      (call-with-output-file (string-append dir "/nix-cache-info")
+        (lambda (p)
+          (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                  (%store-prefix))))
+      (call-with-output-file (string-append dir "/" (store-path-hash-part o)
+                                            ".narinfo")
+        (lambda (p)
+          (format p "StorePath: ~a
 URL: ~a
 Compression: none
 NarSize: 1234
 References: 
 System: ~a
 Deriver: ~a~%"
-                o                                   ; StorePath
-                (string-append dir "/example.nar")  ; URL
-                (%current-system)                   ; System
-                (basename
-                 (derivation-file-name d)))))       ; Deriver
+                  o                                 ; StorePath
+                  (string-append dir "/example.nar") ; URL
+                  (%current-system)                  ; System
+                  (basename
+                   (derivation-file-name d)))))    ; Deriver
 
-    ;; Remove entry from the local cache.
-    (false-if-exception
-     (delete-file (string-append (getenv "XDG_CACHE_HOME")
-                                 "/guix/substitute-binary/"
-                                 (store-path-hash-part o))))
+      ;; Remove entry from the local cache.
+      (false-if-exception
+       (delete-file (string-append (getenv "XDG_CACHE_HOME")
+                                   "/guix/substitute-binary/"
+                                   (store-path-hash-part o))))
 
-    ;; Make sure `substitute-binary' correctly communicates the above data.
-    (set-build-options s #:use-substitutes? #t)
-    (and (has-substitutes? s o)
-         (equal? (list o) (substitutable-paths s (list o)))
-         (match (pk 'spi (substitutable-path-info s (list o)))
-           (((? substitutable? s))
-            (and (string=? (substitutable-deriver s) (derivation-file-name d))
-                 (null? (substitutable-references s))
-                 (equal? (substitutable-nar-size s) 1234)))))))
+      ;; Make sure `substitute-binary' correctly communicates the above data.
+      (set-build-options s #:use-substitutes? #t)
+      (and (has-substitutes? s o)
+           (equal? (list o) (substitutable-paths s (list o)))
+           (match (pk 'spi (substitutable-path-info s (list o)))
+             (((? substitutable? s))
+              (and (string=? (substitutable-deriver s) (derivation-file-name d))
+                   (null? (substitutable-references s))
+                   (equal? (substitutable-nar-size s) 1234))))))))
 
 (test-assert "substitute"
-  (let* ((s   (open-connection))
-         (c   (random-text))                      ; contents of the output
-         (d   (build-expression->derivation
-               s "substitute-me"
-               `(call-with-output-file %output
-                  (lambda (p)
-                    (exit 1)                      ; would actually fail
-                    (display ,c p)))
-               #:guile-for-build
-               (package-derivation s %bootstrap-guile (%current-system))))
-         (o   (derivation->output-path d))
-         (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                     (compose uri-path string->uri))))
-    ;; Create fake substituter data, to be read by `substitute-binary'.
-    (call-with-output-file (string-append dir "/nix-cache-info")
-      (lambda (p)
-        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
-                (%store-prefix))))
-    (call-with-output-file (string-append dir "/example.out")
-      (lambda (p)
-        (display c p)))
-    (call-with-output-file (string-append dir "/example.nar")
-      (lambda (p)
-        (write-file (string-append dir "/example.out") p)))
-    (call-with-output-file (string-append dir "/" (store-path-hash-part o)
-                                          ".narinfo")
-      (lambda (p)
-        (format p "StorePath: ~a
+  (with-store s
+    (let* ((c   (random-text))                     ; contents of the output
+           (d   (build-expression->derivation
+                 s "substitute-me"
+                 `(call-with-output-file %output
+                    (lambda (p)
+                      (exit 1)                     ; would actually fail
+                      (display ,c p)))
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d))
+           (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                       (compose uri-path string->uri))))
+      ;; Create fake substituter data, to be read by `substitute-binary'.
+      (call-with-output-file (string-append dir "/nix-cache-info")
+        (lambda (p)
+          (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                  (%store-prefix))))
+      (call-with-output-file (string-append dir "/example.out")
+        (lambda (p)
+          (display c p)))
+      (call-with-output-file (string-append dir "/example.nar")
+        (lambda (p)
+          (write-file (string-append dir "/example.out") p)))
+      (call-with-output-file (string-append dir "/" (store-path-hash-part o)
+                                            ".narinfo")
+        (lambda (p)
+          (format p "StorePath: ~a
 URL: ~a
 Compression: none
 NarSize: 1234
@@ -387,50 +387,50 @@ NarHash: sha256:~a
 References: 
 System: ~a
 Deriver: ~a~%"
-                o                                   ; StorePath
-                "example.nar"                       ; relative URL
-                (call-with-input-file (string-append dir "/example.nar")
-                  (compose bytevector->nix-base32-string sha256
-                           get-bytevector-all))
-                (%current-system)                   ; System
-                (basename
-                 (derivation-file-name d)))))       ; Deriver
+                  o                                ; StorePath
+                  "example.nar"                    ; relative URL
+                  (call-with-input-file (string-append dir "/example.nar")
+                    (compose bytevector->nix-base32-string sha256
+                             get-bytevector-all))
+                  (%current-system)                ; System
+                  (basename
+                   (derivation-file-name d)))))    ; Deriver
 
-    ;; Make sure we use `substitute-binary'.
-    (set-build-options s #:use-substitutes? #t)
-    (and (has-substitutes? s o)
-         (build-derivations s (list d))
-         (equal? c (call-with-input-file o get-string-all)))))
+      ;; Make sure we use `substitute-binary'.
+      (set-build-options s #:use-substitutes? #t)
+      (and (has-substitutes? s o)
+           (build-derivations s (list d))
+           (equal? c (call-with-input-file o get-string-all))))))
 
 (test-assert "substitute, corrupt output hash"
   ;; Tweak the substituter into installing a substitute whose hash doesn't
   ;; match the one announced in the narinfo.  The daemon must notice this and
   ;; raise an error.
-  (let* ((s   (open-connection))
-         (c   "hello, world")                     ; contents of the output
-         (d   (build-expression->derivation
-               s "corrupt-substitute"
-               `(mkdir %output)
-               #:guile-for-build
-               (package-derivation s %bootstrap-guile (%current-system))))
-         (o   (derivation->output-path d))
-         (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                     (compose uri-path string->uri))))
-    ;; Create fake substituter data, to be read by `substitute-binary'.
-    (call-with-output-file (string-append dir "/nix-cache-info")
-      (lambda (p)
-        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
-                (%store-prefix))))
-    (call-with-output-file (string-append dir "/example.out")
-      (lambda (p)
-        (display "The contents here do not match C." p)))
-    (call-with-output-file (string-append dir "/example.nar")
-      (lambda (p)
-        (write-file (string-append dir "/example.out") p)))
-    (call-with-output-file (string-append dir "/" (store-path-hash-part o)
-                                          ".narinfo")
-      (lambda (p)
-        (format p "StorePath: ~a
+  (with-store s
+    (let* ((c   "hello, world")                    ; contents of the output
+           (d   (build-expression->derivation
+                 s "corrupt-substitute"
+                 `(mkdir %output)
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d))
+           (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                       (compose uri-path string->uri))))
+      ;; Create fake substituter data, to be read by `substitute-binary'.
+      (call-with-output-file (string-append dir "/nix-cache-info")
+        (lambda (p)
+          (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                  (%store-prefix))))
+      (call-with-output-file (string-append dir "/example.out")
+        (lambda (p)
+          (display "The contents here do not match C." p)))
+      (call-with-output-file (string-append dir "/example.nar")
+        (lambda (p)
+          (write-file (string-append dir "/example.out") p)))
+      (call-with-output-file (string-append dir "/" (store-path-hash-part o)
+                                            ".narinfo")
+        (lambda (p)
+          (format p "StorePath: ~a
 URL: ~a
 Compression: none
 NarSize: 1234
@@ -438,50 +438,50 @@ NarHash: sha256:~a
 References: 
 System: ~a
 Deriver: ~a~%"
-                o                                   ; StorePath
-                "example.nar"                       ; relative URL
-                (bytevector->nix-base32-string
-                 (sha256 (string->utf8 c)))
-                (%current-system)                   ; System
-                (basename
-                 (derivation-file-name d)))))       ; Deriver
+                  o                                ; StorePath
+                  "example.nar"                    ; relative URL
+                  (bytevector->nix-base32-string
+                   (sha256 (string->utf8 c)))
+                  (%current-system)                ; System
+                  (basename
+                   (derivation-file-name d)))))    ; Deriver
 
-    ;; Make sure we use `substitute-binary'.
-    (set-build-options s
-                       #:use-substitutes? #t
-                       #:fallback? #f)
-    (and (has-substitutes? s o)
-         (guard (c ((nix-protocol-error? c)
-                    ;; XXX: the daemon writes "hash mismatch in downloaded
-                    ;; path", but the actual error returned to the client
-                    ;; doesn't mention that.
-                    (pk 'corrupt c)
-                    (not (zero? (nix-protocol-error-status c)))))
-           (build-derivations s (list d))
-           #f))))
+      ;; Make sure we use `substitute-binary'.
+      (set-build-options s
+                         #:use-substitutes? #t
+                         #:fallback? #f)
+      (and (has-substitutes? s o)
+           (guard (c ((nix-protocol-error? c)
+                      ;; XXX: the daemon writes "hash mismatch in downloaded
+                      ;; path", but the actual error returned to the client
+                      ;; doesn't mention that.
+                      (pk 'corrupt c)
+                      (not (zero? (nix-protocol-error-status c)))))
+             (build-derivations s (list d))
+             #f)))))
 
 (test-assert "substitute --fallback"
-  (let* ((s   (open-connection))
-         (t   (random-text))                      ; contents of the output
-         (d   (build-expression->derivation
-               s "substitute-me-not"
-               `(call-with-output-file %output
-                  (lambda (p)
-                    (display ,t p)))
-               #:guile-for-build
-               (package-derivation s %bootstrap-guile (%current-system))))
-         (o   (derivation->output-path d))
-         (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                     (compose uri-path string->uri))))
-    ;; Create fake substituter data, to be read by `substitute-binary'.
-    (call-with-output-file (string-append dir "/nix-cache-info")
-      (lambda (p)
-        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
-                (%store-prefix))))
-    (call-with-output-file (string-append dir "/" (store-path-hash-part o)
-                                          ".narinfo")
-      (lambda (p)
-        (format p "StorePath: ~a
+  (with-store s
+    (let* ((t   (random-text))                     ; contents of the output
+           (d   (build-expression->derivation
+                 s "substitute-me-not"
+                 `(call-with-output-file %output
+                    (lambda (p)
+                      (display ,t p)))
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d))
+           (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                       (compose uri-path string->uri))))
+      ;; Create fake substituter data, to be read by `substitute-binary'.
+      (call-with-output-file (string-append dir "/nix-cache-info")
+        (lambda (p)
+          (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                  (%store-prefix))))
+      (call-with-output-file (string-append dir "/" (store-path-hash-part o)
+                                            ".narinfo")
+        (lambda (p)
+          (format p "StorePath: ~a
 URL: ~a
 Compression: none
 NarSize: 1234
@@ -489,26 +489,26 @@ NarHash: sha256:0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 References: 
 System: ~a
 Deriver: ~a~%"
-                o                                   ; StorePath
-                "does-not-exist.nar"                ; relative URL
-                (%current-system)                   ; System
-                (basename
-                 (derivation-file-name d)))))       ; Deriver
+                  o                                ; StorePath
+                  "does-not-exist.nar"             ; relative URL
+                  (%current-system)                ; System
+                  (basename
+                   (derivation-file-name d)))))    ; Deriver
 
-    ;; Make sure we use `substitute-binary'.
-    (set-build-options s #:use-substitutes? #t)
-    (and (has-substitutes? s o)
-         (guard (c ((nix-protocol-error? c)
-                    ;; The substituter failed as expected.  Now make sure that
-                    ;; #:fallback? #t works correctly.
-                    (set-build-options s
-                                       #:use-substitutes? #t
-                                       #:fallback? #t)
-                    (and (build-derivations s (list d))
-                         (equal? t (call-with-input-file o get-string-all)))))
-           ;; Should fail.
-           (build-derivations s (list d))
-           #f))))
+      ;; Make sure we use `substitute-binary'.
+      (set-build-options s #:use-substitutes? #t)
+      (and (has-substitutes? s o)
+           (guard (c ((nix-protocol-error? c)
+                      ;; The substituter failed as expected.  Now make sure that
+                      ;; #:fallback? #t works correctly.
+                      (set-build-options s
+                                         #:use-substitutes? #t
+                                         #:fallback? #t)
+                      (and (build-derivations s (list d))
+                           (equal? t (call-with-input-file o get-string-all)))))
+             ;; Should fail.
+             (build-derivations s (list d))
+             #f)))))
 
 (test-assert "export/import several paths"
   (let* ((texts (unfold (cut >= <> 10)
