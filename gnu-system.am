@@ -240,6 +240,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ruby.scm				\
   gnu/packages/rush.scm				\
   gnu/packages/samba.scm			\
+  gnu/packages/sawfish.scm			\
   gnu/packages/scanner.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
@@ -417,6 +418,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
+  gnu/packages/patches/librep-rules.mk.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
