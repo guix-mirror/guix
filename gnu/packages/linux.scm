@@ -1785,3 +1785,30 @@ an isolated container, created with the help of Linux namespaces.  It is
 similar in functionality to chroot, although pflask provides better isolation
 thanks to the use of namespaces.")
     (license bsd-2)))
+
+(define-public hdparm
+  (package
+    (name "hdparm")
+    (version "9.45")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sc6yf3k6sd7n6a2ig2my9fjlqpak3znlyw7jw4cz5d9asm1rc13"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "binprefix=" out)
+                            (string-append "manprefix=" out)
+                            "CC=gcc"))
+       #:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f))  ; no test suite
+    (home-page "http://sourceforge.net/projects/hdparm/")
+    (synopsis "tune hard disk parameters for high performance")
+    (description
+     "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
+is for enabling irq-unmasking and IDE multiplemode.")
+    (license (bsd-style "file://LICENSE.TXT"))))
+
