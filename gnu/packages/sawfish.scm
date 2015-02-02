@@ -23,12 +23,15 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages xorg))
 
 (define-public librep
   (package
@@ -96,4 +99,77 @@ implementing both small and large scale systems.")
     (description
      "Rep-GTK is a GTK+ (and GLib, GDK) binding to the librep, and one of the
 backend of Sawfish.")
+    (license gpl2+)))
+
+(define-public sawfish
+  (package
+    (name "sawfish")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.tuxfamily.org/sawfish/"
+                                  name "_" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wp4m0p836a0rysbcdqb6z5hxlxqj3rgdbks3bs44rlssx0mcvyg"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "Makedefs.in"
+                    (("/bin/sh") "@SHELL@")
+                    (("REP_DL_LOAD_PATH=")
+                     ;; To find rep-gtk when building sawfish.
+                     "REP_DL_LOAD_PATH=$(REP_DL_LOAD_PATH):"))
+                  (substitute* "src/Makefile.in"
+                    ;; Install libraries for librep to $out/lib/rep.
+                    (("\\$\\(repexecdir\\)") "$(libdir)/rep"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases
+       (alist-cons-before
+        'configure 'patch-exec-rep
+        (lambda _
+          (substitute* '("lisp/sawfish/cfg/main.jl.in"
+                         "scripts/sawfish-about.jl.in"
+                         "scripts/sawfish-client.jl"
+                         "scripts/sawfish-menu.jl")
+            (("exec rep") (string-append "exec " (which "rep")))))
+        (alist-cons-after
+         'install 'wrap-scripts
+         ;; Wrap scripts with REP_DL_LOAD_PATH for finding rep-gtk
+         ;; and sawfish.client.
+         (lambda* (#:key outputs #:allow-other-keys)
+           (define (wrap-script script)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out script)
+                             `("REP_DL_LOAD_PATH" =
+                               ,(list (getenv "REP_DL_LOAD_PATH")
+                                      (string-append out "/lib/rep"))))))
+           (for-each wrap-script
+                     (list "/bin/sawfish-about"
+                           "/bin/sawfish-client"
+                           "/bin/sawfish-config"
+                           "/lib/sawfish/sawfish-menu")))
+         %standard-phases))))
+    (native-inputs
+     `(("gettext"     ,gnu-gettext)
+       ("makeinfo"    ,texinfo)
+       ("pkg-config"  ,pkg-config)
+       ("which"       ,which)))
+    (inputs
+     `(("libsm"       ,libsm)
+       ("libxft"      ,libxft)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr"   ,libxrandr)
+       ("libxtst"     ,libxtst)
+       ("rep-gtk"     ,rep-gtk)))
+    (home-page "http://sawfish.wikia.com/wiki/Main_Page")
+    (synopsis "Configurable window manager")
+    (description
+     "Sawfish is an extensible window manager using a Lisp-based scripting
+language.  Its policy is very minimal compared to most window managers.  Its aim
+is simply to manage windows in the most flexible and attractive manner possible.
+All high-level WM functions are implemented in Lisp for future extensibility or
+redefinition.")
     (license gpl2+)))
