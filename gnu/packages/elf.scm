@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public elfutils
   (package
     (name "elfutils")
-    (version "0.157")
+    (version "0.161")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -37,7 +38,7 @@
                     version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "11ffbihw9zs2dhmlww9zilwvmv6v1pr6bvnz5dnzn0lxq70ckbag"))))
+                "0w50szymyqvx8g0vkwrvnv17grqxva6x1z9dm9m3i99zg2hr232p"))))
     (build-system gnu-build-system)
 
     ;; Separate programs because that's usually not what elfutils users want,
