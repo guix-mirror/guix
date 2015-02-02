@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,14 +35,14 @@
 (define-public node
   (package
     (name "node")
-    (version "0.10.29")
+    (version "0.10.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0pdib215ldypc149ad03wlfj0i8fwdfydd4q2hd7ry35yw0rsds7"))))
+                "10cc2yglmrp8i2l4lm4pnm1pf7jvzjk5v80kddl4dkjb578d3mxr"))))
     (native-inputs `(("python" ,python-2)
                      ("perl" ,perl)
                      ("gcc" ,gcc-4.9)
