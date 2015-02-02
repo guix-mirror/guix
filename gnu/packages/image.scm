@@ -188,7 +188,7 @@ work.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.0.1")
+    (version "2.1.0")
     (source
       (origin
         (method url-fetch)
@@ -196,7 +196,7 @@ work.")
          (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
                         version ".tar.gz"))
         (sha256
-         (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))))
+         (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -219,6 +219,19 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://code.google.com/p/openjpeg/")
     (license license:bsd-2)))
+
+(define-public openjpeg-2.0
+  (package (inherit openjpeg)
+    (name "openjpeg")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)

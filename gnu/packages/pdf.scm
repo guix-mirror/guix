@@ -206,7 +206,7 @@ extracting content or merging files.")
         ("libjpeg" ,libjpeg)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
-        ("openjpeg" ,openjpeg)
+        ("openjpeg" ,openjpeg-2.0)
         ("openssl" ,openssl)
         ("zlib" ,zlib)))
     (native-inputs
