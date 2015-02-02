@@ -62,6 +62,8 @@
             hash-part->path
             add-text-to-store
             add-to-store
+            build-things
+            build
             build-derivations
             add-temp-root
             add-indirect-root
@@ -140,7 +142,7 @@
   (query-referrers 6)
   (add-to-store 7)
   (add-text-to-store 8)
-  (build-derivations 9)
+  (build-things 9)
   (ensure-path 10)
   (add-temp-root 11)
   (add-indirect-root 12)
@@ -573,10 +575,15 @@ kept.  HASH-ALGO must be a string such as \"sha256\"."
               (hash-set! cache args path)
               path))))))
 
-(define-operation (build-derivations (string-list derivations))
-  "Build DERIVATIONS, and return when the worker is done building them.
+(define-operation (build-things (string-list things))
+  "Build THINGS, a list of store items which may be either '.drv' files or
+outputs, and return when the worker is done building them.  Elements of THINGS
+that are not derivations can only be substituted and not built locally.
 Return #t on success."
   boolean)
+
+;; Deprecated name for 'build-things'.
+(define build-derivations build-things)
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.
@@ -906,6 +913,10 @@ permission bits are kept."
     (values (add-to-store store (or name (basename file))
                           recursive? "sha256" file)
             store)))
+
+(define build
+  ;; Monadic variant of 'build-things'.
+  (store-lift build-things))
 
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,

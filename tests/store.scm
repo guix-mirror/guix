@@ -306,6 +306,24 @@
            (null? (substitutable-paths s o))
            (null? (substitutable-path-info s o))))))
 
+(test-assert "build-things with output path"
+  (with-store s
+    (let* ((c   (random-text))                    ;contents of the output
+           (d   (build-expression->derivation
+                 s "substitute-me"
+                 `(call-with-output-file %output
+                    (lambda (p)
+                      (display ,c p)))
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d)))
+      (set-build-options s #:use-substitutes? #f)
+
+      ;; Pass 'build-things' the output file name, O.  However, since there
+      ;; are no substitutes for O, it will just do nothing.
+      (build-things s (list o))
+      (not (valid-path? s o)))))
+
 (test-skip (if (getenv "GUIX_BINARY_SUBSTITUTE_URL") 0 1))
 
 (test-assert "substitute query"
@@ -348,6 +366,25 @@
         (set-build-options s #:use-substitutes? #t)
         (and (has-substitutes? s o)
              (build-derivations s (list d))
+             (equal? c (call-with-input-file o get-string-all)))))))
+
+(test-assert "substitute + build-things with output path"
+  (with-store s
+    (let* ((c   (random-text))                    ;contents of the output
+           (d   (build-expression->derivation
+                 s "substitute-me"
+                 `(call-with-output-file %output
+                    (lambda (p)
+                      (exit 1)                    ;would actually fail
+                      (display ,c p)))
+                 #:guile-for-build
+                 (package-derivation s %bootstrap-guile (%current-system))))
+           (o   (derivation->output-path d)))
+      (with-derivation-substitute d c
+        (set-build-options s #:use-substitutes? #t)
+        (and (has-substitutes? s o)
+             (build-things s (list o))            ;give the output path
+             (valid-path? s o)
              (equal? c (call-with-input-file o get-string-all)))))))
 
 (test-assert "substitute, corrupt output hash"
