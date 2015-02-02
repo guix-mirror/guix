@@ -21,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
@@ -42,14 +43,16 @@
 (define-public inkscape
   (package
     (name "inkscape")
-    (version "0.48.5")
+    (version "0.91")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/inkscape/inkscape-"
-                                  version ".tar.bz2"))
+              (uri (string-append "https://launchpad.net/inkscape/"
+                                  (version-major+minor version) ".x/"
+                                  version "/+download/inkscape-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "0sfr7a1vr1066rrkkqbqvcqs3gawalj68ralnhd6k87jz62fcv1b"))))
+                "086v01jy896dj86bq7plrf6si4p6gh6ga2v5417llgmminycz8rc"))))
     (build-system gnu-build-system)
     (inputs
      `(("aspell" ,aspell)
