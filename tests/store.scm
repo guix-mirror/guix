@@ -119,7 +119,7 @@
 
 (test-assert "dead-paths"
   (let ((p (add-text-to-store %store "random-text" (random-text))))
-    (member p (dead-paths %store))))
+    (->bool (member p (dead-paths %store)))))
 
 ;; FIXME: Find a test for `live-paths'.
 ;;
