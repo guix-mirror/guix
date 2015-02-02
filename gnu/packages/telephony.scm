@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,13 +143,13 @@ multiplayer games.")
 (define-public sipwitch
   (package
    (name "sipwitch")
-   (version "1.9.3")
+   (version "1.9.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sipwitch/sipwitch-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "1iyh390rmxqrks7rypl8ql7fhd3pmy2ckqnp1p0llzrx67jh2q91"))))
+                     "04kfzcg12zn47y70gc5w5yi6jwgj1z2xyma2ljzz48lg1236qiqq"))))
    (build-system gnu-build-system)
    ;; The configure.ac uses pkg-config but in a kludgy way which breaks when 
    ;; cross-compiling.  Among other issues there the program name "pkg-config"
