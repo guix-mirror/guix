@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages cdrom)
@@ -371,10 +372,14 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1aai0h0z1bhp89pxmg4fkrwpmqq24k39fhr15cw6q77m9bccip6k"))))
+                "1aai0h0z1bhp89pxmg4fkrwpmqq24k39fhr15cw6q77m9bccip6k"))
+              (patches
+               (list (search-patch "libvpx-vp9-out-of-bounds-access.patch")
+                     (search-patch "libvpx-fix-ssse3-quantize.patch")
+                     (search-patch "libvpx-fix-armhf-link.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
+     `(#:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
                    (setenv "CONFIG_SHELL" (which "bash"))
@@ -382,6 +387,23 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
+                                     ,@(if (and (not (%current-target-system))
+                                                (string-prefix?
+                                                 "armhf-"
+                                                 (%current-system)))
+                                           ;; When building on ARMv7, libvpx
+                                           ;; assumes that NEON will be
+                                           ;; available.  On Guix, armhf
+                                           ;; does not require NEON, so we
+                                           ;; build for ARMv6 and -marm (since
+                                           ;; no thumb2 on ARMv6) to ensure
+                                           ;; compatibility with all ARMv7
+                                           ;; cores we support.  Based on
+                                           ;; the Debian libvpx package.
+                                           '("--target=armv6-linux-gcc"
+                                             "--extra-cflags=-marm"
+                                             "--enable-small")
+                                           '())
                                      (string-append "--prefix=" out)))))
                  %standard-phases)
        #:tests? #f)) ; no check target

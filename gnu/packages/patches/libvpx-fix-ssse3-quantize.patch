@@ -1,0 +1,32 @@
+commit 0d43bd77e5f429467fbd280a7b8f7fbc0bfe1809
+Author: Yunqing Wang <yunqingwang@google.com>
+Date:   Fri Feb 7 14:27:07 2014 -0800
+
+    Bug fix in ssse3 quantize function
+    
+    A bug was reported in Issue 702: "SIGILL (Illegal instruction) when
+    transcoding with vp9 - using FFmpeg". It was reproduced and fixed.
+    
+    Change-Id: Ie32c149a89af02856084aeaf289e848a905c7700
+
+diff --git a/vp9/encoder/x86/vp9_quantize_ssse3.asm b/vp9/encoder/x86/vp9_quantize_ssse3.asm
+index db30660..48ccef8 100644
+--- a/vp9/encoder/x86/vp9_quantize_ssse3.asm
++++ b/vp9/encoder/x86/vp9_quantize_ssse3.asm
+@@ -188,7 +188,8 @@ cglobal quantize_%1, 0, %2, 15, coeff, ncoeff, skip, zbin, round, quant, \
+   pmaxsw                          m8, m7
+   pshuflw                         m7, m8, 0x1
+   pmaxsw                          m8, m7
+-  pextrw                        [r2], m8, 0
++  pextrw                          r6, m8, 0
++  mov                             [r2], r6
+   RET
+ 
+   ; skip-block, i.e. just write all zeroes
+@@ -214,5 +215,5 @@ cglobal quantize_%1, 0, %2, 15, coeff, ncoeff, skip, zbin, round, quant, \
+ %endmacro
+ 
+ INIT_XMM ssse3
+-QUANTIZE_FN b, 6
++QUANTIZE_FN b, 7
+ QUANTIZE_FN b_32x32, 7
