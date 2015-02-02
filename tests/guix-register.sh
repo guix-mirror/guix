@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -110,6 +110,14 @@ do
 
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
 	NIX_LOG_DIR NIX_DB_DIR
+
+    # Check whether we overflow the limitation on local socket name lengths.
+    if [ `echo "$NIX_STATE_DIR/daemon-socket/socket" | wc -c` -ge 108 ]
+    then
+	# Mark the test as skipped even though we already did some work so
+	# that the remainder is not silently skipped.
+	exit 77
+    fi
 
     guix-daemon --disable-chroot &
     subdaemon_pid=$!
