@@ -64,7 +64,6 @@
             add-to-store
             build-things
             build
-            build-derivations
             add-temp-root
             add-indirect-root
             add-permanent-root
@@ -581,9 +580,6 @@ outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
   boolean)
-
-;; Deprecated name for 'build-things'.
-(define build-derivations build-things)
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.

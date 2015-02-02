@@ -2879,7 +2879,7 @@ equivalent @command{guix-daemon} option.
 Behind the scenes, @command{guix build} is essentially an interface to
 the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
-store)} module.
+derivations)} module.
 
 In addition to options explicitly passed on the command line,
 @command{guix build} and other @command{guix} commands that support

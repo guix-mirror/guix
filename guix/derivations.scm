@@ -94,6 +94,7 @@
 
             map-derivation
 
+            build-derivations
             built-derivations
             imported-modules
             compiled-modules
@@ -102,9 +103,7 @@
             imported-files)
 
   ;; Re-export it from here for backward compatibility.
-  #:re-export (%guile-for-build)
-
-  #:replace (build-derivations))
+  #:re-export (%guile-for-build))
 
 ;;;
 ;;; Error conditions.
@@ -916,12 +915,11 @@ recursively."
 
 (define (build-derivations store derivations)
   "Build DERIVATIONS, a list of <derivation> objects or .drv file names."
-  (let ((build (@ (guix store) build-derivations)))
-    (build store (map (match-lambda
-                       ((? string? file) file)
-                       ((and drv ($ <derivation>))
-                        (derivation-file-name drv)))
-                      derivations))))
+  (build-things store (map (match-lambda
+                            ((? string? file) file)
+                            ((and drv ($ <derivation>))
+                             (derivation-file-name drv)))
+                           derivations)))
 
 
 ;;;
