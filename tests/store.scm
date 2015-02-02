@@ -343,27 +343,12 @@
                       (display ,c p)))
                  #:guile-for-build
                  (package-derivation s %bootstrap-guile (%current-system))))
-           (o   (derivation->output-path d))
-           (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                       (compose uri-path string->uri))))
-        (call-with-output-file (string-append dir "/example.out")
-          (lambda (p)
-            (display c p)))
-        (call-with-output-file (string-append dir "/example.nar")
-          (lambda (p)
-            (write-file (string-append dir "/example.out") p)))
-
-        (let ((h (call-with-input-file (string-append dir "/example.nar")
-                   port-sha256)))
-          ;; Create fake substituter data, to be read by `substitute-binary'.
-          (with-derivation-narinfo d
-            (sha256 => h)
-
-            ;; Make sure we use `substitute-binary'.
-            (set-build-options s #:use-substitutes? #t)
-            (and (has-substitutes? s o)
-                 (build-derivations s (list d))
-                 (equal? c (call-with-input-file o get-string-all))))))))
+           (o   (derivation->output-path d)))
+      (with-derivation-substitute d c
+        (set-build-options s #:use-substitutes? #t)
+        (and (has-substitutes? s o)
+             (build-derivations s (list d))
+             (equal? c (call-with-input-file o get-string-all)))))))
 
 (test-assert "substitute, corrupt output hash"
   ;; Tweak the substituter into installing a substitute whose hash doesn't
@@ -376,33 +361,23 @@
                  `(mkdir %output)
                  #:guile-for-build
                  (package-derivation s %bootstrap-guile (%current-system))))
-           (o   (derivation->output-path d))
-           (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                       (compose uri-path string->uri))))
-      ;; Create fake substituter data, to be read by `substitute-binary'.
-      (with-derivation-narinfo d
-        (sha256 => (sha256 (string->utf8 c)))
+           (o   (derivation->output-path d)))
+      (with-derivation-substitute d c
+        (sha256 => (make-bytevector 32 0)) ;select a hash that doesn't match C
 
-        (call-with-output-file (string-append dir "/example.out")
-          (lambda (p)
-            (display "The contents here do not match C." p)))
-        (call-with-output-file (string-append dir "/example.nar")
-          (lambda (p)
-            (write-file (string-append dir "/example.out") p)))
-
-       ;; Make sure we use `substitute-binary'.
-       (set-build-options s
-                          #:use-substitutes? #t
-                          #:fallback? #f)
-       (and (has-substitutes? s o)
-            (guard (c ((nix-protocol-error? c)
-                       ;; XXX: the daemon writes "hash mismatch in downloaded
-                       ;; path", but the actual error returned to the client
-                       ;; doesn't mention that.
-                       (pk 'corrupt c)
-                       (not (zero? (nix-protocol-error-status c)))))
-              (build-derivations s (list d))
-              #f))))))
+        ;; Make sure we use `substitute-binary'.
+        (set-build-options s
+                           #:use-substitutes? #t
+                           #:fallback? #f)
+        (and (has-substitutes? s o)
+             (guard (c ((nix-protocol-error? c)
+                        ;; XXX: the daemon writes "hash mismatch in downloaded
+                        ;; path", but the actual error returned to the client
+                        ;; doesn't mention that.
+                        (pk 'corrupt c)
+                        (not (zero? (nix-protocol-error-status c)))))
+               (build-derivations s (list d))
+               #f))))))
 
 (test-assert "substitute --fallback"
   (with-store s

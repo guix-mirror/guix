@@ -21,6 +21,8 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix base32)
+  #:use-module (guix serialization)
+  #:use-module (guix hash)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
@@ -29,7 +31,9 @@
             random-text
             random-bytevector
             mock
+            %substitute-directory
             with-derivation-narinfo
+            with-derivation-substitute
             dummy-package))
 
 ;;; Commentary:
@@ -107,14 +111,18 @@ Deriver: ~a~%"
           (basename
            (derivation-file-name drv))))      ; Deriver
 
+(define %substitute-directory
+  (make-parameter
+   (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+          (compose uri-path string->uri))))
+
 (define* (call-with-derivation-narinfo drv thunk
                                        #:key (sha256 (make-bytevector 32 0)))
   "Call THUNK in a context where fake substituter data, as read by 'guix
 substitute-binary', has been installed for DRV.  SHA256 is the hash of the
 expected output of DRV."
   (let* ((output  (derivation->output-path drv))
-         (dir     (uri-path
-                   (string->uri (getenv "GUIX_BINARY_SUBSTITUTE_URL"))))
+         (dir     (%substitute-directory))
          (info    (string-append dir "/nix-cache-info"))
          (narinfo (string-append dir "/" (store-path-hash-part output)
                                  ".narinfo")))
@@ -145,6 +153,45 @@ substituter's viewpoint."
        (lambda ()
          body ...)))))
 
+(define* (call-with-derivation-substitute drv contents thunk
+                                          #:key sha256)
+  "Call THUNK in a context where a substitute for DRV has been installed,
+using CONTENTS, a string, as its contents.  If SHA256 is true, use it as the
+expected hash of the substitute; otherwise use the hash of the nar containing
+CONTENTS."
+  (define dir (%substitute-directory))
+  (dynamic-wind
+    (lambda ()
+      (call-with-output-file (string-append dir "/example.out")
+        (lambda (port)
+          (display contents port)))
+      (call-with-output-file (string-append dir "/example.nar")
+        (lambda (p)
+          (write-file (string-append dir "/example.out") p))))
+    (lambda ()
+      (let ((hash (call-with-input-file (string-append dir "/example.nar")
+                    port-sha256)))
+        ;; Create fake substituter data, to be read by `substitute-binary'.
+        (call-with-derivation-narinfo drv
+          thunk
+          #:sha256 (or sha256 hash))))
+    (lambda ()
+      (delete-file (string-append dir "/example.out"))
+      (delete-file (string-append dir "/example.nar")))))
+
+(define-syntax with-derivation-substitute
+  (syntax-rules (sha256 =>)
+    "Evaluate BODY in a context where DRV is substitutable with the given
+CONTENTS."
+    ((_ drv contents (sha256 => hash) body ...)
+     (call-with-derivation-substitute drv contents
+       (lambda () body ...)
+       #:sha256 hash))
+    ((_ drv contents body ...)
+     (call-with-derivation-substitute drv contents
+       (lambda ()
+         body ...)))))
+
 (define-syntax-rule (dummy-package name* extra-fields ...)
   "Return a \"dummy\" package called NAME*, with all its compulsory fields
 initialized with default values, and with EXTRA-FIELDS set as specified."
@@ -156,6 +203,7 @@ initialized with default values, and with EXTRA-FIELDS set as specified."
 
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)
+;; eval: (put 'call-with-derivation-substitute 'scheme-indent-function 2)
 ;; End:
 
 ;;; tests.scm ends here
