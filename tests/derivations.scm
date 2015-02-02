@@ -916,7 +916,3 @@
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
-
-;; Local Variables:
-;; eval: (put 'with-derivation-narinfo 'scheme-indent-function 1)
-;; End:

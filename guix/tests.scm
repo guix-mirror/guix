@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix base32)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
@@ -86,25 +87,31 @@ given by REPLACEMENT."
 ;;; Narinfo files, as used by the substituter.
 ;;;
 
-(define* (derivation-narinfo drv #:optional (nar "example.nar"))
+(define* (derivation-narinfo drv #:key (nar "example.nar")
+                             (sha256 (make-bytevector 32 0)))
   "Return the contents of the narinfo corresponding to DRV; NAR should be the
-file name of the archive containing the substitute for DRV."
+file name of the archive containing the substitute for DRV, and SHA256 is the
+expected hash."
   (format #f "StorePath: ~a
 URL: ~a
 Compression: none
 NarSize: 1234
+NarHash: sha256:~a
 References: 
 System: ~a
 Deriver: ~a~%"
           (derivation->output-path drv)       ; StorePath
           nar                                 ; URL
+          (bytevector->nix-base32-string sha256)  ; NarHash
           (derivation-system drv)             ; System
           (basename
            (derivation-file-name drv))))      ; Deriver
 
-(define (call-with-derivation-narinfo drv thunk)
+(define* (call-with-derivation-narinfo drv thunk
+                                       #:key (sha256 (make-bytevector 32 0)))
   "Call THUNK in a context where fake substituter data, as read by 'guix
-substitute-binary', has been installed for DRV."
+substitute-binary', has been installed for DRV.  SHA256 is the hash of the
+expected output of DRV."
   (let* ((output  (derivation->output-path drv))
          (dir     (uri-path
                    (string->uri (getenv "GUIX_BINARY_SUBSTITUTE_URL"))))
@@ -119,18 +126,24 @@ substitute-binary', has been installed for DRV."
                     (%store-prefix))))
         (call-with-output-file narinfo
           (lambda (p)
-            (display (derivation-narinfo drv) p))))
+            (display (derivation-narinfo drv #:sha256 sha256) p))))
       thunk
       (lambda ()
         (delete-file narinfo)
         (delete-file info)))))
 
-(define-syntax-rule (with-derivation-narinfo drv body ...)
-  "Evaluate BODY in a context where DRV looks substitutable from the
+(define-syntax with-derivation-narinfo
+  (syntax-rules (sha256 =>)
+    "Evaluate BODY in a context where DRV looks substitutable from the
 substituter's viewpoint."
-  (call-with-derivation-narinfo drv
-    (lambda ()
-      body ...)))
+    ((_ drv (sha256 => hash) body ...)
+     (call-with-derivation-narinfo drv
+       (lambda () body ...)
+       #:sha256 hash))
+    ((_ drv body ...)
+     (call-with-derivation-narinfo drv
+       (lambda ()
+         body ...)))))
 
 (define-syntax-rule (dummy-package name* extra-fields ...)
   "Return a \"dummy\" package called NAME*, with all its compulsory fields
