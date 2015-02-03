@@ -2,9 +2,10 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2848,3 +2849,31 @@ and written in Python.")
 
 (define-public python2-html5lib
   (package-with-python2 python-html5lib))
+
+(define-public python-urwid
+  (package
+    (name "python-urwid")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append
+                   "https://pypi.python.org/packages/source/u/urwid/urwid-"
+                   version ".tar.gz")
+                  ;; Downloading from the upstream URI above fails due to an
+                  ;; invalid ETag header.
+                  "https://pkgs.fedoraproject.org/repo/pkgs/python-urwid/urwid-1.3.0.tar.gz/a989acd54f4ff1a554add464803a9175/urwid-1.3.0.tar.gz"))
+       (sha256
+        (base32
+         "18mb0yy94sjc434rd61m2sfnw27sa0nyrszpj5a9r9zh7fnlzw19"))))
+    (build-system python-build-system)
+    (native-inputs `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://urwid.org")
+    (synopsis "Console user interface library for Python")
+    (description
+     "Urwid is a curses-based UI/widget library for Python.  It includes many
+features useful for text console applications.")
+    (license lgpl2.1+)))
+
+(define-public python2-urwid
+  (package-with-python2 python-urwid))
