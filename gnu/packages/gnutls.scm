@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.21")
+    (version "3.3.12")
     (source (origin
              (method url-fetch)
              (uri
@@ -74,7 +75,7 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0zq8syiq51ls5g0f32nglvps330h5llpyrs1z2gjn5pr9hjrchc2"))))
+               "16r96bzsfqx1rlqrkggmhhx6zbxj1fmc3mwpp0ik73ylqn93xav7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
