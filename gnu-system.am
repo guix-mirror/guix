@@ -157,6 +157,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libcanberra.scm			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
+  gnu/packages/libffcall.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libftdi.scm			\
   gnu/packages/libidn.scm			\
