@@ -4579,6 +4579,10 @@ Session type using the Ratpoison window manager.
 Session type using the WindowMaker window manager.
 @end defvr
 
+@defvr {Scheme Variable} %sawfish-session-type
+Session type using the Sawfish window manager.
+@end defvr
+
 @defvr {Scheme Variable} %default-theme
 @defvrx {Scheme Variable} %default-theme-name
 The G-Expression denoting the default SLiM theme and its name.

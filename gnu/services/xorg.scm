@@ -27,6 +27,7 @@
   #:use-module (gnu packages slim)
   #:use-module (gnu packages ratpoison)
   #:use-module (gnu packages gnustep)
+  #:use-module (gnu packages sawfish)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (guix gexp)
@@ -41,6 +42,7 @@
             %default-xsessions
             %ratpoison-session-type
             %windowmaker-session-type
+            %sawfish-session-type
 
             session-type?
             session-type-name
@@ -193,6 +195,11 @@ which should be passed to this script as the first argument.  If not, the
   (session-type
    (name "Ratpoison")
    (executable #~(string-append #$ratpoison "/bin/ratpoison"))))
+
+(define %sawfish-session-type
+  (session-type
+   (name "Sawfish")
+   (executable #~(string-append #$sawfish "/bin/sawfish"))))
 
 (define %default-xsessions
   ;; Default session types available to the log-in manager.
