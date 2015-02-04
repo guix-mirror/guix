@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -678,16 +678,16 @@ commands and their arguments.")
 (define-public wpa-supplicant
   (package
     (name "wpa-supplicant")
-    (version "2.2")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://hostap.epitest.fi/releases/wpa_supplicant-"
+                    "http://w1.fi/releases/wpa_supplicant-"
                     version
                     ".tar.gz"))
               (sha256
                (base32
-                "1vf8jc4yyksbxf86narvsli3vxfbm8nbnim2mdp66nd6d3yvin70"))))
+                "0skvkl6c10ls4s48b2wmf47h9j1y40nlzxnzn8hyaw2j0prmpapa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -726,7 +726,7 @@ commands and their arguments.")
        ("openssl" ,o:openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://hostap.epitest.fi/wpa_supplicant/")
+    (home-page "http://w1.fi/wpa_supplicant/")
     (synopsis "Connecting to WPA and WPA2-protected wireless networks")
     (description
      "wpa_supplicant is a WPA Supplicant with support for WPA and WPA2 (IEEE
