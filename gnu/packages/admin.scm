@@ -714,7 +714,27 @@ commands and their arguments.")
       CONFIG_LIBNL32=y
       CONFIG_READLINE=y\n" port)
                      (close-port port)))
-                 %standard-phases)
+
+                 (alist-cons-after
+                  'install 'install-man-pages
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out  (assoc-ref outputs "out"))
+                           (man  (string-append out "/share/man"))
+                           (man5 (string-append man "/man5"))
+                           (man8 (string-append man "/man8")))
+                      (define (copy-man-page target)
+                        (lambda (file)
+                          (copy-file file
+                                     (string-append target "/"
+                                                    (basename file)))))
+
+                      (mkdir-p man5) (mkdir man8)
+                      (for-each (copy-man-page man5)
+                                (find-files "doc/docbook" "\\.5"))
+                      (for-each (copy-man-page man8)
+                                (find-files "doc/docbook" "\\.8"))
+                      #t))
+                  %standard-phases))
 
       #:make-flags (list "CC=gcc"
                          (string-append "BINDIR=" (assoc-ref %outputs "out")
