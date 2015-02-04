@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -93,6 +93,11 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
                 "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; The Avahi daemon socket is expected by src/Makefile.am to be at
+     ;; "$(localstatedir)/run/avahi-daemon/socket", so set $(localstatedir)
+     ;; appropriately.
+     '(#:configure-flags '("--localstatedir=/")))
 
     ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18704>.
     (home-page "http://0pointer.de/lennart/projects/nss-mdns/")
