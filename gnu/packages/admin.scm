@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -38,6 +38,8 @@
   #:use-module (gnu packages tcl)
   #:use-module ((gnu packages compression) #:prefix c:)
   #:use-module ((gnu packages openssl) #:prefix o:)
+  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
@@ -699,6 +701,9 @@ commands and their arguments.")
                      (display "
       CONFIG_DEBUG_SYSLOG=y
 
+      # Choose GnuTLS (the default is OpenSSL.)
+      CONFIG_TLS=gnutls
+
       # TODO: Add a variant of this package with DBus support.
       #CONFIG_CTRL_IFACE_DBUS=y
       #CONFIG_CTRL_IFACE_DBUS_NEW=y
@@ -723,7 +728,8 @@ commands and their arguments.")
        ;; TODO: Add a variant with DBus support.  This significantly increases
        ;; the size of its closure since DBus depends on libx11.
        ;; ("dbus" ,dbus)
-       ("openssl" ,o:openssl)))
+       ("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)))                 ;needed by crypto_gnutls.c
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://w1.fi/wpa_supplicant/")
