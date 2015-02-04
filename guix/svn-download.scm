@@ -67,8 +67,6 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "svn-checkout") build
                       #:system system
-                      ;; FIXME: See <https://bugs.gnu.org/18747>.
-                      ;;#:local-build? #t
                       #:hash-algo hash-algo
                       #:hash hash
                       #:recursive? #t
