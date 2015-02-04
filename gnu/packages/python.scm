@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
+;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2874,3 +2876,29 @@ features useful for text console applications.")
 
 (define-public python2-urwid
   (package-with-python2 python-urwid))
+
+(define-public python-dbus
+  (package
+    (name "python-dbus")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://dbus.freedesktop.org/releases/dbus-python/dbus-python-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1py62qir966lvdkngg0v8k1khsqxwk5m4s8nflpk1agk5f5nqb71"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("glib" ,glib)))
+    (synopsis "Python bindings for D-bus")
+    (description "python-dbus provides bindings for libdbus, the reference
+implementation of D-Bus.")
+    (home-page "http://www.freedesktop.org/wiki/Software/DBusBindings/")
+    (license expat)))
