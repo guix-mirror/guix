@@ -22,6 +22,7 @@
 (define-module (gnu packages admin)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
@@ -677,9 +678,9 @@ commands and their arguments.")
     ;; See <http://www.sudo.ws/sudo/license.html>.
     (license x11)))
 
-(define-public wpa-supplicant
+(define-public wpa-supplicant-light
   (package
-    (name "wpa-supplicant")
+    (name "wpa-supplicant-light")
     (version "2.3")
     (source (origin
               (method url-fetch)
@@ -703,11 +704,6 @@ commands and their arguments.")
 
       # Choose GnuTLS (the default is OpenSSL.)
       CONFIG_TLS=gnutls
-
-      # TODO: Add a variant of this package with DBus support.
-      #CONFIG_CTRL_IFACE_DBUS=y
-      #CONFIG_CTRL_IFACE_DBUS_NEW=y
-      #CONFIG_CTRL_IFACE_DBUS_INTRO=y
 
       CONFIG_DRIVER_NL80211=y
       CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
@@ -745,9 +741,6 @@ commands and their arguments.")
     (inputs
      `(("readline" ,readline)
        ("libnl" ,libnl)
-       ;; TODO: Add a variant with DBus support.  This significantly increases
-       ;; the size of its closure since DBus depends on libx11.
-       ;; ("dbus" ,dbus)
        ("gnutls" ,gnutls)
        ("libgcrypt" ,libgcrypt)))                 ;needed by crypto_gnutls.c
     (native-inputs
@@ -765,6 +758,26 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
 
     ;; In practice, this is linked against Readline, which makes it GPLv3+.
     (license bsd-3)))
+
+(define-public wpa-supplicant
+  (package (inherit wpa-supplicant-light)
+    (name "wpa-supplicant")
+    (inputs `(("dbus" ,dbus)
+              ,@(package-inputs wpa-supplicant-light)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments wpa-supplicant-light)
+       ((#:phases phases)
+        `(alist-cons-after
+          'configure 'configure-for-dbus
+          (lambda _
+            (let ((port (open-file ".config" "al")))
+              (display "
+      CONFIG_CTRL_IFACE_DBUS=y
+      CONFIG_CTRL_IFACE_DBUS_NEW=y
+      CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
+              (close-port port))
+            #t)
+          ,phases))))))
 
 (define-public wakelan
   (package
