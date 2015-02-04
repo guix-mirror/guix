@@ -47,6 +47,7 @@
   #:use-module (gnu services base)
   #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system nss)
   #:use-module (gnu system locale)
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
@@ -137,6 +138,8 @@
             (default "en_US.utf8"))
   (locale-definitions operating-system-locale-definitions ; list of <locale-definition>
                       (default %default-locale-definitions))
+  (name-service-switch operating-system-name-service-switch ; <name-service-switch>
+                       (default %default-nss))
 
   (services operating-system-user-services        ; list of monadic services
             (default %base-services))
@@ -408,7 +411,7 @@ settings for 'guix.el' to work out-of-the-box."
                         (skeletons '())
                         (pam-services '())
                         (profile "/run/current-system/profile")
-                        hosts-file
+                        hosts-file nss
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
@@ -422,10 +425,8 @@ settings for 'guix.el' to work out-of-the-box."
 /run/current-system/profile/bin/bash\n"))
        (emacs      (emacs-site-directory))
        (issue      (text-file "issue" issue))
-
-       ;; For now, generate a basic config so that /etc/hosts is honored.
        (nsswitch   (text-file "nsswitch.conf"
-                              "hosts: files dns\n"))
+                              (name-service-switch->string nss)))
 
        ;; Startup file for POSIX-compliant login shells, which set system-wide
        ;; environment variables.
@@ -518,6 +519,7 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
                   #:skeletons skeletons
                   #:issue (operating-system-issue os)
                   #:locale (operating-system-locale os)
+                  #:nss (operating-system-name-service-switch os)
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
                   #:sudoers (operating-system-sudoers os)

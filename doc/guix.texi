@@ -142,6 +142,7 @@ System Configuration
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
+* Name Service Switch::         Configuring libc's name service switch.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * GRUB Configuration::          Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
@@ -3642,6 +3643,7 @@ instance to support new system services.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
+* Name Service Switch::         Configuring libc's name service switch.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * GRUB Configuration::          Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
@@ -3826,6 +3828,11 @@ Library Reference Manual}).  @xref{Locales}, for more information.
 @item @code{locale-definitions} (default: @var{%default-locale-definitions})
 The list of locale definitions to be compiled and that may be used at
 run time.  @xref{Locales}.
+
+@item @code{name-service-switch} (default: @var{%default-nss})
+Configuration of libc's name service switch (NSS)---a
+@code{<name-service-switch>} object.  @xref{Name Service Switch}, for
+details.
 
 @item @code{services} (default: @var{%base-services})
 A list of monadic values denoting system services.  @xref{Services}.
@@ -4648,6 +4655,115 @@ Under the hood, the actual setuid programs are created in the
 files in this directory refer to the ``real'' binaries, which are in the
 store.
 
+@node Name Service Switch
+@subsection Name Service Switch
+
+@cindex name service switch
+@cindex NSS
+The @code{(gnu system nss)} module provides bindings to the
+configuration file of libc's @dfn{name service switch} or @dfn{NSS}
+(@pxref{NSS Configuration File,,, libc, The GNU C Library Reference
+Manual}).  In a nutshell, the NSS is a mechanism that allows libc to be
+extended with new ``name'' lookup methods for system databases, which
+includes host names, service names, user accounts, and more (@pxref{Name
+Service Switch, System Databases and Name Service Switch,, libc, The GNU
+C Library Reference Manual}).
+
+The NSS configuration specifies, for each system database, which lookup
+method is to be used, and how the various methods are chained
+together---for instance, under which circumstances NSS should try the
+next method in the list.  The NSS configuration is given in the
+@code{name-service-switch} field of @code{operating-system} declarations
+(@pxref{operating-system Reference, @code{name-service-switch}}).
+
+@c See <http://0pointer.de/lennart/projects/nss-mdns/>.
+As an example, the declaration below configures the NSS to use the
+@code{nss-mdns} back-end for host name lookups:
+
+@example
+(name-service-switch
+   (hosts (list %files    ;first, check /etc/hosts
+
+                ;; If the above did not succeed, try
+                ;; with 'mdns_minimal'.
+                (name-service
+                  (name "mdns_minimal")
+
+                  ;; 'mdns_minimal' is authoritative for
+                  ;; '.local'.  When it returns "not found",
+                  ;; no need to try the next methods.
+                  (reaction (lookup-specification
+                             (not-found => return))))
+
+                ;; Then fall back to DNS.
+                (name-service
+                  (name "dns"))
+
+                ;; Finally, try with the "full" 'mdns'.
+                (name-service
+                  (name "mdns")))))
+@end example
+
+The reference for name service switch configuration is given below.  It
+is a direct mapping of the C library's configuration file format, so
+please refer to the C library manual for more information (@pxref{NSS
+Configuration File,,, libc, The GNU C Library Reference Manual}).
+Compared to libc's NSS configuration file format, it has the advantage
+not only of adding this warm parenthetic feel that we like, but also
+static checks: you'll know about syntax errors and typos as soon as you
+run @command{guix system}.
+
+@defvr {Scheme Variable} %default-nss
+This is the default name service switch configuration, a
+@code{name-service-switch} object.
+@end defvr
+
+@deftp {Data Type} name-service-switch
+
+This is the data type representation the configuration of libc's name
+service switch (NSS).  Each field below represents one of the supported
+system databases.
+
+@table @code
+@item aliases
+@itemx ethers
+@itemx group
+@itemx gshadow
+@itemx hosts
+@itemx initgroups
+@itemx netgroup
+@itemx networks
+@itemx password
+@itemx public-key
+@itemx rpc
+@itemx services
+@itemx shadow
+The system databases handled by the NSS.  Each of these fields must be a
+list of @code{<name-service>} objects (see below.)
+@end table
+@end deftp
+
+@deftp {Data Type} name-service
+
+This is the data type representing an actual name service and the
+associated lookup action.
+
+@table @code
+@item name
+A string denoting the name service (@pxref{Services in the NSS
+configuration,,, libc, The GNU C Library Reference Manual}).
+
+@item reaction
+An action specified using the @code{lookup-specification} macro
+(@pxref{Actions in the NSS configuration,,, libc, The GNU C Library
+Reference Manual}).  For example:
+
+@example
+(lookup-specification (unavailable => continue)
+                      (success => return))
+@end example
+@end table
+@end deftp
 
 @node Initial RAM Disk
 @subsection Initial RAM Disk

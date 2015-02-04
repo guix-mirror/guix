@@ -316,6 +316,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
   gnu/system/locale.scm				\
+  gnu/system/nss.scm				\
   gnu/system/shadow.scm				\
   gnu/system/vm.scm				\
 						\
