@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages ntp)
+  #:use-module (gnu packages wicd)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -34,7 +36,8 @@
             %ntp-servers
             ntp-service
             tor-service
-            bitlbee-service))
+            bitlbee-service
+            wicd-service))
 
 ;;; Commentary:
 ;;;
@@ -296,5 +299,27 @@ configuration file."
                             (home-directory "/var/empty")
                             (shell #~(string-append #$shadow
                                                     "/sbin/nologin")))))))))
+
+(define* (wicd-service #:key (wicd wicd))
+  "Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
+manager that aims to simplify wired and wireless networking."
+  (with-monad %store-monad
+    (return
+     (service
+      (documentation "Run the Wicd network manager.")
+      (provision '(networking))
+      (requirement '(user-processes dbus-system loopback))
+      (start #~(make-forkexec-constructor
+                (list (string-append #$wicd "/sbin/wicd")
+                      "--no-daemon")))
+      (stop #~(make-kill-destructor))
+      (activate
+       #~(begin
+           (use-modules (guix build utils))
+           (mkdir-p "/etc/wicd")
+           (let ((file-name "/etc/wicd/dhclient.conf.template.default"))
+             (unless (file-exists? file-name)
+               (copy-file (string-append #$wicd file-name)
+                          file-name)))))))))
 
 ;;; networking.scm ends here

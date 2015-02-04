@@ -4453,6 +4453,12 @@ Return a service that starts @var{interface} with address @var{ip}.  If
 gateway.
 @end deffn
 
+@cindex wicd
+@deffn {Monadic Procedure} wicd-service [#:wicd @var{wicd}]
+Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a
+network manager that aims to simplify wired and wireless networking.
+@end deffn
+
 @deffn {Monadic Procedure} ntp-service [#:ntp @var{ntp}] @
   [#:name-service @var{%ntp-servers}]
 Return a service that runs the daemon from @var{ntp}, the
