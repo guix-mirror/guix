@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -82,19 +82,9 @@ static const struct argp_option options[] =
     { "max-jobs", 'M', "N", 0,
       "Allow at most N build jobs" },
     { "disable-chroot", GUIX_OPT_DISABLE_CHROOT, 0, 0,
-      "Disable chroot builds"
-#ifndef HAVE_CHROOT
-      " (chroots are not supported in this configuration, so "
-      "this option has no effect)"
-#endif
-    },
+      "Disable chroot builds" },
     { "chroot-directory", GUIX_OPT_CHROOT_DIR, "DIR", 0,
-      "Add DIR to the build chroot"
-#ifndef HAVE_CHROOT
-      " (chroots are not supported in this configuration, so "
-      "this option has no effect)"
-#endif
-    },
+      "Add DIR to the build chroot" },
     { "build-users-group", GUIX_OPT_BUILD_USERS_GROUP, "GROUP", 0,
       "Perform builds as a user of GROUP" },
     { "no-substitutes", GUIX_OPT_NO_SUBSTITUTES, 0, 0,
@@ -255,11 +245,12 @@ main (int argc, char *argv[])
      See <http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html>.  */
   umask (S_IWGRP | S_IWOTH);
 
-#ifdef HAVE_CHROOT
-  settings.useChroot = true;
-#else
-  settings.useChroot = false;
+#ifndef HAVE_CHROOT
+# error chroot is assumed to be available
 #endif
+
+  /* Always use chroots by default.  */
+  settings.useChroot = true;
 
   /* Turn automatic deduplication on by default.  */
   settings.autoOptimiseStore = true;
@@ -335,7 +326,6 @@ main (int argc, char *argv[])
 	fprintf (stderr, "warning: daemon is running as root, so "
 		 "using `--build-users-group' is highly recommended\n");
 
-#ifdef HAVE_CHROOT
       if (settings.useChroot)
 	{
 	  foreach (PathSet::iterator, i, settings.dirsInChroot)
@@ -344,7 +334,6 @@ main (int argc, char *argv[])
 			format ("directory `%1%' added to the chroot") % *i);
 	    }
 	}
-#endif
 
       printMsg (lvlDebug,
 		format ("automatic deduplication set to %1%")

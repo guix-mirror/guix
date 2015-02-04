@@ -75,6 +75,10 @@ if test "x$guix_build_daemon" = "xyes"; then
   AC_CHECK_FUNCS([chroot unshare])
   AC_CHECK_HEADERS([sched.h sys/param.h sys/mount.h tr1/unordered_set])
 
+  if test "x$ac_cv_func_chroot" != "xyes"; then
+    AC_MSG_ERROR(['chroot' function missing, bailing out])
+  fi
+
   dnl lutimes and lchown: used when canonicalizing store items.
   dnl posix_fallocate: used when extracting archives.
   dnl vfork: to speed up spawning of helper programs.
