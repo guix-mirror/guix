@@ -323,7 +323,7 @@ for under the directories designated by FILES.  For example:
                                           (list file)
                                           '())))))
                             files))
-              input-dirs))
+              (delete-duplicates input-dirs)))
 
 (define (list->search-path-as-string lst separator)
   (string-join lst separator))
