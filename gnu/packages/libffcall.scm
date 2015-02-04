@@ -46,4 +46,4 @@
      "GNU Libffcall is a collection of libraries that can be used to build
 foreign function call interfaces in embedded interpreters.")
     (home-page "http://www.gnu.org/software/libffcall/")
-    (license l:gpl2)))
+    (license l:gpl2+)))
