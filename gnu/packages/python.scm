@@ -2857,12 +2857,9 @@ and written in Python.")
     (source
      (origin
        (method url-fetch)
-       (uri (list (string-append
-                   "https://pypi.python.org/packages/source/u/urwid/urwid-"
-                   version ".tar.gz")
-                  ;; Downloading from the upstream URI above fails due to an
-                  ;; invalid ETag header.
-                  "https://pkgs.fedoraproject.org/repo/pkgs/python-urwid/urwid-1.3.0.tar.gz/a989acd54f4ff1a554add464803a9175/urwid-1.3.0.tar.gz"))
+       (uri (string-append
+             "https://pypi.python.org/packages/source/u/urwid/urwid-"
+             version ".tar.gz"))
        (sha256
         (base32
          "18mb0yy94sjc434rd61m2sfnw27sa0nyrszpj5a9r9zh7fnlzw19"))))
