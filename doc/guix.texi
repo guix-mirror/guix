@@ -4319,9 +4319,12 @@ the ``message of the day''.
 
 @cindex name service cache daemon
 @cindex nscd
-@deffn {Monadic Procedure} nscd-service [@var{config}] [#:glibc glibc]
-Return a service that runs libc's name service cache daemon (nscd) with the
-given @var{config}---an @code{<nscd-configuration>} object.
+@deffn {Monadic Procedure} nscd-service [@var{config}] [#:glibc glibc] @
+                [#:name-services '()]
+Return a service that runs libc's name service cache daemon (nscd) with
+the given @var{config}---an @code{<nscd-configuration>} object.
+Optionally, @code{#:name-services} is a list of packages that provide
+name service switch (NSS) modules needed by nscd.
 @end deffn
 
 @defvr {Scheme Variable} %nscd-default-configuration
@@ -4752,6 +4755,11 @@ associated lookup action.
 @item name
 A string denoting the name service (@pxref{Services in the NSS
 configuration,,, libc, The GNU C Library Reference Manual}).
+
+Note that name services listed here must be visible to nscd.  This is
+achieved by passing the @code{#:name-services} argument to
+@code{nscd-service} the list of packages providing the needed name
+services (@pxref{Base Services, @code{nscd-service}}).
 
 @item reaction
 An action specified using the @code{lookup-specification} macro

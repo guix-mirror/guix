@@ -492,9 +492,12 @@ the ``message of the day''."
                                 (map cache->config caches)))))))
 
 (define* (nscd-service #:optional (config %nscd-default-configuration)
-                       #:key (glibc (canonical-package glibc)))
+                       #:key (glibc (canonical-package glibc))
+                       (name-services '()))
   "Return a service that runs libc's name service cache daemon (nscd) with the
-given @var{config}---an @code{<nscd-configuration>} object."
+given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
+@code{#:name-services} is a list of packages that provide name service switch
+ (NSS) modules needed by nscd."
   (mlet %store-monad ((nscd.conf (nscd.conf-file config)))
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
@@ -507,7 +510,15 @@ given @var{config}---an @code{<nscd-configuration>} object."
 
              (start #~(make-forkexec-constructor
                        (list (string-append #$glibc "/sbin/nscd")
-                             "-f" #$nscd.conf "--foreground")))
+                             "-f" #$nscd.conf "--foreground")
+
+                       #:environment-variables
+                       (list (string-append "LD_LIBRARY_PATH="
+                                            (string-join
+                                             (map (lambda (dir)
+                                                    (string-append dir "/lib"))
+                                                  (list #$@name-services))
+                                             ":")))))
              (stop #~(make-kill-destructor))
 
              (respawn? #f)))))
