@@ -1913,6 +1913,18 @@ Which Ruby package is used can be specified with the @code{#:ruby}
 parameter.
 @end defvr
 
+@defvr {Scheme Variable} waf-build-system
+This variable is exported by @code{(guix build-system waf)}.  It
+implements a build procedure around the @code{waf} script.  The common
+phases---@code{configure}, @code{build}, and @code{install}---are
+implemented by passing their names as arguments to the @code{waf}
+script.
+
+The @code{waf} script is executed by the Python interpreter.  Which
+Python package is used to run the script can be specified with the
+@code{#:python} parameter.
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,

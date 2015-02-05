@@ -53,6 +53,7 @@ MODULES =					\
   guix/build-system/gnu.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
+  guix/build-system/waf.scm			\
   guix/build-system/ruby.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
@@ -72,6 +73,7 @@ MODULES =					\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/ruby-build-system.scm		\
+  guix/build/waf-build-system.scm		\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
