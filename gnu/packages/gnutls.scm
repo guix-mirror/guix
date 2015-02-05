@@ -86,12 +86,12 @@ specifications.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.0)
-       ("zlib" ,guix:zlib)
        ("perl" ,perl)))
     (propagated-inputs
      `(("libtasn1" ,libtasn1)
        ("nettle" ,nettle)
-       ("which" ,which)))
+       ("which" ,which)
+       ("zlib" ,guix:zlib)))
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
     (description
