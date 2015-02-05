@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -541,4 +542,61 @@ with terminals within a single window, the possibility to have a
 pseudo-transparent terminal background, and a compact mode (where both the
 menubar and the window decorations are hidden) that helps you to save space
 on your desktop.")
+    (license gpl2+)))
+
+(define-public xfce
+  (package
+    (name "xfce")
+    (version (package-version xfce4-session))
+    (source #f)
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build glib-or-gtk-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build glib-or-gtk-build-system)
+                           (guix build utils))
+       #:phases
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((out  (assoc-ref outputs "out"))
+                 (bin  (string-append out "/bin"))
+                 (prog (string-append bin "/startxfce4")))
+            (mkdir-p bin)
+            (symlink (string-append
+                      (assoc-ref %build-inputs "xfce4-session")
+                      "/bin/startxfce4")
+                     prog)
+            (wrap-program prog
+              ;; For xfce4-panel plugins.
+              `("X_XFCE4_LIB_DIRS" = ,(list (getenv "X_XFCE4_LIB_DIRS"))))))
+        (map (cut assq <> %standard-phases)
+             '(set-paths install glib-or-gtk-wrap)))))
+    (propagated-inputs
+     `(("exo"                  ,exo)
+       ("garcon"               ,garcon)
+       ("gnome-icon-theme"     ,gnome-icon-theme)
+       ("gtk-xfce-engine"      ,gtk-xfce-engine)
+       ("hicolor-icon-theme"   ,hicolor-icon-theme)
+       ("shared-mime-info"     ,shared-mime-info)
+       ("thunar"               ,thunar)
+       ("thunar-volman"        ,thunar-volman)
+       ("tumlber"              ,tumbler)
+       ("xfce4-appfinder"      ,xfce4-appfinder)
+       ("xfce4-battery-plugin" ,xfce4-battery-plugin)
+       ("xfce4-panel"          ,xfce4-panel)
+       ("xfce4-session"        ,xfce4-session)
+       ("xfce4-settings"       ,xfce4-settings)
+       ("xfce4-terminal"       ,xfce4-terminal)
+       ("xfconf"               ,xfconf)
+       ("xfdesktop"            ,xfdesktop)
+       ("xfwm4"                ,xfwm4)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Desktop environment (meta-package)")
+    (description
+     "Xfce is a lightweight desktop environment.  It aims to be fast and low on
+system resources, while still being visually appealing and user friendly.")
     (license gpl2+)))
