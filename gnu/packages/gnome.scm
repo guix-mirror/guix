@@ -994,6 +994,28 @@ high-quality vector-based 2D library with antialiasing and alpha composition.")
 creating interactive structured graphics.")
     (license license:lgpl2.0+)))
 
+(define-public libgnomecanvasmm
+  (package
+    (name "libgnomecanvasmm")
+    (version "2.26.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0679hcnpam2gkag2i63sm0wdm35gwvzafnz1354mg6j5gzwpfrcr"))))
+    (build-system gnu-build-system)
+    (propagated-inputs `(("libgnomecanvas" ,libgnomecanvas)))
+    (native-inputs
+     `(("gtkmm-2" ,gtkmm-2)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://gtkmm.org")
+    (synopsis "C++ bindings to the GNOME Canvas library")
+    (description "C++ bindings to the GNOME Canvas library.")
+    (license license:lgpl2.0+)))
+
 (define-public libgnomeui
   (package
     (name "libgnomeui")
