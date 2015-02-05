@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,16 +59,15 @@
              (patches (list (search-patch "sdl-libx11-1.6.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Explicitly link against Xext because SDL tries to dlopen it and
-       ;; doesn't go very far otherwise (see
-       ;; <https://lists.gnu.org/archive/html/guix-devel/2013-11/msg00088.html>
-       ;; for details.)
-       #:configure-flags '("LDFLAGS=-lXext")
+     '(;; Explicitly link against shared libraries instead of dlopening them.
+       ;; For X11, ALSA, PulseAudio, etc.
+       #:configure-flags '("--disable-sdl-dlopen")
 
        #:tests? #f)) ; no check target
     (propagated-inputs
      ;; SDL headers include X11 headers.
-     `(("libx11" ,libx11)))
+     `(("libx11" ,libx11)
+       ("libcap" ,libcap))) ; 'libSDL.la' contain `-lcap'.
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
