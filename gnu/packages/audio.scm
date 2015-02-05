@@ -137,6 +137,43 @@ synchronous execution of all clients, and low latency operation.")
     ;; Most files are under GPLv2+, but some headers are under LGPLv2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public ladspa
+  (package
+    (name "ladspa")
+    (version "1.13")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.ladspa.org/download/ladspa_sdk_"
+                   version
+                   ".tgz"))
+             (sha256
+              (base32
+               "0srh5n2l63354bc0srcrv58rzjkn4gv8qjqzg8dnq3rs4m7kzvdm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; the "test" target is a listening test only
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+          (chdir "src")
+          (let ((out (assoc-ref outputs "out")))
+            (substitute* "makefile"
+              (("/usr/lib/ladspa/") (string-append out "/lib/ladspa/"))
+              (("/usr/include/")    (string-append out "/include/"))
+              (("/usr/bin/")        (string-append out "/bin/"))
+              (("-mkdirhier")       "mkdir -p")
+              (("^CC.*")            "CC = gcc\n")
+              (("^CPP.*")           "CPP = g++\n"))))
+        (alist-delete 'build %standard-phases))))
+    (home-page "http://ladspa.org")
+    (synopsis "Linux Audio Developer's Simple Plugin API (LADSPA)")
+    (description
+     "LADSPA is a standard that allows software audio processors and effects
+to be plugged into a wide range of audio synthesis and recording packages.")
+    (license license:lgpl2.1+)))
+
 (define-public liblo
   (package
     (name "liblo")
