@@ -310,7 +310,14 @@ hook."
        ;; directory.
        (let ((root-directory (string-append %state-directory
                                             "/gcroots/tmp")))
-         (false-if-exception (mkdir root-directory))
+         (catch 'system-error
+           (lambda ()
+             (mkdir root-directory))
+           (lambda args
+             (unless (= EEXIST (system-error-errno args))
+               (error "failed to create remote GC root directory"
+                      root-directory (system-error-errno args)))))
+
          (catch 'system-error
            (lambda ()
              (symlink ,file
@@ -331,7 +338,7 @@ hook."
         ;; Better be safe than sorry: if we ignore the error here, then FILE
         ;; may be GC'd just before we start using it.
         (leave (_ "failed to register GC root for '~a' on '~a' (status: ~a)~%")
-               file machine status)))))
+               file (build-machine-name machine) status)))))
 
 (define (remove-gc-roots machine)
   "Remove from MACHINE the GC roots previously installed with
