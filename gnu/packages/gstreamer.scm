@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright   2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gstreamer)
-  #:use-module ((guix licenses) #:select (lgpl2.0+))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ bsd-2 bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -37,6 +38,28 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
+
+(define-public orc
+  (package
+    (name "orc")
+    (version "0.4.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://gstreamer.freedesktop.org/data/src/"
+                                  "orc/orc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ryz1gfgrxcj806cakcblxf0bcwq8p2mw8k86fs3f5wlwayawzkn"))))
+    (build-system gnu-build-system)
+    (home-page "http://code.entropywave.com/orc/")
+    (synopsis "Oil runtime compiler")
+    (description
+     "Orc is a just-in-time compiler implemented as a library and set of
+associated tools for compiling and executing simple programs that operate on
+arrays of data.")
+    ;; The source code implementing the Marsenne Twister algorithm is licensed
+    ;; under the 3-clause BSD license, the rest is under 2-clause BSD license.
+    (license (list bsd-2 bsd-3))))
 
 (define-public gstreamer
   (package
