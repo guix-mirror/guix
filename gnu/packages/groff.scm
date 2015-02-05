@@ -40,6 +40,8 @@
             (sha256 (base32
                      "1998v2kcs288d3y7kfxpvl369nqi06zbbvjzafyvyl3pr7bajj1s"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "doc"))                    ;12MiB of PS, PDF, HTML, and examples
    (inputs `(("ghostscript" ,ghostscript)
              ("netpbm" ,netpbm)))
    (native-inputs `(("bison" ,bison)
