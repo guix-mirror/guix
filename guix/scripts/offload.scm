@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -191,25 +191,19 @@ not be started."
       (lambda ()
         (write str))))
 
-  (catch 'system-error
-    (lambda ()
-      ;; Let the child inherit ERROR-PORT.
-      (with-error-to-port error-port
-        (apply open-pipe* mode %lshg-command
-               "-l" (build-machine-user machine)
-               "-p" (number->string (build-machine-port machine))
+  ;; Let the child inherit ERROR-PORT.
+  (with-error-to-port error-port
+    (apply open-pipe* mode %lshg-command
+           "-l" (build-machine-user machine)
+           "-p" (number->string (build-machine-port machine))
 
-               ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
-               "-i" (build-machine-private-key machine)
+           ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
+           "-i" (build-machine-private-key machine)
 
-               (build-machine-name machine)
-               (if quote?
-                   (map shell-quote command)
-                   command))))
-    (lambda args
-      (warning (_ "failed to execute '~a': ~a~%")
-               %lshg-command (strerror (system-error-errno args)))
-      #f)))
+           (build-machine-name machine)
+           (if quote?
+               (map shell-quote command)
+               command))))
 
 
 ;;;
@@ -533,9 +527,14 @@ success, #f otherwise."
 (define (machine-load machine)
   "Return the load of MACHINE, divided by the number of parallel builds
 allowed on MACHINE."
-  (let* ((pipe (remote-pipe machine OPEN_READ `("cat" "/proc/loadavg")))
-         (line (read-line pipe)))
-    (close-pipe pipe)
+  (let* ((pipe   (remote-pipe machine OPEN_READ `("cat" "/proc/loadavg")))
+         (line   (read-line pipe))
+         (status (close-pipe pipe)))
+    (unless (eqv? 0 (status:exit-val status))
+      (warning (_ "failed to obtain load of '~a': SSH client exited with ~a~%")
+               (build-machine-name machine)
+               (status:exit-val status)))
+
     (if (eof-object? line)
         +inf.0    ;MACHINE does not respond, so assume it is infinitely loaded
         (match (string-tokenize line)
