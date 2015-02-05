@@ -64,7 +64,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.0.10")
+    (version "1.4.5")
     (source
      (origin
       (method url-fetch)
@@ -72,13 +72,9 @@ arrays of data.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "0c0irk85jd2cihm5pmf4zxhlpg08qpxjcqv1l9qn2n3h2gsaj2lf"))))
+        "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; XXX: Temporarily disable tests to work around 'gst/gstbus' test
-     ;; failure: <https://bugzilla.gnome.org/show_bug.cgi?id=724073>.
-     '(#:tests? #f))
-    (inputs `(("glib" ,glib)))
+    (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
