@@ -160,6 +160,35 @@ synchronous execution of all clients, and low latency operation.")
 implementation of the Open Sound Control (OSC) protocol.")
     (license license:lgpl2.1+)))
 
+(define-public lilv
+  (package
+    (name "lilv")
+    (version "0.20.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/lilv-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "0aj2plkx56iar8vzjbq2l7hi7sp0ml99m0h44rgwai2x4vqkk2j2"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("lv2" ,lv2)
+       ("serd" ,serd)
+       ("sord" ,sord)
+       ("sratom" ,sratom)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/lilv/")
+    (synopsis "Library to simplify use of LV2 plugins in applications")
+    (description
+     "Lilv is a C library to make the use of LV2 plugins as simple as possible
+for applications.  Lilv is the successor to SLV2, rewritten to be
+significantly faster and have minimal dependencies.")
+    (license license:isc)))
+
 (define-public lv2
   (package
     (name "lv2")
