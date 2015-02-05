@@ -280,3 +280,33 @@ that toolkit will work in all hosts that use Suil automatically.
 
 Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
     (license license:isc)))
+
+(define-public vamp
+  (package
+    (name "vamp")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://code.soundsoftware.ac.uk"
+                    "/attachments/download/690/vamp-plugin-sdk-"
+                    version
+                    ".tar.gz"))
+             (sha256
+              (base32
+               "178kfgq08cmgdzv7g8dwyjp4adwx8q04riimncq4nqkm8ng9ywbv"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://vamp-plugins.org")
+    (synopsis "Modular and extensible audio processing system")
+    (description
+     "Vamp is an audio processing plugin system for plugins that extract
+descriptive information from audio data — typically referred to as audio
+analysis plugins or audio feature extraction plugins.")
+    (license
+     (license:x11-style
+      "https://code.soundsoftware.ac.uk/projects/vamp-plugin-sdk/repository/entry/COPYING"))))
