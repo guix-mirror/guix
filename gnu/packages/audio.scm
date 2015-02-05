@@ -158,3 +158,33 @@ synchronous execution of all clients, and low latency operation.")
      "liblo is a lightweight library that provides an easy to use
 implementation of the Open Sound Control (OSC) protocol.")
     (license license:lgpl2.1+)))
+
+(define-public lv2
+  (package
+    (name "lv2")
+    (version "1.10.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://lv2plug.in/spec/lv2-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "1md41x9snrp4mcfyli7lyfpvcfa78nfy6xkdy84kppnl8m5qw378"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f  ; no check target
+       #:configure-flags '("--lv2-system")))
+    (inputs
+     ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
+     `(("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://lv2plug.in/")
+    (synopsis "LV2 audio plugin specification")
+    (description
+     "LV2 is an open specification for audio plugins and host applications.
+At its core, LV2 is a simple stable interface, accompanied by extensions which
+add functionality to support the needs of increasingly powerful audio
+software.")
+    (license license:isc)))
