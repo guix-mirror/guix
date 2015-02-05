@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages admin)
@@ -54,7 +55,8 @@
               ("wpa-supplicant" ,wpa-supplicant)
               ("net-tools" ,net-tools)
               ("isc-dhcp" ,isc-dhcp)
-              ("iproute" ,iproute)))
+              ("iproute" ,iproute)
+              ("hicolor-icon-theme" ,hicolor-icon-theme)))
     (arguments
      `(#:python ,python-2
        #:tests? #f                      ; test suite requires networking
@@ -140,7 +142,7 @@
                                    out "/share/gnome-shell-extensions")
                     (string-append "--icons=" out "/share/icons/hicolor")
                     (string-append "--pixmaps=" out "/share/pixmaps")
-                    (string-append "--images=" out "/share/wicd/icons")
+                    (string-append "--images=" out "/share/icons")
                     (string-append "--dbus=" out "/etc/dbus-1/system.d")
                     (string-append "--dbus-service="
                                    out "/share/dbus-1/system-services")
@@ -157,18 +159,25 @@
                       "python setup.py" "configure" params)
               (zero? (apply system* "python" "setup.py" "configure" params)))))
         (alist-cons-after
-         'install 'install-dhclient.conf.template.default
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; wicd's installer tries to put dhclient.conf.template.default
-           ;; in /etc/wicd/other, which is not available in the build
-           ;; environment, so here we install it manually in the output
-           ;; directory.
-           (let* ((out (assoc-ref outputs "out"))
-                  (dest-dir (string-append out "/etc/wicd"))
-                  (name "dhclient.conf.template.default"))
-             (mkdir-p dest-dir)
-             (copy-file (string-append "other/" name)
-                        (string-append dest-dir "/" name))
+         'install 'post-install
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             ;; wicd's installer tries to put dhclient.conf.template.default
+             ;; in /etc/wicd/other, which is not available in the build
+             ;; environment, so here we install it manually in the output
+             ;; directory.
+             (let ((dest-dir (string-append out "/etc/wicd"))
+                   (name "dhclient.conf.template.default"))
+               (mkdir-p dest-dir)
+               (copy-file (string-append "other/" name)
+                          (string-append dest-dir "/" name)))
+
+             ;; Copy index.theme from hicolor-icon-theme.  This is needed to
+             ;; allow wicd-gtk to find its icons.
+             (let ((hicolor (assoc-ref inputs "hicolor-icon-theme"))
+                   (name "/share/icons/hicolor/index.theme"))
+               (copy-file (string-append hicolor name)
+                          (string-append out name)))
              #t))
          %standard-phases))))
     (synopsis "Network connection manager")
