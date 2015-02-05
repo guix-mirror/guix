@@ -25,6 +25,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
@@ -126,7 +127,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.0.10")
+    (version "1.4.5")
     (source
      (origin
       (method url-fetch)
@@ -134,10 +135,11 @@ This package provides the core library and elements.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "1s4pphbb5kpdh4rrmb8rala4sp499k4by59925k15xiz58xyhm4p"))))
+        "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
+     `(("cdparanoia" ,cdparanoia)
+       ("orc" ,orc)
        ("pango" ,pango)
        ("libogg" ,libogg)
        ("libtheora" ,libtheora)
@@ -153,14 +155,13 @@ This package provides the core library and elements.")
         ("glib" ,glib "bin")
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     `(#:tests? #f))
-      ;; All tests pass except for one:
-      ;; Running suite(s): pbutils library
-      ;; 85%: Checks: 7, Failures: 1, Errors: 0
-      ;; libs/pbutils.c:522:F:general:test_pb_utils_install_plugins:0: gst_install_plugins_sync() failed ;; with unexpected ret 201, which is neither HELPER_MISSING nor 1
-      ;; FAIL: libs/pbutils
-      ;; According to the documentation, "gst_install_plugins_sync (...)
-      ;; should almost never be used".
+     '(#:phases
+       (alist-cons-before
+        'configure 'patch-test-pb-utils
+        (lambda _
+          (substitute* "tests/check/libs/pbutils.c"
+            (("/bin/sh") (which "sh"))))
+        %standard-phases)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
