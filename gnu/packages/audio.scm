@@ -27,6 +27,8 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib) ;dbus
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
@@ -244,4 +246,37 @@ software.")
     (description
      "Sratom is a library for serialising LV2 atoms to/from RDF, particularly
 the Turtle syntax.")
+    (license license:isc)))
+
+(define-public suil
+  (package
+    (name "suil")
+    (version "0.8.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/suil-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "1s3adyiw7sa5gfvm5wasa61qa23629kprxyv6w8hbxdiwp0hhxkq"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("lv2" ,lv2)
+       ("gtk+-2" ,gtk+-2)
+       ("qt-4" ,qt-4)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/suil/")
+    (synopsis "Library for loading and wrapping LV2 plugin UIs")
+    (description
+     "Suil is a lightweight C library for loading and wrapping LV2 plugin UIs.
+
+Suil makes it possible to load a UI of a toolkit in a host using another
+toolkit.  The API is designed such that hosts do not need to explicitly
+support specific toolkits – if Suil supports a particular toolkit, then UIs in
+that toolkit will work in all hosts that use Suil automatically.
+
+Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
     (license license:isc)))
