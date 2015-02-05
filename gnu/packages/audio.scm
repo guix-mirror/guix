@@ -24,14 +24,55 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib) ;dbus
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml))
+
+(define-public aubio
+  (package
+    (name "aubio")
+    (version "0.4.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://aubio.org/pub/aubio-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "15f6nf76y7iyl2kl4ny7ky0zpxfxr8j3902afvd6ydnnkh5dzmr5"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f  ; no check target
+       #:configure-flags
+       '("--enable-fftw3f"
+         "--enable-jack"
+         "--enable-sndfile"
+         "--enable-samplerate"
+         ;; enable compilation with avcodec once available
+         "--disable-avcodec")
+       #:python ,python-2))
+    (inputs
+     `(("jack" ,jack-1)
+       ("libuuid" ,util-linux)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("fftwf" ,fftwf)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://aubio.org/")
+    (synopsis "A library for audio labelling")
+    (description
+     "aubio is a tool designed for the extraction of annotations from audio
+signals.  Its features include segmenting a sound file before each of its
+attacks, performing pitch detection, tapping the beat and producing MIDI
+streams from live audio.")
+    (license license:gpl3+)))
 
 (define-public jack-1
   (package
