@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +23,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -2775,6 +2778,37 @@ There are a few caveats of which to be aware: the XVideo extension is not
 supported, and the RENDER extension is not accelerated by this driver.")
     (license license:x11)))
 
+(define-public xf86-video-nouveau
+  (package
+    (name "xf86-video-nouveau")
+    (version "1.0.11")
+    (source (origin
+              ;; There are no tarball releases of Nouveau.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://anongit.freedesktop.org/nouveau/xf86-video-nouveau")
+                    (commit (string-append name "-" version))))
+              (sha256
+               (base32
+                "0zdb6b0n7pzf3l8j8hl7gfshg8jsmcmk11isvvl542yc36162ahp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'unpack 'bootstrap
+                 (lambda _
+                   (zero? (system* "autoreconf" "-vi")))
+                 %standard-phases)))
+    (inputs `(("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,(autoconf-wrapper))
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)))
+    (home-page "http://nouveau.freedesktop.org")
+    (synopsis "NVIDIA video driver for the Xorg X server")
+    (description
+     "This package provides modern, high-quality Xorg drivers for NVIDIA
+graphics cards.")
+    (license license:x11)))
 
 (define-public xf86-video-openchrome
   (package
