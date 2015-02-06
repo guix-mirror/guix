@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -29,6 +30,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
+  #:use-module (gnu packages tbb)
 
 (define-public bedtools
   (package
@@ -138,6 +140,46 @@ genome, its memory footprint is typically around 3.2 GB.  Bowtie 2 supports
 gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
+
+(define-public flexbar
+  (package
+    (name "flexbar")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/flexbar/"
+                              version "/flexbar_v" version "_src.tgz"))
+              (sha256
+               (base32
+                "13jaykc3y1x8y5nn9j8ljnb79s5y51kyxz46hdmvvjj6qhyympmf"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(;; There is no test target, although there is a directory containing
+       ;; test data and scripts (launched by flexbar_validate.sh).
+       #:tests? #f
+       #:configure-flags (list
+                          (string-append "-DFLEXBAR_BINARY_DIR="
+                                         (assoc-ref %outputs "out")
+                                         "/bin/"))
+       #:phases
+       (alist-delete 'install %standard-phases)))
+    (inputs
+     `(("tbb" ,tbb)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("seqan" ,seqan)))
+    (home-page "http://flexbar.sourceforge.net")
+    (synopsis "Barcode and adapter removal tool for sequencing platforms")
+    (description
+     "Flexbar preprocesses high-throughput nucleotide sequencing data
+efficiently.  It demultiplexes barcoded runs and removes adapter sequences.
+Moreover, trimming and filtering features are provided.  Flexbar increases
+read mapping rates and improves genome and transcriptome assemblies.  It
+supports next-generation sequencing data in fasta/q and csfasta/q format from
+Illumina, Roche 454, and the SOLiD platform.")
+    (license license:gpl3)))
 
 (define-public samtools
   (package
