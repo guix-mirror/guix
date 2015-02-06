@@ -1,0 +1,18 @@
+Update the wicd-curses client to work with urwid-1.3.  Based on a patch from:
+http://technik.blogbasis.net/wicd-curses-fix-fuer-attributeerror-screen-object-no-attribute-get_input_nonblocking-04-12-2014
+
+--- wicd-1.7.3/curses/wicd-curses.py.orig	2014-12-21 14:40:46.000000000 -0500
++++ wicd-1.7.3/curses/wicd-curses.py	2015-02-05 23:41:17.530901204 -0500
+@@ -1153,9 +1153,10 @@
+         if not ui._started:
+             return False
+ 
+-        input_data = ui.get_input_nonblocking()
++        ui.set_input_timeouts(max_wait=0)
++        input_data = ui.get_input()
+         # Resolve any "alarms" in the waiting
+-        self.handle_keys(input_data[1])
++        self.handle_keys(input_data)
+ 
+         # Update the screen
+         canvas = self.frame.render((self.size), True)

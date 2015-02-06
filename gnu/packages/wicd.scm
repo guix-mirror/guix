@@ -23,6 +23,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix licenses)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -42,7 +43,8 @@
                            (version-major+minor version) "/" version
                            "/+download/wicd-" version ".tar.gz"))
        (sha256
-        (base32 "00c4rq753bhg64rv1v9yl834ssq7igyy7cz3swp287b5n5bqiqwi"))))
+        (base32 "00c4rq753bhg64rv1v9yl834ssq7igyy7cz3swp287b5n5bqiqwi"))
+       (patches (list (search-patch "wicd-urwid-1.3.patch")))))
     (build-system python-build-system)
     (native-inputs `(("gettext" ,gnu-gettext)))
     (inputs `(("dbus" ,dbus)
