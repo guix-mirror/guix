@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -188,22 +188,26 @@ contained therein."
   (mlet* %store-monad ((source        (build-from-source tarball
                                                          #:verbose? verbose?))
                        (source-dir -> (derivation->output-path source))
-                       (to-do?        (what-to-build (list source))))
-    (if to-do?
-        (mlet* %store-monad ((built? (built-derivations (list source))))
-          (if built?
-              (mlet* %store-monad
-                  ((latest -> (string-append config-dir "/latest"))
-                   (done      (indirect-root-added latest)))
+                       (to-do?        (what-to-build (list source)))
+                       (built?        (built-derivations (list source))))
+    ;; Always update the 'latest' symlink, regardless of whether SOURCE was
+    ;; already built or not.
+    (if built?
+        (mlet* %store-monad
+            ((latest -> (string-append config-dir "/latest"))
+             (done      (indirect-root-added latest)))
+          (if (and (file-exists? latest)
+                   (string=? (readlink latest) source-dir))
+              (begin
+                (display (_ "Guix already up to date\n"))
+                (return #t))
+              (begin
                 (switch-symlinks latest source-dir)
                 (format #t
                         (_ "updated ~a successfully deployed under `~a'~%")
                         %guix-package-name latest)
-                (return #t))
-              (leave (_ "failed to update Guix, check the build log~%"))))
-        (begin
-          (display (_ "Guix already up to date\n"))
-          (return #t)))))
+                (return #t))))
+        (leave (_ "failed to update Guix, check the build log~%")))))
 
 (define (guix-pull . args)
   (define (parse-options)
