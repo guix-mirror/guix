@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +33,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8")
+   (version "4.2.8p1")
    (source (origin
 	    (method url-fetch)
 	    (uri (string-append 
@@ -42,7 +42,7 @@
                   "/ntp-" version ".tar.gz"))
 	    (sha256
 	     (base32
-	      "1vnqa1542d01xmlkw8f3rq57y360b2j7yxkkg9b11955nvw0v4if"))))
+	      "124xslljdzv778msr18jn5l9d6fhvzpsmmnfczc05l0yiyw790ll"))))
    (native-inputs `(("which" ,which)
                     ("pkg-config" ,pkg-config)))
    (inputs
