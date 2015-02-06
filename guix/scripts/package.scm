@@ -661,10 +661,20 @@ removed from MANIFEST."
                (_ #f))
               options))
 
-(define (maybe-register-gc-root store profile)
-  "Register PROFILE as a GC root, unless it doesn't need it."
-  (unless (string=? profile %current-profile)
-    (add-indirect-root store (canonicalize-path profile))))
+(define (register-gc-root store profile)
+  "Register PROFILE, a profile generation symlink, as a GC root, unless it
+doesn't need it."
+  (define absolute
+    ;; We must pass the daemon an absolute file name for PROFILE.  However, we
+    ;; cannot use (canonicalize-path profile) because that would return us the
+    ;; target of PROFILE in the store; using a store item as an indirect root
+    ;; would mean that said store item will always remain live, which is not
+    ;; what we want here.
+    (if (string-prefix? "/" profile)
+        profile
+        (string-append (getcwd) "/" profile)))
+
+  (add-indirect-root store absolute))
 
 (define (readlink* file)
   "Call 'readlink' until the result is not a symlink."
@@ -857,7 +867,8 @@ more information.~%"))
                                  (count   (length entries)))
                             (switch-symlinks name prof)
                             (switch-symlinks profile name)
-                            (maybe-register-gc-root (%store) profile)
+                            (unless (string=? profile %current-profile)
+                              (register-gc-root (%store) name))
                             (format #t (N_ "~a package in profile~%"
                                            "~a packages in profile~%"
                                            count)

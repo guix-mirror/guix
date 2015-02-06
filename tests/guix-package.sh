@@ -32,7 +32,7 @@ module_dir="t-guix-package-$$"
 profile="t-profile-$$"
 rm -f "$profile"
 
-trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf "$module_dir" t-home-'"$$" EXIT
+trap 'rm -f "$profile" "$profile-"[0-9]* ; rm -rf "$module_dir" t-home-'"$$" EXIT
 
 # Use `-e' with a non-package expression.
 if guix package --bootstrap -e +;
@@ -202,6 +202,18 @@ generation="`readlink_base "$profile"`"
 if guix package -p "$profile" --delete-generations=12m;
 then false; else true; fi
 test "`readlink_base "$profile"`" = "$generation"
+
+# Make sure $profile is a GC root at this point.
+real_profile="`readlink -f "$profile"`"
+if guix gc -d "$real_profile"
+then false; else true; fi
+test -d "$real_profile"
+
+# Now, let's remove all the symlinks to $real_profile, and make sure
+# $real_profile is no longer a GC root.
+rm "$profile" "$profile"-[0-9]-link
+guix gc -d "$real_profile"
+[ ! -d "$real_profile" ]
 
 #
 # Try with the default profile.
