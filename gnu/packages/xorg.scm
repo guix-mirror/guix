@@ -2766,8 +2766,13 @@ kernel mode setting (KMS).")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "NVIDIA video driver for the Xorg X server")
+    (description
+     "This package contains Xorg support for the NVIDIA GeForce 8 series of
+graphics processors.
+
+There are a few caveats of which to be aware: the XVideo extension is not
+supported, and the RENDER extension is not accelerated by this driver.")
     (license license:x11)))
 
 
