@@ -209,14 +209,14 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.1.25")
+    (version "0.1.30")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+              (uri (string-append "http://archive.xfce.org/src/xfce/tumbler/0.1/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ijm04vm75gmhyyzrlqdr6vzchr01hlajcm84lm6j64cim8dxm82"))))
+                "013kacqyy1vya7kp6jgc1almp3cbbvq96a3r7f5myiihr1whvhp7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -232,7 +232,7 @@ merging features essential for loading menus modified with menu editors.")
        ("libjpeg" ,libjpeg)
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
-       ("gstreamer" ,gstreamer-0.10)))
+       ("gstreamer" ,gstreamer)))
     (home-page "http://www.xfce.org/")
     (synopsis "D-Bus service for applications to request thumbnails")
     (description
