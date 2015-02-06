@@ -116,14 +116,14 @@ numbers of user-defined menu items efficiently.")
 (define-public slock
   (package
     (name "slock")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dl.suckless.org/tools/slock-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1r70s3npmp0nyrfdsxz8cw1i1z8n9phqdlw02wjphv341h3yajp0"))))
+                "1crkyr4vblhciy6vnbjwwjnlkm9yg2hzq16v6hzxm20ai67na0il"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
