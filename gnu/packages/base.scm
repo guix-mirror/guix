@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -167,7 +167,26 @@ files depending on the contents of the diff file.  It accepts several
 different diff formats.  It may also be used to revert previously applied
 differences.")
    (license gpl3+)
+   (replacement patch-CVE-2015-1196)
    (home-page "http://savannah.gnu.org/projects/patch/")))
+
+(define-public patch-2.7.4
+  (package
+    (inherit patch)
+    (version "2.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/patch/patch-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "02gikxjvcxysr4l65c8vivgz62xmalp0av5ypzff8vqhrq3vpb0f"))))
+    (replacement #f)))
+
+(define patch-CVE-2015-1196
+  (package (inherit patch-2.7.4)
+    ;; Keep the old version number so it can be used as a 'replacement'.
+    (version (package-version patch))))
 
 (define-public diffutils
   (package
