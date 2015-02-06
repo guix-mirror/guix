@@ -21,7 +21,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -198,3 +200,46 @@ sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
 variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
+
+(define-public seqan
+  (package
+    (name "seqan")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://packages.seqan.de/seqan-library/"
+                                  "seqan-library-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05s3wrrwn50f81aklfm65i4a749zag1vr8z03k21xm0pdxy47yvp"))))
+    ;; The documentation is 7.8MB and the includes are 3.6MB heavy, so it
+    ;; makes sense to split the outputs.
+    (outputs '("out" "doc"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((tar  (assoc-ref %build-inputs "tar"))
+               (bzip (assoc-ref %build-inputs "bzip2"))
+               (out  (assoc-ref %outputs "out"))
+               (doc  (assoc-ref %outputs "doc")))
+           (setenv "PATH" (string-append tar "/bin:" bzip "/bin"))
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (chdir (string-append "seqan-library-" ,version))
+           (copy-recursively "include" (string-append out "/include"))
+           (copy-recursively "share"  (string-append doc "/share"))))))
+    (native-inputs
+     `(("source" ,source)
+       ("tar" ,tar)
+       ("bzip2" ,bzip2)))
+    (home-page "http://www.seqan.de")
+    (synopsis "Library for nucleotide sequence analysis")
+    (description
+     "SeqAn is a C++ library of efficient algorithms and data structures for
+the analysis of sequences with the focus on biological data.  It contains
+algorithms and data structures for string representation and their
+manipulation, online and indexed string search, efficient I/O of
+bioinformatics file formats, sequence alignment, and more.")
+    (license license:bsd-3)))
