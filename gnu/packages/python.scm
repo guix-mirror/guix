@@ -7,6 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1896,6 +1897,39 @@ sources.")
 
 (define-public python2-sphinx
   (package-with-python2 python-sphinx))
+
+(define-public python-sphinx-rtd-theme
+  (package
+    (name "python-sphinx-rtd-theme")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/s/"
+                           "sphinx_rtd_theme/sphinx_rtd_theme-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "19nw3rn7awplcdrz63kg1njqwkbymfg9lwn7l2grhdyhyr2gaa8g"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; With standard flags, the install phase attempts to create a zip'd
+       ;; egg file, and fails with an error: 'ZIP does not support timestamps
+       ;; before 1980'
+       #:configure-flags '("--single-version-externally-managed"
+                           "--record=sphinx-rtd-theme.txt")))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/snide/sphinx_rtd_theme/")
+    (synopsis "ReadTheDocs.org theme for Sphinx")
+    (description "A theme for Sphinx used by ReadTheDocs.org.")
+    (license expat)))
+
+(define-public python2-sphinx-rtd-theme
+  (package-with-python2 python-sphinx-rtd-theme))
 
 (define-public python-cython
   (package
