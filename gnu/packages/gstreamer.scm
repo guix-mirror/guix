@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright   2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,18 @@
                (base32
                 "1ryz1gfgrxcj806cakcblxf0bcwq8p2mw8k86fs3f5wlwayawzkn"))))
     (build-system gnu-build-system)
+    (arguments `(#:phases
+                 (alist-cons-before
+                  'check 'disable-faulty-test
+                  (lambda _
+                    ;; XXX Disable the 'test-limits' and 'exec_opcodes_sys'
+                    ;; tests, which fail on some machines.  See:
+                    ;; https://bugzilla.gnome.org/show_bug.cgi?id=735273
+                    (substitute* '("testsuite/test-limits.c"
+                                   "testsuite/exec_opcodes_sys.c")
+                      (("if \\(error\\) return 1;")
+                       "if (error) return 77;")))
+                  %standard-phases)))
     (home-page "http://code.entropywave.com/orc/")
     (synopsis "Oil runtime compiler")
     (description
