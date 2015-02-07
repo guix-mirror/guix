@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ebook)
-  #:use-module ((guix licenses) #:select (gpl3))
+  #:use-module ((guix licenses) #:select (lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -37,4 +37,4 @@
     (home-page "http://www.jedrea.com/chmlib/")
     (synopsis "Library for CHM files")
     (description "CHMLIB is a library for dealing with ITSS/CHM format files.")
-    (license gpl3))) ; some files are under various other licenses, see COPYRIGHT
+    (license lgpl2.1+)))
