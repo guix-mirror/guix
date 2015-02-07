@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix cvs-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
@@ -287,6 +288,41 @@ the shortest private part of a given domain, works with international
 domains (UTF-8 and IDNA2008 Punycode), is thread-safe, and handles IDNA2008
 UTS#46")
     (license l:x11)))
+
+(define-public tidy
+  (package
+    (name "tidy")
+    (version "20091223")
+    (source (origin
+              (method cvs-fetch)
+              (uri (cvs-reference
+                    (root-directory
+                     ":pserver:anonymous@tidy.cvs.sourceforge.net:/cvsroot/tidy")
+                    (module "tidy")
+                    (revision "2009-12-23")))
+              (sha256
+               (base32
+                "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'bootstrap
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; configure.in and Makefile.am aren't in the root of the
+                   ;; source tree.
+                   (copy-recursively "build/gnuauto" ".")
+                   (setenv "AUTOMAKE" "automake --foreign")
+                   (zero? (system* "autoreconf" "-vfi")))
+                 %standard-phases)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (synopsis "HTML validator and tidier")
+    (description "HTML Tidy is a command-line tool and C library that can be
+used to validate and fix HTML data.")
+    (home-page "http://tidy.sourceforge.net/")
+    (license (l:x11-style "file:///include/tidy.h"))))
 
 (define-public perl-html-tagset
   (package
