@@ -138,6 +138,9 @@ buffers.")
        ("libjpeg" ,libjpeg-8)
        ("atk" ,atk)
        ("gtk+" ,gtk+-2)
+       ("exif" ,libexif)                         ;optional, EXIF + XMP support
+       ("lcms" ,lcms)                            ;optional, color management
+       ("librsvg" ,librsvg)                      ;optional, SVG support
        ("gegl" ,gegl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
