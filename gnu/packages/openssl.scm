@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,14 +29,14 @@
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.1k")
+   (version "1.0.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0754wzmzr90hiiqs5cy6g3cf8as75ljkhppgyirfg26hpapax7wg"))))
+              "1s988w1h1yxh7lhrhh164hv6vil94lkwzh6g2rfm03dypbrvlj4c"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
