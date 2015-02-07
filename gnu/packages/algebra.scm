@@ -350,14 +350,14 @@ cosine/ sine transforms or DCT/DST).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
-                                  version ".tar.gz"))
+                                  version ".tar.bz2"))
               (sha256
                (base32
-                "14l5hlgxxymwyava5mx97ipyk3ma3alaj586aaz1xh1r700a7sxm"))
+                "08l92i6vpzz9ypj89hn7rxm6cp4njgc6wr7nb4n3v01i5v4k4hyn"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
