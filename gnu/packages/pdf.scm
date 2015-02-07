@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -165,6 +165,9 @@
        ("libjpeg" ,libjpeg-8)
        ("freetype" ,freetype)
        ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"
+                           "-DPODOFO_BUILD_STATIC=ON")))
     (home-page "http://podofo.sourceforge.net")
     (synopsis "Tools to work with the PDF file format")
     (description
