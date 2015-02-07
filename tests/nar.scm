@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -200,6 +200,15 @@
           (get-hash)))
       (lambda ()
         (rm-rf input)))))
+
+(test-equal "restore-file with incomplete input"
+  (string-append %test-dir "/foo")
+  (let ((port (open-bytevector-input-port #vu8(1 2 3))))
+    (guard (c ((nar-error? c)
+               (and (eq? port (nar-error-port c))
+                    (nar-error-file c))))
+      (restore-file port (string-append %test-dir "/foo"))
+      #f)))
 
 (test-assert "write-file + restore-file"
   (let* ((input  (string-append (dirname (search-path %load-path "guix.scm"))

@@ -56,13 +56,32 @@
 
 ;; Similar to serialize.cc in Nix.
 
+(define-condition-type &nar-error &error      ; XXX: inherit from &nix-error ?
+  nar-error?
+  (file  nar-error-file)                       ; file we were restoring, or #f
+  (port  nar-error-port))                      ; port from which we read
+
+(define currently-restored-file
+  ;; Name of the file being restored.  Used internally for error reporting.
+  (make-parameter #f))
+
+
+(define (get-bytevector-n* port count)
+  (let ((bv (get-bytevector-n port count)))
+    (when (or (eof-object? bv)
+              (< (bytevector-length bv) count))
+      (raise (condition (&nar-error
+                         (file (currently-restored-file))
+                         (port port)))))
+    bv))
+
 (define (write-int n p)
   (let ((b (make-bytevector 8 0)))
     (bytevector-u32-set! b 0 n (endianness little))
     (put-bytevector p b)))
 
 (define (read-int p)
-  (let ((b (get-bytevector-n p 8)))
+  (let ((b (get-bytevector-n* p 8)))
     (bytevector-u32-ref b 0 (endianness little))))
 
 (define (write-long-long n p)
@@ -71,7 +90,7 @@
     (put-bytevector p b)))
 
 (define (read-long-long p)
-  (let ((b (get-bytevector-n p 8)))
+  (let ((b (get-bytevector-n* p 8)))
     (bytevector-u64-ref b 0 (endianness little))))
 
 (define write-padding
@@ -93,10 +112,10 @@
 (define (read-string p)
   (let* ((len (read-int p))
          (m   (modulo len 8))
-         (bv  (get-bytevector-n p len))
+         (bv  (get-bytevector-n* p len))
          (str (utf8->string bv)))
     (or (zero? m)
-        (get-bytevector-n p (- 8 m)))
+        (get-bytevector-n* p (- 8 m)))
     str))
 
 (define (read-latin1-string p)
@@ -105,9 +124,9 @@
          ;; Note: do not use 'get-string-n' to work around Guile bug
          ;; <http://bugs.gnu.org/19621>.  See <http://bugs.gnu.org/19610> for
          ;; a discussion.
-         (str (get-bytevector-n p len)))
+         (str (get-bytevector-n* p len)))
     (or (zero? m)
-        (get-bytevector-n p (- 8 m)))
+        (get-bytevector-n* p (- 8 m)))
 
     ;; XXX: Rewrite using (ice-9 iconv) when the minimum requirement is
     ;; upgraded to Guile >= 2.0.9.
@@ -143,11 +162,6 @@
 (define read-store-path-list read-string-list)
 
 
-(define-condition-type &nar-error &error      ; XXX: inherit from &nix-error ?
-  nar-error?
-  (file  nar-error-file)                       ; file we were restoring, or #f
-  (port  nar-error-port))                      ; port from which we read
-
 (define-condition-type &nar-read-error &nar-error
   nar-read-error?
   (token nar-read-error-token))                 ; faulty token, or #f
@@ -222,7 +236,7 @@ the size in bytes."
       (chmod out #o755))
     (let ((m (modulo size 8)))
       (unless (zero? m)
-        (get-bytevector-n in (- 8 m))))
+        (get-bytevector-n* in (- 8 m))))
     size))
 
 (define %archive-version-1
@@ -286,68 +300,71 @@ sub-directories of FILE as needed."
 (define (restore-file port file)
   "Read a file (possibly a directory structure) in Nar format from PORT.
 Restore it as FILE."
-  (let ((signature (read-string port)))
-    (unless (equal? signature %archive-version-1)
-      (raise
-       (condition (&message (message "invalid nar signature"))
-                  (&nar-read-error (port port)
-                                   (token signature)
-                                   (file #f))))))
+  (parameterize ((currently-restored-file file))
+    (let ((signature (read-string port)))
+      (unless (equal? signature %archive-version-1)
+        (raise
+         (condition (&message (message "invalid nar signature"))
+                    (&nar-read-error (port port)
+                                     (token signature)
+                                     (file #f))))))
 
-  (let restore ((file file))
-    (define (read-eof-marker)
-      (match (read-string port)
-        (")" #t)
-        (x (raise
-            (condition
-             (&message (message "invalid nar end-of-file marker"))
-             (&nar-read-error (port port) (file file) (token x)))))))
+    (let restore ((file file))
+      (define (read-eof-marker)
+        (match (read-string port)
+          (")" #t)
+          (x (raise
+              (condition
+               (&message (message "invalid nar end-of-file marker"))
+               (&nar-read-error (port port) (file file) (token x)))))))
 
-    (match (list (read-string port) (read-string port) (read-string port))
-      (("(" "type" "regular")
-       (call-with-output-file file (cut read-contents port <>))
-       (read-eof-marker))
-      (("(" "type" "symlink")
-       (match (list (read-string port) (read-string port))
-         (("target" target)
-          (symlink target file)
-          (read-eof-marker))
-         (x (raise
-             (condition
-              (&message (message "invalid symlink tokens"))
-              (&nar-read-error (port port) (file file) (token x)))))))
-      (("(" "type" "directory")
-       (let ((dir file))
-         (mkdir dir)
-         (let loop ((prefix (read-string port)))
-           (match prefix
-             ("entry"
-              (match (list (read-string port)
-                           (read-string port) (read-string port)
-                           (read-string port))
-                (("(" "name" file "node")
-                 (restore (string-append dir "/" file))
-                 (match (read-string port)
-                   (")" #t)
-                   (x
-                    (raise
-                     (condition
-                      (&message
-                       (message "unexpected directory entry termination"))
-                      (&nar-read-error (port port)
-                                       (file file)
-                                       (token x))))))
-                 (loop (read-string port)))))
-             (")" #t)                             ; done with DIR
-             (x
-              (raise
+      (currently-restored-file file)
+
+      (match (list (read-string port) (read-string port) (read-string port))
+        (("(" "type" "regular")
+         (call-with-output-file file (cut read-contents port <>))
+         (read-eof-marker))
+        (("(" "type" "symlink")
+         (match (list (read-string port) (read-string port))
+           (("target" target)
+            (symlink target file)
+            (read-eof-marker))
+           (x (raise
                (condition
-                (&message (message "unexpected directory inter-entry marker"))
-                (&nar-read-error (port port) (file file) (token x)))))))))
-      (x
-       (raise
-        (condition
-         (&message (message "unsupported nar entry type"))
-         (&nar-read-error (port port) (file file) (token x))))))))
+                (&message (message "invalid symlink tokens"))
+                (&nar-read-error (port port) (file file) (token x)))))))
+        (("(" "type" "directory")
+         (let ((dir file))
+           (mkdir dir)
+           (let loop ((prefix (read-string port)))
+             (match prefix
+               ("entry"
+                (match (list (read-string port)
+                             (read-string port) (read-string port)
+                             (read-string port))
+                  (("(" "name" file "node")
+                   (restore (string-append dir "/" file))
+                   (match (read-string port)
+                     (")" #t)
+                     (x
+                      (raise
+                       (condition
+                        (&message
+                         (message "unexpected directory entry termination"))
+                        (&nar-read-error (port port)
+                                         (file file)
+                                         (token x))))))
+                   (loop (read-string port)))))
+               (")" #t)                            ; done with DIR
+               (x
+                (raise
+                 (condition
+                  (&message (message "unexpected directory inter-entry marker"))
+                  (&nar-read-error (port port) (file file) (token x)))))))))
+        (x
+         (raise
+          (condition
+           (&message (message "unsupported nar entry type"))
+           (&nar-read-error (port port) (file file) (token x)))))))))
 
 ;;; serialization.scm ends here
