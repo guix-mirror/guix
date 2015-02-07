@@ -155,9 +155,7 @@
                 "1n12lbq9x15vqn7dc0hsccp56l5jdff1xrhvlfqlbklxx0qiw9pc"))))
     (build-system cmake-build-system)
     (inputs                                      ; TODO: Add cppunit for tests
-     `(;; Optional Lua support fails to build with:
-       ;;   error: 'luaL_getn' was not declared in this scope
-       ;; ("lua" ,lua)
+     `(("lua" ,lua-5.1)
        ("libpng" ,libpng)
        ("openssl" ,openssl)
        ("fontconfig" ,fontconfig)
