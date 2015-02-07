@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,7 +21,7 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ bsd-3 public-domain))
+                #:select (gpl2 gpl2+ gpl3+ bsd-3 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -36,6 +36,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages image)
@@ -490,3 +491,24 @@ additional calls to tell the library of user interaction.  The whole
 DVD virtual machine and internal playback states are completely
 encapsulated.")
     (license gpl2+)))
+
+(define-public srt2vtt
+  (package
+    (name "srt2vtt")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dthompson.us/releases/srt2vtt/srt2vtt-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "16b377znjm6qlga5yb8aj7b7bcisa1ghcnj2lrb1d30lvxp4liif"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "SubRip to WebVTT subtitle converter")
+    (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
+for use with HTML5 video.")
+    (home-page "http://dthompson.us/pages/software/srt2vtt")
+    (license gpl3+)))
