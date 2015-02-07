@@ -145,14 +145,14 @@
 (define-public podofo
   (package
     (name "podofo")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/podofo/podofo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wx3s0718rmhdzdwyi8hgpf2s92sk3hijy8f4glrmnjpiihr2la6"))))
+                "1n12lbq9x15vqn7dc0hsccp56l5jdff1xrhvlfqlbklxx0qiw9pc"))))
     (build-system cmake-build-system)
     (inputs                                      ; TODO: Add cppunit for tests
      `(;; Optional Lua support fails to build with:
