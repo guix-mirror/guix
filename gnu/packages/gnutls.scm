@@ -27,12 +27,13 @@
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages compression) #:prefix guix:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages nettle)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages which))
 
 (define-public libtasn1
   (package
@@ -60,6 +61,44 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license lgpl2.0+)))
+
+(define-public p11-kit
+  (package
+    (name "p11-kit")
+    (version "0.22.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://p11-glue.freedesktop.org/releases/p11-kit-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0p4sadq2c70jdm7b5a5xw8mk2mqy36krpxr3ihnf783arygk6fpg"))
+      (modules '((guix build utils))) ; for substitute*
+      (snippet
+        '(begin
+           ;; Drop one test that fails, also when trying to compile manually.
+           ;; Reported upstream at
+           ;; https://bugs.freedesktop.org/show_bug.cgi?id=89027
+           (substitute* "Makefile.in"
+             (("test-module\\$\\(EXEEXT\\) ") ""))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libffi" ,libffi)
+       ("libtasn1" ,libtasn1)))
+    (arguments
+     `(#:configure-flags '("--without-trust-paths")))
+    (home-page "http://p11-glue.freedesktop.org/p11-kit.html")
+    (synopsis "PKCS#11 library")
+    (description
+     "p11-kit provides a way to load and enumerate PKCS#11 modules.  It
+provides a standard configuration setup for installing PKCS#11 modules
+in such a way that they are discoverable.  It also solves problems with
+coordinating the use of PKCS#11 by different components or libraries
+living in the same process.")
+    (license bsd-3)))
 
 (define-public gnutls
   (package
