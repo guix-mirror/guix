@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,8 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages python))
 
 (define-public dmd
   (package
@@ -1000,3 +1002,29 @@ within the file system where it occurred.  Thus, \"direvent\" provides an
 easy way to react immediately if given files undergo changes, for example, to
 track changes in important system configuration files.")
     (license gpl3+)))
+
+(define-public libcap-ng
+  (package
+    (name "libcap-ng")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://people.redhat.com/sgrubb/libcap-ng/libcap-ng-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ssvnh4cvhya0c1j6k6192zvqcq7nc0x01fb5nwhr0prfqr0i8j8"))))
+    (build-system gnu-build-system)
+    (inputs `(("python" ,python)))
+    (home-page "http://people.redhat.com/sgrubb/libcap-ng/")
+    (synopsis "Library for more easily working with POSIX capabilities")
+    (description
+     "The libcap-ng library is intended to make programming with POSIX
+capabilities easier than the traditional libcap library.  It includes
+utilities that can analyse all currently running applications and print out
+any capabilities and whether or not it has an open ended bounding set.  The
+included utilities are designed to let admins and developers spot apps from
+various ways that may be running with too much privilege.")
+    ;; The library is lgpl2.1+, but also ships some utils which are gpl2+.
+    (license (list lgpl2.1+ gpl2+))))
