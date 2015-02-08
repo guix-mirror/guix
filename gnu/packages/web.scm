@@ -305,8 +305,8 @@ UTS#46")
                 "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'bootstrap
+     '(#:phases (alist-cons-after
+                 'unpack 'bootstrap
                  (lambda* (#:key inputs #:allow-other-keys)
                    ;; configure.in and Makefile.am aren't in the root of the
                    ;; source tree.
