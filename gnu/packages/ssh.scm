@@ -216,7 +216,8 @@ Additionally, various channel-specific options can be negotiated.")
                       ;; Make sure it works.
                       (setenv "GUILE_LOAD_PATH" guiledir)
                       (setenv "GUILE_LOAD_COMPILED_PATH" guiledir)
-                      (system* "guile" "-c" "(use-modules (ssh session))")))
+                      (zero?
+                       (system* "guile" "-c" "(use-modules (ssh session))"))))
                   %standard-phases))
        #:configure-flags (list (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
