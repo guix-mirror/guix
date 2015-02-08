@@ -303,24 +303,25 @@ no match.."
            (default '())))
 
 (define (manifest-transaction-effects manifest transaction)
-  "Compute the effect of applying TRANSACTION to MANIFEST.  Return 3 values:
-the list of packages that would be removed, installed, or upgraded when
-applying TRANSACTION to MANIFEST.  Upgrades are represented as pairs where the
-head is the entry being upgraded and the tail is the entry that will replace
-it."
+  "Compute the effect of applying TRANSACTION to MANIFEST.  Return 4 values:
+the list of packages that would be removed, installed, upgraded, or downgraded
+when applying TRANSACTION to MANIFEST.  Upgrades are represented as pairs
+where the head is the entry being upgraded and the tail is the entry that will
+replace it."
   (define (manifest-entry->pattern entry)
     (manifest-pattern
       (name   (manifest-entry-name entry))
       (output (manifest-entry-output entry))))
 
-  (let loop ((input    (manifest-transaction-install transaction))
-             (install '())
-             (upgrade '()))
+  (let loop ((input     (manifest-transaction-install transaction))
+             (install   '())
+             (upgrade   '())
+             (downgrade '()))
     (match input
       (()
        (let ((remove (manifest-transaction-remove transaction)))
          (values (manifest-matching-entries manifest remove)
-                 (reverse install) (reverse upgrade))))
+                 (reverse install) (reverse upgrade) (reverse downgrade))))
       ((entry rest ...)
        ;; Check whether installing ENTRY corresponds to the installation of a
        ;; new package or to an upgrade.
@@ -328,12 +329,18 @@ it."
        ;; XXX: When the exact same output directory is installed, we're not
        ;; really upgrading anything.  Add a check for that case.
        (let* ((pattern  (manifest-entry->pattern entry))
-              (previous (manifest-lookup manifest pattern)))
+              (previous (manifest-lookup manifest pattern))
+              (newer?   (and previous
+                             (version>? (manifest-entry-version entry)
+                                        (manifest-entry-version previous)))))
          (loop rest
                (if previous install (cons entry install))
-               (if previous
+               (if (and previous newer?)
                    (alist-cons previous entry upgrade)
-                   upgrade)))))))
+                   upgrade)
+               (if (and previous (not newer?))
+                   (alist-cons previous entry downgrade)
+                   downgrade)))))))
 
 (define (manifest-perform-transaction manifest transaction)
   "Perform TRANSACTION on MANIFEST and return new manifest."

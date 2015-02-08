@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -155,11 +155,19 @@
          (t  (manifest-transaction
               (install (list guile-2.0.9 glibc))
               (remove (list (manifest-pattern (name "coreutils")))))))
-    (let-values (((remove install upgrade)
+    (let-values (((remove install upgrade downgrade)
                   (manifest-transaction-effects m0 t)))
-      (and (null? remove)
+      (and (null? remove) (null? downgrade)
            (equal? (list glibc) install)
            (equal? (list (cons guile-1.8.8 guile-2.0.9)) upgrade)))))
+
+(test-assert "manifest-transaction-effects and downgrades"
+  (let* ((m0 (manifest (list guile-2.0.9)))
+         (t  (manifest-transaction (install (list guile-1.8.8)))))
+    (let-values (((remove install upgrade downgrade)
+                  (manifest-transaction-effects m0 t)))
+      (and (null? remove) (null? install) (null? upgrade)
+           (equal? (list (cons guile-2.0.9 guile-1.8.8)) downgrade)))))
 
 (test-assertm "profile-derivation"
   (mlet* %store-monad

@@ -416,7 +416,7 @@ replacement if PORT is not Unicode-capable."
                 (package-output store item output)
                 item)))
 
-  (let-values (((remove install upgrade)
+  (let-values (((remove install upgrade downgrade)
                 (manifest-transaction-effects manifest transaction)))
     (match remove
       ((($ <manifest-entry> name version output item) ..1)
@@ -433,6 +433,24 @@ replacement if PORT is not Unicode-capable."
                          "The following packages will be removed:~%~{~a~%~}~%"
                          len)
                      remove))))
+      (_ #f))
+    (match downgrade
+      (((($ <manifest-entry> name old-version)
+         . ($ <manifest-entry> _ new-version output item)) ..1)
+       (let ((len       (length name))
+             (downgrade (map upgrade-string
+                             name old-version new-version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be downgraded:~%~{~a~%~}~%"
+                         "The following packages would be downgraded:~%~{~a~%~}~%"
+                         len)
+                     downgrade)
+             (format (current-error-port)
+                     (N_ "The following package will be downgraded:~%~{~a~%~}~%"
+                         "The following packages will be downgraded:~%~{~a~%~}~%"
+                         len)
+                     downgrade))))
       (_ #f))
     (match upgrade
       (((($ <manifest-entry> name old-version)
