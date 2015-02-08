@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -230,19 +230,17 @@ Second line" 24))
 (test-assert "show-manifest-transaction"
   (let* ((m (manifest (list guile-1.8.8)))
          (t (manifest-transaction (install (list guile-2.0.9)))))
-    (let-values (((remove install upgrade)
-                  (manifest-transaction-effects m t)))
-      (with-store store
-        (and (string-match "guile\t1.8.8 → 2.0.9"
-                           (with-fluids ((%default-port-encoding "UTF-8"))
-                             (with-error-to-string
-                              (lambda ()
-                                (show-manifest-transaction store m t)))))
-             (string-match "guile\t1.8.8 -> 2.0.9"
-                           (with-fluids ((%default-port-encoding "ISO-8859-1"))
-                             (with-error-to-string
-                              (lambda ()
-                                (show-manifest-transaction store m t))))))))))
+    (with-store store
+      (and (string-match "guile\t1.8.8 → 2.0.9"
+                         (with-fluids ((%default-port-encoding "UTF-8"))
+                           (with-error-to-string
+                            (lambda ()
+                              (show-manifest-transaction store m t)))))
+           (string-match "guile\t1.8.8 -> 2.0.9"
+                         (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                           (with-error-to-string
+                            (lambda ()
+                              (show-manifest-transaction store m t)))))))))
 
 (test-end "ui")
 
