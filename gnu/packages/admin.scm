@@ -1028,3 +1028,27 @@ included utilities are designed to let admins and developers spot apps from
 various ways that may be running with too much privilege.")
     ;; The library is lgpl2.1+, but also ships some utils which are gpl2+.
     (license (list lgpl2.1+ gpl2+))))
+
+(define-public smartmontools
+  (package
+    (name "smartmontools")
+    (version "6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/smartmontools/smartmontools/"
+                    version "/smartmontools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06gy71jh2d3gcfmlbbrsqw7215knkfq59q3j6qdxfrar39fhcxx7"))))
+    (build-system gnu-build-system)
+    (inputs `(("libcap-ng" ,libcap-ng)))
+    (home-page "http://www.smartmontools.org/")
+    (synopsis "S.M.A.R.T. harddisk control and monitoring tools")
+    (description
+     "The smartmontools package contains utility programs to control and
+monitor storage systems using the Self-Monitoring, Analysis and Reporting
+Technology System (S.M.A.R.T.) built into most modern ATA and SCSI harddisks.
+In many cases, these utilities will provide advanced warning of disk
+degradation and failure.")
+    (license gpl2+)))
