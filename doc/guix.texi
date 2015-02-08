@@ -4822,8 +4822,11 @@ system declaration like this:
 
 @example
 (initrd (lambda (file-systems . rest)
+          ;; Create a standard initrd that has modules "foo.ko"
+          ;; and "bar.ko", as well as their dependencies, in
+          ;; addition to the modules available by default.
           (apply base-initrd file-systems
-                 #:extra-modules '("my.ko" "modules.ko")
+                 #:extra-modules '("foo" "bar")
                  rest)))
 @end example
 
