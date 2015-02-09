@@ -4,6 +4,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -669,6 +670,30 @@ images more compressible.")
      "strace is a system call tracer, i.e. a debugging tool which prints out a
 trace of all the system calls made by a another process/program.")
     (license bsd-3)))
+
+(define-public ltrace
+  (package
+    (name "ltrace")
+    (version "0.7.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.ltrace.org/ltrace_" version
+                                 ".orig.tar.bz2"))
+             (sha256
+              (base32
+               "00wmbdghqbz6x95m1mcdd3wd46l6hgcr4wggdp049dbifh3qqvqf"))))
+    (build-system gnu-build-system)
+    (inputs `(("libelf" ,libelf)))
+    (arguments
+     ;; Compilation uses -Werror by default, but it fails.
+     '(#:configure-flags '("--disable-werror")))
+    (home-page "http://www.ltrace.org/")
+    (synopsis "Library call tracer for Linux")
+    (description
+     "ltrace intercepts and records dynamic library calls which are called by
+an executed process and the signals received by that process.  It can also
+intercept and print the system calls executed by the program.")
+    (license gpl2+)))
 
 (define-public alsa-lib
   (package
