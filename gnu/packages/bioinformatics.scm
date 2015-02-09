@@ -29,8 +29,9 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages zip))
 
 (define-public bedtools
   (package
@@ -180,6 +181,69 @@ read mapping rates and improves genome and transcriptome assemblies.  It
 supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
     (license license:gpl3)))
+
+(define-public hisat
+  (package
+    (name "hisat")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ccb.jhu.edu/software/hisat/downloads/hisat-"
+                    version "-beta-source.zip"))
+              (sha256
+               (base32
+                "1k381ydranqxp09yf2y7w1d0chz5d59vb6jchi89hbb0prq19lk5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no check target
+       #:make-flags '("allall")
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda* (#:key source #:allow-other-keys)
+          (and (zero? (system* "unzip" source))
+               (chdir "hisat-0.1.4-beta")))
+        (alist-cons-after
+         'unpack 'patch-sources
+         (lambda _
+           ;; XXX Cannot use snippet because zip files are not supported
+           (substitute* "Makefile"
+             (("^CC = .*$") "CC = gcc")
+             (("^CPP = .*$") "CPP = g++")
+             ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+             (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+             (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
+           (substitute* '("hisat-build" "hisat-inspect")
+             (("/usr/bin/env") (which "env"))))
+         (alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (mkdir-p bin)
+              (for-each
+               (lambda (file)
+                 (copy-file file (string-append bin file)))
+               (find-files
+                "."
+                "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
+          (alist-delete 'configure %standard-phases))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("perl" ,perl)
+       ("python" ,python)
+       ("zlib" ,zlib)))
+    (home-page "http://ccb.jhu.edu/software/hisat/index.shtml")
+    (synopsis "Hierarchical indexing for spliced alignment of transcripts")
+    (description
+     "HISAT is a fast and sensitive spliced alignment program for mapping
+RNA-seq reads.  In addition to one global FM index that represents a whole
+genome, HISAT uses a large set of small FM indexes that collectively cover the
+whole genome.  These small indexes (called local indexes) combined with
+several alignment strategies enable effective alignment of RNA-seq reads, in
+particular, reads spanning multiple exons.")
+    (license license:gpl3+)))
 
 (define-public samtools
   (package
