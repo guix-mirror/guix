@@ -331,8 +331,8 @@ replace it."
        (let* ((pattern  (manifest-entry->pattern entry))
               (previous (manifest-lookup manifest pattern))
               (newer?   (and previous
-                             (version>? (manifest-entry-version entry)
-                                        (manifest-entry-version previous)))))
+                             (version>=? (manifest-entry-version entry)
+                                         (manifest-entry-version previous)))))
          (loop rest
                (if previous install (cons entry install))
                (if (and previous newer?)

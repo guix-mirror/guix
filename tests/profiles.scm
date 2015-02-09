@@ -169,6 +169,14 @@
       (and (null? remove) (null? install) (null? upgrade)
            (equal? (list (cons guile-2.0.9 guile-1.8.8)) downgrade)))))
 
+(test-assert "manifest-transaction-effects and pseudo-upgrades"
+  (let* ((m0 (manifest (list guile-2.0.9)))
+         (t  (manifest-transaction (install (list guile-2.0.9)))))
+    (let-values (((remove install upgrade downgrade)
+                  (manifest-transaction-effects m0 t)))
+      (and (null? remove) (null? install) (null? downgrade)
+           (equal? (list (cons guile-2.0.9 guile-2.0.9)) upgrade)))))
+
 (test-assertm "profile-derivation"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry %bootstrap-guile))
