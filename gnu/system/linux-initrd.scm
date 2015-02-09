@@ -186,6 +186,7 @@ loaded at boot time in the order in which they appear."
     ;; Modules added to the initrd and loaded from the initrd.
     `("ahci"                                  ;for SATA controllers
       "pata_acpi" "pata_atiixp"               ;for ATA controllers
+      "isci"                              ;for SAS controllers like Intel C602
       "usb-storage" "uas"                     ;for the installation image etc.
       "usbkbd" "usbhid"                       ;USB keyboards, for debugging
       ,@(if (or virtio? qemu-networking?)
