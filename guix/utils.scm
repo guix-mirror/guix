@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -67,6 +67,7 @@
             %current-target-system
             version-compare
             version>?
+            version>=?
             version-prefix
             version-major+minor
             guile-version>?
@@ -554,8 +555,14 @@ minor version numbers from version-string."
   (version-prefix version-string 2))
 
 (define (version>? a b)
-  "Return #t when A denotes a newer version than B."
+  "Return #t when A denotes a version strictly newer than B."
   (eq? '> (version-compare a b)))
+
+(define (version>=? a b)
+  "Return #t when A denotes a version newer or equal to B."
+  (case (version-compare a b)
+    ((> =) #t)
+    (else #f)))
 
 (define (guile-version>? str)
   "Return #t if the running Guile version is greater than STR."
