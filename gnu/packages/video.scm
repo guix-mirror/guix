@@ -73,6 +73,7 @@
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("opus" ,opus)
+       ("lame" ,lame)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
@@ -167,6 +168,7 @@
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
                       "--enable-libfreetype"
+                      "--enable-libmp3lame"
                       "--enable-libopus"
                       "--enable-libspeex"
                       "--enable-libtheora"
