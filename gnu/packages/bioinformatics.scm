@@ -31,6 +31,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
 
 (define-public bedtools
@@ -349,3 +350,51 @@ algorithms and data structures for string representation and their
 manipulation, online and indexed string search, efficient I/O of
 bioinformatics file formats, sequence alignment, and more.")
     (license license:bsd-3)))
+
+(define-public star
+  (package
+    (name "star")
+    (version "2.4.0j")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/alexdobin/STAR/archive/STAR_"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1y3bciych1aw6s7k8sy1saj23dcan9wk4d4f96an499slkxwz712"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "source/Makefile"
+                  (("/bin/rm") "rm")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no check target
+       #:make-flags '("STAR")
+       #:phases
+       (alist-cons-after
+        'unpack 'enter-source-dir (lambda _ (chdir "source"))
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (copy-file "STAR" (string-append bin "STAR"))))
+         (alist-delete
+          'configure %standard-phases)))))
+    (native-inputs
+     `(("vim" ,vim))) ; for xxd
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/alexdobin/STAR")
+    (synopsis "Universal RNA-seq aligner")
+    (description
+     "The Spliced Transcripts Alignment to a Reference (STAR) software is
+based on a previously undescribed RNA-seq alignment algorithm that uses
+sequential maximum mappable seed search in uncompressed suffix arrays followed
+by seed clustering and stitching procedure.  In addition to unbiased de novo
+detection of canonical junctions, STAR can discover non-canonical splices and
+chimeric (fusion) transcripts, and is also capable of mapping full-length RNA
+sequences.")
+    ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
+    (license license:gpl3+)))
