@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,3 +62,26 @@ computers over a network.")
              "http://www.eecis.udel.edu/~mills/ntp/html/copyright.html"
              "A non-copyleft free licence from the University of Delaware"))
    (home-page "http://www.ntp.org")))
+
+(define-public openntpd
+  (package
+    (name "openntpd")
+    (version "5.7p3")
+    (source (origin
+              (method url-fetch)
+              ;; XXX Use mirror://openbsd
+              (uri (string-append
+                    "http://ftp.openbsd.org/pub/OpenBSD/OpenNTPD/openntpd-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0filjmb3b8rc39bvhm8q2azzj10ljfgq41qih71pxv919j57qhag"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.openntpd.org/")
+    (synopsis "NTP client and server by the OpenBSD Project")
+    (description "OpenNTPD is the OpenBSD Project's implementation of a client
+and server for the Network Time Protocol.  Its design goals include being
+secure, easy to configure, and accurate enough for most purposes, so it's more
+minimalist than ntpd.")
+    ;; A few of the source files are under bsd-3.
+    (license (list l:isc l:bsd-3))))
