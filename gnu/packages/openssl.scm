@@ -72,14 +72,14 @@
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.66")
+    (version "1.68")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "0mxfdhz2fyc40a4myi1yfalf875v5wq1fm4qib9sj3chdm9zvy2v"))))
+                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments
