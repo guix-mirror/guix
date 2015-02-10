@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gettext)
-  #:use-module ((guix licenses) #:select (gpl3))
+  #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -78,4 +78,4 @@ textual output of programs into multiple languages.  It provides translators
 with the means to create message catalogs, as well as an Emacs mode to work
 with them, and a runtime library to load translated messages from the
 catalogs.  Nearly all GNU packages use Gettext.")
-    (license gpl3))) ; some files are under GPLv2+
+    (license gpl3+)))                             ;some files are under GPLv2+
