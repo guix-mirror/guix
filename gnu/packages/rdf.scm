@@ -254,6 +254,30 @@ or situations where a simple reader/writer with minimal dependencies is
 ideal (e.g. in LV2 implementations or embedded applications).")
     (license isc)))
 
+(define-public sord
+  (package
+    (name "sord")
+    (version "0.12.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/sord-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "0rq7vafdv4vsxi6xk9zf5shr59w3kppdhqbj78185rz5gp9kh1dx"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("serd" ,serd)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/sord/")
+    (synopsis "C library for storing RDF data in memory")
+    (description
+     "Sord is a lightweight C library for storing RDF data in memory.")
+    (license isc)))
+
 (define-public soprano
   (package
     (name "soprano")
