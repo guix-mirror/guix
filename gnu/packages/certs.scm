@@ -20,8 +20,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages python))
 
 (define certdata2pem
@@ -63,3 +66,53 @@
 .pem formatted certificates.")
    (license license:gpl2+)
    (home-page "http://pkgs.fedoraproject.org/cgit/ca-certificates.git/")))
+
+(define-public nss-certs
+  (package (inherit nss) ; to reuse the source, version and some metadata
+    (name "nss-certs")
+    (build-system gnu-build-system)
+    (outputs '("out"))
+    (native-inputs
+     `(("certdata2pem" ,certdata2pem)
+       ("openssl" ,openssl)))
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils))
+       #:phases
+         (alist-cons-after
+           'unpack 'install
+           (lambda _
+             (let ((certsdir (string-append %output "/etc/ssl/certs/")))
+               (mkdir-p certsdir)
+               (with-directory-excursion "nss/lib/ckfw/builtins/"
+                 ;; extract single certificates from blob
+                 (system* "certdata2pem.py" "certdata.txt")
+                 ;; copy the .pem files into the output
+                 (for-each
+                   (lambda (file)
+                     (copy-file file (string-append certsdir file)))
+                   ;; FIXME: Some of the file names are UTF8 (?) and cause an
+                   ;; error message such as 
+                   ;; find-files:
+                   ;; ./EBG_Elektronik_Sertifika_Hizmet_Sa??lay??c??s??:2.8.76.175.115.66.28.142.116.2.pem:
+                   ;; No such file or directory
+                   (find-files "." ".*\\.pem")))
+                 (with-directory-excursion certsdir
+                   ;; create symbolic links for and by openssl
+                   ;; Strangely, the call (system* "c_rehash" certsdir)
+                   ;; from inside the build dir fails with
+                   ;; "Usage error; try -help."
+                   ;; This looks like a bug in openssl-1.0.2, but we can also
+                   ;; switch into the target directory.
+                   (system* "c_rehash" "."))))
+           (map (cut assq <> %standard-phases)
+                '(set-paths unpack)))))
+    (synopsis "CA certificates from Mozilla")
+    (description
+      "This package provides certificates for Certification Authorities (CA)
+taken from the NSS package and thus ultimately from the Mozilla project.")))
