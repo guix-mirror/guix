@@ -19,12 +19,13 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (bsd-style gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
+                #:select (bsd-style isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages databases)
@@ -227,6 +228,31 @@ Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3.")
     (description "The Redland RDF Library (librdf) provides the RDF API
 and triple stores.")
     (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
+
+(define-public serd
+  (package
+    (name "serd")
+    (version "0.20.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/serd-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "1gxbzqsm212wmn8qkdd3lbl6wbv7fwmaf9qh2nxa4yxjbr7mylb4"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (home-page "http://drobilla.net/software/serd/")
+    (synopsis "Library for RDF syntax supporting Turtle and NTriples")
+    (description
+     "Serd is a lightweight C library for RDF syntax which supports reading
+and writing Turtle and NTriples.  Serd is not intended to be a swiss-army
+knife of RDF syntax, but rather is suited to resource limited or performance
+critical applications (e.g. converting many gigabytes of NTriples to Turtle),
+or situations where a simple reader/writer with minimal dependencies is
+ideal (e.g. in LV2 implementations or embedded applications).")
+    (license isc)))
 
 (define-public soprano
   (package
