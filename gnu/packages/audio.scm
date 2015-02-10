@@ -31,6 +31,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml))
@@ -187,4 +188,31 @@ implementation of the Open Sound Control (OSC) protocol.")
 At its core, LV2 is a simple stable interface, accompanied by extensions which
 add functionality to support the needs of increasingly powerful audio
 software.")
+    (license license:isc)))
+
+(define-public sratom
+  (package
+    (name "sratom")
+    (version "0.4.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/sratom-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "080jjiyxjnj7hf25844hd9rb01grvzz1rk8mxcdnakywmspbxfd4"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("lv2" ,lv2)
+       ("serd" ,serd)
+       ("sord" ,sord)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/sratom/")
+    (synopsis "Library for serialising LV2 atoms to/from RDF")
+    (description
+     "Sratom is a library for serialising LV2 atoms to/from RDF, particularly
+the Turtle syntax.")
     (license license:isc)))
