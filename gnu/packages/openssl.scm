@@ -63,6 +63,10 @@
               (("/bin/rm")
                "rm"))))
         %standard-phases))))
+   (native-search-paths
+     (list (search-path-specification
+           (variable "SSL_CERT_DIR")
+           (files '("etc/ssl/certs")))))
    (synopsis "SSL/TLS implementation")
    (description
     "OpenSSL is an implementation of SSL/TLS")
