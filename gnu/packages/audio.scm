@@ -258,6 +258,34 @@ add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
 
+(define-public rubberband
+  (package
+    (name "rubberband")
+    (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://bitbucket.org/breakfastquay/rubberband/get/v"
+                              version
+                              ".tar.bz2"))
+              (sha256
+               (base32
+                "05amrbrxx0da3w7m237q51799r8xgs4ffqabi2qv06hq8dpcj386"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("ladspa" ,ladspa)
+       ("libsamplerate" ,libsamplerate)
+       ("vamp" ,vamp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://breakfastquay.com/rubberband/")
+    (synopsis "Audio time-stretching and pitch-shifting library")
+    (description
+     "Rubber Band is a library and utility program that permits changing the
+tempo and pitch of an audio recording independently of one another.")
+    (license license:gpl2+)))
+
 (define-public sratom
   (package
     (name "sratom")
