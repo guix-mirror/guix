@@ -25,11 +25,16 @@
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages glib) ;dbus
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mp3) ;taglib
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
   #:use-module (gnu packages python)
@@ -76,6 +81,79 @@ signals.  Its features include segmenting a sound file before each of its
 attacks, performing pitch detection, tapping the beat and producing MIDI
 streams from live audio.")
     (license license:gpl3+)))
+
+(define-public ardour
+  (package
+    (name "ardour")
+    (version "3.5.403")
+    (source (origin
+              ;; The project only provides tarballs upon individual request
+              ;; (or after payment) so we take the code from git.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.ardour.org/ardour/ardour.git")
+                    (commit version)))
+              (snippet
+               '(call-with-output-file
+                    "libs/ardour/revision.cc"
+                  (lambda (port)
+                    (format port "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
+              (sha256
+               (base32
+                "01b0wxh0wlxjfz5j8gcwwqhxc6q2kn4njz2fcmzv9fr3xaya5dbp"))
+              (file-name (string-append name "-" version))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:python ,python-2))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("aubio" ,aubio)
+       ("lrdf" ,lrdf)
+       ("boost" ,boost)
+       ("atkmm" ,atkmm)
+       ("cairomm" ,cairomm)
+       ("gtkmm" ,gtkmm-2)
+       ("glibmm" ,glibmm)
+       ("libart-lgpl" ,libart-lgpl)
+       ("libgnomecanvasmm" ,libgnomecanvasmm)
+       ("pangomm" ,pangomm)
+       ("liblo" ,liblo)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("libxml2" ,libxml2)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("flac" ,flac)
+       ("lv2" ,lv2)
+       ("vamp" ,vamp)
+       ("curl" ,curl)
+       ("libuuid" ,util-linux)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("jack" ,jack-1)
+       ("serd" ,serd)
+       ("sord" ,sord)
+       ("sratom" ,sratom)
+       ("suil" ,suil)
+       ("lilv" ,lilv)
+       ("rasqal" ,rasqal)
+       ("raptor2" ,raptor2)
+       ("redland" ,redland)
+       ("rubberband" ,rubberband)
+       ("taglib" ,taglib)
+       ("python-rdflib" ,python-rdflib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://ardour.org")
+    (synopsis "Digital audio workstation")
+    (description
+     "Ardour is a multi-channel digital audio workstation, allowing users to
+record, edit, mix and master audio and MIDI projects.  It is targeted at audio
+engineers, musicians, soundtrack editors and composers.")
+    (license license:gpl2+)))
 
 (define-public jack-1
   (package
