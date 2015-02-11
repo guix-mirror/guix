@@ -1,0 +1,31 @@
+This patch allows us to use glibc's build system to build locales
+in a package separate from glibc.
+
+  1. Use 'localedef' from $PATH since we are not rebuilding it.
+  2. Use '--no-archive' to avoid building the big locale archive, and
+     because the already-built 'localedef' would want to write it
+     to '/run/current-system/locale', which is not possible.
+  3. Pass $(localedir)/$$locale to install files in the right place, and
+     because otherwise, 'localedef' fails with:
+     "cannot write output files to `(null)'".
+
+--- glibc-2.20/localedata/Makefile	2014-09-07 10:09:09.000000000 +0200
++++ glibc-2.20/localedata/Makefile	2015-02-11 10:23:55.560545568 +0100
+@@ -217,7 +217,7 @@ INSTALL-SUPPORTED-LOCALES=$(addprefix in
+ 
+ # Sometimes the whole collection of locale files should be installed.
+ LOCALEDEF=I18NPATH=. GCONV_PATH=$(common-objpfx)iconvdata LC_ALL=C \
+-$(rtld-prefix) $(common-objpfx)locale/localedef
++  localedef --no-archive
+ install-locales: $(INSTALL-SUPPORTED-LOCALES)
+ 
+ install-locales-dir:
+@@ -234,7 +234,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-lo
+ 	input=`echo $$locale | sed 's/\([^.]*\)[^@]*\(.*\)/\1\2/'`; \
+ 	$(LOCALEDEF) --alias-file=../intl/locale.alias \
+ 		     -i locales/$$input -c -f charmaps/$$charset \
+-		     $(addprefix --prefix=,$(install_root)) $$locale; \
++		     $(addprefix --prefix=,$(install_root)) $(localedir)/$$locale; \
+ 	echo ' done'; \
+ 
+ tst-setlocale-ENV = LC_ALL=ja_JP.EUC-JP

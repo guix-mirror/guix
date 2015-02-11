@@ -33,6 +33,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -519,6 +520,40 @@ The GNU C library is used as the C library in the GNU system and most systems
 with the Linux kernel.")
    (license lgpl2.0+)
    (home-page "http://www.gnu.org/software/libc/")))
+
+(define-public glibc-locales
+  (package
+    (inherit glibc)
+    (name "glibc-locales")
+    (source (origin (inherit (package-source glibc))
+                    (patches (cons (search-patch "glibc-locales.patch")
+                                   (origin-patches (package-source glibc))))))
+    (synopsis "All the locales supported by the GNU C Library")
+    (description
+     "This package provides all the locales supported by the GNU C Library,
+more than 400 in total.  To use them set the 'LOCPATH' environment variable to
+the 'share/locale' sub-directory of this package.")
+    (outputs '("out"))                            ;110+ MiB
+    (arguments
+     (let ((args `(#:tests? #f #:strip-binaries? #f
+                   ,@(package-arguments glibc))))
+       (substitute-keyword-arguments args
+         ((#:phases phases)
+          `(alist-replace
+            'build
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                ;; Delete $out/bin, which contains 'bash'.
+                (delete-file-recursively (string-append out "/bin")))
+
+              (zero? (system* "make" "localedata/install-locales"
+                              "-j" (number->string (parallel-job-count)))))
+            (alist-delete 'install ,phases)))
+         ((#:configure-flags flags)
+          `(append ,flags
+                   (list (string-append "libc_cv_localedir="
+                                        (assoc-ref %outputs "out")
+                                        "/share/locale")))))))))
 
 (define-public tzdata
   (package
