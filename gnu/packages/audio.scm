@@ -498,6 +498,39 @@ add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
 
+(define-public lv2-mda-piano
+  (package
+    (name "lv2-mda-piano")
+    (version "0.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitorious.org/lv2-synths/lv2-mdametapiano.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "07lywf6lpfpndg3i9w752mmlg2hgn1bwp23h8b0mdj6awh67abqd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list
+                     "TYPE=mdaPiano"
+                     (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no check target
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("lv2" ,lv2)
+       ("lvtk" ,lvtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://elephly.net/lv2/mdapiano.html")
+    (synopsis "LV2 port of the mda Piano plugin")
+    (description "An LV2 port of the mda Piano VSTi.")
+    (license license:gpl3+)))
+
 (define-public lvtk
   (package
     (name "lvtk")
