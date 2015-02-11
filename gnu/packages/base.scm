@@ -357,14 +357,14 @@ included.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.20")
+   (version "2.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "19bbyfc2gcxr9rihrkkbd3p362i608yhlyrr7icqsa6cmr16sjzq"))
+              "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -373,10 +373,7 @@ included.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-CVE-2014-7817.patch")
-                           (search-patch "glibc-CVE-2012-3406.patch")
-                           (search-patch "glibc-mips-dangling-vfork-ref.patch")
-                           (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -409,7 +406,7 @@ included.")
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
 
-            ;; This is the default for most architectures as of GNU libc 2.20,
+            ;; This is the default for most architectures as of GNU libc 2.21,
             ;; but we specify it explicitly for clarity and consistency.  See
             ;; "kernel-features.h" in the GNU libc for details.
             "--enable-kernel=2.6.32"
