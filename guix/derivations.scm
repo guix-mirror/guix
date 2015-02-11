@@ -1095,6 +1095,7 @@ applied."
        (let ((mapping ',mapping))
          (for-each (lambda (input output)
                      (format #t "grafting '~a' -> '~a'...~%" input output)
+                     (force-output)
                      (rewrite-directory input output
                                         `((,input . ,output)
                                           ,@mapping)))
