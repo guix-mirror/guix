@@ -3490,7 +3490,7 @@ to report issues (and success stories!), and join us in improving it.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@url{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
+@code{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
