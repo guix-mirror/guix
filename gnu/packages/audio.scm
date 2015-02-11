@@ -531,6 +531,19 @@ software.")
     (description "An LV2 port of the mda Piano VSTi.")
     (license license:gpl3+)))
 
+(define-public lv2-mda-epiano
+  (package (inherit lv2-mda-piano)
+    (name "lv2-mda-epiano")
+    (arguments
+     `(#:make-flags (list
+                     "TYPE=mdaEPiano"
+                     (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no check target
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://elephly.net/lv2/mdaepiano.html")
+    (synopsis "LV2 port of the mda EPiano plugin")
+    (description "An LV2 port of the mda EPiano VSTi.")))
+
 (define-public lvtk
   (package
     (name "lvtk")
