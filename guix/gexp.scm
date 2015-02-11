@@ -118,6 +118,29 @@ corresponding derivation."
                                                #:target target)))
        (return (map cons file-names inputs))))))
 
+(define* (lower-references lst #:key system target)
+  "Based on LST, a list of output names and packages, return a list of output
+names and file names suitable for the #:allowed-references argument to
+'derivation'."
+  ;; XXX: Currently outputs other than "out" are not supported, and things
+  ;; other than packages aren't either.
+  (with-monad %store-monad
+    (define lower
+      (match-lambda
+       ((? string? output)
+        (return output))
+       ((? package? package)
+        (mlet %store-monad ((drv
+                             (if target
+                                 (package->cross-derivation package target
+                                                            #:system system
+                                                            #:graft? #f)
+                                 (package->derivation package system
+                                                      #:graft? #f))))
+          (return (derivation->output-path drv))))))
+
+    (sequence %store-monad (map lower lst))))
+
 (define* (gexp->derivation name exp
                            #:key
                            system (target 'current)
@@ -127,6 +150,7 @@ corresponding derivation."
                            (module-path %load-path)
                            (guile-for-build (%guile-for-build))
                            references-graphs
+                           allowed-references
                            local-build?)
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
 derivation) on SYSTEM.  When TARGET is true, it is used as the
@@ -151,8 +175,9 @@ an input of the build process of EXP.  In the build environment, each
 FILE-NAME contains the reference graph of the corresponding item, in a simple
 text format.
 
-In that case, the reference graph of each store path is exported in
-the build environment in the corresponding file, in a simple text format.
+ALLOWED-REFERENCES must be either #f or a list of output names and packages.
+In the latter case, the list denotes store items that the result is allowed to
+refer to.  Any reference to another store item will lead to a build error.
 
 The other arguments are as for 'derivation'."
   (define %modules modules)
@@ -207,6 +232,11 @@ The other arguments are as for 'derivation'."
                                                              #:system system
                                                              #:target target)
                                      (return #f)))
+                       (allowed  (if allowed-references
+                                     (lower-references allowed-references
+                                                       #:system system
+                                                       #:target target)
+                                     (return #f)))
                        (guile    (if guile-for-build
                                      (return guile-for-build)
                                      (package->derivation (default-guile)
@@ -233,6 +263,7 @@ The other arguments are as for 'derivation'."
                                    (_ '())))
                     #:hash hash #:hash-algo hash-algo #:recursive? recursive?
                     #:references-graphs (and=> graphs graphs-file-names)
+                    #:allowed-references allowed
                     #:local-build? local-build?)))
 
 (define* (gexp-inputs exp #:optional (references gexp-references))

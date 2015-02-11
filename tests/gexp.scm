@@ -27,6 +27,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
@@ -395,6 +396,30 @@
                          (list one (derivation->output-path two "chbouib")))
                  (equal? (call-with-input-file g-guile read)
                          (list (derivation->output-path guile-drv)))))))
+
+(test-assertm "gexp->derivation #:allowed-references"
+  (mlet %store-monad ((drv (gexp->derivation "allowed-refs"
+                                             #~(begin
+                                                 (mkdir #$output)
+                                                 (chdir #$output)
+                                                 (symlink #$output "self")
+                                                 (symlink #$%bootstrap-guile
+                                                          "guile"))
+                                             #:allowed-references
+                                             (list "out" %bootstrap-guile))))
+    (built-derivations (list drv))))
+
+(test-assert "gexp->derivation #:allowed-references, disallowed"
+  (let ((drv (run-with-store %store
+               (gexp->derivation "allowed-refs"
+                                 #~(begin
+                                     (mkdir #$output)
+                                     (chdir #$output)
+                                     (symlink #$%bootstrap-guile "guile"))
+                                 #:allowed-references '()))))
+    (guard (c ((nix-protocol-error? c) #t))
+      (build-derivations %store (list drv))
+      #f)))
 
 (define shebang
   (string-append "#!" (derivation->output-path (%guile-for-build))
