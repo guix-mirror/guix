@@ -132,14 +132,15 @@ living in the same process.")
              ;; independently.  This seems suboptimal.
              "--with-default-trust-store-dir=/etc/ssl/certs")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (inputs
      `(("guile" ,guile-2.0)
        ("perl" ,perl)))
     (propagated-inputs
+     ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
        ("nettle" ,nettle)
-       ("which" ,which)
        ("zlib" ,guix:zlib)))
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
