@@ -2358,9 +2358,10 @@ Run @var{mval}, a monadic value in the store monad, in @var{store}, an
 open store connection.
 @end deffn
 
-@deffn {Monadic Procedure} text-file @var{name} @var{text}
+@deffn {Monadic Procedure} text-file @var{name} @var{text} [@var{references}]
 Return as a monadic value the absolute file name in the store of the file
-containing @var{text}, a string.
+containing @var{text}, a string.  @var{references} is a list of store items that the
+resulting text file refers to; it defaults to the empty list.
 @end deffn
 
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
