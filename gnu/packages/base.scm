@@ -485,6 +485,13 @@ included.")
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)))
 
+   (native-search-paths
+    ;; Search path for packages that provide locale data.  This is useful
+    ;; primarily in build environments.
+    (list (search-path-specification
+           (variable "LOCPATH")
+           (files '("share/locale")))))
+
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
