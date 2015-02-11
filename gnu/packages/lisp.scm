@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,11 @@
   #:use-module (gnu packages m4)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages libffi))
 
 (define-public gcl
   (package
@@ -81,3 +86,52 @@ stratified garbage collection strategy, a source-level debugger and a built-in
 interface to the Tk widget system.")
     (license license:lgpl2.0+)))
 
+(define-public ecl
+  (package
+    (name "ecl")
+    (version "13.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/ecls/ecls/"
+                           (version-major+minor version)
+                           "/ecl-" version ".tgz"))
+       (sha256
+        (base32 "18ic8w9sdl0dh3kmyc9lsrafikrd9cg1jkhhr25p9saz0v75f77r"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("which" ,which)))
+    (inputs `(("gmp" ,gmp)
+              ("libatomic-ops" ,libatomic-ops)
+              ("libgc" ,libgc)
+              ("libffi" ,libffi)))
+    (arguments
+     '(#:phases
+       ;; The test-suite seems to assume that ECL is installed.  So re-order
+       ;; the phases, then reference the installed executable.
+       (let* ((check-phase (assq-ref %standard-phases 'check))
+              (rearranged-phases
+               (alist-cons-after 'install 'check check-phase
+                                 (alist-delete 'check %standard-phases))))
+         (alist-cons-before
+          'check 'pre-check
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* '("build/tests/Makefile")
+              (("ECL=ecl")
+               (string-append
+                "ECL=" (assoc-ref outputs "out") "/bin/ecl"))))
+          rearranged-phases))
+       ;; Parallel builds explicitly not supported:
+       ;; http://sourceforge.net/p/ecls/bugs/98/
+       #:parallel-build? #f
+       #:parallel-tests? #f))
+    (home-page "http://ecls.sourceforge.net/")
+    (synopsis "Embeddable Common Lisp")
+    (description "ECL is an implementation of the Common Lisp language as
+defined by the ANSI X3J13 specification.  Its most relevant features are: a
+bytecode compiler and interpreter, being able to compile Common Lisp with any
+C/C++ compiler, being able to build standalone executables and libraries, and
+supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
+    ;; Note that the file "Copyright" points to some files and directories
+    ;; which aren't under the lgpl2.0+ and instead contain many different,
+    ;; non-copyleft licenses.
+    (license license:lgpl2.0+)))
