@@ -147,32 +147,6 @@ standard utility.")
 (define-public patch
   (package
    (name "patch")
-   (version "2.7.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/patch/patch-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "1sqckf560pzwgniy00vcpdv2c9c11s4cmhlm14yqgg8avd3bl94i"))))
-   (build-system gnu-build-system)
-   (native-inputs `(("ed", ed)))
-    ;; TODO: When cross-compiling, add this:
-    ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
-   (synopsis "Apply differences to originals, with optional backups")
-   (description
-    "Patch is a program that applies changes to files based on differences
-laid out as by the program \"diff\".  The changes may be applied to one or more
-files depending on the contents of the diff file.  It accepts several
-different diff formats.  It may also be used to revert previously applied
-differences.")
-   (license gpl3+)
-   (replacement patch-CVE-2015-1196)
-   (home-page "http://savannah.gnu.org/projects/patch/")))
-
-(define-public patch-2.7.4
-  (package
-    (inherit patch)
     (version "2.7.4")
     (source (origin
               (method url-fetch)
@@ -181,12 +155,17 @@ differences.")
               (sha256
                (base32
                 "02gikxjvcxysr4l65c8vivgz62xmalp0av5ypzff8vqhrq3vpb0f"))))
-    (replacement #f)))
-
-(define patch-CVE-2015-1196
-  (package (inherit patch-2.7.4)
-    ;; Keep the old version number so it can be used as a 'replacement'.
-    (version (package-version patch))))
+   (build-system gnu-build-system)
+   (native-inputs `(("ed", ed)))
+   (synopsis "Apply differences to originals, with optional backups")
+   (description
+    "Patch is a program that applies changes to files based on differences
+laid out as by the program \"diff\".  The changes may be applied to one or more
+files depending on the contents of the diff file.  It accepts several
+different diff formats.  It may also be used to revert previously applied
+differences.")
+   (license gpl3+)
+   (home-page "http://savannah.gnu.org/projects/patch/")))
 
 (define-public diffutils
   (package
