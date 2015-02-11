@@ -34,6 +34,63 @@
   #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
 
+(define-public bedops
+  (package
+    (name "bedops")
+    (version "2.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bedops/bedops/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wmg6j0icimlrnsidaxrzf3hfgjvlkkcwvpdg7n4gg7hdv2m9ni5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "BINDIR=" %output "/bin"))
+       #:phases
+       (alist-cons-after
+         'unpack 'unpack-tarballs
+         (lambda _
+           ;; FIXME: Bedops includes tarballs of minimally patched upstream
+           ;; libraries jansson, zlib, and bzip2.  We cannot just use stock
+           ;; libraries because at least one of the libraries (zlib) is
+           ;; patched to add a C++ function definition (deflateInit2cpp).
+           ;; Until the Bedops developers offer a way to link against system
+           ;; libraries we have to build the in-tree copies of these three
+           ;; libraries.
+
+           ;; See upstream discussion:
+           ;; https://github.com/bedops/bedops/issues/124
+
+           ;; Unpack the tarballs to benefit from shebang patching.
+           (with-directory-excursion "third-party"
+             (and (zero? (system* "tar" "xvf" "jansson-2.6.tar.bz2"))
+                  (zero? (system* "tar" "xvf" "zlib-1.2.7.tar.bz2"))
+                  (zero? (system* "tar" "xvf" "bzip2-1.0.6.tar.bz2"))))
+           ;; Disable unpacking of tarballs in Makefile.
+           (substitute* "system.mk/Makefile.linux"
+             (("^\tbzcat .*") "\t@echo \"not unpacking\"\n")
+             (("\\./configure") "CONFIG_SHELL=bash ./configure"))
+           (substitute* "third-party/zlib-1.2.7/Makefile.in"
+             (("^SHELL=.*$") "SHELL=bash\n")))
+         (alist-delete 'configure %standard-phases))))
+    (home-page "https://github.com/bedops/bedops")
+    (synopsis "Tools for high-performance genomic feature operations")
+    (description
+     "BEDOPS is a suite of tools to address common questions raised in genomic
+studies---mostly with regard to overlap and proximity relationships between
+data sets.  It aims to be scalable and flexible, facilitating the efficient
+and accurate analysis and management of large-scale genomic data.
+
+BEDOPS provides tools that perform highly efficient and scalable Boolean and
+other set operations, statistical calculations, archiving, conversion and
+other management of genomic data of arbitrary scale.  Tasks can be easily
+split by chromosome for distributing whole-genome analyses across a
+computational cluster.")
+    (license license:gpl2+)))
+
 (define-public bedtools
   (package
     (name "bedtools")
