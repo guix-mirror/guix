@@ -336,6 +336,39 @@ add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
 
+(define-public lvtk
+  (package
+    (name "lvtk")
+    (version "1.2.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/lvtk/lvtk/archive/"
+                                 version
+                                 ".tar.gz"))
+             (sha256
+              (base32
+               "03nbj2cqcklqwh50zj2gwm07crh5iwqbpxbpzwbg5hvgl4k4rnjd"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f  ; no check target
+       #:python ,python-2
+       #:configure-flags
+       (list (string-append "--boost-includes="
+                            (assoc-ref %build-inputs "boost")
+                            "/include"))))
+    (inputs
+     `(("boost" ,boost)
+       ("lv2" ,lv2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/lvtk/lvtk")
+    (synopsis "C++ libraries for LV2 plugins")
+    (description
+     "The LV2 Toolkit (LVTK) contains libraries that wrap the LV2 C API and
+extensions into easy to use C++ classes.  It is the successor of
+lv2-c++-tools.")
+    (license license:gpl3+)))
+
 (define-public rubberband
   (package
     (name "rubberband")
