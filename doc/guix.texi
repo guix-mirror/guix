@@ -2583,8 +2583,8 @@ information about monads.)
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
-       [#:references-graphs #f] [#:local-build? #f] @
-       [#:guile-for-build #f]
+       [#:references-graphs #f] [#:allowed-references #f] @
+       [#:local-build? #f] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}.  When @var{target}
 is true, it is used as the cross-compilation target triplet for packages
@@ -2611,6 +2611,10 @@ The right-hand-side of each element of @var{references-graphs} is automatically 
 an input of the build process of @var{exp}.  In the build environment, each
 @var{file-name} contains the reference graph of the corresponding item, in a simple
 text format.
+
+@var{allowed-references} must be either @code{#f} or a list of output names and packages.
+In the latter case, the list denotes store items that the result is allowed to
+refer to.  Any reference to another store item will lead to a build error.
 
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
@@ -3490,7 +3494,7 @@ to report issues (and success stories!), and join us in improving it.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@url{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
+@code{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
