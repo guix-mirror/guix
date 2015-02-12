@@ -260,6 +260,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/socat.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
+  gnu/packages/statistics.scm			\
   gnu/packages/swig.scm				\
   gnu/packages/sxiv.scm				\
   gnu/packages/synergy.scm			\

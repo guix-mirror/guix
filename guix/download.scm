@@ -164,6 +164,16 @@
        "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
        "http://mirrors.163.com/cpan/"
        "ftp://cpan.mirror.ac.za/")
+      (cran
+       ;; Arbitrary mirrors from http://cran.r-project.org/mirrors.html
+       ;; This one automatically redirects to servers worldwide
+       "http://cran.rstudio.com/"
+       "http://cran.univ-lyon1.fr/"
+       "http://cran.r-mirror.de/"
+       "http://cran.ism.ac.jp/"
+       "http://cran.stat.auckland.ac.nz/"
+       "http://cran.mirror.ac.za/"
+       "http://cran.csie.ntu.edu.tw/")
       (imagemagick
        ;; from http://www.imagemagick.org/script/download.php
        ;; (without mirrors that are unavailable or not up to date)
