@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1514,3 +1515,49 @@ serialization and deserialization support for the JavaScript Object Notation
 GObject classes and various wrappers for the complex data types employed by
 JSON, such as arrays and objects.")
     (license license:lgpl2.1+)))
+
+(define-public libxklavier
+  (package
+    (name "libxklavier")
+    (version "5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "016lpdv35z0qsw1cprdc2k5qzkdi5waj6qmr0a2q6ljn9g2kpv7b"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-xkb-base="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb"))
+       #:phases
+       (alist-cons-before
+        'build 'set-cc
+        (lambda _
+          (setenv "CC" "gcc")) ; for g-ir-scanner.
+        %standard-phases)))
+    (native-inputs
+     `(("glib:bin"              ,glib "bin") ; for glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config"            ,pkg-config)))
+    (propagated-inputs
+     ;; Required by libxklavier.pc.
+     `(("glib"    ,glib)
+       ("libxml2" ,libxml2)))
+    (inputs
+     `(("iso-codes"        ,iso-codes)
+       ("libxi"            ,libxi)
+       ("libxkbfile"       ,libxkbfile)
+       ("xkbcomp"          ,xkbcomp)
+       ("xkeyboard-config" ,xkeyboard-config)))
+    (home-page "http://www.freedesktop.org/wiki/Software/LibXklavier/")
+    (synopsis "High-level API for X Keyboard Extension")
+    (description
+     "LibXklavier is a library providing high-level API for X Keyboard
+Extension known as XKB.  This library is indended to support XFree86 and other
+commercial X servers. It is useful for creating XKB-related software (layout
+indicators etc).")
+    (license license:lgpl2.0+)))
