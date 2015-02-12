@@ -54,6 +54,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages which)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -2985,3 +2986,33 @@ translate the complete SQLite API into Python.")
 
 (define-public python2-apsw
   (package-with-python2 python-apsw))
+
+(define-public python-lxml
+  (package
+    (name "python-lxml")
+    (version "3.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/l/lxml/lxml-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "0pd23qz8vms1mgm41p96h4vac5y91igs4wr9640gnvxgk019kmf7"))))
+    (build-system python-build-system)
+    (inputs
+      `(("libxml2" ,libxml2)
+        ("libxslt" ,libxslt)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://lxml.de/")
+    (synopsis
+      "Python XML processing library")
+    (description
+      "The lxml XML toolkit is a Pythonic binding for the C libraries
+libxml2 and libxslt.")
+    (license bsd-3))) ; and a few more, see LICENSES.txt
+
+(define-public python2-lxml
+  (package-with-python2 python-lxml))
