@@ -197,8 +197,14 @@ WEBP, XCF, XPM, and XV.")
     (build-system gnu-build-system)
     ;; no check target
     ;; use libmad instead of smpeg
+    ;; explicitly link against shared libraries instead of dlopening them
     (arguments `(#:tests? #f
-                 #:configure-flags '("--enable-music-mp3-mad-gpl")))
+                 #:configure-flags '("--enable-music-mp3-mad-gpl"
+                                     "--disable-music-mod-shared"
+                                     "--disable-music-fluidsynth-shared"
+                                     "--disable-music-ogg-shared"
+                                     "--disable-music-flac-shared"
+                                     "--disable-music-mp3-shared")))
     (inputs `(("libvorbis" ,libvorbis)
               ("libflac" ,flac)
               ("libmad" ,libmad)
