@@ -2947,3 +2947,41 @@ implementation of D-Bus.")
     ;; FIXME: on Python 2, the test_utf8 fails with:
     ;; "ValueError: unichr() arg not in range(0x10000) (narrow Python build)"
     (arguments `(#:tests? #f))))
+
+(define-public python-apsw
+  (package
+    (name "python-apsw")
+    (version "3.8.7.3-r1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/a/apsw/apsw-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1rgxdypg7hym0qny15rx5khrghx9fkppfgsfa2s8lg917924mv7l"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ("sqlite" ,sqlite)))
+    (arguments
+     `(#:phases
+        ;; swap check and install phases
+        (alist-cons-after
+         'install 'check
+         (assoc-ref %standard-phases 'check)
+         (alist-delete
+          'check
+          %standard-phases))))
+    (home-page "https://github.com/rogerbinns/apsw/")
+    (synopsis "Another Python SQLite Wrapper")
+    (description "APSW is a Python wrapper for the SQLite
+embedded relational database engine.  In contrast to other wrappers such as
+pysqlite it focuses on being a minimal layer over SQLite attempting just to
+translate the complete SQLite API into Python.")
+    (license zlib)))
+
+(define-public python2-apsw
+  (package-with-python2 python-apsw))
