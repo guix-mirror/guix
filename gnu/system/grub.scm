@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,13 +80,13 @@
 (define %background-image
   (grub-image
    (aspect-ratio 4/3)
-   (file #~(string-append #$%artwork-repository "/grub/guix-4-3.svg"))))
+   (file #~(string-append #$%artwork-repository "/grub/GuixSD-4-3.svg"))))
 
 (define %default-theme
   ;; Default theme contributed by Felipe López.
   (grub-theme
    (images (list %background-image))
-   (color-highlight '((fg . cyan) (bg . black)))  ;XXX: fg should be #x3bb7f5
+   (color-highlight '((fg . yellow) (bg . black)))
    (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
 
 (define-record-type* <grub-configuration>
