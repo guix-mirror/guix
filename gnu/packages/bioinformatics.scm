@@ -197,8 +197,15 @@ Illumina, Roche 454, and the SOLiD platform.")
                 "1k381ydranqxp09yf2y7w1d0chz5d59vb6jchi89hbb0prq19lk5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;no check target
-       #:make-flags '("allall")
+     `(#:tests? #f ;no check target
+       #:make-flags '("allall"
+                      ;; Disable unsupported `popcnt' instructions on
+                      ;; architectures other than x86_64
+                      ,@(if (string-prefix? "x86_64"
+                                            (or (%current-target-system)
+                                                (%current-system)))
+                            '()
+                            '("POPCNT_CAPABILITY=0")))
        #:phases
        (alist-replace
         'unpack
