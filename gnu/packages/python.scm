@@ -26,10 +26,10 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
+                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain))
-  #:use-module ((guix licenses) #:select (zlib) #:prefix license:)
+  #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
@@ -343,7 +343,7 @@ etc. ")
     (description
      "The lockfile package exports a LockFile class which provides a simple
 API for locking files.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
@@ -368,7 +368,7 @@ API for locking files.")
      "Mock is a library for testing in Python.  It allows you to replace parts
 of your system under test with mock objects and make assertions about how they
 have been used.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-mock
   (package-with-python2 python-mock))
@@ -655,7 +655,7 @@ under several distributions that's hard or impossible to figure out.")
      "Pysam is a Python module for reading and manipulating files in the
 SAM/BAM format.  Pysam is a lightweight wrapper of the SAMtools C API.  It
 also includes an interface for tabix.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pysam
   (package-with-python2 python-pysam))
@@ -1025,7 +1025,7 @@ software.")
     (synopsis "Useful extensions to the Python standard library")
     (description
      "Extras is a set of extensions to the Python standard library.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-extras
   (package-with-python2 python-extras))
@@ -1054,7 +1054,7 @@ software.")
     (description
      "Mimeparse provides basic functions for parsing MIME type names and
 matching them against a list of media-ranges.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-mimeparse
   (package-with-python2 python-mimeparse))
@@ -1149,7 +1149,7 @@ standard library.")
     (description
      "Py is a Python library for file name parsing, .ini file parsing, I/O,
 code introspection, and logging.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-py
   (package-with-python2 python-py))
@@ -1185,7 +1185,7 @@ code introspection, and logging.")
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pytest
   (package-with-python2 python-pytest))
@@ -1212,7 +1212,7 @@ and many external plugins.")
     (description "Scripttest is a Python helper library for testing
 interactive command-line applications.  With it you can run a script in a
 subprocess and see the output as well as any file modifications.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-scripttest
   (package-with-python2 python-scripttest))
@@ -1600,7 +1600,7 @@ than Python’s urllib2 library.")
     (synopsis "Implementation of JSON Schema for Python")
     (description
      "Jsonschema is an implementation of JSON Schema for Python.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-jsonschema
   (package-with-python2 python-jsonschema))
@@ -1656,7 +1656,7 @@ somewhat intelligeble.")
     (synopsis "JSON Web Token implementation in Python")
     (description
      "PyJWT is a JSON Web Token implementation written in Python.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pyjwt
   (package-with-python2 python-pyjwt))
@@ -1755,7 +1755,7 @@ environments and back.")
     (synopsis "Virtual Python environment builder")
     (description
      "Virtualenv is a tool to create isolated Python environments.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-virtualenv
   (package-with-python2 python-virtualenv))
@@ -1926,7 +1926,7 @@ sources.")
     (home-page "https://github.com/snide/sphinx_rtd_theme/")
     (synopsis "ReadTheDocs.org theme for Sphinx")
     (description "A theme for Sphinx used by ReadTheDocs.org.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-sphinx-rtd-theme
   (package-with-python2 python-sphinx-rtd-theme))
@@ -2141,7 +2141,7 @@ capabilities.")
 executing simple grammars, vs. the traditional lex/yacc approach, or the use
 of regular expressions.  The pyparsing module provides a library of classes
 that client code uses to construct the grammar directly in Python code.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pyparsing
   (package-with-python2 python-pyparsing))
@@ -2637,7 +2637,7 @@ a front-end for C compilers or analysis tools.")
     (synopsis "Foreign function interface for Python")
     (description
      "Foreign Function Interface for Python calling C code.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-cffi
   (package-with-python2 python-cffi))
@@ -2678,7 +2678,7 @@ a front-end for C compilers or analysis tools.")
     (description
      "Xcffib is a replacement for xpyb, an XCB Python bindings.  It adds
 support for Python 3 and PyPy.  It is based on cffi.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-xcffib
   (package-with-python2 python-xcffib))
@@ -2881,7 +2881,7 @@ ISO 8601 dates, time and duration.")
     (description
       "Html5lib is an HTML parser based on the WHATWG HTML specifcation
 and written in Python.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-html5lib
   (package-with-python2 python-html5lib))
@@ -2935,7 +2935,7 @@ features useful for text console applications.")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")
     (home-page "http://www.freedesktop.org/wiki/Software/DBusBindings/")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-dbus
   (package (inherit python-dbus)
