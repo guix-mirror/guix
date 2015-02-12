@@ -19,6 +19,8 @@
 (define-module (guix import cpan)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module ((ice-9 popen) #:select (open-pipe* close-pipe))
+  #:use-module ((ice-9 rdelim) #:select (read-line))
   #:use-module (srfi srfi-1)
   #:use-module (json)
   #:use-module (guix hash)
@@ -27,6 +29,9 @@
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
   #:use-module (guix import json)
+  #:use-module (guix packages)
+  #:use-module (guix derivations)
+  #:use-module (gnu packages perl)
   #:export (cpan->guix-package))
 
 ;;; Commentary:
@@ -71,6 +76,14 @@
   "Transform a 'module' name into a 'release' name"
   (regexp-substitute/global #f "::" module 'pre "-" 'post))
 
+(define (module->dist-name module)
+  "Return the base distribution module for a given module.  E.g. the 'ok'
+module is distributed with 'Test::Simple', so (module->dist-name \"ok\") would
+return \"Test-Simple\""
+  (assoc-ref (json-fetch (string-append "http://api.metacpan.org/module/"
+                                        module))
+             "distribution"))
+
 (define (cpan-fetch module)
   "Return an alist representation of the CPAN metadata for the perl module MODULE,
 or #f on failure.  MODULE should be e.g. \"Test::Script\""
@@ -83,6 +96,14 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
 
 (define (cpan-home name)
   (string-append "http://search.cpan.org/dist/" name))
+
+(define %corelist
+  (let* ((perl (with-store store
+                 (derivation->output-path
+                  (package-derivation store perl))))
+         (core (string-append perl "/bin/corelist")))
+    (and (access? core X_OK)
+         core)))
 
 (define (cpan-module->sexp meta)
   "Return the `package' s-expression for a CPAN module from the metadata in
@@ -98,6 +119,17 @@ META."
   (define version
     (assoc-ref meta "version"))
 
+  (define (core-module? name)
+    (and %corelist
+         (parameterize ((current-error-port (%make-void-port "w")))
+           (let* ((corelist (open-pipe* OPEN_READ %corelist name)))
+             (let loop ((line (read-line corelist)))
+               (if (eof-object? line)
+                   (begin (close-pipe corelist) #f)
+                   (if (string-contains line "first released with perl")
+                       (begin (close-pipe corelist) #t)
+                       (loop (read-line corelist)))))))))
+
   (define (convert-inputs phases)
     ;; Convert phase dependencies into a list of name/variable pairs.
     (match (flatten
@@ -112,15 +144,13 @@ META."
        (delete-duplicates
         ;; Listed dependencies may include core modules.  Filter those out.
         (filter-map (match-lambda
-                     ((or (module . "0") ("perl" . _))
-                      ;; TODO: A stronger test might to run MODULE through
-                      ;; `corelist' from our perl package.  This current test
-                      ;; seems to be only a loose convention.
+                     (("perl" . _)      ;implicit dependency
                       #f)
                      ((module . _)
-                      (let ((name (guix-name (module->name module))))
-                        (list name
-                              (list 'unquote (string->symbol name))))))
+                      (and (not (core-module? module))
+                           (let ((name (guix-name (module->dist-name module))))
+                             (list name
+                                   (list 'unquote (string->symbol name)))))))
                     inputs)))))
 
   (define (maybe-inputs guix-name inputs)
@@ -147,12 +177,12 @@ META."
                    ,(bytevector->nix-base32-string (file-sha256 tarball))))))
        (build-system perl-build-system)
        ,@(maybe-inputs 'native-inputs
-                       ;; "runtime" and "test" may also be needed here.  See
+                       ;; "runtime" may also be needed here.  See
                        ;; https://metacpan.org/pod/CPAN::Meta::Spec#Phases,
                        ;; which says they are required during building.  We
                        ;; have not yet had a need for cross-compiled perl
-                       ;; modules, however, so we leave them out.
-                       (convert-inputs '("configure" "build")))
+                       ;; modules, however, so we leave it out.
+                       (convert-inputs '("configure" "build" "test")))
        ,@(maybe-inputs 'inputs
                        (convert-inputs '("runtime")))
        (home-page ,(string-append "http://search.cpan.org/dist/" name))
