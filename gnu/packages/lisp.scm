@@ -31,7 +31,10 @@
   #:use-module (gnu packages which)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages bdw-gc)
-  #:use-module (gnu packages libffi))
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libffcall)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages libsigsegv))
 
 (define-public gcl
   (package
@@ -135,3 +138,53 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
     ;; which aren't under the lgpl2.0+ and instead contain many different,
     ;; non-copyleft licenses.
     (license license:lgpl2.0+)))
+
+(define-public clisp
+  (package
+    (name "clisp")
+    (version "2.49")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/clisp/release/" version
+                           "/clisp-" version ".tar.gz"))
+       (sha256
+        (base32 "0rp82nqp5362isl9i34rwgg04cidz7izljd9d85pqcw1qr964bxx"))))
+    (build-system gnu-build-system)
+    (inputs `(("libffcall" ,libffcall)
+              ("readline" ,readline)
+              ("libsigsegv" ,libsigsegv)))
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'unpack 'patch-sh-and-pwd
+        (lambda _
+          ;; The package is very messy with its references to "/bin/sh" and
+          ;; some other absolute paths to traditional tools.  These appear in
+          ;; many places where our automatic patching misses them.  Therefore
+          ;; we do the following, in this early (post-unpack) phase, to solve
+          ;; the problem from its root.
+          (substitute* (find-files "." "configure|Makefile")
+            (("/bin/sh") "sh"))
+          (substitute* '("src/clisp-link.in")
+            (("/bin/pwd") "pwd")))
+        (alist-cons-before
+         'build 'chdir-to-source
+         (lambda _
+           ;; We are supposed to call make under the src sub-directory.
+           (chdir "src"))
+         %standard-phases))
+       ;; Makefiles seem to have race conditions.
+       #:parallel-build? #f))
+    (home-page "http://www.clisp.org/")
+    (synopsis "Common Lisp implementation")
+    (description "GNU CLISP is an implementation of ANSI Common Lisp, with
+many extensions.  It includes an interpreter, compiler, debugger, CLOS, MOP,
+an FFI, i18n, POSIX and Perl regular expressions, a socket interface, fast
+bignums, arbitrary precision floats, and more.  An X11 interface is available
+through CLX, Garnet and CLUE/CLIO.  Command line editing is provided by
+readline.")
+    ;; Website says gpl2+, COPYRIGHT file says gpl2; actual source files have
+    ;; a lot of gpl3+.  (Also some parts are under non-copyleft licenses, such
+    ;; as CLX by Texas Instruments.)  In that case gpl3+ wins out.
+    (license license:gpl3+)))
