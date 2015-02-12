@@ -158,6 +158,12 @@ other supporting functions for SDL.")
               (base32
                "16an9slbb8ci7d89wakkmyfvp7c0cval8xw4hkg0842nhhlp540b"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Explicitly link against shared libraries instead of dlopening them.
+     '(#:configure-flags '("--disable-jpg-shared"
+                           "--disable-png-shared"
+                           "--disable-tif-shared"
+                           "--disable-webp-shared")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     ;; FIXME: Add webp
     ;;
