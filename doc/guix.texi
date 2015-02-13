@@ -2580,7 +2580,7 @@ below allow you to do that (@pxref{The Store Monad}, for more
 information about monads.)
 
 @deffn {Monadic Procedure} gexp->derivation @var{name} @var{exp} @
-       [#:system (%current-system)] [#:target #f] [#:inputs '()] @
+       [#:system (%current-system)] [#:target #f] [#:graft? #t] @
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
@@ -2591,11 +2591,14 @@ Return a derivation @var{name} that runs @var{exp} (a gexp) with
 is true, it is used as the cross-compilation target triplet for packages
 referred to by @var{exp}.
 
-Make @var{modules} available in the evaluation context of @var{EXP};
-@var{MODULES} is a list of names of Guile modules searched in
-@var{MODULE-PATH} to be copied in the store, compiled, and made available in
+Make @var{modules} available in the evaluation context of @var{exp};
+@var{modules} is a list of names of Guile modules searched in
+@var{module-path} to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
+
+@var{graft?} determines whether packages referred to by @var{exp} should be grafted when
+applicable.
 
 When @var{references-graphs} is true, it must be a list of tuples of one of the
 following forms:

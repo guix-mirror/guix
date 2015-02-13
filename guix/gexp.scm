@@ -153,6 +153,7 @@ names and file names suitable for the #:allowed-references argument to
                            (modules '())
                            (module-path %load-path)
                            (guile-for-build (%guile-for-build))
+                           (graft? (%graft?))
                            references-graphs
                            allowed-references
                            local-build?)
@@ -164,6 +165,9 @@ Make MODULES available in the evaluation context of EXP; MODULES is a list of
 names of Guile modules searched in MODULE-PATH to be copied in the store,
 compiled, and made available in the load path during the execution of
 EXP---e.g., '((guix build utils) (guix build gnu-build-system)).
+
+GRAFT? determines whether packages referred to by EXP should be grafted when
+applicable.
 
 When REFERENCES-GRAPHS is true, it must be a list of tuples of one of the
 following forms:
@@ -198,10 +202,10 @@ The other arguments are as for 'derivation'."
             (cons file-name thing)))
          graphs))
 
-  (mlet* %store-monad (;; The following binding is here to force
-                       ;; '%current-system' and '%current-target-system' to be
-                       ;; looked up at >>= time.
-                       (unused    (return #f))
+  (mlet* %store-monad (;; The following binding forces '%current-system' and
+                       ;; '%current-target-system' to be looked up at >>=
+                       ;; time.
+                       (graft?    (set-grafting graft?))
 
                        (system -> (or system (%current-system)))
                        (target -> (if (eq? target 'current)
@@ -245,30 +249,32 @@ The other arguments are as for 'derivation'."
                                      (return guile-for-build)
                                      (package->derivation (default-guile)
                                                           system))))
-    (raw-derivation name
-                    (string-append (derivation->output-path guile)
-                                   "/bin/guile")
-                    `("--no-auto-compile"
-                      ,@(if (pair? %modules)
-                            `("-L" ,(derivation->output-path modules)
-                              "-C" ,(derivation->output-path compiled))
-                            '())
-                      ,builder)
-                    #:outputs outputs
-                    #:env-vars env-vars
-                    #:system system
-                    #:inputs `((,guile)
-                               (,builder)
-                               ,@(if modules
-                                     `((,modules) (,compiled) ,@inputs)
-                                     inputs)
-                               ,@(match graphs
-                                   (((_ . inputs) ...) inputs)
-                                   (_ '())))
-                    #:hash hash #:hash-algo hash-algo #:recursive? recursive?
-                    #:references-graphs (and=> graphs graphs-file-names)
-                    #:allowed-references allowed
-                    #:local-build? local-build?)))
+    (mbegin %store-monad
+      (set-grafting graft?)                       ;restore the initial setting
+      (raw-derivation name
+                      (string-append (derivation->output-path guile)
+                                     "/bin/guile")
+                      `("--no-auto-compile"
+                        ,@(if (pair? %modules)
+                              `("-L" ,(derivation->output-path modules)
+                                "-C" ,(derivation->output-path compiled))
+                              '())
+                        ,builder)
+                      #:outputs outputs
+                      #:env-vars env-vars
+                      #:system system
+                      #:inputs `((,guile)
+                                 (,builder)
+                                 ,@(if modules
+                                       `((,modules) (,compiled) ,@inputs)
+                                       inputs)
+                                 ,@(match graphs
+                                     (((_ . inputs) ...) inputs)
+                                     (_ '())))
+                      #:hash hash #:hash-algo hash-algo #:recursive? recursive?
+                      #:references-graphs (and=> graphs graphs-file-names)
+                      #:allowed-references allowed
+                      #:local-build? local-build?))))
 
 (define* (gexp-inputs exp #:optional (references gexp-references))
   "Return the input list for EXP, using REFERENCES to get its list of

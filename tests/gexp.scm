@@ -249,6 +249,23 @@
                  (equal? refs (list (dirname (dirname guile))))
                  (equal? refs2 (list file))))))
 
+(test-assertm "gexp->derivation vs. grafts"
+  (mlet* %store-monad ((p0 ->   (dummy-package "dummy"
+                                               (arguments
+                                                '(#:implicit-inputs? #f))))
+                       (r  ->   (package (inherit p0) (name "DuMMY")))
+                       (p1 ->   (package (inherit p0) (replacement r)))
+                       (exp0 -> (gexp (frob (ungexp p0) (ungexp output))))
+                       (exp1 -> (gexp (frob (ungexp p1) (ungexp output))))
+                       (void    (set-guile-for-build %bootstrap-guile))
+                       (drv0    (gexp->derivation "t" exp0))
+                       (drv1    (gexp->derivation "t" exp1))
+                       (drv1*   (gexp->derivation "t" exp1 #:graft? #f)))
+    (return (and (not (string=? (derivation->output-path drv0)
+                                (derivation->output-path drv1)))
+                 (string=? (derivation->output-path drv0)
+                           (derivation->output-path drv1*))))))
+
 (test-assertm "gexp->derivation, composed gexps"
   (mlet* %store-monad ((exp0 -> (gexp (begin
                                         (mkdir (ungexp output))
