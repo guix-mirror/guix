@@ -96,11 +96,8 @@
 
             build-derivations
             built-derivations
-            imported-modules
-            compiled-modules
 
-            build-expression->derivation
-            imported-files)
+            build-expression->derivation)
 
   ;; Re-export it from here for backward compatibility.
   #:re-export (%guile-for-build))
@@ -942,7 +939,7 @@ recursively."
            (remove (cut string=? <> ".")
                    (string-tokenize (dirname file-name) not-slash))))))
 
-(define* (imported-files store files
+(define* (imported-files store files              ;deprecated
                          #:key (name "file-import")
                          (system (%current-system))
                          (guile (%guile-for-build)))
@@ -982,7 +979,7 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
   ;; up looking for the same files over and over again.
   (memoize search-path))
 
-(define* (%imported-modules store modules
+(define* (%imported-modules store modules         ;deprecated
                             #:key (name "module-import")
                             (system (%current-system))
                             (guile (%guile-for-build))
@@ -1001,7 +998,7 @@ search path."
     (imported-files store files #:name name #:system system
                     #:guile guile)))
 
-(define* (%compiled-modules store modules
+(define* (%compiled-modules store modules         ;deprecated
                             #:key (name "module-import-compiled")
                             (system (%current-system))
                             (guile (%guile-for-build))
@@ -1124,7 +1121,7 @@ applied."
                                      #:outputs output-names
                                      #:local-build? #t)))))
 
-(define* (build-expression->derivation store name exp
+(define* (build-expression->derivation store name exp ;deprecated
                                        #:key
                                        (system (%current-system))
                                        (inputs '())
@@ -1290,9 +1287,3 @@ ALLOWED-REFERENCES, and LOCAL-BUILD?."
 
 (define built-derivations
   (store-lift build-derivations))
-
-(define imported-modules
-  (store-lift %imported-modules))
-
-(define compiled-modules
-  (store-lift %compiled-modules))

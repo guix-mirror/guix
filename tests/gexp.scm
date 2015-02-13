@@ -360,6 +360,40 @@
                      (string=? (readlink (string-append out "/" two "/one"))
                                one)))))))
 
+(test-assertm "imported-files"
+  (mlet* %store-monad
+      ((files -> `(("x"     . ,(search-path %load-path "ice-9/q.scm"))
+                   ("a/b/c" . ,(search-path %load-path
+                                            "guix/derivations.scm"))
+                   ("p/q"   . ,(search-path %load-path "guix.scm"))
+                   ("p/z"   . ,(search-path %load-path "guix/store.scm"))))
+       (drv (imported-files files)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let ((dir (derivation->output-path drv)))
+        (return
+         (every (match-lambda
+                 ((path . source)
+                  (equal? (call-with-input-file (string-append dir "/" path)
+                            get-bytevector-all)
+                          (call-with-input-file source
+                            get-bytevector-all))))
+                files))))))
+
+(test-assertm "gexp->derivation #:modules"
+  (mlet* %store-monad
+      ((build ->  #~(begin
+                      (use-modules (guix build utils))
+                      (mkdir-p (string-append #$output "/guile/guix/nix"))
+                      #t))
+       (drv       (gexp->derivation "test-with-modules" build
+                                    #:modules '((guix build utils)))))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let* ((p (derivation->output-path drv))
+             (s (stat (string-append p "/guile/guix/nix"))))
+        (return (eq? (stat:type s) 'directory))))))
+
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad
       ((one (text-file "one" "hello, world"))

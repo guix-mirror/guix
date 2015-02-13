@@ -21,6 +21,7 @@
   #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -31,7 +32,10 @@
             gexp->derivation
             gexp->file
             gexp->script
-            text-file*))
+            text-file*
+            imported-files
+            imported-modules
+            compiled-modules))
 
 ;;; Commentary:
 ;;;
@@ -502,6 +506,157 @@ package/derivation references."
 
 
 ;;;
+;;; Module handling.
+;;;
+
+(define %mkdir-p-definition
+  ;; The code for 'mkdir-p' is copied from (guix build utils).  We use it in
+  ;; derivations that cannot use the #:modules argument of 'gexp->derivation'
+  ;; precisely because they implement that functionality.
+  (gexp
+   (define (mkdir-p dir)
+     (define absolute?
+       (string-prefix? "/" dir))
+
+     (define not-slash
+       (char-set-complement (char-set #\/)))
+
+     (let loop ((components (string-tokenize dir not-slash))
+                (root       (if absolute? "" ".")))
+       (match components
+         ((head tail ...)
+          (let ((path (string-append root "/" head)))
+            (catch 'system-error
+              (lambda ()
+                (mkdir path)
+                (loop tail path))
+              (lambda args
+                (if (= EEXIST (system-error-errno args))
+                    (loop tail path)
+                    (apply throw args))))))
+         (() #t))))))
+
+(define* (imported-files files
+                         #:key (name "file-import")
+                         (system (%current-system))
+                         (guile (%guile-for-build)))
+  "Return a derivation that imports FILES into STORE.  FILES must be a list
+of (FINAL-PATH . FILE-NAME) pairs; each FILE-NAME is read from the file
+system, imported, and appears under FINAL-PATH in the resulting store path."
+  (define file-pair
+    (match-lambda
+     ((final-path . file-name)
+      (mlet %store-monad ((file (interned-file file-name
+                                               (basename final-path))))
+        (return (list final-path file))))))
+
+  (mlet %store-monad ((files (sequence %store-monad
+                                       (map file-pair files))))
+    (define build
+      (gexp
+       (begin
+         (use-modules (ice-9 match))
+
+         (ungexp %mkdir-p-definition)
+
+         (mkdir (ungexp output)) (chdir (ungexp output))
+         (for-each (match-lambda
+                    ((final-path store-path)
+                     (mkdir-p (dirname final-path))
+                     (symlink store-path final-path)))
+                   '(ungexp files)))))
+
+    ;; TODO: Pass FILES as an environment variable so that BUILD remains
+    ;; exactly the same regardless of FILES: less disk space, and fewer
+    ;; 'add-to-store' RPCs.
+    (gexp->derivation name build
+                      #:system system
+                      #:guile-for-build guile
+                      #:local-build? #t)))
+
+(define search-path*
+  ;; A memoizing version of 'search-path' so 'imported-modules' does not end
+  ;; up looking for the same files over and over again.
+  (memoize search-path))
+
+(define* (imported-modules modules
+                           #:key (name "module-import")
+                           (system (%current-system))
+                           (guile (%guile-for-build))
+                           (module-path %load-path))
+  "Return a derivation that contains the source files of MODULES, a list of
+module names such as `(ice-9 q)'.  All of MODULES must be in the MODULE-PATH
+search path."
+  ;; TODO: Determine the closure of MODULES, build the `.go' files,
+  ;; canonicalize the source files through read/write, etc.
+  (let ((files (map (lambda (m)
+                      (let ((f (string-append
+                                (string-join (map symbol->string m) "/")
+                                ".scm")))
+                        (cons f (search-path* module-path f))))
+                    modules)))
+    (imported-files files #:name name #:system system
+                    #:guile guile)))
+
+(define* (compiled-modules modules
+                           #:key (name "module-import-compiled")
+                           (system (%current-system))
+                           (guile (%guile-for-build))
+                           (module-path %load-path))
+  "Return a derivation that builds a tree containing the `.go' files
+corresponding to MODULES.  All the MODULES are built in a context where
+they can refer to each other."
+  (mlet %store-monad ((modules (imported-modules modules
+                                                 #:system system
+                                                 #:guile guile
+                                                 #:module-path
+                                                 module-path)))
+    (define build
+      (gexp
+       (begin
+         (use-modules (ice-9 ftw)
+                      (ice-9 match)
+                      (srfi srfi-26)
+                      (system base compile))
+
+         (ungexp %mkdir-p-definition)
+
+         (define (regular? file)
+           (not (member file '("." ".."))))
+
+         (define (process-directory directory output)
+           (let ((entries (map (cut string-append directory "/" <>)
+                               (scandir directory regular?))))
+             (for-each (lambda (entry)
+                         (if (file-is-directory? entry)
+                             (let ((output (string-append output "/"
+                                                          (basename entry))))
+                               (mkdir-p output)
+                               (process-directory entry output))
+                             (let* ((base   (string-drop-right
+                                             (basename entry)
+                                             4)) ;.scm
+                                    (output (string-append output "/" base
+                                                           ".go")))
+                               (compile-file entry
+                                             #:output-file output
+                                             #:opts
+                                             %auto-compilation-options))))
+                       entries)))
+
+         (set! %load-path (cons (ungexp modules) %load-path))
+         (mkdir (ungexp output))
+         (chdir (ungexp modules))
+         (process-directory "." (ungexp output)))))
+
+    ;; TODO: Pass MODULES as an environment variable.
+    (gexp->derivation name build
+                      #:system system
+                      #:guile-for-build guile
+                      #:local-build? #t)))
+
+
+;;;
 ;;; Convenience procedures.
 ;;;
 
@@ -561,7 +716,6 @@ and store file names; the resulting store file holds references to all these."
               (display (string-append (ungexp-splicing text)) port)))))
 
   (gexp->derivation name builder))
-
 
 
 ;;;
