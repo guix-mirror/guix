@@ -170,8 +170,12 @@ engineers, musicians, soundtrack editors and composers.")
                "1mk1wnx33anp6haxfjjkfhwbaknfblsvj35nxvz0hvspcmhdyhpb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bdb" ,bdb)
+     `(("alsa-lib" ,alsa-lib)
+       ("bdb" ,bdb)
+       ("readline" ,readline)
        ("libuuid" ,util-linux)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://jackaudio.org/")
     (synopsis "JACK audio connection kit")
     (description
