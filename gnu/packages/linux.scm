@@ -1837,3 +1837,24 @@ thanks to the use of namespaces.")
 is for enabling irq-unmasking and IDE multiplemode.")
     (license (bsd-style "file://LICENSE.TXT"))))
 
+(define-public acpid
+  (package
+    (name "acpid")
+    (version "2.0.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/acpid2/acpid-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1vl7c6vc724v4jwki17czgj6lnrknnj1a6llm8gkl32i2gnam5j3"))))
+    (build-system gnu-build-system)
+    (home-page "http://sourceforge.net/projects/acpid2/")
+    (synopsis "Daemon for delivering ACPI events to user-space programs")
+    (description
+     "acpid is designed to notify user-space programs of Advanced
+Configuration and Power Interface (ACPI) events.  acpid should be started
+during the system boot, and will run as a background process.  When an ACPI
+event is received from the kernel, acpid will examine the list of rules
+specified in /etc/acpi/events and execute the rules that match the event.")
+    (license gpl2+)))
