@@ -446,7 +446,11 @@ providing the system administrator with some help in common tasks.")
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (arguments
-     '(#:phases (alist-replace
+     '(#:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; No `configure', just a single Makefile.
@@ -467,6 +471,13 @@ providing the system administrator with some help in common tasks.")
                       (and (zero?
                             (system* "make" "install"
                                      (string-append "DESTDIR=" out)))
+
+                           ;; Remove commands and man pages redundant with
+                           ;; Coreutils.
+                           (let ((dup (append-map (cut find-files out <>)
+                                                  '("^kill" "^uptime"))))
+                             (for-each delete-file dup)
+                             #t)
 
                            ;; Sanity check.
                            (zero?
