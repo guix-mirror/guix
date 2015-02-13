@@ -191,7 +191,7 @@ synchronous execution of all clients, and low latency operation.")
 
 (define-public jack-2
   (package (inherit jack-1)
-    (name "jack")
+    (name "jack2")
     (version "1.9.10")
     (source (origin
              (method url-fetch)
