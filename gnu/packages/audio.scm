@@ -41,7 +41,8 @@
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xiph)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1))
 
 (define-public aubio
   (package
@@ -255,6 +256,47 @@ synchronous execution of all clients, and low latency operation.")
      "LADSPA is a standard that allows software audio processors and effects
 to be plugged into a wide range of audio synthesis and recording packages.")
     (license license:lgpl2.1+)))
+
+(define-public lash
+  (package
+    (name "lash")
+    (version "0.6.0-rc2")
+    (source (origin
+              (method url-fetch)
+              ;; The tilde is not permitted in the builder name, but is used
+              ;; in the tarball.
+              (uri (string-append
+                    "mirror://savannah/lash/lash-"
+                    (string-join (string-split version #\-) "~")
+                    ".tar.bz2"))
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "12z1vx3krrzsfccpah9xjs68900xvr7bw92wx8np5871i2yv47iw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("gtk" ,gtk+-2)
+       ("jack" ,jack-1)
+       ("libuuid" ,util-linux)
+       ("readline" ,readline)
+       ("python" ,python-2)))
+    ;; According to pkg-config, packages depending on lash also need to have
+    ;; at least the following packages declared as inputs.
+    (propagated-inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dbus" ,dbus)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.nongnu.org/lash/")
+    (synopsis "Audio application session manager")
+    (description
+     "LASH is a session management system for audio applications.  It allows
+you to save and restore audio sessions consisting of multiple interconneced
+applications, restoring program state (i.e. loaded patches) and the
+connections between them.")
+    (license license:gpl2+)))
 
 (define-public liblo
   (package
