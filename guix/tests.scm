@@ -23,6 +23,7 @@
   #:use-module (guix base32)
   #:use-module (guix serialization)
   #:use-module (guix hash)
+  #:use-module (guix build-system gnu)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
