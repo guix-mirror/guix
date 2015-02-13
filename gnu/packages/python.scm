@@ -2980,7 +2980,7 @@ implementation of D-Bus.")
 embedded relational database engine.  In contrast to other wrappers such as
 pysqlite it focuses on being a minimal layer over SQLite attempting just to
 translate the complete SQLite API into Python.")
-    (license zlib)))
+    (license license:zlib)))
 
 (define-public python2-apsw
   (package-with-python2 python-apsw))
