@@ -877,7 +877,11 @@ manpages.")
               (list (search-patch "net-tools-bitrot.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases (alist-cons-after
                  'unpack 'patch
                  (lambda* (#:key inputs #:allow-other-keys)
                    (define (apply-patch file)
@@ -888,7 +892,6 @@ manpages.")
                      (format #t "applying Debian patch set '~a'...~%"
                              patch.gz)
                      (system (string-append "gunzip < " patch.gz " > the-patch"))
-                     (pk 'here)
                      (and (apply-patch "the-patch")
                           (for-each apply-patch
                                     (find-files "debian/patches"
@@ -907,7 +910,18 @@ manpages.")
                       ;; definition.
                       (substitute* '("config.make" "config.h")
                         (("^.*HAVE_AFDECnet.*$") ""))))
-                  %standard-phases))
+                  (alist-cons-after
+                   'install 'remove-redundant-commands
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Remove commands and man pages redundant with
+                     ;; Inetutils.
+                     (let* ((out (assoc-ref outputs "out"))
+                            (dup (append-map (cut find-files out <>)
+                                             '("^hostname"
+                                               "^(yp|nis|dns)?domainname"))))
+                       (for-each delete-file dup)
+                       #t))
+                   %standard-phases)))
 
        ;; Binaries that depend on libnet-tools.a don't declare that
        ;; dependency, making it parallel-unsafe.
