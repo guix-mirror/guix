@@ -28,37 +28,35 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
-                          psfl public-domain))
+                          psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages gdbm)
-  #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages libffi)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages openssl)
-  #:use-module (gnu packages elf)
-  #:use-module (gnu packages maths)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages gcc)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages zip)
-  #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages texlive)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages which)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -3016,3 +3014,40 @@ libxml2 and libxslt.")
 
 (define-public python2-lxml
   (package-with-python2 python-lxml))
+
+(define-public python-pillow
+  (package
+    (name "python-pillow")
+    (version "2.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/P/Pillow/Pillow-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1y0rysgd7vqpl5lh0lsra7j2k30azwxqlh5jnqk1i0pmfc735s96"))))
+    (build-system python-build-system)
+    (inputs
+      `(("freetype" ,freetype)
+        ("lcms" ,lcms)
+        ("libjpeg" ,libjpeg)
+        ("libtiff" ,libtiff)
+        ("openjpeg" ,openjpeg)
+        ("python-setuptools" ,python-setuptools)
+        ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f)) ; no check target
+    (home-page "http://python-pillow.github.io/")
+    (synopsis "Pillow fork of Python Imaging Library")
+    (description "Pillow is a fork of the Python Imaging Library (PIL).")
+    ;; PIL license, see
+    ;; http://www.pythonware.com/products/pil/license.htm
+    (license (x11-style
+               "file://PKG-INFO"
+               "See http://www.pythonware.com/products/pil/license.htm"))))
+
+(define-public python2-pillow
+  (package-with-python2 python-pillow))
