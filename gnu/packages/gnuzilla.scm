@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -122,15 +122,15 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.17.3")
+    (version "3.17.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
-                    "releases/NSS_3_17_3_RTM/src/nss-3.17.3.tar.gz"))
+                    "releases/NSS_3_17_4_RTM/src/nss-3.17.4.tar.gz"))
               (sha256
                (base32
-                "1m91z80x4zh1mxgf53bl33lp43gn1wxxx0y26mgz511gb81ykmgl"))
+                "0ycxzybgn4bq0i6j5zjdjl70n3s8a742yixyik4pw8x4h4cav60x"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
