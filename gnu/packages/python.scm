@@ -3105,3 +3105,42 @@ capabilities to the Python interpreter.")
     (license (x11-style
                "file://README"
                "See 'README' in the distribution."))))
+
+(define-public python2-cssutils
+  (package
+    (name "python2-cssutils")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/c/cssutils/cssutils-"
+              version
+              ".zip"))
+        (sha256
+          (base32
+            "1bwim1353r4hqiir73sn4sc43y7ymh09qx0kly7vj048blppc125"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python2-mock" ,python2-mock) ; for the tests
+        ("unzip" ,unzip))) ; for unpacking the source
+    (inputs
+      `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     `(#:python ,python-2 ; Otherwise tests fail with a syntax error.
+       #:tests? #f ; The tests apparently download an external URL.
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda* (#:key source #:allow-other-keys)
+          (and (zero? (system* "unzip" source))
+               (chdir "cssutils-1.0")))
+        %standard-phases)))
+    (home-page "http://cthedot.de/cssutils/")
+    (synopsis
+      "CSS Cascading Style Sheets library for Python")
+    (description
+      "Cssutils is a Python package for parsing and building CSS
+Cascading Style Sheets.  Currently it provides a DOM only and no rendering
+options.")
+    (license lgpl3+)))
