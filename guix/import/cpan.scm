@@ -167,7 +167,9 @@ META."
                    (list 'quasiquote inputs))))))
 
   (define source-url
-    (assoc-ref meta "download_url"))
+    (regexp-substitute/global #f "http://cpan.metacpan.org"
+                              (assoc-ref meta "download_url")
+                              'pre "mirror://cpan" 'post))
 
   (let ((tarball (with-store store
                    (download-to-store store source-url))))
