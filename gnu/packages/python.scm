@@ -3144,3 +3144,37 @@ capabilities to the Python interpreter.")
 Cascading Style Sheets.  Currently it provides a DOM only and no rendering
 options.")
     (license lgpl3+)))
+
+(define-public python-cssselect
+  (package
+    (name "python-cssselect")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/c/cssselect/cssselect-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "10h623qnp6dp1191jri7lvgmnd4yfkl36k9smqklp1qlf3iafd85"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     ;; tests fail with message
+     ;; AttributeError: 'module' object has no attribute 'tests'
+     `(#:tests? #f))
+    (home-page
+      "https://pythonhosted.org/cssselect/")
+    (synopsis
+      "CSS3 selector parser and translator to XPath 1.0")
+    (description
+      "Cssselect ia a Python module that parses CSS3 Selectors and translates
+them to XPath 1.0 expressions.  Such expressions can be used in lxml or
+another XPath engine to find the matching elements in an XML or HTML document.")
+    (license bsd-3)))
+
+(define-public python2-cssselect
+  (package-with-python2 python-cssselect))
