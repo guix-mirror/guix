@@ -98,6 +98,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fltk.scm				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
+  gnu/packages/freedesktop.scm			\
   gnu/packages/freeipmi.scm			\
   gnu/packages/ftp.scm				\
   gnu/packages/fribidi.scm			\
