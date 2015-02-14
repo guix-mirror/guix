@@ -141,17 +141,22 @@ META."
       (#f
        '())
       ((inputs ...)
-       (delete-duplicates
-        ;; Listed dependencies may include core modules.  Filter those out.
-        (filter-map (match-lambda
-                     (("perl" . _)      ;implicit dependency
-                      #f)
-                     ((module . _)
-                      (and (not (core-module? module))
-                           (let ((name (guix-name (module->dist-name module))))
-                             (list name
-                                   (list 'unquote (string->symbol name)))))))
-                    inputs)))))
+       (sort
+        (delete-duplicates
+         ;; Listed dependencies may include core modules.  Filter those out.
+         (filter-map (match-lambda
+                      (("perl" . _)     ;implicit dependency
+                       #f)
+                      ((module . _)
+                       (and (not (core-module? module))
+                            (let ((name (guix-name (module->dist-name module))))
+                              (list name
+                                    (list 'unquote (string->symbol name)))))))
+                     inputs))
+        (lambda args
+          (match args
+            (((a _ ...) (b _ ...))
+             (string<? a b))))))))
 
   (define (maybe-inputs guix-name inputs)
     (match inputs
