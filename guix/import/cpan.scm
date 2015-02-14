@@ -49,7 +49,7 @@
    ;; apache_1_1
    ("apache_2_0" 'asl2.0)
    ;; artistic_1_0
-   ;; artistic_2_0
+   ("artistic_2_0" 'artistic2.0)
    ("bsd" 'bsd-3)
    ("freebsd" 'bsd-2)
    ;; gfdl_1_2
@@ -63,7 +63,7 @@
    ;; mozilla_1_0
    ("mozilla_1_1" 'mpl1.1)
    ("openssl" 'openssl)
-   ("perl_5" 'gpl1+)                    ;and Artistic 1
+   ("perl_5" '(package-license perl))   ;GPL1+ and Artistic 1
    ("qpl_1_0" 'qpl)
    ;; ssleay
    ;; sun
