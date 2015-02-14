@@ -34,7 +34,9 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libffcall)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages libsigsegv))
+  #:use-module (gnu packages libsigsegv)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages ed))
 
 (define-public gcl
   (package
@@ -188,3 +190,91 @@ readline.")
     ;; a lot of gpl3+.  (Also some parts are under non-copyleft licenses, such
     ;; as CLX by Texas Instruments.)  In that case gpl3+ wins out.
     (license license:gpl3+)))
+
+(define-public sbcl
+  (package
+    (name "sbcl")
+    (version "1.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
+                           version "-source.tar.bz2"))
+       (sha256
+        (base32 "0ab9lw056yf6y0rjmx3iirn5n59pmssqxf00fbmpyl6qsnpaja1d"))))
+    (build-system gnu-build-system)
+    ;; Bootstrap with CLISP.
+    (native-inputs
+     `(("clisp" ,clisp)
+       ("which" ,which)
+       ("inetutils" ,inetutils)         ;for hostname(1)
+       ("ed" ,ed)))
+    (arguments
+     '(#:phases
+       (alist-delete
+        'configure
+        (alist-cons-before
+         'build 'patch-unix-tool-paths
+         (lambda* (#:key outputs inputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out"))
+                 (bash (assoc-ref inputs "bash"))
+                 (coreutils (assoc-ref inputs "coreutils"))
+                 (ed (assoc-ref inputs "ed")))
+             (define (quoted-path input path)
+               (string-append "\"" input path "\""))
+             ;; Patch absolute paths in string literals.  Note that this
+             ;; occurs in some .sh files too (which contain Lisp code).
+             (substitute* (find-files "." "\\.(lisp|sh)$")
+               (("\"/bin/sh\"") (quoted-path bash "/bin/sh"))
+               (("\"/usr/bin/env\"") (quoted-path coreutils "/usr/bin/env"))
+               (("\"/bin/cat\"") (quoted-path coreutils "/bin/cat"))
+               (("\"/bin/ed\"") (quoted-path ed "/bin/ed"))
+               (("\"/bin/echo\"") (quoted-path coreutils "/bin/echo"))
+               (("\"/bin/uname\"") (quoted-path coreutils "/bin/uname")))
+             ;; This one script has a non-string occurrence of /bin/sh.
+             (substitute* '("tests/foreign.test.sh")
+               ;; Leave whitespace so we don't match the shebang.
+               ((" /bin/sh ") " sh "))
+             ;; This file contains a module that can create executable files
+             ;; which depend on the presence of SBCL.  It generates shell
+             ;; scripts doing "exec sbcl ..." to achieve this.  We patch both
+             ;; the shebang and the reference to "sbcl", tying the generated
+             ;; executables to the exact SBCL package that generated them.
+             (substitute* '("contrib/sb-executable/sb-executable.lisp")
+               (("/bin/sh") (string-append bash "/bin/sh"))
+               (("exec sbcl") (string-append "exec " out "/bin/sbcl")))
+             ;; Disable some tests that fail in our build environment.
+             (substitute* '("contrib/sb-bsd-sockets/tests.lisp")
+               ;; This requires /etc/protocols.
+               (("\\(deftest get-protocol-by-name/error" all)
+                (string-append "#+nil ;disabled by Guix\n" all)))
+             (substitute* '("contrib/sb-posix/posix-tests.lisp")
+               ;; These assume some users/groups which we don't have.
+               (("\\(deftest pwent\\.[12]" all)
+                (string-append "#+nil ;disabled by Guix\n" all))
+               (("\\(deftest grent\\.[12]" all)
+                (string-append "#+nil ;disabled by Guix\n" all)))))
+         (alist-replace
+          'build
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "CC" "gcc")
+            (zero? (system* "sh" "make.sh" "clisp"
+                            (string-append "--prefix="
+                                           (assoc-ref outputs "out")))))
+          (alist-replace
+           'install
+           (lambda _
+             (zero? (system* "sh" "install.sh")))
+           %standard-phases))))
+       ;; No 'check' target, though "make.sh" (build phase) runs tests.
+       #:tests? #f))
+    (home-page "http://www.sbcl.org/")
+    (synopsis "Common Lisp implementation")
+    (description "Steel Bank Common Lisp (SBCL) is a high performance Common
+Lisp compiler.  In addition to the compiler and runtime system for ANSI Common
+Lisp, it provides an interactive environment including a debugger, a
+statistical profiler, a code coverage tool, and many other extensions.")
+    ;; Public domain in jurisdictions that allow it, bsd-2 otherwise.  MIT
+    ;; loop macro has its own license.  See COPYING file for further notes.
+    (license (list license:public-domain license:bsd-2
+                   (license:x11-style "file://src/code/loop.lisp")))))
