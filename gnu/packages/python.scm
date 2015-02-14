@@ -3051,3 +3051,57 @@ libxml2 and libxslt.")
 
 (define-public python2-pillow
   (package-with-python2 python-pillow))
+
+(define-public python2-pil
+  (package
+    (name "python2-pil")
+    (version "1.1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "http://effbot.org/downloads/Imaging-"
+              version ".tar.gz"))
+        (sha256
+          (base32
+            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))))
+    (build-system python-build-system)
+    (inputs
+      `(("freetype" ,freetype)
+        ("libjpeg" ,libjpeg)
+        ("libtiff" ,libtiff)
+        ("python-setuptools" ,python-setuptools)
+        ("zlib" ,zlib)))
+    (arguments
+     ;; Only the fork python-pillow works with Python 3.
+     `(#:python ,python-2
+       #:tests? #f ; no check target
+       #:phases
+         (alist-cons-before
+          'build 'configure
+          ;; According to README and setup.py, manual configuration is
+          ;; the preferred way of "searching" for inputs.
+          ;; lcms is not found, TCL_ROOT refers to the unavailable tkinter.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((jpeg (assoc-ref inputs "libjpeg"))
+                  (zlib (assoc-ref inputs "zlib"))
+                  (tiff (assoc-ref inputs "libtiff"))
+                  (freetype (assoc-ref inputs "freetype")))
+              (substitute* "setup.py"
+                (("JPEG_ROOT = None")
+                 (string-append "JPEG_ROOT = libinclude(\"" jpeg "\")"))
+                (("ZLIB_ROOT = None")
+                 (string-append "ZLIB_ROOT = libinclude(\"" zlib "\")"))
+                (("TIFF_ROOT = None")
+                 (string-append "TIFF_ROOT = libinclude(\"" tiff "\")"))
+                (("FREETYPE_ROOT = None")
+                 (string-append "FREETYPE_ROOT = libinclude(\""
+                                freetype "\")")))))
+          %standard-phases)))
+    (home-page "http://www.pythonware.com/products/pil/")
+    (synopsis "Python Imaging Library")
+    (description "The Python Imaging Library (PIL) adds image processing
+capabilities to the Python interpreter.")
+    (license (x11-style
+               "file://README"
+               "See 'README' in the distribution."))))
