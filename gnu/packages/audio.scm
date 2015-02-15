@@ -415,6 +415,40 @@ extensions into easy to use C++ classes.  It is the successor of
 lv2-c++-tools.")
     (license license:gpl3+)))
 
+(define-public patchage
+  (package
+    (name "patchage")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.drobilla.net/patchage-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "1agdpwwi42176l4mxj0c4fsvdiv1ig56bfnnx0msckxmy57df8bb"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("jack" ,jack-1)
+       ("libuuid" ,util-linux)
+       ("ganv" ,ganv)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)
+       ("gtkmm" ,gtkmm-2)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/patchage/")
+    (synopsis "Modular patch bay for audio and MIDI systems")
+    (description
+     "Patchage is a modular patch bay for audio and MIDI systems based on JACK
+and ALSA.")
+    (license license:gpl3+)))
+
 (define-public rubberband
   (package
     (name "rubberband")
