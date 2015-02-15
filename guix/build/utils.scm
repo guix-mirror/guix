@@ -837,7 +837,7 @@ the previous wrapper."
     (if (zero? number)
         (let ((prog-real (string-append (dirname prog) "/."
                                         (basename prog) "-real")))
-          (copy-file prog prog-real)
+          (rename-file prog prog-real)
           prog-real)
         (wrapper-file-name number)))
 
