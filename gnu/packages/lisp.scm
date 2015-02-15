@@ -36,7 +36,10 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages libsigsegv)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages ed))
+  #:use-module (gnu packages ed)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages version-control)
+  #:use-module (ice-9 match))
 
 (define-public gcl
   (package
@@ -278,3 +281,107 @@ statistical profiler, a code coverage tool, and many other extensions.")
     ;; loop macro has its own license.  See COPYING file for further notes.
     (license (list license:public-domain license:bsd-2
                    (license:x11-style "file://src/code/loop.lisp")))))
+
+(define-public ccl
+  (package
+    (name "ccl")
+    (version "1.10")
+    (source #f)
+    (build-system gnu-build-system)
+    ;; CCL consists of a "lisp kernel" and "heap image", both of which are
+    ;; shipped in precompiled form in source tarballs.  The former is a C
+    ;; program which we can rebuild from scratch, but the latter cannot be
+    ;; generated without an already working copy of CCL, and is platform
+    ;; dependent, so we need to fetch the correct tarball for the platform.
+    (inputs
+     `(("ccl"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "ftp://ftp.clozure.com/pub/release/1.10/ccl-" version "-"
+                 (match (%current-system)
+                   ((or "i686-linux" "x86_64-linux") "linuxx86")
+                   ("armhf-linux" "linuxarm"))
+                 ".tar.gz"))
+           (sha256
+            (base32
+             (match (%current-system)
+               ((or "i686-linux" "x86_64-linux")
+                "0mr653q5px05lr11z2mk551m5g47b4wq96vbfibpp0qlc9jp58lc")
+               ("armhf"
+                "1py02irpmi2qz5rq3h33wfv6impf15z8i2rign6hvhlqn7s99wwh"))))))))
+    (native-inputs
+     `(("m4" ,m4)
+       ("subversion" ,subversion)))
+    (arguments
+     `(#:tests? #f                      ;no 'check' target
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda* (#:key inputs #:allow-other-keys)
+          (and (zero? (system* "tar" "xzvf" (assoc-ref inputs "ccl")))
+               (begin (chdir "ccl") #t)))
+        (alist-delete
+         'configure
+         (alist-cons-before
+          'build 'pre-build
+          ;; Enter the source directory for the current platform's lisp
+          ;; kernel, and run 'make clean' to remove the precompiled one.
+          (lambda _
+            (chdir (string-append
+                    "lisp-kernel/"
+                    ,(match (or (%current-target-system) (%current-system))
+                       ("i686-linux" "linuxx8632")
+                       ("x86_64-linux" "linuxx8664")
+                       ("armhf-linux" "linuxarm"))))
+            (substitute* '("Makefile")
+              (("/bin/rm") "rm"))
+            (setenv "CC" "gcc")
+            (zero? (system* "make" "clean")))
+          ;; XXX Do we need to recompile the heap image as well for Guix?
+          ;; For now just use the one we already got in the tarball.
+          (alist-replace
+           'install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; The lisp kernel built by running 'make' in lisp-kernel/$system
+             ;; is put back into the original directory, so go back.  The heap
+             ;; image is there as well.
+             (chdir "../..")
+             (let* ((out (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib/"))
+                    (bindir (string-append out "/bin/"))
+                    (wrapper (string-append bindir "ccl"))
+                    (bash (assoc-ref inputs "bash"))
+                    (kernel
+                     ,(match (or (%current-target-system) (%current-system))
+                        ("i686-linux" "lx86cl")
+                        ("x86_64-linux" "lx86cl64")
+                        ("armhf-linux" "armcl")))
+                    (heap (string-append kernel ".image")))
+               (mkdir-p libdir)
+               (mkdir-p bindir)
+               (copy-file kernel (string-append libdir kernel))
+               (copy-file heap (string-append libdir heap))
+               (with-output-to-file wrapper
+                 (lambda ()
+                   (display
+                    (string-append
+                     "#!" bash "/bin/sh\n"
+                     "if [ -z \"$CCL_DEFAULT_DIRECTORY\" ]; then\n"
+                     "    CCL_DEFAULT_DIRECTORY=" libdir "\n"
+                     "fi\n"
+                     "export CCL_DEFAULT_DIRECTORY\n"
+                     "exec " libdir kernel "\n"))))
+               (chmod wrapper #o755)))
+           %standard-phases))))))
+    (supported-systems '("i686-linux" "x86_64-linux" "armhf-linux"))
+    (home-page "http://ccl.clozure.com/")
+    (synopsis "Common Lisp implementation")
+    (description "Clozure CL (often called CCL for short) is a Common Lisp
+implementation featuring fast compilation speed, native threads, a precise,
+generational, compacting garbage collector, and a convenient foreign-function
+interface.")
+    ;; See file doc/LICENSE for clarifications it makes regarding how the LGPL
+    ;; applies to Lisp code according to them.
+    (license (list license:lgpl2.1
+                   license:clarified-artistic)))) ;TRIVIAL-LDAP package
