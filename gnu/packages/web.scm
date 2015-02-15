@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -49,14 +49,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.6")
+    (version "2.4.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1sig08xxq1kqxr2a42ndwr9g4mm6zdqnxldhxraym2y0xcjkd7yw"))))
+               "1r7a63ka41vlswrqbb21vall6sc7svwgd497kb6dh8a6zvnkjvdd"))))
     (build-system gnu-build-system)
     (inputs `(("apr" ,apr)
               ("apr-util" ,apr-util)
