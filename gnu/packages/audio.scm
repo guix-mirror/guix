@@ -156,6 +156,43 @@ record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
 
+(define-public azr3
+  (package
+    (name "azr3")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/ll-plugins/azr3-jack-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "18mdw6nc0vgj6k9rsy0x8w64wvzld0frqshrxxbxfj9qi9843vlc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:make-flags
+       (list "LV2PEG=ttl2c"
+             (string-append "prefix=" %output)
+             (string-append "pkgdatadir=" %output "/share/azr3-jack"))))
+    (inputs
+     `(("gtkmm" ,gtkmm-2)
+       ("lvtk" ,lvtk)
+       ("jack" ,jack-1)
+       ("lash" ,lash)
+       ("libuuid" ,util-linux)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://ll-plugins.nongnu.org/azr3/")
+    (synopsis "Tonewheel organ synthesizer")
+    (description
+     "AZR-3 is a port of the free VST plugin AZR-3.  It is a tonewheel organ
+with drawbars, distortion and rotating speakers.  The organ has three
+sections, two polyphonic sections with nine drawbars each and one monophonic
+bass section with five drawbars.  A standalone JACK application and LV2
+plugins are provided.")
+    (license license:gpl2)))
+
 (define-public jack-1
   (package
     (name "jack")
