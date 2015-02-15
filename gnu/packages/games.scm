@@ -7,6 +7,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -398,7 +399,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
 (define-public xboard
   (package
     (name "xboard")
-    (version "4.7.3")
+    (version "4.8.0")
     (source
      (origin
        (method url-fetch)
@@ -406,17 +407,8 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                            ".tar.gz"))
        (sha256
         (base32
-         "1amy9krr0qkvcc7gnp3i9x9ma91fc5cq8hy3gdc7rmfsaczv1l3z"))))
+         "05rdj0nyirc4g1qi5hhrjy45y52ihp1j3ldq2c5bwrz0gzy4i3y8"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (alist-cons-before 
-        'configure 'pre-conf
-        ;; This is GNU.  So use gnuchess as the first choice of engine
-        (lambda _
-          (substitute* "xboard.conf.in" 
-            (("-firstChessProgram fairymax") "-firstChessProgram gnuchess")))
-        %standard-phases)))
     (inputs `(("cairo" ,cairo)
               ("librsvg" ,librsvg)
               ("libxt" ,libxt)
