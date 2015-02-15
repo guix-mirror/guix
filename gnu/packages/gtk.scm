@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
@@ -209,6 +210,33 @@ longer provided by recent pango releases.  pangox-compat provides the
 functions which were removed.")
     (license license:lgpl2.0+)))
 
+(define-public ganv
+  (package
+    (name "ganv")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.drobilla.net/ganv-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("gtk" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/ganv/")
+    (synopsis "GTK+ widget for interactive graph-like environments")
+    (description
+     "Ganv is an interactive GTK+ widget for interactive “boxes and lines” or
+graph-like environments, e.g. modular synths or finite state machine
+diagrams.")
+    (license license:gpl3+)))
 
 (define-public gtksourceview
   (package
