@@ -231,7 +231,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.5.1")
+    (version "1.5.3")
     (source
      (origin
       (method url-fetch)
@@ -239,7 +239,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "1qqi9bxwxxsc4r15j7drclgp0w8jk9nj3h2fsivk4c7brvw3lbvc"))))
+        "1jgwmra6cf0i5x2prj92w77vl7hmj276qmmll3lwysbyn32l1c0d"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
