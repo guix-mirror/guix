@@ -376,7 +376,7 @@ have been used.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "1.1.4")
+    (version "12.1")
     (source
      (origin
       (method url-fetch)
@@ -384,14 +384,12 @@ have been used.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0hl9sa5xr9bi2ifq51wy1bawsjv5nzvpbac7m9z1ciz778874csf"))))
+        "04bfk7si1pwj3b5k2b1x9b1zkiclybmzpw6alrs5bciri56lg9zs"))))
     (build-system python-build-system)
+    ;; FIXME: Tests require pytest, which itself relies on setuptools.
+    ;; One could bootstrap with an internal untested setuptools.
     (arguments
      `(#:tests? #f))
-         ;;FIXME: test_sdist_with_utf8_encoded_filename fails in
-         ;; /tmp/nix-build-python2-setuptools-1.1.4.drv-0/setuptools-1.1.4/setuptools/tests/test_sdist.py"
-         ;; line 354
-         ;; The tests pass with Python 2.7.5.
     (home-page "https://pypi.python.org/pypi/setuptools")
     (synopsis
      "Library designed to facilitate packaging Python projects")
