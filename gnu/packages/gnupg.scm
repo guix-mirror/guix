@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -39,7 +39,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.17")
+    (version "1.18")
     (source
      (origin
       (method url-fetch)
@@ -47,7 +47,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1dapxzxl1naghf342fwfc2w2f2c5hb9gr1a1s4n8dsqn26kybx1z"))))
+        "0408v19h3h0q6w61g51hgbdg6cyw81nyzkh70qfprvsc3pkddwcz"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
