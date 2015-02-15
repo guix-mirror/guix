@@ -3178,3 +3178,32 @@ another XPath engine to find the matching elements in an XML or HTML document.")
 
 (define-public python2-cssselect
   (package-with-python2 python-cssselect))
+
+(define-public python-netifaces
+  (package
+    (name "python-netifaces")
+    (version "0.10.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/n/netifaces/netifaces-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1plw237a4zib4z8s62g0mrs8gm3kjfrp5sxh6bbk9nl3rdls2mln"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page
+      "https://bitbucket.org/al45tair/netifaces")
+    (synopsis
+      "Python module for portable network interface information")
+    (description
+      "Netifaces is a Python module providing information on network
+interfaces in an easy and portable manner.")
+    (license license:expat)))
+
+(define-public python2-netifaces
+  (package-with-python2 python-netifaces))
