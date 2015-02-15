@@ -816,7 +816,7 @@ contents:
   #!location/of/bin/bash
   export PATH=\"/gnu/.../bar/bin\"
   export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/gnu/.../baz/certs:/qux/certs\"
-  exec -a location/of/foo location/of/.foo-real \"$@\"
+  exec -a $0 location/of/.foo-real \"$@\"
 
 This is useful for scripts that expect particular programs to be in $PATH, for
 programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
@@ -870,11 +870,10 @@ the previous wrapper."
     (with-output-to-file prog-tmp
       (lambda ()
         (format #t
-                "#!~a~%~a~%exec -a \"~a\" \"~a\" \"$@\"~%"
+                "#!~a~%~a~%exec -a \"$0\" \"~a\" \"$@\"~%"
                 (which "bash")
                 (string-join (map export-variable vars)
                              "\n")
-                (canonicalize-path prog)
                 (canonicalize-path target))))
 
     (chmod prog-tmp #o755)
