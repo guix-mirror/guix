@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -238,14 +239,14 @@ Makefile, simplifying the entire process for the developer.")
 (define-public libtool
   (package
     (name "libtool")
-    (version "2.4.5")
+    (version "2.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libtool/libtool-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0zhphv4n9bdd6sz66lqfrfqcsnv89mg2bykgi5w9401va4vc3al4"))
+                "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
               (patches
                (list (search-patch "libtool-skip-tests.patch")))))
     (build-system gnu-build-system)
@@ -295,14 +296,14 @@ complexity of working with shared libraries across platforms.")
   ;; Libtool's extensive test suite isn't run.
   (package
     (name "libltdl")
-    (version "2.4.4")
+    (version "2.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libtool/libtool-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0v3zq08qxv7k5067mpqrkjkjl3wphhg06i696mka90mzadc5nad8"))
+                "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
               (patches
                (list (search-patch "libtool-skip-tests.patch")))))
     (build-system gnu-build-system)
