@@ -474,3 +474,38 @@ loaded at run time.  Interpreted code and compiled code can be freely
 mixed.")
     ;; Dual license.
     (license (list lgpl2.1+ asl2.0))))
+
+(define-public chibi-scheme
+  (package
+    (name "chibi-scheme")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://abrek.synthcode.com/chibi-scheme-" version ".tgz"))
+       (sha256
+        (base32 "0h6k2gdb4xk2pzhdipffcg2w3kfr4zh1va556k1hvng2did6prds"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-delete
+        'configure
+        (alist-cons-before
+         'build 'set-cc
+         (lambda _
+           (setenv "CC" "gcc"))
+         %standard-phases))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))
+       #:test-target "test"))
+    (home-page "https://code.google.com/p/chibi-scheme/")
+    (synopsis "Small embeddable Scheme implementation")
+    (description
+     "Chibi-Scheme is a very small library with no external dependencies
+intended for use as an extension and scripting language in C programs.  In
+addition to support for lightweight VM-based threads, each VM itself runs in
+an isolated heap allowing multiple VMs to run simultaneously in different OS
+threads.")
+    (license bsd-3)))
