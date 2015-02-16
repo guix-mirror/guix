@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -428,3 +430,47 @@ R6RS) and related languages, such as Typed Racket.  It features a compiler and
 a virtual machine with just-in-time native compilation, as well as a large set
 of libraries.")
     (license lgpl2.0+)))
+
+(define-public gambit-c
+  (package
+    (name "gambit-c")
+    (version "4.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.iro.umontreal.ca/~gambit/download/gambit/v"
+             (version-major+minor version) "/source/gambc-v"
+             (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
+             ".tgz"))
+       (sha256
+        (base32 "0y2pklh4k65yrmxv63ass76xckrk9wqimbdad2gha35v2mi7blhs"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; According to the ./configure script, this makes the build slower and
+       ;; use >= 1 GB memory, but makes Gambit much faster.
+       '("--enable-single-host")
+       #:phases
+       (alist-cons-before
+        'check 'fix-tests
+        (lambda _
+          (substitute* '("tests/makefile")
+            ;; '-:' is how run-time options are set.  'tl' sets some terminal
+            ;; option, which makes it fail in our build environment.  It
+            ;; recommends using 'd-' as a solution, which sets the REPL
+            ;; interaction channel to stdin/stdout.
+            (("gsi -:tl") "gsi -:d-,tl")))
+        %standard-phases)))
+    (home-page "http://www.iro.umontreal.ca/~gambit/")
+    (synopsis "Efficient Scheme interpreter and compiler")
+    (description
+     "Gambit consists of two main programs: gsi, the Gambit Scheme
+interpreter, and gsc, the Gambit Scheme compiler.  The interpreter contains
+the complete execution and debugging environment.  The compiler is the
+interpreter extended with the capability of generating executable files.  The
+compiler can produce standalone executables or compiled modules which can be
+loaded at run time.  Interpreted code and compiled code can be freely
+mixed.")
+    ;; Dual license.
+    (license (list lgpl2.1+ asl2.0))))
