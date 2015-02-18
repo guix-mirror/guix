@@ -1913,3 +1913,27 @@ during the system boot, and will run as a background process.  When an ACPI
 event is received from the kernel, acpid will examine the list of rules
 specified in /etc/acpi/events and execute the rules that match the event.")
     (license gpl2+)))
+
+(define-public sysfsutils
+  (package
+    (name "sysfsutils")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "mirror://sourceforge/linux-diag/sysfsutils/" version "/sysfsutils-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "12i0ip11xbfcjzxz4r10cvz7mbzgq1hfcdn97w6zz7sm3wndwrg8"))))
+    (build-system gnu-build-system)
+    (home-page "http://linux-diag.sourceforge.net/Sysfsutils.html")
+    (synopsis "System utilities based on Linux sysfs")
+    (description
+     "These are a set of utilites built upon sysfs, a virtual filesystem in
+Linux kernel versions 2.5+ that exposes a system's device tree.  The package
+also contains the libsysfs library.")
+    ;; The library is under lgpl2.1+ (all files say "or any later version").
+    ;; The rest is mostly gpl2, with a few files indicating gpl2+.
+    (license (list gpl2 gpl2+ lgpl2.1+))))
