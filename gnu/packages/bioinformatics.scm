@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -308,6 +309,49 @@ genome, HISAT uses a large set of small FM indexes that collectively cover the
 whole genome.  These small indexes (called local indexes) combined with
 several alignment strategies enable effective alignment of RNA-seq reads, in
 particular, reads spanning multiple exons.")
+    (license license:gpl3+)))
+
+(define-public rseqc
+  (package
+    (name "rseqc")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/rseqc/"
+                       version "/RSeQC-" version ".tar.gz"))
+       (sha256
+        (base32 "09rf0x9d6apjja5l01cgprj7vigpw6kiqhy34ibwwlxil0db0ri4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; remove bundled copy of pysam
+           (delete-file-recursively "lib/pysam")
+           (substitute* "setup.py"
+             ;; remove dependency on outdated "distribute" module
+             (("^from distribute_setup import use_setuptools") "")
+             (("^use_setuptools\\(\\)") "")
+             ;; do not use bundled copy of pysam
+             (("^have_pysam = False") "have_pysam = True"))))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (inputs
+     `(("python-cython" ,python2-cython)
+       ("python-pysam" ,python2-pysam)
+       ("python-numpy" ,python2-numpy)
+       ("python-setuptools" ,python2-setuptools)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)))
+    (home-page "http://rseqc.sourceforge.net/")
+    (synopsis "RNA-seq quality control package")
+    (description
+     "RSeQC provides a number of modules that can comprehensively evaluate
+high throughput sequence data, especially RNA-seq data.  Some basic modules
+inspect sequence quality, nucleotide composition bias, PCR bias and GC bias,
+while RNA-seq specific modules evaluate sequencing saturation, mapped reads
+distribution, coverage uniformity, strand specificity, etc.")
     (license license:gpl3+)))
 
 (define-public samtools
