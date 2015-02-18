@@ -2259,7 +2259,11 @@ backend = GTK3Agg~%")))))
                   (info (string-append data "/info"))
                   (html (string-append doc "/html")))
              (with-directory-excursion "doc"
-               ;; Without setting this variable we get an encoding error.
+               ;; Install and set UTF-8 locale to avoid an encoding error.
+               (setenv "LOCPATH" (getcwd))
+               (system* "localedef" "--no-archive"
+                        "--prefix" (getcwd) "-i" "en_US"
+                        "-f" "UTF-8" "./en_US.UTF-8")
                (setenv "LANG" "en_US.UTF-8")
                ;; Produce pdf in 'A4' format.
                (substitute* (find-files "." "conf\\.py")
