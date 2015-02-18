@@ -374,6 +374,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-CVE-2014-9112-pt4.patch		\
   gnu/packages/patches/cpio-CVE-2014-9112-pt5.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \

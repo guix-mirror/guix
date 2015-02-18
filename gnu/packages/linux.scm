@@ -1961,3 +1961,31 @@ also contains the libsysfs library.")
              (("includedir='(\\$\\{prefix\\}/include)'" all orig)
               (string-append "includedir='" orig "/sysfs'")))))))
     (synopsis "System utilities based on Linux sysfs (version 1.x)")))
+
+(define-public cpufrequtils
+  (package
+    (name "cpufrequtils")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
+       (patches (list (search-patch "cpufrequtils-fix-aclocal.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("sysfsutils" ,sysfsutils-1)))
+    (arguments
+     '(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib"))))
+    (home-page "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/")
+    (synopsis "Utilities to get and set CPU frequency on Linux")
+    (description
+     "The cpufrequtils suite contains utilities to retreive CPU frequency
+information, and set the CPU frequency if supported, using the cpufreq
+capabilities of the Linux kernel.")
+    (license gpl2)))
