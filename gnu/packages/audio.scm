@@ -210,8 +210,10 @@ plugins are provided.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bdb" ,bdb)
-       ("readline" ,readline)
-       ("libuuid" ,util-linux)))
+       ("readline" ,readline)))
+    ;; uuid.h is included in the JACK type headers
+    (propagated-inputs
+     `(("libuuid" ,util-linux)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://jackaudio.org/")
