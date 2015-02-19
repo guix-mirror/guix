@@ -34,6 +34,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3) ;taglib
@@ -645,6 +646,62 @@ that toolkit will work in all hosts that use Suil automatically.
 
 Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
     (license license:isc)))
+
+(define-public timidity++
+  (package
+    (name "timidity++")
+    (version "2.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/timidity/TiMidity++-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0xk41w4qbk23z1fvqdyfblbz10mmxsllw0svxzjw5sa9y11vczzr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--enable-audio=alsa,flac,jack,ao,vorbis,speex"
+             "--enable-ncurses"
+             "--enable-server"
+             "--enable-alsaseq"
+             (string-append "--with-default-path="
+                            (assoc-ref %outputs "out") "/etc/timidity"))
+       #:phases
+       (alist-cons-after
+        'install 'install-config
+        (lambda _
+          (let ((out (string-append (assoc-ref %outputs "out")
+                                    "/etc/timidity")))
+            (mkdir-p out)
+            (call-with-output-file
+                (string-append out "/timidity.cfg")
+              (lambda (port)
+                (format port (string-append "source "
+                                            (assoc-ref %build-inputs "freepats")
+                                            "/share/freepats/freepats.cfg"))))))
+        %standard-phases)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ao" ,ao)
+       ("flac" ,flac)
+       ("jack" ,jack-1)
+       ("libogg" ,libogg)
+       ("speex" ,speex)
+       ("ncurses" ,ncurses)
+       ("freepats" ,freepats)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://timidity.sourceforge.net/")
+    (synopsis "Software synthesizer for playing MIDI files")
+    (description
+     "TiMidity++ is a software synthesizer.  It can play MIDI files by
+converting them into PCM waveform data; give it a MIDI data along with digital
+instrument data files, then it synthesizes them in real-time, and plays.  It
+can not only play sounds, but also can save the generated waveforms into hard
+disks as various audio file formats.")
+    (license license:gpl2+)))
 
 (define-public vamp
   (package
