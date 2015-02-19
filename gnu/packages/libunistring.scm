@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,7 @@
 (define-public libunistring
   (package
    (name "libunistring")
-   (version "0.9.4")
+   (version "0.9.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -33,7 +34,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "19nqvn19hz25ig9dbmh2di5j1r7v852x9mlnq0nr0hka51ins97m"))))
+              "05va4x47ik006nd13grwm276gfxb8igsj63k37vvwl3q8rr0g30s"))))
    (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
    (build-system gnu-build-system)
    (arguments
