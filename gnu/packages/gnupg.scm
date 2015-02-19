@@ -190,6 +190,47 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
+    (version "2.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "14k7c5spai3yppz6izf1ggbnffskl54ln87v1wgy9pwism1mlks0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bzip2" ,guix:bzip2)
+       ("curl" ,curl)
+       ("libassuan" ,libassuan)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
+       ("libksba" ,libksba)
+       ("npth" ,npth)
+       ("openldap" ,openldap)
+       ("zlib" ,guix:zlib)
+       ("readline" ,readline)))
+   (arguments
+    `(#:phases
+       (alist-cons-before
+        'configure 'patch-config-files
+        (lambda _
+          (substitute* "tests/openpgp/defs.inc"
+            (("/bin/pwd") (which "pwd"))))
+       %standard-phases)))
+    (home-page "http://gnupg.org/")
+    (synopsis "GNU Privacy Guard")
+    (description
+     "The GNU Privacy Guard is a complete implementation of the OpenPGP
+standard.  It is used to encrypt and sign data and communication.  It
+features powerful key management and the ability to access public key
+servers.  It includes several libraries: libassuan (IPC between GnuPG
+components), libgpg-error (centralized GnuPG error values), and
+libskba (working with X.509 certificates and CMS data).")
+    (license gpl3+)))
+
+(define-public gnupg-2.0
+  (package (inherit gnupg)
     (version "2.0.26")
     (source (origin
               (method url-fetch)
@@ -198,7 +239,6 @@ compatible to GNU Pth.")
               (sha256
                (base32
                 "1q5qcl5panrvcvpwvz6nl9gayl5a6vwvfhgdcxqpmbl2qc6y6n3p"))))
-    (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
        ("curl" ,curl)
@@ -217,17 +257,7 @@ compatible to GNU Pth.")
         (lambda _
           (substitute* "tests/openpgp/Makefile.in"
             (("/bin/sh") (which "bash"))))
-       %standard-phases)))
-    (home-page "http://gnupg.org/")
-    (synopsis "GNU Privacy Guard")
-    (description
-     "The GNU Privacy Guard is a complete implementation of the OpenPGP
-standard.  It is used to encrypt and sign data and communication.  It
-features powerful key management and the ability to access public key
-servers.  It includes several libraries: libassuan (IPC between GnuPG
-components), libgpg-error (centralized GnuPG error values), and
-libskba (working with X.509 certificates and CMS data).")
-    (license gpl3+)))
+       %standard-phases)))))
 
 (define-public gnupg-1
   (package (inherit gnupg)
