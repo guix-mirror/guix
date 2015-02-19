@@ -162,6 +162,31 @@ as well as the CMS easily accessible by other applications.  Both
 specifications are building blocks of S/MIME and TLS.")
     (license gpl3+)))
 
+(define-public npth
+  (package
+    (name "npth")
+    (version "1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://gnupg/npth/npth-"
+            version ".tar.bz2"))
+      (sha256
+       (base32
+        "0zyzwmk4mp6pas87jz35zx0jvwdz7x5b13w225gs73gcn8g5cv49"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnupg.org")
+    (synopsis "Non-preemptive thread library")
+    (description
+     "Npth is a library to provide the GNU Pth API and thus a non-preemptive
+threads implementation.
+
+In contrast to GNU Pth is is based on the system's standard threads
+implementation.  This allows the use of libraries which are not
+compatible to GNU Pth.")
+    (license (list lgpl3+ gpl2+)))) ; dual license
+
 (define-public gnupg
   (package
     (name "gnupg")
