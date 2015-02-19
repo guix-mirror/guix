@@ -23,9 +23,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system waf)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
@@ -189,6 +192,45 @@ sections, two polyphonic sections with nine drawbars each and one monophonic
 bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
+
+(define-public freepats
+  (package
+    (name "freepats")
+    (version "20060219")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://freepats.zenvoid.org/freepats-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "12iw36rd94zirll96cd5k0va7p5hxmf2shvjlhzihcmjaw8flq82"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((out (string-append %output "/share/freepats")))
+                     (setenv "PATH" (string-append
+                                     (assoc-ref %build-inputs "bzip2") "/bin:"
+                                     (assoc-ref %build-inputs "tar") "/bin"))
+                     (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+                     (chdir "freepats")
+                     ;; Use absolute pattern references
+                     (substitute* "freepats.cfg"
+                       (("Tone_000") (string-append out "/Tone_000"))
+                       (("Drum_000") (string-append out "/Drum_000")))
+                     (mkdir-p out)
+                     (copy-recursively "." out)))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("bzip2" ,bzip2)))
+    (home-page "http://freepats.zenvoid.org")
+    (synopsis "GUS compatible patches for MIDI players")
+    (description
+     "FreePats is a project to create a free and open set of GUS compatible
+patches that can be used with softsynths such as Timidity and WildMidi.")
+    ;; GPLv2+ with exception for compositions using these patches.
+    (license license:gpl2+)))
 
 (define-public jack-1
   (package
