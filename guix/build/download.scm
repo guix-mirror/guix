@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (open-connection-for-uri
+            resolve-uri-reference
             maybe-expand-mirrors
             url-fetch
             progress-proc
@@ -204,6 +206,84 @@ which is not available during bootstrap."
 (module-define! (resolve-module '(web client))
                 'shutdown (const #f))
 
+;; XXX: Work around <http://bugs.gnu.org/19840>, present in Guile
+;; up to 2.0.11.
+(unless (or (> (string->number (major-version)) 2)
+            (> (string->number (minor-version)) 0)
+            (> (string->number (micro-version)) 11))
+  (let ((declare-relative-uri-header!
+         (module-ref (resolve-module '(web http))
+                     'declare-relative-uri-header!)))
+    (declare-relative-uri-header! "Location")))
+
+(define (resolve-uri-reference ref base)
+  "Resolve the URI reference REF, interpreted relative to the BASE URI, into a
+target URI, according to the algorithm specified in RFC 3986 section 5.2.2.
+Return the resulting target URI."
+
+  (define (merge-paths base-path rel-path)
+    (let* ((base-components (string-split base-path #\/))
+           (base-directory-components (match base-components
+                                        ((components ... last) components)
+                                        (() '())))
+           (base-directory (string-join base-directory-components "/")))
+      (string-append base-directory "/" rel-path)))
+
+  (define (remove-dot-segments path)
+    (let loop ((in
+                ;; Drop leading "." and ".." components from a relative path.
+                ;; (absolute paths will start with a "" component)
+                (drop-while (match-lambda
+                              ((or "." "..") #t)
+                              (_ #f))
+                            (string-split path #\/)))
+               (out '()))
+      (match in
+        (("." . rest)
+         (loop rest out))
+        ((".." . rest)
+         (match out
+           ((or () (""))
+            (error "remove-dot-segments: too many '..' components" path))
+           (_
+            (loop rest (cdr out)))))
+        ((component . rest)
+         (loop rest (cons component out)))
+        (()
+         (string-join (reverse out) "/")))))
+
+  (cond ((or (uri-scheme ref)
+             (uri-host   ref))
+         (build-uri (or (uri-scheme ref)
+                        (uri-scheme base))
+                    #:userinfo (uri-userinfo ref)
+                    #:host     (uri-host     ref)
+                    #:port     (uri-port     ref)
+                    #:path     (remove-dot-segments (uri-path ref))
+                    #:query    (uri-query    ref)
+                    #:fragment (uri-fragment ref)))
+        ((string-null? (uri-path ref))
+         (build-uri (uri-scheme base)
+                    #:userinfo (uri-userinfo base)
+                    #:host     (uri-host     base)
+                    #:port     (uri-port     base)
+                    #:path     (remove-dot-segments (uri-path base))
+                    #:query    (or (uri-query ref)
+                                   (uri-query base))
+                    #:fragment (uri-fragment ref)))
+        (else
+         (build-uri (uri-scheme base)
+                    #:userinfo (uri-userinfo base)
+                    #:host     (uri-host     base)
+                    #:port     (uri-port     base)
+                    #:path     (remove-dot-segments
+                                (if (string-prefix? "/" (uri-path ref))
+                                    (uri-path ref)
+                                    (merge-paths (uri-path base)
+                                                 (uri-path ref))))
+                    #:query    (uri-query    ref)
+                    #:fragment (uri-fragment ref)))))
+
 (define (http-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
 
@@ -260,7 +340,7 @@ which is not available during bootstrap."
          file))
       ((301                                       ; moved permanently
         302)                                      ; found (redirection)
-       (let ((uri (response-location resp)))
+       (let ((uri (resolve-uri-reference (response-location resp) uri)))
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))
          (close connection)
