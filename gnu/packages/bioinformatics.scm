@@ -311,6 +311,30 @@ several alignment strategies enable effective alignment of RNA-seq reads, in
 particular, reads spanning multiple exons.")
     (license license:gpl3+)))
 
+(define-public htseq
+  (package
+    (name "htseq")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/H/HTSeq/HTSeq-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i85ppf2j2lj12m0x690qq5nn17xxk23pbbx2c83r8ayb5wngzwv"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; only Python 2 is supported
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
+    (synopsis "Analysing high-throughput sequencing data with Python")
+    (description
+     "HTSeq is a Python package that provides infrastructure to process data
+from high-throughput sequencing assays.")
+    (license license:gpl3+)))
+
 (define-public rseqc
   (package
     (name "rseqc")
