@@ -372,11 +372,13 @@ implementation of the Open Sound Control (OSC) protocol.")
                "0aj2plkx56iar8vzjbq2l7hi7sp0ml99m0h44rgwai2x4vqkk2j2"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f)) ; no check target
-    (inputs
-     `(("lv2" ,lv2)
-       ("serd" ,serd)
+    ;; required by lilv-0.pc
+    (propagated-inputs
+     `(("serd" ,serd)
        ("sord" ,sord)
        ("sratom" ,sratom)))
+    (inputs
+     `(("lv2" ,lv2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://drobilla.net/software/lilv/")
