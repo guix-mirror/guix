@@ -38,6 +38,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/asciidoc.scm			\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
+  gnu/packages/audacity.scm			\
   gnu/packages/audio.scm			\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
@@ -369,6 +370,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
   gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
+  gnu/packages/patches/audacity-fix-ffmpeg-binding.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
