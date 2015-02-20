@@ -294,6 +294,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wine.scm				\
   gnu/packages/wordnet.scm			\
   gnu/packages/wv.scm				\
+  gnu/packages/wxwidgets.scm			\
   gnu/packages/xfig.scm				\
   gnu/packages/xiph.scm				\
   gnu/packages/xml.scm				\
