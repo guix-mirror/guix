@@ -141,6 +141,39 @@ intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
     (license license:gpl2)))
 
+(define-public python2-pybedtools
+  (package
+    (name "python2-pybedtools")
+    (version "0.6.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/p/pybedtools/pybedtools-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1ldzdxw1p4y3g2ignmggsdypvqkcwqwzhdha4rbgpih048z5p4an"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; no Python 3 support
+    (inputs
+     `(("python-cython" ,python2-cython)
+       ("python-matplotlib" ,python2-matplotlib)))
+    (propagated-inputs
+     `(("bedtools" ,bedtools)
+       ("samtools" ,samtools)))
+    (native-inputs
+     `(("python-pyyaml" ,python2-pyyaml)
+       ("python-nose" ,python2-nose)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "https://pythonhosted.org/pybedtools/")
+    (synopsis "Python wrapper for BEDtools programs")
+    (description
+     "pybedtools is a Python wrapper for Aaron Quinlan's BEDtools programs,
+which are widely used for genomic interval manipulation or \"genome algebra\".
+pybedtools extends BEDTools by offering feature-level manipulations from with
+Python.")
+    (license license:gpl2+)))
+
 (define-public bowtie
   (package
     (name "bowtie")
