@@ -2357,7 +2357,11 @@ toolkits.")
                   (html (string-append doc "/html"))
                   (pyver ,(string-append "PYVER=")))
              (with-directory-excursion "doc"
-               ;; Without setting this variable we get an encoding error.
+               ;; Install and set UTF-8 locale to avoid an encoding error.
+               (setenv "LOCPATH" (getcwd))
+               (system* "localedef" "--no-archive"
+                        "--prefix" (getcwd) "-i" "en_US"
+                        "-f" "UTF-8" "./en_US.UTF-8")
                (setenv "LANG" "en_US.UTF-8")
                ;; Fix generation of images for mathematical expressions.
                (substitute* (find-files "source" "conf\\.py")
