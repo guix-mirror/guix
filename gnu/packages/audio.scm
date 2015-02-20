@@ -256,6 +256,37 @@ synchronous execution of all clients, and low latency operation.")
     ;; Most files are under GPLv2+, but some headers are under LGPLv2.1+
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public jalv
+  (package
+    (name "jalv")
+    (version "1.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.drobilla.net/jalv-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1f1hcq74n3ziw8bk97mn5a1vgw028dxikv3fchaxd430pbbhqgl9"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("lv2" ,lv2)
+       ("lilv" ,lilv)
+       ("suil" ,suil)
+       ("gtk" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)
+       ("qt" ,qt-4)
+       ("jack" ,jack-1)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/jalv/")
+    (synopsis "Simple LV2 host for JACK")
+    (description
+     "Jalv is a simple but fully featured LV2 host for JACK.  It runs LV2
+plugins and exposes their ports as JACK ports, essentially making any LV2
+plugin function as a JACK application.")
+    (license license:isc)))
+
 (define-public ladspa
   (package
     (name "ladspa")
