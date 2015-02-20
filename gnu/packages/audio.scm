@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
@@ -744,3 +746,37 @@ analysis plugins or audio feature extraction plugins.")
     (license
      (license:x11-style
       "https://code.soundsoftware.ac.uk/projects/vamp-plugin-sdk/repository/entry/COPYING"))))
+
+(define-public libsbsms
+  (package
+    (name "libsbsms")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/sbsms/sbsms/" version
+                           "/libsbsms-" version ".tar.gz"))
+       (sha256
+        (base32 "1vmf84iy4dkwxv887grnlsfk43fmhd9gbg26gc2kgcv40sbkvayf"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("automake" ,automake)))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'fix-ar-lib-path
+        (lambda* (#:key inputs #:allow-other-keys)
+          ;; Originally a symlink to '/usr/local/share/automake-1.12/ar-lib'.
+          (delete-file "ar-lib")
+          (symlink
+           (string-append (assoc-ref inputs "automake") "/share/automake-"
+                          ,(package-version automake) "/ar-lib")
+           "ar-lib"))
+        %standard-phases)))
+    (home-page "http://sbsms.sourceforge.net/")
+    (synopsis "Library for time stretching and pitch scaling of audio")
+    (description
+     "SBSMS (Subband Sinusoidal Modeling Synthesis) is software for time
+stretching and pitch scaling of audio.  This package contains the library.")
+    ;; There is no explicit declaration of a license, but a COPYING file
+    ;; containing gpl2.
+    (license license:gpl2)))
