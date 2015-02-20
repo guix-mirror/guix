@@ -25,6 +25,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -818,4 +819,25 @@ stretching and pitch scaling of audio.  This package contains the library.")
 and playback rates of audio streams or audio files.  It is intended for
 application developers writing sound processing tools that require tempo/pitch
 control functionality, or just for playing around with the sound effects.")
+    (license license:lgpl2.1+)))
+
+(define-public soxr
+  (package
+    (name "soxr")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/soxr/soxr-" version
+                       "-Source.tar.xz"))
+       (sha256
+        (base32 "1hmadwqfpg15vhwq9pa1sl5xslibrjpk6hpq2s9hfmx1s5l6ihfw"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))          ;no 'check' target
+    (home-page "http://sourceforge.net/p/soxr/wiki/Home/")
+    (synopsis "One-dimensional sample-rate conversion library")
+    (description
+     "The SoX Resampler library (libsoxr) performs one-dimensional sample-rate
+conversion.  It may be used, for example, to resample PCM-encoded audio.")
     (license license:lgpl2.1+)))
