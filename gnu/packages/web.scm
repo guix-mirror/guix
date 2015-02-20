@@ -799,3 +799,23 @@ select or poll.")
 server).  It was primarily designed to be used by one person or a small group
 of people.")
     (license l:expat)))
+
+(define-public libyaml
+  (package
+    (name "libyaml")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://pyyaml.org/download/libyaml/yaml-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1vrv5ly58bkmcyc049ad180f2m8iav6l9h3v8l2fqdmrny7yx1zs"))))
+    (build-system gnu-build-system)
+    (home-page "http://pyyaml.org/wiki/LibYAML")
+    (synopsis "YAML 1.1 parser and emitter written in C")
+    (description
+     "LibYAML is a YAML 1.1 parser and emitter written in C.")
+    (license l:expat)))
