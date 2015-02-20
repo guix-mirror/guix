@@ -867,3 +867,32 @@ conversion.  It may be used, for example, to resample PCM-encoded audio.")
 tooLAME by Mike Cheng, which in turn is based upon the ISO dist10 code and
 portions of LAME.")
     (license license:lgpl2.1+)))
+
+(define-public portaudio
+  (package
+    (name "portaudio")
+    (version "19.20140130")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.portaudio.com/archives/pa_stable_v"
+             (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
+             ".tgz"))
+       (sha256
+        (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))))
+    (build-system gnu-build-system)
+    (inputs
+     ;; TODO: Add ASIHPI.
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments '(#:tests? #f))          ;no 'check' target
+    (home-page "http://www.portaudio.com/")
+    (synopsis "Audio I/O library")
+    (description
+     "PortAudio is a portable C/C++ audio I/O library providing a simple API
+to record and/or play sound using a callback function or a blocking read/write
+interface.")
+    (license license:expat)))
