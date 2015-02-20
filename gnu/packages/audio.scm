@@ -33,6 +33,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -780,3 +781,41 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; There is no explicit declaration of a license, but a COPYING file
     ;; containing gpl2.
     (license license:gpl2)))
+
+(define-public soundtouch
+  (package
+    (name "soundtouch")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
+       (sha256
+        (base32 "0sqn3wk4qz20vf0vz853l6dl1gnj1yhqxfwxqsc5lp529kbn2h9x"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("file" ,file)))
+    (arguments
+     '(#:phases
+       (alist-cons-before
+        'configure 'bootstrap
+        (lambda _
+          (unless (zero? (system* "sh" "bootstrap"))
+            (error "bootstrap failed"))
+          (substitute* '("configure")
+            (("/usr/bin/file") "file")))
+        %standard-phases)))
+    (home-page "http://www.surina.net/soundtouch/")
+    (synopsis
+     "Audio processing library for changing tempo, pitch and playback rate")
+    (description
+     "SoundTouch is an audio processing library for changing the tempo, pitch
+and playback rates of audio streams or audio files.  It is intended for
+application developers writing sound processing tools that require tempo/pitch
+control functionality, or just for playing around with the sound effects.")
+    (license license:lgpl2.1+)))
