@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -324,3 +325,21 @@ processed by a Bourne-type shell to unpack the original collection of files.
 This package is mostly for compatibility and historical interest.")
     (license license:gpl3+)))
 
+(define-public libmspack
+  (package
+    (name "libmspack")
+    (version "0.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.cabextract.org.uk/libmspack/libmspack-"
+                          version "alpha.tar.gz"))
+      (sha256
+       (base32 "04413hynb7zizxnkgy9riik3612dwirkpr6fcjrnfl2za9sz4rw9"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.cabextract.org.uk/libmspack/")
+    (synopsis "Compression tools for some formats used by Microsoft")
+    (description
+     "The purpose of libmspack is to provide both compression and
+decompression of some loosely related file formats used by Microsoft.")
+    (license license:lgpl2.1+)))
