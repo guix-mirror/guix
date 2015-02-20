@@ -48,6 +48,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages which)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
@@ -840,4 +841,29 @@ control functionality, or just for playing around with the sound effects.")
     (description
      "The SoX Resampler library (libsoxr) performs one-dimensional sample-rate
 conversion.  It may be used, for example, to resample PCM-encoded audio.")
+    (license license:lgpl2.1+)))
+
+(define-public twolame
+  (package
+    (name "twolame")
+    (version "0.3.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/twolame/twolame-" version ".tar.gz"))
+       (sha256
+        (base32 "0ahiqqng5pidwhj1wzph4vxxgxxgcfa3gl0gywipzx2ii7s35wwq"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("which" ,which)))               ;used in tests/test.pl
+    (home-page "http://www.twolame.org/")
+    (synopsis "MPEG Audio Layer 2 (MP2) encoder")
+    (description
+     "TwoLAME is an optimised MPEG Audio Layer 2 (MP2) encoder based on
+tooLAME by Mike Cheng, which in turn is based upon the ISO dist10 code and
+portions of LAME.")
     (license license:lgpl2.1+)))
