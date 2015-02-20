@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,12 +99,13 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
   (string-append "http://search.cpan.org/dist/" name))
 
 (define %corelist
-  (let* ((perl (with-store store
-                 (derivation->output-path
-                  (package-derivation store perl))))
-         (core (string-append perl "/bin/corelist")))
-    (and (access? core X_OK)
-         core)))
+  (delay
+    (let* ((perl (with-store store
+                   (derivation->output-path
+                    (package-derivation store perl))))
+           (core (string-append perl "/bin/corelist")))
+      (and (access? core X_OK)
+           core))))
 
 (define (cpan-module->sexp meta)
   "Return the `package' s-expression for a CPAN module from the metadata in
@@ -120,9 +122,9 @@ META."
     (assoc-ref meta "version"))
 
   (define (core-module? name)
-    (and %corelist
+    (and (force %corelist)
          (parameterize ((current-error-port (%make-void-port "w")))
-           (let* ((corelist (open-pipe* OPEN_READ %corelist name)))
+           (let* ((corelist (open-pipe* OPEN_READ (force %corelist) name)))
              (let loop ((line (read-line corelist)))
                (if (eof-object? line)
                    (begin (close-pipe corelist) #f)
