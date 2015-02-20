@@ -53,6 +53,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages which)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -1721,6 +1722,37 @@ environments and back.")
 
 (define-public python2-itsdangerous
   (package-with-python2 python-itsdangerous))
+
+(define-public python-pyyaml
+  (package
+    (name "python-pyyaml")
+    (version "3.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/PyYAML/PyYAML-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1s26125vfnskng58ym37xhwv8v0mm95b2cwbjfag8prfhy596v63"))))
+    (build-system python-build-system)
+    (inputs
+     `(("libyaml" ,libyaml)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pyyaml.org/wiki/PyYAML")
+    (synopsis "YAML parser and emitter for Python")
+    (description
+     "PyYAML is a YAML parser and emitter for Python.  PyYAML features a
+complete YAML 1.1 parser, Unicode support, pickle support, capable extension
+API, and sensible error messages.  PyYAML supports standard YAML tags and
+provides Python-specific tags that allow to represent an arbitrary Python
+object.")
+    (license license:expat)))
+
+(define-public python2-pyyaml
+  (package-with-python2 python-pyyaml))
 
 (define-public python-virtualenv
   (package
