@@ -1,0 +1,60 @@
+Taken from Debian, necessary for compilation on mips.
+
+Patch to fix integer types problem by Goswin von Brederlow
+<brederlo@informatik.uni-tuebingen.de> (#258444)
+--- chmlib-0.39.orig/src/chm_lib.c
++++ chmlib-0.39/src/chm_lib.c
+@@ -56,6 +56,7 @@
+ 
+ #include "lzx.h"
+ 
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #ifdef CHM_DEBUG
+@@ -149,22 +150,9 @@
+ typedef __int64                 Int64;
+ typedef unsigned __int64        UInt64;
+ 
+-/* I386, 32-bit, non-Windows */
+-/* Sparc        */
+-/* MIPS         */
+-/* PPC          */
+-#elif __i386__ || __sun || __sgi || __ppc__
+-typedef unsigned char           UChar;
+-typedef short                   Int16;
+-typedef unsigned short          UInt16;
+-typedef long                    Int32;
+-typedef unsigned long           UInt32;
+-typedef long long               Int64;
+-typedef unsigned long long      UInt64;
+-
+ /* x86-64 */
+ /* Note that these may be appropriate for other 64-bit machines. */
+-#elif __x86_64__ || __ia64__
++#elif defined(__LP64__)
+ typedef unsigned char           UChar;
+ typedef short                   Int16;
+ typedef unsigned short          UInt16;
+@@ -173,10 +161,18 @@
+ typedef long                    Int64;
+ typedef unsigned long           UInt64;
+ 
++/* I386, 32-bit, non-Windows */
++/* Sparc        */
++/* MIPS         */
++/* PPC          */
+ #else
+-
+-/* yielding an error is preferable to yielding incorrect behavior */
+-#error "Please define the sized types for your platform in chm_lib.c"
++typedef unsigned char           UChar;
++typedef short                   Int16;
++typedef unsigned short          UInt16;
++typedef long                    Int32;
++typedef unsigned long           UInt32;
++typedef long long               Int64;
++typedef unsigned long long      UInt64;
+ #endif
+ 
+ /* GCC */

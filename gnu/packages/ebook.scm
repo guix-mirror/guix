@@ -20,7 +20,8 @@
   #:use-module ((guix licenses) #:select (lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages))
 
 (define-public chmlib
   (package
@@ -32,7 +33,8 @@
                                  version ".tar.bz2"))
              (sha256
                (base32
-                "18zzb4x3z0d7fjh1x5439bs62dmgsi4c1pg3qyr7h5gp1i5xcj9l"))))
+                "18zzb4x3z0d7fjh1x5439bs62dmgsi4c1pg3qyr7h5gp1i5xcj9l"))
+             (patches (list (search-patch "chmlib-inttypes.patch")))))
     (build-system gnu-build-system)
     (home-page "http://www.jedrea.com/chmlib/")
     (synopsis "Library for CHM files")
