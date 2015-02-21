@@ -230,6 +230,27 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
                               "Exporter-Lite-" version))
     (license (package-license perl))))
 
+(define-public perl-params-util
+  (package
+    (name "perl-params-util")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/Params-Util-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0v67sx93yhn7xa0nh9mnbf8mixf54czk6wzrjsp6dzzr5hzyrw9h"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Params-Util")
+    (synopsis "Simple, compact and correct param-checking functions")
+    (description
+     "Params::Util provides a basic set of importable functions that makes
+checking parameters easier.")
+    (license (package-license perl))))
+
 (define-public perl-probe-perl
   (package
     (name "perl-probe-perl")
