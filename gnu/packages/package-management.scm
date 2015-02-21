@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module ((guix licenses) #:select (gpl3+ lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages compression) #:select (bzip2 gzip))
@@ -210,3 +211,31 @@ never change after they have been built.  Nix stores packages in the Nix
 store, usually the directory /nix/store, where each package has its own unique
 sub-directory.")
     (license lgpl2.1+)))
+
+(define-public stow
+  (package
+    (name "stow")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/stow/stow-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0arw1nsdlcvd7javkbk2bdvnc31d7dmb6fr25xyyi6ng76cxg2cb"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)))
+    (native-inputs
+     `(("perl-test-simple" ,perl-test-simple)
+       ("perl-test-output" ,perl-test-output)
+       ("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "https://www.gnu.org/software/stow/")
+    (synopsis "Managing installed software packages")
+    (description
+     "GNU Stow is a symlink manager.  It generates symlinks to directories
+of data and makes them appear to be merged into the same directory.  It is
+typically used for managing software packages installed from source, by
+letting you install them apart in distinct directories and then create
+symlinks to the files in a common directory such as /usr/local.")
+    (license gpl2+)))
