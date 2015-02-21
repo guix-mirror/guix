@@ -615,11 +615,23 @@ Suil currently supports every combination of Gtk 2, Qt 4, and X11.")
                     "/attachments/download/690/vamp-plugin-sdk-"
                     version
                     ".tar.gz"))
-             (sha256
-              (base32
-               "178kfgq08cmgdzv7g8dwyjp4adwx8q04riimncq4nqkm8ng9ywbv"))))
+              (sha256
+               (base32
+                "178kfgq08cmgdzv7g8dwyjp4adwx8q04riimncq4nqkm8ng9ywbv"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:phases
+       (alist-cons-after
+        'install 'remove-libvamp-hostsdk.la
+        (lambda* (#:key outputs #:allow-other-keys)
+          ;; https://bugs.launchpad.net/ubuntu/+source/vamp-plugin-sdk/+bug/1253656
+          (for-each delete-file
+                    (let ((out (assoc-ref outputs "out")))
+                      (list (string-append out "/lib/libvamp-sdk.la")
+                            (string-append out "/lib/libvamp-hostsdk.la"))))
+          #t)
+        %standard-phases)))
     (inputs
      `(("libsndfile" ,libsndfile)))
     (native-inputs
