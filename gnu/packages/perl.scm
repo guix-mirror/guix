@@ -480,6 +480,31 @@ bin as is also commonly used) paths of your Perl distribution.")
                               "Test-Simple-" version))
     (license (package-license perl))))
 
+(define-public perl-test-output
+  (package
+    (name "perl-test-output")
+    (version "1.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                                  "Test-Output-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12991jnzj4cbw9whhprmqvnzd1ayii84g2mh8vxbjngwqrjsy41i"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-test-tester" ,perl-test-tester)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (synopsis "Utilities to test STDOUT and STDERR messages")
+    (description
+     "Test::Output provides a simple interface for testing output sent to
+STDOUT or STDERR.  A number of different utilities are included to try and be
+as flexible as possible to the tester.")
+    (home-page (string-append "http://search.cpan.org/~bdfoy/"
+                              "Test-Output-" version))
+    (license (package-license perl))))
+
 (define-public perl-test-tester
   (package
     (name "perl-test-tester")
