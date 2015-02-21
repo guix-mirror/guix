@@ -942,3 +942,50 @@ portions of LAME.")
 to record and/or play sound using a callback function or a blocking read/write
 interface.")
     (license license:expat)))
+
+(define-public zita-alsa-pcmi
+  (package
+    (name "zita-alsa-pcmi")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-alsa-pcmi-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "libs/Makefile"
+                  (("ldconfig") "true")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack
+        'enter-directory
+        (lambda _ (chdir "libs"))
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libzita-alsa-pcmi.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libzita-alsa-pcmi.so.0")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "C++ wrapper around the ALSA API")
+    (description
+     "Zita-alsa-pcmi is a C++ wrapper around the ALSA API.  It provides easy
+access to ALSA PCM devices, taking care of the many functions required to
+open, initialise and use a hw: device in mmap mode, and providing floating
+point audio data.")
+    (license license:gpl3+)))
