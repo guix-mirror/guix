@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -273,6 +274,28 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; "You may use this module under the terms of the BSD, Artistic, or GPL
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
+
+(define-public perl-sub-install
+  (package
+    (name "perl-sub-install")
+    (version "0.928")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Sub-Install-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "03zgk1yh128gciyx3q77zxzxg9kf8yy2gm46gdxqi24mcykngrb1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sub-Install")
+    (synopsis "Install subroutines into packages easily")
+    (description
+     "Sub::Install makes it easy to install subroutines into packages without
+the unsightly mess of C<no strict> or typeglobs lying about where just anyone
+can see them.")
+    (license (package-license perl))))
 
 (define-public perl-test-deep
   (package
