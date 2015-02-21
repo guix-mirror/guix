@@ -420,6 +420,7 @@ connection alive.")
                     (let* ((out       (assoc-ref outputs "out"))
                            (libexec   (string-append out "/libexec"))
                            (coreutils (assoc-ref inputs "coreutils"))
+                           (inetutils (assoc-ref inputs "inetutils"))
                            (net-tools (assoc-ref inputs "net-tools"))
                            (sed       (assoc-ref inputs "sed")))
                       (substitute* "client/scripts/linux"
@@ -431,17 +432,19 @@ connection alive.")
                       (copy-file "client/scripts/linux"
                                  (string-append libexec "/dhclient-script"))
 
-                      (wrap-program (string-append libexec "/dhclient-script")
-                                    `("PATH" ":" prefix
-                                      ,(map (lambda (dir)
-                                              (string-append dir "/bin:"
-                                                             dir "/sbin"))
-                                            (list net-tools coreutils sed))))))
+                      (wrap-program
+                          (string-append libexec "/dhclient-script")
+                        `("PATH" ":" prefix
+                          ,(map (lambda (dir)
+                                  (string-append dir "/bin:"
+                                                 dir "/sbin"))
+                                (list inetutils net-tools coreutils sed))))))
                   %standard-phases))))
 
     (native-inputs `(("perl" ,perl)))
 
-    (inputs `(("net-tools" ,net-tools)
+    (inputs `(("inetutils" ,inetutils)
+              ("net-tools" ,net-tools)
               ("iproute" ,iproute)
 
               ;; When cross-compiling, we need the cross Coreutils and sed.
