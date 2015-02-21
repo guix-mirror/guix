@@ -1724,6 +1724,34 @@ you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
     (license gpl2+)))
 
+(define-public i2c-tools
+  (package
+    (name "i2c-tools")
+    (version "3.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dl.lm-sensors.org/i2c-tools/releases/i2c-tools-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "000pvg995qy1b15ks59gd0klri55hb33kqpg5czy84hw1pbdgm0l"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no 'check' target
+       #:make-flags (list (string-append "prefix=" %output)
+                          "CC=gcc")
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://www.lm-sensors.org/wiki/I2CTools")
+    (synopsis "I2C tools for Linux")
+    (description
+     "The i2c-tools package contains a heterogeneous set of I2C tools for
+Linux: a bus probing tool, a chip dumper, register-level SMBus access helpers,
+EEPROM decoding scripts, EEPROM programming tools, and a python module for
+SMBus access.")
+    (license gpl2+)))
+
 (define-public xsensors
   (package
     (name "xsensors")
