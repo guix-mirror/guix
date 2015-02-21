@@ -53,6 +53,40 @@
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
+(define-public alsa-modular-synth
+  (package
+    (name "alsa-modular-synth")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/alsamodular/ams-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1nb7qzzqlqa2x8h797jbwi18ihnfkxqg9lyi0c4nvf8ybwzxkzd2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ;; We cannot use zita-alsa-pcmi (the successor of clalsadrv) due to
+       ;; license incompatibility.
+       ("clalsadrv" ,clalsadrv)
+       ("fftw" ,fftw)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("liblo" ,liblo)
+       ("qt" ,qt-4)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://alsamodular.sourceforge.net/")
+    (synopsis "Realtime modular synthesizer and effect processor")
+    (description
+     "AlsaModularSynth is a digital implementation of a classical analog
+modular synthesizer system.  It uses virtual control voltages to control the
+parameters of the modules.  The control voltages which control the frequency
+e.g. of the VCO (Voltage Controlled Oscillator) and VCF (Voltage Controlled
+Filter) modules follow the convention of 1V / Octave.")
+    (license license:gpl2)))
+
 (define-public aubio
   (package
     (name "aubio")
