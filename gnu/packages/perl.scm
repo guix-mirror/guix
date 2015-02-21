@@ -232,6 +232,30 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-data-optlist
+  (package
+    (name "perl-data-optlist")
+    (version "0.109")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Data-OptList-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1j44rm2spprlq3bc80cxni3dzs3gfjiqv1qc9q7820n1qj0wgmqw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sub-install" ,perl-sub-install)))
+    (inputs
+     `(("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Data-OptList")
+    (synopsis "Parse and validate simple name/value option pairs")
+    (description
+     "Data::OptList provides a simple syntax for name/value option pairs.")
+    (license (package-license perl))))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
