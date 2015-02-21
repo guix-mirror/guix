@@ -233,6 +233,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
+  gnu/packages/pumpio.scm			\
   gnu/packages/pretty-print.scm			\
   gnu/packages/protobuf.scm			\
   gnu/packages/python.scm			\
