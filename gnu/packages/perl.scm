@@ -343,6 +343,30 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-sub-exporter
+  (package
+    (name "perl-sub-exporter")
+    (version "0.987")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Sub-Exporter-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ml3n1ck4ln9qjm2mcgkczj1jb5n1fkscz9c4x23v4db0glb4g2l"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-data-optlist" ,perl-data-optlist)
+       ("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Sub-Exporter")
+    (synopsis "Sophisticated exporter for custom-built routines")
+    (description
+     "Sub::Exporter provides a sophisticated alternative to Exporter.pm for
+custom-built routines.")
+    (license (package-license perl))))
+
 (define-public perl-sub-install
   (package
     (name "perl-sub-install")
