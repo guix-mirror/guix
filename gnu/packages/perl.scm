@@ -209,6 +209,29 @@ but don't want to go all out and profile your code.")
                               "Benchmark-Timer-" version))
     (license gpl2)))
 
+(define-public perl-capture-tiny
+  (package
+    (name "perl-capture-tiny")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Capture-Tiny-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "117gmwipql1y5xnw9jil3lhdsrf2wsm9wjdzqj66x971n3fwm573"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Capture-Tiny")
+    (synopsis "Capture STDOUT and STDERR from Perl, XS or external programs")
+    (description
+     "Capture::Tiny provides a simple, portable way to capture almost anything
+sent to STDOUT or STDERR, regardless of whether it comes from Perl, from XS
+code or from an external program.  Optionally, output can be teed so that it
+is captured while being passed through to the original file handles.")
+    (license asl2.0)))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
