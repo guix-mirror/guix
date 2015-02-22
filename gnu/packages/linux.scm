@@ -1743,6 +1743,8 @@ It works with most newer systems.")
                           "CC=gcc")
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("perl" ,perl)))
     (home-page "http://www.lm-sensors.org/wiki/I2CTools")
     (synopsis "I2C tools for Linux")
     (description
