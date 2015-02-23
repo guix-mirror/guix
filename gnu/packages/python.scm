@@ -1952,6 +1952,74 @@ sources.")
 (define-public python2-sphinx-rtd-theme
   (package-with-python2 python-sphinx-rtd-theme))
 
+(define-public python-scikit-learn
+  (package
+    (name "python-scikit-learn")
+    (version "0.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/scikit-learn/scikit-learn/archive/"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1rb93h2q15f219sz60sczjb65rg70xjmnp0q4pkkaairx5s05q55"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'set-environment-variables
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let* ((atlas-threaded
+                  (string-append (assoc-ref inputs "atlas")
+                                 "/lib/libtatlas.so"))
+                 ;; On single core CPUs only the serial library is created.
+                 (atlas-lib
+                  (if (file-exists? atlas-threaded)
+                      atlas-threaded
+                      (string-append (assoc-ref inputs "atlas")
+                                     "/lib/libsatlas.so"))))
+            (setenv "ATLAS" atlas-lib)))
+        (alist-cons-before
+         'check 'set-HOME
+         ;; some tests require access to "$HOME"
+         (lambda _ (setenv "HOME" "/tmp"))
+         ;; Tests can only be run after the library has been installed and not
+         ;; within the source directory.
+         (alist-cons-after
+          'install 'check
+          (lambda _
+            (with-directory-excursion "/tmp"
+              ;; With Python 3 one test of 3334 fails
+              ;; (sklearn.tests.test_common.test_transformers); see
+              ;; https://github.com/scikit-learn/scikit-learn/issues/3693
+              (system* "nosetests" "-v" "sklearn")))
+          (alist-delete 'check %standard-phases))))))
+    (inputs
+     `(("atlas" ,atlas)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (home-page "http://scikit-learn.org/")
+    (synopsis "Machine Learning in Python")
+    (description
+     "Scikit-learn provides simple and efficient tools for data
+mining and data analysis.")
+    (license bsd-3)))
+
+(define-public python2-scikit-learn
+  (let ((scikit (package-with-python2 python-scikit-learn)))
+    (package (inherit scikit)
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ,@(alist-delete
+            "python-numpy"
+            (alist-delete
+             "python-scipy" (package-propagated-inputs scikit))))))))
+
 (define-public python-cython
   (package
     (name "python-cython")
