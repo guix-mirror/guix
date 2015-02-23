@@ -1689,17 +1689,6 @@ OAuth request-signing logic.")
   (let ((base (package-with-python2 python-oauthlib)))
     (package
       (inherit base)
-      (name "python2-oauthlib")
-      (version "0.6.3")
-      (source (origin
-                (method url-fetch)
-                (uri
-                 (string-append
-                  "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
-                  version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
       (inputs
        (append (package-inputs base)
                `(("python2-unittest2" ,python2-unittest2)))))))
@@ -1994,25 +1983,25 @@ writing C extensions for Python as easy as Python itself.")
         'build 'set-environment-variables
         (lambda* (#:key inputs #:allow-other-keys)
           (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas") 
+                  (string-append (assoc-ref inputs "atlas")
                                  "/lib/libtatlas.so"))
                  ;; On single core CPUs only the serial library is created.
                  (atlas-lib
                   (if (file-exists? atlas-threaded)
                       atlas-threaded
-                      (string-append (assoc-ref inputs "atlas") 
+                      (string-append (assoc-ref inputs "atlas")
                                      "/lib/libsatlas.so"))))
             (setenv "ATLAS" atlas-lib)))
         ;; Tests can only be run after the library has been installed and not
         ;; within the source directory.
         (alist-cons-after
          'install 'check
-         (lambda _ 
+         (lambda _
            (with-directory-excursion "/tmp"
-             (zero? (system* "python" "-c" 
+             (zero? (system* "python" "-c"
                              "import numpy; numpy.test(verbose=2)"))))
-         (alist-delete 
-          'check 
+         (alist-delete
+          'check
           %standard-phases)))))
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
@@ -2030,7 +2019,7 @@ capabilities.")
   (package (inherit python-numpy-bootstrap)
     (name "python-numpy")
     (outputs '("out" "doc"))
-    (inputs 
+    (inputs
      `(("which" ,which)
        ("python-setuptools" ,python-setuptools)
        ("python-matplotlib" ,python-matplotlib)
@@ -2045,15 +2034,15 @@ capabilities.")
        ("perl" ,perl)
        ,@(package-native-inputs python-numpy-bootstrap)))
     (arguments
-     `(,@(substitute-keyword-arguments 
+     `(,@(substitute-keyword-arguments
              (package-arguments python-numpy-bootstrap)
            ((#:phases phases)
             `(alist-cons-after
               'install 'install-doc
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                       (doc (string-append 
-                             data "/doc/" ,name "-" 
+                       (doc (string-append
+                             data "/doc/" ,name "-"
                              ,(package-version python-numpy-bootstrap)))
                        (info (string-append data "/info"))
                        (html (string-append doc "/html"))
@@ -2062,7 +2051,7 @@ capabilities.")
                     (mkdir-p html)
                     (system* "make" "html" pyver)
                     (system* "make" "latex" "PAPER=a4" pyver)
-                    (system* "make" "-C" "build/latex" 
+                    (system* "make" "-C" "build/latex"
                              "all-pdf" "PAPER=a4" pyver)
                     ;; FIXME: Generation of the info file fails.
                     ;; (system* "make" "info" pyver)
@@ -2091,7 +2080,7 @@ capabilities.")
       ;; import the right version of 'matplotlib' as well.
       (inputs `(("python2-numpydoc" ,python2-numpydoc)
                 ("python2-matplotlib" ,python2-matplotlib)
-                ,@(alist-delete "python-numpydoc" 
+                ,@(alist-delete "python-numpydoc"
                                 (alist-delete "python-matplotlib"
                                               (package-inputs numpy))))))))
 
@@ -2117,15 +2106,15 @@ capabilities.")
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((doc (string-append (assoc-ref outputs "doc") 
+          (let* ((doc (string-append (assoc-ref outputs "doc")
                                      "/share/doc/" ,name "-" ,version))
                  (html-doc (string-append doc "/html"))
                  (examples (string-append doc "/examples")))
             (mkdir-p html-doc)
             (mkdir-p examples)
-            (for-each 
+            (for-each
              (lambda (dir tgt)
-               (map (lambda (file) 
+               (map (lambda (file)
                       (copy-file file (string-append tgt "/" (basename file))))
                     (find-files dir ".*")))
              (list "docs" "htmldoc" "examples")
@@ -2150,7 +2139,7 @@ that client code uses to construct the grammar directly in Python code.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append 
+       (uri (string-append
              "https://pypi.python.org/packages/source/n/numpydoc/numpydoc-"
              version ".tar.gz"))
        (sha256
@@ -2170,7 +2159,7 @@ that client code uses to construct the grammar directly in Python code.")
     (license bsd-2)))
 
 (define-public python2-numpydoc
-  (package 
+  (package
     (inherit (package-with-python2 python-numpydoc))
     ;; With python-2 1 test (out of 30) fails because it doesn't find
     ;; matplotlib.  With python-3 it seems to detect at run-time the absence
@@ -2297,16 +2286,16 @@ toolkits.")
     (package (inherit matplotlib)
       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
       ;; customized for Python 2.
-      (propagated-inputs 
+      (propagated-inputs
        `(("python2-py2cairo" ,python2-py2cairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
          ,@(alist-delete "python-pycairo"
                          (alist-delete "python-pygobject"
-                                       (package-propagated-inputs 
+                                       (package-propagated-inputs
                                         matplotlib)))))
-      (inputs 
+      (inputs
        `(("python2-numpydoc" ,python2-numpydoc)
-         ,@(alist-delete "python-numpydoc" 
+         ,@(alist-delete "python-numpydoc"
                          (package-inputs matplotlib)))))))
 
 (define-public python-scipy
@@ -2340,13 +2329,13 @@ toolkits.")
         'build 'set-environment-variables
         (lambda* (#:key inputs #:allow-other-keys)
           (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas") 
+                  (string-append (assoc-ref inputs "atlas")
                                  "/lib/libtatlas.so"))
                  ;; On single core CPUs only the serial library is created.
                  (atlas-lib
                   (if (file-exists? atlas-threaded)
                       atlas-threaded
-                      (string-append (assoc-ref inputs "atlas") 
+                      (string-append (assoc-ref inputs "atlas")
                                      "/lib/libsatlas.so"))))
             (setenv "ATLAS" atlas-lib)))
         (alist-cons-after
@@ -2385,11 +2374,11 @@ toolkits.")
          ;; within the source directory.
          (alist-cons-after
           'install 'check
-          (lambda _ 
+          (lambda _
             (with-directory-excursion "/tmp"
               (zero? (system* "python" "-c" "import scipy; scipy.test()"))))
-          (alist-delete 
-           'check 
+          (alist-delete
+           'check
            %standard-phases))))))
     (home-page "http://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
@@ -2404,8 +2393,8 @@ routines such as routines for numerical integration and optimization.")
       ;; Use packages customized for python-2.
       (inputs `(("python2-matplotlib" ,python2-matplotlib)
                 ("python2-numpy" ,python2-numpy)
-                ,@(alist-delete "python-matplotlib" 
-                                (alist-delete "python-numpy" 
+                ,@(alist-delete "python-matplotlib"
+                                (alist-delete "python-numpy"
                                               (package-inputs scipy))))))))
 
 (define-public python-sqlalchemy
@@ -2572,7 +2561,7 @@ a general image processing tool.")
      `(("pkg-config" ,pkg-config)
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-replace
         'check
         (lambda _
@@ -2611,7 +2600,7 @@ a front-end for C compilers or analysis tools.")
       (method url-fetch)
       (uri (string-append "https://pypi.python.org/packages/source/c/"
                           "cffi/cffi-" version ".tar.gz"))
-      (sha256 
+      (sha256
        (base32 "0406j3sgndmx88idv5zxkkrwfqxmjl18pj8gf47nsg4ymzixjci5"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
@@ -2625,7 +2614,7 @@ a front-end for C compilers or analysis tools.")
        ("python-setuptools" ,python-setuptools)))
     (arguments
      `(#:tests? #f ; FIXME: requires pytest
-       #:phases 
+       #:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
@@ -2668,7 +2657,7 @@ a front-end for C compilers or analysis tools.")
     (propagated-inputs
      `(("python-cffi" ,python-cffi))) ; used at run time
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
@@ -2714,14 +2703,14 @@ support for Python 3 and PyPy.  It is based on cffi.")
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key inputs outputs #:allow-other-keys)
           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
                  (doc (string-append data "/doc/" ,name "-" ,version))
                  (html (string-append doc "/html")))
-            (setenv "LD_LIBRARY_PATH" 
+            (setenv "LD_LIBRARY_PATH"
                     (string-append (assoc-ref inputs "cairo") "/lib" ":"
                                    (assoc-ref inputs "gdk-pixbuf") "/lib"))
             (setenv "LANG" "en_US.UTF-8")
@@ -2772,7 +2761,7 @@ PNG, PostScript, PDF, and SVG file output.")
        ("texinfo" ,texinfo)
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2808,8 +2797,8 @@ PNG, PostScript, PDF, and SVG file output.")
            ;;   (zero? (system* (string-append (assoc-ref outputs "out")
            ;;                                  "/bin/iptest"))))
            #t)
-         (alist-delete 
-          'check 
+         (alist-delete
+          'check
           %standard-phases)))))
     (home-page "http://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
@@ -2824,7 +2813,7 @@ computing.")
   (let ((ipython (package-with-python2 python-ipython)))
     (package (inherit ipython)
       ;; Make sure we use custom python2-NAME packages.
-      (inputs 
+      (inputs
        `(("python2-numpydoc" ,python2-numpydoc)
          ("python2-matplotlib" ,python2-matplotlib)
          ,@(alist-delete "python-numpydoc"
