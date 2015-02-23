@@ -94,7 +94,8 @@
 (test-assert "gnu-build-system"
   (build-system? gnu-build-system))
 
-(unless (network-reachable?) (test-skip 1))
+(when (or (not (network-reachable?)) (shebang-too-long?))
+  (test-skip 1))
 (test-assert "gnu-build"
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
          (hash     (nix-base32-string->bytevector

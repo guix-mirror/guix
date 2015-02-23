@@ -32,6 +32,7 @@
             random-text
             random-bytevector
             network-reachable?
+            shebang-too-long?
             mock
             %substitute-directory
             with-derivation-narinfo
@@ -184,6 +185,17 @@ CONTENTS."
     (lambda ()
       (delete-file (string-append dir "/example.out"))
       (delete-file (string-append dir "/example.nar")))))
+
+(define (shebang-too-long?)
+  "Return true if the typical shebang in the current store would exceed
+Linux's static limit---the BINPRM_BUF_SIZE constant, normally 128 characters
+all included."
+  (define shebang
+    (string-append "#!" (%store-prefix) "/"
+                   (make-string 32 #\a)
+                   "-bootstrap-binaries-0/bin/bash\0"))
+
+  (> (string-length shebang) 128))
 
 (define-syntax with-derivation-substitute
   (syntax-rules (sha256 =>)

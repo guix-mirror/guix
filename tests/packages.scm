@@ -531,7 +531,8 @@
                      (%current-target-system "foo64-linux-gnu"))
         (equal? drv (bag->derivation %store bag))))))
 
-(unless (network-reachable?) (test-skip 1))
+(when (or (not (network-reachable?)) (shebang-too-long?))
+  (test-skip 1))
 (test-assert "GNU Make, bootstrap"
   ;; GNU Make is the first program built during bootstrap; we choose it
   ;; here so that the test doesn't last for too long.

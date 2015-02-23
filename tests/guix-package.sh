@@ -28,6 +28,14 @@ readlink_base ()
     basename `readlink "$1"`
 }
 
+# Return true if a typical shebang in the store would not exceed Linux's
+# default static limit.
+shebang_not_too_long ()
+{
+    test `echo $NIX_STORE_DIR/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bootstrap-binaries-0/bin/bash | wc -c` \
+	 -lt 128
+}
+
 module_dir="t-guix-package-$$"
 profile="t-profile-$$"
 rm -f "$profile"
@@ -55,8 +63,9 @@ test -f "$profile/bin/guile"
 guix package --search-paths -p "$profile"
 test "`guix package --search-paths -p "$profile" | wc -l`" = 0
 
-# Check whether we have network access.
-if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
+# Check whether we have network access and an acceptable shebang length.
+if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null \
+	 && shebang_not_too_long
 then
     boot_make="(@@ (gnu packages commencement) gnu-make-boot0)"
     boot_make_drv="`guix build -e "$boot_make" | grep -v -e -debug`"
