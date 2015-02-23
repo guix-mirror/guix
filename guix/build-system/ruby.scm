@@ -43,22 +43,24 @@
   (define private-keywords
     '(#:source #:target #:ruby #:inputs #:native-inputs))
 
-  (and (not target)                               ;XXX: no cross-compilation
-       (bag
-         (name name)
-         (system system)
-         (host-inputs `(,@(if source
-                              `(("source" ,source))
-                              '())
-                        ,@inputs
+  (let ((version-control (resolve-interface '(gnu packages version-control))))
+    (and (not target)                    ;XXX: no cross-compilation
+         (bag
+           (name name)
+           (system system)
+           (host-inputs `(,@(if source
+                                `(("source" ,source))
+                                '())
+                          ,@inputs
 
-                        ;; Keep the standard inputs of 'gnu-build-system'.
-                        ,@(standard-packages)))
-         (build-inputs `(("ruby" ,ruby)
-                         ,@native-inputs))
-         (outputs outputs)
-         (build ruby-build)
-         (arguments (strip-keyword-arguments private-keywords arguments)))))
+                          ;; Keep the standard inputs of 'gnu-build-system'.
+                          ,@(standard-packages)))
+           (build-inputs `(("ruby" ,ruby)
+                           ("git" ,(module-ref version-control 'git))
+                           ,@native-inputs))
+           (outputs outputs)
+           (build ruby-build)
+           (arguments (strip-keyword-arguments private-keywords arguments))))))
 
 (define* (ruby-build store name inputs
                      #:key

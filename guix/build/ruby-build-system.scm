@@ -39,6 +39,14 @@ directory."
     ((file-name . _) file-name)
     (() (error "No files matching pattern: " pattern))))
 
+;; Most gemspecs assume that builds are taking place within a git repository
+;; by include calls to 'git ls-files'.  In order for these gemspecs to work
+;; as-is, every file in the source tree is added to the staging area.
+(define gitify
+  (lambda _
+    (and (zero? (system* "git" "init"))
+         (zero? (system* "git" "add" ".")))))
+
 (define build
   (lambda _
     (zero? (system* "gem" "build" (first-matching-file "\\.gemspec$")))))
@@ -62,13 +70,16 @@ directory."
                     (first-matching-file "\\.gem$")))))
 
 (define %standard-phases
-  (alist-replace
-   'build build
+  (alist-cons-after
+   'unpack 'gitify gitify
    (alist-replace
-    'install install
+    'build build
     (alist-replace
-     'check check
-     (alist-delete 'configure gnu:%standard-phases)))))
+     'install install
+     (alist-replace
+      'check check
+      (alist-delete
+       'configure gnu:%standard-phases))))))
 
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
