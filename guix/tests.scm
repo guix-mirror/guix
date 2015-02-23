@@ -31,6 +31,7 @@
   #:export (open-connection-for-tests
             random-text
             random-bytevector
+            network-reachable?
             mock
             %substitute-directory
             with-derivation-narinfo
@@ -76,6 +77,10 @@
             (bytevector-u8-set! bv i (random 256 %seed))
             (loop (1+ i)))
           bv))))
+
+(define (network-reachable?)
+  "Return true if we can reach the Internet."
+  (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
 
 (define-syntax-rule (mock (module proc replacement) body ...)
   "Within BODY, replace the definition of PROC from MODULE with the definition

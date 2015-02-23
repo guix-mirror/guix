@@ -463,7 +463,7 @@
 
 (define %coreutils
   (false-if-exception
-   (and (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)
+   (and (network-reachable?)
         (or (package-derivation %store %bootstrap-coreutils&co)
             (nixpkgs-derivation "coreutils")))))
 
