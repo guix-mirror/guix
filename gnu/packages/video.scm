@@ -60,14 +60,14 @@
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.5.3")
+    (version "2.5.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "06j1cgw9h9ya5z8gpcf9v9zik3l4xz7sr4wshj06kznzz5z3sf4x"))))
+               "11m2hbhdgphjxjp6hk438cxmipqjg5ixbr1kqnn9mbdhq9kc34fc"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
