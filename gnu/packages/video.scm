@@ -28,6 +28,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
@@ -78,7 +79,9 @@
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("patchelf" ,patchelf)
+       ("soxr" ,soxr)
        ("speex" ,speex)
+       ("twolame" ,twolame)
        ("zlib", zlib)))
     (native-inputs
      `(("bc" ,bc)
@@ -128,7 +131,6 @@
 ;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
 ;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
 ;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
-;;   --enable-libmp3lame      enable MP3 encoding via libmp3lame [no]
 ;;   --enable-libnut          enable NUT (de)muxing via libnut,
 ;;                            native (de)muxer exists [no]
 ;;   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
@@ -140,11 +142,9 @@
 ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
 ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
 ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
-;;   --enable-libsoxr         enable Include libsoxr resampling [no]
 ;;   --enable-libssh          enable SFTP protocol via libssh [no]
 ;;                            (libssh2 does not work)
 ;;   --enable-libstagefright-h264  enable H.264 decoding via libstagefright [no]
-;;   --enable-libtwolame      enable MP2 encoding via libtwolame [no]
 ;;   --enable-libutvideo      enable Ut Video encoding and decoding via libutvideo [no]
 ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
 ;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
@@ -170,8 +170,10 @@
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
+                      "--enable-libsoxr"
                       "--enable-libspeex"
                       "--enable-libtheora"
+                      "--enable-libtwolame"
                       "--enable-libvorbis"
                       "--enable-libvpx"
 
