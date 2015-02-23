@@ -30,6 +30,7 @@
   #:use-module (gnu packages gdbm)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ruby))
@@ -113,6 +114,34 @@ a focus on simplicity and productivity.")
                           "process.c")
              (("/bin/sh") (which "sh"))))
          %standard-phases)))))
+
+(define-public ruby-hoe
+  (package
+    (name "ruby-hoe")
+    (version "3.13.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/hoe.git")
+                    (commit "0c11836"))) ; no release tags :(
+              (sha256
+               (base32
+                "0i8dimf8kxcjgqj9x65bbi3l6hc9p9gbfbb1vmrz42764a4jjbz9"))) )
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'build
+                 (lambda _ (zero? (system* "rake" "gem")))
+                 %standard-phases)))
+    (synopsis "Ruby project management helper")
+    (description
+     "Hoe is a rake/rubygems helper for project Rakefiles.  It helps manage,
+maintain, and release projects and includes a dynamic plug-in system allowing
+for easy extensibility.  Hoe ships with plug-ins for all the usual project
+tasks including rdoc generation, testing, packaging, deployment, and
+announcement.")
+    (home-page "http://www.zenspider.com/projects/hoe.html")
+    (license license:expat)))
 
 (define-public ruby-i18n
   (package
