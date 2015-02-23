@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -24,6 +24,7 @@
                 #:select (gpl2 gpl2+ gpl3+ bsd-3 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -32,14 +33,17 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages zip)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -56,7 +60,8 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages yasm))
+  #:use-module (gnu packages yasm)
+  #:use-module (gnu packages zip))
 
 (define-public ffmpeg
   (package
@@ -516,3 +521,208 @@ encapsulated.")
 for use with HTML5 video.")
     (home-page "http://dthompson.us/pages/software/srt2vtt")
     (license gpl3+)))
+
+(define-public avidemux
+  (package
+    (name "avidemux")
+    (version "2.6.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://sourceforge/avidemux/avidemux_"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "10p60wjkzf1bxqcb6i7bx4hbqy3vqg598p3l9lc4v2c9b8iqr682"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    ;; FIXME: Once packaged, add libraries not found during the build.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("glu" ,glu)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-1)
+       ("lame" ,lame)
+       ("libvorbis" ,libvorbis)
+       ("libvpx" ,libvpx)
+       ("libxv" ,libxv)
+       ("perl" ,perl)
+       ("pulseaudio" ,pulseaudio)
+       ("python" ,python-wrapper)
+       ("qt" ,qt-4)
+       ("sdl" ,sdl)
+       ("sqlite" ,sqlite)
+       ("yasm" ,yasm)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       ;; Make sure files inside the included ffmpeg tarball are
+       ;; patch-shebanged.
+       (alist-cons-before
+        'patch-source-shebangs 'unpack-ffmpeg
+        (lambda _
+          (with-directory-excursion "avidemux_core/ffmpeg_package"
+            (system* "tar" "xf" "ffmpeg-1.2.1.tar.bz2")
+            (delete-file "ffmpeg-1.2.1.tar.bz2")))
+        (alist-cons-after
+         'patch-source-shebangs 'repack-ffmpeg
+         (lambda _
+           (with-directory-excursion "avidemux_core/ffmpeg_package"
+             (substitute* "ffmpeg-1.2.1/configure"
+               (("#! /bin/sh") (string-append "#!" (which "bash"))))
+             (system* "tar" "cjf" "ffmpeg-1.2.1.tar.bz2" "ffmpeg-1.2.1")
+             (delete-file-recursively "ffmpeg-1.2.1")))
+         (alist-replace 'configure
+          (lambda _
+            ;; Copy-paste settings from the cmake build system.
+            (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+            (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH")))
+          (alist-replace 'build
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let*
+                ((out (assoc-ref outputs "out"))
+                 (lib (string-append out "/lib64"))
+                 (top (getcwd))
+                 (sdl (assoc-ref inputs "sdl"))
+                 (build_component
+                   (lambda* (component srcdir #:optional (args '()))
+                     (let ((builddir (string-append "build_" component)))
+                       (mkdir builddir)
+                       (with-directory-excursion builddir
+                        (zero? (and
+                          (apply system* "cmake"
+                                 "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                                 (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                                 (string-append "-DCMAKE_INSTALL_RPATH=" lib)
+                                 (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
+                                 (string-append "-DSDL_INCLUDE_DIR="
+                                                sdl "/include/SDL")
+                                 (string-append "../" srcdir)
+                                 args)
+                          (system* "make" "-j"
+                                   (number->string (parallel-job-count)))
+                          (system* "make" "install"))))))))
+                (mkdir out)
+                (and (build_component "core" "avidemux_core")
+                     (build_component "cli" "avidemux/cli")
+                     (build_component "qt4" "avidemux/qt4")
+                     (build_component "gtk" "avidemux/gtk")
+                     (build_component "plugins_common" "avidemux_plugins"
+                                     '("-DPLUGIN_UI=COMMON"))
+                     (build_component "plugins_cli" "avidemux_plugins"
+                                     '("-DPLUGIN_UI=CLI"))
+                     (build_component "plugins_qt4" "avidemux_plugins"
+                                     '("-DPLUGIN_UI=QT4"))
+                     (build_component "plugins_gtk" "avidemux_plugins"
+                                     '("-DPLUGIN_UI=GTK"))
+                     (build_component "plugins_settings" "avidemux_plugins"
+                                     '("-DPLUGIN_UI=SETTINGS")))
+                ;; Remove .exe and .dll file.
+                (delete-file-recursively
+                  (string-append out "/share/ADM6_addons"))))
+            (alist-delete 'install
+               %standard-phases)))))))
+    (home-page "http://fixounet.free.fr/avidemux/")
+    (synopsis "Video editor")
+    (description "Avidemux is a video editor designed for simple cutting,
+filtering and encoding tasks.  It supports many file types, including AVI,
+DVD compatible MPEG files, MP4 and ASF, using a variety of codecs.  Tasks
+can be automated using projects, job queue and powerful scripting
+capabilities.")
+    ;; Software with various licenses is included, see License.txt.
+    (license gpl2+)))
+
+(define-public avidemux-2.5
+  (package (inherit avidemux)
+    (version "2.5.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://sourceforge/avidemux/avidemux_"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "12wvxz0n2g85f079d8mdkkp2zm279d34m9v7qgcqndh48cn7znnn"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("gettext" ,gnu-gettext)
+       ("gtk+" ,gtk+-2)
+       ("jack" ,jack-1)
+       ("lame" ,lame)
+       ("libvorbis" ,libvorbis)
+       ("libvpx" ,libvpx)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("libxv" ,libxv)
+       ("perl" ,perl)
+       ("pulseaudio" ,pulseaudio)
+       ("qt" ,qt-4)
+       ("sdl" ,sdl)
+       ("yasm" ,yasm)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (alist-cons-before
+        'patch-source-shebangs 'unpack-ffmpeg
+        (lambda _
+          (with-directory-excursion "avidemux/ADM_libraries"
+            (system* "tar" "xf" "ffmpeg-0.9.tar.bz2")
+            (delete-file "ffmpeg-0.9.tar.bz2")))
+        (alist-cons-after
+         'patch-source-shebangs 'repack-ffmpeg
+         (lambda _
+           (with-directory-excursion "avidemux/ADM_libraries"
+             (substitute* "ffmpeg-0.9/configure"
+               (("#! /bin/sh") (string-append "#!" (which "bash"))))
+             (system* "tar" "cjf" "ffmpeg-0.9.tar.bz2" "ffmpeg-0.9")
+             (delete-file-recursively "ffmpeg-0.9")))
+         (alist-replace 'configure
+          (lambda _
+            (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+            (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH")))
+          (alist-replace 'build
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let*
+                ((out (assoc-ref outputs "out"))
+                 (lib (string-append out "/lib"))
+                 (top (getcwd))
+                 (sdl (assoc-ref inputs "sdl"))
+                 (build_component
+                   (lambda* (component srcdir)
+                     (let ((builddir (string-append "build_" component)))
+                       (mkdir builddir)
+                       (with-directory-excursion builddir
+                        (zero? (and
+                          (system* "cmake"
+                                   "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                                   (string-append "-DCMAKE_INSTALL_PREFIX="
+                                                  out)
+                                   (string-append "-DCMAKE_INSTALL_RPATH="
+                                                  lib)
+                                   (string-append "-DAVIDEMUX_SOURCE_DIR="
+                                                  top)
+                                   (string-append "-DAVIDEMUX_CORECONFIG_DIR="
+                                                  top "/build_main/config")
+                                   (string-append "-DAVIDEMUX_INSTALL_PREFIX="
+                                                  out)
+                                   (string-append "-DSDL_INCLUDE_DIR="
+                                                  sdl "/include/SDL")
+                                   (string-append "../" srcdir))
+                          (system* "make" "-j"
+                                   (number->string (parallel-job-count)))
+                          (system* "make" "install"))))))))
+                (mkdir out)
+                (and (build_component "main" ".")
+                     (build_component "plugins" "plugins"))
+                (delete-file-recursively
+                  (string-append out "/share/ADM_addons"))))
+            (alist-delete 'install
+               %standard-phases)))))))))
