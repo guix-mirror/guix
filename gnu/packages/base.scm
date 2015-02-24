@@ -551,9 +551,10 @@ the 'share/locale' sub-directory of this package.")
             (alist-delete 'install ,phases)))
          ((#:configure-flags flags)
           `(append ,flags
+                   ;; Use $(libdir)/locale as is the case by default.
                    (list (string-append "libc_cv_localedir="
                                         (assoc-ref %outputs "out")
-                                        "/share/locale")))))))))
+                                        "/lib/locale")))))))))
 
 (define-public tzdata
   (package
