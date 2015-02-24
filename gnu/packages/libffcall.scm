@@ -41,7 +41,7 @@
          "1lwdskc2w4rr98x9flr2726lmj4190l16r0izg7gqxy50801wwgd"))))
     (build-system gnu-build-system)
     (arguments `(#:parallel-build? #f))
-    (synopsis "Foreign function call libraries")
+    (synopsis "Foreign function calls from interpreters")
     (description
      "GNU Libffcall is a collection of libraries that can be used to build
 foreign function call interfaces in embedded interpreters.")

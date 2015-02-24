@@ -849,7 +849,7 @@ multi-system game/emulator system.")
                "0wkahvqpzq6lzl5r49a4sd4p52frdmphnqsfdv7gdp24bykdfs6s"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)))
-    (synopsis "Go game")
+    (synopsis "Play the game of Go")
     (description "GNU Go is a program that plays the game of Go, in which
 players place stones on a grid to form territory or capture other stones.
 While it can be played directly from the terminal, rendered in ASCII

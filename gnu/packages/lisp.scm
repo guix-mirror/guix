@@ -182,13 +182,11 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))
     (home-page "http://www.clisp.org/")
-    (synopsis "Common Lisp implementation")
-    (description "GNU CLISP is an implementation of ANSI Common Lisp, with
-many extensions.  It includes an interpreter, compiler, debugger, CLOS, MOP,
-an FFI, i18n, POSIX and Perl regular expressions, a socket interface, fast
-bignums, arbitrary precision floats, and more.  An X11 interface is available
-through CLX, Garnet and CLUE/CLIO.  Command line editing is provided by
-readline.")
+    (synopsis "A Common Lisp implementation")
+    (description
+     "GNU CLISP is an implementation of ANSI Common Lisp.  Common Lisp is a
+high-level, object-oriented functional programming language.  CLISP includes
+an interpreter, a compiler, a debugger, and much more.")
     ;; Website says gpl2+, COPYRIGHT file says gpl2; actual source files have
     ;; a lot of gpl3+.  (Also some parts are under non-copyleft licenses, such
     ;; as CLX by Texas Instruments.)  In that case gpl3+ wins out.
