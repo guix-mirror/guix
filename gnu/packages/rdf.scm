@@ -319,6 +319,9 @@ system.")
               "https://pypi.python.org/packages/source/r/rdflib/rdflib-"
               version
               ".tar.gz"))
+        (patches
+          ;; The patch has no effect under Python 3.
+          (list (search-patch "python2-rdflib-drop-sparqlwrapper.patch")))
         (sha256
           (base32
             "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
@@ -336,3 +339,13 @@ system.")
 powerful language for representing information.")
     (license (bsd-style "file://LICENSE"
                         "See LICENSE in the distribution."))))
+
+(define-public python2-rdflib
+  (let ((base (package-with-python2 python-rdflib)))
+    (package
+      (inherit base)
+      (inputs
+        (append (package-inputs base)
+                `(("python2-nose" ,python2-nose))))
+      (arguments
+        `(#:tests? #f))))) ; 3 tests fail, also outside Guix
