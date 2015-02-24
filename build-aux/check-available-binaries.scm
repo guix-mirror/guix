@@ -29,27 +29,28 @@
              (srfi srfi-26))
 
 (with-store store
-  (let* ((native (append-map (lambda (system)
-                               (map (cut package-derivation store <> system)
-                                    (list %bootstrap-tarballs emacs)))
-                             %supported-systems))
-         (cross  (map (cut package-cross-derivation store
-                           %bootstrap-tarballs <>)
-                      '("mips64el-linux-gnuabi64")))
-         (total  (append native cross)))
-    (define (warn item system)
-      (format (current-error-port) "~a (~a) is not substitutable~%"
-              item system)
-      #f)
+  (parameterize ((%graft? #f))
+    (let* ((native (append-map (lambda (system)
+                                 (map (cut package-derivation store <> system)
+                                      (list %bootstrap-tarballs emacs)))
+                               %supported-systems))
+           (cross  (map (cut package-cross-derivation store
+                             %bootstrap-tarballs <>)
+                        '("mips64el-linux-gnuabi64")))
+           (total  (append native cross)))
+      (define (warn item system)
+        (format (current-error-port) "~a (~a) is not substitutable~%"
+                item system)
+        #f)
 
-    (set-build-options store #:use-substitutes? #t)
-    (let* ((substitutable? (substitution-oracle store total))
-           (result         (every (lambda (drv)
-                                    (let ((out (derivation->output-path drv)))
-                                      (or (substitutable? out)
-                                          (warn out (derivation-system drv)))))
-                                  total)))
-      (when result
-        (format (current-error-port) "~a packages found substitutable~%"
-                (length total)))
-      (exit result))))
+      (set-build-options store #:use-substitutes? #t)
+      (let* ((substitutable? (substitution-oracle store total))
+             (result         (every (lambda (drv)
+                                      (let ((out (derivation->output-path drv)))
+                                        (or (substitutable? out)
+                                            (warn out (derivation-system drv)))))
+                                    total)))
+        (when result
+          (format (current-error-port) "~a packages found substitutable~%"
+                  (length total)))
+        (exit result)))))

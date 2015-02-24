@@ -73,8 +73,9 @@ refer to the bootstrap tools."
 
 ;; Entry point.
 (with-store store
-  (set-build-options store #:use-substitutes? #t)
+  (parameterize ((%graft? #f))
+    (set-build-options store #:use-substitutes? #t)
 
-  (for-each (cut test-final-inputs store <>)
-            %supported-systems))
+    (for-each (cut test-final-inputs store <>)
+              %supported-systems)))
 
