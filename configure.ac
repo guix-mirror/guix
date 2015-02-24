@@ -50,6 +50,8 @@ AC_SUBST([guix_localstatedir])
 AC_SUBST([guix_sysconfdir])
 AC_SUBST([guix_sbindir])
 
+GUIX_CHECK_FILE_NAME_LIMITS
+
 dnl We require the pkg.m4 set of macros from pkg-config.
 dnl Make sure it's available.
 m4_pattern_forbid([PKG_CHECK_MODULES])

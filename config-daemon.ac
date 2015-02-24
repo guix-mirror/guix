@@ -127,9 +127,8 @@ if test "x$guix_build_daemon" = "xyes"; then
   fi
 
   dnl Temporary directory used to store the daemon's data.
-  AC_MSG_CHECKING([for unit test root])
-  GUIX_TEST_ROOT="`pwd`/test-tmp"
-  AC_MSG_RESULT([$GUIX_TEST_ROOT])
+  GUIX_TEST_ROOT_DIRECTORY
+  GUIX_TEST_ROOT="$ac_cv_guix_test_root"
   AC_SUBST([GUIX_TEST_ROOT])
 
   AC_CONFIG_FILES([nix/scripts/list-runtime-roots],
