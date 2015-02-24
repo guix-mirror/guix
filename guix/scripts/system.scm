@@ -446,7 +446,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                                result)))
          (option '("no-grub") #f #f
                  (lambda (opt name arg result)
-                   (alist-delete 'install-grub? result)))
+                   (alist-cons 'install-grub? #f result)))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
