@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,7 @@
             ijg
             ibmpl1.0
             imlib2
+            ipa
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl1.1 mpl2.0
             ncsa
@@ -214,6 +215,11 @@ which may be a file:// URI pointing the package's tree."
   (license "Imlib2"
            "http://directory.fsf.org/wiki/License:Imlib2"
            "https://www.gnu.org/licenses/license-list#imlib"))
+
+(define ipa
+  (license "IPA Font License"
+           "http://directory.fsf.org/wiki/License:IPA_Font_License"
+           "https://www.gnu.org/licenses/license-list#IPAFONT"))
 
 (define lgpl2.0
   (license "LGPL 2.0"
