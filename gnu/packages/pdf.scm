@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +33,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
@@ -281,3 +282,31 @@ manipulate the list of pages in a PDF file.  It is not a PDF viewer or a
 program capable of converting PDF into other formats.")
    (license license:clarified-artistic)
    (home-page "http://qpdf.sourceforge.net/")))
+
+(define-public xournal
+  (package
+    (name "xournal")
+    (version "0.4.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/xournal/xournal-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0c7gjcqhygiyp0ypaipdaxgkbivg6q45vhsj8v5jsi9nh6iqff13"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk" ,gtk+-2)
+       ("pango" ,pango)
+       ("poppler" ,poppler)
+       ("glib" ,glib)
+       ("libgnomecanvas" ,libgnomecanvas)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://xournal.sourceforge.net/")
+    (synopsis "Notetaking using a stylus")
+    (description
+     "Xournal is an application for notetaking, sketching, keeping a journal
+using a stylus.")
+    (license license:gpl2+)))
