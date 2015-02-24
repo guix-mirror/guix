@@ -89,7 +89,7 @@ HTML and JSON.")
              (sha256
               (base32
                "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))
-             (patches (list 
+             (patches (list
                        (search-patch "clucene-pkgconfig.patch")
                        (search-patch "clucene-contribs-lib.patch")))))
     (build-system cmake-build-system)
@@ -324,7 +324,7 @@ system.")
             "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
     (build-system python-build-system)
     (inputs
-      `(("python-htm5lib" ,python-html5lib)
+      `(("python-html5lib" ,python-html5lib)
         ("python-isodate" ,python-isodate)
         ("python-pyparsing" ,python-pyparsing)
         ("python-setuptools" ,python-setuptools)))
