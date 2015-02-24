@@ -32,9 +32,9 @@
     (method git-fetch)
     (uri (git-reference
           (url "git://git.savannah.gnu.org/guix/guix-artwork.git")
-          (commit "3236581")))
+          (commit "61ae7c8")))
     (sha256
      (base32
-      "0ayg0693agck8zkcxfymph5ccc3y44cdf9i4y0qvxajhac8rkcaj"))))
+      "102fxk2l6b0ibry3n430q8ljhwrnbml9qgalzkz6v09r7sx6a532"))))
 
 ;;; artwork.scm ends here
