@@ -2867,6 +2867,8 @@ ISO 8601 dates, time and duration.")
           (base32
             "1l5i6xzckzx4hnh9qzv9q3kyhkgjx2hsi2k9srgci3qizjmvp6ln"))))
     (build-system python-build-system)
+    (propagated-inputs
+      `(("python-six" ,python-six))) ; required to "import html5lib"
     (inputs
       `(("python-setuptools" ,python-setuptools)))
     (arguments
