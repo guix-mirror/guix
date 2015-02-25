@@ -492,7 +492,7 @@ included.")
     ;; primarily in build environments.
     (list (search-path-specification
            (variable "LOCPATH")
-           (files '("share/locale")))))
+           (files '("lib/locale")))))
 
    (synopsis "The GNU C Library")
    (description
