@@ -692,22 +692,11 @@ doesn't need it."
 ;;;
 
 (define (guix-package . args)
-  (define (parse-options)
-    ;; Return the alist of option values.
-    (append (parse-options-from args)
-            (parse-options-from (environment-build-options))))
-
-  (define (parse-options-from args)
-    ;; Actual parsing takes place here.
-    (args-fold* args %options
-                (lambda (opt name arg result arg-handler)
-                  (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result arg-handler)
-                  (if arg-handler
-                      (arg-handler arg result)
-                      (leave (_ "~A: extraneous argument~%") arg)))
-                %default-options
-                #f))
+  (define (handle-argument arg result arg-handler)
+    ;; Process non-option argument ARG by calling back ARG-HANDLER.
+    (if arg-handler
+        (arg-handler arg result)
+        (leave (_ "~A: extraneous argument~%") arg)))
 
   (define (ensure-default-profile)
     ;; Ensure the default profile symlink and directory exist and are
@@ -987,7 +976,8 @@ more information.~%"))
 
         (_ #f))))
 
-  (let ((opts (parse-options)))
+  (let ((opts (parse-command-line args %options (list %default-options #f)
+                                  #:argument-handler handle-argument)))
     (with-error-handling
       (or (process-query opts)
           (parameterize ((%store (open-connection)))
