@@ -234,6 +234,44 @@ gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
 
+(define-public clipper
+  (package
+    (name "clipper")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/YeoLab/clipper/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1q7jpimsqln7ic44i8v2rx2haj5wvik8hc1s2syd31zcn0xk1iyq"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; remove unnecessary setup dependency
+               '(substitute* "setup.py"
+                  (("setup_requires = .*") "")))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; only Python 2 is supported
+    (inputs
+     `(("htseq" ,htseq)
+       ("python-pybedtools" ,python2-pybedtools)
+       ("python-cython" ,python2-cython)
+       ("python-scikit-learn" ,python2-scikit-learn)
+       ("python-matplotlib" ,python2-matplotlib)
+       ("python-pysam" ,python2-pysam)
+       ("python-numpy" ,python2-numpy)
+       ("python-scipy" ,python2-scipy)))
+    (native-inputs
+     `(("python-mock" ,python2-mock) ; for tests
+       ("python-pytz" ,python2-pytz) ; for tests
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/YeoLab/clipper")
+    (synopsis "CLIP peak enrichment recognition")
+    (description
+     "CLIPper is a tool to define peaks in CLIP-seq datasets.")
+    (license license:gpl2)))
+
 (define-public flexbar
   (package
     (name "flexbar")
