@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -695,6 +696,20 @@ we're running in the final root."
                        (dmd-conf (dmd-configuration-file services)))
     (gexp->file "boot"
                 #~(begin
+                    (use-modules (guix build utils))
+
+                    ;; Clean out /tmp and /var/run.
+                    ;;
+                    ;; XXX This needs to happen before service activations, so
+                    ;; it has to be here, but this also implicitly assumes
+                    ;; that /tmp and /var/run are on the root partition.
+                    (false-if-exception (delete-file-recursively "/tmp"))
+                    (false-if-exception (delete-file-recursively "/var/run"))
+                    (false-if-exception (mkdir "/tmp"))
+                    (false-if-exception (chmod "/tmp" #o1777))
+                    (false-if-exception (mkdir "/var/run"))
+                    (false-if-exception (chmod "/var/run" #o755))
+
                     ;; Activate the system.
                     ;; TODO: Use 'load-compiled'.
                     (primitive-load #$activate)
