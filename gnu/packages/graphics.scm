@@ -119,3 +119,36 @@ exception-handling library.")
 use in computer imaging applications.  The IlmImf libraries supports storage
 of the \"EXR\" file format for storing 16-bit floating-point images.")
     (license license:bsd-3)))
+
+(define-public ctl
+  (package
+    (name "ctl")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ampas/CTL/archive/ctl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gg04pyvw0m398akn0s1l07g5b1haqv5na1wpi5dii1jjd1w3ynp"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))                    ;no 'test' target
+
+    ;; Headers include OpenEXR and IlmBase headers.
+    (propagated-inputs `(("openexr" ,openexr)))
+
+    (home-page "http://ampasctl.sourceforge.net")
+    (synopsis "Color Transformation Language")
+    (description
+     "The Color Transformation Language, or CTL, is a small programming
+language that was designed to serve as a building block for digital color
+management systems.  CTL allows users to describe color transforms in a
+concise and unambiguous way by expressing them as programs.  In order to apply
+a given transform to an image, the color management system instructs a CTL
+interpreter to load and run the CTL program that describes the transform.  The
+original and the transformed image constitute the CTL program's input and
+output.")
+
+    ;; The web site says it's under a BSD-3 license, but the 'LICENSE' file
+    ;; and headers use different wording.
+    (license (license:bsd-style "file://LICENSE"))))
