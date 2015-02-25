@@ -211,10 +211,12 @@ which is not available during bootstrap."
 (unless (or (> (string->number (major-version)) 2)
             (> (string->number (minor-version)) 0)
             (> (string->number (micro-version)) 11))
-  (let ((declare-relative-uri-header!
-         (module-ref (resolve-module '(web http))
-                     'declare-relative-uri-header!)))
-    (declare-relative-uri-header! "Location")))
+  (let ((var (module-variable (resolve-module '(web http))
+                              'declare-relative-uri-header!)))
+    ;; If 'declare-relative-uri-header!' doesn't exist, forget it.
+    (when (and var (variable-bound? var))
+      (let ((declare-relative-uri-header! (variable-ref var)))
+        (declare-relative-uri-header! "Location")))))
 
 (define (resolve-uri-reference ref base)
   "Resolve the URI reference REF, interpreted relative to the BASE URI, into a
