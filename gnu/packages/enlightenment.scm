@@ -122,3 +122,28 @@ for Enlightenment.  Libraries covers data serialization, wide support for
 graphics rendering, UI layout and themes, interaction with OS, access to
 removable devices or support for multimedia.")
     (license (list license:bsd-2 license:lgpl2.1 license:zlib)))) ; different parts under different licenses
+
+(define-public elementary
+  (package
+    (name "elementary")
+    (version "1.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.enlightenment.org/rel/libs/elementary/elementary-"
+                version ".tar.gz"))
+              (sha256
+               (base32 "133p4yaynmy37yhk2gxwlc8a2n2wy7cbh4rd7nsnl5929wqb9waj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("efl" ,efl))) ; elementary.pc, elementary-cxx.pc
+    (home-page "http://www.enlightenment.org")
+    (synopsis "Widget library of Enlightenment world")
+    (description
+     "Elementary is a widget library/toolkit, part of the Enlightenment
+Foundation  Libraries.  It is build upon Edje and Evas libraries and uses
+full capabilities of EFL.")
+    (license license:lgpl2.1)))
