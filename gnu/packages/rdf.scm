@@ -348,4 +348,5 @@ powerful language for representing information.")
         (append (package-inputs base)
                 `(("python2-nose" ,python2-nose))))
       (arguments
-        `(#:tests? #f))))) ; 3 tests fail, also outside Guix
+        `(#:python ,python-2
+          #:tests? #f))))) ; 3 tests fail, also outside Guix
