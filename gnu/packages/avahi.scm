@@ -97,7 +97,7 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
      ;; The Avahi daemon socket is expected by src/Makefile.am to be at
      ;; "$(localstatedir)/run/avahi-daemon/socket", so set $(localstatedir)
      ;; appropriately.
-     '(#:configure-flags '("--localstatedir=/")))
+     '(#:configure-flags '("--localstatedir=/var")))
 
     ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18704>.
     (home-page "http://0pointer.de/lennart/projects/nss-mdns/")
