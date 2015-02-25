@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
