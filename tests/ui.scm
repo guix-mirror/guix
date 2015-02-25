@@ -82,6 +82,15 @@ interface, and powerful string processing.")
                         %standard-build-options
                         (list '()))))
 
+(test-equal "parse-command-line and --no options"
+  '((argument . "foo")
+    (substitutes? . #f))                          ;takes precedence
+
+  (with-environment-variable "GUIX_BUILD_OPTIONS" "--no-substitutes"
+    (parse-command-line '("foo")
+                        %standard-build-options
+                        (list '((substitutes? . #t))))))
+
 (test-assert "fill-paragraph"
   (every (lambda (column)
            (every (lambda (width)

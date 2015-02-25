@@ -769,7 +769,7 @@ Command-line options take precedence those passed via 'GUIX_BUILD_OPTIONS'.
 
 ARGUMENT-HANDLER is called for non-option arguments, like the 'operand-proc'
 parameter of 'args-fold'."
-  (define (parse-options-from args)
+  (define (parse-options-from args seeds)
     ;; Actual parsing takes place here.
     (apply args-fold* args options
            (lambda (opt name arg . rest)
@@ -777,8 +777,12 @@ parameter of 'args-fold'."
            argument-handler
            seeds))
 
-  (append (parse-options-from args)
-          (parse-options-from (environment-build-options))))
+  (call-with-values
+      (lambda ()
+        (parse-options-from (environment-build-options) seeds))
+    (lambda seeds
+      ;; ARGS take precedence over what the environment variable specifies.
+      (parse-options-from args seeds))))
 
 (define (show-guix-usage)
   (format (current-error-port)
