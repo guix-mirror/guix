@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,11 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl))
 
+;;;
+;;; Please: Try to add new module packages in alphabetic order.
+;;;
+
+
 (define-public perl
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
@@ -75,75 +81,6 @@
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
-(define-public perl-clone
-  (package
-    (name "perl-clone")
-    (version "0.37")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
-                                  "Clone-" version ".tar.gz"))
-              (sha256
-               (base32
-                "17fdhxpzrq2nwim3zkcrz4m9gjixp0i886yz54ysrshxy3k53wnr"))))
-    (build-system perl-build-system)
-    (synopsis "Recursively copy Perl datatypes")
-    (description
-     "This module provides a clone() method which makes recursive copies of
-nested hash, array, scalar and reference types, including tied variables and
-objects.")
-    (home-page (string-append "http://search.cpan.org/~garu/"
-                              "Clone-" version))
-    (license (package-license perl))))
-
-(define-public perl-file-list
-  (package
-    (name "perl-file-list")
-    (version "0.3.1")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/D/DO/DOPACKI/File-List-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "00m5ax4aq59hdvav6yc4g63vhx3a57006rglyypagvrzfxjvm8s8"))))
-    (build-system perl-build-system)
-    (arguments
-     `(#:phases
-       (alist-cons-after
-        'unpack 'cd
-        (lambda* _
-         (chdir "List"))
-       %standard-phases)))
-    (license (package-license perl))
-    (synopsis "Perl extension for crawling directory trees and compiling
-lists of files")
-    (description
-     "The File::List module crawls the directory tree starting at the
-provided base directory and can return files (and/or directories if desired)
-matching a regular expression.")
-    (home-page "http://search.cpan.org/~dopacki/File-List/")))
-
-(define-public perl-io-tty
-  (package
-    (name "perl-io-tty")
-    (version "1.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/IO-Tty-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0lgd9xcbi4gf4gw1ka6fj94my3w1f3k1zamb4pfln0qxz45zlxx4"))))
-    (build-system perl-build-system)
-    (home-page "http://search.cpan.org/~toddr/IO-Tty/")
-    (synopsis "Perl interface to pseudo ttys")
-    (description
-     "This package provides the 'IO::Pty' and 'IO::Tty' Perl interfaces to
-pseudo ttys.")
-    (license (package-license perl))))
-
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
@@ -162,26 +99,6 @@ pseudo ttys.")
     (description "The Archive::Zip module allows a Perl program to create,
 manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
-    (license (package-license perl))))
-
-(define-public perl-digest-sha1
-  (package
-    (name "perl-digest-sha1")
-    (version "2.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
-                                  "Digest-SHA1-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1k23p5pjk42vvzg8xcn4iwdii47i0qm4awdzgbmz08bl331dmhb8"))))
-    (build-system perl-build-system)
-    (synopsis "Perl implementation of the SHA-1 message digest algorithm")
-    (description
-     "This package provides 'Digest::SHA1', an implementation of the NIST
-SHA-1 message digest algorithm for use by Perl programs.")
-    (home-page (string-append "http://search.cpan.org/~gaas/Digest-SHA1-"
-                              version "/SHA1.pm"))
     (license (package-license perl))))
 
 (define-public perl-benchmark-timer
@@ -232,6 +149,27 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-clone
+  (package
+    (name "perl-clone")
+    (version "0.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
+                                  "Clone-" version ".tar.gz"))
+              (sha256
+               (base32
+                "17fdhxpzrq2nwim3zkcrz4m9gjixp0i886yz54ysrshxy3k53wnr"))))
+    (build-system perl-build-system)
+    (synopsis "Recursively copy Perl datatypes")
+    (description
+     "This module provides a clone() method which makes recursive copies of
+nested hash, array, scalar and reference types, including tied variables and
+objects.")
+    (home-page (string-append "http://search.cpan.org/~garu/"
+                              "Clone-" version))
+    (license (package-license perl))))
+
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
@@ -256,6 +194,26 @@ is captured while being passed through to the original file handles.")
      "Data::OptList provides a simple syntax for name/value option pairs.")
     (license (package-license perl))))
 
+(define-public perl-digest-sha1
+  (package
+    (name "perl-digest-sha1")
+    (version "2.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                                  "Digest-SHA1-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k23p5pjk42vvzg8xcn4iwdii47i0qm4awdzgbmz08bl331dmhb8"))))
+    (build-system perl-build-system)
+    (synopsis "Perl implementation of the SHA-1 message digest algorithm")
+    (description
+     "This package provides 'Digest::SHA1', an implementation of the NIST
+SHA-1 message digest algorithm for use by Perl programs.")
+    (home-page (string-append "http://search.cpan.org/~gaas/Digest-SHA1-"
+                              version "/SHA1.pm"))
+    (license (package-license perl))))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
@@ -276,6 +234,120 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
     (home-page (string-append "http://search.cpan.org/~neilb/"
                               "Exporter-Lite-" version))
     (license (package-license perl))))
+
+(define-public perl-file-list
+  (package
+    (name "perl-file-list")
+    (version "0.3.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/D/DO/DOPACKI/File-List-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "00m5ax4aq59hdvav6yc4g63vhx3a57006rglyypagvrzfxjvm8s8"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'cd
+        (lambda* _
+         (chdir "List"))
+       %standard-phases)))
+    (license (package-license perl))
+    (synopsis "Perl extension for crawling directory trees and compiling
+lists of files")
+    (description
+     "The File::List module crawls the directory tree starting at the
+provided base directory and can return files (and/or directories if desired)
+matching a regular expression.")
+    (home-page "http://search.cpan.org/~dopacki/File-List/")))
+
+(define-public perl-file-which
+  (package
+    (name "perl-file-which")
+    (version "1.09")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                                  "File-Which-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hxjyh9yrv32f3g8vrnr8iylzprajsac14vjm75kf1qnj1jyqbxp"))))
+    (build-system perl-build-system)
+    (native-inputs `(("test-script" ,perl-test-script)))
+    (synopsis "Portable implementation of the `which' utility")
+    (description
+     "File::Which was created to be able to get the paths to executable
+programs on systems under which the `which' program wasn't implemented in the
+shell.")
+    (home-page (string-append "http://search.cpan.org/~adamk/"
+                              "File-Which-" version))
+    (license (package-license perl))))
+
+(define-public perl-getopt-tabular
+  (package
+    (name "perl-getopt-tabular")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/G/GW/GWARD/"
+                                  "Getopt-Tabular-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xskl9lcj07sdfx5dkma5wvhhgf5xlsq0khgh8kk34dm6dv0dpwv"))))
+    (build-system perl-build-system)
+    (synopsis "Table-driven argument parsing for Perl")
+    (description
+     "Getopt::Tabular is a Perl 5 module for table-driven argument parsing,
+vaguely inspired by John Ousterhout's Tk_ParseArgv.")
+    (home-page (string-append "http://search.cpan.org/~gward/"
+                              "Getopt-Tabular-" version))
+    (license (package-license perl))))
+
+(define-public perl-io-tty
+  (package
+    (name "perl-io-tty")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/IO-Tty-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0lgd9xcbi4gf4gw1ka6fj94my3w1f3k1zamb4pfln0qxz45zlxx4"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/~toddr/IO-Tty/")
+    (synopsis "Perl interface to pseudo ttys")
+    (description
+     "This package provides the 'IO::Pty' and 'IO::Tty' Perl interfaces to
+pseudo ttys.")
+    (license (package-license perl))))
+
+(define-public perl-ipc-run3
+  (package
+    (name "perl-ipc-run3")
+    (version "0.048")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "IPC-Run3-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0r9m8q78bg7yycpixd7738jm40yz71p2q7inm766kzsw3g6c709x"))))
+    (build-system perl-build-system)
+    (synopsis "Run a subprocess with input/ouput redirection")
+    (description
+     "The IPC::Run3 module allows you to run a subprocess and redirect stdin,
+stdout, and/or stderr to files and perl data structures.  It aims to satisfy
+99% of the need for using system, qx, and open3 with a simple, extremely
+Perlish API and none of the bloat and rarely used features of IPC::Run.")
+    (home-page (string-append "http://search.cpan.org/~rjbs/"
+                              "IPC-Run3-" version))
+    ;; "You may use this module under the terms of the BSD, Artistic, or GPL
+    ;; licenses, any version."
+    (license (list bsd-3 gpl3+))))
 
 (define-public perl-params-util
   (package
@@ -319,29 +391,30 @@ Module::Build project, but has been externalized here for general use.")
                               "Probe-Perl-" version))
     (license (package-license perl))))
 
-(define-public perl-ipc-run3
+(define-public perl-regexp-common
   (package
-    (name "perl-ipc-run3")
-    (version "0.048")
+    (name "perl-regexp-common")
+    (version "2013031301")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
-                                  "IPC-Run3-" version ".tar.gz"))
+              (uri (string-append "mirror://cpan/authors/id/A/AB/ABIGAIL/"
+                                  "Regexp-Common-" version ".tar.gz"))
               (sha256
                (base32
-                "0r9m8q78bg7yycpixd7738jm40yz71p2q7inm766kzsw3g6c709x"))))
+                "112wybsm0vr8yfannx6sdfvgp5vza28gjgr3pgn69ak4sac836kj"))))
     (build-system perl-build-system)
-    (synopsis "Run a subprocess with input/ouput redirection")
+    (synopsis "Provide commonly requested regular expressions")
     (description
-     "The IPC::Run3 module allows you to run a subprocess and redirect stdin,
-stdout, and/or stderr to files and perl data structures.  It aims to satisfy
-99% of the need for using system, qx, and open3 with a simple, extremely
-Perlish API and none of the bloat and rarely used features of IPC::Run.")
-    (home-page (string-append "http://search.cpan.org/~rjbs/"
-                              "IPC-Run3-" version))
-    ;; "You may use this module under the terms of the BSD, Artistic, or GPL
-    ;; licenses, any version."
-    (license (list bsd-3 gpl3+))))
+     "This module exports a single hash (`%RE') that stores or generates
+commonly needed regular expressions.  Patterns currently provided include:
+balanced parentheses and brackets, delimited text (with escapes), integers and
+floating-point numbers in any base (up to 36), comments in 44 languages,
+offensive language, lists of any pattern, IPv4 addresses, URIs, and Zip
+codes.")
+    (home-page (string-append "http://search.cpan.org/~abigail/"
+                              "Regexp-Common-" version))
+    ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
+    (license (list (package-license perl) x11 bsd-3))))
 
 (define-public perl-sub-exporter
   (package
@@ -387,6 +460,27 @@ custom-built routines.")
      "Sub::Install makes it easy to install subroutines into packages without
 the unsightly mess of C<no strict> or typeglobs lying about where just anyone
 can see them.")
+    (license (package-license perl))))
+
+(define-public perl-sys-cpu
+  (package
+    (name "perl-sys-cpu")
+    (version "0.61")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MZ/MZSANFORD/"
+                                  "Sys-CPU-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))))
+    (build-system perl-build-system)
+    (synopsis "Perl extension for getting CPU information")
+    (description
+     "In responce to a post on perlmonks.org, a module for counting the number
+of CPU's on a system.  Support has now also been added for type of CPU and
+clock speed.")
+    (home-page (string-append "http://search.cpan.org/~mzsanford/"
+                              "Sys-CPU-" version))
     (license (package-license perl))))
 
 (define-public perl-test-deep
@@ -437,6 +531,31 @@ including a stack trace of what was going on when it occurred.")
                               "Test-NoWarnings-" version))
     (license lgpl2.1)))
 
+(define-public perl-test-output
+  (package
+    (name "perl-test-output")
+    (version "1.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                                  "Test-Output-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12991jnzj4cbw9whhprmqvnzd1ayii84g2mh8vxbjngwqrjsy41i"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-test-tester" ,perl-test-tester)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (synopsis "Utilities to test STDOUT and STDERR messages")
+    (description
+     "Test::Output provides a simple interface for testing output sent to
+STDOUT or STDERR.  A number of different utilities are included to try and be
+as flexible as possible to the tester.")
+    (home-page (string-append "http://search.cpan.org/~bdfoy/"
+                              "Test-Output-" version))
+    (license (package-license perl))))
+
 (define-public perl-test-script
   (package
     (name "perl-test-script")
@@ -480,31 +599,6 @@ bin as is also commonly used) paths of your Perl distribution.")
                               "Test-Simple-" version))
     (license (package-license perl))))
 
-(define-public perl-test-output
-  (package
-    (name "perl-test-output")
-    (version "1.03")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
-                                  "Test-Output-" version ".tar.gz"))
-              (sha256
-               (base32
-                "12991jnzj4cbw9whhprmqvnzd1ayii84g2mh8vxbjngwqrjsy41i"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-test-tester" ,perl-test-tester)
-       ("perl-sub-exporter" ,perl-sub-exporter)))
-    (synopsis "Utilities to test STDOUT and STDERR messages")
-    (description
-     "Test::Output provides a simple interface for testing output sent to
-STDOUT or STDERR.  A number of different utilities are included to try and be
-as flexible as possible to the tester.")
-    (home-page (string-append "http://search.cpan.org/~bdfoy/"
-                              "Test-Output-" version))
-    (license (package-license perl))))
-
 (define-public perl-test-tester
   (package
     (name "perl-test-tester")
@@ -524,92 +618,4 @@ a minimum of effort.")
     (home-page (string-append "http://search.cpan.org/~fdaly/"
                               "Test-Tester-" version))
     ;; "Under the same license as Perl itself"
-    (license (package-license perl))))
-
-(define-public perl-file-which
-  (package
-    (name "perl-file-which")
-    (version "1.09")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
-                                  "File-Which-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1hxjyh9yrv32f3g8vrnr8iylzprajsac14vjm75kf1qnj1jyqbxp"))))
-    (build-system perl-build-system)
-    (native-inputs `(("test-script" ,perl-test-script)))
-    (synopsis "Portable implementation of the `which' utility")
-    (description
-     "File::Which was created to be able to get the paths to executable
-programs on systems under which the `which' program wasn't implemented in the
-shell.")
-    (home-page (string-append "http://search.cpan.org/~adamk/"
-                              "File-Which-" version))
-    (license (package-license perl))))
-
-(define-public perl-getopt-tabular
-  (package
-    (name "perl-getopt-tabular")
-    (version "0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/G/GW/GWARD/"
-                                  "Getopt-Tabular-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0xskl9lcj07sdfx5dkma5wvhhgf5xlsq0khgh8kk34dm6dv0dpwv"))))
-    (build-system perl-build-system)
-    (synopsis "Table-driven argument parsing for Perl")
-    (description
-     "Getopt::Tabular is a Perl 5 module for table-driven argument parsing,
-vaguely inspired by John Ousterhout's Tk_ParseArgv.")
-    (home-page (string-append "http://search.cpan.org/~gward/"
-                              "Getopt-Tabular-" version))
-    (license (package-license perl))))
-
-(define-public perl-regexp-common
-  (package
-    (name "perl-regexp-common")
-    (version "2013031301")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/A/AB/ABIGAIL/"
-                                  "Regexp-Common-" version ".tar.gz"))
-              (sha256
-               (base32
-                "112wybsm0vr8yfannx6sdfvgp5vza28gjgr3pgn69ak4sac836kj"))))
-    (build-system perl-build-system)
-    (synopsis "Provide commonly requested regular expressions")
-    (description
-     "This module exports a single hash (`%RE') that stores or generates
-commonly needed regular expressions.  Patterns currently provided include:
-balanced parentheses and brackets, delimited text (with escapes), integers and
-floating-point numbers in any base (up to 36), comments in 44 languages,
-offensive language, lists of any pattern, IPv4 addresses, URIs, and Zip
-codes.")
-    (home-page (string-append "http://search.cpan.org/~abigail/"
-                              "Regexp-Common-" version))
-    ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
-    (license (list (package-license perl) x11 bsd-3))))
-
-(define-public perl-sys-cpu
-  (package
-    (name "perl-sys-cpu")
-    (version "0.61")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/M/MZ/MZSANFORD/"
-                                  "Sys-CPU-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1r6976bs86j7zp51m5vh42xlyah951jgdlkimv202413kjvqc2i5"))))
-    (build-system perl-build-system)
-    (synopsis "Perl extension for getting CPU information")
-    (description
-     "In responce to a post on perlmonks.org, a module for counting the number
-of CPU's on a system.  Support has now also been added for type of CPU and
-clock speed.")
-    (home-page (string-append "http://search.cpan.org/~mzsanford/"
-                              "Sys-CPU-" version))
     (license (package-license perl))))
