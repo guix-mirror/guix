@@ -28,6 +28,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -36,6 +37,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -147,3 +149,33 @@ removable devices or support for multimedia.")
 Foundation  Libraries.  It is build upon Edje and Evas libraries and uses
 full capabilities of EFL.")
     (license license:lgpl2.1)))
+
+(define-public evas-generic-loaders
+  (package
+    (name "evas-generic-loaders")
+    (version "1.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.enlightenment.org/rel/libs/evas_generic_loaders/evas_generic_loaders-"
+                version ".tar.gz"))
+              (sha256
+               (base32 "16yzjk58bxsd0rlnpzrr8as9fxjjiq01swzhpadsgkmq33abgg63"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("librsvg" ,librsvg)
+       ("libspectre" ,libspectre)
+       ("poppler" ,poppler)))
+    (home-page "http://www.enlightenment.org")
+    (synopsis "Plugins for integration of various file types into Evas")
+    (description
+     "Evas-generic-loaders is a collection of interfaces to outside libraries
+and applications allowing to natively open pictures, documents and media
+files in Evas (EFL canvas library).")
+    (license license:gpl2+)))
