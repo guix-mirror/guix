@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,14 +95,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "3.6.8")
+    (version "3.6.25")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://us3.samba.org/samba/ftp/stable/samba-"
+             (uri (string-append "https://www.samba.org/samba/ftp/stable/samba-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1phl6mmrc72jyvbyrw6cv6b92cxq3v2pbn1fh97nnb4hild1fnjg"))))
+               "0l9pz2m67vf398q3c2dwn8jwdxsjb20igncf4byhv6yq5dzqlb4g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
