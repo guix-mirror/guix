@@ -54,6 +54,7 @@
             alist-cons-before
             alist-cons-after
             alist-replace
+            modify-phases
             with-atomic-file-replacement
             substitute
             substitute*
@@ -422,6 +423,33 @@ An error is raised when no such pair exists."
     (match after
       ((_ after ...)
        (append before (alist-cons key value after))))))
+
+(define-syntax-rule (modify-phases phases mod-spec ...)
+  "Modify PHASES sequentially as per each MOD-SPEC, which may have one of the
+following forms:
+
+  (delete <old-phase-name>)
+  (replace <old-phase-name> <new-phase>)
+  (add-before <old-phase-name> <new-phase-name> <new-phase>)
+  (add-after <old-phase-name> <new-phase-name> <new-phase>)
+
+Where every <*-phase-name> is an automatically quoted symbol, and <new-phase>
+an expression evaluating to a procedure."
+  (let* ((phases* phases)
+         (phases* (%modify-phases phases* mod-spec))
+         ...)
+    phases*))
+
+(define-syntax %modify-phases
+  (syntax-rules (delete replace add-before add-after)
+    ((_ phases (delete old-phase-name))
+     (alist-delete 'old-phase-name phases))
+    ((_ phases (replace old-phase-name new-phase))
+     (alist-replace 'old-phase-name new-phase phases))
+    ((_ phases (add-before old-phase-name new-phase-name new-phase))
+     (alist-cons-before 'old-phase-name 'new-phase-name new-phase phases))
+    ((_ phases (add-after old-phase-name new-phase-name new-phase))
+     (alist-cons-after 'old-phase-name 'new-phase-name new-phase phases))))
 
 
 ;;;
