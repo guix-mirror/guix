@@ -113,11 +113,11 @@ exception-handling library.")
      `(("ilmbase" ,ilmbase)                       ;used in public headers
        ("zlib" ,zlib)))                           ;OpenEXR.pc reads "-lz"
     (home-page "http://www.openexr.com")
-    (synopsis #f)
+    (synopsis "High-dynamic range file format library")
     (description
      "OpenEXR is a high dynamic-range (HDR) image file format developed for
-use in computer imaging applications.  The IlmImf libraries supports storage
-of the \"EXR\" file format for storing 16-bit floating-point images.")
+use in computer imaging applications.  The IlmImf C++ libraries support
+storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (license license:bsd-3)))
 
 (define-public ctl
