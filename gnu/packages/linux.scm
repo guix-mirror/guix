@@ -523,14 +523,14 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.42.11")
+    (version "1.42.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/e2fsprogs/e2fsprogs-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0xhbj7494g3y2w2miyrzdz6nciaffxajrs6wqm73yp4jnrqagn2b"))
+               "0v0qcfyls0dlrjy8gx9m3s2wbkp5z3lbsr5hb7x8kp8f3bclcy71"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "MCONFIG.in"
