@@ -21,6 +21,7 @@
   #:use-module (guix base32)
   #:use-module (guix hash)
   #:use-module (guix tests)
+  #:use-module ((guix build utils) #:select (delete-file-recursively))
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -46,8 +47,14 @@
   }
 }")
 
-(define test-source
-  "foobar")
+(define test-source-hash
+  "")
+
+(define test-requirements
+"# A comment
+ # A comment after a space
+bar
+baz > 13.37")
 
 (test-begin "pypi")
 
@@ -55,15 +62,22 @@
   ;; Replace network resources with sample data.
   (mock ((guix import utils) url-fetch
          (lambda (url file-name)
-           (with-output-to-file file-name
-             (lambda ()
-               (display
-                (match url
-                  ("https://pypi.python.org/pypi/foo/json"
-                   test-json)
-                  ("https://example.com/foo-1.0.0.tar.gz"
-                   test-source)
-                  (_ (error "Unexpected URL: " url))))))))
+           (match url
+             ("https://pypi.python.org/pypi/foo/json"
+              (with-output-to-file file-name
+                (lambda ()
+                  (display test-json))))
+             ("https://example.com/foo-1.0.0.tar.gz"
+               (begin
+                 (mkdir "foo-1.0.0")
+                 (with-output-to-file "foo-1.0.0/requirements.txt"
+                   (lambda ()
+                     (display test-requirements)))
+                 (system* "tar" "czvf" file-name "foo-1.0.0/")
+                 (delete-file-recursively "foo-1.0.0")
+                 (set! test-source-hash
+                       (call-with-input-file file-name port-sha256))))
+             (_ (error "Unexpected URL: " url)))))
     (match (pypi->guix-package "foo")
       (('package
          ('name "python-foo")
@@ -78,13 +92,15 @@
          ('build-system 'python-build-system)
          ('inputs
           ('quasiquote
-           (("python-setuptools" ('unquote 'python-setuptools)))))
+           (("python-bar" ('unquote 'python-bar))
+            ("python-baz" ('unquote 'python-baz))
+            ("python-setuptools" ('unquote 'python-setuptools)))))
          ('home-page "http://example.com")
          ('synopsis "summary")
          ('description "summary")
          ('license 'lgpl2.0))
        (string=? (bytevector->nix-base32-string
-                  (call-with-input-string test-source port-sha256))
+                  test-source-hash)
                  hash))
       (x
        (pk 'fail x #f)))))
