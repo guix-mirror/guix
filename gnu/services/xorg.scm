@@ -289,6 +289,7 @@ authfile /var/run/slim.auth
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
 login_cmd  exec " xinitrc " %session
 sessiondir " sessiondir "
+session_msg session (F1 to change):
 
 halt_cmd " dmd "/sbin/halt
 reboot_cmd " dmd "/sbin/reboot
