@@ -73,7 +73,8 @@ command-line arguments, multiple languages, and so on.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))))
+              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))
+            (patches (list (search-patch "grep-CVE-2015-1345.patch")))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
