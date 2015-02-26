@@ -42,6 +42,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xorg))
 
 (define-public efl
@@ -179,3 +180,29 @@ full capabilities of EFL.")
 and applications allowing to natively open pictures, documents and media
 files in Evas (EFL canvas library).")
     (license license:gpl2+)))
+
+(define-public emotion-generic-players
+  (package
+    (name "emotion-generic-players")
+    (version "1.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.enlightenment.org/rel/libs/emotion_generic_players/emotion_generic_players-"
+                version ".tar.gz"))
+              (sha256
+               (base32 "0gin3cjhfj75v0gjsvv7harbj4fs4r7r1sfi74ncxzna71nrd8r3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)
+       ("vlc" ,vlc)))
+    (home-page "http://www.enlightenment.org")
+    (synopsis "Plugins for integrating media players in EFL based applications")
+    (description
+     "Emotion-generic-players is a collection of interfaces to outside libraries
+and applications allowing to natively play video files through Emotion.
+The only supported now is VLC.")
+    (license license:bsd-2)))
