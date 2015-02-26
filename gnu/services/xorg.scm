@@ -207,23 +207,33 @@ which should be passed to this script as the first argument.  If not, the
   (list %windowmaker-session-type %ratpoison-session-type))
 
 (define (xsessions-directory sessions)
-  "Return a directory containing SESSIONS, a list of <session-type> objects."
+  "Return a directory containing SESSIONS, a list of <session-type> objects.
+The alphabetical order of the files in that directory match the order of the
+elements in SESSIONS."
   (define builder
     #~(begin
+        (use-modules (srfi srfi-1)
+                     (ice-9 format))
+
         (mkdir #$output)
         (chdir #$output)
-        (for-each (lambda (name executable)
-                    (let ((file (string-append (string-downcase name)
-                                               ".desktop")))
-                      (call-with-output-file file
-                        (lambda (port)
-                          (format port "[Desktop Entry]
+        (fold (lambda (name executable number)
+                ;; Create file names such that the order of the items in
+                ;; SESSION is respected.  SLiM gets them in lexicographic
+                ;; order and uses the first one as the default session.
+                (let ((file (format #f "~2,'0d-~a.desktop"
+                                    number (string-downcase name))))
+                  (call-with-output-file file
+                    (lambda (port)
+                      (format port "[Desktop Entry]
 Name=~a
 Exec=~a
 Type=Application~%"
-                                  name executable)))))
-                  '#$(map session-type-name sessions)
-                  (list #$@(map session-type-executable sessions)))))
+                              name executable)))
+                  (+ 1 number)))
+              1
+              '#$(map session-type-name sessions)
+              (list #$@(map session-type-executable sessions)))))
 
   (gexp->derivation "xsessions-dir" builder))
 
@@ -260,7 +270,8 @@ theme to use.  In that case, @var{theme-name} specifies the name of the
 theme.
 
 Last, @var{session} is a list of @code{<session-type>} objects denoting the
-available session types that can be chosen from the log-in screen."
+available session types that can be chosen from the log-in screen.  The first
+one is chosen by default."
 
   (define (slim.cfg)
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))

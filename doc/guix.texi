@@ -4634,7 +4634,8 @@ theme to use.  In that case, @var{theme-name} specifies the name of the
 theme.
 
 Last, @var{session} is a list of @code{<session-type>} objects denoting the
-available session types that can be chosen from the log-in screen.
+available session types that can be chosen from the log-in screen.  The first
+one is chosen by default.
 @end deffn
 
 @defvr {Scheme Variable} %default-sessions
