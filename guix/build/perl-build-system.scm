@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,15 +71,11 @@
 (define %standard-phases
   ;; Everything is as with the GNU Build System except for the `configure',
   ;; `build', `check', and `install' phases.
-  (alist-replace
-   'configure configure
-   (alist-replace
-    'build build
-    (alist-replace
-     'check check
-     (alist-replace
-      'install install
-      gnu:%standard-phases)))))
+  (modify-phases gnu:%standard-phases
+    (replace install install)
+    (replace check check)
+    (replace build build)
+    (replace configure configure)))
 
 (define* (perl-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)

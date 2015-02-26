@@ -69,14 +69,11 @@
         (call-waf "install" params)))
 
 (define %standard-phases
-  (alist-replace
-   'configure configure
-   (alist-replace
-    'build build
-    (alist-replace
-     'check check
-     (alist-replace 'install install
-                    gnu:%standard-phases)))))
+  (modify-phases gnu:%standard-phases
+    (replace configure configure)
+    (replace build build)
+    (replace check check)
+    (replace install install)))
 
 (define* (waf-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)

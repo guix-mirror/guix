@@ -62,13 +62,11 @@ directory."
                     (first-matching-file "\\.gem$")))))
 
 (define %standard-phases
-  (alist-replace
-   'build build
-   (alist-replace
-    'install install
-    (alist-replace
-     'check check
-     (alist-delete 'configure gnu:%standard-phases)))))
+  (modify-phases gnu:%standard-phases
+    (delete configure)
+    (replace build build)
+    (replace install install)
+    (replace check check)))
 
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)

@@ -239,13 +239,10 @@ needed."
          outputs))
 
 (define %standard-phases
-  (alist-cons-after
-   'install 'glib-or-gtk-wrap wrap-all-programs
-   (alist-cons-after
-    'install 'glib-or-gtk-icon-cache generate-icon-cache
-    (alist-cons-after
-     'install 'glib-or-gtk-compile-schemas compile-glib-schemas
-     gnu:%standard-phases))))
+  (modify-phases gnu:%standard-phases
+    (add-after install glib-or-gtk-compile-schemas compile-glib-schemas)
+    (add-after install glib-or-gtk-icon-cache generate-icon-cache)
+    (add-after install glib-or-gtk-wrap wrap-all-programs)))
 
 (define* (glib-or-gtk-build #:key inputs (phases %standard-phases)
                             #:allow-other-keys #:rest args)

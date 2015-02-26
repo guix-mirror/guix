@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -122,19 +122,13 @@ installed with setuptools."
 (define %standard-phases
   ;; 'configure' and 'build' phases are not needed.  Everything is done during
   ;; 'install'.
-  (alist-cons-before
-   'strip 'rename-pth-file
-   rename-pth-file
-   (alist-cons-after
-    'install 'wrap
-    wrap
-    (alist-replace
-     'build build
-     (alist-replace
-      'check check
-      (alist-replace 'install install
-                     (alist-delete 'configure
-                                   gnu:%standard-phases)))))))
+  (modify-phases gnu:%standard-phases
+    (delete configure)
+    (replace install install)
+    (replace check check)
+    (replace build build)
+    (add-after install wrap wrap)
+    (add-before strip rename-pth-file rename-pth-file)))
 
 (define* (python-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)
