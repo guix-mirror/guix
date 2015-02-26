@@ -198,7 +198,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.19")
+  (let* ((version "3.18.7")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -271,7 +271,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1ndrflzalkcyy61im6kcm8z681yaq2hwqgn6zbd7r3j9mscyqq1a"))))
+               "113r2dzmiwlchp5b3hyjyx91jysx5j4hhxjw45gaky5nj9pax2rh"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -446,7 +446,11 @@ providing the system administrator with some help in common tasks.")
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (arguments
-     '(#:phases (alist-replace
+     '(#:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; No `configure', just a single Makefile.
@@ -467,6 +471,13 @@ providing the system administrator with some help in common tasks.")
                       (and (zero?
                             (system* "make" "install"
                                      (string-append "DESTDIR=" out)))
+
+                           ;; Remove commands and man pages redundant with
+                           ;; Coreutils.
+                           (let ((dup (append-map (cut find-files out <>)
+                                                  '("^kill" "^uptime"))))
+                             (for-each delete-file dup)
+                             #t)
 
                            ;; Sanity check.
                            (zero?
@@ -512,14 +523,14 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.42.11")
+    (version "1.42.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/e2fsprogs/e2fsprogs-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0xhbj7494g3y2w2miyrzdz6nciaffxajrs6wqm73yp4jnrqagn2b"))
+               "0v0qcfyls0dlrjy8gx9m3s2wbkp5z3lbsr5hb7x8kp8f3bclcy71"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "MCONFIG.in"
@@ -866,7 +877,11 @@ manpages.")
               (list (search-patch "net-tools-bitrot.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases (alist-cons-after
                  'unpack 'patch
                  (lambda* (#:key inputs #:allow-other-keys)
                    (define (apply-patch file)
@@ -877,7 +892,6 @@ manpages.")
                      (format #t "applying Debian patch set '~a'...~%"
                              patch.gz)
                      (system (string-append "gunzip < " patch.gz " > the-patch"))
-                     (pk 'here)
                      (and (apply-patch "the-patch")
                           (for-each apply-patch
                                     (find-files "debian/patches"
@@ -896,7 +910,18 @@ manpages.")
                       ;; definition.
                       (substitute* '("config.make" "config.h")
                         (("^.*HAVE_AFDECnet.*$") ""))))
-                  %standard-phases))
+                  (alist-cons-after
+                   'install 'remove-redundant-commands
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Remove commands and man pages redundant with
+                     ;; Inetutils.
+                     (let* ((out (assoc-ref outputs "out"))
+                            (dup (append-map (cut find-files out <>)
+                                             '("^hostname"
+                                               "^(yp|nis|dns)?domainname"))))
+                       (for-each delete-file dup)
+                       #t))
+                   %standard-phases)))
 
        ;; Binaries that depend on libnet-tools.a don't declare that
        ;; dependency, making it parallel-unsafe.
@@ -1699,6 +1724,36 @@ you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
     (license gpl2+)))
 
+(define-public i2c-tools
+  (package
+    (name "i2c-tools")
+    (version "3.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dl.lm-sensors.org/i2c-tools/releases/i2c-tools-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "000pvg995qy1b15ks59gd0klri55hb33kqpg5czy84hw1pbdgm0l"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no 'check' target
+       #:make-flags (list (string-append "prefix=" %output)
+                          "CC=gcc")
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://www.lm-sensors.org/wiki/I2CTools")
+    (synopsis "I2C tools for Linux")
+    (description
+     "The i2c-tools package contains a heterogeneous set of I2C tools for
+Linux: a bus probing tool, a chip dumper, register-level SMBus access helpers,
+EEPROM decoding scripts, EEPROM programming tools, and a python module for
+SMBus access.")
+    (license gpl2+)))
+
 (define-public xsensors
   (package
     (name "xsensors")
@@ -1837,3 +1892,100 @@ thanks to the use of namespaces.")
 is for enabling irq-unmasking and IDE multiplemode.")
     (license (bsd-style "file://LICENSE.TXT"))))
 
+(define-public acpid
+  (package
+    (name "acpid")
+    (version "2.0.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/acpid2/acpid-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1vl7c6vc724v4jwki17czgj6lnrknnj1a6llm8gkl32i2gnam5j3"))))
+    (build-system gnu-build-system)
+    (home-page "http://sourceforge.net/projects/acpid2/")
+    (synopsis "Daemon for delivering ACPI events to user-space programs")
+    (description
+     "acpid is designed to notify user-space programs of Advanced
+Configuration and Power Interface (ACPI) events.  acpid should be started
+during the system boot, and will run as a background process.  When an ACPI
+event is received from the kernel, acpid will examine the list of rules
+specified in /etc/acpi/events and execute the rules that match the event.")
+    (license gpl2+)))
+
+(define-public sysfsutils
+  (package
+    (name "sysfsutils")
+    (version "2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "mirror://sourceforge/linux-diag/sysfsutils/" version "/sysfsutils-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "12i0ip11xbfcjzxz4r10cvz7mbzgq1hfcdn97w6zz7sm3wndwrg8"))))
+    (build-system gnu-build-system)
+    (home-page "http://linux-diag.sourceforge.net/Sysfsutils.html")
+    (synopsis "System utilities based on Linux sysfs")
+    (description
+     "These are a set of utilites built upon sysfs, a virtual filesystem in
+Linux kernel versions 2.5+ that exposes a system's device tree.  The package
+also contains the libsysfs library.")
+    ;; The library is under lgpl2.1+ (all files say "or any later version").
+    ;; The rest is mostly gpl2, with a few files indicating gpl2+.
+    (license (list gpl2 gpl2+ lgpl2.1+))))
+
+(define-public sysfsutils-1
+  (package
+    (inherit sysfsutils)
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "mirror://sourceforge/linux-diag/sysfsutils/sysfsutils-" version
+         "/sysfsutils-" version ".tar.gz"))
+       (sha256
+        (base32 "0kdhs07fm8263pxwd5blwn2x211cg4fk63fyf9ijcdkvzmwxrqq3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Makefile.in"
+             (("includedir = /usr/include/sysfs")
+              "includedir = @includedir@"))
+           (substitute* "configure"
+             (("includedir='(\\$\\{prefix\\}/include)'" all orig)
+              (string-append "includedir='" orig "/sysfs'")))))))
+    (synopsis "System utilities based on Linux sysfs (version 1.x)")))
+
+(define-public cpufrequtils
+  (package
+    (name "cpufrequtils")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-"
+         version ".tar.gz"))
+       (sha256
+        (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
+       (patches (list (search-patch "cpufrequtils-fix-aclocal.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("sysfsutils" ,sysfsutils-1)))
+    (arguments
+     '(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib"))))
+    (home-page "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/")
+    (synopsis "Utilities to get and set CPU frequency on Linux")
+    (description
+     "The cpufrequtils suite contains utilities to retreive CPU frequency
+information, and set the CPU frequency if supported, using the cpufreq
+capabilities of the Linux kernel.")
+    (license gpl2)))

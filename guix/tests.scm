@@ -23,6 +23,7 @@
   #:use-module (guix base32)
   #:use-module (guix serialization)
   #:use-module (guix hash)
+  #:use-module (guix build-system gnu)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
@@ -30,6 +31,8 @@
   #:export (open-connection-for-tests
             random-text
             random-bytevector
+            network-reachable?
+            shebang-too-long?
             mock
             %substitute-directory
             with-derivation-narinfo
@@ -75,6 +78,10 @@
             (bytevector-u8-set! bv i (random 256 %seed))
             (loop (1+ i)))
           bv))))
+
+(define (network-reachable?)
+  "Return true if we can reach the Internet."
+  (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
 
 (define-syntax-rule (mock (module proc replacement) body ...)
   "Within BODY, replace the definition of PROC from MODULE with the definition
@@ -178,6 +185,17 @@ CONTENTS."
     (lambda ()
       (delete-file (string-append dir "/example.out"))
       (delete-file (string-append dir "/example.nar")))))
+
+(define (shebang-too-long?)
+  "Return true if the typical shebang in the current store would exceed
+Linux's static limit---the BINPRM_BUF_SIZE constant, normally 128 characters
+all included."
+  (define shebang
+    (string-append "#!" (%store-prefix) "/"
+                   (make-string 32 #\a)
+                   "-bootstrap-binaries-0/bin/bash\0"))
+
+  (> (string-length shebang) 128))
 
 (define-syntax with-derivation-substitute
   (syntax-rules (sha256 =>)

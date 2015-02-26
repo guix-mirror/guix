@@ -405,25 +405,12 @@ arguments with packages that use the specified source."
 ;;;
 
 (define (guix-build . args)
-  (define (parse-options)
-    ;; Return the alist of option values.
-    (append (parse-options-from args)
-            (parse-options-from (environment-build-options))))
-
-  (define (parse-options-from args)
-    ;; Actual parsing takes place here.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
-
   (with-error-handling
     ;; Ask for absolute file names so that .drv file names passed from the
     ;; user to 'read-derivation' are absolute when it returns.
     (with-fluids ((%file-port-name-canonicalization 'absolute))
-      (let* ((opts  (parse-options))
+      (let* ((opts  (parse-command-line args %options
+                                        (list %default-options)))
              (store (open-connection))
              (drv   (options->derivations store opts))
              (roots (filter-map (match-lambda

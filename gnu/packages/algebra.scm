@@ -84,22 +84,23 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.7.2")
+   (version "2.7.3")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
                   version ".tar.gz"))
-            (sha256 (base32
-                     "1b0hzyhafpxhmiljyhnsh6c27ydsvb2599fshwq2fjfm96awjxmc"))))
+            (sha256
+              (base32
+                "02k54m7p47r54lgxqanxvf7pdrss17n8if1qwk5wx0j1px22j0rq"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("perl" ,perl)
              ("readline" ,readline)))
    (arguments
     '(#:make-flags '("gp")
-      ;; FIXME: building the documentation requires tex; once this is available,
-      ;; replace "gp" by "all"
+      ;; FIXME: building the documentation requires tex; once this is
+      ;; available, replace "gp" by "all"
       #:test-target "dobench"
       #:phases
       (alist-replace

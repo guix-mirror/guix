@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -392,3 +392,31 @@ X Window System.")
     (license (license:bsd-style #f "See xlock.c.")
              ;; + GPLv2 in modes/glx/biof.c.
              )))
+
+(define-public xosd
+  (package
+    (name "xosd")
+    (version "2.2.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/libxosd/xosd-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "025m7ha89q29swkc7s38knnbn8ysl24g2h5s7imfxflm91psj7sg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--mandir=" %output "/share/man"))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxt" ,libxt)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)))
+    (home-page "http://sourceforge.net/projects/libxosd/")
+    (synopsis "X On Screen Display")
+    (description
+     "XOSD provides a C library and a simple utility (osd_cat) for displaying
+transparent text on your screen.")
+    (license license:gpl2+)))

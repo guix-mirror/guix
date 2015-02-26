@@ -890,11 +890,13 @@ taking the store as its first argument."
 ;; Store monad operators.
 ;;
 
-(define* (text-file name text)
+(define* (text-file name text
+                    #:optional (references '()))
   "Return as a monadic value the absolute file name in the store of the file
-containing TEXT, a string."
+containing TEXT, a string.  REFERENCES is a list of store items that the
+resulting text file refers to; it defaults to the empty list."
   (lambda (store)
-    (values (add-text-to-store store name text '())
+    (values (add-text-to-store store name text references)
             store)))
 
 (define* (interned-file file #:optional name

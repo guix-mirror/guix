@@ -28,15 +28,8 @@
   "{
   \"metadata\" : {
     \"prereqs\" : {
-      \"configure\" : {
-        \"requires\" : {
-          \"ExtUtils::MakeMaker\" : \"0\",
-          \"Module::Build\" : \"0.28\"
-        }
-      },
       \"runtime\" : {
         \"requires\" : {
-          \"Getopt::Std\" : \"0\",
           \"Test::Script\" : \"1.05\",
         }
       }
@@ -70,6 +63,8 @@
                 (match url
                   ("http://api.metacpan.org/release/Foo-Bar"
                    test-json)
+                  ("http://api.metacpan.org/module/Test::Script"
+                   "{ \"distribution\" : \"Test-Script\" }")
                   ("http://example.com/Foo-Bar-0.1.tar.gz"
                    test-source)
                   (_ (error "Unexpected URL: " url))))))))
@@ -85,16 +80,13 @@
                      ('base32
                       (? string? hash)))))
          ('build-system 'perl-build-system)
-         ('native-inputs
-          ('quasiquote
-           (("perl-module-build" ('unquote 'perl-module-build)))))
          ('inputs
           ('quasiquote
            (("perl-test-script" ('unquote 'perl-test-script)))))
          ('home-page "http://search.cpan.org/dist/Foo-Bar")
          ('synopsis "Fizzle Fuzz")
          ('description 'fill-in-yourself!)
-         ('license 'gpl1+))
+         ('license (package-license perl)))
        (string=? (bytevector->nix-base32-string
                   (call-with-input-string test-source port-sha256))
                  hash))

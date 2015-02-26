@@ -217,22 +217,12 @@ packages."
 
 ;; Entry point.
 (define (guix-environment . args)
-  (define (parse-options)
-    ;; Return the alist of option values.
-    (append (parse-options-from args)
-            (parse-options-from (environment-build-options))))
-
-  (define (parse-options-from args)
-    ;; Actual parsing takes place here.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (alist-cons 'package arg result))
-                %default-options))
+  (define (handle-argument arg result)
+    (alist-cons 'package arg result))
 
   (with-store store
-    (let* ((opts (parse-options))
+    (let* ((opts  (parse-command-line args %options (list %default-options)
+                                      #:argument-handler handle-argument))
            (pure? (assoc-ref opts 'pure))
            (command (assoc-ref opts 'exec))
            (inputs (packages->transitive-inputs

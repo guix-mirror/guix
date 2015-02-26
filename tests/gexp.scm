@@ -249,6 +249,23 @@
                  (equal? refs (list (dirname (dirname guile))))
                  (equal? refs2 (list file))))))
 
+(test-assertm "gexp->derivation vs. grafts"
+  (mlet* %store-monad ((p0 ->   (dummy-package "dummy"
+                                               (arguments
+                                                '(#:implicit-inputs? #f))))
+                       (r  ->   (package (inherit p0) (name "DuMMY")))
+                       (p1 ->   (package (inherit p0) (replacement r)))
+                       (exp0 -> (gexp (frob (ungexp p0) (ungexp output))))
+                       (exp1 -> (gexp (frob (ungexp p1) (ungexp output))))
+                       (void    (set-guile-for-build %bootstrap-guile))
+                       (drv0    (gexp->derivation "t" exp0))
+                       (drv1    (gexp->derivation "t" exp1))
+                       (drv1*   (gexp->derivation "t" exp1 #:graft? #f)))
+    (return (and (not (string=? (derivation->output-path drv0)
+                                (derivation->output-path drv1)))
+                 (string=? (derivation->output-path drv0)
+                           (derivation->output-path drv1*))))))
+
 (test-assertm "gexp->derivation, composed gexps"
   (mlet* %store-monad ((exp0 -> (gexp (begin
                                         (mkdir (ungexp output))
@@ -359,6 +376,40 @@
                      (file-exists? (string-append out "/" two "/two"))
                      (string=? (readlink (string-append out "/" two "/one"))
                                one)))))))
+
+(test-assertm "imported-files"
+  (mlet* %store-monad
+      ((files -> `(("x"     . ,(search-path %load-path "ice-9/q.scm"))
+                   ("a/b/c" . ,(search-path %load-path
+                                            "guix/derivations.scm"))
+                   ("p/q"   . ,(search-path %load-path "guix.scm"))
+                   ("p/z"   . ,(search-path %load-path "guix/store.scm"))))
+       (drv (imported-files files)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let ((dir (derivation->output-path drv)))
+        (return
+         (every (match-lambda
+                 ((path . source)
+                  (equal? (call-with-input-file (string-append dir "/" path)
+                            get-bytevector-all)
+                          (call-with-input-file source
+                            get-bytevector-all))))
+                files))))))
+
+(test-assertm "gexp->derivation #:modules"
+  (mlet* %store-monad
+      ((build ->  #~(begin
+                      (use-modules (guix build utils))
+                      (mkdir-p (string-append #$output "/guile/guix/nix"))
+                      #t))
+       (drv       (gexp->derivation "test-with-modules" build
+                                    #:modules '((guix build utils)))))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let* ((p (derivation->output-path drv))
+             (s (stat (string-append p "/guile/guix/nix"))))
+        (return (eq? (stat:type s) 'directory))))))
 
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad

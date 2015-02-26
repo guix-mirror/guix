@@ -446,7 +446,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                                result)))
          (option '("no-grub") #f #f
                  (lambda (opt name arg result)
-                   (alist-delete 'install-grub? result)))
+                   (alist-cons 'install-grub? #f result)))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
@@ -487,26 +487,15 @@ Build the operating system declared in FILE according to ACTION.\n"))
 ;;;
 
 (define (guix-system . args)
-  (define (parse-options)
-    ;; Return the alist of option values.
-    (append (parse-options-from args)
-            (parse-options-from (environment-build-options))))
-
-  (define (parse-options-from args)
-    ;; Actual parsing takes place here.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (if (assoc-ref result 'action)
-                      (alist-cons 'argument arg result)
-                      (let ((action (string->symbol arg)))
-                        (case action
-                          ((build vm vm-image disk-image reconfigure init)
-                           (alist-cons 'action action result))
-                          (else (leave (_ "~a: unknown action~%")
-                                       action))))))
-                %default-options))
+  (define (parse-sub-command arg result)
+    ;; Parse sub-command ARG and augment RESULT accordingly.
+    (if (assoc-ref result 'action)
+        (alist-cons 'argument arg result)
+        (let ((action (string->symbol arg)))
+          (case action
+            ((build vm vm-image disk-image reconfigure init)
+             (alist-cons 'action action result))
+            (else (leave (_ "~a: unknown action~%") action))))))
 
   (define (match-pair car)
     ;; Return a procedure that matches a pair with CAR.
@@ -534,7 +523,10 @@ Build the operating system declared in FILE according to ACTION.\n"))
       args))
 
   (with-error-handling
-    (let* ((opts     (parse-options))
+    (let* ((opts     (parse-command-line args %options
+                                         (list %default-options)
+                                         #:argument-handler
+                                         parse-sub-command))
            (args     (option-arguments opts))
            (file     (first args))
            (action   (assoc-ref opts 'action))

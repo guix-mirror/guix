@@ -375,14 +375,14 @@ connection alive.")
 (define-public isc-dhcp
   (package
     (name "isc-dhcp")
-    (version "4.3.0")
+    (version "4.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                   version "/dhcp-" version ".tar.gz"))
               (sha256
                (base32
-                "12mydvj6x3zcl3gla06bywfkkrgg03g66fijs94mwb7kbiym3dm7"))))
+                "1w4s7sni1m9223ya8m2a64lr62845c6xlraprjf8zfx6lylbqv16"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -409,9 +409,9 @@ connection alive.")
 
                      (system* "tar" "xf" "bind.tar.gz")
                      (for-each patch-shebang
-                               (find-files "bind-9.9.5" ".*"))
+                               (find-files "bind-9.9.5-P1" ".*"))
                      (zero? (system* "tar" "cf" "bind.tar.gz"
-                                     "bind-9.9.5"))))
+                                     "bind-9.9.5-P1"))))
                  (alist-cons-after
                   'install 'post-install
                   (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -420,6 +420,7 @@ connection alive.")
                     (let* ((out       (assoc-ref outputs "out"))
                            (libexec   (string-append out "/libexec"))
                            (coreutils (assoc-ref inputs "coreutils"))
+                           (inetutils (assoc-ref inputs "inetutils"))
                            (net-tools (assoc-ref inputs "net-tools"))
                            (sed       (assoc-ref inputs "sed")))
                       (substitute* "client/scripts/linux"
@@ -431,17 +432,19 @@ connection alive.")
                       (copy-file "client/scripts/linux"
                                  (string-append libexec "/dhclient-script"))
 
-                      (wrap-program (string-append libexec "/dhclient-script")
-                                    `("PATH" ":" prefix
-                                      ,(map (lambda (dir)
-                                              (string-append dir "/bin:"
-                                                             dir "/sbin"))
-                                            (list net-tools coreutils sed))))))
+                      (wrap-program
+                          (string-append libexec "/dhclient-script")
+                        `("PATH" ":" prefix
+                          ,(map (lambda (dir)
+                                  (string-append dir "/bin:"
+                                                 dir "/sbin"))
+                                (list inetutils net-tools coreutils sed))))))
                   %standard-phases))))
 
     (native-inputs `(("perl" ,perl)))
 
-    (inputs `(("net-tools" ,net-tools)
+    (inputs `(("inetutils" ,inetutils)
+              ("net-tools" ,net-tools)
               ("iproute" ,iproute)
 
               ;; When cross-compiling, we need the cross Coreutils and sed.

@@ -506,7 +506,8 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
 
              (activate #~(begin
                            (use-modules (guix build utils))
-                           (mkdir-p "/var/run/nscd")))
+                           (mkdir-p "/var/run/nscd")
+                           (mkdir-p "/var/db/nscd"))) ;for the persistent cache
 
              (start #~(make-forkexec-constructor
                        (list (string-append #$glibc "/sbin/nscd")

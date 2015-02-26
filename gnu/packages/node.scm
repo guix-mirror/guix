@@ -35,14 +35,14 @@
 (define-public node
   (package
     (name "node")
-    (version "0.10.36")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "10cc2yglmrp8i2l4lm4pnm1pf7jvzjk5v80kddl4dkjb578d3mxr"))))
+                "0cifd2qhpyrbxx71a4hsagzk24qas8m5zvwcyhx69cz9yhxf404p"))))
     (native-inputs `(("python" ,python-2)
                      ("perl" ,perl)
                      ("gcc" ,gcc-4.9)

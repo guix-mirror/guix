@@ -4451,7 +4451,7 @@ graphics cards.")
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.16.3")
+    (version "1.16.4")
     (source
       (origin
         (method url-fetch)
@@ -4460,7 +4460,7 @@ graphics cards.")
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1yxhc3aw2cadf77w48d2glc5j6w6hairiskfiys7h45g70r483sy"))))
+          "0wf8xykcjhvpk9ppjcixvf60p6kkyrpmfj0z29d93a8kjb6f3dmb"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)

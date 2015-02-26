@@ -176,8 +176,7 @@
     (and (direct-store-path? source)
          (string-suffix? "utils.scm" source))))
 
-(unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
-  (test-skip 1))
+(unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"
   (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
@@ -532,7 +531,7 @@
                      (%current-target-system "foo64-linux-gnu"))
         (equal? drv (bag->derivation %store bag))))))
 
-(unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
+(when (or (not (network-reachable?)) (shebang-too-long?))
   (test-skip 1))
 (test-assert "GNU Make, bootstrap"
   ;; GNU Make is the first program built during bootstrap; we choose it

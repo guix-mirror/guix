@@ -29,6 +29,7 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages texinfo)
@@ -36,7 +37,8 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial))
 
 ;;; Commentary:
 ;;;
@@ -537,9 +539,50 @@ the 'share/locale' sub-directory of this package.")
             (alist-delete 'install ,phases)))
          ((#:configure-flags flags)
           `(append ,flags
+                   ;; Use $(libdir)/locale as is the case by default.
                    (list (string-append "libc_cv_localedir="
                                         (assoc-ref %outputs "out")
-                                        "/share/locale")))))))))
+                                        "/lib/locale")))))))))
+
+(define-public glibc-utf8-locales
+  (package
+    (name "glibc-utf8-locales")
+    (version (package-version glibc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (srfi srfi-1)
+                                (guix build utils))
+
+                   (let* ((libc      (assoc-ref %build-inputs "glibc"))
+                          (gzip      (assoc-ref %build-inputs "gzip"))
+                          (out       (assoc-ref %outputs "out"))
+                          (localedir (string-append out "/lib/locale")))
+                     ;; 'localedef' needs 'gzip'.
+                     (setenv "PATH" (string-append libc "/bin:" gzip "/bin"))
+
+                     (mkdir-p localedir)
+                     (every (lambda (locale)
+                              (zero? (system* "localedef" "--no-archive"
+                                              "--prefix" localedir "-i" locale
+                                              "-f" "UTF-8"
+                                              (string-append localedir "/"
+                                                             locale
+                                                             ".UTF-8"))))
+
+                            ;; These are the locales commonly used for
+                            ;; tests---e.g., in Guile's i18n tests.
+                            '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))))))
+    (inputs `(("glibc" ,glibc)
+              ("gzip" ,gzip)))
+    (synopsis "Small sample of UTF-8 locales")
+    (description
+     "This package provides a small sample of UTF-8 locales mostly useful in
+test environments.")
+    (home-page (package-home-page glibc))
+    (license (package-license glibc))))
 
 (define-public tzdata
   (package

@@ -463,7 +463,7 @@
 
 (define %coreutils
   (false-if-exception
-   (and (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)
+   (and (network-reachable?)
         (or (package-derivation %store %bootstrap-coreutils&co)
             (nixpkgs-derivation "coreutils")))))
 
@@ -669,23 +669,6 @@
     (and succeeded?
          (let ((p (derivation->output-path drv)))
            (string-contains (call-with-input-file p read-line) "GNU")))))
-
-(test-assert "imported-files"
-  (let* ((files    `(("x"     . ,(search-path %load-path "ice-9/q.scm"))
-                     ("a/b/c" . ,(search-path %load-path
-                                              "guix/derivations.scm"))
-                     ("p/q"   . ,(search-path %load-path "guix.scm"))
-                     ("p/z"   . ,(search-path %load-path "guix/store.scm"))))
-         (drv      (imported-files %store files)))
-    (and (build-derivations %store (list drv))
-         (let ((dir (derivation->output-path drv)))
-           (every (match-lambda
-                   ((path . source)
-                    (equal? (call-with-input-file (string-append dir "/" path)
-                              get-bytevector-all)
-                            (call-with-input-file source
-                              get-bytevector-all))))
-                  files)))))
 
 (test-assert "build-expression->derivation with modules"
   (let* ((builder  `(begin

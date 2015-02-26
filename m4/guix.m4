@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl
 dnl This file is part of GNU Guix.
@@ -161,4 +161,60 @@ AC_DEFUN([GUIX_CHECK_UNBUFFERED_CBIP], [
      else
        ac_cv_guix_cbips_support_setvbuf=no
      fi])
+])
+
+dnl GUIX_TEST_ROOT_DIRECTORY
+AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
+  AC_CACHE_CHECK([for unit test root directory],
+    [ac_cv_guix_test_root],
+    [ac_cv_guix_test_root="`pwd`/test-tmp"])
+])
+
+dnl 'BINPRM_BUF_SIZE' constant in Linux.  The Hurd has a limit
+dnl of about a page (see exec/hashexec.c.)
+m4_define([LINUX_HASH_BANG_LIMIT], 128)
+
+dnl Hardcoded 'sun_path' length in <sys/un.h>.
+m4_define([SOCKET_FILE_NAME_LIMIT], 108)
+
+dnl GUIX_SOCKET_FILE_NAME_LENGTH
+AC_DEFUN([GUIX_SOCKET_FILE_NAME_LENGTH], [
+  AC_CACHE_CHECK([the length of the installed socket file name],
+    [ac_cv_guix_socket_file_name_length],
+    [ac_cv_guix_socket_file_name_length="`echo -n "$guix_localstatedir/guix/daemon-socket/socket" | wc -c`"])
+])
+
+dnl GUIX_TEST_SOCKET_FILE_NAME_LENGTH
+AC_DEFUN([GUIX_TEST_SOCKET_FILE_NAME_LENGTH], [
+  AC_REQUIRE([GUIX_TEST_ROOT_DIRECTORY])
+  AC_CACHE_CHECK([the length of the socket file name used in tests],
+    [ac_cv_guix_test_socket_file_name_length],
+    [ac_cv_guix_test_socket_file_name_length="`echo -n "$ac_cv_guix_test_root/var/123456/daemon-socket/socket" | wc -c`"])
+])
+
+dnl GUIX_HASH_BANG_LENGTH
+AC_DEFUN([GUIX_HASH_BANG_LENGTH], [
+  AC_CACHE_CHECK([the length of a typical hash bang line],
+    [ac_cv_guix_hash_bang_length],
+    [ac_cv_guix_hash_bang_length=`echo -n "$storedir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bootstrap-binaries-0/bin/bash" | wc -c`])
+])
+
+dnl GUIX_CHECK_FILE_NAME_LIMITS
+dnl
+dnl GNU/Linux has a couple of silly limits that we can easily run into.
+dnl Make sure everything is fine with the current settings.
+AC_DEFUN([GUIX_CHECK_FILE_NAME_LIMITS], [
+  AC_REQUIRE([GUIX_SOCKET_FILE_NAME_LENGTH])
+  AC_REQUIRE([GUIX_TEST_SOCKET_FILE_NAME_LENGTH])
+  AC_REQUIRE([GUIX_HASH_BANG_LENGTH])
+
+  if test "$ac_cv_guix_socket_file_name_length" -ge ]SOCKET_FILE_NAME_LIMIT[; then
+    AC_MSG_ERROR([socket file name would exceed the maxium allowed length])
+  fi
+  if test "$ac_cv_guix_test_socket_file_name_length" -ge ]SOCKET_FILE_NAME_LIMIT[; then
+    AC_MSG_WARN([socket file name limit may be exceeded when running tests])
+  fi
+  if test "$ac_cv_guix_hash_bang_length" -ge ]LINUX_HASH_BANG_LIMIT[; then
+    AC_MSG_ERROR([store directory '$storedir' would lead to overly long hash-bang lines])
+  fi
 ])

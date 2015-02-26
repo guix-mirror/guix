@@ -75,7 +75,9 @@
                      (tests? #t)
                      (parallel-build? #t)
                      (parallel-tests? #t)
+                     (make-maker? #f)
                      (make-maker-flags ''())
+                     (module-build-flags ''())
                      (phases '(@ (guix build perl-build-system)
                                  %standard-phases))
                      (outputs '("out"))
@@ -101,7 +103,9 @@ provides a `Makefile.PL' file as its build system."
                                 source))
                    #:search-paths ',(map search-path-specification->sexp
                                          search-paths)
+                   #:make-maker? ,make-maker?
                    #:make-maker-flags ,make-maker-flags
+                   #:module-build-flags ,module-build-flags
                    #:phases ,phases
                    #:system ,system
                    #:test-target "test"

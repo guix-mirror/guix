@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public complexity
   (package
     (name "complexity")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/complexity/complexity-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1aad7n35ymxbj5dlpvm64dcd71b6i7hbmps0g7nkf47vj53l6y2j"))))
+                "0pmlhlj1chl4caaqffvn1cy9z8gwmjbx97syi7pdfa0vqygkql6d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)

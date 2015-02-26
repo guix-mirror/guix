@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -33,6 +34,63 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
+
+(define-public bedops
+  (package
+    (name "bedops")
+    (version "2.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bedops/bedops/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0wmg6j0icimlrnsidaxrzf3hfgjvlkkcwvpdg7n4gg7hdv2m9ni5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "BINDIR=" %output "/bin"))
+       #:phases
+       (alist-cons-after
+         'unpack 'unpack-tarballs
+         (lambda _
+           ;; FIXME: Bedops includes tarballs of minimally patched upstream
+           ;; libraries jansson, zlib, and bzip2.  We cannot just use stock
+           ;; libraries because at least one of the libraries (zlib) is
+           ;; patched to add a C++ function definition (deflateInit2cpp).
+           ;; Until the Bedops developers offer a way to link against system
+           ;; libraries we have to build the in-tree copies of these three
+           ;; libraries.
+
+           ;; See upstream discussion:
+           ;; https://github.com/bedops/bedops/issues/124
+
+           ;; Unpack the tarballs to benefit from shebang patching.
+           (with-directory-excursion "third-party"
+             (and (zero? (system* "tar" "xvf" "jansson-2.6.tar.bz2"))
+                  (zero? (system* "tar" "xvf" "zlib-1.2.7.tar.bz2"))
+                  (zero? (system* "tar" "xvf" "bzip2-1.0.6.tar.bz2"))))
+           ;; Disable unpacking of tarballs in Makefile.
+           (substitute* "system.mk/Makefile.linux"
+             (("^\tbzcat .*") "\t@echo \"not unpacking\"\n")
+             (("\\./configure") "CONFIG_SHELL=bash ./configure"))
+           (substitute* "third-party/zlib-1.2.7/Makefile.in"
+             (("^SHELL=.*$") "SHELL=bash\n")))
+         (alist-delete 'configure %standard-phases))))
+    (home-page "https://github.com/bedops/bedops")
+    (synopsis "Tools for high-performance genomic feature operations")
+    (description
+     "BEDOPS is a suite of tools to address common questions raised in genomic
+studies---mostly with regard to overlap and proximity relationships between
+data sets.  It aims to be scalable and flexible, facilitating the efficient
+and accurate analysis and management of large-scale genomic data.
+
+BEDOPS provides tools that perform highly efficient and scalable Boolean and
+other set operations, statistical calculations, archiving, conversion and
+other management of genomic data of arbitrary scale.  Tasks can be easily
+split by chromosome for distributing whole-genome analyses across a
+computational cluster.")
+    (license license:gpl2+)))
 
 (define-public bedtools
   (package
@@ -197,8 +255,15 @@ Illumina, Roche 454, and the SOLiD platform.")
                 "1k381ydranqxp09yf2y7w1d0chz5d59vb6jchi89hbb0prq19lk5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;no check target
-       #:make-flags '("allall")
+     `(#:tests? #f ;no check target
+       #:make-flags '("allall"
+                      ;; Disable unsupported `popcnt' instructions on
+                      ;; architectures other than x86_64
+                      ,@(if (string-prefix? "x86_64"
+                                            (or (%current-target-system)
+                                                (%current-system)))
+                            '()
+                            '("POPCNT_CAPABILITY=0")))
        #:phases
        (alist-replace
         'unpack
@@ -244,6 +309,73 @@ genome, HISAT uses a large set of small FM indexes that collectively cover the
 whole genome.  These small indexes (called local indexes) combined with
 several alignment strategies enable effective alignment of RNA-seq reads, in
 particular, reads spanning multiple exons.")
+    (license license:gpl3+)))
+
+(define-public htseq
+  (package
+    (name "htseq")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/H/HTSeq/HTSeq-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i85ppf2j2lj12m0x690qq5nn17xxk23pbbx2c83r8ayb5wngzwv"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; only Python 2 is supported
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
+    (synopsis "Analysing high-throughput sequencing data with Python")
+    (description
+     "HTSeq is a Python package that provides infrastructure to process data
+from high-throughput sequencing assays.")
+    (license license:gpl3+)))
+
+(define-public rseqc
+  (package
+    (name "rseqc")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/rseqc/"
+                       version "/RSeQC-" version ".tar.gz"))
+       (sha256
+        (base32 "09rf0x9d6apjja5l01cgprj7vigpw6kiqhy34ibwwlxil0db0ri4"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; remove bundled copy of pysam
+           (delete-file-recursively "lib/pysam")
+           (substitute* "setup.py"
+             ;; remove dependency on outdated "distribute" module
+             (("^from distribute_setup import use_setuptools") "")
+             (("^use_setuptools\\(\\)") "")
+             ;; do not use bundled copy of pysam
+             (("^have_pysam = False") "have_pysam = True"))))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (inputs
+     `(("python-cython" ,python2-cython)
+       ("python-pysam" ,python2-pysam)
+       ("python-numpy" ,python2-numpy)
+       ("python-setuptools" ,python2-setuptools)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)))
+    (home-page "http://rseqc.sourceforge.net/")
+    (synopsis "RNA-seq quality control package")
+    (description
+     "RSeQC provides a number of modules that can comprehensively evaluate
+high throughput sequence data, especially RNA-seq data.  Some basic modules
+inspect sequence quality, nucleotide composition bias, PCR bias and GC bias,
+while RNA-seq specific modules evaluate sequencing saturation, mapped reads
+distribution, coverage uniformity, strand specificity, etc.")
     (license license:gpl3+)))
 
 (define-public samtools

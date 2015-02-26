@@ -1894,12 +1894,20 @@ parameter.
 
 @defvr {Scheme Variable} perl-build-system
 This variable is exported by @code{(guix build-system perl)}.  It
-implements the standard build procedure for Perl packages, which
-consists in running @code{perl Makefile.PL PREFIX=/gnu/store/@dots{}},
-followed by @code{make} and @code{make install}.
+implements the standard build procedure for Perl packages, which either
+consists in running @code{perl Build.PL --prefix=/gnu/store/@dots{}},
+followed by @code{Build} and @code{Build install}; or in running
+@code{perl Makefile.PL PREFIX=/gnu/store/@dots{}}, followed by
+@code{make} and @code{make install}; depending on which of
+@code{Build.PL} or @code{Makefile.PL} is present in the package
+distribution.  Preference is given to the former if both @code{Build.PL}
+and @code{Makefile.PL} exist in the package distribution.  This
+preference can be reversed by specifying @code{#t} for the
+@code{#:make-maker?} parameter.
 
-The initial @code{perl Makefile.PL} invocation passes flags specified by
-the @code{#:make-maker-flags} parameter.
+The initial @code{perl Makefile.PL} or @code{perl Build.PL} invocation
+passes flags specified by the @code{#:make-maker-flags} or
+@code{#:module-build-flags} parameter, respectively.
 
 Which Perl package is used can be specified with @code{#:perl}.
 @end defvr
@@ -2358,9 +2366,10 @@ Run @var{mval}, a monadic value in the store monad, in @var{store}, an
 open store connection.
 @end deffn
 
-@deffn {Monadic Procedure} text-file @var{name} @var{text}
+@deffn {Monadic Procedure} text-file @var{name} @var{text} [@var{references}]
 Return as a monadic value the absolute file name in the store of the file
-containing @var{text}, a string.
+containing @var{text}, a string.  @var{references} is a list of store items that the
+resulting text file refers to; it defaults to the empty list.
 @end deffn
 
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
@@ -2579,7 +2588,7 @@ below allow you to do that (@pxref{The Store Monad}, for more
 information about monads.)
 
 @deffn {Monadic Procedure} gexp->derivation @var{name} @var{exp} @
-       [#:system (%current-system)] [#:target #f] [#:inputs '()] @
+       [#:system (%current-system)] [#:target #f] [#:graft? #t] @
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
@@ -2590,11 +2599,14 @@ Return a derivation @var{name} that runs @var{exp} (a gexp) with
 is true, it is used as the cross-compilation target triplet for packages
 referred to by @var{exp}.
 
-Make @var{modules} available in the evaluation context of @var{EXP};
-@var{MODULES} is a list of names of Guile modules searched in
-@var{MODULE-PATH} to be copied in the store, compiled, and made available in
+Make @var{modules} available in the evaluation context of @var{exp};
+@var{modules} is a list of names of Guile modules searched in
+@var{module-path} to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
+
+@var{graft?} determines whether packages referred to by @var{exp} should be grafted when
+applicable.
 
 When @var{references-graphs} is true, it must be a list of tuples of one of the
 following forms:
@@ -3077,9 +3089,10 @@ guix import pypi itsdangerous
 Import meta-data from @uref{https://www.metacpan.org/, MetaCPAN}.
 Information is taken from the JSON-formatted meta-data provided through
 @uref{https://api.metacpan.org/, MetaCPAN's API} and includes most
-relevant information.  License information should be checked closely.
-Package dependencies are included but may in some cases needlessly
-include core Perl modules.
+relevant information, such as module dependencies.  License information
+should be checked closely.  If Perl is available in the store, then the
+@code{corelist} utility will be used to filter core modules out of the
+list of dependencies.
 
 The command command below imports meta-data for the @code{Acme::Boolean}
 Perl module:
@@ -4621,7 +4634,8 @@ theme to use.  In that case, @var{theme-name} specifies the name of the
 theme.
 
 Last, @var{session} is a list of @code{<session-type>} objects denoting the
-available session types that can be chosen from the log-in screen.
+available session types that can be chosen from the log-in screen.  The first
+one is chosen by default.
 @end deffn
 
 @defvr {Scheme Variable} %default-sessions

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,10 +18,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ftp)
-  #:use-module ((guix licenses) #:select (gpl3+ clarified-artistic))
-  #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ clarified-artistic))
   #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages pkg-config)
@@ -103,3 +105,41 @@ File Transfer Protocol (FTP) servers.  This includes 'ncftp', an interactive
 FTP browser, as well as non-interactive commands such as 'ncftpput' and
 'ncftpget'.")
     (license clarified-artistic)))
+
+
+(define-public weex
+  (package
+    (name "weex")
+    (version "2.6.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append "mirror://sourceforge/weex/weex/" version
+                         "/weex-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0f5cj5p852wkm24mzy2sxgxyahv2p9rk4wlq21j310pi7wlhgwyl"))
+        (patches (list (search-patch "weex-vacopy.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:phases
+        (alist-replace 'configure
+          ;; configure does not work followed by both "SHELL=..." and
+          ;; "CONFIG_SHELL=..."; set environment variables instead
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                  (bash (which "bash")))
+              (setenv "SHELL" bash)
+              (setenv "CONFIG_SHELL" bash)
+              (zero? (system* bash "./configure"
+                              (string-append "--prefix=" out)))))
+          %standard-phases)))
+    (home-page "http://weex.sourceforge.net/")
+    (synopsis "Non-interactive client for FTP synchronization")
+    (description
+     "Weex is a utility designed to automate the task of remotely
+maintaining a web page or other FTP archive.  It synchronizes a set of
+local files to a remote server by performing uploads and remote deletes
+as required.")
+    (license gpl2+)))

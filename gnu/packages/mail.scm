@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
@@ -528,5 +530,90 @@ which can add many functionalities to the base client.")
 an SMTP server (for example at a free mail provider) which takes care of further
 delivery.")
     (license gpl3+)))
+
+(define-public exim
+  (package
+    (name "exim")
+    (version "4.85")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "ftp://ftp.exim.org/pub/exim/exim4/exim-" version ".tar.bz2"))
+       (sha256
+        (base32 "195a3ll5ck9viazf9pvgcyc0sziln5g0ggmlm6ax002lphmiy88k"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("gnutls" ,gnutls)
+       ("gzip" ,gzip)
+       ("bzip2" ,bzip2)
+       ("xz" ,xz)
+       ("pcre" ,pcre)
+       ("perl" ,perl)
+       ("libxt" ,libxt)
+       ("libxaw" ,libxaw)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (arguments
+     '(#:phases
+       (alist-replace
+        'configure
+        ;; We'd use #:make-flags but the top-level Makefile calls others
+        ;; recursively, so just set all variables this way.
+        (lambda* (#:key outputs inputs #:allow-other-keys)
+          (substitute* '("Makefile" "OS/Makefile-Default")
+            (("(RM_COMMAND=).*" all var)
+             (string-append var "rm\n")))
+          (copy-file "src/EDITME" "Local/Makefile")
+          (copy-file "exim_monitor/EDITME" "Local/eximon.conf")
+          (let ((out (assoc-ref outputs "out"))
+                (gzip (assoc-ref inputs "gzip"))
+                (bzip2 (assoc-ref inputs "bzip2"))
+                (xz (assoc-ref inputs "xz")))
+            (substitute* '("Local/Makefile")
+              (("(BIN_DIRECTORY=).*" all var)
+               (string-append var out "/bin\n"))
+              (("(CONFIGURE_FILE=).*" all var)
+               (string-append var out "/etc/exim.conf\n"))
+              (("(EXIM_USER=).*" all var)
+               (string-append var "nobody\n"))
+              (("(FIXED_NEVER_USERS=).*" all var)
+               (string-append var "\n"))  ;XXX no root in build environment
+              (("(COMPRESS_COMMAND=).*" all var)
+               (string-append var gzip "/bin/gzip\n"))
+              (("(ZCAT_COMMAND=).*" all var)
+               (string-append var gzip "/bin/zcat\n")))
+            ;; This file has hardcoded names for tools despite the zcat
+            ;; configuration above.
+            (substitute* '("src/exigrep.src")
+              (("'zcat'") (string-append "'" gzip "/bin/zcat'"))
+              (("'bzcat'") (string-append "'" bzip2 "/bin/bzcat'"))
+              (("'xzcat'") (string-append "'" xz "/bin/xzcat'"))
+              (("'lzma'") (string-append "'" xz "/bin/lzma'")))))
+        (alist-cons-before
+         'build 'fix-sh-paths
+         (lambda* (#:key inputs #:allow-other-keys)
+           (substitute* '("scripts/lookups-Makefile" "scripts/reversion")
+             (("SHELL=/bin/sh") "SHELL=sh"))
+           (substitute* '("scripts/Configure-config.h")
+             (("\\| /bin/sh") "| sh"))
+           (let ((bash (assoc-ref inputs "bash")))
+             (substitute* '("scripts/Configure-eximon")
+               (("#!/bin/sh") (string-append "#!" bash "/bin/sh")))))
+         %standard-phases))
+       #:make-flags '("INSTALL_ARG=-no_chown")
+       ;; No 'check' target.
+       #:tests? #f))
+    (home-page "http://www.exim.org/")
+    (synopsis
+     "Message Transfer Agent (MTA) developed at the University of Cambridge")
+    (description
+     "Exim is a message transfer agent (MTA) developed at the University of
+Cambridge for use on Unix systems connected to the Internet.  In style it is
+similar to Smail 3, but its facilities are more general.  There is a great
+deal of flexibility in the way mail can be routed, and there are extensive
+facilities for checking incoming mail.")
+    (license gpl2+)))
 
 ;;; mail.scm ends here

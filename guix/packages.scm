@@ -114,6 +114,7 @@
             default-guile
 
             set-guile-for-build
+            set-grafting
             package-file
             package->derivation
             package->cross-derivation
@@ -905,6 +906,12 @@ code of derivations to GUILE, a package object."
   (lambda (store)
     (let ((guile (package-derivation store guile)))
       (values (%guile-for-build guile) store))))
+
+(define (set-grafting enable?)
+  "This monadic procedure enables grafting when ENABLE? is true, and disables
+it otherwise.  It returns the previous setting."
+  (lambda (store)
+    (values (%graft? enable?) store)))
 
 (define* (package-file package
                        #:optional file

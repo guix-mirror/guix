@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,7 +28,7 @@
             cc0
             cddl1.0
             cecill-c
-            clarified-artistic
+            artistic2.0 clarified-artistic
             cpl1.0
             epl1.0
             expat
@@ -39,6 +39,7 @@
             ijg
             ibmpl1.0
             imlib2
+            ipa
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl1.1 mpl2.0
             ncsa
@@ -129,6 +130,11 @@ which may be a file:// URI pointing the package's tree."
            "http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html"
            "https://www.gnu.org/licenses/license-list.html#CeCILL"))
 
+(define artistic2.0
+  (license "Artistic License 2.0"
+           "http://www.perlfoundation.org/artistic_license_2_0"
+           "http://www.gnu.org/licenses/license-list.html#ArtisticLicense2"))
+
 (define clarified-artistic
   (license "Clarified Artistic"
            ;; http://directory.fsf.org/wiki/User:Jgay/license-categorization#Clarified_Artistic_License
@@ -209,6 +215,11 @@ which may be a file:// URI pointing the package's tree."
   (license "Imlib2"
            "http://directory.fsf.org/wiki/License:Imlib2"
            "https://www.gnu.org/licenses/license-list#imlib"))
+
+(define ipa
+  (license "IPA Font License"
+           "http://directory.fsf.org/wiki/License:IPA_Font_License"
+           "https://www.gnu.org/licenses/license-list#IPAFONT"))
 
 (define lgpl2.0
   (license "LGPL 2.0"

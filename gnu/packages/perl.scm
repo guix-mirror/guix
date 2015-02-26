@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -208,6 +209,53 @@ but don't want to go all out and profile your code.")
                               "Benchmark-Timer-" version))
     (license gpl2)))
 
+(define-public perl-capture-tiny
+  (package
+    (name "perl-capture-tiny")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Capture-Tiny-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "117gmwipql1y5xnw9jil3lhdsrf2wsm9wjdzqj66x971n3fwm573"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Capture-Tiny")
+    (synopsis "Capture STDOUT and STDERR from Perl, XS or external programs")
+    (description
+     "Capture::Tiny provides a simple, portable way to capture almost anything
+sent to STDOUT or STDERR, regardless of whether it comes from Perl, from XS
+code or from an external program.  Optionally, output can be teed so that it
+is captured while being passed through to the original file handles.")
+    (license asl2.0)))
+
+(define-public perl-data-optlist
+  (package
+    (name "perl-data-optlist")
+    (version "0.109")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Data-OptList-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1j44rm2spprlq3bc80cxni3dzs3gfjiqv1qc9q7820n1qj0wgmqw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sub-install" ,perl-sub-install)))
+    (inputs
+     `(("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Data-OptList")
+    (synopsis "Parse and validate simple name/value option pairs")
+    (description
+     "Data::OptList provides a simple syntax for name/value option pairs.")
+    (license (package-license perl))))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
@@ -227,6 +275,27 @@ lightweight subset of the most commonly-used functionality.  It supports
 import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
     (home-page (string-append "http://search.cpan.org/~neilb/"
                               "Exporter-Lite-" version))
+    (license (package-license perl))))
+
+(define-public perl-params-util
+  (package
+    (name "perl-params-util")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/Params-Util-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0v67sx93yhn7xa0nh9mnbf8mixf54czk6wzrjsp6dzzr5hzyrw9h"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Params-Util")
+    (synopsis "Simple, compact and correct param-checking functions")
+    (description
+     "Params::Util provides a basic set of importable functions that makes
+checking parameters easier.")
     (license (package-license perl))))
 
 (define-public perl-probe-perl
@@ -273,6 +342,52 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; "You may use this module under the terms of the BSD, Artistic, or GPL
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
+
+(define-public perl-sub-exporter
+  (package
+    (name "perl-sub-exporter")
+    (version "0.987")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Sub-Exporter-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ml3n1ck4ln9qjm2mcgkczj1jb5n1fkscz9c4x23v4db0glb4g2l"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-data-optlist" ,perl-data-optlist)
+       ("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Sub-Exporter")
+    (synopsis "Sophisticated exporter for custom-built routines")
+    (description
+     "Sub::Exporter provides a sophisticated alternative to Exporter.pm for
+custom-built routines.")
+    (license (package-license perl))))
+
+(define-public perl-sub-install
+  (package
+    (name "perl-sub-install")
+    (version "0.928")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RJ/RJBS/Sub-Install-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "03zgk1yh128gciyx3q77zxzxg9kf8yy2gm46gdxqi24mcykngrb1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sub-Install")
+    (synopsis "Install subroutines into packages easily")
+    (description
+     "Sub::Install makes it easy to install subroutines into packages without
+the unsightly mess of C<no strict> or typeglobs lying about where just anyone
+can see them.")
+    (license (package-license perl))))
 
 (define-public perl-test-deep
   (package
@@ -363,6 +478,31 @@ bin as is also commonly used) paths of your Perl distribution.")
      "Test::Simple contains basic utilities for writing tests.")
     (home-page (string-append "http://search.cpan.org/~exodist/"
                               "Test-Simple-" version))
+    (license (package-license perl))))
+
+(define-public perl-test-output
+  (package
+    (name "perl-test-output")
+    (version "1.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                                  "Test-Output-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12991jnzj4cbw9whhprmqvnzd1ayii84g2mh8vxbjngwqrjsy41i"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-test-tester" ,perl-test-tester)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (synopsis "Utilities to test STDOUT and STDERR messages")
+    (description
+     "Test::Output provides a simple interface for testing output sent to
+STDOUT or STDERR.  A number of different utilities are included to try and be
+as flexible as possible to the tester.")
+    (home-page (string-append "http://search.cpan.org/~bdfoy/"
+                              "Test-Output-" version))
     (license (package-license perl))))
 
 (define-public perl-test-tester

@@ -19,12 +19,13 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (bsd-style gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
+                #:select (bsd-style isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages databases)
@@ -88,7 +89,7 @@ HTML and JSON.")
              (sha256
               (base32
                "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))
-             (patches (list 
+             (patches (list
                        (search-patch "clucene-pkgconfig.patch")
                        (search-patch "clucene-contribs-lib.patch")))))
     (build-system cmake-build-system)
@@ -228,6 +229,55 @@ Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3.")
 and triple stores.")
     (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
 
+(define-public serd
+  (package
+    (name "serd")
+    (version "0.20.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/serd-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "1gxbzqsm212wmn8qkdd3lbl6wbv7fwmaf9qh2nxa4yxjbr7mylb4"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (home-page "http://drobilla.net/software/serd/")
+    (synopsis "Library for RDF syntax supporting Turtle and NTriples")
+    (description
+     "Serd is a lightweight C library for RDF syntax which supports reading
+and writing Turtle and NTriples.  Serd is not intended to be a swiss-army
+knife of RDF syntax, but rather is suited to resource limited or performance
+critical applications (e.g. converting many gigabytes of NTriples to Turtle),
+or situations where a simple reader/writer with minimal dependencies is
+ideal (e.g. in LV2 implementations or embedded applications).")
+    (license isc)))
+
+(define-public sord
+  (package
+    (name "sord")
+    (version "0.12.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.drobilla.net/sord-"
+                                 version
+                                 ".tar.bz2"))
+             (sha256
+              (base32
+               "0rq7vafdv4vsxi6xk9zf5shr59w3kppdhqbj78185rz5gp9kh1dx"))))
+    (build-system waf-build-system)
+    (arguments `(#:tests? #f)) ; no check target
+    (inputs
+     `(("serd" ,serd)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/sord/")
+    (synopsis "C library for storing RDF data in memory")
+    (description
+     "Sord is a lightweight C library for storing RDF data in memory.")
+    (license isc)))
+
 (define-public soprano
   (package
     (name "soprano")
@@ -269,12 +319,15 @@ system.")
               "https://pypi.python.org/packages/source/r/rdflib/rdflib-"
               version
               ".tar.gz"))
+        (patches
+          ;; The patch has no effect under Python 3.
+          (list (search-patch "python2-rdflib-drop-sparqlwrapper.patch")))
         (sha256
           (base32
             "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))
     (build-system python-build-system)
     (inputs
-      `(("python-htm5lib" ,python-html5lib)
+      `(("python-html5lib" ,python-html5lib)
         ("python-isodate" ,python-isodate)
         ("python-pyparsing" ,python-pyparsing)
         ("python-setuptools" ,python-setuptools)))
@@ -286,3 +339,14 @@ system.")
 powerful language for representing information.")
     (license (bsd-style "file://LICENSE"
                         "See LICENSE in the distribution."))))
+
+(define-public python2-rdflib
+  (let ((base (package-with-python2 python-rdflib)))
+    (package
+      (inherit base)
+      (inputs
+        (append (package-inputs base)
+                `(("python2-nose" ,python2-nose))))
+      (arguments
+        `(#:python ,python-2
+          #:tests? #f))))) ; 3 tests fail, also outside Guix

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT([GNU Guix], [0.8.1], [bug-guix@gnu.org], [guix],
+AC_INIT([GNU Guix], [0.8.2], [bug-guix@gnu.org], [guix],
   [http://www.gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -49,6 +49,8 @@ guix_sbindir="`eval echo $sbindir | sed -e "s|NONE|$guix_prefix|g"`"
 AC_SUBST([guix_localstatedir])
 AC_SUBST([guix_sysconfdir])
 AC_SUBST([guix_sbindir])
+
+GUIX_CHECK_FILE_NAME_LIMITS
 
 dnl We require the pkg.m4 set of macros from pkg-config.
 dnl Make sure it's available.

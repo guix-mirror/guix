@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012 Free Software Foundation, Inc.
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,6 +30,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module ((guix build download) #:select (resolve-uri-reference))
   #:export (&http-get-error
             http-get-error?
             http-get-error-uri
@@ -227,7 +229,7 @@ Raise an '&http-get-error' condition if downloading fails."
                     (values data len)))))
           ((301                                   ; moved permanently
             302)                                  ; found (redirection)
-           (let ((uri (response-location resp)))
+           (let ((uri (resolve-uri-reference (response-location resp) uri)))
              (close-port port)
              (format #t (_ "following redirection to `~a'...~%")
                      (uri->string uri))

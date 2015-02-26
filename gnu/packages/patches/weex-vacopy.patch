@@ -1,0 +1,13 @@
+Taken from the Debian 2.8.0 package.
+
+--- weex-2.6.1.5/src/strlib.c	2003-08-18 11:52:38.000000000 +0200
++++ weex-2.8.0/src/strlib.c	2007-12-04 14:22:02.000000000 +0100
+@@ -42,6 +42,8 @@
+ #  define G_VA_COPY(ap1, ap2)     (*(ap1) = *(ap2))
+ #  elif defined (G_VA_COPY_AS_ARRAY)
+ #  define G_VA_COPY(ap1, ap2)     g_memmove ((ap1), (ap2), sizeof (va_list))
++#  elif defined (__x86_64__)
++#  define G_VA_COPY(ap1, ap2)     memmove ((ap1), (ap2), sizeof (va_list))
+ #  else /* va_list is a pointer */
+ #  define G_VA_COPY(ap1, ap2)     ((ap1) = (ap2))
+ #  endif /* va_list is a pointer */

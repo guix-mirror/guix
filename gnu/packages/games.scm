@@ -7,6 +7,8 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -398,7 +400,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
 (define-public xboard
   (package
     (name "xboard")
-    (version "4.7.3")
+    (version "4.8.0")
     (source
      (origin
        (method url-fetch)
@@ -406,17 +408,8 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                            ".tar.gz"))
        (sha256
         (base32
-         "1amy9krr0qkvcc7gnp3i9x9ma91fc5cq8hy3gdc7rmfsaczv1l3z"))))
+         "05rdj0nyirc4g1qi5hhrjy45y52ihp1j3ldq2c5bwrz0gzy4i3y8"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (alist-cons-before 
-        'configure 'pre-conf
-        ;; This is GNU.  So use gnuchess as the first choice of engine
-        (lambda _
-          (substitute* "xboard.conf.in" 
-            (("-firstChessProgram fairymax") "-firstChessProgram gnuchess")))
-        %standard-phases)))
     (inputs `(("cairo" ,cairo)
               ("librsvg" ,librsvg)
               ("libxt" ,libxt)
@@ -841,4 +834,28 @@ the easy creation of emulators, games and multimedia applications that can plug
 straight into any libretro-compatible frontend.  RetroArch is the official
 reference frontend for the libretro API, currently used by most as a modular
 multi-system game/emulator system.")
+    (license license:gpl3+)))
+
+(define-public gnugo
+  (package
+    (name "gnugo")
+    (version "3.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/gnugo/gnugo-" version
+                                 ".tar.gz"))
+             (sha256
+              (base32
+               "0wkahvqpzq6lzl5r49a4sd4p52frdmphnqsfdv7gdp24bykdfs6s"))))
+    (build-system gnu-build-system)
+    (inputs `(("readline" ,readline)))
+    (synopsis "Play the game of Go")
+    (description "GNU Go is a program that plays the game of Go, in which
+players place stones on a grid to form territory or capture other stones.
+While it can be played directly from the terminal, rendered in ASCII
+characters, it is also possible to play GNU Go with 3rd party graphical
+interfaces or even in Emacs.  It supports the standard game storage format
+(SGF, Smart Game Format) and inter-process communication format (GMP, Go
+Modem Protocol).")
+    (home-page "http://www.gnu.org/software/gnugo/")
     (license license:gpl3+)))

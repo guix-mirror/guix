@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 # Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
@@ -25,6 +25,7 @@ GNU_SYSTEM_MODULES =				\
   gnu.scm					\
   gnu/artwork.scm				\
   gnu/packages.scm				\
+  gnu/packages/aarddict.scm			\
   gnu/packages/abiword.scm			\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
@@ -55,6 +56,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/calcurse.scm			\
   gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
+  gnu/packages/certs.scm			\
   gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
@@ -97,6 +99,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fltk.scm				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
+  gnu/packages/freedesktop.scm			\
   gnu/packages/freeipmi.scm			\
   gnu/packages/ftp.scm				\
   gnu/packages/fribidi.scm			\
@@ -190,6 +193,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/miscfiles.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
+  gnu/packages/moreutils.scm			\
   gnu/packages/mpd.scm				\
   gnu/packages/mp3.scm				\
   gnu/packages/mpi.scm				\
@@ -229,6 +233,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
+  gnu/packages/pumpio.scm			\
   gnu/packages/pretty-print.scm			\
   gnu/packages/protobuf.scm			\
   gnu/packages/python.scm			\
@@ -257,6 +262,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/socat.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
+  gnu/packages/statistics.scm			\
   gnu/packages/swig.scm				\
   gnu/packages/sxiv.scm				\
   gnu/packages/synergy.scm			\
@@ -289,6 +295,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wine.scm				\
   gnu/packages/wordnet.scm			\
   gnu/packages/wv.scm				\
+  gnu/packages/wxwidgets.scm			\
   gnu/packages/xfig.scm				\
   gnu/packages/xiph.scm				\
   gnu/packages/xml.scm				\
@@ -357,6 +364,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/cdparanoia-fpic.patch			\
+  gnu/packages/patches/chmlib-inttypes.patch			\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-dummy-man.patch		\
@@ -366,6 +374,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-CVE-2014-9112-pt4.patch		\
   gnu/packages/patches/cpio-CVE-2014-9112-pt5.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \
@@ -410,6 +419,23 @@ dist_patch_DATA =						\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
+  gnu/packages/patches/icecat-CVE-2015-0822.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0827-pt-1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0827-pt-2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0827-pt-3.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0831-pt-1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0831-pt-2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-01.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-02.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-03.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-04.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-05.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-06.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-07.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-08.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-09.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-10.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0836-pt-11.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
@@ -430,6 +456,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/libvpx-vp9-out-of-bounds-access.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua51-liblua-so.patch                    \
+  gnu/packages/patches/luajit-no_ldconfig.patch			\
+  gnu/packages/patches/luajit-symlinks.patch			\
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
@@ -449,6 +477,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-assume-preserve-path.patch		\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
+  gnu/packages/patches/openexr-missing-samples.patch		\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/ots-no-include-missing-file.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
@@ -469,6 +498,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
   gnu/packages/patches/python-sqlite-3.8.4-test-fix.patch	\
+  gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qt4-tests.patch				\
@@ -496,6 +526,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\

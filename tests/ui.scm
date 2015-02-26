@@ -22,6 +22,8 @@
   #:use-module (guix profiles)
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module ((guix scripts build)
+                #:select (%standard-build-options))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -52,8 +54,42 @@ interface, and powerful string processing.")
     (item "/gnu/store/...")
     (output "out")))
 
+(define-syntax-rule (with-environment-variable variable value body ...)
+  "Run BODY with VARIABLE set to VALUE."
+  (let ((orig (getenv variable)))
+    (dynamic-wind
+      (lambda ()
+        (setenv variable value))
+      (lambda ()
+        body ...)
+      (lambda ()
+        (if orig
+            (setenv variable orig)
+            (unsetenv variable))))))
+
 
 (test-begin "ui")
+
+(test-equal "parse-command-line"
+  '((argument . "bar") (argument . "foo")
+    (cores . 10)                                  ;takes precedence
+    (substitutes? . #f) (keep-failed? . #t)
+    (max-jobs . 77) (cores . 42))
+
+  (with-environment-variable "GUIX_BUILD_OPTIONS" "-c 42 -M 77"
+    (parse-command-line '("--keep-failed" "--no-substitutes"
+                          "--cores=10" "foo" "bar")
+                        %standard-build-options
+                        (list '()))))
+
+(test-equal "parse-command-line and --no options"
+  '((argument . "foo")
+    (substitutes? . #f))                          ;takes precedence
+
+  (with-environment-variable "GUIX_BUILD_OPTIONS" "--no-substitutes"
+    (parse-command-line '("foo")
+                        %standard-build-options
+                        (list '((substitutes? . #t))))))
 
 (test-assert "fill-paragraph"
   (every (lambda (column)
@@ -246,3 +282,7 @@ Second line" 24))
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
+
+;;; Local Variables:
+;;; eval: (put 'with-environment-variable 'scheme-indent-function 2)
+;;; End:

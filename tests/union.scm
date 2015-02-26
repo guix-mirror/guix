@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,9 +84,7 @@
                           (call-with-input-file "bar/two" get-string-all))
                 (not (file-exists? "bar/one")))))))
 
-(test-skip (if (and %store
-                    (false-if-exception
-                     (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
+(test-skip (if (and %store (network-reachable?))
                0
                1))
 

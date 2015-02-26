@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages qt)
-  #:use-module ((guix licenses) #:select (gpl3 lgpl2.1 x11-style))
+  #:use-module ((guix licenses) #:select (gpl2 gpl3 lgpl2.1 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
@@ -396,5 +396,55 @@ contain over 620 classes.")
     (native-inputs
      `(("python-sip" ,python2-sip)
        ("qt" ,qt)))
+    (inputs
+     `(("python" ,python-2)))))
+
+(define-public python-pyqt-4
+  (package (inherit python-pyqt)
+    (name "python-pyqt")
+    (version "4.11.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append "mirror://sourceforge/pyqt/PyQt4/"
+                         "PyQt-" version "/PyQt-x11-gpl-"
+                         version ".tar.gz"))
+        (sha256
+         (base32
+          "11jnfjw79s0b0qdd9s6kd69w87vf16dhagbhbmwbmrp2vgf80dw5"))))
+    (native-inputs
+     `(("python-sip" ,python-sip)
+       ("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+         (alist-replace
+         'configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (bin (string-append out "/bin"))
+                  (sip (string-append out "/share/sip"))
+                  (python-version
+                    (string-take
+                      (string-take-right (assoc-ref inputs "python") 5)
+                      3))
+                  (lib (string-append out "/lib/python"
+                                      python-version
+                                      "/site-packages")))
+             (zero? (system* "python" "configure.py"
+                             "--confirm-license"
+                             "--bindir" bin
+                             "--destdir" lib
+                             "--sipdir" sip))))
+         %standard-phases)))
+    (license (list gpl2 gpl3)))) ; choice of either license
+
+(define-public python2-pyqt-4
+  (package (inherit python-pyqt-4)
+    (name "python2-pyqt")
+    (native-inputs
+     `(("python-sip" ,python2-sip)
+       ("qt" ,qt-4)))
     (inputs
      `(("python" ,python-2)))))

@@ -26,38 +26,37 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
+                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
-                          psfl public-domain))
-  #:use-module ((guix licenses) #:select (zlib) #:prefix license:)
+                          psfl public-domain x11-style))
+  #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages gdbm)
-  #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages libffi)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages openssl)
-  #:use-module (gnu packages elf)
-  #:use-module (gnu packages maths)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages gcc)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages zip)
-  #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages texlive)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages which)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -343,7 +342,7 @@ etc. ")
     (description
      "The lockfile package exports a LockFile class which provides a simple
 API for locking files.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
@@ -368,7 +367,7 @@ API for locking files.")
      "Mock is a library for testing in Python.  It allows you to replace parts
 of your system under test with mock objects and make assertions about how they
 have been used.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-mock
   (package-with-python2 python-mock))
@@ -377,7 +376,7 @@ have been used.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "1.1.4")
+    (version "12.1")
     (source
      (origin
       (method url-fetch)
@@ -385,14 +384,12 @@ have been used.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0hl9sa5xr9bi2ifq51wy1bawsjv5nzvpbac7m9z1ciz778874csf"))))
+        "04bfk7si1pwj3b5k2b1x9b1zkiclybmzpw6alrs5bciri56lg9zs"))))
     (build-system python-build-system)
+    ;; FIXME: Tests require pytest, which itself relies on setuptools.
+    ;; One could bootstrap with an internal untested setuptools.
     (arguments
      `(#:tests? #f))
-         ;;FIXME: test_sdist_with_utf8_encoded_filename fails in
-         ;; /tmp/nix-build-python2-setuptools-1.1.4.drv-0/setuptools-1.1.4/setuptools/tests/test_sdist.py"
-         ;; line 354
-         ;; The tests pass with Python 2.7.5.
     (home-page "https://pypi.python.org/pypi/setuptools")
     (synopsis
      "Library designed to facilitate packaging Python projects")
@@ -509,6 +506,9 @@ the goal of writing Python code that is compatible on both Python versions.
 Six supports every Python version since 2.5.  It is contained in only one
 Python file, so it can be easily copied into your project.")
     (license x11)))
+
+(define-public python2-six
+  (package-with-python2 python-six))
 
 (define-public python-dateutil-2
   (package
@@ -655,7 +655,7 @@ under several distributions that's hard or impossible to figure out.")
      "Pysam is a Python module for reading and manipulating files in the
 SAM/BAM format.  Pysam is a lightweight wrapper of the SAMtools C API.  It
 also includes an interface for tabix.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pysam
   (package-with-python2 python-pysam))
@@ -1025,7 +1025,7 @@ software.")
     (synopsis "Useful extensions to the Python standard library")
     (description
      "Extras is a set of extensions to the Python standard library.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-extras
   (package-with-python2 python-extras))
@@ -1054,7 +1054,7 @@ software.")
     (description
      "Mimeparse provides basic functions for parsing MIME type names and
 matching them against a list of media-ranges.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-mimeparse
   (package-with-python2 python-mimeparse))
@@ -1149,7 +1149,7 @@ standard library.")
     (description
      "Py is a Python library for file name parsing, .ini file parsing, I/O,
 code introspection, and logging.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-py
   (package-with-python2 python-py))
@@ -1185,7 +1185,7 @@ code introspection, and logging.")
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pytest
   (package-with-python2 python-pytest))
@@ -1212,7 +1212,7 @@ and many external plugins.")
     (description "Scripttest is a Python helper library for testing
 interactive command-line applications.  With it you can run a script in a
 subprocess and see the output as well as any file modifications.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-scripttest
   (package-with-python2 python-scripttest))
@@ -1600,7 +1600,7 @@ than Python’s urllib2 library.")
     (synopsis "Implementation of JSON Schema for Python")
     (description
      "Jsonschema is an implementation of JSON Schema for Python.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-jsonschema
   (package-with-python2 python-jsonschema))
@@ -1656,7 +1656,7 @@ somewhat intelligeble.")
     (synopsis "JSON Web Token implementation in Python")
     (description
      "PyJWT is a JSON Web Token implementation written in Python.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pyjwt
   (package-with-python2 python-pyjwt))
@@ -1692,17 +1692,6 @@ OAuth request-signing logic.")
   (let ((base (package-with-python2 python-oauthlib)))
     (package
       (inherit base)
-      (name "python2-oauthlib")
-      (version "0.6.3")
-      (source (origin
-                (method url-fetch)
-                (uri
-                 (string-append
-                  "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
-                  version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
       (inputs
        (append (package-inputs base)
                `(("python2-unittest2" ,python2-unittest2)))))))
@@ -1755,7 +1744,7 @@ environments and back.")
     (synopsis "Virtual Python environment builder")
     (description
      "Virtualenv is a tool to create isolated Python environments.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-virtualenv
   (package-with-python2 python-virtualenv))
@@ -1926,7 +1915,7 @@ sources.")
     (home-page "https://github.com/snide/sphinx_rtd_theme/")
     (synopsis "ReadTheDocs.org theme for Sphinx")
     (description "A theme for Sphinx used by ReadTheDocs.org.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-sphinx-rtd-theme
   (package-with-python2 python-sphinx-rtd-theme))
@@ -1997,25 +1986,25 @@ writing C extensions for Python as easy as Python itself.")
         'build 'set-environment-variables
         (lambda* (#:key inputs #:allow-other-keys)
           (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas") 
+                  (string-append (assoc-ref inputs "atlas")
                                  "/lib/libtatlas.so"))
                  ;; On single core CPUs only the serial library is created.
                  (atlas-lib
                   (if (file-exists? atlas-threaded)
                       atlas-threaded
-                      (string-append (assoc-ref inputs "atlas") 
+                      (string-append (assoc-ref inputs "atlas")
                                      "/lib/libsatlas.so"))))
             (setenv "ATLAS" atlas-lib)))
         ;; Tests can only be run after the library has been installed and not
         ;; within the source directory.
         (alist-cons-after
          'install 'check
-         (lambda _ 
+         (lambda _
            (with-directory-excursion "/tmp"
-             (zero? (system* "python" "-c" 
+             (zero? (system* "python" "-c"
                              "import numpy; numpy.test(verbose=2)"))))
-         (alist-delete 
-          'check 
+         (alist-delete
+          'check
           %standard-phases)))))
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
@@ -2033,7 +2022,7 @@ capabilities.")
   (package (inherit python-numpy-bootstrap)
     (name "python-numpy")
     (outputs '("out" "doc"))
-    (inputs 
+    (inputs
      `(("which" ,which)
        ("python-setuptools" ,python-setuptools)
        ("python-matplotlib" ,python-matplotlib)
@@ -2048,15 +2037,15 @@ capabilities.")
        ("perl" ,perl)
        ,@(package-native-inputs python-numpy-bootstrap)))
     (arguments
-     `(,@(substitute-keyword-arguments 
+     `(,@(substitute-keyword-arguments
              (package-arguments python-numpy-bootstrap)
            ((#:phases phases)
             `(alist-cons-after
               'install 'install-doc
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                       (doc (string-append 
-                             data "/doc/" ,name "-" 
+                       (doc (string-append
+                             data "/doc/" ,name "-"
                              ,(package-version python-numpy-bootstrap)))
                        (info (string-append data "/info"))
                        (html (string-append doc "/html"))
@@ -2065,7 +2054,7 @@ capabilities.")
                     (mkdir-p html)
                     (system* "make" "html" pyver)
                     (system* "make" "latex" "PAPER=a4" pyver)
-                    (system* "make" "-C" "build/latex" 
+                    (system* "make" "-C" "build/latex"
                              "all-pdf" "PAPER=a4" pyver)
                     ;; FIXME: Generation of the info file fails.
                     ;; (system* "make" "info" pyver)
@@ -2094,7 +2083,7 @@ capabilities.")
       ;; import the right version of 'matplotlib' as well.
       (inputs `(("python2-numpydoc" ,python2-numpydoc)
                 ("python2-matplotlib" ,python2-matplotlib)
-                ,@(alist-delete "python-numpydoc" 
+                ,@(alist-delete "python-numpydoc"
                                 (alist-delete "python-matplotlib"
                                               (package-inputs numpy))))))))
 
@@ -2120,15 +2109,15 @@ capabilities.")
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((doc (string-append (assoc-ref outputs "doc") 
+          (let* ((doc (string-append (assoc-ref outputs "doc")
                                      "/share/doc/" ,name "-" ,version))
                  (html-doc (string-append doc "/html"))
                  (examples (string-append doc "/examples")))
             (mkdir-p html-doc)
             (mkdir-p examples)
-            (for-each 
+            (for-each
              (lambda (dir tgt)
-               (map (lambda (file) 
+               (map (lambda (file)
                       (copy-file file (string-append tgt "/" (basename file))))
                     (find-files dir ".*")))
              (list "docs" "htmldoc" "examples")
@@ -2141,7 +2130,7 @@ capabilities.")
 executing simple grammars, vs. the traditional lex/yacc approach, or the use
 of regular expressions.  The pyparsing module provides a library of classes
 that client code uses to construct the grammar directly in Python code.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pyparsing
   (package-with-python2 python-pyparsing))
@@ -2153,7 +2142,7 @@ that client code uses to construct the grammar directly in Python code.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append 
+       (uri (string-append
              "https://pypi.python.org/packages/source/n/numpydoc/numpydoc-"
              version ".tar.gz"))
        (sha256
@@ -2173,7 +2162,7 @@ that client code uses to construct the grammar directly in Python code.")
     (license bsd-2)))
 
 (define-public python2-numpydoc
-  (package 
+  (package
     (inherit (package-with-python2 python-numpydoc))
     ;; With python-2 1 test (out of 30) fails because it doesn't find
     ;; matplotlib.  With python-3 it seems to detect at run-time the absence
@@ -2262,7 +2251,11 @@ backend = GTK3Agg~%")))))
                   (info (string-append data "/info"))
                   (html (string-append doc "/html")))
              (with-directory-excursion "doc"
-               ;; Without setting this variable we get an encoding error.
+               ;; Install and set UTF-8 locale to avoid an encoding error.
+               (setenv "LOCPATH" (getcwd))
+               (system* "localedef" "--no-archive"
+                        "--prefix" (getcwd) "-i" "en_US"
+                        "-f" "UTF-8" "./en_US.UTF-8")
                (setenv "LANG" "en_US.UTF-8")
                ;; Produce pdf in 'A4' format.
                (substitute* (find-files "." "conf\\.py")
@@ -2296,16 +2289,16 @@ toolkits.")
     (package (inherit matplotlib)
       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
       ;; customized for Python 2.
-      (propagated-inputs 
+      (propagated-inputs
        `(("python2-py2cairo" ,python2-py2cairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
          ,@(alist-delete "python-pycairo"
                          (alist-delete "python-pygobject"
-                                       (package-propagated-inputs 
+                                       (package-propagated-inputs
                                         matplotlib)))))
-      (inputs 
+      (inputs
        `(("python2-numpydoc" ,python2-numpydoc)
-         ,@(alist-delete "python-numpydoc" 
+         ,@(alist-delete "python-numpydoc"
                          (package-inputs matplotlib)))))))
 
 (define-public python-scipy
@@ -2339,13 +2332,13 @@ toolkits.")
         'build 'set-environment-variables
         (lambda* (#:key inputs #:allow-other-keys)
           (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas") 
+                  (string-append (assoc-ref inputs "atlas")
                                  "/lib/libtatlas.so"))
                  ;; On single core CPUs only the serial library is created.
                  (atlas-lib
                   (if (file-exists? atlas-threaded)
                       atlas-threaded
-                      (string-append (assoc-ref inputs "atlas") 
+                      (string-append (assoc-ref inputs "atlas")
                                      "/lib/libsatlas.so"))))
             (setenv "ATLAS" atlas-lib)))
         (alist-cons-after
@@ -2356,7 +2349,11 @@ toolkits.")
                   (html (string-append doc "/html"))
                   (pyver ,(string-append "PYVER=")))
              (with-directory-excursion "doc"
-               ;; Without setting this variable we get an encoding error.
+               ;; Install and set UTF-8 locale to avoid an encoding error.
+               (setenv "LOCPATH" (getcwd))
+               (system* "localedef" "--no-archive"
+                        "--prefix" (getcwd) "-i" "en_US"
+                        "-f" "UTF-8" "./en_US.UTF-8")
                (setenv "LANG" "en_US.UTF-8")
                ;; Fix generation of images for mathematical expressions.
                (substitute* (find-files "source" "conf\\.py")
@@ -2380,11 +2377,11 @@ toolkits.")
          ;; within the source directory.
          (alist-cons-after
           'install 'check
-          (lambda _ 
+          (lambda _
             (with-directory-excursion "/tmp"
               (zero? (system* "python" "-c" "import scipy; scipy.test()"))))
-          (alist-delete 
-           'check 
+          (alist-delete
+           'check
            %standard-phases))))))
     (home-page "http://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
@@ -2399,8 +2396,8 @@ routines such as routines for numerical integration and optimization.")
       ;; Use packages customized for python-2.
       (inputs `(("python2-matplotlib" ,python2-matplotlib)
                 ("python2-numpy" ,python2-numpy)
-                ,@(alist-delete "python-matplotlib" 
-                                (alist-delete "python-numpy" 
+                ,@(alist-delete "python-matplotlib"
+                                (alist-delete "python-numpy"
                                               (package-inputs scipy))))))))
 
 (define-public python-sqlalchemy
@@ -2567,7 +2564,7 @@ a general image processing tool.")
      `(("pkg-config" ,pkg-config)
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-replace
         'check
         (lambda _
@@ -2606,7 +2603,7 @@ a front-end for C compilers or analysis tools.")
       (method url-fetch)
       (uri (string-append "https://pypi.python.org/packages/source/c/"
                           "cffi/cffi-" version ".tar.gz"))
-      (sha256 
+      (sha256
        (base32 "0406j3sgndmx88idv5zxkkrwfqxmjl18pj8gf47nsg4ymzixjci5"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
@@ -2620,7 +2617,7 @@ a front-end for C compilers or analysis tools.")
        ("python-setuptools" ,python-setuptools)))
     (arguments
      `(#:tests? #f ; FIXME: requires pytest
-       #:phases 
+       #:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
@@ -2637,7 +2634,7 @@ a front-end for C compilers or analysis tools.")
     (synopsis "Foreign function interface for Python")
     (description
      "Foreign Function Interface for Python calling C code.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-cffi
   (package-with-python2 python-cffi))
@@ -2663,7 +2660,7 @@ a front-end for C compilers or analysis tools.")
     (propagated-inputs
      `(("python-cffi" ,python-cffi))) ; used at run time
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
@@ -2678,7 +2675,7 @@ a front-end for C compilers or analysis tools.")
     (description
      "Xcffib is a replacement for xpyb, an XCB Python bindings.  It adds
 support for Python 3 and PyPy.  It is based on cffi.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-xcffib
   (package-with-python2 python-xcffib))
@@ -2709,14 +2706,14 @@ support for Python 3 and PyPy.  It is based on cffi.")
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key inputs outputs #:allow-other-keys)
           (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
                  (doc (string-append data "/doc/" ,name "-" ,version))
                  (html (string-append doc "/html")))
-            (setenv "LD_LIBRARY_PATH" 
+            (setenv "LD_LIBRARY_PATH"
                     (string-append (assoc-ref inputs "cairo") "/lib" ":"
                                    (assoc-ref inputs "gdk-pixbuf") "/lib"))
             (setenv "LANG" "en_US.UTF-8")
@@ -2767,7 +2764,7 @@ PNG, PostScript, PDF, and SVG file output.")
        ("texinfo" ,texinfo)
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2803,8 +2800,8 @@ PNG, PostScript, PDF, and SVG file output.")
            ;;   (zero? (system* (string-append (assoc-ref outputs "out")
            ;;                                  "/bin/iptest"))))
            #t)
-         (alist-delete 
-          'check 
+         (alist-delete
+          'check
           %standard-phases)))))
     (home-page "http://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
@@ -2819,7 +2816,7 @@ computing.")
   (let ((ipython (package-with-python2 python-ipython)))
     (package (inherit ipython)
       ;; Make sure we use custom python2-NAME packages.
-      (inputs 
+      (inputs
        `(("python2-numpydoc" ,python2-numpydoc)
          ("python2-matplotlib" ,python2-matplotlib)
          ,@(alist-delete "python-numpydoc"
@@ -2870,6 +2867,8 @@ ISO 8601 dates, time and duration.")
           (base32
             "1l5i6xzckzx4hnh9qzv9q3kyhkgjx2hsi2k9srgci3qizjmvp6ln"))))
     (build-system python-build-system)
+    (propagated-inputs
+      `(("python-six" ,python-six))) ; required to "import html5lib"
     (inputs
       `(("python-setuptools" ,python-setuptools)))
     (arguments
@@ -2881,7 +2880,7 @@ ISO 8601 dates, time and duration.")
     (description
       "Html5lib is an HTML parser based on the WHATWG HTML specifcation
 and written in Python.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-html5lib
   (package-with-python2 python-html5lib))
@@ -2935,7 +2934,7 @@ features useful for text console applications.")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")
     (home-page "http://www.freedesktop.org/wiki/Software/DBusBindings/")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-dbus
   (package (inherit python-dbus)
@@ -2947,3 +2946,264 @@ implementation of D-Bus.")
     ;; FIXME: on Python 2, the test_utf8 fails with:
     ;; "ValueError: unichr() arg not in range(0x10000) (narrow Python build)"
     (arguments `(#:tests? #f))))
+
+(define-public python-apsw
+  (package
+    (name "python-apsw")
+    (version "3.8.7.3-r1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/a/apsw/apsw-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1rgxdypg7hym0qny15rx5khrghx9fkppfgsfa2s8lg917924mv7l"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ("sqlite" ,sqlite)))
+    (arguments
+     `(#:phases
+        ;; swap check and install phases
+        (alist-cons-after
+         'install 'check
+         (assoc-ref %standard-phases 'check)
+         (alist-delete
+          'check
+          %standard-phases))))
+    (home-page "https://github.com/rogerbinns/apsw/")
+    (synopsis "Another Python SQLite Wrapper")
+    (description "APSW is a Python wrapper for the SQLite
+embedded relational database engine.  In contrast to other wrappers such as
+pysqlite it focuses on being a minimal layer over SQLite attempting just to
+translate the complete SQLite API into Python.")
+    (license license:zlib)))
+
+(define-public python2-apsw
+  (package-with-python2 python-apsw))
+
+(define-public python-lxml
+  (package
+    (name "python-lxml")
+    (version "3.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/l/lxml/lxml-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "0pd23qz8vms1mgm41p96h4vac5y91igs4wr9640gnvxgk019kmf7"))))
+    (build-system python-build-system)
+    (inputs
+      `(("libxml2" ,libxml2)
+        ("libxslt" ,libxslt)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://lxml.de/")
+    (synopsis
+      "Python XML processing library")
+    (description
+      "The lxml XML toolkit is a Pythonic binding for the C libraries
+libxml2 and libxslt.")
+    (license bsd-3))) ; and a few more, see LICENSES.txt
+
+(define-public python2-lxml
+  (package-with-python2 python-lxml))
+
+(define-public python-pillow
+  (package
+    (name "python-pillow")
+    (version "2.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/P/Pillow/Pillow-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1y0rysgd7vqpl5lh0lsra7j2k30azwxqlh5jnqk1i0pmfc735s96"))))
+    (build-system python-build-system)
+    (inputs
+      `(("freetype" ,freetype)
+        ("lcms" ,lcms)
+        ("libjpeg" ,libjpeg)
+        ("libtiff" ,libtiff)
+        ("openjpeg" ,openjpeg)
+        ("python-setuptools" ,python-setuptools)
+        ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f)) ; no check target
+    (home-page "http://python-pillow.github.io/")
+    (synopsis "Pillow fork of Python Imaging Library")
+    (description "Pillow is a fork of the Python Imaging Library (PIL).")
+    ;; PIL license, see
+    ;; http://www.pythonware.com/products/pil/license.htm
+    (license (x11-style
+               "file://PKG-INFO"
+               "See http://www.pythonware.com/products/pil/license.htm"))))
+
+(define-public python2-pillow
+  (package-with-python2 python-pillow))
+
+(define-public python2-pil
+  (package
+    (name "python2-pil")
+    (version "1.1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "http://effbot.org/downloads/Imaging-"
+              version ".tar.gz"))
+        (sha256
+          (base32
+            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))))
+    (build-system python-build-system)
+    (inputs
+      `(("freetype" ,freetype)
+        ("libjpeg" ,libjpeg)
+        ("libtiff" ,libtiff)
+        ("python-setuptools" ,python-setuptools)
+        ("zlib" ,zlib)))
+    (arguments
+     ;; Only the fork python-pillow works with Python 3.
+     `(#:python ,python-2
+       #:tests? #f ; no check target
+       #:phases
+         (alist-cons-before
+          'build 'configure
+          ;; According to README and setup.py, manual configuration is
+          ;; the preferred way of "searching" for inputs.
+          ;; lcms is not found, TCL_ROOT refers to the unavailable tkinter.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((jpeg (assoc-ref inputs "libjpeg"))
+                  (zlib (assoc-ref inputs "zlib"))
+                  (tiff (assoc-ref inputs "libtiff"))
+                  (freetype (assoc-ref inputs "freetype")))
+              (substitute* "setup.py"
+                (("JPEG_ROOT = None")
+                 (string-append "JPEG_ROOT = libinclude(\"" jpeg "\")"))
+                (("ZLIB_ROOT = None")
+                 (string-append "ZLIB_ROOT = libinclude(\"" zlib "\")"))
+                (("TIFF_ROOT = None")
+                 (string-append "TIFF_ROOT = libinclude(\"" tiff "\")"))
+                (("FREETYPE_ROOT = None")
+                 (string-append "FREETYPE_ROOT = libinclude(\""
+                                freetype "\")")))))
+          %standard-phases)))
+    (home-page "http://www.pythonware.com/products/pil/")
+    (synopsis "Python Imaging Library")
+    (description "The Python Imaging Library (PIL) adds image processing
+capabilities to the Python interpreter.")
+    (license (x11-style
+               "file://README"
+               "See 'README' in the distribution."))))
+
+(define-public python2-cssutils
+  (package
+    (name "python2-cssutils")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/c/cssutils/cssutils-"
+              version
+              ".zip"))
+        (sha256
+          (base32
+            "1bwim1353r4hqiir73sn4sc43y7ymh09qx0kly7vj048blppc125"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python2-mock" ,python2-mock) ; for the tests
+        ("unzip" ,unzip))) ; for unpacking the source
+    (inputs
+      `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     `(#:python ,python-2 ; Otherwise tests fail with a syntax error.
+       #:tests? #f ; The tests apparently download an external URL.
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda* (#:key source #:allow-other-keys)
+          (and (zero? (system* "unzip" source))
+               (chdir "cssutils-1.0")))
+        %standard-phases)))
+    (home-page "http://cthedot.de/cssutils/")
+    (synopsis
+      "CSS Cascading Style Sheets library for Python")
+    (description
+      "Cssutils is a Python package for parsing and building CSS
+Cascading Style Sheets.  Currently it provides a DOM only and no rendering
+options.")
+    (license lgpl3+)))
+
+(define-public python-cssselect
+  (package
+    (name "python-cssselect")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/c/cssselect/cssselect-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "10h623qnp6dp1191jri7lvgmnd4yfkl36k9smqklp1qlf3iafd85"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     ;; tests fail with message
+     ;; AttributeError: 'module' object has no attribute 'tests'
+     `(#:tests? #f))
+    (home-page
+      "https://pythonhosted.org/cssselect/")
+    (synopsis
+      "CSS3 selector parser and translator to XPath 1.0")
+    (description
+      "Cssselect ia a Python module that parses CSS3 Selectors and translates
+them to XPath 1.0 expressions.  Such expressions can be used in lxml or
+another XPath engine to find the matching elements in an XML or HTML document.")
+    (license bsd-3)))
+
+(define-public python2-cssselect
+  (package-with-python2 python-cssselect))
+
+(define-public python-netifaces
+  (package
+    (name "python-netifaces")
+    (version "0.10.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "https://pypi.python.org/packages/source/n/netifaces/netifaces-"
+              version
+              ".tar.gz"))
+        (sha256
+          (base32
+            "1plw237a4zib4z8s62g0mrs8gm3kjfrp5sxh6bbk9nl3rdls2mln"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page
+      "https://bitbucket.org/al45tair/netifaces")
+    (synopsis
+      "Python module for portable network interface information")
+    (description
+      "Netifaces is a Python module providing information on network
+interfaces in an easy and portable manner.")
+    (license license:expat)))
+
+(define-public python2-netifaces
+  (package-with-python2 python-netifaces))

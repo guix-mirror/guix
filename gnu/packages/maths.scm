@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -211,6 +212,30 @@ is designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data
 can be imported from spreadsheets, text files and database sources and it can
 be output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
+
+(define-public arpack-ng
+  (package
+    (name "arpack-ng")
+    (version "3.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/opencollab/arpack-ng/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1fwch6vipms1ispzg2djvbzv5wag36f1dmmr3xs3mbp6imfyhvff"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/opencollab/arpack-ng")
+    (inputs
+     `(("lapack" ,lapack)
+       ("fortran" ,gfortran-4.8)))
+    (synopsis "Fortran subroutines for solving eigenvalue problems")
+    (description
+     "ARPACK-NG is a collection of Fortran77 subroutines designed to solve
+large scale eigenvalue problems.")
+    (license (license:bsd-style "file://COPYING"
+                                "See COPYING in the distribution."))))
 
 (define-public lapack
   (package

@@ -1,0 +1,31 @@
+From 629200f48e18dc1a3a5229739748bad0e2a6a0a2 Mon Sep 17 00:00:00 2001
+From: =?utf8?q?Tom=C3=A1=C5=A1=20=C4=8Cech?= <sleep_walker@suse.cz>
+Date: Wed, 4 Feb 2015 11:37:16 +0100
+Subject: [PATCH] Do not silently and prematurely end install when ldconfig is
+ missing
+
+---
+ Makefile | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 343ecb5..4667146 100644
+--- a/Makefile
++++ b/Makefile
+@@ -112,9 +112,10 @@ install: $(INSTALL_DEP)
+ 	$(RM) $(INSTALL_TSYM) $(INSTALL_DYN) $(INSTALL_SHORT1) $(INSTALL_SHORT2)
+ 	cd src && test -f $(FILE_SO) && \
+ 	  $(INSTALL_X) $(FILE_SO) $(INSTALL_DYN) && \
+-	  $(LDCONFIG) $(INSTALL_LIB) && \
+-	  $(SYMLINK) $(INSTALL_SONAME) $(INSTALL_SHORT1) && \
+-	  $(SYMLINK) $(INSTALL_SONAME) $(INSTALL_SHORT2) || :
++	  ( $(LDCONFIG) $(INSTALL_LIB) ; \
++	    $(SYMLINK) $(INSTALL_SONAME) $(INSTALL_SHORT1) && \
++	    $(SYMLINK) $(INSTALL_SONAME) $(INSTALL_SHORT2) || : \
++	  )
+ 	cd etc && $(INSTALL_F) $(FILE_MAN) $(INSTALL_MAN)
+ 	cd etc && $(SED_PC) $(FILE_PC) > $(FILE_PC).tmp && \
+ 	  $(INSTALL_F) $(FILE_PC).tmp $(INSTALL_PC) && \
+-- 
+2.2.2
+

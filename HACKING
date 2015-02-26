@@ -25,12 +25,6 @@ Run ‘./bootstrap’ to download the Nix daemon source code and to generate the
 build system infrastructure using autoconf.  It reports an error if an
 inappropriate version of the above packages is being used.
 
-The ‘bootstrap’ script, among other things, invokes ‘git submodule update’; if
-you didn’t run it, you may get the following error:
-
-  make: *** No rule to make target `nix/libstore/schema.sql', needed by
-  `nix/libstore/schema.sql.hh'
-
 If you get an error like this one:
 
   configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES
