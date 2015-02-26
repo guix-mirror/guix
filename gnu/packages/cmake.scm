@@ -35,7 +35,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "2.8.12")
+    (version "3.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -43,7 +43,7 @@
                    (version-major+minor version)
                    "/cmake-" version ".tar.gz"))
              (sha256
-              (base32 "11q21vyrr6c6smyjy81k2k07zmn96ggjia9im9cxwvj0n88bm1fq"))
+              (base32 "1l662p9lscbzx9s85y86cynb9fn1rb2alqg4584wqq9gibxd7x25"))
              (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -62,6 +62,7 @@
                          "Source/cmGlobalXCodeGenerator.cxx"
                          "Source/CTest/cmCTestBatchTestHandler.cxx"
                          "Source/cmLocalUnixMakefileGenerator3.cxx"
+                         "Source/cmExecProgramCommand.cxx"
                          "Utilities/cmbzip2/Makefile-libbz2_so"
                          "Utilities/Release/release_cmake.cmake"
                          "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
