@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -278,6 +278,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (phases '%standard-phases)
+                    (locale "en_US.UTF-8")
                     (system (%current-system))
                     (imported-modules %default-modules)
                     (modules %default-modules)
@@ -328,6 +329,7 @@ are allowed to refer to."
                   #:search-paths ',(map search-path-specification->sexp
                                         search-paths)
                   #:phases ,phases
+                  #:locale ,locale
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
                   #:out-of-source? ,out-of-source?
@@ -410,6 +412,7 @@ is one of `host' or `target'."
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
                           (phases '%standard-phases)
+                          (locale "en_US.UTF-8")
                           (system (%current-system))
                           (imported-modules '((guix build gnu-build-system)
                                               (guix build utils)))
@@ -473,6 +476,7 @@ platform."
                                              search-path-specification->sexp
                                              native-search-paths)
                     #:phases ,phases
+                    #:locale ,locale
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
                     #:out-of-source? ,out-of-source?

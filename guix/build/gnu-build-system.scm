@@ -94,6 +94,29 @@
 
   #t)
 
+(define* (install-locale #:key
+                         (locale "en_US.UTF-8")
+                         (locale-category LC_ALL)
+                         #:allow-other-keys)
+  "Try to install LOCALE; emit a warning if that fails.  The main goal is to
+use a UTF-8 locale so that Guile correctly interprets UTF-8 file names.
+
+This phase must typically happen after 'set-paths' so that $LOCPATH has a
+chance to be set."
+  (catch 'system-error
+    (lambda ()
+      (setlocale locale-category locale)
+      (format (current-error-port) "using '~a' locale for category ~a~%"
+              locale locale-category)
+      #t)
+    (lambda args
+      ;; This is known to fail for instance in early bootstrap where locales
+      ;; are not available.
+      (format (current-error-port)
+              "warning: failed to install '~a' locale: ~a~%"
+              locale (strerror (system-error-errno args)))
+      #t)))
+
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack SOURCE in the working directory, and change directory within the
 source.  When SOURCE is a directory, copy it in a sub-directory of the current
@@ -454,7 +477,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack
+    (phases set-paths install-locale unpack
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
