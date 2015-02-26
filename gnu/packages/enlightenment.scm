@@ -206,3 +206,30 @@ files in Evas (EFL canvas library).")
 and applications allowing to natively play video files through Emotion.
 The only supported now is VLC.")
     (license license:bsd-2)))
+
+(define-public terminology
+  (package
+    (name "terminology")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.enlightenment.org/rel/apps/terminology/terminology-"
+                version ".tar.gz"))
+              (sha256
+               (base32 "0a767ixackzmhb2awrhjy7q6vsivsd54wc434i617xiw095x843s"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)
+       ("elementary" ,elementary)))
+    (home-page "http://www.enlightenment.org")
+    (synopsis "Powerful terminal emulator based on EFL")
+    (description
+     "Terminology is fast and feature rich terminal emulator.  It is solely
+based on Enlightenment Foundation Libraries.  It supports multiple tabs, UTF-8,
+URL and local path detection, themes, popup based content viewer for non-text
+contents and more.")
+    (license license:bsd-2)))
