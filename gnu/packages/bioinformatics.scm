@@ -272,6 +272,48 @@ gapped, local, and paired-end alignment modes.")
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
 
+(define-public crossmap
+  (package
+    (name "crossmap")
+    (version "0.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/crossmap/CrossMap-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "163hi5gjgij6cndxlvbkp5jjwr0k4wbm9im6d2210278q7k9kpnp"))
+              ;; patch has been sent upstream already
+              (patches (list
+                        (search-patch "crossmap-allow-system-pysam.patch")))
+              (modules '((guix build utils)))
+              ;; remove bundled copy of pysam
+              (snippet
+               '(delete-file-recursively "lib/pysam"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (alist-cons-after
+        'unpack 'set-env
+        (lambda _ (setenv "CROSSMAP_USE_SYSTEM_PYSAM" "1"))
+        %standard-phases)))
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-cython" ,python2-cython)
+       ("python-nose" ,python2-nose)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://crossmap.sourceforge.net/")
+    (synopsis "Convert genome coordinates between assemblies")
+    (description
+     "CrossMap is a program for conversion of genome coordinates or annotation
+files between different genome assemblies.  It supports most commonly used
+file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
+    (license license:gpl2+)))
+
 (define-public flexbar
   (package
     (name "flexbar")
