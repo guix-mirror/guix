@@ -108,7 +108,9 @@ working directory."
         (copy-recursively source "."
                           #:keep-mtime? #t)
         #t)
-      (and (zero? (system* "tar" "xvf" source))
+      (and (if (string-suffix? ".zip" source)
+               (zero? (system* "unzip" source))
+               (zero? (system* "tar" "xvf" source)))
            (chdir (first-subdirectory ".")))))
 
 ;; See <http://bugs.gnu.org/17840>.
