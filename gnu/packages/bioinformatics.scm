@@ -368,6 +368,37 @@ particular, reads spanning multiple exons.")
 from high-throughput sequencing assays.")
     (license license:gpl3+)))
 
+(define-public macs
+  (package
+    (name "macs")
+    (version "2.1.0.20140616")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/M/MACS2/MACS2-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "11lmiw6avqhwn75sn59g4lfkrr2kk20r3rgfbx9xfqb8rg9mi2n6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only compatible with Python 2.7
+       #:tests? #f)) ; no test target
+    (inputs
+     `(("python-numpy" ,python2-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://github.com/taoliu/MACS/")
+    (synopsis "Model based analysis for ChIP-Seq data")
+    (description
+     "MACS is an implementation of a ChIP-Seq analysis algorithm for
+identifying transcript factor binding sites named Model-based Analysis of
+ChIP-Seq (MACS).  MACS captures the influence of genome complexity to evaluate
+the significance of enriched ChIP regions and it improves the spatial
+resolution of binding sites through combining the information of both
+sequencing tag position and orientation.")
+    (license license:bsd-3)))
+
 (define-public rseqc
   (package
     (name "rseqc")
