@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -662,6 +662,16 @@ store.")
     ("grep" ,grep-final)
     ,@%boot4-inputs))
 
+(define gzip-final
+  (package-with-explicit-inputs gzip %boot5-inputs
+                                (current-source-location)))
+
+(define glibc-utf8-locales-final
+  (package
+    (inherit glibc-utf8-locales)
+    (inputs `(("glibc" ,glibc-final)
+              ("gzip" ,gzip-final)))))
+
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
   ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
@@ -674,7 +684,6 @@ store.")
               ((name package)
                (list name (finalize package))))
              `(("tar" ,tar)
-               ("gzip" ,gzip)
                ("bzip2" ,bzip2)
                ("xz" ,xz)
                ("file" ,file)
@@ -683,6 +692,7 @@ store.")
                ("sed" ,sed)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
+      ("gzip" ,gzip-final)
       ("grep" ,grep-final)
       ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)
@@ -690,7 +700,8 @@ store.")
       ("ld-wrapper" ,ld-wrapper)
       ("binutils" ,binutils-final)
       ("gcc" ,gcc-final)
-      ("libc" ,glibc-final))))
+      ("libc" ,glibc-final)
+      ("locales" ,glibc-utf8-locales-final))))
 
 (define-public canonical-package
   (let ((name->package (fold (lambda (input result)
