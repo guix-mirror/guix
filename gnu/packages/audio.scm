@@ -804,13 +804,10 @@ stretching and pitch scaling of audio.  This package contains the library.")
        ("file" ,file)))
     (arguments
      '(#:phases
-       (alist-cons-before
-        'configure 'bootstrap
+       (alist-cons-after
+        'unpack 'bootstrap
         (lambda _
-          (unless (zero? (system* "sh" "bootstrap"))
-            (error "bootstrap failed"))
-          (substitute* '("configure")
-            (("/usr/bin/file") "file")))
+          (zero? (system* "sh" "bootstrap")))
         %standard-phases)))
     (home-page "http://www.surina.net/soundtouch/")
     (synopsis

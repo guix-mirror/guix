@@ -140,9 +140,9 @@ Java Lucene text search engine API to C++.")
                    (substitute* "examples/Makefile.am"
                      (("instances_test remove_test") "instances_test")
                      (("\\$\\(TESTS\\) remove_test") "$(TESTS)")))
-                 (alist-cons-before
-                  'configure 'autoreconf
-                  (lambda* (#:key inputs #:allow-other-keys)
+                 (alist-cons-after
+                  'remove-out-of-tree-references 'autoreconf
+                  (lambda _
                     (zero? (system* "autoreconf" "-vfi")))
                   %standard-phases))))
     (inputs

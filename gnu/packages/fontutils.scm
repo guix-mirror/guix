@@ -278,8 +278,8 @@ smooth contours with constant curvature at the spline joins.")
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'bootstrap
+     `(#:phases (alist-cons-after
+                 'unpack 'bootstrap
                  (lambda _
                    (zero? (system* "autoreconf" "-vi")))
                  %standard-phases)))

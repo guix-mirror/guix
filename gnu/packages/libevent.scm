@@ -73,12 +73,12 @@ loop.")
                 "1ys2wlypdbv59yywn91d5vl329z50mi7ivi3fj5rjm4mr9g3wnmr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'autogen
+     '(#:phases (alist-cons-after
+                 'unpack 'autogen
                  (lambda _
                    ;; Fashionable people don't run 'make dist' these days, so
                    ;; we need to do that ourselves.
-                   (zero? (system* "./autogen.sh")))
+                   (zero? (system* "sh" "autogen.sh")))
                  %standard-phases)
 
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.

@@ -1005,8 +1005,8 @@ Linux-based operating systems.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'bootstrap
+     '(#:phases (alist-cons-after
+                 'unpack 'bootstrap
                  (lambda _
                    (zero? (system* "autoreconf" "-vf")))
                  %standard-phases)
