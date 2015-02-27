@@ -314,12 +314,12 @@ references."
        (cons name result))
       ((? gexp? exp)
        (append (gexp-outputs exp) result))
+      ((lst ...)
+       (fold-right add-reference-output result lst))
       (_
        result)))
 
-  (fold-right add-reference-output
-              '()
-              (gexp-references exp)))
+  (add-reference-output (gexp-references exp) '()))
 
 (define* (gexp->sexp exp #:key
                      (system (%current-system))

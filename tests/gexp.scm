@@ -230,6 +230,16 @@
                 (gexp-outputs exp2))
          (= 2 (length (gexp-outputs exp2))))))
 
+(test-assert "output list + ungexp-splicing list, combined gexps"
+  (let* ((exp0  (gexp (mkdir (ungexp output))))
+         (exp1  (gexp (mkdir (ungexp output "foo"))))
+         (exp2  (gexp (begin (display "hi!")
+                             (ungexp-splicing (list exp0 exp1))))))
+    (and (lset= equal?
+                (append (gexp-outputs exp0) (gexp-outputs exp1))
+                (gexp-outputs exp2))
+         (= 2 (length (gexp-outputs exp2))))))
+
 (test-assertm "gexp->file"
   (mlet* %store-monad ((exp -> (gexp (display (ungexp %bootstrap-guile))))
                        (guile  (package-file %bootstrap-guile))
