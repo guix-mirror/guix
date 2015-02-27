@@ -588,22 +588,27 @@ match the terminating newline of a line."
 (define* (dump-port in out
                     #:key (buffer-size 16384)
                     (progress (lambda (t k) (k))))
-  "Read as much data as possible from IN and write it to OUT, using
-chunks of BUFFER-SIZE bytes.  Call PROGRESS after each successful
-transfer of BUFFER-SIZE bytes or less, passing it the total number of
-bytes transferred and the continuation of the transfer as a thunk."
+  "Read as much data as possible from IN and write it to OUT, using chunks of
+BUFFER-SIZE bytes.  Call PROGRESS at the beginning and after each successful
+transfer of BUFFER-SIZE bytes or less, passing it the total number of bytes
+transferred and the continuation of the transfer as a thunk."
   (define buffer
     (make-bytevector buffer-size))
 
-  (let loop ((total 0)
-             (bytes (get-bytevector-n! in buffer 0 buffer-size)))
+  (define (loop total bytes)
     (or (eof-object? bytes)
         (let ((total (+ total bytes)))
           (put-bytevector out buffer 0 bytes)
           (progress total
                     (lambda ()
                       (loop total
-                            (get-bytevector-n! in buffer 0 buffer-size))))))))
+                            (get-bytevector-n! in buffer 0 buffer-size)))))))
+
+  ;; Make sure PROGRESS is called when we start so that it can measure
+  ;; throughput.
+  (progress 0
+            (lambda ()
+              (loop 0 (get-bytevector-n! in buffer 0 buffer-size)))))
 
 (define (set-file-time file stat)
   "Set the atime/mtime of FILE to that specified by STAT."
