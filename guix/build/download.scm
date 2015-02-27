@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,6 +41,10 @@
 ;;; Fetch data such as tarballs over HTTP or FTP (builder-side code).
 ;;;
 ;;; Code:
+
+(define %http-receive-buffer-size
+  ;; Size of the HTTP receive buffer.
+  65536)
 
 (define* (progress-proc file size #:optional (log-port (current-output-port)))
   "Return a procedure to show the progress of FILE's download, which is
@@ -92,7 +96,7 @@ abbreviation of URI showing the scheme, host, and basename of the file."
     (call-with-output-file file
       (lambda (out)
         (dump-port in out
-                   #:buffer-size 65536            ; don't flood the log
+                   #:buffer-size %http-receive-buffer-size
                    #:progress (progress-proc (uri-abbreviation uri) size))))
 
     (ftp-close conn))
@@ -182,7 +186,7 @@ which is not available during bootstrap."
           (connect s (addrinfo:addr ai))
 
           ;; Buffer input and output on this port.
-          (setvbuf s _IOFBF)
+          (setvbuf s _IOFBF %http-receive-buffer-size)
 
           (if (eq? 'https (uri-scheme uri))
               (tls-wrap s (uri-host uri))
@@ -334,7 +338,7 @@ Return the resulting target URI."
              (if (port? bv-or-port)
                  (begin
                    (dump-port bv-or-port p
-                              #:buffer-size 65536 ; don't flood the log
+                              #:buffer-size %http-receive-buffer-size
                               #:progress (progress-proc (uri-abbreviation uri)
                                                         size))
                    (newline))
