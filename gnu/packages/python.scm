@@ -2251,12 +2251,6 @@ backend = GTK3Agg~%")))))
                   (info (string-append data "/info"))
                   (html (string-append doc "/html")))
              (with-directory-excursion "doc"
-               ;; Install and set UTF-8 locale to avoid an encoding error.
-               (setenv "LOCPATH" (getcwd))
-               (system* "localedef" "--no-archive"
-                        "--prefix" (getcwd) "-i" "en_US"
-                        "-f" "UTF-8" "./en_US.UTF-8")
-               (setenv "LANG" "en_US.UTF-8")
                ;; Produce pdf in 'A4' format.
                (substitute* (find-files "." "conf\\.py")
                  (("latex_paper_size = 'letter'")
@@ -2349,12 +2343,6 @@ toolkits.")
                   (html (string-append doc "/html"))
                   (pyver ,(string-append "PYVER=")))
              (with-directory-excursion "doc"
-               ;; Install and set UTF-8 locale to avoid an encoding error.
-               (setenv "LOCPATH" (getcwd))
-               (system* "localedef" "--no-archive"
-                        "--prefix" (getcwd) "-i" "en_US"
-                        "-f" "UTF-8" "./en_US.UTF-8")
-               (setenv "LANG" "en_US.UTF-8")
                ;; Fix generation of images for mathematical expressions.
                (substitute* (find-files "source" "conf\\.py")
                  (("pngmath_use_preview = True")
