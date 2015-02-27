@@ -102,7 +102,8 @@ tools have full access to view and control running applications.")
      `(("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)))
     (arguments
-      `(#:tests? #f)) ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
+     `(#:tests? #f  ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
+       #:configure-flags '("--enable-tee")))  ; needed for GNU Icecat
    (synopsis "2D graphics library")
    (description
     "Cairo is a 2D graphics library with support for multiple output devices.
