@@ -26,6 +26,7 @@
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -46,24 +47,59 @@
   ;; Size of the HTTP receive buffer.
   65536)
 
+(define (duration->seconds duration)
+  "Return the number of seconds represented by DURATION, a 'time-duration'
+object, as an inexact number."
+  (+ (time-second duration)
+     (/ (time-nanosecond duration) 1e9)))
+
+(define (throughput->string throughput)
+  "Given THROUGHPUT, measured in bytes per second, return a string
+representing it in a human-readable way."
+  (if (> throughput 3e6)
+      (format #f "~,2f MiB/s" (/ throughput (expt 2. 20)))
+      (format #f "~,0f KiB/s" (/ throughput 1024.0))))
+
 (define* (progress-proc file size #:optional (log-port (current-output-port)))
   "Return a procedure to show the progress of FILE's download, which is
 SIZE byte long.  The returned procedure is suitable for use as an
 argument to `dump-port'.  The progress report is written to LOG-PORT."
-  (if (number? size)
-      (lambda (transferred cont)
-        (let ((% (* 100.0 (/ transferred size))))
-          (display #\cr log-port)
-          (format log-port "~a\t~5,1f% of ~,1f KiB"
-                  file % (/ size 1024.0))
-          (flush-output-port log-port)
-          (cont)))
-      (lambda (transferred cont)
-        (display #\cr log-port)
-        (format log-port "~a\t~6,1f KiB transferred"
-                file (/ transferred 1024.0))
-        (flush-output-port log-port)
-        (cont))))
+  (let ((start-time #f))
+    (let-syntax ((with-elapsed-time
+                     (syntax-rules ()
+                       ((_ elapsed body ...)
+                        (let* ((now     (current-time time-monotonic))
+                               (elapsed (and start-time
+                                             (duration->seconds
+                                              (time-difference now
+                                                               start-time)))))
+                          (unless start-time
+                            (set! start-time now))
+                          body ...)))))
+      (if (number? size)
+          (lambda (transferred cont)
+            (with-elapsed-time elapsed
+              (let ((%          (* 100.0 (/ transferred size)))
+                    (throughput (if elapsed
+                                    (/ transferred elapsed)
+                                    0)))
+                (display #\cr log-port)
+                (format log-port "~a\t~5,1f% of ~,1f KiB (~a)"
+                        file % (/ size 1024.0)
+                        (throughput->string throughput))
+                (flush-output-port log-port)
+                (cont))))
+          (lambda (transferred cont)
+            (with-elapsed-time elapsed
+              (let ((throughput (if elapsed
+                                    (/ transferred elapsed)
+                                    0)))
+                (display #\cr log-port)
+                (format log-port "~a\t~6,1f KiB transferred (~a)"
+                        file (/ transferred 1024.0)
+                        (throughput->string throughput))
+                (flush-output-port log-port)
+                (cont))))))))
 
 (define* (uri-abbreviation uri #:optional (max-length 42))
   "If URI's string representation is larger than MAX-LENGTH, return an
@@ -426,5 +462,9 @@ on success."
        (format (current-error-port) "failed to download ~s from ~s~%"
                file url)
        #f))))
+
+;;; Local Variables:
+;;; eval: (put 'with-elapsed-time 'scheme-indent-function 1)
+;;; End:
 
 ;;; download.scm ends here
