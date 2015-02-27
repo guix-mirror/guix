@@ -106,8 +106,12 @@ chance to be set."
   (catch 'system-error
     (lambda ()
       (setlocale locale-category locale)
-      (format (current-error-port) "using '~a' locale for category ~a~%"
-              locale locale-category)
+
+      ;; While we're at it, pass it to sub-processes.
+      (setenv (locale-category->string locale-category) locale)
+
+      (format (current-error-port) "using '~a' locale for category ~s~%"
+              locale (locale-category->string locale-category))
       #t)
     (lambda args
       ;; This is known to fail for instance in early bootstrap where locales

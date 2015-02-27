@@ -21,6 +21,7 @@
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-60)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -65,7 +66,9 @@
             patch-/usr/bin/file
             fold-port-matches
             remove-store-references
-            wrap-program))
+            wrap-program
+
+            locale-category->string))
 
 
 ;;;
@@ -908,6 +911,27 @@ the previous wrapper."
     (rename-file prog-tmp wrapper)
     (symlink wrapper prog-tmp)
     (rename-file prog-tmp prog)))
+
+
+;;;
+;;; Locales.
+;;;
+
+(define (locale-category->string category)
+  "Return the name of locale category CATEGORY, one of the 'LC_' constants.
+If CATEGORY is a bitwise or of several 'LC_' constants, an approximation is
+returned."
+  (letrec-syntax ((convert (syntax-rules ()
+                             ((_)
+                              (number->string category))
+                             ((_ first rest ...)
+                              (if (= first category)
+                                  (symbol->string 'first)
+                                  (convert rest ...))))))
+    (convert LC_ADDRESS LC_ALL LC_COLLATE LC_CTYPE
+             LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY
+             LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE
+             LC_TIME)))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
