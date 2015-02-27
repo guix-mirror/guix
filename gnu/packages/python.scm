@@ -2290,7 +2290,7 @@ toolkits.")
       ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
       ;; customized for Python 2.
       (propagated-inputs
-       `(("python2-py2cairo" ,python2-py2cairo)
+       `(("python2-pycairo" ,python2-pycairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
          ,@(alist-delete "python-pycairo"
                          (alist-delete "python-pygobject"
