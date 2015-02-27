@@ -61,13 +61,14 @@ directory."
           (match:substring (string-match "ruby-(.*)$"
                                          (assoc-ref inputs "ruby"))
                            1))
-         (gem-home (string-append (assoc-ref outputs "out")
-                                  "/lib/ruby/gems/"
-                                  ruby-version)))
+         (out (assoc-ref outputs "out"))
+         (gem-home (string-append out "/lib/ruby/gems/" ruby-version)))
     (setenv "GEM_HOME" gem-home)
     (mkdir-p gem-home)
     (zero? (system* "gem" "install" "--local"
-                    (first-matching-file "\\.gem$")))))
+                    (first-matching-file "\\.gem$")
+                    ;; Executables should go into /bin, not /lib/ruby/gems.
+                    "--bindir" (string-append out "/bin")))))
 
 (define %standard-phases
   (alist-cons-after
