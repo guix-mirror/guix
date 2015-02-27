@@ -64,6 +64,9 @@ representing it in a human-readable way."
   "Return a procedure to show the progress of FILE's download, which is
 SIZE byte long.  The returned procedure is suitable for use as an
 argument to `dump-port'.  The progress report is written to LOG-PORT."
+  ;; XXX: Because of <http://bugs.gnu.org/19939> this procedure is often not
+  ;; called as frequently as we'd like too; this is especially bad with Nginx
+  ;; on hydra.gnu.org, which returns whole nars as a single chunk.
   (let ((start-time #f))
     (let-syntax ((with-elapsed-time
                      (syntax-rules ()
