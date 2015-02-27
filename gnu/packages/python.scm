@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -3129,13 +3129,7 @@ capabilities to the Python interpreter.")
     (arguments
      `(#:python ,python-2 ; Otherwise tests fail with a syntax error.
        #:tests? #f ; The tests apparently download an external URL.
-       #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source #:allow-other-keys)
-          (and (zero? (system* "unzip" source))
-               (chdir "cssutils-1.0")))
-        %standard-phases)))
+       ))
     (home-page "http://cthedot.de/cssutils/")
     (synopsis
       "CSS Cascading Style Sheets library for Python")

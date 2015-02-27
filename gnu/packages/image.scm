@@ -385,20 +385,15 @@ supplies a generic doubly-linked list and some string functions.")
               "0q1gnjnxgphsh4l8i9rfly4bi8xsczsb9ryzbm8hf38lc3fk5bq3"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:phases (alist-replace
-                'unpack
-                (lambda* (#:key source #:allow-other-keys)
-                  (and (zero? (system* "unzip" source))
-                       (chdir "FreeImage")))
-                (alist-delete
-                 'configure
-                 (alist-cons-before
-                  'build 'patch-makefile
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (substitute* "Makefile.gnu"
-                      (("/usr") (assoc-ref outputs "out"))
-                      (("-o root -g root") "")))
-                  %standard-phases)))
+    '(#:phases (alist-delete
+                'configure
+                (alist-cons-before
+                 'build 'patch-makefile
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (substitute* "Makefile.gnu"
+                     (("/usr") (assoc-ref outputs "out"))
+                     (("-o root -g root") "")))
+                 %standard-phases))
       #:make-flags '("CC=gcc")
       #:tests? #f)) ; no check target
    (native-inputs

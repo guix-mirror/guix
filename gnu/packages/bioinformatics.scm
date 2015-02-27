@@ -265,35 +265,30 @@ Illumina, Roche 454, and the SOLiD platform.")
                             '()
                             '("POPCNT_CAPABILITY=0")))
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source #:allow-other-keys)
-          (and (zero? (system* "unzip" source))
-               (chdir "hisat-0.1.4-beta")))
-        (alist-cons-after
-         'unpack 'patch-sources
-         (lambda _
-           ;; XXX Cannot use snippet because zip files are not supported
-           (substitute* "Makefile"
-             (("^CC = .*$") "CC = gcc")
-             (("^CPP = .*$") "CPP = g++")
-             ;; replace BUILD_HOST and BUILD_TIME for deterministic build
-             (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-             (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
-           (substitute* '("hisat-build" "hisat-inspect")
-             (("/usr/bin/env") (which "env"))))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-              (mkdir-p bin)
-              (for-each
-               (lambda (file)
-                 (copy-file file (string-append bin file)))
-               (find-files
-                "."
-                "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
-          (alist-delete 'configure %standard-phases))))))
+       (alist-cons-after
+        'unpack 'patch-sources
+        (lambda _
+          ;; XXX Cannot use snippet because zip files are not supported
+          (substitute* "Makefile"
+            (("^CC = .*$") "CC = gcc")
+            (("^CPP = .*$") "CPP = g++")
+            ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+            (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+            (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
+          (substitute* '("hisat-build" "hisat-inspect")
+            (("/usr/bin/env") (which "env"))))
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (for-each
+              (lambda (file)
+                (copy-file file (string-append bin file)))
+              (find-files
+               "."
+               "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
+         (alist-delete 'configure %standard-phases)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
