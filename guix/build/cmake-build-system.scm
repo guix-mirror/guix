@@ -57,6 +57,8 @@
                   "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
                   ;; add (other) libraries of the project itself to rpath
                   ,(string-append "-DCMAKE_INSTALL_RPATH=" out "/lib")
+                  ;; enable verbose output from builds
+                  "-DCMAKE_VERBOSE_MAKEFILE=ON"
                   ,@configure-flags)))
       (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
       (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
