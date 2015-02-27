@@ -32,6 +32,7 @@
               (method url-fetch)
               (uri (string-append "https://github.com/martine/ninja/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))

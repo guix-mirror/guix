@@ -43,6 +43,7 @@
               (method url-fetch)
               (uri (string-append "https://github.com/bedops/bedops/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0wmg6j0icimlrnsidaxrzf3hfgjvlkkcwvpdg7n4gg7hdv2m9ni5"))))
@@ -100,6 +101,7 @@ computational cluster.")
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "16aq0w3dmbd0853j32xk9jin4vb6v6fgakfyvrsmsjizzbn3fpfl"))))
@@ -149,6 +151,7 @@ BED, GFF/GTF, VCF.")
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "15dnbqippwvhyh9zqjhaxkabk7lm1xbh1nvar1x4b5kwm117zijn"))

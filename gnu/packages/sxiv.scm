@@ -34,6 +34,7 @@
               (uri (string-append
                     "https://github.com/muennich/sxiv/archive/v"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "03hxy5ff7xbs15rhlbpgx8xmvmpjlffp0m4528975hg16sqa2c4s"))))

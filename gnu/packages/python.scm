@@ -2678,6 +2678,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
       ;; The archive on pypi is missing the 'utils' directory!
       (uri (string-append "https://github.com/SimonSapin/cairocffi/archive/v"
                           version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
         "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))

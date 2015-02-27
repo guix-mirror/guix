@@ -284,6 +284,7 @@ synchronous execution of all clients, and low latency operation.")
                    "https://github.com/jackaudio/jack2/archive/v"
                    version
                    ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
@@ -507,6 +508,7 @@ software.")
              (uri (string-append "https://github.com/lvtk/lvtk/archive/"
                                  version
                                  ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "03nbj2cqcklqwh50zj2gwm07crh5iwqbpxbpzwbg5hvgl4k4rnjd"))))

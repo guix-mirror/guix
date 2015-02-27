@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -122,6 +122,7 @@ a focus on simplicity and productivity.")
               (method url-fetch)
               (uri (string-append "https://github.com/svenfuchs/i18n/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1fdhnhh1p5g8vibv44d770z8nq208zrms3m2nswdvr54072y1m6k"))))

@@ -283,6 +283,7 @@ and corrections.  It is based on a Bayesian filter.")
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "00k84qagph3xnxss6rkxm61x07ngz8fvffx4z9jyw5baf3cdd32p"))))
@@ -416,6 +417,7 @@ useful features.")
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
                (base32 "05qyqx2c1ppb1jnrs3m52i60f9xlxfxdmb9dnwg4vqjv8kwv2qkr"))))
     (build-system gnu-build-system)

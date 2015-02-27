@@ -68,6 +68,7 @@ loop.")
               (method url-fetch)
               (uri (string-append "https://github.com/joyent/libuv/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1ys2wlypdbv59yywn91d5vl329z50mi7ivi3fj5rjm4mr9g3wnmr"))))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@ is used in some video games and movies.")
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "03a15vbzjfwc8dpifbjvd0gnr208mzmdkgs2nlc8zq6z0a4h4jqd"))))
