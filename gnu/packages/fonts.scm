@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -303,3 +304,58 @@ The Liberation Fonts are sponsored by Red Hat.")
     (description "Terminus Font is a clean, fixed width bitmap font, designed
 for long (8 and more hours per day) work with computers.")
     (license license:silofl1.1)))
+
+(define-public font-adobe-source-han-sans
+  (package
+    (name "font-adobe-source-han-sans")
+    (version "1.001R")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/adobe-fonts/source-han-sans/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append "source-han-sans-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cwz3d8jancl0a7vbjxhnh1vgwsjba62lahfjya9yrjkp1ndxlap"))))
+    (outputs '("out"                 ; OpenType/CFF Collection (OTC), 119 MiB.
+               "cn" "jp" "kr" "tw")) ; Region-specific Subset OpenType/CFF.
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((tar  (string-append (assoc-ref %build-inputs
+                                               "tar")
+                                    "/bin/tar"))
+               (PATH (string-append (assoc-ref %build-inputs
+                                               "gzip")
+                                    "/bin"))
+               (install-opentype-fonts
+                (lambda (fonts-dir out)
+                  (copy-recursively fonts-dir
+                                    (string-append (assoc-ref %outputs out)
+                                                   "/share/fonts/opentype")))))
+           (setenv "PATH" PATH)
+           (system* tar "xvf" (assoc-ref %build-inputs "source"))
+           (chdir (string-append "source-han-sans-" ,version))
+           (install-opentype-fonts "OTC" "out")
+           (install-opentype-fonts "SubsetOTF/CN" "cn")
+           (install-opentype-fonts "SubsetOTF/JP" "jp")
+           (install-opentype-fonts "SubsetOTF/KR" "kr")
+           (install-opentype-fonts "SubsetOTF/TW" "tw")))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "https://github.com/adobe-fonts/source-han-sans")
+    (synopsis "Pan-CJK fonts")
+    (description
+     "Source Han Sans is a sans serif Pan-CJK font family that is offered in
+seven weights: ExtraLight, Light, Normal, Regular, Medium, Bold, and Heavy.
+And in several OpenType/CFF-based deployment configurations to accommodate
+various system requirements or limitations.  As the name suggests, Pan-CJK
+fonts are intended to support the characters necessary to render or display
+text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.
+")
+    (license license:asl2.0)))
