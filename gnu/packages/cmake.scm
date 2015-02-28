@@ -101,6 +101,10 @@
        ("expat"      ,expat)
        ("bzip2"      ,bzip2)
        ("libarchive" ,libarchive)))
+    (native-search-paths
+     (list (search-path-specification
+             (variable "CMAKE_PREFIX_PATH")
+             (files '("")))))
     (home-page "http://www.cmake.org/")
     (synopsis "Cross-platform build system")
     (description
