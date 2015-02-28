@@ -27,10 +27,12 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -338,3 +340,35 @@ Opus-tools provide command line utilities for creating, inspecting and
 decoding .opus files")
     (license license:bsd-3)
     (home-page "http://www.opus-codec.org")))
+
+(define-public icecast
+  (package
+    (name "icecast")
+    (version "2.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xiph.org/releases/icecast/icecast-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0js5lylrgklhvvaksx46zc8lc975qb1bns8h1ms545nv071rxy23"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)
+       ("curl" ,curl)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("libtheora" ,libtheora)
+       ("speex" ,speex)))
+    (synopsis "Streaming media server")
+    (description "Icecast is a streaming media server which currently supports
+Ogg (Vorbis and Theora), Opus, WebM and MP3 audio streams.  It can be used to
+create an Internet radio station or a privately running jukebox and many
+things in between.")
+    (home-page "http://icecast.org/")
+    (license license:gpl2)))
