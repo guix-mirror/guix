@@ -22,6 +22,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 iconv)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -499,8 +500,11 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
-  ;; Encoding/decoding errors shouldn't be silent.
-  (fluid-set! %default-port-conversion-strategy 'error)
+  ;; Encoding/decoding errors shouldn't be silent.  But our bootstrap Guile
+  ;; currently doesn't have access to iconv modules, so we have to allow it to
+  ;; be sloppier (XXX).
+  (when (false-if-exception (string->bytevector "works?" "ISO-8859-1"))
+    (fluid-set! %default-port-conversion-strategy 'error))
 
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
