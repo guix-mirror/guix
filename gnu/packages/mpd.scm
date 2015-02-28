@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -210,4 +210,28 @@ but it provides new useful features such as support for regular expressions
 for library searches, extended song format, items filtering, the ability to
 sort playlists, and a local filesystem browser.")
     (home-page "http://ncmpcpp.rybczak.net/")
+    (license license:gpl2+)))
+
+(define-public mpdscribble
+  (package
+    (name "mpdscribble")
+    (version "0.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.musicpd.org/download/mpdscribble/"
+                                  version "/mpdscribble-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0f0ybx380x2z2g1qvdndpvcrhkrgsfqckhz3ryydq2w3pl12v27z"))))
+    (build-system gnu-build-system)
+    (inputs `(("libmpdclient" ,libmpdclient)
+              ("curl" ,curl)
+              ("glib" ,glib)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "MPD client for track scrobbling")
+    (description "mpdscribble is a Music Player Daemon client which submits
+information about tracks being played to a scrobbler, such as Libre.FM.")
+    ;; musicpd.org doesn't mention mpdscribble.  It points users to this wiki
+    ;; instead.
+    (home-page "http://mpd.wikia.com/wiki/Client:Mpdscribble")
     (license license:gpl2+)))
