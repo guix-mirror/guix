@@ -42,14 +42,9 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xiph)
-  #:export (libmpdclient
-            mpd
-            mpd-mpc
-            ncmpc
-            ncmpcpp))
+  #:use-module (gnu packages xiph))
 
-(define libmpdclient
+(define-public libmpdclient
   (package
     (name "libmpdclient")
     (version "2.9")
@@ -70,7 +65,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
     (home-page "http://www.musicpd.org/libs/libmpdclient/")
     (license license:bsd-3)))
 
-(define mpd
+(define-public mpd
   (package
     (name "mpd")
     (version "0.18.8")
@@ -131,7 +126,7 @@ protocol.")
     (home-page "http://www.musicpd.org/")
     (license license:gpl2)))
 
-(define mpd-mpc
+(define-public mpd-mpc
   (package
     (name "mpd-mpc")
     (version "0.26")
@@ -153,7 +148,7 @@ player daemon.")
     (home-page "http://www.musicpd.org/clients/mpc/")
     (license license:gpl2)))
 
-(define ncmpc
+(define-public ncmpc
   (package
     (name "ncmpc")
     (version "0.21")
@@ -177,7 +172,7 @@ terminal using ncurses.")
     (home-page "http://www.musicpd.org/clients/ncmpc/")
     (license license:gpl2)))
 
-(define ncmpcpp
+(define-public ncmpcpp
   (package
     (name "ncmpcpp")
     (version "0.6.2")
