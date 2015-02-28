@@ -412,6 +412,9 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                     (srfi srfi-1)
                     (guix build utils))
 
+       ;; Encoding/decoding errors shouldn't be silent.
+       (fluid-set! %default-port-conversion-strategy 'error)
+
        (let ((locales (assoc-ref %build-inputs "locales"))
              (out     (assoc-ref %outputs "out"))
              (xz      (assoc-ref %build-inputs "xz"))

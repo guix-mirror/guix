@@ -499,6 +499,9 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
+  ;; Encoding/decoding errors shouldn't be silent.
+  (fluid-set! %default-port-conversion-strategy 'error)
+
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
   (every (match-lambda
