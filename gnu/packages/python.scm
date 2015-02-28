@@ -2147,7 +2147,15 @@ that client code uses to construct the grammar directly in Python code.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0d4dnifaxkll50jx6czj05y8cb4ny60njd2wz299sj2jxfy51w4k"))))
+         "0d4dnifaxkll50jx6czj05y8cb4ny60njd2wz299sj2jxfy51w4k"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Drop a test requiring matplotlib, which we cannot add as an
+           ;; input since it would create a circular dependency: Extend the
+           ;; test for Python 3, where it is already dropped, to Python 2.
+           (substitute* "numpydoc/tests/test_plot_directive.py"
+             (("3") "2"))))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
@@ -2162,13 +2170,7 @@ that client code uses to construct the grammar directly in Python code.")
     (license bsd-2)))
 
 (define-public python2-numpydoc
-  (package
-    (inherit (package-with-python2 python-numpydoc))
-    ;; With python-2 1 test (out of 30) fails because it doesn't find
-    ;; matplotlib.  With python-3 it seems to detect at run-time the absence
-    ;; of matplotlib.
-    (arguments `(#:tests? #f
-                 #:python ,python-2))))
+  (package-with-python2 python-numpydoc))
 
 (define-public python-matplotlib
   (package
