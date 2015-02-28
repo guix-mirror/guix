@@ -618,6 +618,14 @@ transferred and the continuation of the transfer as a thunk."
          (stat:atimensec stat)
          (stat:mtimensec stat)))
 
+(define (get-char* p)
+  ;; We call it `get-char', but that's really a binary version
+  ;; thereof.  (The real `get-char' cannot be used here because our
+  ;; bootstrap Guile is hacked to always use UTF-8.)
+  (match (get-u8 p)
+    ((? integer? x) (integer->char x))
+    (x x)))
+
 (define patch-shebang
   (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
     (lambda* (file
@@ -653,8 +661,8 @@ FILE are kept unchanged."
 
       (call-with-ascii-input-file file
         (lambda (p)
-          (and (eq? #\# (read-char p))
-               (eq? #\! (read-char p))
+          (and (eq? #\# (get-char* p))
+               (eq? #\! (get-char* p))
                (let ((line (false-if-exception (read-line p))))
                  (and=> (and line (regexp-exec shebang-rx line))
                         (lambda (m)
@@ -753,21 +761,13 @@ for each unmatched character."
         (map char-set (string->list pattern))
         pattern))
 
-  (define (get-char p)
-    ;; We call it `get-char', but that's really a binary version
-    ;; thereof.  (The real `get-char' cannot be used here because our
-    ;; bootstrap Guile is hacked to always use UTF-8.)
-    (match (get-u8 p)
-      ((? integer? x) (integer->char x))
-      (x x)))
-
   ;; Note: we're not really striving for performance here...
   (let loop ((chars   '())
              (pattern initial-pattern)
              (matched '())
              (result  init))
     (cond ((null? chars)
-           (loop (list (get-char port))
+           (loop (list (get-char* port))
                  pattern
                  matched
                  result))
