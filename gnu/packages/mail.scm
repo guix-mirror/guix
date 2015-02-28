@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
