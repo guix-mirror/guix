@@ -45,6 +45,7 @@
   #:use-module (gnu packages xiph)
   #:export (libmpdclient
             mpd
+            mpd-mpc
             ncmpc
             ncmpcpp))
 
@@ -128,6 +129,28 @@ server-side application for playing music.  Through plugins and libraries it
 can play a variety of sound files while being controlled by its network
 protocol.")
     (home-page "http://www.musicpd.org/")
+    (license license:gpl2)))
+
+(define mpd-mpc
+  (package
+    (name "mpd-mpc")
+    (version "0.26")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://www.musicpd.org/download/mpc/"
+                              (car (string-split version #\.))
+                              "/mpc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hp2qv6w2v902dhrmck5hg32s1ai6xiv9n61a3n6prfcfdqmywr0"))))
+    (build-system gnu-build-system)
+    (inputs `(("libmpdclient" ,libmpdclient)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Music Player Daemon client")
+    (description "MPC is a minimalist command line interface to MPD, the music
+player daemon.")
+    (home-page "http://www.musicpd.org/clients/mpc/")
     (license license:gpl2)))
 
 (define ncmpc
