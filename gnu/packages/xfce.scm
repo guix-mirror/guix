@@ -151,14 +151,14 @@ to share commonly used Xfce widgets amoung the Xfce applications.")
 (define-public exo
   (package
     (name "exo")
-    (version "0.8.0")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+              (uri (string-append "http://archive.xfce.org/xfce/4.12/src/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1c05pbagw14djv5zmqg34qfj40jav8sd10w2zi2wpzrad4qal8bf"))))
+                "1g9651ra395v2fmzb943l68b9pg0rfxc19x97a62crchxwa4nw4m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
