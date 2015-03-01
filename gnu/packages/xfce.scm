@@ -43,14 +43,14 @@
 (define-public gtk-xfce-engine
   (package
     (name "gtk-xfce-engine")
-    (version "3.0.0")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+              (uri (string-append "http://archive.xfce.org/xfce/4.12/src/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "13c3ajfqkdr6jlqjyhcp4nls0ddanypr83q9qib2ciffik78zq4h"))))
+                "0rqrnjxx1lzla7wp2fadyixs6jy0js6xh005pgwyqbigpl0v7hy1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
