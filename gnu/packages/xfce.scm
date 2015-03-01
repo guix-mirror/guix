@@ -486,7 +486,7 @@ on the screen.")
 (define-public xfdesktop
   (package
     (name "xfdesktop")
-    (version "4.10.0")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -494,7 +494,7 @@ on the screen.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yrddj1lgk3xn4w340y89z7x2isks72ia36pka08kk2x8gpfcyl9"))))
+                "1ivzgg4792nid6wcgd1nq5vc3z0y5ip6ymq7ci5j2qkp663qnykf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
