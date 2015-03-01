@@ -397,14 +397,14 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.4.0")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.10/src/"
+              (uri (string-append "http://archive.xfce.org/xfce/4.12/src/"
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "1fn8wjzkfvnx2giv3rrg2cyrr2c96f9mskgvcji0ixyfcjga249c"))))
+                "1cl9v3rdzipyyxml3pyrzspxfmmssz5h5snpj18irq4an42539dr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
