@@ -366,7 +366,7 @@ allows you to shutdown the computer from Xfce.")
 (define-public xfce4-settings
   (package
     (name "xfce4-settings")
-    (version "4.10.0")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -374,7 +374,7 @@ allows you to shutdown the computer from Xfce.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0zppq747z9lrxyv5zrrvpalq7hb3gfhy9p7qbldisgv7m6dz0hq8"))))
+                "108za1cmjslwzkdl76x9kwxkq8z734kg9nz8rxk057f10pqwxgh4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
