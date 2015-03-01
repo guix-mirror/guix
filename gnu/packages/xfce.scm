@@ -335,7 +335,7 @@ your system in categories, so you can quickly find and launch them.")
 (define-public xfce4-session
   (package
     (name "xfce4-session")
-    (version "4.10.0")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -343,7 +343,7 @@ your system in categories, so you can quickly find and launch them.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kj65jkjhd0ysf0yxsf88wzpyv6n8i8qgd3gb502hf1x9jksk2mv"))))
+                "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
