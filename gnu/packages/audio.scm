@@ -199,6 +199,51 @@ bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
 
+(define-public clalsadrv
+  (package
+    (name "clalsadrv")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/clalsadrv-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bsacx3l9065gk8g4137qmz2ij7s9x06aldvacinzlcslw7bd1kq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "libs/Makefile"
+                  (("/sbin/ldconfig") "true")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack
+        'enter-directory
+        (lambda _ (chdir "libs"))
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libclalsadrv.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libclalsadrv.so.2")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "C++ wrapper around the ALSA API")
+    (description
+     "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
+ALSA PCM devices.")
+    (license license:gpl2+)))
+
 (define-public freepats
   (package
     (name "freepats")
