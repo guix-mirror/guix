@@ -148,6 +148,37 @@
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
 
+(define-public zathura-ps
+  (package
+    (name "zathura-ps")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-ps/download/zathura-ps-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1a6ps5v1wk18qvslbkjln6w8wfzzr6fi13ls96vbdc03vdhn4m76"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs `(("libspectre" ,libspectre)
+              ("gtk+" ,gtk+)
+              ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not contain tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-ps/")
+    (synopsis "PS support for zathura (libspectre backend)")
+    (description "The zathura-ps plugin adds PS support to zathura
+using libspectre.")
+    (license license:zlib)))
+
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
