@@ -309,7 +309,7 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-appfinder
   (package
     (name "xfce4-appfinder")
-    (version "4.10.0")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -317,7 +317,7 @@ applications menu, workspace switcher and more.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0falckrziw8m1a72nxd7fqq84r3xfbrb6lv35flsca346rzawah4"))))
+                "0ry5hin8xhgnkmm9vs7jq8blk1cnbyr0s18nm1j6nsm7360abm1a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
