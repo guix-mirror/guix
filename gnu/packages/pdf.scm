@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,9 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
@@ -142,6 +146,46 @@
     "Xpdf is a viewer for Portable Document Format (PDF) files")
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
+
+(define-public zathura
+  (package
+    (name "zathura")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura/download/zathura-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1qk5s7cyqp4l673yhma5igk9g24p5jyqyy81fdk7q7xjqlym19px"))
+              (patches
+               (list
+                (search-patch "zathura-plugindir-environment-variable.patch")))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gettext" ,gnu-gettext)))
+    (inputs `(("girara" ,girara)
+              ("sqlite" ,sqlite)
+              ("gtk+" ,gtk+)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "ZATHURA_PLUGIN_PATH")
+            (files '("lib/zathura")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
+         "CC=gcc" "COLOR=0")
+       #:tests? #f ; Tests fail: "Gtk cannot open display".
+       #:test-target "test"
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura/")
+    (synopsis "Lightweight keyboard-driven PDF viewer")
+    (description "Zathura is a customizable document viewer.  It provides a
+minimalistic interface and an interface that mainly focuses on keyboard
+interaction.")
+    (license license:zlib)))
 
 (define-public podofo
   (package

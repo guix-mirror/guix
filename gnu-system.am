@@ -551,7 +551,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-trident-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-vmware-glibc-2.20.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
-  gnu/packages/patches/xmodmap-asprintf.patch
+  gnu/packages/patches/xmodmap-asprintf.patch 			\
+  gnu/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES = gnu/packages/javac.in
 
