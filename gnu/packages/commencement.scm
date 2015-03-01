@@ -616,12 +616,31 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
+(define glibc-utf8-locales-final
+  ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed
+  ;; by the build processes afterwards so their 'scm_to_locale_string' works
+  ;; with the full range of Unicode codepoints (remember
+  ;; 'scm_to_locale_string' is called every time a string is passed to a C
+  ;; function.)
+  (package
+    (inherit glibc-utf8-locales)
+    (inputs `(("glibc" ,glibc-final)
+              ("gzip"
+               ,(package-with-explicit-inputs gzip %boot4-inputs
+                                              (current-source-location)
+                                              #:guile %bootstrap-guile))))))
+
+(define %boot5-inputs
+  ;; Now with UTF-8 locale.
+  `(("locales" ,glibc-utf8-locales-final)
+    ,@%boot4-inputs))
+
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs gnu-make
                                  `(("guile" ,guile-final)
-                                   ,@%boot4-inputs)
+                                   ,@%boot5-inputs)
                                  (current-source-location))))
 
 (define-public ld-wrapper
@@ -638,7 +657,7 @@ store.")
   ;; Findutils, keep a reference to the Coreutils they were built with.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs coreutils
-                                 %boot4-inputs
+                                 %boot5-inputs
                                  (current-source-location)
 
                                  ;; Use the final Guile, linked against the
@@ -652,25 +671,15 @@ store.")
   ;; built before gzip.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs grep
-                                 %boot4-inputs
+                                 %boot5-inputs
                                  (current-source-location)
                                  #:guile guile-final)))
 
-(define %boot5-inputs
+(define %boot6-inputs
   ;; Now use the final Coreutils.
   `(("coreutils" ,coreutils-final)
     ("grep" ,grep-final)
-    ,@%boot4-inputs))
-
-(define gzip-final
-  (package-with-explicit-inputs gzip %boot5-inputs
-                                (current-source-location)))
-
-(define glibc-utf8-locales-final
-  (package
-    (inherit glibc-utf8-locales)
-    (inputs `(("glibc" ,glibc-final)
-              ("gzip" ,gzip-final)))))
+    ,@%boot5-inputs))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
@@ -678,12 +687,13 @@ store.")
   ;; used for origins that have patches, thereby avoiding circular
   ;; dependencies.
   (let ((finalize (compose package-with-bootstrap-guile
-                           (cut package-with-explicit-inputs <> %boot5-inputs
+                           (cut package-with-explicit-inputs <> %boot6-inputs
                                 (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
                (list name (finalize package))))
              `(("tar" ,tar)
+               ("gzip" ,gzip)
                ("bzip2" ,bzip2)
                ("xz" ,xz)
                ("file" ,file)
@@ -692,7 +702,6 @@ store.")
                ("sed" ,sed)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
-      ("gzip" ,gzip-final)
       ("grep" ,grep-final)
       ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)
