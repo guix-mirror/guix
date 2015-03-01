@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
@@ -770,3 +773,39 @@ extensive documentation, including API reference and a tutorial.")
 targetted at GTK 2.x, and can be used in conjunction with gnome-python to
 write GNOME applications.")
     (license license:lgpl2.1+)))
+
+(define-public girara
+  (package
+    (name "girara")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/girara/download/girara-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1phfmqp8y17zcy9yi6pm2f80x8ldbk60iswpm4bmjz5217jwqzxh"))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gettext" ,gnu-gettext)))
+    (inputs `(("gtk+" ,gtk+)
+              ("check" ,check)))
+    (arguments
+     `(#:make-flags
+       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
+         "COLOR=0" "CC=gcc")
+       #:test-target "test"
+       #:tests? #f ; Tests fail with "Gtk cannot open display:"
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (build-system gnu-build-system)
+    (home-page "https://pwmt.org/projects/girara/")
+    (synopsis "Library for minimalistic gtk+3 user interfaces")
+    (description "Girara is a library that implements a user interface that
+focuses on simplicity and minimalism.  Currently based on GTK+, a
+cross-platform widget toolkit, it provides an interface that focuses on three
+main components: a so-called view widget that represents the actual
+application, an input bar that is used to execute commands of the
+application and the status bar which provides the user with current
+information.")
+    (license license:zlib)))
