@@ -30,6 +30,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages lesstif)
@@ -146,6 +147,38 @@
     "Xpdf is a viewer for Portable Document Format (PDF) files")
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
+
+(define-public zathura-djvu
+  (package
+    (name "zathura-djvu")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-djvu/download/zathura-djvu-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1lafmrjbx0xv7fljdmyqxx0k334sq4q6jy4a0q5xfrgz0bh45c"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("gtk+" ,gtk+)
+       ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not contain tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-djvu/")
+    (synopsis "DjVu support for zathura (DjVuLibre backend)")
+    (description "The zathura-djvu plugin adds DjVu support to zathura
+using the DjVuLibre library.")
+    (license license:zlib)))
 
 (define-public zathura-pdf-poppler
   (package
