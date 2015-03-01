@@ -148,6 +148,37 @@
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
 
+(define-public zathura-cb
+  (package
+    (name "zathura-cb")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-cb/download/zathura-cb-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "09ln4fpjxmhcq6cw1ka7mdkmca36gyd4gzrynbw3waz0ri0b277j"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs `(("libarchive" ,libarchive)
+              ("gtk+" ,gtk+)
+              ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not contain tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-cb/")
+    (synopsis "Comic book support for zathura (libarchive backend)")
+    (description "The zathura-cb plugin adds comic book support to zathura
+using libarchive.")
+    (license license:zlib)))
+
 (define-public zathura-ps
   (package
     (name "zathura-ps")
