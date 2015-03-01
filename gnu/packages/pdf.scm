@@ -147,6 +147,39 @@
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
 
+(define-public zathura-pdf-poppler
+  (package
+    (name "zathura-pdf-poppler")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-pdf-poppler/download/zathura-pdf-poppler-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1b0chsds8iwjm4g629p6a67nb6wgra65pw2vvngd7g35dmcjgcv0"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs
+     `(("poppler" ,poppler)
+       ("gtk+" ,gtk+)
+       ("zathura" ,zathura)
+       ("cairo" ,cairo)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not include tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-pdf-poppler/")
+    (synopsis "PDF support for zathura (poppler backend)")
+    (description "The zathura-pdf-poppler plugin adds PDF support to zathura
+by using the poppler rendering engine.")
+    (license license:zlib)))
+
 (define-public zathura
   (package
     (name "zathura")
