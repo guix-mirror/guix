@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -99,8 +99,18 @@ Xfce Desktop Environment.")
                (base32
                 "0mmi0g30aln3x98y5p507g17pipq0dj0bwypshan8cq5hkmfl44r"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f  ; XXX test suite requires working DBus
-                 #:parallel-tests? #f)) ; parallel tests failed
+    (arguments
+     '(#:phases
+       ;; Run check after install phase to test dbus activation.
+       (alist-cons-after
+        'install 'check
+        (lambda _
+          (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
+          ;; Run test-suite under a dbus session.
+          (setenv "XDG_DATA_DIRS" ; for finding org.xfce.Xfconf.service
+                  (string-append %output "/share"))
+          (zero? (system* "dbus-launch" "make" "check")))
+        (alist-delete 'check %standard-phases))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
