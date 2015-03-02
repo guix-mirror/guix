@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,3 +115,10 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "14ffy9mn5jqqpp437kannc3559bfdrpk7r36ljkzjalxa53i0hpr")))
+
+(define-public aspell-dict-ru
+  (aspell-dictionary "ru" "Russian"
+                     #:version "0.99f7-1"
+                     #:sha256
+                     (base32
+                      "0ip6nq43hcr7vvzbv4lwwmlwgfa60hrhsldh9xy3zg2prv6bcaaw")))
