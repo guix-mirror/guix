@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -294,7 +294,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 (define-public sharutils
   (package
     (name "sharutils")
-    (version "4.14")
+    (version "4.15")
     (source
      (origin
       (method url-fetch)
@@ -302,7 +302,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "033sq1v0cp0bi1mp320xaqwd4fhakqc5747hh6qa1asjrzpqiqza"))))
+        "19gqb6qbqmpgh6xlpgpj0ayw2nshllxg9d01qb5z8bnkhfcla8ka"))))
     (build-system gnu-build-system)
     (inputs
      `(("which" ,which)))
