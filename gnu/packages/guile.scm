@@ -183,34 +183,28 @@ without requiring the source code to be rewritten.")
 ;;; Extensions.
 ;;;
 
-(define (guile-reader guile)
-  "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
-or 2.0."
+(define-public guile-reader
   (package
-   (name (string-append "guile-reader-for-guile_" (package-version guile)))
-   (version "0.6")
-   (source  (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://download-mirror.savannah.gnu.org/releases/guile-reader/guile-reader-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
-   (build-system gnu-build-system)
-   (native-inputs `(("pkgconfig" ,pkg-config)
-                    ("gperf" ,gperf)))
-   (inputs `(("guile" ,guile)))
-   (arguments `(#:configure-flags
-                (let ((out (assoc-ref %outputs "out")))
-                  ,(if (string-prefix? "2." (package-version guile))
-                       '(list (string-append "--with-guilemoduledir="
-                                             out "/share/guile/site/2.0"))
-                       '(list (string-append "--with-guilemoduledir="
-                                             out "/share/guile/site"))))))
-   (synopsis "Framework for building readers for GNU Guile")
-   (description
-"Guile-Reader is a simple framework for building readers for GNU Guile.
+    (name "guile-reader")
+    (version "0.6")
+    (source  (origin
+               (method url-fetch)
+               (uri (string-append "mirror://savannah/guile-reader/guile-reader-"
+                                   version ".tar.gz"))
+               (sha256
+                (base32
+                 "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkgconfig" ,pkg-config)
+                     ("gperf" ,gperf)))
+    (inputs `(("guile" ,guile-2.0)))
+    (arguments `(#:configure-flags
+                 (let ((out (assoc-ref %outputs "out")))
+                   (list (string-append "--with-guilemoduledir="
+                                        out "/share/guile/site/2.0")))))
+    (synopsis "Framework for building readers for GNU Guile")
+    (description
+     "Guile-Reader is a simple framework for building readers for GNU Guile.
 
 The idea is to make it easy to build procedures that extend Guile’s read
 procedure.  Readers supporting various syntax variants can easily be written,
@@ -221,16 +215,8 @@ document syntax.
 Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
 hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
-   (home-page "http://www.nongnu.org/guile-reader/")
-   (license gpl3+)))
-
-(define-public guile-reader/guile-1.8
-  ;; Guile-Reader built against Guile 1.8.
-  (guile-reader guile-1.8))
-
-(define-public guile-reader/guile-2.0
-  ;; Guile-Reader built against Guile 2.0.
-  (guile-reader guile-2.0))
+    (home-page "http://www.nongnu.org/guile-reader/")
+    (license gpl3+)))
 
 (define-public guile-ncurses
   (package
