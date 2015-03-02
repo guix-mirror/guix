@@ -409,6 +409,47 @@ settings for 'guix.el' to work out-of-the-box."
                           (chdir #$output)
                           (symlink #$file "site-start.el")))))
 
+(define (certificate-bundle certificates)
+  "Produce a single-file certificate bundle by concatenating the certificates
+found in CERTIFICATES' /etc/ssl/certs sub-directory.  Single-file bundles are
+required by applications such as Git and Lynx."
+  ;; See <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00429.html>
+  ;; for a discussion.
+  ;; TODO: Do something similar in user profiles.
+
+  (define build
+    #~(begin
+        (use-modules (guix build utils)
+                     (rnrs io ports)
+                     (srfi srfi-26))
+
+        (define (concatenate-files files result)
+          "Make RESULT the concatenation of all of FILES."
+          (define (dump file port)
+            (display (call-with-input-file file get-string-all)
+                     port)
+            (newline port))    ;required, see <https://bugs.debian.org/635570>
+
+          (call-with-output-file result
+            (lambda (port)
+              (for-each (cut dump <> port) files))))
+
+        ;; Some file names in the NSS certificates are UTF-8 encoded so
+        ;; install a UTF-8 locale.
+        (setenv "LOCPATH" (string-append #$glibc-utf8-locales "/lib/locale"))
+        (setlocale LC_ALL "en_US.UTF-8")
+
+        (let ((files  (find-files #$certificates "\\.pem$"))
+              (result (string-append #$output "/etc/ssl/certs")))
+          (mkdir-p result)
+          (concatenate-files files
+                             (string-append result
+                                            "/ca-certificates.crt")))))
+
+  (gexp->derivation "certificate-bundle" build
+                    #:modules '((guix build utils))
+                    #:local-build? #t))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (issue "Hello!\n")
@@ -432,6 +473,7 @@ settings for 'guix.el' to work out-of-the-box."
        (issue      (text-file "issue" issue))
        (nsswitch   (text-file "nsswitch.conf"
                               (name-service-switch->string nss)))
+       (certs      (certificate-bundle x509-certificates))
 
        ;; Startup file for POSIX-compliant login shells, which set system-wide
        ;; environment variables.
@@ -458,6 +500,11 @@ export EMACSLOADPATH=:/etc/emacs
 # when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
 export DBUS_FATAL_WARNINGS=0
 
+# These variables are honored by OpenSSL (libssl) and Git.
+export SSL_CERT_DIR=/etc/ssl/certs
+export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
+export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
+
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 "))
@@ -466,7 +513,7 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
                   ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
                   ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
-                  ("ssl" ,#~(string-append #$x509-certificates
+                  ("ssl" ,#~(string-append #$certs
                                            "/etc/ssl")) ;for OpenSSL & co.
                   ("emacs" ,#~#$emacs)
                   ("pam.d" ,#~#$pam.d)
