@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
@@ -46,19 +46,17 @@
 (define-public libotr
   (package
     (name "libotr")
-    (version "4.0.0")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://otr.cypherpunks.ca/libotr-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "1d4k0b7v4d3scwm858cmqr9c6xgd6ppla1vk4x2yg64q82a1k49z"))))
+               (base32 "0c6rkh58s6wqzcrpccwdik5qs91qj6dgd60a340d72gc80cqknsg"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
     (inputs `(("libgpg-error" ,libgpg-error)))
-    (arguments
-     `(#:configure-flags '("--with-pic")))
     (synopsis "Off-the-Record (OTR) Messaging Library and Toolkit")
     (description
      "OTR allows you to have private conversations over instant messaging by
