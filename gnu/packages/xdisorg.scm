@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -419,4 +421,35 @@ X Window System.")
     (description
      "XOSD provides a C library and a simple utility (osd_cat) for displaying
 transparent text on your screen.")
+    (license license:gpl2+)))
+
+(define-public xbindkeys
+  (package
+    (name "xbindkeys")
+    (version "1.8.6")
+    (source (origin
+              (method url-fetch)
+              ;; Download from the savannah mirror list fails
+              (uri (string-append
+                    "http://www.nongnu.org/xbindkeys/xbindkeys-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "060df6d8y727jp1inp7blp44cs8a7jig7vcm8ndsn6gw36z1h3bc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("guile" ,guile-2.0)))
+    (home-page "http://www.nongnu.org/xbindkeys/")
+    (synopsis "Associate a combination of keys with a shell command")
+    (description
+     "XBindKeys is a program that allows you to launch shell commands with
+your keyboard or your mouse under the X Window System.  It links commands to
+keys or mouse buttons, using a configuration file.  It's independent of the
+window manager and can capture all keyboard keys (ex: Power, Wake...).  It
+optionally supports a Guile-based configuration file layout, which enables you
+to access all XBindKeys internals, so you can have key combinations, double
+clicks or timed double clicks take actions.  Also all functions that work in
+Guile will work for XBindKeys.")
     (license license:gpl2+)))

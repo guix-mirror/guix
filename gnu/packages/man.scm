@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
@@ -176,3 +178,28 @@ Linux kernel and C library interfaces employed by user-space programs.")
 \"--help\" and \"--version\" command-line arguments into a manual page
 automatically.")
     (license gpl3+)))
+
+(define-public txt2man
+  (package
+    (name "txt2man")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mvertes/txt2man/archive/txt2man-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0sjq687jknq65wbnjh2siq8hc09ydpnlmrkrnwl66mrhd4n9g7fz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("gawk" ,gawk)))
+    (home-page "https://github.com/mvertes/txt2man")
+    (synopsis "Convert text to man page")
+    (description "Txt2man converts flat ASCII text to man page format.")
+    (license gpl2+)))

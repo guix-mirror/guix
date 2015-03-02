@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -231,14 +231,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-2.0
   (package (inherit gnupg)
-    (version "2.0.26")
+    (version "2.0.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1q5qcl5panrvcvpwvz6nl9gayl5a6vwvfhgdcxqpmbl2qc6y6n3p"))))
+                "1wihx7dphacg9fy5wfj93h236lr1w5gwzh7ir3js37wi9cz6sr2p"))))
     (inputs
      `(("bzip2" ,guix:bzip2)
        ("curl" ,curl)
@@ -261,14 +261,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-1
   (package (inherit gnupg)
-    (version "1.4.18")
+    (version "1.4.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1233bppjvdpbbl425ii6l7xvgy0879ghhnmwrph5b6c4g3dgvddp"))))
+                "11pxx26sfilh0vswylh9mhiifw5yffw7nn733zknw3sb0jfk22bz"))))
     (inputs
      `(("zlib" ,guix:zlib)
        ("bzip2" ,guix:bzip2)

@@ -2078,14 +2078,11 @@ capabilities.")
 (define-public python2-numpy
   (let ((numpy (package-with-python2 python-numpy)))
     (package (inherit numpy)
-      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is customized for
-      ;; Python 2. Since it is also an input to PYTHON2-MATPLOTLIB, we need to
-      ;; import the right version of 'matplotlib' as well.
-      (inputs `(("python2-numpydoc" ,python2-numpydoc)
-                ("python2-matplotlib" ,python2-matplotlib)
-                ,@(alist-delete "python-numpydoc"
-                                (alist-delete "python-matplotlib"
-                                              (package-inputs numpy))))))))
+      ;; Make sure we use exactly PYTHON2-MATPLOTLIB, which is customized for
+      ;; Python 2.
+      (inputs `(("python2-matplotlib" ,python2-matplotlib)
+                ,@(alist-delete "python-matplotlib"
+                                (package-inputs numpy)))))))
 
 (define-public python-pyparsing
   (package
@@ -2147,7 +2144,15 @@ that client code uses to construct the grammar directly in Python code.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0d4dnifaxkll50jx6czj05y8cb4ny60njd2wz299sj2jxfy51w4k"))))
+         "0d4dnifaxkll50jx6czj05y8cb4ny60njd2wz299sj2jxfy51w4k"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Drop a test requiring matplotlib, which we cannot add as an
+           ;; input since it would create a circular dependency: Extend the
+           ;; test for Python 3, where it is already dropped, to Python 2.
+           (substitute* "numpydoc/tests/test_plot_directive.py"
+             (("3") "2"))))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
@@ -2162,13 +2167,7 @@ that client code uses to construct the grammar directly in Python code.")
     (license bsd-2)))
 
 (define-public python2-numpydoc
-  (package
-    (inherit (package-with-python2 python-numpydoc))
-    ;; With python-2 1 test (out of 30) fails because it doesn't find
-    ;; matplotlib.  With python-3 it seems to detect at run-time the absence
-    ;; of matplotlib.
-    (arguments `(#:tests? #f
-                 #:python ,python-2))))
+  (package-with-python2 python-numpydoc))
 
 (define-public python-matplotlib
   (package
@@ -2281,19 +2280,15 @@ toolkits.")
 (define-public python2-matplotlib
   (let ((matplotlib (package-with-python2 python-matplotlib)))
     (package (inherit matplotlib)
-      ;; Make sure we use exactly PYTHON2-NUMPYDOC, which is
-      ;; customized for Python 2.
+      ;; Make sure to use special packages for Python 2 instead
+      ;; of those automatically rewritten by package-with-python2.
       (propagated-inputs
-       `(("python2-py2cairo" ,python2-py2cairo)
+       `(("python2-pycairo" ,python2-pycairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
          ,@(alist-delete "python-pycairo"
                          (alist-delete "python-pygobject"
                                        (package-propagated-inputs
-                                        matplotlib)))))
-      (inputs
-       `(("python2-numpydoc" ,python2-numpydoc)
-         ,@(alist-delete "python-numpydoc"
-                         (package-inputs matplotlib)))))))
+                                        matplotlib))))))))
 
 (define-public python-scipy
   (package
@@ -2806,11 +2801,9 @@ computing.")
     (package (inherit ipython)
       ;; Make sure we use custom python2-NAME packages.
       (inputs
-       `(("python2-numpydoc" ,python2-numpydoc)
-         ("python2-matplotlib" ,python2-matplotlib)
-         ,@(alist-delete "python-numpydoc"
-                         (alist-delete "python-matplotlib"
-                                       (package-inputs ipython))))))))
+       `(("python2-matplotlib" ,python2-matplotlib)
+         ,@(alist-delete "python-matplotlib"
+                         (package-inputs ipython)))))))
 
 (define-public python-isodate
   (package

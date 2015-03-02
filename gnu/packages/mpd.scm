@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,8 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages doxygen)
@@ -35,16 +38,13 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xiph)
-  #:export (libmpdclient
-            mpd
-            ncmpc
-            ncmpcpp))
+  #:use-module (gnu packages xiph))
 
-(define libmpdclient
+(define-public libmpdclient
   (package
     (name "libmpdclient")
     (version "2.9")
@@ -65,7 +65,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
     (home-page "http://www.musicpd.org/libs/libmpdclient/")
     (license license:bsd-3)))
 
-(define mpd
+(define-public mpd
   (package
     (name "mpd")
     (version "0.18.8")
@@ -126,7 +126,29 @@ protocol.")
     (home-page "http://www.musicpd.org/")
     (license license:gpl2)))
 
-(define ncmpc
+(define-public mpd-mpc
+  (package
+    (name "mpd-mpc")
+    (version "0.26")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://www.musicpd.org/download/mpc/"
+                              (car (string-split version #\.))
+                              "/mpc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hp2qv6w2v902dhrmck5hg32s1ai6xiv9n61a3n6prfcfdqmywr0"))))
+    (build-system gnu-build-system)
+    (inputs `(("libmpdclient" ,libmpdclient)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Music Player Daemon client")
+    (description "MPC is a minimalist command line interface to MPD, the music
+player daemon.")
+    (home-page "http://www.musicpd.org/clients/mpc/")
+    (license license:gpl2)))
+
+(define-public ncmpc
   (package
     (name "ncmpc")
     (version "0.21")
@@ -150,10 +172,10 @@ terminal using ncurses.")
     (home-page "http://www.musicpd.org/clients/ncmpc/")
     (license license:gpl2)))
 
-(define ncmpcpp
+(define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.5.10")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -161,11 +183,27 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "1a54g6dary1rirrny9fd0hpxpyyffypni3mpbdpvmjnrl9v56vgz"))))
+                "1mrd6m6ph0fscxp9x96ipxh6ai7w0n1miapcfqrqfy058qx5zbck"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
+              ("boost"  ,boost)
+              ("readline" ,readline)
               ("ncurses" ,ncurses)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:configure-flags
+       '("BOOST_LIB_SUFFIX=")
+       #:phases
+       (alist-cons-after
+        'unpack 'autogen
+        (lambda _
+          (setenv "NOCONFIGURE" "true")
+          (zero? (system* "sh" "autogen.sh")))
+        %standard-phases)))
     (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions

@@ -53,6 +53,40 @@
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
+(define-public alsa-modular-synth
+  (package
+    (name "alsa-modular-synth")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/alsamodular/ams-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1nb7qzzqlqa2x8h797jbwi18ihnfkxqg9lyi0c4nvf8ybwzxkzd2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ;; We cannot use zita-alsa-pcmi (the successor of clalsadrv) due to
+       ;; license incompatibility.
+       ("clalsadrv" ,clalsadrv)
+       ("fftw" ,fftw)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("liblo" ,liblo)
+       ("qt" ,qt-4)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://alsamodular.sourceforge.net/")
+    (synopsis "Realtime modular synthesizer and effect processor")
+    (description
+     "AlsaModularSynth is a digital implementation of a classical analog
+modular synthesizer system.  It uses virtual control voltages to control the
+parameters of the modules.  The control voltages which control the frequency
+e.g. of the VCO (Voltage Controlled Oscillator) and VCF (Voltage Controlled
+Filter) modules follow the convention of 1V / Octave.")
+    (license license:gpl2)))
+
 (define-public aubio
   (package
     (name "aubio")
@@ -198,6 +232,51 @@ sections, two polyphonic sections with nine drawbars each and one monophonic
 bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
+
+(define-public clalsadrv
+  (package
+    (name "clalsadrv")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/clalsadrv-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bsacx3l9065gk8g4137qmz2ij7s9x06aldvacinzlcslw7bd1kq"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "libs/Makefile"
+                  (("/sbin/ldconfig") "true")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack
+        'enter-directory
+        (lambda _ (chdir "libs"))
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libclalsadrv.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libclalsadrv.so.2")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "C++ wrapper around the ALSA API")
+    (description
+     "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
+ALSA PCM devices.")
+    (license license:gpl2+)))
 
 (define-public freepats
   (package
@@ -498,6 +577,52 @@ At its core, LV2 is a simple stable interface, accompanied by extensions which
 add functionality to support the needs of increasingly powerful audio
 software.")
     (license license:isc)))
+
+(define-public lv2-mda-piano
+  (package
+    (name "lv2-mda-piano")
+    (version "0.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitorious.org/lv2-synths/lv2-mdametapiano.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "07lywf6lpfpndg3i9w752mmlg2hgn1bwp23h8b0mdj6awh67abqd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list
+                     "TYPE=mdaPiano"
+                     (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no check target
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("lv2" ,lv2)
+       ("lvtk" ,lvtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://elephly.net/lv2/mdapiano.html")
+    (synopsis "LV2 port of the mda Piano plugin")
+    (description "An LV2 port of the mda Piano VSTi.")
+    (license license:gpl3+)))
+
+(define-public lv2-mda-epiano
+  (package (inherit lv2-mda-piano)
+    (name "lv2-mda-epiano")
+    (arguments
+     `(#:make-flags (list
+                     "TYPE=mdaEPiano"
+                     (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:tests? #f ; no check target
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://elephly.net/lv2/mdaepiano.html")
+    (synopsis "LV2 port of the mda EPiano plugin")
+    (description "An LV2 port of the mda EPiano VSTi.")))
 
 (define-public lvtk
   (package
@@ -895,3 +1020,50 @@ portions of LAME.")
 to record and/or play sound using a callback function or a blocking read/write
 interface.")
     (license license:expat)))
+
+(define-public zita-alsa-pcmi
+  (package
+    (name "zita-alsa-pcmi")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-alsa-pcmi-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "libs/Makefile"
+                  (("ldconfig") "true")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack
+        'enter-directory
+        (lambda _ (chdir "libs"))
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libzita-alsa-pcmi.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libzita-alsa-pcmi.so.0")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "C++ wrapper around the ALSA API")
+    (description
+     "Zita-alsa-pcmi is a C++ wrapper around the ALSA API.  It provides easy
+access to ALSA PCM devices, taking care of the many functions required to
+open, initialise and use a hw: device in mmap mode, and providing floating
+point audio data.")
+    (license license:gpl3+)))

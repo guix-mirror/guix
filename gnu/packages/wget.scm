@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -31,7 +32,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
       (method url-fetch)
@@ -39,14 +40,15 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0csdw41hixa4kd0m19r7p41sip1hlnkp5y62bdzq9zhmxq3wg5ib"))))
+        "1mfpvhgzvpvw36wmkwyyds3ilz74s2gn8yjqvynkbc8frcdxxpx7"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn" ,libidn)
        ("libpsl" ,libpsl)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
        ("python" ,python)               ;for testenv suite
        ("perl-http-daemon" ,perl-http-daemon)
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)))

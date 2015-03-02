@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -305,18 +306,22 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.9.5")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://mu0.googlecode.com/files/mu-"
+              (uri (string-append "https://github.com/djcb/mu/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "1hwkliyb8fjrz5sw9fcisssig0jkdxzhccw0ld0l9a10q1l9mqhp"))))
+                "01n1lzq4pfsm5pn932p948d1z55yqc7kkm1ifjxjchb3k8lr66fh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
        ("texinfo" ,texinfo)))
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
@@ -327,14 +332,18 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("gmime" ,gmime)
        ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
     (arguments
-     '(#:phases (alist-cons-before
-                 'check 'check-tz-setup
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; For mu/test/test-mu-query.c
-                   (setenv "TZDIR"
-                           (string-append (assoc-ref inputs "tzdata")
-                                          "/share/zoneinfo")))
-                 %standard-phases)))
+     '(#:phases (alist-cons-after
+                 'unpack 'autoreconf
+                 (lambda _
+                   (zero? (system* "autoreconf" "-vi")))
+                 (alist-cons-before
+                   'check 'check-tz-setup
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; For mu/test/test-mu-query.c
+                     (setenv "TZDIR"
+                             (string-append (assoc-ref inputs "tzdata")
+                                            "/share/zoneinfo")))
+                   %standard-phases))))
     (home-page "http://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
     (description

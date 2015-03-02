@@ -533,7 +533,7 @@ graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
 
-
+
 ;;;
 ;;; C++ bindings.
 ;;;
@@ -706,9 +706,9 @@ extensive documentation, including API reference and a tutorial.")
      "Pycairo is a set of Python bindings for the Cairo graphics library.")
     (license license:lgpl3+)))
 
-(define-public python2-py2cairo
+(define-public python2-pycairo
   (package (inherit python-pycairo)
-    (name "python2-py2cairo")
+    (name "python2-pycairo")
     (version "1.10.0")
     (source
      (origin
@@ -744,7 +744,7 @@ extensive documentation, including API reference and a tutorial.")
      `(("python" ,python-2)
        ("glib"   ,glib)))
     (propagated-inputs
-     `(("python-pycairo"   ,python2-py2cairo)    ;loaded at runtime
+     `(("python-pycairo"   ,python2-pycairo)     ;loaded at runtime
        ("python-pygobject" ,python2-pygobject-2) ;referenced in pc file
        ("gtk+"             ,gtk+-2)))
     (arguments

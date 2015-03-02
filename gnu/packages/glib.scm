@@ -212,11 +212,11 @@ dynamic loading, and an object system.")
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
               (base32 "1xwm7wmr9r9wp6xljb3bckx3a4siybavaq39w46ly7gpskxfv8iv"))
-             (patches (list 
+             (patches (list
                        (search-patch "gobject-introspection-cc.patch")
                        (search-patch
                         "gobject-introspection-girepository.patch")
-                       (search-patch 
+                       (search-patch
                         "gobject-introspection-absolute-shlib-path.patch")))))
     (build-system gnu-build-system)
     (inputs
@@ -466,7 +466,7 @@ useful for C++.")
     (inputs
      `(("python" ,python-2)
        ("glib"   ,glib)
-       ("python2-py2cairo" ,python2-py2cairo)
+       ("python2-pycairo" ,python2-pycairo)
        ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
      `(("libffi" ,libffi)))             ;mentioned in pygobject-2.0.pc
