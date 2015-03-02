@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +36,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0rdindczxq8ysm3qq7ghc7pcvhp6bn6fadlwna8p83vc1n9nd5py"))))
+        "0rbnv5wszpr35py97vwylqkdlf06qpd2x9j9aqlmgkd4mr1n4hf0"))))
     (build-system gnu-build-system)
     (inputs `(("which" ,which)))
     (home-page "http://www.gnu.org/software/gnu-pw-mgr/")
