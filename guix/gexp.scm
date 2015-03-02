@@ -319,7 +319,8 @@ references."
       (_
        result)))
 
-  (add-reference-output (gexp-references exp) '()))
+  (delete-duplicates
+   (add-reference-output (gexp-references exp) '())))
 
 (define* (gexp->sexp exp #:key
                      (system (%current-system))

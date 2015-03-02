@@ -230,6 +230,13 @@
                 (gexp-outputs exp2))
          (= 2 (length (gexp-outputs exp2))))))
 
+(test-equal "output list, combined gexps, duplicate output"
+  1
+  (let* ((exp0 (gexp (mkdir (ungexp output))))
+         (exp1 (gexp (begin (mkdir (ungexp output)) (ungexp exp0))))
+         (exp2 (gexp (begin (mkdir (ungexp output)) (ungexp exp1)))))
+    (length (gexp-outputs exp2))))
+
 (test-assert "output list + ungexp-splicing list, combined gexps"
   (let* ((exp0  (gexp (mkdir (ungexp output))))
          (exp1  (gexp (mkdir (ungexp output "foo"))))
