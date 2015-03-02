@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "3.5.0")
+    (version "3.6.0")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +40,7 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "00swb43mzlvda8306arlg2jw7g6k3acwfccgf1k4c2pgd3rrkq98"))))
+        "1kmr5vlnz1419nnvyc7lsrcfx09n65ravjbmzxrqz7ml07jnk6mk"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-wrapper)
@@ -74,7 +75,7 @@ development.  The compiler infrastructure includes mirror sets of programming
 tools as well as libraries with equivalent functionality.")
     (license ncsa)))
 
-(define-public clang
+(define (clang-from-llvm llvm hash)
   (package
     (name "clang")
     (version (package-version llvm))
@@ -83,9 +84,7 @@ tools as well as libraries with equivalent functionality.")
        (method url-fetch)
        (uri (string-append "http://llvm.org/releases/"
                            version "/cfe-" version ".src.tar.xz"))
-       (sha256
-        (base32
-         "12yv3jwdjcbkrx7zjm8wh4jrvb59v8fdw4mnmz3zc1jb00p9k07w"))))
+       (sha256 (base32 hash))))
     ;; Using cmake allows us to treat llvm as an external library.  There
     ;; doesn't seem to be any way to do this with clang's autotools-based
     ;; build system.
@@ -105,3 +104,23 @@ Objective-C++ programming languages.  It uses LLVM as its back end.  The Clang
 project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
     (license ncsa)))
+
+(define-public clang
+  (clang-from-llvm llvm
+                   "0b8825mvdhfk5r9gwcwp1j2dl9kw5glgyk7pybq2dzhrh4vnj3my"))
+
+(define-public llvm-3.5
+  (package (inherit llvm)
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://llvm.org/releases/"
+                           version "/llvm-" version ".src.tar.xz"))
+       (sha256
+        (base32
+         "00swb43mzlvda8306arlg2jw7g6k3acwfccgf1k4c2pgd3rrkq98"))))))
+
+(define-public clang-3.5
+  (clang-from-llvm llvm-3.5
+                   "12yv3jwdjcbkrx7zjm8wh4jrvb59v8fdw4mnmz3zc1jb00p9k07w"))
