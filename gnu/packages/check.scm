@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,7 @@
 (define-public check
   (package
     (name "check")
-    (version "0.9.9")
+    (version "0.9.14")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +35,7 @@
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "1jcahzrvxcnp5chdn2x46l0y4aba8d8yd70lljfin7h5knxrlyhs"))))
+        "02l4g79d81s07hzywcv1knwj5dyrwjiq2pgxaz7kidxi8m364wn2"))))
     (build-system gnu-build-system)
     (home-page "http://check.sourceforge.net/")
     (synopsis "Unit test framework for C")
@@ -46,7 +47,6 @@ catch both assertion failures and code errors that cause segmentation
 faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license lgpl2.1+)))
-
 
 (define-public cppunit
   (package
@@ -67,5 +67,3 @@ source code editors and IDEs.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
-
-
