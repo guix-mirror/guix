@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,7 +89,7 @@ Xfce Desktop Environment.")
 (define-public xfconf
   (package
     (name "xfconf")
-    (version "4.10.0")
+    (version "4.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -97,9 +97,10 @@ Xfce Desktop Environment.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0xh520z0qh0ib0ijgnyrgii9h5d4pc53n6mx1chhyzfc86j1jlhp"))))
+                "0mmi0g30aln3x98y5p507g17pipq0dj0bwypshan8cq5hkmfl44r"))))
     (build-system gnu-build-system)
-    (arguments '(#:parallel-tests? #f)) ; parallel tests failed
+    (arguments '(#:tests? #f  ; XXX test suite requires working DBus
+                 #:parallel-tests? #f)) ; parallel tests failed
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
