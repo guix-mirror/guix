@@ -3300,3 +3300,25 @@ interfaces in an easy and portable manner.")
 
 (define-public python2-netifaces
   (package-with-python2 python-netifaces))
+
+(define-public snakemake
+  (package
+    (name "snakemake")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/snakemake/snakemake-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0fi4b63sj60hvi7rfydvmz2icl4wj74djw5sn2gl8hxd02qw4b91"))))
+    (build-system python-build-system)
+    (inputs `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://bitbucket.org/johanneskoester/snakemake")
+    (synopsis "Python-based execution environment for make-like workflows")
+    (description
+      "Snakemake aims to reduce the complexity of creating workflows by
+providing a clean and modern domain specific specification language (DSL) in
+Python style, together with a fast and comfortable execution environment.")
+    (license license:expat)))
