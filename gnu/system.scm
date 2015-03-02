@@ -42,6 +42,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages firmware)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
+  #:use-module (gnu packages certs)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
@@ -77,6 +78,7 @@
             operating-system-locale-definitions
             operating-system-mapped-devices
             operating-system-file-systems
+            operating-system-x509-certificates
             operating-system-activation-script
 
             operating-system-derivation
@@ -140,6 +142,8 @@
                       (default %default-locale-definitions))
   (name-service-switch operating-system-name-service-switch ; <name-service-switch>
                        (default %default-nss))
+  (x509-certificates operating-system-x509-certificates     ; package
+                     (default nss-certs))
 
   (services operating-system-user-services        ; list of monadic services
             (default %base-services))
@@ -412,6 +416,7 @@ settings for 'guix.el' to work out-of-the-box."
                         (pam-services '())
                         (profile "/run/current-system/profile")
                         hosts-file nss
+                        x509-certificates
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
@@ -461,6 +466,8 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
                   ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
                   ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
+                  ("ssl" ,#~(string-append #$x509-certificates
+                                           "/etc/ssl")) ;for OpenSSL & co.
                   ("emacs" ,#~#$emacs)
                   ("pam.d" ,#~#$pam.d)
                   ("login.defs" ,#~#$login.defs)
@@ -523,6 +530,7 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
                   #:sudoers (operating-system-sudoers os)
+                  #:x509-certificates (operating-system-x509-certificates os)
                   #:profile profile-drv)))
 
 (define %setuid-programs
