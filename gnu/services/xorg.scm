@@ -155,13 +155,6 @@ which should be passed to this script as the first argument.  If not, the
     #~(begin
         (use-modules (ice-9 match))
 
-        (define (close-all-fdes)
-          ;; Close all the open file descriptors.
-          (let loop ((fd 0))
-            (when (< fd 4096)               ;FIXME: use sysconf + _SC_OPEN_MAX
-              (false-if-exception (close-fdes fd))
-              (loop (+ 1 fd)))))
-
         (define (exec-from-login-shell command . args)
           ;; Run COMMAND from a login shell so that it gets to see the same
           ;; environment variables that one gets when logging in on a tty, for
@@ -170,11 +163,6 @@ which should be passed to this script as the first argument.  If not, the
                  (shell (passwd:shell pw))
                  (st    (stat command #f)))
             (when (and st (not (zero? (logand (stat:mode st) #o100))))
-              ;; Close any open file descriptors.  This is all the more
-              ;; important that SLiM itself exec's us directly without closing
-              ;; its own file descriptors!
-              (close-all-fdes)
-
               ;; The '--login' option is supported at least by Bash and zsh.
               (execl shell shell "--login" "-c"
                      (string-join (cons command args))))))
