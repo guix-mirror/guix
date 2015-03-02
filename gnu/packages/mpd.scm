@@ -29,6 +29,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -68,24 +69,26 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.18.8")
+    (version "0.19.9")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "http://musicpd.org/download/mpd/"
                               (version-major+minor version)
-                              "/mpd-" version ".tar.gz"))
+                              "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1ryqh0xf76xv4mpwy1gjwy275ar4wmbzifa9ccjim9r7lk2hgp5v"))))
+                "0vzj365s4j0pw5w37lfhx3dmpkdp85driravsvx8rlrw0lii91a7"))))
     (build-system gnu-build-system)
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
+              ("boost" ,boost)
               ("curl" ,curl)
               ("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
               ("glib" ,glib)
+              ("icu4c" ,icu4c)
               ("lame" ,lame)
               ("libid3tag" ,libid3tag)
               ("libmad" ,libmad)
