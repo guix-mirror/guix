@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,36 +81,47 @@
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (srfi srfi-26))
+                  (rnrs io ports)
+                  (srfi srfi-26)
+                  (ice-9 regex))
        #:imported-modules ((guix build gnu-build-system)
                            (guix build utils))
        #:phases
          (alist-cons-after
            'unpack 'install
            (lambda _
-             (let ((certsdir (string-append %output "/etc/ssl/certs/")))
+             (let ((certsdir (string-append %output "/etc/ssl/certs/"))
+                   (trusted-rx (make-regexp "^# openssl-trust=[a-zA-Z]"
+                                            regexp/newline)))
+
+               (define (maybe-install-cert file)
+                 (let ((cert (call-with-input-file file get-string-all)))
+                   (when (regexp-exec trusted-rx cert)
+                     (call-with-output-file
+                         (string-append certsdir file)
+                       (cut display cert <>)))))
+
                (mkdir-p certsdir)
                (with-directory-excursion "nss/lib/ckfw/builtins/"
                  ;; extract single certificates from blob
                  (system* "certdata2pem.py" "certdata.txt")
-                 ;; copy the .pem files into the output
-                 (for-each
-                   (lambda (file)
-                     (copy-file file (string-append certsdir file)))
-                   ;; FIXME: Some of the file names are UTF8 (?) and cause an
-                   ;; error message such as 
-                   ;; find-files:
-                   ;; ./EBG_Elektronik_Sertifika_Hizmet_Sa??lay??c??s??:2.8.76.175.115.66.28.142.116.2.pem:
-                   ;; No such file or directory
-                   (find-files "." ".*\\.pem")))
-                 (with-directory-excursion certsdir
-                   ;; create symbolic links for and by openssl
-                   ;; Strangely, the call (system* "c_rehash" certsdir)
-                   ;; from inside the build dir fails with
-                   ;; "Usage error; try -help."
-                   ;; This looks like a bug in openssl-1.0.2, but we can also
-                   ;; switch into the target directory.
-                   (system* "c_rehash" "."))))
+                 ;; copy selected .pem files into the output
+                 (for-each maybe-install-cert
+                           ;; FIXME: Some of the file names are UTF8 (?) and
+                           ;; cause an error message such as find-files:
+                           ;; ./EBG_Elektronik_Sertifika_Hizmet_Sa??lay??c??s??:2.8.76.175.115.66.28.142.116.2.pem:
+                           ;; No such file or directory
+                           (find-files "." ".*\\.pem")))
+
+               (with-directory-excursion certsdir
+                 ;; create symbolic links for and by openssl
+                 ;; Strangely, the call (system* "c_rehash" certsdir)
+                 ;; from inside the build dir fails with
+                 ;; "Usage error; try -help."
+                 ;; This looks like a bug in openssl-1.0.2, but we can also
+                 ;; switch into the target directory.
+                 (system* "c_rehash" "."))))
+
            (map (cut assq <> %standard-phases)
                 '(set-paths unpack)))))
     (synopsis "CA certificates from Mozilla")
