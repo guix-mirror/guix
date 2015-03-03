@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,22 +64,23 @@ loop.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "0.11.25")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/joyent/libuv/archive/v"
+              (uri (string-append "https://github.com/libuv/libuv/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ys2wlypdbv59yywn91d5vl329z50mi7ivi3fj5rjm4mr9g3wnmr"))))
+                "0hdpysawz85zpmsfkcsd1b7bmx53szcir1szbh1w7ldhkpv29r5r"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'autogen
+     '(#:phases (alist-cons-after
+                 'unpack 'autogen
                  (lambda _
                    ;; Fashionable people don't run 'make dist' these days, so
                    ;; we need to do that ourselves.
-                   (zero? (system* "./autogen.sh")))
+                   (zero? (system* "sh" "autogen.sh")))
                  %standard-phases)
 
        ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
