@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,23 +414,87 @@ MANIFEST."
       (gexp->derivation "info-dir" build
                         #:modules '((guix build utils)))))
 
-(define* (profile-derivation manifest #:key (info-dir? #t))
+(define (ca-certificate-bundle manifest)
+  "Return a derivation that builds a single-file bundle containing the CA
+certificates in the /etc/ssl/certs sub-directories of the packages in
+MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
+  ;; See <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00429.html>
+  ;; for a discussion.
+
+  (define glibc-utf8-locales                      ;lazy reference
+    (module-ref (resolve-interface '(gnu packages base)) 'glibc-utf8-locales))
+
+  (define build
+    #~(begin
+        (use-modules (guix build utils)
+                     (rnrs io ports)
+                     (srfi srfi-1)
+                     (srfi srfi-26)
+                     (ice-9 ftw))
+
+        (define (pem-file? file)
+          (string-suffix? ".pem" file))
+
+        (define (ca-files top)
+          (let ((cert-dir (string-append top "/etc/ssl/certs")))
+            (map (cut string-append cert-dir "/" <>)
+                 (or (scandir cert-dir pem-file?) '()))))
+
+        (define (concatenate-files files result)
+          "Make RESULT the concatenation of all of FILES."
+          (define (dump file port)
+            (display (call-with-input-file file get-string-all)
+                     port)
+            (newline port))    ;required, see <https://bugs.debian.org/635570>
+
+          (call-with-output-file result
+            (lambda (port)
+              (for-each (cut dump <> port) files))))
+
+        ;; Some file names in the NSS certificates are UTF-8 encoded so
+        ;; install a UTF-8 locale.
+        (setenv "LOCPATH" (string-append #+glibc-utf8-locales "/lib/locale"))
+        (setlocale LC_ALL "en_US.UTF-8")
+
+        (let ((ca-files (append-map ca-files
+                                    '#$(manifest-inputs manifest)))
+              (result   (string-append #$output "/etc/ssl/certs")))
+          (mkdir-p result)
+          (concatenate-files ca-files
+                             (string-append result
+                                            "/ca-certificates.crt")))))
+
+  (gexp->derivation "ca-certificate-bundle" build
+                    #:modules '((guix build utils))
+                    #:local-build? #t))
+
+(define* (profile-derivation manifest
+                             #:key
+                             (info-dir? #t)
+                             (ca-certificate-bundle? #t))
   "Return a derivation that builds a profile (aka. 'user environment') with
-the given MANIFEST.  The profile includes a top-level Info 'dir' file, unless
-INFO-DIR? is #f."
+the given MANIFEST.  The profile includes a top-level Info 'dir' file unless
+INFO-DIR? is #f, and a single-file CA certificate bundle unless
+CA-CERTIFICATE-BUNDLE? is #f."
   (mlet %store-monad ((info-dir (if info-dir?
                                     (info-dir-file manifest)
-                                    (return #f))))
+                                    (return #f)))
+                      (ca-cert-bundle (if ca-certificate-bundle?
+                                          (ca-certificate-bundle manifest)
+                                          (return #f))))
     (define inputs
-      (if info-dir
-          ;; XXX: Here we use the tuple (INFO-DIR "out") just so that the list
-          ;; is unambiguous for the gexp code when MANIFEST has a single input
-          ;; denoted as a string (the pattern (DRV STRING) is normally
-          ;; interpreted in a gexp as "the STRING output of DRV".).  See
-          ;; <http://lists.gnu.org/archive/html/guix-devel/2014-12/msg00292.html>.
-          (cons (list info-dir "out")
-                (manifest-inputs manifest))
-          (manifest-inputs manifest)))
+      ;; XXX: Here we use tuples of the form (DIR "out") just so that the list
+      ;; is unambiguous for the gexp code when MANIFEST has a single input
+      ;; denoted as a string (the pattern (DRV STRING) is normally
+      ;; interpreted in a gexp as "the STRING output of DRV".).  See
+      ;; <http://lists.gnu.org/archive/html/guix-devel/2014-12/msg00292.html>.
+      (append (if info-dir
+                  `((,info-dir "out"))
+                  '())
+              (if ca-cert-bundle
+                  `((,ca-cert-bundle "out"))
+                  '())
+              (manifest-inputs manifest)))
 
     (define builder
       #~(begin
