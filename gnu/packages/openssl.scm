@@ -64,9 +64,16 @@
                "rm"))))
         %standard-phases))))
    (native-search-paths
-     (list (search-path-specification
+    ;; FIXME: These two variables must designate a single file or directory
+    ;; and are not actually "search paths."  In practice it works OK in user
+    ;; profiles because there's always just one item that matches the
+    ;; specification.
+    (list (search-path-specification
            (variable "SSL_CERT_DIR")
-           (files '("etc/ssl/certs")))))
+           (files '("etc/ssl/certs")))
+          (search-path-specification
+           (variable "SSL_CERT_FILE")
+           (files '("etc/ssl/certs/ca-certificates.crt")))))
    (synopsis "SSL/TLS implementation")
    (description
     "OpenSSL is an implementation of SSL/TLS")
