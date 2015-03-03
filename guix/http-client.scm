@@ -55,7 +55,7 @@
   (reason http-get-error-reason))                 ; string
 
 
-(define-syntax when-guile<=2.0.5
+(define-syntax when-guile<=2.0.5-or-otherwise-broken
   (lambda (s)
     (syntax-case s ()
       ((_ body ...)
@@ -64,11 +64,14 @@
        ;; when using "guix pull".
        #'(begin body ...)))))
 
-(when-guile<=2.0.5
+(when-guile<=2.0.5-or-otherwise-broken
  ;; Backport of Guile commits 312e79f8 ("Add HTTP Chunked Encoding support to
  ;; web modules.") and 00d3ecf2 ("http: Do not buffer HTTP chunks.")
 
  (use-modules (ice-9 rdelim))
+
+ (define %web-http
+   (resolve-module '(web http)))
 
  ;; Chunked Responses
  (define (read-chunk-header port)
@@ -126,6 +129,11 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
      (loop to-read 0))
 
    (make-custom-binary-input-port "chunked input port" read! #f #f close))
+
+ ;; Chunked encoding support in Guile <= 2.0.11 would load whole chunks in
+ ;; memory---see <http://bugs.gnu.org/19939>.
+ (when (module-variable %web-http 'read-chunk-body)
+   (module-set! %web-http 'make-chunked-input-port make-chunked-input-port))
 
  (define (read-response-body* r)
    "Reads the response body from @var{r}, as a bytevector.  Returns
