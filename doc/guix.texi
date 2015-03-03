@@ -3882,19 +3882,6 @@ Configuration of libc's name service switch (NSS)---a
 @code{<name-service-switch>} object.  @xref{Name Service Switch}, for
 details.
 
-@item @code{x509-certificates} (default: @var{nss-certs})
-This field's value must be a package containing X.509 certificates for
-so-called ``Certification Authorities'' (CAs) that is made available in
-the @file{/etc/ssl/certs} directory.  Currently this directory is
-accessed by applications using either the GnuTLS library or the OpenSSL
-library.
-
-By default, certificates from
-@uref{https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS,
-Mozilla's Network Security Services} are used.  These are the
-certificates shipped by Mozilla browsers and derivatives such as
-GNU@tie{}IceCat.
-
 @item @code{services} (default: @var{%base-services})
 A list of monadic values denoting system services.  @xref{Services}.
 
