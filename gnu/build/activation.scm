@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,6 +200,15 @@ numeric gid or #f."
     (false-if-exception (delete-file file)))
 
   (format #t "populating /etc from ~a...~%" etc)
+
+  ;; Create the /etc/ssl -> /run/current-system/profile/etc/ssl symlink.  This
+  ;; symlink, to a target outside of the store, probably doesn't belong in the
+  ;; static 'etc' store directory.  However, if it were to be put there,
+  ;; beware that if /run/current-system/profile/etc/ssl doesn't exist at the
+  ;; time of activation (e.g. when installing a fresh system), the call to
+  ;; 'file-is-directory?' below will fail because it uses 'stat', not 'lstat'.
+  (rm-f "/etc/ssl")
+  (symlink "/run/current-system/profile/etc/ssl" "/etc/ssl")
 
   (rm-f "/etc/static")
   (symlink etc "/etc/static")

@@ -453,6 +453,11 @@ export EMACSLOADPATH=:/etc/emacs
 # when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
 export DBUS_FATAL_WARNINGS=0
 
+# These variables are honored by OpenSSL (libssl) and Git.
+export SSL_CERT_DIR=/etc/ssl/certs
+export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
+export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
+
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 "))
