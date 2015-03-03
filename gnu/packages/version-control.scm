@@ -147,63 +147,73 @@ as well as the classic centralized workflow.")
             (("/usr/bin/perl") (which "perl"))
             (("/usr/bin/python") (which "python"))))
         (alist-cons-after
-         'install 'split
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           ;; Split the binaries to the various outputs.
-           (let* ((out      (assoc-ref outputs "out"))
-                  (svn      (assoc-ref outputs "svn"))
-                  (gui      (assoc-ref outputs "gui"))
-                  (gitk     (string-append out "/bin/gitk"))
-                  (gitk*    (string-append gui "/bin/gitk"))
-                  (git-gui  (string-append out "/libexec/git-core/git-gui"))
-                  (git-gui* (string-append gui "/libexec/git-core/git-gui"))
-                  (git-cit  (string-append out "/libexec/git-core/git-citool"))
-                  (git-cit* (string-append gui "/libexec/git-core/git-citool"))
-                  (git-svn  (string-append out "/libexec/git-core/git-svn"))
-                  (git-svn* (string-append svn "/libexec/git-core/git-svn"))
-                  (git-sm   (string-append out
-                                           "/libexec/git-core/git-submodule")))
-             (mkdir-p (string-append gui "/bin"))
-             (mkdir-p (string-append gui "/libexec/git-core"))
-             (mkdir-p (string-append svn "/libexec/git-core"))
+         'install 'install-shell-completion
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out         (assoc-ref outputs "out"))
+                  (completions (string-append out "/etc/bash_completion.d")))
+             ;; TODO: Install the tcsh and zsh completions in the right place.
+             (mkdir-p completions)
+             (copy-file "contrib/completion/git-completion.bash"
+                        (string-append completions "/git.sh"))
+             #t))
+         (alist-cons-after
+          'install 'split
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Split the binaries to the various outputs.
+            (let* ((out      (assoc-ref outputs "out"))
+                   (svn      (assoc-ref outputs "svn"))
+                   (gui      (assoc-ref outputs "gui"))
+                   (gitk     (string-append out "/bin/gitk"))
+                   (gitk*    (string-append gui "/bin/gitk"))
+                   (git-gui  (string-append out "/libexec/git-core/git-gui"))
+                   (git-gui* (string-append gui "/libexec/git-core/git-gui"))
+                   (git-cit  (string-append out "/libexec/git-core/git-citool"))
+                   (git-cit* (string-append gui "/libexec/git-core/git-citool"))
+                   (git-svn  (string-append out "/libexec/git-core/git-svn"))
+                   (git-svn* (string-append svn "/libexec/git-core/git-svn"))
+                   (git-sm   (string-append out
+                                            "/libexec/git-core/git-submodule")))
+              (mkdir-p (string-append gui "/bin"))
+              (mkdir-p (string-append gui "/libexec/git-core"))
+              (mkdir-p (string-append svn "/libexec/git-core"))
 
-             (for-each (lambda (old new)
-                         (copy-file old new)
-                         (delete-file old)
-                         (chmod new #o555))
-                       (list gitk git-gui git-cit git-svn)
-                       (list gitk* git-gui* git-cit* git-svn*))
+              (for-each (lambda (old new)
+                          (copy-file old new)
+                          (delete-file old)
+                          (chmod new #o555))
+                        (list gitk git-gui git-cit git-svn)
+                        (list gitk* git-gui* git-cit* git-svn*))
 
-             ;; Tell 'git-svn' where Subversion is.
-             (wrap-program git-svn*
-                           `("PATH" ":" prefix
-                             (,(string-append (assoc-ref inputs "subversion")
-                                              "/bin")))
-                           `("PERL5LIB" ":" prefix
-                             (,(string-append (assoc-ref inputs "subversion")
-                                              "/lib/perl5/site_perl")))
+              ;; Tell 'git-svn' where Subversion is.
+              (wrap-program git-svn*
+                `("PATH" ":" prefix
+                  (,(string-append (assoc-ref inputs "subversion")
+                                   "/bin")))
+                `("PERL5LIB" ":" prefix
+                  (,(string-append (assoc-ref inputs "subversion")
+                                   "/lib/perl5/site_perl")))
 
-                           ;; XXX: The .so for SVN/Core.pm lacks a RUNPATH, so
-                           ;; help it find 'libsvn_client-1.so'.
-                           `("LD_LIBRARY_PATH" ":" prefix
-                             (,(string-append (assoc-ref inputs "subversion")
-                                              "/lib"))))
+                ;; XXX: The .so for SVN/Core.pm lacks a RUNPATH, so
+                ;; help it find 'libsvn_client-1.so'.
+                `("LD_LIBRARY_PATH" ":" prefix
+                  (,(string-append (assoc-ref inputs "subversion")
+                                   "/lib"))))
 
-             ;; Tell 'git-submodule' where Perl is.
-             (wrap-program git-sm
-                           `("PATH" ":" prefix
-                             (,(string-append (assoc-ref inputs "perl")
-                                              "/bin"))))
+              ;; Tell 'git-submodule' where Perl is.
+              (wrap-program git-sm
+                `("PATH" ":" prefix
+                  (,(string-append (assoc-ref inputs "perl")
+                                   "/bin"))))
 
-             ;; Tell 'git' to look for core programs in the user's profile.
-             ;; This allows user to install other outputs of this package and
-             ;; have them transparently taken into account.  There's a
-             ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
-             ;; specify a single directory, not a search path.
-             (wrap-program (string-append out "/bin/git")
-                           `("PATH" ":" prefix
-                             ("$HOME/.guix-profile/libexec/git-core")))))
-         %standard-phases))))
+              ;; Tell 'git' to look for core programs in the user's profile.
+              ;; This allows user to install other outputs of this package and
+              ;; have them transparently taken into account.  There's a
+              ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
+              ;; specify a single directory, not a search path.
+              (wrap-program (string-append out "/bin/git")
+                `("PATH" ":" prefix
+                  ("$HOME/.guix-profile/libexec/git-core")))))
+          %standard-phases)))))
    (synopsis "Distributed version control system")
    (description
     "Git is a free distributed version control system designed to handle
