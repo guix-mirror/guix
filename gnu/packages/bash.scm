@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -206,3 +206,23 @@ without modification.")
                  ,@(if (%current-target-system)
                        '("bash_cv_job_control_missing=no")
                        '()))))))))
+
+(define-public bash-completion
+  (package
+    (name "bash-completion")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://bash-completion.alioth.debian.org/files/"
+                    "bash-completion-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0kxf8s5bw7y50x0ksb77d3kv0dwadixhybl818w27y6mlw26hq1b"))))
+    (build-system gnu-build-system)
+    (synopsis "Bash completions for common commands")
+    (description
+     "This package provides extensions that allow Bash to provide adapted
+completion for many common commands.")
+    (home-page "http://bash-completion.alioth.debian.org/")
+    (license gpl2+)))
