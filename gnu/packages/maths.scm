@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -964,6 +965,31 @@ point numbers")
     ;; At least one file (src/maxima.asd) says "version 2."
     ;; GPLv2 only is therefore the smallest subset.
     (license license:gpl2)))
+
+(define-public muparser
+  (package
+    (name "muparser")
+    (version "2.2.5")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url "http://muparser.googlecode.com/svn/trunk/")
+             (revision 34)))
+       (sha256
+        (base32
+         "1d6bdbhx9zj3srwj3m7c9hvr18gnx1fx43h6d25my7q85gicpcwn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-samples=no")
+       #:tests? #f)) ;no "check" target
+    (home-page "http://muparser.beltoforion.de/")
+    (synopsis "Fast parser library for mathematical expressions")
+    (description
+     "muParser is an extensible high performance math parser library.  It is
+based on transforming an expression into a bytecode and precalculating
+constant parts of it.")
+    (license license:expat)))
 
 (define-public atlas
   (package
