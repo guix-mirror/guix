@@ -90,7 +90,7 @@
           'configure
           (alist-delete 'install %standard-phases))))))
     (native-inputs
-     `(("icedtea6" ,icedtea6)))
+     `(("icedtea6" ,icedtea6 "jdk")))
     (home-page "http://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
@@ -122,6 +122,9 @@ build process and its dependencies, whereas Make uses Makefile format.")
                   (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
                    "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
     (build-system gnu-build-system)
+    (outputs '("out"   ; Java Runtime Environment
+               "jdk"   ; Java Development Kit
+               "doc")) ; all documentation
     (arguments
      `(;; There are many failing tests and many are known to fail upstream.
        ;;
@@ -412,8 +415,13 @@ build process and its dependencies, whereas Make uses Makefile format.")
                           (run-test "check-jdk")))))
              (alist-replace
               'install
-              (lambda _
-                (copy-recursively "openjdk.build" %output))
+              (lambda* (#:key outputs #:allow-other-keys)
+                (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
+                      (jre (assoc-ref outputs "out"))
+                      (jdk (assoc-ref outputs "jdk")))
+                  (copy-recursively "openjdk.build/docs" doc)
+                  (copy-recursively "openjdk.build/j2re-image" jre)
+                  (copy-recursively "openjdk.build/j2sdk-image" jdk)))
               %standard-phases))))))))
     (native-inputs
      `(("ant-bootstrap"

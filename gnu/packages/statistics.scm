@@ -87,7 +87,7 @@
        ("cairo" ,cairo)
        ("gfortran" ,gfortran-4.8)
        ("icu4c" ,icu4c)
-       ("icedtea6" ,icedtea6)
+       ("icedtea6" ,icedtea6 "jdk")
        ("lapack" ,lapack)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
