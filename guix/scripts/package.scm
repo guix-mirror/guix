@@ -829,7 +829,8 @@ more information.~%"))
                (let* ((prof-drv (run-with-store (%store)
                                   (profile-derivation
                                    new
-                                   #:info-dir? (not bootstrap?))))
+                                   #:info-dir? (not bootstrap?)
+                                   #:ca-certificate-bundle? (not bootstrap?))))
                       (prof     (derivation->output-path prof-drv)))
                  (show-manifest-transaction (%store) manifest transaction
                                             #:dry-run? dry-run?)

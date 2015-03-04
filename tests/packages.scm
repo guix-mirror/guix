@@ -599,7 +599,8 @@
                  (profile-derivation
                   (manifest (map package->manifest-entry
                                  (list p1 p2)))
-                  #:info-dir? #f)
+                  #:info-dir? #f
+                  #:ca-certificate-bundle? #f)
                  #:guile-for-build (%guile-for-build))))
     (build-derivations %store (list prof))
     (string-match (format #f "^export XML_CATALOG_FILES=\"~a/xml/+bar/baz/catalog\\.xml\"\n"

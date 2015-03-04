@@ -182,7 +182,8 @@
       ((entry ->   (package->manifest-entry %bootstrap-guile))
        (guile      (package->derivation %bootstrap-guile))
        (drv        (profile-derivation (manifest (list entry))
-                                       #:info-dir? #f))
+                                       #:info-dir? #f
+                                       #:ca-certificate-bundle? #f))
        (profile -> (derivation->output-path drv))
        (bindir ->  (string-append profile "/bin"))
        (_          (built-derivations (list drv))))

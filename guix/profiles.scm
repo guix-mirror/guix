@@ -464,9 +464,13 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                              (string-append result
                                             "/ca-certificates.crt")))))
 
-  (gexp->derivation "ca-certificate-bundle" build
-                    #:modules '((guix build utils))
-                    #:local-build? #t))
+  ;; Don't depend on 'glibc-utf8-locales' and its dependencies when there's
+  ;; nothing to do.
+  (if (null? (manifest-entries manifest))
+      (gexp->derivation "ca-certificate-bundle" #~(mkdir #$output))
+      (gexp->derivation "ca-certificate-bundle" build
+                        #:modules '((guix build utils))
+                        #:local-build? #t)))
 
 (define* (profile-derivation manifest
                              #:key
