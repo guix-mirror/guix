@@ -204,7 +204,7 @@ OpenBSD's sndio.")
    (arguments
     `(#:parallel-tests? #f))
    ;; FIXME: configure also looks for xmms, input could be added once it exists
-   (inputs `(("libogg" ,libogg)))
+   (propagated-inputs `(("libogg" ,libogg))) ; required by flac.pc
    (synopsis "Free lossless audio codec")
    (description
 "FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,
