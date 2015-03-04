@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -2350,12 +2350,6 @@ backend = GTK3Agg~%")))))
                   (info (string-append data "/info"))
                   (html (string-append doc "/html")))
              (with-directory-excursion "doc"
-               ;; Install and set UTF-8 locale to avoid an encoding error.
-               (setenv "LOCPATH" (getcwd))
-               (system* "localedef" "--no-archive"
-                        "--prefix" (getcwd) "-i" "en_US"
-                        "-f" "UTF-8" "./en_US.UTF-8")
-               (setenv "LANG" "en_US.UTF-8")
                ;; Produce pdf in 'A4' format.
                (substitute* (find-files "." "conf\\.py")
                  (("latex_paper_size = 'letter'")
@@ -2444,12 +2438,6 @@ toolkits.")
                   (html (string-append doc "/html"))
                   (pyver ,(string-append "PYVER=")))
              (with-directory-excursion "doc"
-               ;; Install and set UTF-8 locale to avoid an encoding error.
-               (setenv "LOCPATH" (getcwd))
-               (system* "localedef" "--no-archive"
-                        "--prefix" (getcwd) "-i" "en_US"
-                        "-f" "UTF-8" "./en_US.UTF-8")
-               (setenv "LANG" "en_US.UTF-8")
                ;; Fix generation of images for mathematical expressions.
                (substitute* (find-files "source" "conf\\.py")
                  (("pngmath_use_preview = True")
@@ -2785,6 +2773,7 @@ support for Python 3 and PyPy.  It is based on cffi.")
       ;; The archive on pypi is missing the 'utils' directory!
       (uri (string-append "https://github.com/SimonSapin/cairocffi/archive/v"
                           version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
         "03w5p62sp3nqiccx864sbq0jvh7946277jqx3rcc3dch5xwfvv51"))))
@@ -3222,13 +3211,7 @@ capabilities to the Python interpreter.")
     (arguments
      `(#:python ,python-2 ; Otherwise tests fail with a syntax error.
        #:tests? #f ; The tests apparently download an external URL.
-       #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source #:allow-other-keys)
-          (and (zero? (system* "unzip" source))
-               (chdir "cssutils-1.0")))
-        %standard-phases)))
+       ))
     (home-page "http://cthedot.de/cssutils/")
     (synopsis
       "CSS Cascading Style Sheets library for Python")

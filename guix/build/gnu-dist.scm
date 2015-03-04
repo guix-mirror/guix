@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,14 +82,11 @@
 
 (define %dist-phases
   ;; Phases for building a source tarball.
-  (alist-replace
-   'unpack copy-source
-   (alist-cons-before
-    'configure 'autoreconf autoreconf
-    (alist-replace
-     'build build
-     (alist-replace
-      'install install-dist
-      (alist-delete 'strip %standard-phases))))))
+  (modify-phases %standard-phases
+    (delete strip)
+    (replace install install-dist)
+    (replace build build)
+    (add-before configure autoreconf autoreconf)
+    (replace unpack copy-source)))
 
 ;;; gnu-dist.scm ends here

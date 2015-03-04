@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,6 +26,7 @@
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -42,24 +43,66 @@
 ;;;
 ;;; Code:
 
+(define %http-receive-buffer-size
+  ;; Size of the HTTP receive buffer.
+  65536)
+
+(define (duration->seconds duration)
+  "Return the number of seconds represented by DURATION, a 'time-duration'
+object, as an inexact number."
+  (+ (time-second duration)
+     (/ (time-nanosecond duration) 1e9)))
+
+(define (throughput->string throughput)
+  "Given THROUGHPUT, measured in bytes per second, return a string
+representing it in a human-readable way."
+  (if (> throughput 3e6)
+      (format #f "~,2f MiB/s" (/ throughput (expt 2. 20)))
+      (format #f "~,0f KiB/s" (/ throughput 1024.0))))
+
 (define* (progress-proc file size #:optional (log-port (current-output-port)))
   "Return a procedure to show the progress of FILE's download, which is
 SIZE byte long.  The returned procedure is suitable for use as an
 argument to `dump-port'.  The progress report is written to LOG-PORT."
-  (if (number? size)
-      (lambda (transferred cont)
-        (let ((% (* 100.0 (/ transferred size))))
-          (display #\cr log-port)
-          (format log-port "~a\t~5,1f% of ~,1f KiB"
-                  file % (/ size 1024.0))
-          (flush-output-port log-port)
-          (cont)))
-      (lambda (transferred cont)
-        (display #\cr log-port)
-        (format log-port "~a\t~6,1f KiB transferred"
-                file (/ transferred 1024.0))
-        (flush-output-port log-port)
-        (cont))))
+  ;; XXX: Because of <http://bugs.gnu.org/19939> this procedure is often not
+  ;; called as frequently as we'd like too; this is especially bad with Nginx
+  ;; on hydra.gnu.org, which returns whole nars as a single chunk.
+  (let ((start-time #f))
+    (let-syntax ((with-elapsed-time
+                     (syntax-rules ()
+                       ((_ elapsed body ...)
+                        (let* ((now     (current-time time-monotonic))
+                               (elapsed (and start-time
+                                             (duration->seconds
+                                              (time-difference now
+                                                               start-time)))))
+                          (unless start-time
+                            (set! start-time now))
+                          body ...)))))
+      (if (number? size)
+          (lambda (transferred cont)
+            (with-elapsed-time elapsed
+              (let ((%          (* 100.0 (/ transferred size)))
+                    (throughput (if elapsed
+                                    (/ transferred elapsed)
+                                    0)))
+                (display #\cr log-port)
+                (format log-port "~a\t~5,1f% of ~,1f KiB (~a)"
+                        file % (/ size 1024.0)
+                        (throughput->string throughput))
+                (flush-output-port log-port)
+                (cont))))
+          (lambda (transferred cont)
+            (with-elapsed-time elapsed
+              (let ((throughput (if elapsed
+                                    (/ transferred elapsed)
+                                    0)))
+                (display #\cr log-port)
+                (format log-port "~a\t~6,1f KiB transferred (~a)"
+                        file (/ transferred 1024.0)
+                        (throughput->string throughput))
+                (flush-output-port log-port)
+                (cont))))))))
 
 (define* (uri-abbreviation uri #:optional (max-length 42))
   "If URI's string representation is larger than MAX-LENGTH, return an
@@ -92,7 +135,7 @@ abbreviation of URI showing the scheme, host, and basename of the file."
     (call-with-output-file file
       (lambda (out)
         (dump-port in out
-                   #:buffer-size 65536            ; don't flood the log
+                   #:buffer-size %http-receive-buffer-size
                    #:progress (progress-proc (uri-abbreviation uri) size))))
 
     (ftp-close conn))
@@ -182,7 +225,7 @@ which is not available during bootstrap."
           (connect s (addrinfo:addr ai))
 
           ;; Buffer input and output on this port.
-          (setvbuf s _IOFBF)
+          (setvbuf s _IOFBF %http-receive-buffer-size)
 
           (if (eq? 'https (uri-scheme uri))
               (tls-wrap s (uri-host uri))
@@ -334,7 +377,7 @@ Return the resulting target URI."
              (if (port? bv-or-port)
                  (begin
                    (dump-port bv-or-port p
-                              #:buffer-size 65536 ; don't flood the log
+                              #:buffer-size %http-receive-buffer-size
                               #:progress (progress-proc (uri-abbreviation uri)
                                                         size))
                    (newline))
@@ -422,5 +465,9 @@ on success."
        (format (current-error-port) "failed to download ~s from ~s~%"
                file url)
        #f))))
+
+;;; Local Variables:
+;;; eval: (put 'with-elapsed-time 'scheme-indent-function 1)
+;;; End:
 
 ;;; download.scm ends here

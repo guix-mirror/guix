@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <address@hidden>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
       (method url-fetch)
       (uri (string-append "https://github.com/maebert/jrnl/archive/"
                           version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
         "019ky09sj5i7frmca0imv4jm46mn3f4lzah2wmiwxh22cisj7ksn"))))

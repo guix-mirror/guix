@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define bison
   (package
     (name "bison")
-    (version "3.0.2")
+    (version "3.0.4")
     (source
      (origin
       (method url-fetch)
@@ -38,7 +38,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0g4gjan477lac18m51kv4xzcsp6wjfsfwvd2dxymcl6vid9fihx2"))))
+        "1qbgf6q1n2z17k8g33444m0q68kf3fbiq65q7jlrzpvvj73jh957"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (inputs `(("flex" ,flex)))

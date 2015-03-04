@@ -215,6 +215,7 @@ fast arithmetic.")
             (uri (string-append
                   "https://github.com/fredrik-johansson/arb/archive/"
                   version ".tar.gz"))
+            (file-name (string-append name "-" version ".tar.gz"))
             (sha256 (base32
                      "0a8cgzznkmr59ngj4di9a37b5h4i00gbnixnxlwd34bcbflvjzyr"))))
    (build-system gnu-build-system)

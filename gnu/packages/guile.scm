@@ -247,16 +247,7 @@ many readers as needed).")
                       (("\"libguile-ncurses\"")
                        (format #f "\"~a/lib/libguile-ncurses\""
                                out)))))
-                 (alist-cons-before
-                  'check 'install-locales
-                  (lambda _
-                    ;; One of the tests requires the availability of a UTF-8
-                    ;; locale and otherwise fails.
-                    (setenv "LOCPATH" (getcwd))
-                    (zero? (system* "localedef" "--no-archive"
-                                    "--prefix" (getcwd) "-i" "en_US"
-                                    "-f" "UTF-8" "./en_US.utf8")))
-                  %standard-phases))))
+                 %standard-phases)))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description

@@ -96,6 +96,7 @@
              (method url-fetch)
              (uri (string-append "https://github.com/flavio/qjson/archive/"
                                  version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "163fspi0xc705irv79qw861fmh68pjyla9vx3kqiq6xrdhb9834j"))))

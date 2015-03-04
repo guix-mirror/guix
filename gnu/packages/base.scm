@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -75,7 +75,8 @@ command-line arguments, multiple languages, and so on.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))))
+              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))
+            (patches (list (search-patch "grep-CVE-2015-1345.patch")))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
@@ -150,32 +151,6 @@ standard utility.")
 (define-public patch
   (package
    (name "patch")
-   (version "2.7.1")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/patch/patch-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "1sqckf560pzwgniy00vcpdv2c9c11s4cmhlm14yqgg8avd3bl94i"))))
-   (build-system gnu-build-system)
-   (native-inputs `(("ed", ed)))
-    ;; TODO: When cross-compiling, add this:
-    ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
-   (synopsis "Apply differences to originals, with optional backups")
-   (description
-    "Patch is a program that applies changes to files based on differences
-laid out as by the program \"diff\".  The changes may be applied to one or more
-files depending on the contents of the diff file.  It accepts several
-different diff formats.  It may also be used to revert previously applied
-differences.")
-   (license gpl3+)
-   (replacement patch-CVE-2015-1196)
-   (home-page "http://savannah.gnu.org/projects/patch/")))
-
-(define-public patch-2.7.4
-  (package
-    (inherit patch)
     (version "2.7.4")
     (source (origin
               (method url-fetch)
@@ -184,12 +159,17 @@ differences.")
               (sha256
                (base32
                 "02gikxjvcxysr4l65c8vivgz62xmalp0av5ypzff8vqhrq3vpb0f"))))
-    (replacement #f)))
-
-(define patch-CVE-2015-1196
-  (package (inherit patch-2.7.4)
-    ;; Keep the old version number so it can be used as a 'replacement'.
-    (version (package-version patch))))
+   (build-system gnu-build-system)
+   (native-inputs `(("ed", ed)))
+   (synopsis "Apply differences to originals, with optional backups")
+   (description
+    "Patch is a program that applies changes to files based on differences
+laid out as by the program \"diff\".  The changes may be applied to one or more
+files depending on the contents of the diff file.  It accepts several
+different diff formats.  It may also be used to revert previously applied
+differences.")
+   (license gpl3+)
+   (home-page "http://savannah.gnu.org/projects/patch/")))
 
 (define-public diffutils
   (package
@@ -381,14 +361,14 @@ included.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.20")
+   (version "2.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "19bbyfc2gcxr9rihrkkbd3p362i608yhlyrr7icqsa6cmr16sjzq"))
+              "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -397,10 +377,7 @@ included.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-CVE-2014-7817.patch")
-                           (search-patch "glibc-CVE-2012-3406.patch")
-                           (search-patch "glibc-mips-dangling-vfork-ref.patch")
-                           (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -411,6 +388,7 @@ included.")
 
    (arguments
     `(#:out-of-source? #t
+      #:parallel-build? #f ; There's at least one race in the build.
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -433,7 +411,7 @@ included.")
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
 
-            ;; This is the default for most architectures as of GNU libc 2.20,
+            ;; This is the default for most architectures as of GNU libc 2.21,
             ;; but we specify it explicitly for clarity and consistency.  See
             ;; "kernel-features.h" in the GNU libc for details.
             "--enable-kernel=2.6.32"
@@ -512,6 +490,13 @@ included.")
    (native-inputs `(("texinfo" ,texinfo)
                     ("perl" ,perl)))
 
+   (native-search-paths
+    ;; Search path for packages that provide locale data.  This is useful
+    ;; primarily in build environments.
+    (list (search-path-specification
+           (variable "LOCPATH")
+           (files '("lib/locale")))))
+
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
@@ -536,6 +521,7 @@ with the Linux kernel.")
 more than 400 in total.  To use them set the 'LOCPATH' environment variable to
 the 'share/locale' sub-directory of this package.")
     (outputs '("out"))                            ;110+ MiB
+    (native-search-paths '())
     (arguments
      (let ((args `(#:tests? #f #:strip-binaries? #f
                    ,@(package-arguments glibc))))

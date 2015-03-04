@@ -156,15 +156,15 @@ the Nix package manager.")
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.1)
          ((#:phases phases)
-          `(alist-cons-before
-            'configure 'bootstrap
+          `(alist-cons-after
+            'unpack 'bootstrap
             (lambda _
               ;; Make sure 'msgmerge' can modify the PO files.
               (for-each (lambda (po)
                           (chmod po #o666))
                         (find-files "." "\\.po$"))
 
-              (zero? (system* "./bootstrap")))
+              (zero? (system* "sh" "bootstrap")))
             ,phases))))
       (native-inputs
        `(("autoconf" ,(autoconf-wrapper))

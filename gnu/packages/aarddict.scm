@@ -33,6 +33,7 @@
       (method url-fetch)
       (uri (string-append "https://github.com/aarddict/desktop/archive/"
                           version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
         "12h7m0z7nd7rg8avpi9syd265k0rhh4vbdh464nq0jzdg8m9p28c"))))

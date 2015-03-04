@@ -223,6 +223,7 @@ be output in text, PostScript, PDF or HTML.")
        (method url-fetch)
        (uri (string-append "https://github.com/opencollab/arpack-ng/archive/"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1fwch6vipms1ispzg2djvbzv5wag36f1dmmr3xs3mbp6imfyhvff"))))

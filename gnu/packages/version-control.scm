@@ -214,6 +214,15 @@ as well as the classic centralized workflow.")
                 `("PATH" ":" prefix
                   ("$HOME/.guix-profile/libexec/git-core")))))
           %standard-phases)))))
+
+   (native-search-paths
+    ;; For HTTPS access, Git needs a single-file certificate bundle, specified
+    ;; with $GIT_SSL_CAINFO.
+    ;; FIXME: This variable designates a single file; it is not a search path.
+    (list (search-path-specification
+           (variable "GIT_SSL_CAINFO")
+           (files '("etc/ssl/certs/ca-certificates.crt")))))
+
    (synopsis "Distributed version control system")
    (description
     "Git is a free distributed version control system designed to handle

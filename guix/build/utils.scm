@@ -21,6 +21,7 @@
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-60)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -54,6 +55,7 @@
             alist-cons-before
             alist-cons-after
             alist-replace
+            modify-phases
             with-atomic-file-replacement
             substitute
             substitute*
@@ -64,7 +66,9 @@
             patch-/usr/bin/file
             fold-port-matches
             remove-store-references
-            wrap-program))
+            wrap-program
+
+            locale-category->string))
 
 
 ;;;
@@ -323,7 +327,7 @@ for under the directories designated by FILES.  For example:
                                           (list file)
                                           '())))))
                             files))
-              input-dirs))
+              (delete-duplicates input-dirs)))
 
 (define (list->search-path-as-string lst separator)
   (string-join lst separator))
@@ -422,6 +426,33 @@ An error is raised when no such pair exists."
     (match after
       ((_ after ...)
        (append before (alist-cons key value after))))))
+
+(define-syntax-rule (modify-phases phases mod-spec ...)
+  "Modify PHASES sequentially as per each MOD-SPEC, which may have one of the
+following forms:
+
+  (delete <old-phase-name>)
+  (replace <old-phase-name> <new-phase>)
+  (add-before <old-phase-name> <new-phase-name> <new-phase>)
+  (add-after <old-phase-name> <new-phase-name> <new-phase>)
+
+Where every <*-phase-name> is an automatically quoted symbol, and <new-phase>
+an expression evaluating to a procedure."
+  (let* ((phases* phases)
+         (phases* (%modify-phases phases* mod-spec))
+         ...)
+    phases*))
+
+(define-syntax %modify-phases
+  (syntax-rules (delete replace add-before add-after)
+    ((_ phases (delete old-phase-name))
+     (alist-delete 'old-phase-name phases))
+    ((_ phases (replace old-phase-name new-phase))
+     (alist-replace 'old-phase-name new-phase phases))
+    ((_ phases (add-before old-phase-name new-phase-name new-phase))
+     (alist-cons-before 'old-phase-name 'new-phase-name new-phase phases))
+    ((_ phases (add-after old-phase-name new-phase-name new-phase))
+     (alist-cons-after 'old-phase-name 'new-phase-name new-phase phases))))
 
 
 ;;;
@@ -557,22 +588,27 @@ match the terminating newline of a line."
 (define* (dump-port in out
                     #:key (buffer-size 16384)
                     (progress (lambda (t k) (k))))
-  "Read as much data as possible from IN and write it to OUT, using
-chunks of BUFFER-SIZE bytes.  Call PROGRESS after each successful
-transfer of BUFFER-SIZE bytes or less, passing it the total number of
-bytes transferred and the continuation of the transfer as a thunk."
+  "Read as much data as possible from IN and write it to OUT, using chunks of
+BUFFER-SIZE bytes.  Call PROGRESS at the beginning and after each successful
+transfer of BUFFER-SIZE bytes or less, passing it the total number of bytes
+transferred and the continuation of the transfer as a thunk."
   (define buffer
     (make-bytevector buffer-size))
 
-  (let loop ((total 0)
-             (bytes (get-bytevector-n! in buffer 0 buffer-size)))
+  (define (loop total bytes)
     (or (eof-object? bytes)
         (let ((total (+ total bytes)))
           (put-bytevector out buffer 0 bytes)
           (progress total
                     (lambda ()
                       (loop total
-                            (get-bytevector-n! in buffer 0 buffer-size))))))))
+                            (get-bytevector-n! in buffer 0 buffer-size)))))))
+
+  ;; Make sure PROGRESS is called when we start so that it can measure
+  ;; throughput.
+  (progress 0
+            (lambda ()
+              (loop 0 (get-bytevector-n! in buffer 0 buffer-size)))))
 
 (define (set-file-time file stat)
   "Set the atime/mtime of FILE to that specified by STAT."
@@ -581,6 +617,14 @@ bytes transferred and the continuation of the transfer as a thunk."
          (stat:mtime stat)
          (stat:atimensec stat)
          (stat:mtimensec stat)))
+
+(define (get-char* p)
+  ;; We call it `get-char', but that's really a binary version
+  ;; thereof.  (The real `get-char' cannot be used here because our
+  ;; bootstrap Guile is hacked to always use UTF-8.)
+  (match (get-u8 p)
+    ((? integer? x) (integer->char x))
+    (x x)))
 
 (define patch-shebang
   (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
@@ -617,8 +661,8 @@ FILE are kept unchanged."
 
       (call-with-ascii-input-file file
         (lambda (p)
-          (and (eq? #\# (read-char p))
-               (eq? #\! (read-char p))
+          (and (eq? #\# (get-char* p))
+               (eq? #\! (get-char* p))
                (let ((line (false-if-exception (read-line p))))
                  (and=> (and line (regexp-exec shebang-rx line))
                         (lambda (m)
@@ -668,16 +712,18 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
       shell))
 
   (let ((st (stat file)))
-   (substitute* file
-     (("^ *SHELL[[:blank:]]*:?=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
-       _ dir shell args)
-      (let* ((old (string-append dir shell))
-             (new (or (find-shell shell) old)))
-        (unless (string=? new old)
-          (format (current-error-port)
-                  "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
-                  file old new))
-        (string-append "SHELL = " new args))))
+    ;; Consider FILE is using an 8-bit encoding to avoid errors.
+    (with-fluids ((%default-port-encoding #f))
+      (substitute* file
+        (("^ *SHELL[[:blank:]]*:?=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
+          _ dir shell args)
+         (let* ((old (string-append dir shell))
+                (new (or (find-shell shell) old)))
+           (unless (string=? new old)
+             (format (current-error-port)
+                     "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
+                     file old new))
+           (string-append "SHELL = " new args)))))
 
    (when keep-mtime?
      (set-file-time file st))))
@@ -694,13 +740,15 @@ unchanged."
               "patch-/usr/bin/file: warning: \
 no replacement 'file' command, doing nothing~%")
       (let ((st (stat file)))
-        (substitute* file
-          (("/usr/bin/file")
-           (begin
-             (format (current-error-port)
-                     "patch-/usr/bin/file: ~a: changing `~a' to `~a'~%"
-                     file "/usr/bin/file" file-command)
-             file-command)))
+        ;; Consider FILE is using an 8-bit encoding to avoid errors.
+        (with-fluids ((%default-port-encoding #f))
+          (substitute* file
+            (("/usr/bin/file")
+             (begin
+               (format (current-error-port)
+                       "patch-/usr/bin/file: ~a: changing `~a' to `~a'~%"
+                       file "/usr/bin/file" file-command)
+               file-command))))
 
         (when keep-mtime?
           (set-file-time file st)))))
@@ -717,21 +765,13 @@ for each unmatched character."
         (map char-set (string->list pattern))
         pattern))
 
-  (define (get-char p)
-    ;; We call it `get-char', but that's really a binary version
-    ;; thereof.  (The real `get-char' cannot be used here because our
-    ;; bootstrap Guile is hacked to always use UTF-8.)
-    (match (get-u8 p)
-      ((? integer? x) (integer->char x))
-      (x x)))
-
   ;; Note: we're not really striving for performance here...
   (let loop ((chars   '())
              (pattern initial-pattern)
              (matched '())
              (result  init))
     (cond ((null? chars)
-           (loop (list (get-char port))
+           (loop (list (get-char* port))
                  pattern
                  matched
                  result))
@@ -816,7 +856,7 @@ contents:
   #!location/of/bin/bash
   export PATH=\"/gnu/.../bar/bin\"
   export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/gnu/.../baz/certs:/qux/certs\"
-  exec -a location/of/foo location/of/.foo-real \"$@\"
+  exec -a $0 location/of/.foo-real \"$@\"
 
 This is useful for scripts that expect particular programs to be in $PATH, for
 programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
@@ -837,7 +877,7 @@ the previous wrapper."
     (if (zero? number)
         (let ((prog-real (string-append (dirname prog) "/."
                                         (basename prog) "-real")))
-          (copy-file prog prog-real)
+          (rename-file prog prog-real)
           prog-real)
         (wrapper-file-name number)))
 
@@ -870,17 +910,37 @@ the previous wrapper."
     (with-output-to-file prog-tmp
       (lambda ()
         (format #t
-                "#!~a~%~a~%exec -a \"~a\" \"~a\" \"$@\"~%"
+                "#!~a~%~a~%exec -a \"$0\" \"~a\" \"$@\"~%"
                 (which "bash")
                 (string-join (map export-variable vars)
                              "\n")
-                (canonicalize-path prog)
                 (canonicalize-path target))))
 
     (chmod prog-tmp #o755)
     (rename-file prog-tmp wrapper)
     (symlink wrapper prog-tmp)
     (rename-file prog-tmp prog)))
+
+
+;;;
+;;; Locales.
+;;;
+
+(define (locale-category->string category)
+  "Return the name of locale category CATEGORY, one of the 'LC_' constants.
+If CATEGORY is a bitwise or of several 'LC_' constants, an approximation is
+returned."
+  (letrec-syntax ((convert (syntax-rules ()
+                             ((_)
+                              (number->string category))
+                             ((_ first rest ...)
+                              (if (= first category)
+                                  (symbol->string 'first)
+                                  (convert rest ...))))))
+    (convert LC_ADDRESS LC_ALL LC_COLLATE LC_CTYPE
+             LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY
+             LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE
+             LC_TIME)))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)

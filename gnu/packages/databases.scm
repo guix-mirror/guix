@@ -213,7 +213,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.7.4")
+   (version "3.8.8.3")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -233,10 +233,12 @@ types are supported, as is encryption.")
                     "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
-              "1v2rhgsx27in6dcvxk0pkxc0zrbl38biimjg6c1zxz85jh9hydw6"))))
+              "04dl53iv5q0srv4jcgjfzsrdzkq6dg1sgmlmpw9lrd4xrmj6jmvl"))))
    (build-system gnu-build-system)
-    (inputs
-     `(("readline" ,readline)))
+   (inputs `(("readline" ,readline)))
+   ;; Add -DSQLITE_SECURE_DELETE.  GNU Icecat will refuse to use the system
+   ;; SQLite unless this option is enabled.
+   (arguments `(#:configure-flags '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE")))
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description

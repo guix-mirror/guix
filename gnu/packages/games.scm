@@ -606,6 +606,7 @@ for common mesh file formats, and collision detection.")
               (uri (string-append
                     "https://github.com/minetest/minetest_game/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0hzb27srv6f2j84dpxx2p0p0aaq9vdp5jvbrfpklb5q5ssdjxvc6"))))
@@ -646,6 +647,7 @@ for common mesh file formats, and collision detection.")
               (uri (string-append
                     "https://github.com/minetest/minetest/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0h223svzkvp63b77nqfxy7k8whw4543gahs3kxd3x4myi5ax5z5f"))))
@@ -792,6 +794,7 @@ reference interpreter, using Glk API.")
        (method url-fetch)
        (uri (string-append "https://github.com/libretro/RetroArch/archive/"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "1iqcrb076xiih20sk8n1w79xsp4fb8pj4vkmdc1xn562h56y4nxx"))))
     (build-system gnu-build-system)

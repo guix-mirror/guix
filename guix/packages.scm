@@ -335,7 +335,8 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
       ("gzip"  ,(ref '(gnu packages compression) 'gzip))
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
-      ("patch" ,(ref '(gnu packages base) 'patch)))))
+      ("patch" ,(ref '(gnu packages base) 'patch))
+      ("locales" ,(ref '(gnu packages base) 'glibc-utf8-locales)))))
 
 (define (default-guile)
   "Return the default Guile package used to run the build code of
@@ -411,7 +412,11 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                     (srfi srfi-1)
                     (guix build utils))
 
-       (let ((out     (assoc-ref %outputs "out"))
+       ;; Encoding/decoding errors shouldn't be silent.
+       (fluid-set! %default-port-conversion-strategy 'error)
+
+       (let ((locales (assoc-ref %build-inputs "locales"))
+             (out     (assoc-ref %outputs "out"))
              (xz      (assoc-ref %build-inputs "xz"))
              (decomp  (assoc-ref %build-inputs ,decompression-type))
              (source  (assoc-ref %build-inputs "source"))
@@ -432,6 +437,12 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
            (car (scandir directory
                          (lambda (name)
                            (not (member name '("." "..")))))))
+
+         (when locales
+           ;; First of all, install a UTF-8 locale so that UTF-8 file names
+           ;; are correctly interpreted.  During bootstrap, LOCALES is #f.
+           (setenv "LOCPATH" (string-append locales "/lib/locale"))
+           (setlocale LC_ALL "en_US.UTF-8"))
 
          (setenv "PATH" (string-append xz "/bin" ":"
                                        decomp "/bin"))

@@ -104,6 +104,15 @@ exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "
                    (< depth %max-symlink-depth)
                    (loop (readlink file) (+ 1 depth))))))))
 
+(define (shared-library? file)
+  ;; Return #t when FILE denotes a shared library.
+  (or (string-suffix? ".so" file)
+      (let ((index (string-contains file ".so.")))
+        ;; Since we cannot use regexps during bootstrap, roll our own.
+        (and index
+             (string-every (char-set-union (char-set #\.) char-set:digit)
+                           (string-drop file (+ index 3)))))))
+
 (define (library-files-linked args)
   ;; Return the file names of shared libraries explicitly linked against via
   ;; `-l' or with an absolute file name in ARGS.
@@ -125,7 +134,7 @@ exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "
                                   (cons full library-files))
                             result)))
                      ((and (string-prefix? %store-directory argument)
-                           (string-suffix? ".so" argument)) ;add library
+                           (shared-library? argument)) ;add library
                       (cons library-path
                             (cons argument library-files)))
                      (else

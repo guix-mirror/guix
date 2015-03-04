@@ -42,6 +42,7 @@
 ;; For white-box testing.
 (define gexp-inputs (@@ (guix gexp) gexp-inputs))
 (define gexp-native-inputs (@@ (guix gexp) gexp-native-inputs))
+(define gexp-outputs (@@ (guix gexp) gexp-outputs))
 (define gexp->sexp  (@@ (guix gexp) gexp->sexp))
 
 (define* (gexp->sexp* exp #:optional target)
@@ -213,6 +214,38 @@
          (null? (gexp-inputs exp))
          (equal? (gexp->sexp* exp)                ;native
                  (gexp->sexp* exp "mips64el-linux")))))
+
+(test-equal "output list"
+  2
+  (let ((exp (gexp (begin (mkdir (ungexp output))
+                          (mkdir (ungexp output "bar"))))))
+    (length (gexp-outputs exp))))                ;XXX: <output-ref> is private
+
+(test-assert "output list, combined gexps"
+  (let* ((exp0  (gexp (mkdir (ungexp output))))
+         (exp1  (gexp (mkdir (ungexp output "foo"))))
+         (exp2  (gexp (begin (display "hi!") (ungexp exp0) (ungexp exp1)))))
+    (and (lset= equal?
+                (append (gexp-outputs exp0) (gexp-outputs exp1))
+                (gexp-outputs exp2))
+         (= 2 (length (gexp-outputs exp2))))))
+
+(test-equal "output list, combined gexps, duplicate output"
+  1
+  (let* ((exp0 (gexp (mkdir (ungexp output))))
+         (exp1 (gexp (begin (mkdir (ungexp output)) (ungexp exp0))))
+         (exp2 (gexp (begin (mkdir (ungexp output)) (ungexp exp1)))))
+    (length (gexp-outputs exp2))))
+
+(test-assert "output list + ungexp-splicing list, combined gexps"
+  (let* ((exp0  (gexp (mkdir (ungexp output))))
+         (exp1  (gexp (mkdir (ungexp output "foo"))))
+         (exp2  (gexp (begin (display "hi!")
+                             (ungexp-splicing (list exp0 exp1))))))
+    (and (lset= equal?
+                (append (gexp-outputs exp0) (gexp-outputs exp1))
+                (gexp-outputs exp2))
+         (= 2 (length (gexp-outputs exp2))))))
 
 (test-assertm "gexp->file"
   (mlet* %store-monad ((exp -> (gexp (display (ungexp %bootstrap-guile))))

@@ -65,7 +65,7 @@ things the parser might find in the XML document (like start tags).")
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
-    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
     (native-inputs `(("perl" ,perl)
                      ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
 

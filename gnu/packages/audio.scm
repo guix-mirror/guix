@@ -363,6 +363,7 @@ synchronous execution of all clients, and low latency operation.")
                    "https://github.com/jackaudio/jack2/archive/v"
                    version
                    ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
@@ -632,6 +633,7 @@ software.")
              (uri (string-append "https://github.com/lvtk/lvtk/archive/"
                                  version
                                  ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "03nbj2cqcklqwh50zj2gwm07crh5iwqbpxbpzwbg5hvgl4k4rnjd"))))
@@ -929,13 +931,10 @@ stretching and pitch scaling of audio.  This package contains the library.")
        ("file" ,file)))
     (arguments
      '(#:phases
-       (alist-cons-before
-        'configure 'bootstrap
+       (alist-cons-after
+        'unpack 'bootstrap
         (lambda _
-          (unless (zero? (system* "sh" "bootstrap"))
-            (error "bootstrap failed"))
-          (substitute* '("configure")
-            (("/usr/bin/file") "file")))
+          (zero? (system* "sh" "bootstrap")))
         %standard-phases)))
     (home-page "http://www.surina.net/soundtouch/")
     (synopsis

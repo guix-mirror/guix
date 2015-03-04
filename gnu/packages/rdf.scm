@@ -120,6 +120,7 @@ Java Lucene text search engine API to C++.")
               (method url-fetch)
               (uri (string-append "https://github.com/swh/LRDF/archive/"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "18p2flb2sv2hq6w2qkd29z9c7knnwqr3f12i2srshlzx6vwkm05s"))))
@@ -140,9 +141,9 @@ Java Lucene text search engine API to C++.")
                    (substitute* "examples/Makefile.am"
                      (("instances_test remove_test") "instances_test")
                      (("\\$\\(TESTS\\) remove_test") "$(TESTS)")))
-                 (alist-cons-before
-                  'configure 'autoreconf
-                  (lambda* (#:key inputs #:allow-other-keys)
+                 (alist-cons-after
+                  'remove-out-of-tree-references 'autoreconf
+                  (lambda _
                     (zero? (system* "autoreconf" "-vfi")))
                   %standard-phases))))
     (inputs

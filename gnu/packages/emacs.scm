@@ -309,8 +309,8 @@ operations.")
                               out "/share/images/emacs-w3m")))
        #:tests? #f  ; no check target
        #:phases
-       (alist-cons-before
-        'configure 'pre-configure
+       (alist-cons-after
+        'unpack 'autoconf
         (lambda _
           (zero? (system* "autoconf")))
         (alist-cons-before

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -57,6 +57,8 @@
                   "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
                   ;; add (other) libraries of the project itself to rpath
                   ,(string-append "-DCMAKE_INSTALL_RPATH=" out "/lib")
+                  ;; enable verbose output from builds
+                  "-DCMAKE_VERBOSE_MAKEFILE=ON"
                   ,@configure-flags)))
       (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
       (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
@@ -72,9 +74,9 @@
 (define %standard-phases
   ;; Everything is as with the GNU Build System except for the `configure'
   ;; and 'check' phases.
-  (alist-replace 'configure configure
-    (alist-replace 'check check
-                   gnu:%standard-phases)))
+  (modify-phases gnu:%standard-phases
+    (replace check check)
+    (replace configure configure)))
 
 (define* (cmake-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)

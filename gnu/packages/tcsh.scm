@@ -58,7 +58,11 @@
             (("; other_script.csh") "; /bin/sh other_script.csh"))
           ;; Now, let's generate the test suite and patch it
           (system* "make" "tests/testsuite")
-          (substitute* "tests/testsuite" (("/bin/sh") (which "sh"))))
+
+          ;; This file is ISO-8859-1 encoded.
+          (with-fluids ((%default-port-encoding #f))
+            (substitute* "tests/testsuite"
+              (("/bin/sh") (which "sh")))))
         (alist-cons-after
          'install 'post-install
          (lambda* (#:key inputs outputs #:allow-other-keys)

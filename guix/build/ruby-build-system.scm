@@ -71,16 +71,12 @@ directory."
                     "--bindir" (string-append out "/bin")))))
 
 (define %standard-phases
-  (alist-cons-after
-   'unpack 'gitify gitify
-   (alist-replace
-    'build build
-    (alist-replace
-     'install install
-     (alist-replace
-      'check check
-      (alist-delete
-       'configure gnu:%standard-phases))))))
+  (modify-phases gnu:%standard-phases
+    (delete configure)
+    (add-after unpack gitify gitify)
+    (replace build build)
+    (replace install install)
+    (replace check check)))
 
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)

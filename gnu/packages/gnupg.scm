@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -39,7 +39,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.17")
+    (version "1.18")
     (source
      (origin
       (method url-fetch)
@@ -47,7 +47,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1dapxzxl1naghf342fwfc2w2f2c5hb9gr1a1s4n8dsqn26kybx1z"))))
+        "0408v19h3h0q6w61g51hgbdg6cyw81nyzkh70qfprvsc3pkddwcz"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -61,14 +61,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.6.2")
+    (version "1.6.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0k2wi34qhp5hq71w1ab3kw1gfsx7xff79bvynqkxp35kls94826y"))))
+               "0pq2nwfqgggrsh8rk84659d80vfnlkbphwqjwahccd5fjdxr3d21"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -162,9 +162,75 @@ as well as the CMS easily accessible by other applications.  Both
 specifications are building blocks of S/MIME and TLS.")
     (license gpl3+)))
 
+(define-public npth
+  (package
+    (name "npth")
+    (version "1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://gnupg/npth/npth-"
+            version ".tar.bz2"))
+      (sha256
+       (base32
+        "0zyzwmk4mp6pas87jz35zx0jvwdz7x5b13w225gs73gcn8g5cv49"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnupg.org")
+    (synopsis "Non-preemptive thread library")
+    (description
+     "Npth is a library to provide the GNU Pth API and thus a non-preemptive
+threads implementation.
+
+In contrast to GNU Pth is is based on the system's standard threads
+implementation.  This allows the use of libraries which are not
+compatible to GNU Pth.")
+    (license (list lgpl3+ gpl2+)))) ; dual license
+
 (define-public gnupg
   (package
     (name "gnupg")
+    (version "2.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "14k7c5spai3yppz6izf1ggbnffskl54ln87v1wgy9pwism1mlks0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bzip2" ,guix:bzip2)
+       ("curl" ,curl)
+       ("libassuan" ,libassuan)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
+       ("libksba" ,libksba)
+       ("npth" ,npth)
+       ("openldap" ,openldap)
+       ("zlib" ,guix:zlib)
+       ("readline" ,readline)))
+   (arguments
+    `(#:phases
+       (alist-cons-before
+        'configure 'patch-config-files
+        (lambda _
+          (substitute* "tests/openpgp/defs.inc"
+            (("/bin/pwd") (which "pwd"))))
+       %standard-phases)))
+    (home-page "http://gnupg.org/")
+    (synopsis "GNU Privacy Guard")
+    (description
+     "The GNU Privacy Guard is a complete implementation of the OpenPGP
+standard.  It is used to encrypt and sign data and communication.  It
+features powerful key management and the ability to access public key
+servers.  It includes several libraries: libassuan (IPC between GnuPG
+components), libgpg-error (centralized GnuPG error values), and
+libskba (working with X.509 certificates and CMS data).")
+    (license gpl3+)))
+
+(define-public gnupg-2.0
+  (package (inherit gnupg)
     (version "2.0.27")
     (source (origin
               (method url-fetch)
@@ -173,7 +239,6 @@ specifications are building blocks of S/MIME and TLS.")
               (sha256
                (base32
                 "1wihx7dphacg9fy5wfj93h236lr1w5gwzh7ir3js37wi9cz6sr2p"))))
-    (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
        ("curl" ,curl)
@@ -192,17 +257,7 @@ specifications are building blocks of S/MIME and TLS.")
         (lambda _
           (substitute* "tests/openpgp/Makefile.in"
             (("/bin/sh") (which "bash"))))
-       %standard-phases)))
-    (home-page "http://gnupg.org/")
-    (synopsis "GNU Privacy Guard")
-    (description
-     "The GNU Privacy Guard is a complete implementation of the OpenPGP
-standard.  It is used to encrypt and sign data and communication.  It
-features powerful key management and the ability to access public key
-servers.  It includes several libraries: libassuan (IPC between GnuPG
-components), libgpg-error (centralized GnuPG error values), and
-libskba (working with X.509 certificates and CMS data).")
-    (license gpl3+)))
+       %standard-phases)))))
 
 (define-public gnupg-1
   (package (inherit gnupg)
@@ -231,7 +286,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.5.1")
+    (version "1.5.3")
     (source
      (origin
       (method url-fetch)
@@ -239,7 +294,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "1qqi9bxwxxsc4r15j7drclgp0w8jk9nj3h2fsivk4c7brvw3lbvc"))))
+        "1jgwmra6cf0i5x2prj92w77vl7hmj276qmmll3lwysbyn32l1c0d"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
@@ -265,14 +320,14 @@ and every application benefits from this.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.0.9")
+   (version "2.0.11")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/pgpius/pius/"
                                 version "/pius-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "1g1jly3wl4ks6h8ydkygyl2c4i7v3z91rg42005m6vm70y1d8b3d"))))
+                     "0pdbyqz6k0bm182cz81ss7yckmpms5qhrrw0wcr4a1srzcjyzf5f"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
              ("python" ,python-2)           ; uses the Python 2 'print' syntax
@@ -414,14 +469,14 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry
   (package
     (name "pinentry")
-    (version "0.8.3")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1bd047crf7xb8g61mval8v6qww98rddlsw2dz6j8h8qbnl4hp2sn"))))
+                "1awhajq21hcjgqfxg9czaxg555gij4bba6axrwg8w6lfmc3ml14h"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)

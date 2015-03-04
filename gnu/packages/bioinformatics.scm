@@ -43,6 +43,7 @@
               (method url-fetch)
               (uri (string-append "https://github.com/bedops/bedops/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0wmg6j0icimlrnsidaxrzf3hfgjvlkkcwvpdg7n4gg7hdv2m9ni5"))))
@@ -100,6 +101,7 @@ computational cluster.")
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "16aq0w3dmbd0853j32xk9jin4vb6v6fgakfyvrsmsjizzbn3fpfl"))))
@@ -182,6 +184,7 @@ Python.")
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "15dnbqippwvhyh9zqjhaxkabk7lm1xbh1nvar1x4b5kwm117zijn"))
@@ -378,35 +381,30 @@ Illumina, Roche 454, and the SOLiD platform.")
                             '()
                             '("POPCNT_CAPABILITY=0")))
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source #:allow-other-keys)
-          (and (zero? (system* "unzip" source))
-               (chdir "hisat-0.1.4-beta")))
-        (alist-cons-after
-         'unpack 'patch-sources
-         (lambda _
-           ;; XXX Cannot use snippet because zip files are not supported
-           (substitute* "Makefile"
-             (("^CC = .*$") "CC = gcc")
-             (("^CPP = .*$") "CPP = g++")
-             ;; replace BUILD_HOST and BUILD_TIME for deterministic build
-             (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-             (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
-           (substitute* '("hisat-build" "hisat-inspect")
-             (("/usr/bin/env") (which "env"))))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-              (mkdir-p bin)
-              (for-each
-               (lambda (file)
-                 (copy-file file (string-append bin file)))
-               (find-files
-                "."
-                "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
-          (alist-delete 'configure %standard-phases))))))
+       (alist-cons-after
+        'unpack 'patch-sources
+        (lambda _
+          ;; XXX Cannot use snippet because zip files are not supported
+          (substitute* "Makefile"
+            (("^CC = .*$") "CC = gcc")
+            (("^CPP = .*$") "CPP = g++")
+            ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+            (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+            (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
+          (substitute* '("hisat-build" "hisat-inspect")
+            (("/usr/bin/env") (which "env"))))
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (for-each
+              (lambda (file)
+                (copy-file file (string-append bin file)))
+              (find-files
+               "."
+               "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
+         (alist-delete 'configure %standard-phases)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs

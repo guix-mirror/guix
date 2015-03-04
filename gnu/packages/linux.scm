@@ -1005,8 +1005,8 @@ Linux-based operating systems.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'bootstrap
+     '(#:phases (alist-cons-after
+                 'unpack 'bootstrap
                  (lambda _
                    (zero? (system* "autoreconf" "-vf")))
                  %standard-phases)
@@ -1851,6 +1851,7 @@ particular the 'perf' command.")
               (method url-fetch)
               (uri (string-append "https://github.com/ghedo/pflask/archive/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1g8fjj67dfkc2s0852l9vqi1pm61gp4rxbpzbzg780f5s5hd1fys"))))

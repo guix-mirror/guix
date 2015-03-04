@@ -40,28 +40,23 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.4.11")
+   (version "2.5.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
-                                version ".tar.gz"))
+                                version ".tar.bz2"))
             (sha256 (base32
-                     "0gpcz6swir64kp0dk3rwgqqkmf48b90dqgczdmznjjryhrahx9r9"))))
+                     "1fdgl7js99xv1yy5zx1ravmqd0jxlnqpv7zcl954h4hbg15wqyrq"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys #:rest args)
-         (let ((install (assoc-ref %standard-phases 'install))
-               (include (string-append (assoc-ref outputs "out") "/include")))
-           (apply install args)
-           ;; Unravel one directory, since ft2build.h includes directly from
-           ;; freetype/, not freetype2/freetype; this is announced in the file
-           ;; to be changed in a future release.
-           (symlink (string-append include "/freetype2/freetype")
-                    (string-append include "/freetype"))))
-       %standard-phases)))
+       ;; This should not be necessary; reported upstream as
+       ;; https://savannah.nongnu.org/bugs/index.php?44261
+       (alist-cons-before
+        'configure 'set-paths
+        (lambda _
+          (setenv "CONFIG_SHELL" (which "bash")))
+        %standard-phases)))
    (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
@@ -283,8 +278,8 @@ smooth contours with constant curvature at the spline joins.")
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'bootstrap
+     `(#:phases (alist-cons-after
+                 'unpack 'bootstrap
                  (lambda _
                    (zero? (system* "autoreconf" "-vi")))
                  %standard-phases)))

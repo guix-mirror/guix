@@ -51,21 +51,25 @@
                  'check 'patch-tests
                  (lambda* (#:key inputs #:allow-other-keys)
                    (let* ((bash (which "sh")))
-                     (substitute*
-                         (find-files "gettext-tools/tests"
-                                     "^(lang-sh|msg(exec|filter)-[0-9])")
-                       (("#![[:blank:]]/bin/sh")
-                        (format #f "#!~a" bash)))
+                     ;; Some of the files we're patching are
+                     ;; ISO-8859-1-encoded, so choose it as the default
+                     ;; encoding so the byte encoding is preserved.
+                     (with-fluids ((%default-port-encoding #f))
+                       (substitute*
+                           (find-files "gettext-tools/tests"
+                                       "^(lang-sh|msg(exec|filter)-[0-9])")
+                         (("#![[:blank:]]/bin/sh")
+                          (format #f "#!~a" bash)))
 
-                     (substitute* (cons "gettext-tools/src/msginit.c"
-                                        (find-files "gettext-tools/gnulib-tests"
-                                                    "posix_spawn"))
-                       (("/bin/sh")
-                        bash))
+                       (substitute* (cons "gettext-tools/src/msginit.c"
+                                          (find-files "gettext-tools/gnulib-tests"
+                                                      "posix_spawn"))
+                         (("/bin/sh")
+                          bash))
 
-                     (substitute* "gettext-tools/src/project-id"
-                       (("/bin/pwd")
-                        "pwd"))))
+                       (substitute* "gettext-tools/src/project-id"
+                         (("/bin/pwd")
+                          "pwd")))))
                  %standard-phases)
 
        ;; When tests fail, we want to know the details.

@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
@@ -263,18 +263,11 @@ for efficient socket-like bidirectional reliable communication channels.")
                      ("which"    ,which)
                      ("libtool"  ,libtool)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'bootstrap 'fix-autogen-shebang
+     `(#:phases (alist-cons-after
+                 'unpack 'bootstrap
                  (lambda _
-                   (substitute* "autogen.sh"
-                     ;; Removing -e as it causes the whole script to fail when
-                     ;; `which gtkdocize` fails.
-                     (("# !/bin/sh -e") (string-append "#!" (which "sh")))))
-                 (alist-cons-before
-                  'patch-usr-bin-file 'bootstrap
-                  (lambda _
-                    (zero? (system* "./autogen.sh")))
-                  %standard-phases))))
+                   (zero? (system* "sh" "autogen.sh")))
+                 %standard-phases)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description

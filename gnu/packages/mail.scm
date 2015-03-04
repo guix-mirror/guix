@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
@@ -284,6 +284,7 @@ and corrections.  It is based on a Bayesian filter.")
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
                                   "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "00k84qagph3xnxss6rkxm61x07ngz8fvffx4z9jyw5baf3cdd32p"))))
@@ -425,6 +426,7 @@ useful features.")
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
                (base32 "05qyqx2c1ppb1jnrs3m52i60f9xlxfxdmb9dnwg4vqjv8kwv2qkr"))))
     (build-system gnu-build-system)
@@ -441,14 +443,11 @@ useful features.")
      `(("curl" ,curl)
        ("expat" ,expat)))
     (arguments
-      '(#:phases (alist-cons-before
-                  'configure 'autogen
+      '(#:phases (alist-cons-after
+                  'unpack 'autogen
                   (lambda _
-                    (system* "./autogen.sh")) ;; Note: this fails because the
-                         ;; generated configure script uses /bin/sh. It is
-                         ;; replaced in the configure phase by the correct
-                         ;; value. TODO: replace the configure phase by the
-                         ;; autogen phase and have the SHELL variable be replaced
+                    (setenv "NOCONFIGURE" "true")
+                    (zero? (system* "sh" "autogen.sh")))
                   %standard-phases)
         #:configure-flags
         '("--disable-static" "--disable-db")))
