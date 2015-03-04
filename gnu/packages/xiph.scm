@@ -192,14 +192,14 @@ OpenBSD's sndio.")
 (define flac
   (package
    (name "flac")
-   (version "1.3.0")
+   (version "1.3.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://downloads.xiph.org/releases/flac/flac-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1p0hh190kqvpkbk1bbajd81jfbmkyl4fn2i7pggk2zppq6m68bgs"))))
+              "0v65w7ph6ldwp5a8fbhp0a3w8f737ck468fr7yb7sxmskl4w0ws7"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f))
