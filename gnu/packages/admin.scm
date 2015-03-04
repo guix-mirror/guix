@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -966,6 +967,31 @@ characters can be replaced as well, as can UTF-8 characters.")
     (description
      "TestDisk is a program for data recovery, primarily designed to help
 recover lost partitions and/or make non-booting disks bootable again.")
+    (license license:gpl2+)))
+
+(define-public tree
+  (package
+    (name "tree")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mama.indstate.edu/users/ice/tree/src/tree-"
+                    version ".tgz"))
+              (sha256
+               (base32 "04kviw799qxly08zb8n5mgxfd96gyis6x69q2qiw86jnh87c4mv9"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f                      ; no check target
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                               (list (string-append "prefix=" out)))))
+    (synopsis "Recursively list the contents of a directory")
+    (description
+     "Tree is a recursive directory listing command that produces a depth
+indented listing of files, which is colorized ala dircolors if the LS_COLORS
+environment variable is set and output is to tty.")
+    (home-page "http://mama.indstate.edu/users/ice/tree/")
     (license license:gpl2+)))
 
 (define-public direvent
