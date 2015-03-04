@@ -33,7 +33,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ed)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)

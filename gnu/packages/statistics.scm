@@ -36,7 +36,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages xorg))
 
 (define-public r

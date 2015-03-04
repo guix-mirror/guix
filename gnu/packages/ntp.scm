@@ -20,7 +20,7 @@
 
 (define-module (gnu packages ntp)
   #:use-module (gnu packages)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openssl)

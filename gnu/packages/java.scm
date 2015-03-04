@@ -39,7 +39,6 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages wget)
-  #:use-module (gnu packages which)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages mit-krb5)

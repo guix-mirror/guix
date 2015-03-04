@@ -48,7 +48,6 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages which)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))

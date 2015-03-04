@@ -32,7 +32,7 @@
   #:use-module (gnu packages ncurses)
   #:autoload   (gnu packages protobuf) (protobuf)
   #:autoload   (gnu packages boost) (boost)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)

@@ -24,7 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages mp3)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml))
 

@@ -49,7 +49,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gtk)

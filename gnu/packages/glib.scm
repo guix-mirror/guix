@@ -39,7 +39,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages file)
-  #:use-module (gnu packages which)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages m4)
 

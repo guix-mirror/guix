@@ -22,7 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages which))
+  #:use-module (gnu packages base))
 
 (define-public datamash
   (package

@@ -23,7 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages screen)
-  #:use-module (gnu packages which))
+  #:use-module (gnu packages base))
 
 (define-public wdiff
   (package

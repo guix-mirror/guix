@@ -159,7 +159,7 @@ webrtc/tools/e2e_quality/audio/perf")))))
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("ruby" ,ruby)
-       ("which" ,(@ (gnu packages which) which))))
+       ("which" ,(@ (gnu packages base) which))))
     (arguments
      `(#:phases
          (alist-replace

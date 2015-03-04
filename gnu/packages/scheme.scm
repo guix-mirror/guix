@@ -30,7 +30,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages libphidget)

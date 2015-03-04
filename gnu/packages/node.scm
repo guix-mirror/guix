@@ -25,7 +25,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)

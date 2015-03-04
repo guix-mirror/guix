@@ -584,6 +584,26 @@ test environments.")
     (home-page (package-home-page glibc))
     (license (package-license glibc))))
 
+(define-public which
+  (package
+    (name "which")
+    (version "2.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/which/which-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1y2p50zadb36izzh2zw4dm5hvdiydqf3qa88l8kav20dcmfbc5yl"))))
+    (build-system gnu-build-system)
+    (home-page "https://gnu.org/software/which/")
+    (synopsis "Find full path of shell commands")
+    (description
+     "The which program finds the location of executables in PATH, with a
+variety of options.  It is an alternative to the shell \"type\" built-in
+command.")
+    (license gpl3+))) ; some files are under GPLv2+
+
 (define-public tzdata
   (package
     (name "tzdata")

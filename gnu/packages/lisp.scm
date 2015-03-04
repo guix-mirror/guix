@@ -28,7 +28,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages libffi)

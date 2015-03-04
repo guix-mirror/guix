@@ -20,7 +20,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages acl)
-  #:use-module (gnu packages which)
+  #:use-module (gnu packages base)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
