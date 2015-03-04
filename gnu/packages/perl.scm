@@ -582,14 +582,14 @@ bin as is also commonly used) paths of your Perl distribution.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.001009")
+    (version "1.001014")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "1klxpy658aj1pmrw63j1hc16gilwh5rzhp9rb2d1iydi3hcm8xb5"))))
+                "0szi95shwwdvc4nqykzgx05g2m1001mjhvqqhjg5wypbi771992m"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
