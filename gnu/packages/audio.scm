@@ -245,20 +245,20 @@ plugins are provided.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0bsacx3l9065gk8g4137qmz2ij7s9x06aldvacinzlcslw7bd1kq"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "libs/Makefile"
-                  (("/sbin/ldconfig") "true")))))
+                "0bsacx3l9065gk8g4137qmz2ij7s9x06aldvacinzlcslw7bd1kq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
-        'unpack
-        'enter-directory
-        (lambda _ (chdir "libs"))
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("/sbin/ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs")
+          #t)
         (alist-cons-after
          'install
          'install-symlink
