@@ -279,6 +279,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/telephony.scm			\
   gnu/packages/texinfo.scm			\
   gnu/packages/texlive.scm			\
+  gnu/packages/textutils.scm			\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
