@@ -4884,14 +4884,14 @@ user-friendly mechanism to start the X server.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "304")
+    (version "315")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
                                   "xterm-" version ".tgz"))
               (sha256
                (base32
-                "19yp5phfzzgydc2yqka4p69ygvfzsd2aa98hbw086xyjlws3kbyk"))))
+                "00kxg36hzp011x98ib6x503pbhj1ldh6hb82l5x3a68s554h1rpy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
