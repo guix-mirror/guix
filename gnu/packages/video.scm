@@ -23,7 +23,7 @@
   #:use-module (ice-9 match)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
-                               fsf-free))
+                               fsf-free isc))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -62,6 +62,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
@@ -88,6 +89,34 @@
 A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license gpl2+)))
+
+(define-public libass
+  (package
+    (name "libass")
+    (version "0.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libass/libass/releases/download/"
+                    version "/libass-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1mwj2nk9g6cq6f8m1hf0ijg1299rghhy9naahqq43sc2whblb1l7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
+    (propagated-inputs
+     `(("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("fontconfig" ,fontconfig)
+       ("harfbuzz" ,harfbuzz)
+       ("enca" ,enca)))
+    (home-page "https://github.com/libass/libass")
+    (synopsis "Subtitle rendering library for the ASS/SSA format")
+    (description "libass is a subtitle rendering library for the
+ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
+    (license isc)))
 
 (define-public libcaca
   (package
@@ -177,6 +206,7 @@ SMPTE 314M.")
        ("opus" ,opus)
        ("ladspa" ,ladspa)
        ("lame" ,lame)
+       ("libass" ,libass)
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
        ("libcdio-paranoia" ,libcdio-paranoia)
@@ -224,7 +254,6 @@ SMPTE 314M.")
 ;;   --enable-avisynth        enable reading of AviSynth script files [no]
 ;;   --enable-frei0r          enable frei0r video filtering
 ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
-;;   --enable-libass          enable libass subtitles rendering [no]
 ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
 ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
 ;;                            and libraw1394 [no]
@@ -269,6 +298,7 @@ SMPTE 314M.")
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
                       "--enable-ladspa"
+                      "--enable-libass"
                       "--enable-libbluray"
                       "--enable-libcaca"
                       "--enable-libcdio"
