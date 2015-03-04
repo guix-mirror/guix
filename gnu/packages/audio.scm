@@ -1157,20 +1157,20 @@ with a much different focus than most other audio daemons.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "libs/Makefile"
-                  (("ldconfig") "true")))))
+                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
-        'unpack
-        'enter-directory
-        (lambda _ (chdir "libs"))
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs")
+          #t)
         (alist-cons-after
          'install
          'install-symlink
