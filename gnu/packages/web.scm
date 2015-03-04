@@ -817,3 +817,21 @@ of people.")
     (description
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license l:expat)))
+
+(define-public libquvi-scripts
+  (package
+    (name "libquvi-scripts")
+    (version "0.4.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/quvi/libquvi-scripts-" version ".tar.xz"))
+       (sha256
+        (base32 "0d0giry6bb57pnidymvdl7i5x9bq3ljk3g4bs294hcr5mj3cq0kw"))))
+    (build-system gnu-build-system)
+    (home-page "http://quvi.sourceforge.net/")
+    (synopsis "Media stream URL parser")
+    (description "This package contains support scripts called by libquvi to
+parse media stream properties.")
+    (license l:lgpl2.1+)))
