@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -336,7 +337,7 @@ extremely large and complex data collections.")
 (define-public octave
   (package
     (name "octave")
-    (version "3.8.0")
+    (version "3.8.2")
     (source
      (origin
       (method url-fetch)
@@ -344,7 +345,7 @@ extremely large and complex data collections.")
 			  version ".tar.gz"))
       (sha256
        (base32
-	"0ks9pr154syw0vb3jn6xsnrkkrbvf9y7i7gaxa28rz6ngxbxvq9l"))))
+	"05slz8yx8k91fqlnfr1f0vni95iq9qmchz41c7nf4isn3b2fjn7j"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
