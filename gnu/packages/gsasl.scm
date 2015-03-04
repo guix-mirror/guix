@@ -18,12 +18,12 @@
 
 (define-module (gnu packages gsasl)
   #:use-module (gnu packages)
-  #:use-module ((gnu packages compression) #:prefix guix:)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages shishi)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -42,7 +42,7 @@
    (synopsis "Library that implements NTLM authentication")
    (description
     "Libntlm is a library that implements NTLM authentication")
-   (license lgpl2.1+)
+   (license license:lgpl2.1+)
    (home-page "http://www.nongnu.org/libntlm/")))
 
 (define-public gss
@@ -58,8 +58,7 @@
    (build-system gnu-build-system)
    (inputs `(("nettle" ,nettle)
              ("shishi" ,shishi)
-             ("zlib" ,guix:zlib)
-            ))
+             ("zlib" ,zlib)))
    (synopsis "Generic Security Service library")
    (description
     "The GNU Generic Security Service provides a free implementation of the
@@ -68,7 +67,7 @@ interface for programs to access security services.  Security services present
 a generic, GSS interface, with which the calling application interacts via
 this library, freeing the application developer from needing to know about
 the underlying security implementation.")
-   (license gpl3+)
+   (license license:gpl3+)
    (home-page "http://www.gnu.org/software/gss/")))
 
 (define-public gsasl
@@ -85,7 +84,7 @@ the underlying security implementation.")
    (inputs `(("libidn" ,libidn)
              ("libntlm" ,libntlm)
              ("gss" ,gss)
-             ("zlib" ,guix:zlib)))
+             ("zlib" ,zlib)))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
     ;; propagated input of GnuTLS.
@@ -96,5 +95,5 @@ the underlying security implementation.")
 Security Layer framework.  On network servers such as IMAP or SMTP servers,
 SASL is used to handle client/server authentication.  This package contains
 both a library and a command-line tool to access the library.")
-   (license gpl3+)
+   (license license:gpl3+)
    (home-page "http://www.gnu.org/software/gsasl/")))

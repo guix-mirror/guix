@@ -20,12 +20,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnutls)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+ bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module ((gnu packages compression) #:prefix guix:)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
@@ -141,7 +141,7 @@ living in the same process.")
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
        ("nettle" ,nettle)
-       ("zlib" ,guix:zlib)))
+       ("zlib" ,zlib)))
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
     (description

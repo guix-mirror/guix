@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages emacs)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -42,7 +42,7 @@
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages autotools)
-  #:use-module ((gnu packages compression) #:prefix compression:)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
@@ -90,7 +90,7 @@
        ;; When looking for libpng `configure' links with `-lpng -lz', so we
        ;; must also provide zlib as an input.
        ("libpng" ,libpng)
-       ("zlib" ,compression:zlib)
+       ("zlib" ,zlib)
 
        ("libXpm" ,libxpm)
        ("libxml2" ,libxml2)
@@ -112,7 +112,7 @@ spreadsheets, remote server editing, and much more.  Emacs includes extensive
 documentation on all aspects of the system, from basic editing to writing
 large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-no-x-toolkit
   (package (inherit emacs)
@@ -170,7 +170,7 @@ at corpses, the continuously running Scheme interpreter takes the center
 of the stage in Geiser.  A bundle of Elisp shims orchestrates the dialog
 between the Scheme interpreter, Emacs and, ultimately, the schemer,
 giving her access to live metadata.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public paredit
   (package
@@ -215,7 +215,7 @@ ParEdit helps **keep parentheses balanced** and adds many keys for moving
 S-expressions and moving around in S-expressions.  Its behavior can be jarring
 for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public magit
   (package
@@ -272,7 +272,7 @@ You can review and commit the changes you have made to the tracked files, for
 example, and you can browse the history of past changes.  There is support for
 cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 
 ;;;
@@ -347,7 +347,7 @@ operations.")
     (synopsis "Simple Web browser for Emacs based on w3m")
     (description
      "Emacs-w3m is an emacs interface for the w3m web browser.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public emacs-wget
   (package
@@ -394,7 +394,7 @@ operations.")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
      "Emacs-wget is an emacs interface for the wget file downloader.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 
 ;;;
@@ -517,7 +517,7 @@ whatever formats are supported by your music player.  It also
 supports tagging and playlist management, all behind a clean and
 light user interface.")
     (home-page "http://www.gnu.org/software/emms/")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 
 ;;;
@@ -560,4 +560,4 @@ light user interface.")
 an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
-    (license gpl3+)))
+    (license license:gpl3+)))

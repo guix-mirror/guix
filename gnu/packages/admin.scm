@@ -21,7 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages admin)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
@@ -38,7 +38,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
-  #:use-module ((gnu packages compression) #:prefix c:)
+  #:use-module (gnu packages compression)
   #:use-module ((gnu packages openssl) #:prefix o:)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages gnupg)
@@ -78,7 +78,7 @@
 execution of system services, replacing similar functionality found in
 typical init systems.  It provides dependency-handling through a convenient
 interface and is based on GNU Guile.")
-    (license gpl3+)
+    (license license:gpl3+)
     (home-page "http://www.gnu.org/software/dmd/")))
 
 (define-public dfc
@@ -102,7 +102,7 @@ interface and is based on GNU Guile.")
    (description
     "dfc (df color) is a modern version of df.  It uses colors, draws pretty
 graphs and can export its output to different formats.")
-   (license bsd-3)))
+   (license license:bsd-3)))
 
 (define-public htop
   (package
@@ -123,7 +123,7 @@ graphs and can export its output to different formats.")
    (description
     "This is htop, an interactive process viewer.  It is a text-mode
 application (for console or X terminals) and requires ncurses.")
-   (license gpl2)))
+   (license license:gpl2)))
 
 (define-public pies
   (package
@@ -145,7 +145,7 @@ application (for console or X terminals) and requires ncurses.")
 other programs.  It reads the list of programs to be started from its
 configuration file, executes them, and then monitors their status,
 re-executing them as necessary.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public inetutils
   (package
@@ -169,7 +169,7 @@ re-executing them as necessary.")
     (description
      "Inetutils is a collection of common network programs, such as an ftp
 client and server, a telnet client and server, and an rsh client and server.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public shadow
   (package
@@ -224,7 +224,7 @@ login, passwd, su, groupadd, and useradd.")
 
     ;; The `vipw' program is GPLv2+.
     ;; libmisc/salt.c is public domain.
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public mingetty
   (package
@@ -274,7 +274,7 @@ login, passwd, su, groupadd, and useradd.")
      "Small console getty that is started on the Linux text console,
 asks for a login name and then transfers over to 'login'.  It is extended to
 allow automatic login and starting any app.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public net-base
   (package
@@ -311,14 +311,14 @@ allow automatic login and starting any app.")
                                     '("services" "protocols" "rpc")))
                      #t))))
     (native-inputs `(("tar" ,tar)
-                     ("xz" ,c:xz)))
+                     ("xz" ,xz)))
     (synopsis "IANA protocol, port, and RPC number assignments")
     (description
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
 files, which contain information about the IANA-assigned port, protocol, and
 ONC RPC numbers")
     (home-page "http://packages.debian.org/sid/netbase")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public netcat
   (package
@@ -348,7 +348,7 @@ reliable \"back-end\" tool that can be used directly or easily driven by other
 programs and scripts.  At the same time, it is a feature-rich network debugging
 and exploration tool, since it can create almost any kind of connection you
 would need and has several interesting built-in capabilities.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public alive
   (package
@@ -370,7 +370,7 @@ would need and has several interesting built-in capabilities.")
     (description
      "GNU Alive sends periodic pings to a server, generally to keep a
 connection alive.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public isc-dhcp
   (package
@@ -460,7 +460,7 @@ connection alive.")
      "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public libpcap
   (package
@@ -484,7 +484,7 @@ portable framework for low-level network monitoring.  Applications include
 network statistics collection, security monitoring, network debugging, etc.")
 
     ;; fad-*.c and a couple other files are BSD-4, but the rest is BSD-3.
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public tcpdump
   (package
@@ -506,7 +506,7 @@ network statistics collection, security monitoring, network debugging, etc.")
     (description
      "Tcpdump is a command-line tool to analyze network traffic passing
 through the network interface controller.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public jnettop
   (package
@@ -532,7 +532,7 @@ through the network interface controller.")
      "Jnettop is a traffic visualiser, which captures traffic going
 through the host it is running from and displays streams sorted
 by bandwidth they use.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public clusterssh
   (package
@@ -578,7 +578,7 @@ by bandwidth they use.")
      "ClusterSSH controls a number of xterm windows via a single graphical
 console window to allow commands to be interactively run on multiple servers
 over ssh connections.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public rottlog
   (package
@@ -621,7 +621,7 @@ automatically rotate out log files when they have reached a given size or
 according to a given schedule.  It can also be used to automatically compress
 and archive such logs.  Rot[t]log will mail reports of its activity to the
 system administrator.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public sudo
   (package
@@ -681,7 +681,7 @@ commands as root or another user while providing an audit trail of the
 commands and their arguments.")
 
     ;; See <http://www.sudo.ws/sudo/license.html>.
-    (license x11)))
+    (license license:x11)))
 
 (define-public wpa-supplicant-light
   (package
@@ -762,7 +762,7 @@ WLAN driver.
 This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
 
     ;; In practice, this is linked against Readline, which makes it GPLv3+.
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public wpa-supplicant
   (package (inherit wpa-supplicant-light)
@@ -820,7 +820,7 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
     (description
      "WakeLan broadcasts a properly formatted UDP packet across the local area
 network, which causes enabled computers to power on.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public dmidecode
   (package
@@ -850,7 +850,7 @@ tag as well as a lot of other details of varying level of interest and
 reliability depending on the manufacturer.  This will often include usage
 status for the CPU sockets, expansion slots (e.g. AGP, PCI, ISA) and memory
 module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public acpica
   (package
@@ -883,7 +883,7 @@ ACPI meant to be directly integrated into the host OS as a kernel-resident
 subsystem, and a small set of tools to assist in developing and debugging ACPI
 tables.  This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
-    (license gpl2)))  ; Dual GPLv2/ACPICA Licence
+    (license license:gpl2)))  ; Dual GPLv2/ACPICA Licence
 
 (define-public stress
   (package
@@ -909,7 +909,7 @@ evaluate how well their systems will scale, by kernel programmers to evaluate
 perceived performance characteristics, and by systems programmers to expose
 the classes of bugs which only or more frequently manifest themselves when the
 system is under heavy load.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public detox
   (package
@@ -939,7 +939,7 @@ system is under heavy load.")
 under Unix and related operating systems.  Spaces and various other unsafe
 characters (such as \"$\") get replaced with \"_\".  ISO 8859-1 (Latin-1)
 characters can be replaced as well, as can UTF-8 characters.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public testdisk
   (package
@@ -957,7 +957,7 @@ characters can be replaced as well, as can UTF-8 characters.")
      `(;; ("ntfs" ,ntfs)
        ("util-linux" ,util-linux)
        ("openssl" ,o:openssl)
-       ("zlib" ,c:zlib)
+       ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
        ("ncurses" ,ncurses)))
@@ -966,7 +966,7 @@ characters can be replaced as well, as can UTF-8 characters.")
     (description
      "TestDisk is a program for data recovery, primarily designed to help
 recover lost partitions and/or make non-booting disks bootable again.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public direvent
   (package
@@ -1004,7 +1004,7 @@ external program with information about the event, such as the location
 within the file system where it occurred.  Thus, \"direvent\" provides an
 easy way to react immediately if given files undergo changes, for example, to
 track changes in important system configuration files.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public libcap-ng
   (package
@@ -1030,7 +1030,7 @@ any capabilities and whether or not it has an open ended bounding set.  The
 included utilities are designed to let admins and developers spot apps from
 various ways that may be running with too much privilege.")
     ;; The library is lgpl2.1+, but also ships some utils which are gpl2+.
-    (license (list lgpl2.1+ gpl2+))))
+    (license (list license:lgpl2.1+ license:gpl2+))))
 
 (define-public smartmontools
   (package
@@ -1054,4 +1054,4 @@ monitor storage systems using the Self-Monitoring, Analysis and Reporting
 Technology System (S.M.A.R.T.) built into most modern ATA and SCSI harddisks.
 In many cases, these utilities will provide advanced warning of disk
 degradation and failure.")
-    (license gpl2+)))
+    (license license:gpl2+)))
