@@ -58,3 +58,23 @@ any pair.  When exact transliteration are not possible, it gets rid of
 offending characters or falls back on approximations.  The recode program is a
 handy front-end to the library.")
     (license license:gpl2+)))
+
+(define-public enca
+  (package
+    (name "enca")
+    (version "1.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/nijel/enca/archive/" version ".tar.gz"))
+       (sha256
+        (base32 "1xik00x0yvhswsw2isnclabhv536xk1s42cf5z54gfbpbhc7ni8l"))))
+    (build-system gnu-build-system)
+    (inputs `(("recode" ,recode)))
+    (home-page "https://github.com/nijel/enca")
+    (synopsis "Text encoding detection tool")
+    (description "Enca (Extremely Naive Charset Analyser) consists of libenca,
+an encoding detection library, and enca, a command line frontend, integrating
+libenca and several charset conversion libraries and tools.")
+    (license license:gpl2)))
