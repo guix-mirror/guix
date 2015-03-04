@@ -185,9 +185,8 @@ objects.")
          "1j44rm2spprlq3bc80cxni3dzs3gfjiqv1qc9q7820n1qj0wgmqw"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-sub-install" ,perl-sub-install)))
-    (inputs
-     `(("perl-params-util" ,perl-params-util)))
+     `(("perl-sub-install" ,perl-sub-install)
+       ("perl-params-util" ,perl-params-util)))
     (home-page "http://search.cpan.org/dist/Data-OptList")
     (synopsis "Parse and validate simple name/value option pairs")
     (description
