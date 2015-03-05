@@ -907,6 +907,27 @@ default if it's installed, and should be preferred in all environments with a
 compiler.")
     (license (package-license perl))))
 
+(define-public perl-padwalker
+  (package
+    (name "perl-padwalker")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RO/ROBIN/"
+                           "PadWalker-" version ".tar.gz"))
+       (sha256
+        (base32
+         "058l78rkr6px3rqcv2sdf9sqimdq1nc6py5yb9rrg3wmva7crw84"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/PadWalker")
+    (synopsis "Play with other peoples' lexical variables")
+    (description "PadWalker is a module which allows you to inspect (and even
+change) lexical variables in any subroutine which called you.  It will only
+show those variables which are in scope at the point of the call.  PadWalker
+is particularly useful for debugging.")
+    (license (package-license perl))))
+
 (define-public perl-params-util
   (package
     (name "perl-params-util")
