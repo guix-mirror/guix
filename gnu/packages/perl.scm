@@ -300,6 +300,26 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
                               "Exporter-Lite-" version))
     (license (package-license perl))))
 
+(define-public perl-extutils-config
+  (package
+    (name "perl-extutils-config")
+    (version "0.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "ExtUtils-Config-" version ".tar.gz"))
+       (sha256
+        (base32
+         "130s5zk4krrymbynqxx62g13jynnb7xi7vdpg65cw3b56kv08ldf"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/ExtUtils-Config")
+    (synopsis "Wrapper for perl's configuration")
+    (description "ExtUtils::Config is an abstraction around the %Config hash.
+By itself it is not a particularly interesting module by any measure, however
+it ties together a family of modern toolchain modules.")
+    (license (package-license perl))))
+
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
