@@ -1385,6 +1385,30 @@ functions")
     ;; license, any version, ..."
     (license gpl3+)))
 
+(define-public perl-test-directory
+  (package
+    (name "perl-test-directory")
+    (version "0.041")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SANBEG/"
+                           "Test-Directory-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ncql08cizhicbxwd753b4czns8nlcnlw0zfjcfrbdd41x4j6hqr"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "http://search.cpan.org/dist/Test-Directory")
+    (synopsis "Perl extension for maintaining test directories")
+    (description "Testing code can involve making sure that files are created
+and deleted as expected.  Doing this manually can be error prone, as it's easy
+to forget a file, or miss that some unexpected file was added.  This module
+simplifies maintaining test directories by tracking their status as they are
+modified or tested with this API, making it simple to test both individual
+files, as well as to verify that there are no missing or unknown files.")
+    (license (package-license perl))))
+
 (define-public perl-test-exception
   (package
     (name "perl-test-exception")
