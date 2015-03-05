@@ -485,6 +485,38 @@ SHA-1 message digest algorithm for use by Perl programs.")
 modules separately and deal with them after the module is done installing.")
     (license (package-license perl))))
 
+(define-public perl-eval-closure
+  (package
+    (name "perl-eval-closure")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Eval-Closure-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ssvlgx3y1y28wrrp0lmmffzqxfrwb2lb3p60b8cjvxsf1c3jbfv"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-devel-lexalias" ,perl-devel-lexalias)))
+    (home-page "http://search.cpan.org/dist/Eval-Closure")
+    (synopsis "Safely and cleanly create closures via string eval")
+    (description "String eval is often used for dynamic code generation.  For
+instance, Moose uses it heavily, to generate inlined versions of accessors and
+constructors, which speeds code up at runtime by a significant amount.  String
+eval is not without its issues however - it's difficult to control the scope
+it's used in (which determines which variables are in scope inside the eval),
+and it's easy to miss compilation errors, since eval catches them and sticks
+them in $@ instead.  This module attempts to solve these problems.  It
+provides an eval_closure function, which evals a string in a clean
+environment, other than a fixed list of specified variables.  Compilation
+errors are rethrown automatically.")
+    (license (package-license perl))))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
