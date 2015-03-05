@@ -50,6 +50,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
 (define-public alsa-modular-synth
@@ -276,6 +277,38 @@ plugins are provided.")
      "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
 ALSA PCM devices.")
     (license license:gpl2+)))
+
+(define-public faad2
+  (package
+    (name "faad2")
+    (version "2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/faac/faad2-" version ".zip"))
+              (sha256
+               (base32
+                "16f3l16c00sg0wkrkm3vzv0gy3g97x309vw788igs0cap2x1ak3z"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("unzip" ,unzip)))
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'unpack 'bootstrap
+        (lambda _
+          (substitute* "bootstrap" (("\r\n") "\n"))
+          (zero? (system* "sh" "bootstrap")))
+        %standard-phases)))
+    (home-page "http://www.audiocoding.com/faad2.html")
+    (synopsis "MPEG-4 and MPEG-2 AAC decoder")
+    (description
+     "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR,
+PS, and DAB+.")
+    (license license:gpl2)))
 
 (define-public freepats
   (package
