@@ -266,6 +266,27 @@ objects.")
                               "Clone-" version))
     (license (package-license perl))))
 
+(define-public perl-config-autoconf
+  (package
+    (name "perl-config-autoconf")
+    (version "0.309")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "Config-AutoConf-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nqc7calfny12dwfhz7ylsvx55nf69kirdc5dbyvh3sjsqj8yvdq"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Config-AutoConf")
+    (synopsis "Module to implement some AutoConf macros in Perl")
+    (description "Config::AutoConf is intended to provide the same
+opportunities to Perl developers as GNU Autoconf does for Shell developers.")
+    (license (package-license perl))))
+
 (define-public perl-cpan-meta-check
   (package
     (name "perl-cpan-meta-check")
