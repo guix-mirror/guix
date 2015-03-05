@@ -142,7 +142,7 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "f1082ec"))
+  (let ((commit "07157e8"))
     (package (inherit guix-0.8.1)
       (version (string-append "0.8.1." commit))
       (source (origin
@@ -152,7 +152,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0mmwmv3wbrgzs49gnxraj11fp1mxfry4r0n222l3p4yga27vzw6d"))))
+                  "0ksfvkkgzsz58h60a8kypg9x24sabl5007hr3a2ddgh05rjckbci"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.1)
          ((#:phases phases)
