@@ -27,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -445,6 +446,51 @@ particular, reads spanning multiple exons.")
      "HTSeq is a Python package that provides infrastructure to process data
 from high-throughput sequencing assays.")
     (license license:gpl3+)))
+
+(define-public htsjdk
+  (package
+    (name "htsjdk")
+    (version "1.129")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htsjdk/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asdk9b8jx2ij7yd6apg9qx03li8q7z3ml0qy2r2qczkra79y6fw"))
+              (modules '((guix build utils)))
+              ;; remove build dependency on git
+              (snippet '(substitute* "build.xml"
+                          (("failifexecutionfails=\"true\"")
+                           "failifexecutionfails=\"false\"")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases (alist-replace
+                 'build
+                 (lambda _
+                   (setenv "JAVA_HOME" (assoc-ref %build-inputs "jdk"))
+                   (zero? (system* "ant" "all"
+                                   (string-append "-Ddist="
+                                                  (assoc-ref %outputs "out")
+                                                  "/share/java/htsjdk/"))))
+                 (fold alist-delete %standard-phases
+                       '(configure install check)))))
+    (native-inputs
+     `(("ant" ,ant)
+       ("jdk" ,icedtea6 "jdk")))
+    (home-page "http://samtools.github.io/htsjdk/")
+    (synopsis "Java API for high-throughput sequencing data (HTS) formats")
+    (description
+     "HTSJDK is an implementation of a unified Java library for accessing
+common file formats, such as SAM and VCF, used for high-throughput
+sequencing (HTS) data.  There are also an number of useful utilities for
+manipulating HTS data.")
+    (license license:expat)))
 
 (define-public macs
   (package
