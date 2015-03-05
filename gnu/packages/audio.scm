@@ -524,6 +524,29 @@ applications, restoring program state (i.e. loaded patches) and the
 connections between them.")
     (license license:gpl2+)))
 
+(define-public libbs2b
+  (package
+    (name "libbs2b")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bs2b/libbs2b-" version ".tar.lzma"))
+              (sha256
+               (base32
+                "1mcc4gjkmphczjybnsrip3gq1f974knzys7x49bv197xk3fn8wdr"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libsndfile" ,libsndfile)))
+    (home-page "http://sourceforge.net/projects/bs2b/")
+    (synopsis "Bauer stereophonic-to-binaural DSP")
+    (description
+     "The Bauer stereophonic-to-binaural DSP (bs2b) library and plugins is
+designed to improve headphone listening of stereo audio records.  Recommended
+for headphone prolonged listening to disable superstereo fatigue without
+essential distortions.")
+    (license license:expat)))
+
 (define-public liblo
   (package
     (name "liblo")
