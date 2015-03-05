@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,9 +95,7 @@ caching facility provided by the library.")
 for CD-ROM and CD image file access.  It allows the developer to add CD
 access to an application without having to worry about the OS- and
 device-dependent properties of CD-ROM or the specific details of CD image
-formats.  It includes pycdio, a Python interface to libcdio, and
-libcdio-paranoia, a library providing jitter-free and error-free audio
-extraction from CDs.")
+formats.")
     (license gpl3+)))
 
 (define-public xorriso
