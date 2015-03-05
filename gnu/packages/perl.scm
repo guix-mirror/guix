@@ -234,6 +234,27 @@ SHA-1 message digest algorithm for use by Perl programs.")
                               version "/SHA1.pm"))
     (license (package-license perl))))
 
+(define-public perl-dist-checkconflicts
+  (package
+    (name "perl-dist-checkconflicts")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                                  "Dist-CheckConflicts-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1i7dr9jpdiy2nijl2p4q5zg2q2s9ckbj2hs4kmnnckf9hsb4p17a"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)))
+    (home-page "http://search.cpan.org/dist/Dist-CheckConflicts")
+    (synopsis "Declare version conflicts for your dist")
+    (description "This module allows you to specify conflicting versions of
+modules separately and deal with them after the module is done installing.")
+    (license (package-license perl))))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
