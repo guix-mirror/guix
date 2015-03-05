@@ -521,6 +521,39 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-module-build-tiny
+  (package
+    (name "perl-module-build-tiny")
+    (version "0.039")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "Module-Build-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "077ijxbvamybph4ymamy1i9q2993xb46vf1npxaybjz0mkv0yn3x"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-extutils-installpaths" ,perl-extutils-installpaths)
+       ("perl-extutils-config" ,perl-extutils-config)
+       ("perl-extutils-helpers" ,perl-extutils-helpers)
+       ("perl-test-harness" ,perl-test-harness)))
+    (propagated-inputs
+     `(("perl-extutils-installpaths" ,perl-extutils-installpaths)
+       ("perl-extutils-config" ,perl-extutils-config)
+       ("perl-extutils-helpers" ,perl-extutils-helpers)
+       ("perl-test-harness" ,perl-test-harness)))
+    (home-page "http://search.cpan.org/dist/Module-Build-Tiny")
+    (synopsis "Tiny replacement for Module::Build")
+    (description "Many Perl distributions use a Build.PL file instead of a
+Makefile.PL file to drive distribution configuration, build, test and
+installation.  Traditionally, Build.PL uses Module::Build as the underlying
+build system.  This module provides a simple, lightweight, drop-in
+replacement.  Whereas Module::Build has over 6,700 lines of code; this module
+has less than 120, yet supports the features needed by most distributions.")
+    (license (package-license perl))))
+
 (define-public perl-module-implementation
   (package
     (name "perl-module-implementation")
