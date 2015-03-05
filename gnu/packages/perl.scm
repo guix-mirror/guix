@@ -640,6 +640,26 @@ a minimum of effort.")
     ;; "Under the same license as Perl itself"
     (license (package-license perl))))
 
+(define-public perl-try-tiny
+  (package
+    (name "perl-try-tiny")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Try-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "068vdbpacfawc3lkfs0b82xxl27h3l0gj14iada3vlwk8rps9yv0"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Try-Tiny")
+    (synopsis "Minimal try/catch with proper preservation of $@")
+    (description "This module provides bare bones try/catch/finally statements
+that are designed to minimize common mistakes with eval blocks, and nothing
+else.")
+    (license x11)))
+
 
 ;;; Some packaged modules need versions of core modules that are newer than
 ;;; those in our perl 5.16.1.
