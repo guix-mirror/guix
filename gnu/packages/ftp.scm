@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,10 @@
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1grmp8zg7cjgjinz66mrh53whigkqzl90nlxj05hapnhk3ns3vni"))))
+                "1grmp8zg7cjgjinz66mrh53whigkqzl90nlxj05hapnhk3ns3vni"))
+              (patches
+               (list (search-patch
+                      "lftp-dont-save-unknown-host-fingerprint.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

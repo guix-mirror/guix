@@ -442,6 +442,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
+  gnu/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
   gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
   gnu/packages/patches/libarchive-fix-lzo-test-case.patch	\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
