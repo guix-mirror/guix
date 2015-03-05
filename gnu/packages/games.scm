@@ -33,6 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -511,35 +512,6 @@ tutorials for the standard QWERTY layout, there are also tutorials for the
 alternative layouts Dvorak and Colemak, as well as for the numpad.  Tutorials
 are primarily in English, however some in other languages are provided.")
     (license license:gpl3+)))
-
-(define-public openal
-  (package
-    (name "openal")
-    (version "1.15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://kcat.strangesoft.net/openal-releases/openal-soft-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "0mmhdqiyb3c9dzvxspm8h2v8jibhi8pfjxnf6m0wn744y1ia2a8f"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f)) ; no check target
-    (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("pulseaudio" ,pulseaudio)))
-    (synopsis "3D audio API")
-    (description
-     "OpenAL provides capabilities for playing audio in a virtual 3D
-environment.  Distance attenuation, doppler shift, and directional sound
-emitters are among the features handled by the API.  More advanced effects,
-including air absorption, occlusion, and environmental reverb, are available
-through the EFX extension.  It also facilitates streaming audio, multi-channel
-buffers, and audio capture.")
-    (home-page "http://kcat.strangesoft.net/openal.html")
-    (license license:lgpl2.0+)))
 
 (define-public irrlicht
   (package
