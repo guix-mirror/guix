@@ -382,6 +382,27 @@ hierarchy the overloads are declared and where the code implementing it is.")
 arbitrary parameters.")
     (license (package-license perl))))
 
+(define-public perl-devel-stacktrace
+  (package
+    (name "perl-devel-stacktrace")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Devel-StackTrace-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r65iq5i11xh0r0kp3pdycydnd3kxpdmxnp0hq9hx9lr60kygsqx"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Devel-StackTrace")
+    (synopsis "Object representing a stack trace")
+    (description "The Devel::StackTrace module contains two classes,
+Devel::StackTrace and Devel::StackTrace::Frame.  These objects encapsulate the
+information that can be retrieved via Perl's caller() function, as well as
+providing a simple interface to this data.")
+    (license artistic2.0)))
+
 (define-public perl-digest-sha1
   (package
     (name "perl-digest-sha1")
