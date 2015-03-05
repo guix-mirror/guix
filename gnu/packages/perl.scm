@@ -677,6 +677,25 @@ if your users try to use \"Sub::Exporter\"'s more advanced features, like
 renaming exports, if they try to use them.")
     (license (package-license perl))))
 
+(define-public perl-sub-identify
+  (package
+    (name "perl-sub-identify")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RG/RGARCIA/"
+                           "Sub-Identify-" version ".tar.gz"))
+       (sha256
+        (base32
+         "087fjcg6w576w47i1slj6mjfd3gl1b0airgddmn3prn0nff6nn2m"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sub-Identify")
+    (synopsis "Retrieve names of code references")
+    (description "Sub::Identify allows you to retrieve the real name of code
+references.")
+    (license (package-license perl))))
+
 (define-public perl-sub-install
   (package
     (name "perl-sub-install")
