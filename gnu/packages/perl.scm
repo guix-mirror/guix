@@ -605,6 +605,30 @@ codes.")
 custom-built routines.")
     (license (package-license perl))))
 
+(define-public perl-sub-exporter-progressive
+  (package
+    (name "perl-sub-exporter-progressive")
+    (version "0.001011")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+                           "Sub-Exporter-Progressive-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01kwzbqwdhvadpphnczid03nlyj0h4cxaq3m3v2401bckkkcc606"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Sub-Exporter-Progressive")
+    (synopsis "Only use Sub::Exporter if you need it")
+    (description "Sub::Exporter is an incredibly powerful module, but with
+that power comes great responsibility, as well as some runtime penalties.
+This module is a \"Sub::Exporter\" wrapper that will let your users just use
+Exporter if all they are doing is picking exports, but use \"Sub::Exporter\"
+if your users try to use \"Sub::Exporter\"'s more advanced features, like
+renaming exports, if they try to use them.")
+    (license (package-license perl))))
+
 (define-public perl-sub-install
   (package
     (name "perl-sub-install")
