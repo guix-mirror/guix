@@ -341,6 +341,25 @@ By itself it is not a particularly interesting module by any measure, however
 it ties together a family of modern toolchain modules.")
     (license (package-license perl))))
 
+(define-public perl-extutils-helpers
+  (package
+    (name "perl-extutils-helpers")
+    (version "0.022")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "ExtUtils-Helpers-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15dalfwmpfmifw312i5pwiai8134pxf7b2804shlqhdk1xqczy6k"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/ExtUtils-Helpers")
+    (synopsis "Various portability utilities for module builders")
+    (description "This module provides various portable helper functions for
+module building modules.")
+    (license (package-license perl))))
+
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
