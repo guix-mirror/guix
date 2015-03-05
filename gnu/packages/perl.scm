@@ -647,6 +647,28 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
                               "Exporter-Lite-" version))
     (license (package-license perl))))
 
+(define-public perl-exporter-tiny
+  (package
+    (name "perl-exporter-tiny")
+    (version "0.042")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOBYINK/"
+                           "Exporter-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gq2ia8c6n84gdrlc73vab61djs8gs8zf7fqx8cxbg5zxg2j45lg"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Exporter-Tiny")
+    (synopsis "Exporter with the features of Sub::Exporter but only core dependencies")
+    (description "Exporter::Tiny supports many of Sub::Exporter's
+external-facing features including renaming imported functions with the `-as`,
+`-prefix` and `-suffix` options; explicit destinations with the `into` option;
+and alternative installers with the `installler` option.  But it's written in
+only about 40% as many lines of code and with zero non-core dependencies.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-installpaths
   (package
     (name "perl-extutils-installpaths")
