@@ -485,6 +485,25 @@ cycle.  Functions called in the package itself will still be bound by their
 name, but they won't show up as methods on your class or instances.")
     (license (package-license perl))))
 
+(define-public perl-number-compare
+  (package
+    (name "perl-number-compare")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "Number-Compare-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09q8i0mxvr7q9vajwlgawsi0hlpc119gnhq4hc933d03x0vkfac3"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Number-Compare")
+    (synopsis "Numeric comparisons")
+    (description "Number::Compare compiles a simple comparison to an anonymous
+subroutine, which you can call with a value to be tested against.")
+    (license (package-license perl))))
+
 (define-public perl-package-anon
   (package
     (name "perl-package-anon")
