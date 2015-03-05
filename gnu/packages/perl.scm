@@ -1773,6 +1773,31 @@ hooking into done_testing as well as via an END block.  You can declare a
 plan, or not, and things will still Just Work.")
     (license (package-license perl))))
 
+(define-public perl-test-writevariants
+  (package
+    (name "perl-test-writevariants")
+    (version "0.010")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "Test-WriteVariants-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kklp05fj98yiq8znyfx9lx1vmjay2ypfb868qdwv3kf93m5zjwr"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-most" ,perl-test-most)
+       ("perl-test-directory" ,perl-test-directory)))
+    (propagated-inputs
+     `(("perl-data-tumbler" ,perl-data-tumbler)
+       ("perl-file-homedir" ,perl-file-homedir)))
+    (home-page "http://search.cpan.org/dist/Test-WriteVariants")
+    (synopsis "Dynamic generation of tests")
+    (description "The Test::WriteVariants module provides for the dynamic
+generation of tests in nested combinations of contexts.")
+    (license (package-license perl))))  ;See LICENSE
+
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
