@@ -1460,6 +1460,32 @@ testing exception-throwing code with about the same amount of typing.")
 automatically aggregated and output to STDOUT.")
     (license (package-license perl))))
 
+(define-public perl-test-most
+  (package
+    (name "perl-test-most")
+    (version "0.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OV/OVID/"
+                           "Test-Most-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i72aih3pakm8gh73wx1n4dwq8lbx6dvxhla46gsapszws6hr0n2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-differences" ,perl-test-differences)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-exception-class" ,perl-exception-class)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)))
+    (home-page "http://search.cpan.org/dist/Test-Most")
+    (synopsis "Most commonly needed test functions and features")
+    (description "This module provides the most commonly used testing
+functions, along with automatically turning on strict and warning and gives a
+bit more fine-grained control over test suites.")
+    (license (package-license perl))))
+
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
