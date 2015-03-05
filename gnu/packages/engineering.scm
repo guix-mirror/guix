@@ -20,13 +20,19 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (srfi srfi-1))
@@ -84,3 +90,48 @@
      "LibreCAD is a 2D Computer-aided design (CAD) application for creating
 plans and designs.")
     (license license:gpl2)))
+
+(define-public geda-gaf
+  (package
+    (name "geda-gaf")
+    (version "1.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ftp.geda-project.org/geda-gaf/stable/v"
+                    (version-major+minor version) "/"
+                    version "/geda-gaf-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08dpa506xk4gjbbi8vnxcb640wq4ihlgmhzlssl52nhvxwx7gx5v"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       ;; tests require a writable HOME
+       (alist-cons-before
+        'check 'set-home
+        (lambda _
+          (setenv "HOME" (getenv "TMPDIR")))
+        %standard-phases)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("guile" ,guile-2.0)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("shared-mime-info" ,shared-mime-info)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl))) ; for tests
+    (home-page "http://geda-project.org/")
+    (synopsis "Schematic capture, netlister, symbols, symbol checker, and utils")
+    (description
+     "gaf stands for “gschem and friends”.  It is a subset of the entire tool
+suite grouped together under the gEDA name.  gEDA/gaf is a collection of tools
+which currently includes: gschem, a schematic capture program; gnetlist, a
+netlist generation program; gsymcheck, a syntax checker for schematic symbols;
+gattrib, a spreadsheet programm that manipulates the properties of symbols of
+a schematic; libgeda, libraries for gschem gnetlist and gsymcheck; gsch2pcb, a
+tool to forward annotation from your schematic to layout using PCB; some minor
+utilities.")
+    (license license:gpl2+)))
+
