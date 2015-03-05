@@ -1468,6 +1468,28 @@ the unsightly mess of C<no strict> or typeglobs lying about where just anyone
 can see them.")
     (license (package-license perl))))
 
+(define-public perl-sub-name
+  (package
+    (name "perl-sub-name")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Sub-Name-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sdlc8pv7vyyc48gzh70hbwzn0hzwl3zbcy2dkmfw8vjzgya5i06"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-devel-checkbin" ,perl-devel-checkbin)))
+    (home-page "http://search.cpan.org/dist/Sub-Name")
+    (synopsis "(Re)name a sub")
+    (description "Assigns a new name to referenced sub.  If package
+specification is omitted in the name, then the current package is used.  The
+return value is the sub.")
+    (license (package-license perl))))
+
 (define-public perl-sub-uplevel
   (package
     (name "perl-sub-uplevel")
