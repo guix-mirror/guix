@@ -29,7 +29,8 @@
   #:export (write-int read-int
             write-long-long read-long-long
             write-padding
-            write-string read-string read-latin1-string
+            write-string
+            read-string read-latin1-string read-maybe-utf8-string
             write-string-list read-string-list
             write-string-pairs
             write-store-path read-store-path
@@ -129,6 +130,21 @@
     ;; XXX: Rewrite using (ice-9 iconv) when the minimum requirement is
     ;; upgraded to Guile >= 2.0.9.
     (list->string (map integer->char (bytevector->u8-list bv)))))
+
+(define (read-maybe-utf8-string p)
+  "Read a serialized string from port P.  Attempt to decode it as UTF-8 and
+substitute invalid byte sequences with question marks.  This is a
+\"permissive\" UTF-8 decoder."
+  ;; XXX: We rely on the port's decoding mechanism to do permissive decoding
+  ;; and substitute invalid byte sequences with question marks, but this is
+  ;; not very efficient.  Eventually Guile may provide a lightweight
+  ;; permissive UTF-8 decoder.
+  (let* ((bv   (read-byte-string p))
+         (port (with-fluids ((%default-port-encoding "UTF-8")
+                             (%default-port-conversion-strategy
+                              'substitute))
+                 (open-bytevector-input-port bv))))
+    (get-string-all port)))
 
 (define (write-string-list l p)
   (write-int (length l) p)
