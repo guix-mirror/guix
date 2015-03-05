@@ -203,6 +203,29 @@ names, not Class::Name.  For that, this module provides \"load_class
 'Class::Name'\".")
     (license (package-license perl))))
 
+(define-public perl-class-load-xs
+  (package
+    (name "perl-class-load-xs")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Class-Load-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1aivalms81s3a2cj053ncgnmkpgl7vspna8ajlkqir7rdn8kpv5v"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (inputs `(("perl-class-load" ,perl-class-load)))
+    (home-page "http://search.cpan.org/dist/Class-Load-XS")
+    (synopsis "XS implementation of parts of Class::Load")
+    (description "This module provides an XS implementation for portions of
+Class::Load")
+    (license artistic2.0)))
+
 (define-public perl-clone
   (package
     (name "perl-clone")
