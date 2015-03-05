@@ -310,6 +310,26 @@ CPAN::Meta object are present.")
      "Data::OptList provides a simple syntax for name/value option pairs.")
     (license (package-license perl))))
 
+(define-public perl-devel-caller
+  (package
+    (name "perl-devel-caller")
+    (version "2.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "Devel-Caller-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pxpimifzmnjnvf4icclx77myc15ahh0k56sj1djad1855mawwva"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-padwalker" ,perl-padwalker)))
+    (home-page "http://search.cpan.org/dist/Devel-Caller")
+    (synopsis "Meatier version of caller")
+    (description "Devel::Caller provides meatier version of caller.")
+    (license (package-license perl))))
+
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
