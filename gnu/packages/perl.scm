@@ -369,6 +369,25 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-module-runtime
+  (package
+    (name "perl-module-runtime")
+    (version "0.014")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/Z/ZE/ZEFRAM/"
+                           "Module-Runtime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19326f094jmjs6mgpwkyisid54k67w34br8yfh0gvaaml87gwi2c"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Module-Runtime")
+    (synopsis "Perl runtime module handling")
+    (description "The functions exported by this module deal with runtime
+handling of Perl modules, which are normally handled at compile time.")
+    (license (package-license perl))))
+
 (define-public perl-params-util
   (package
     (name "perl-params-util")
