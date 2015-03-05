@@ -623,6 +623,34 @@ a minimum of effort.")
 ;;; Some packaged modules need versions of core modules that are newer than
 ;;; those in our perl 5.16.1.
 
+(define-public perl-cpan-meta
+  (package
+    (name "perl-cpan-meta")
+    (version "2.143240")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "CPAN-Meta-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d80bxphpp5dq7fx5ipxszn7j8q9d85w6fnapdrbym21k1vsmlf6"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cpan-meta-requirements" ,perl-cpan-meta-requirements)
+       ("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)
+       ("perl-parse-cpan-meta" ,perl-parse-cpan-meta)))
+    (home-page "http://search.cpan.org/dist/CPAN-Meta")
+    (synopsis "Distribution metadata for a CPAN dist")
+    (description "Software distributions released to the CPAN include a
+META.json or, for older distributions, META.yml, which describes the
+distribution, its contents, and the requirements for building and installing
+the distribution.  The data structure stored in the META.json file is
+described in CPAN::Meta::Spec.  CPAN::Meta provides a simple class to
+represent this distribution metadata (or distmeta), along with some helpful
+methods for interrogating that data.")
+    (license (package-license perl))))
+
 (define-public perl-cpan-meta-requirements
   (package
     (name "perl-cpan-meta-requirements")
