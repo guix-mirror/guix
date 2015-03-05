@@ -461,6 +461,30 @@ implementations.")
 handling of Perl modules, which are normally handled at compile time.")
     (license (package-license perl))))
 
+(define-public perl-namespace-clean
+  (package
+    (name "perl-namespace-clean")
+    (version "0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "namespace-clean-" version ".tar.gz"))
+       (sha256
+        (base32
+         "016dds70ql1mp18b07chkxiy4drn976ibnbshqc2hmhrh9xjnsll"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-package-stash" ,perl-package-stash)
+       ("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)))
+    (home-page "http://search.cpan.org/dist/namespace-clean")
+    (synopsis "Keep imports and functions out of your namespace")
+    (description "The namespace::clean pragma will remove all previously
+declared or imported symbols at the end of the current package's compile
+cycle.  Functions called in the package itself will still be bound by their
+name, but they won't show up as methods on your class or instances.")
+    (license (package-license perl))))
+
 (define-public perl-package-anon
   (package
     (name "perl-package-anon")
