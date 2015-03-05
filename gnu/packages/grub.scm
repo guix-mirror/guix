@@ -79,7 +79,8 @@
              (sha256
               (base32
                "0n64hpmsccvicagvr0c6v0kgp2yw0kgnd3jvsyd26cnwgs7c6kkq"))
-             (patches (list (search-patch "grub-gets-undeclared.patch")))))
+             (patches (list (search-patch "grub-gets-undeclared.patch")
+                            (search-patch "grub-freetype.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-werror")
