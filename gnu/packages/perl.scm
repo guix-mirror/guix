@@ -667,4 +667,25 @@ for use in reading and writing CPAN metadata files like META.yml and
 MYMETA.yml.")
     (license (package-license perl))))
 
+(define-public perl-parse-cpan-meta
+  (package
+    (name "perl-parse-cpan-meta")
+    (version "1.4414")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "Parse-CPAN-Meta-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06ya2rg599qanqb1fxiyrd489mvmdgzbw4ph23hwjwpv9lahhxnd"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cpan-meta-yaml" ,perl-cpan-meta-yaml)))
+    (home-page "http://search.cpan.org/dist/Parse-CPAN-Meta")
+    (synopsis "Parse META.yml and META.json CPAN metadata files")
+    (description "Parse::CPAN::Meta is a parser for META.json and META.yml
+files, using JSON::PP and/or CPAN::Meta::YAML.")
+    (license (package-license perl))))
+
 ;;; END: Core module overrides
