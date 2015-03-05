@@ -226,6 +226,25 @@ names, not Class::Name.  For that, this module provides \"load_class
 Class::Load")
     (license artistic2.0)))
 
+(define-public perl-class-tiny
+  (package
+    (name "perl-class-tiny")
+    (version "1.000")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "Class-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jll90byj0nl16hwpf28k54i4n53jidjsj1bnlbx72v0n56qfpb2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-Tiny")
+    (synopsis "Minimalist class construction")
+    (description "This module offers a minimalist class construction kit.  It
+uses no non-core modules for any recent Perl.")
+    (license asl2.0)))
+
 (define-public perl-clone
   (package
     (name "perl-clone")
