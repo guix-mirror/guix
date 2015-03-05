@@ -1105,6 +1105,46 @@ to record and/or play sound using a callback function or a blocking read/write
 interface.")
     (license license:expat)))
 
+(define-public rsound
+  (package
+    (name "rsound")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Themaister/RSound/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1wzs40c0k5zpkmm5ffl6c17xmr399sxli7ys0fbb9ib0fd334knx"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-2)
+       ("ao" ,ao)
+       ("libsamplerate" ,libsamplerate)
+       ("openal" ,openal)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     '(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (setenv "CC" "gcc")
+          (zero?
+           (system* "./configure"
+                    (string-append "--prefix=" (assoc-ref outputs "out")))))
+        %standard-phases)
+       ;; No 'check' target.
+       #:tests? #f))
+    (home-page "http://themaister.net/rsound.html")
+    (synopsis "Networked audio system")
+    (description
+     "RSound allows you to send audio from an application and transfer it
+directly to a different computer on your LAN network.  It is an audio daemon
+with a much different focus than most other audio daemons.")
+    (license license:gpl3+)))
+
 (define-public zita-alsa-pcmi
   (package
     (name "zita-alsa-pcmi")
