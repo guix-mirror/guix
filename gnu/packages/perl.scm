@@ -390,6 +390,34 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-module-implementation
+  (package
+    (name "perl-module-implementation")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Module-Implementation-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vfngw4dbryihqhi7g9ks360hyw8wnpy3hpkzyg0q4y2y091lpy1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Module-Implementation")
+    (synopsis "Loads alternate underlying implementations for a module")
+    (description "This module abstracts out the process of choosing one of
+several underlying implementations for a module.  This can be used to provide
+XS and pure Perl implementations of a module, or it could be used to load an
+implementation for a given OS or any other case of needing to provide multiple
+implementations.")
+    (license artistic2.0)))
+
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
