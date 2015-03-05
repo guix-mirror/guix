@@ -1128,6 +1128,25 @@ is particularly useful for debugging.")
 checking parameters easier.")
     (license (package-license perl))))
 
+(define-public perl-parent
+  (package
+    (name "perl-parent")
+    (version "0.228")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CO/CORION/"
+                           "parent-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w0i02y4z8465z050kml57mvhv7c5gl8w8ivplhr3cms0zbaq87b"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/parent")
+    (synopsis "Establish an ISA relationship with base classes at compile time")
+    (description "Allows you to both load one or more modules, while setting
+up inheritance from those modules at the same time.")
+    (license (package-license perl))))
+
 (define-public perl-probe-perl
   (package
     (name "perl-probe-perl")
