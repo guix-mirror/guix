@@ -175,6 +175,7 @@ SMPTE 314M.")
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("opus" ,opus)
+       ("ladspa" ,ladspa)
        ("lame" ,lame)
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
@@ -183,7 +184,9 @@ SMPTE 314M.")
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
+       ("openal" ,openal)
        ("patchelf" ,patchelf)
+       ("pulseaudio" ,pulseaudio)
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
@@ -220,7 +223,6 @@ SMPTE 314M.")
 ;; possible additional inputs:
 ;;   --enable-avisynth        enable reading of AviSynth script files [no]
 ;;   --enable-frei0r          enable frei0r video filtering
-;;   --enable-ladspa          enable LADSPA audio filtering
 ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
 ;;   --enable-libass          enable libass subtitles rendering [no]
 ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
@@ -240,7 +242,6 @@ SMPTE 314M.")
 ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
 ;;   --enable-libopencv       enable video filtering via libopencv [no]
 ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-;;   --enable-libpulse        enable Pulseaudio input via libpulse [no]
 ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
 ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
 ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
@@ -257,7 +258,6 @@ SMPTE 314M.")
 ;;   --enable-libxavs         enable AVS encoding via xavs [no]
 ;;   --enable-libzmq          enable message passing via libzmq [no]
 ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
-;;   --enable-openal          enable OpenAL 1.1 capture support [no]
 ;;   --enable-opencl          enable OpenCL code
 ;;   --enable-x11grab         enable X11 grabbing [no]
               (zero? (system*
@@ -267,12 +267,14 @@ SMPTE 314M.")
                       "--enable-shared"
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
+                      "--enable-ladspa"
                       "--enable-libbluray"
                       "--enable-libcaca"
                       "--enable-libcdio"
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
+                      "--enable-libpulse"
                       "--enable-libquvi"
                       "--enable-libsoxr"
                       "--enable-libspeex"
@@ -281,6 +283,7 @@ SMPTE 314M.")
                       "--enable-libvorbis"
                       "--enable-libvpx"
                       "--enable-libxvid"
+                      "--enable-openal"
 
                       "--enable-runtime-cpudetect"
 
