@@ -109,28 +109,26 @@
     (bytevector-copy! s 0 b 8 l)
     (put-bytevector p b)))
 
-(define (read-string p)
+(define (read-byte-string p)
   (let* ((len (read-int p))
          (m   (modulo len 8))
-         (bv  (get-bytevector-n* p len))
-         (str (utf8->string bv)))
+         (bv  (get-bytevector-n* p len)))
     (or (zero? m)
         (get-bytevector-n* p (- 8 m)))
-    str))
+    bv))
+
+(define (read-string p)
+  (utf8->string (read-byte-string p)))
 
 (define (read-latin1-string p)
-  (let* ((len (read-int p))
-         (m   (modulo len 8))
-         ;; Note: do not use 'get-string-n' to work around Guile bug
-         ;; <http://bugs.gnu.org/19621>.  See <http://bugs.gnu.org/19610> for
-         ;; a discussion.
-         (str (get-bytevector-n* p len)))
-    (or (zero? m)
-        (get-bytevector-n* p (- 8 m)))
-
+  "Read an ISO-8859-1 string from P."
+  ;; Note: do not use 'get-string-n' to work around Guile bug
+  ;; <http://bugs.gnu.org/19621>.  See <http://bugs.gnu.org/19610> for
+  ;; a discussion.
+  (let ((bv (read-byte-string p)))
     ;; XXX: Rewrite using (ice-9 iconv) when the minimum requirement is
     ;; upgraded to Guile >= 2.0.9.
-    (list->string (map integer->char (bytevector->u8-list str)))))
+    (list->string (map integer->char (bytevector->u8-list bv)))))
 
 (define (write-string-list l p)
   (write-int (length l) p)
