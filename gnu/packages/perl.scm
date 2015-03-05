@@ -1277,6 +1277,27 @@ a minimum of effort.")
     ;; "Under the same license as Perl itself"
     (license (package-license perl))))
 
+(define-public perl-test-warn
+  (package
+    (name "perl-test-warn")
+    (version "0.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+                           "Test-Warn-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0haf2ii7br5z0psmkvlvmx2z2q9qz1c70gx0969r378qjidmb5w1"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sub-uplevel" ,perl-sub-uplevel)))
+    (home-page "http://search.cpan.org/dist/Test-Warn")
+    (synopsis "Perl extension to test methods for warnings")
+    (description "This module provides a few convenience methods for testing
+warning based code.")
+    (license (package-license perl))))
+
 (define-public perl-test-warnings
   (package
     (name "perl-test-warnings")
