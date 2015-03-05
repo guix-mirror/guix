@@ -323,6 +323,30 @@ It allows you to build rules which specify the desired files and
 directories.")
     (license (package-license perl))))
 
+(define-public perl-file-find-rule-perl
+  (package
+    (name "perl-file-find-rule-perl")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "File-Find-Rule-Perl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xi4ppqr6r57l5xlkwxpvkvpb9p7dvz053d76v2m9pwdfxqb5v6j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-params-util" ,perl-params-util)
+       ("perl-parse-cpan-meta" ,perl-parse-cpan-meta)))
+    (home-page "http://search.cpan.org/dist/File-Find-Rule-Perl")
+    (synopsis "Common rules for searching for Perl things")
+    (description "File::Find::Rule::Perl provides methods for finding various
+types Perl-related files, or replicating search queries run on a distribution
+in various parts of the CPAN ecosystem.")
+    (license (package-license perl))))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
