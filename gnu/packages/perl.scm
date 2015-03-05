@@ -173,6 +173,36 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-class-load
+  (package
+    (name "perl-class-load")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Class-Load-" version ".tar.gz"))
+       (sha256
+        (base32
+         "049i285yj8hwgzj7nncjbs2bhxvpdk88wmx1d0nh0rdmh5hdnlmy"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-package-stash" ,perl-package-stash)
+       ("perl-data-optlist" ,perl-data-optlist)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-module-implementation" ,perl-module-implementation)))
+    (home-page "http://search.cpan.org/dist/Class-Load")
+    (synopsis "Working (require \"Class::Name\") and more")
+    (description "\"require EXPR\" only accepts Class/Name.pm style module
+names, not Class::Name.  For that, this module provides \"load_class
+'Class::Name'\".")
+    (license (package-license perl))))
+
 (define-public perl-clone
   (package
     (name "perl-clone")
