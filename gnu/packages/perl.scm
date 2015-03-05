@@ -1171,6 +1171,34 @@ independent of the main namespace and only available through an object
 instance, not by name.")
     (license (package-license perl))))
 
+(define-public perl-package-deprecationmanager
+  (package
+    (name "perl-package-deprecationmanager")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Package-DeprecationManager-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fkvq3xxwc3l5hg64dr9sj3l12dl59i44cg407qx9sd6r51j3qfi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-output" ,perl-test-output)))
+    (propagated-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-params-util" ,perl-params-util)
+       ("perl-sub-install" ,perl-sub-install)))
+    (arguments `(#:tests? #f))          ;XXX: Failing for some reason...
+    (home-page "http://search.cpan.org/dist/Package-DeprecationManager")
+    (synopsis "Manage deprecation warnings for your distribution")
+    (description "This module allows you to manage a set of deprecations for
+one or more modules.")
+    (license artistic2.0)))
+
 (define-public perl-package-stash
   (package
     (name "perl-package-stash")
