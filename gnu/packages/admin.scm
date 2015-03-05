@@ -1081,3 +1081,29 @@ Technology System (S.M.A.R.T.) built into most modern ATA and SCSI harddisks.
 In many cases, these utilities will provide advanced warning of disk
 degradation and failure.")
     (license license:gpl2+)))
+
+(define-public fdupes
+  (package
+    (name "fdupes")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/adrianlopezroche/fdupes/archive/fdupes-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "11j96vxl9vg3jsnxqxskrv3gad6dh7hz2zpyc8n31xzyxka1c7kn"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f ; no 'check' target
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))))
+    (home-page "https://github.com/adrianlopezroche/fdupes")
+    (synopsis "Identify duplicate files")
+    (description
+     "fdupes is a program for identifying duplicate files residing within
+specified directories.")
+    (license license:expat)))
