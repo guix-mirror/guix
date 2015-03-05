@@ -417,6 +417,25 @@ variants")
     (description "Devel::Caller provides meatier version of caller.")
     (license (package-license perl))))
 
+(define-public perl-devel-checkbin
+  (package
+    (name "perl-devel-checkbin")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+                           "Devel-CheckBin-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g71sma9jy0fjm619hcrcsb9spg2y03vjxx36y8k1xpa2553sr7m"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Devel-CheckBin")
+    (synopsis "Check that a command is available")
+    (description "Devel::CheckBin is a perl module that checks whether a
+particular command is available.")
+    (license (package-license perl))))
+
 (define-public perl-devel-globaldestruction
   (package
     (name "perl-devel-globaldestruction")
