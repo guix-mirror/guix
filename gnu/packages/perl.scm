@@ -805,6 +805,39 @@ clock speed.")
                               "Sys-CPU-" version))
     (license (package-license perl))))
 
+(define-public perl-test-cleannamespaces
+  (package
+    (name "perl-test-cleannamespaces")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Test-CleanNamespaces-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ynrds515gcq954z34zm03rgcx0dskiaz7qj0k7k5gmrjj1kfycp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-warnings" ,perl-test-warnings)
+       ("perl-test-tester" ,perl-test-tester)))
+    (propagated-inputs
+     `(("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-sub-identify" ,perl-sub-identify)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-file-find-rule-perl" ,perl-file-find-rule-perl)))
+    (home-page "http://search.cpan.org/dist/Test-CleanNamespaces")
+    (synopsis "Check for uncleaned imports")
+    (description "This module lets you check your module's namespaces for
+imported functions you might have forgotten to remove with
+namespace::autoclean or namespace::clean and are therefore available to be
+called as methods, which usually isn't want you want.")
+    (license (package-license perl))))
+
 (define-public perl-test-deep
   (package
     (name "perl-test-deep")
