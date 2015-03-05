@@ -98,6 +98,27 @@ device-dependent properties of CD-ROM or the specific details of CD image
 formats.")
     (license gpl3+)))
 
+(define-public libcdio-paranoia
+  (package
+    (name "libcdio-paranoia")
+    (version "10.2+0.93+1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/libcdio/libcdio-paranoia-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "14x4b4jk5b0zvcalrg02y4jmbkmmlb07qfmk5hph9k18b8frn7gc"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("libcdio" ,libcdio)))
+    (home-page "http://www.gnu.org/software/libcdio/")
+    (synopsis "Jitter- and error-tolerant CD audio extraction")
+    (description
+     "libcdio-paranoia is an implementation of CD paranoia libraries based on
+libcdio.")
+    (license gpl3+)))
+
 (define-public xorriso
   (package
     (name "xorriso")

@@ -178,6 +178,7 @@ SMPTE 314M.")
        ("lame" ,lame)
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
+       ("libcdio-paranoia" ,libcdio-paranoia)
        ("libquvi" ,libquvi)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
@@ -223,7 +224,6 @@ SMPTE 314M.")
 ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
 ;;   --enable-libass          enable libass subtitles rendering [no]
 ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
-;;   --enable-libcdio         enable audio CD grabbing with libcdio
 ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
 ;;                            and libraw1394 [no]
 ;;   --enable-libfaac         enable AAC encoding via libfaac [no]
@@ -269,6 +269,7 @@ SMPTE 314M.")
                       ;; "--enable-gnutls" ; causes test failures
                       "--enable-libbluray"
                       "--enable-libcaca"
+                      "--enable-libcdio"
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
