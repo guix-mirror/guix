@@ -1318,6 +1318,30 @@ structures without getting caught in an infinite loop.")
                               "Test-Deep-" version))
     (license gpl1+)))  ; or "Artistic License"
 
+(define-public perl-test-differences
+  (package
+    (name "perl-test-differences")
+    (version "0.63")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
+                           "Test-Differences-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rhs4q6qn64ji06ns7lwl6iiiw3mggvd9xk9nkiqvx1jihbplrbw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-text-diff" ,perl-text-diff)
+       ("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-Differences")
+    (synopsis "Test strings and data structures and show differences")
+    (description "This module exports three test functions and four diff-style
+functions")
+    ;; See LICENSE section of Test/Differences.pm, which reads "... GNU public
+    ;; license, any version, ..."
+    (license gpl3+)))
+
 (define-public perl-test-fatal
   (package
     (name "perl-test-fatal")
