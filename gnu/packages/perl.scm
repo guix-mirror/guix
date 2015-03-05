@@ -645,5 +645,26 @@ adding more and more constraints, and will reduce them to the simplest
 representation.")
     (license (package-license perl))))
 
+(define-public perl-cpan-meta-yaml
+  (package
+    (name "perl-cpan-meta-yaml")
+    (version "0.012")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "CPAN-Meta-YAML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0a0d62w8d81kkas4j1h48znk0f0vrpibl31gvz9r8hm77dbqqwkw"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f))                    ;Tests require Test::More >= 0.99
+    (home-page "http://search.cpan.org/dist/CPAN-Meta-YAML")
+    (synopsis "Read and write a subset of YAML for CPAN Meta files")
+    (description "This module implements a subset of the YAML specification
+for use in reading and writing CPAN metadata files like META.yml and
+MYMETA.yml.")
+    (license (package-license perl))))
 
 ;;; END: Core module overrides
