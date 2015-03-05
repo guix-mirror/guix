@@ -581,6 +581,28 @@ environment, other than a fixed list of specified variables.  Compilation
 errors are rethrown automatically.")
     (license (package-license perl))))
 
+(define-public perl-exception-class
+  (package
+    (name "perl-exception-class")
+    (version "1.39")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Exception-Class-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10r06v6568s33p6h9f9ml0iabc07id86mjkf74gy7ld6d5m7b741"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
+    (home-page "http://search.cpan.org/dist/Exception-Class")
+    (synopsis "Allows you to declare real exception classes in Perl")
+    (description "Exception::Class allows you to declare exception hierarchies
+in your modules in a \"Java-esque\" manner.")
+    (license (package-license perl))))
+
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
