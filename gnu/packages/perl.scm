@@ -291,6 +291,27 @@ CPAN::Meta object are present.")
      "Data::OptList provides a simple syntax for name/value option pairs.")
     (license (package-license perl))))
 
+(define-public perl-devel-globaldestruction
+  (package
+    (name "perl-devel-globaldestruction")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Devel-GlobalDestruction-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qn4iszgylnxjdkb6430f6a3ci7bcx9ih1az6bd5cbij1pf2965j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)))
+    (home-page "http://search.cpan.org/dist/Devel-GlobalDestruction")
+    (synopsis "Provides equivalent of ${^GLOBAL_PHASE} eq 'DESTRUCT' for older perls")
+    (description "Devel::GlobalDestruction provides a function returning the
+equivalent of \"${^GLOBAL_PHASE} eq 'DESTRUCT'\" for older perls.")
+    (license (package-license perl))))
+
 (define-public perl-digest-sha1
   (package
     (name "perl-digest-sha1")
