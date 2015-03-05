@@ -527,6 +527,27 @@ structures without getting caught in an infinite loop.")
                               "Test-Deep-" version))
     (license gpl1+)))  ; or "Artistic License"
 
+(define-public perl-test-fatal
+  (package
+    (name "perl-test-fatal")
+    (version "0.014")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Test-Fatal-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1c6bs68mss4q7cyapkv2c0jn66i21050p0faxf3s3417gdffzp5w"))))
+    (build-system perl-build-system)
+    (propagated-inputs `(("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-Fatal")
+    (synopsis "Simple helpers for testing code with exceptions")
+    (description "Test::Fatal is an alternative to the popular
+Test::Exception.  It does much less, but should allow greater flexibility in
+testing exception-throwing code with about the same amount of typing.")
+    (license (package-license perl))))
+
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
