@@ -81,6 +81,28 @@
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
+(define-public perl-algorithm-diff
+  (package
+    (name "perl-algorithm-diff")
+    (version "1.1903")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TY/TYEMQ/"
+                           "Algorithm-Diff-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l8pk7ziz72d022hsn4xldhhb9f5649j5cgpjdibch0xng24ms1h"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Algorithm-Diff")
+    (synopsis "Compute differences between two files or lists")
+    (description "This is a module for computing the difference between two
+files, two strings, or any other two lists of things.  It uses an intelligent
+algorithm similar to (or identical to) the one used by the Unix \"diff\"
+program.  It is guaranteed to find the *smallest possible* set of
+differences.")
+    (license (package-license perl))))
+
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
