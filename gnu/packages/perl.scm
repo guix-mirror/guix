@@ -355,6 +355,33 @@ operators for a given class (or object), including where in the inheritance
 hierarchy the overloads are declared and where the code implementing it is.")
     (license (package-license perl))))
 
+(define-public perl-devel-partialdump
+  (package
+    (name "perl-devel-partialdump")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Devel-PartialDump-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nr3qa68x4yp219kd17j1ks9c95qc9agfvz7ddnpn8p78f3kgwfn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-test-simple" ,perl-test-simple)))
+    (propagated-inputs
+     `(("perl-class-tiny" ,perl-class-tiny)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/Devel-PartialDump")
+    (synopsis "Partial dumping of data structures")
+    (description "This module is a data dumper optimized for logging of
+arbitrary parameters.")
+    (license (package-license perl))))
+
 (define-public perl-digest-sha1
   (package
     (name "perl-digest-sha1")
