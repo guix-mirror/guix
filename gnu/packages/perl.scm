@@ -2104,4 +2104,25 @@ the \"Module::Build\" code is pure-perl and written in a cross-platform way.")
 files, using JSON::PP and/or CPAN::Meta::YAML.")
     (license (package-license perl))))
 
+(define-public perl-scalar-list-utils
+  (package
+    (name "perl-scalar-list-utils")
+    (version "1.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
+                           "Scalar-List-Utils-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04l1q4hps9n8b1hk9kpgpc1cryim7pl9sfdyb7fz5nq4gmz307j7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Scalar-List-Utils")
+    (synopsis "Common Scalar and List utility subroutines")
+    (description "This package contains a selection of subroutines that people
+have expressed would be nice to have in the perl core, but the usage would not
+really be high enough to warrant the use of a keyword, and the size so small
+such that being individual extensions would be wasteful.")
+    (license (package-license perl))))
+
 ;;; END: Core module overrides
