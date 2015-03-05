@@ -938,6 +938,26 @@ hooking into done_testing as well as via an END block.  You can declare a
 plan, or not, and things will still Just Work.")
     (license (package-license perl))))
 
+(define-public perl-text-glob
+  (package
+    (name "perl-text-glob")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "Text-Glob-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lr76wrsj8wcxrq4wi8z1640w4dmdbkznp06q744rg3g0bd238d5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-Glob")
+    (synopsis "Match globbing patterns against text")
+    (description "Text::Glob implements glob(3) style matching that can be
+used to match against text, rather than fetching names from a filesystem.  If
+you want to do full file globbing use the File::Glob module instead.")
+    (license (package-license perl))))
+
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
