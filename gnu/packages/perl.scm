@@ -1531,6 +1531,29 @@ clock speed.")
                               "Sys-CPU-" version))
     (license (package-license perl))))
 
+(define-public perl-task-weaken
+  (package
+    (name "perl-task-weaken")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "Task-Weaken-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i7kd9v8fjsqyhr4rx4a1jv7n5vfjjm1v4agb24pizh0b72p3qk7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Task-Weaken")
+    (synopsis "Ensure that a platform has weaken support")
+    (description "One recurring problem in modules that use Scalar::Util's
+weaken function is that it is not present in the pure-perl variant.  If
+Scalar::Util is not available at all, it will issue a normal dependency on the
+module.  However, if Scalar::Util is relatively new ( it is >= 1.19 ) and the
+module does not have weaken, the install will bail out altogether with a long
+error encouraging the user to seek support.")
+    (license (package-license perl))))
+
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
