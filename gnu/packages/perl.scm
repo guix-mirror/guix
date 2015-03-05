@@ -1385,6 +1385,30 @@ functions")
     ;; license, any version, ..."
     (license gpl3+)))
 
+(define-public perl-test-exception
+  (package
+    (name "perl-test-exception")
+    (version "0.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
+                           "Test-Exception-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zpwimspbq11wjrli481qk17aabzxab15cnnryflx45nzn3za2xk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-sub-uplevel" ,perl-sub-uplevel)))
+    (home-page "http://search.cpan.org/dist/Test-Exception")
+    (synopsis "Test exception based code")
+    (description "This module provides a few convenience methods for testing
+exception based code.  It is built with Test::Builder and plays happily with
+Test::More and friends.")
+    (license (package-license perl))))
+
 (define-public perl-test-fatal
   (package
     (name "perl-test-fatal")
