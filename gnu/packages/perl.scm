@@ -351,6 +351,27 @@ CPAN::Meta object are present.")
 equivalent of \"${^GLOBAL_PHASE} eq 'DESTRUCT'\" for older perls.")
     (license (package-license perl))))
 
+(define-public perl-devel-lexalias
+  (package
+    (name "perl-devel-lexalias")
+    (version "0.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "Devel-LexAlias-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wpfpjqlrncslnmxa37494sfdy0901510kj2ds2k6q167vadj2jy"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-caller" ,perl-devel-caller)))
+    (home-page "http://search.cpan.org/dist/Devel-LexAlias")
+    (synopsis "Alias lexical variables")
+    (description "Devel::LexAlias provides the ability to alias a lexical
+variable in a subroutines scope to one of your choosing.")
+    (license (package-license perl))))
+
 (define-public perl-devel-overloadinfo
   (package
     (name "perl-devel-overloadinfo")
