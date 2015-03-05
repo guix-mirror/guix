@@ -22,7 +22,7 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ bsd-3 public-domain))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -35,6 +35,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -142,6 +144,7 @@ SMPTE 314M.")
        ("freetype" ,freetype)
        ("opus" ,opus)
        ("lame" ,lame)
+       ("libbluray" ,libbluray)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
@@ -184,7 +187,6 @@ SMPTE 314M.")
 ;;   --enable-ladspa          enable LADSPA audio filtering
 ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
 ;;   --enable-libass          enable libass subtitles rendering [no]
-;;   --enable-libbluray       enable BluRay reading using libbluray [no]
 ;;   --enable-libcaca         enable textual display using libcaca
 ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
 ;;   --enable-libcdio         enable audio CD grabbing with libcdio
@@ -234,6 +236,7 @@ SMPTE 314M.")
                       "--enable-shared"
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
+                      "--enable-libbluray"
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
@@ -507,6 +510,34 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
      "youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
     (license public-domain)))
+
+(define-public libbluray
+  (package
+    (name "libbluray")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.videolan.org/videolan/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "13dngs4b4cv29f6b825dq14n77mfhvk1kjb42axpq494pfgyp6zp"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("doxygen" ,doxygen)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)                   ;for doxygen
+       ("texlive" ,texlive)))
+    (home-page "http://www.videolan.org/developers/libbluray.html")
+    (synopsis "Blu-Ray Disc playback library")
+    (description
+     "libbluray is a library designed for Blu-Ray Disc playback for media
+players, like VLC or MPlayer.")
+    (license lgpl2.1+)))
 
 (define-public libdvdread
   (package
