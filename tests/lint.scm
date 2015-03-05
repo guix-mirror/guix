@@ -21,7 +21,7 @@
 
 (define-module (test-packages)
   #:use-module (guix tests)
-  #:use-module (guix build download)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (guix scripts lint)
