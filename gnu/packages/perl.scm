@@ -956,6 +956,31 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-list-moreutils
+  (package
+    (name "perl-list-moreutils")
+    (version "0.402")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "List-MoreUtils-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i0k7kqg1m9nf2xvq9l4lyf38fxvi9952vmmvhcdaf3qa95pxb24"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-config-autoconf" ,perl-config-autoconf)
+       ("perl-inc-latest" ,perl-inc-latest)
+       ("perl-test-writevariants" ,perl-test-writevariants)))
+    (propagated-inputs
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)))
+    (home-page "http://search.cpan.org/dist/List-MoreUtils")
+    (synopsis "Provide the stuff missing in List::Util")
+    (description "List::MoreUtils provides some trivial but commonly needed
+functionality on lists which is not going to go into List::Util.")
+    (license (package-license perl))))
+
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
