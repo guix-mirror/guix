@@ -1061,6 +1061,29 @@ implementations.")
 handling of Perl modules, which are normally handled at compile time.")
     (license (package-license perl))))
 
+(define-public perl-module-runtime-conflicts
+  (package
+    (name "perl-module-runtime-conflicts")
+    (version "0.001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Module-Runtime-Conflicts-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pz23ch78lbpn4kdbm04icgsmbr7jvmxwq1p5m4x2pap8qwd0wqg"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)))
+    (home-page "http://search.cpan.org/dist/Module-Runtime-Conflicts")
+    (synopsis "Provide information on conflicts for Module::Runtime")
+    (description "This module provides conflicts checking for Module::Runtime,
+which had a recent release that broke some versions of Moose.  It is called
+from Moose::Conflicts and moose-outdated.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
