@@ -1544,6 +1544,30 @@ hooking into done_testing as well as via an END block.  You can declare a
 plan, or not, and things will still Just Work.")
     (license (package-license perl))))
 
+(define-public perl-text-diff
+  (package
+    (name "perl-text-diff")
+    (version "1.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/O/OV/OVID/"
+                           "Text-Diff-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ynjsa4sr1yvyh65sdfvahaafglibz70j8b6rj01cg1iisj50zx6"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-algorithm-diff" ,perl-algorithm-diff)))
+    (home-page "http://search.cpan.org/dist/Text-Diff")
+    (synopsis "Perform diffs on files and record sets")
+    (description "Text::Diff provides a basic set of services akin to the GNU
+diff utility.  It is not anywhere near as feature complete as GNU diff, but it
+is better integrated with Perl and available on all platforms.  It is often
+faster than shelling out to a system's diff executable for small files, and
+generally slower on larger files.")
+    (license (package-license perl))))
+
 (define-public perl-text-glob
   (package
     (name "perl-text-glob")
