@@ -300,6 +300,29 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
                               "Exporter-Lite-" version))
     (license (package-license perl))))
 
+(define-public perl-file-find-rule
+  (package
+    (name "perl-file-find-rule")
+    (version "0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "File-Find-Rule-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w73b4jr2fcrd74a1w3b2jryq3mqzc8z5mk7ia9p85xn3qmpa5r4"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-text-glob" ,perl-text-glob)
+       ("perl-number-compare" ,perl-number-compare)))
+    (home-page "http://search.cpan.org/dist/File-Find-Rule")
+    (synopsis "Alternative interface to File::Find")
+    (description "File::Find::Rule is a friendlier interface to File::Find.
+It allows you to build rules which specify the desired files and
+directories.")
+    (license (package-license perl))))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
