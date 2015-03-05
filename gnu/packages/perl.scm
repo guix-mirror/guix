@@ -760,6 +760,27 @@ provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List/")))
 
+(define-public perl-file-temp
+  (package
+    (name "perl-file-temp")
+    (version "0.2304")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "File-Temp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b11scbw77924awwdf5yw8sk8z0s2hskvpyyxws9yz4gwhim6h8k"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-parent" ,perl-parent)))
+    (home-page "http://search.cpan.org/dist/File-Temp")
+    (synopsis "Return name and handle of a temporary file safely")
+    (description "File::Temp can be used to create and open temporary files in
+a safe way.")
+    (license (package-license perl))))
+
 (define-public perl-file-which
   (package
     (name "perl-file-which")
