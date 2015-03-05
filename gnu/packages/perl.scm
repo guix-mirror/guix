@@ -460,6 +460,31 @@ independent of the main namespace and only available through an object
 instance, not by name.")
     (license (package-license perl))))
 
+(define-public perl-package-stash-xs
+  (package
+    (name "perl-package-stash-xs")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Package-Stash-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11nl69n8i56p91pd0ia44ip0vpv2cxwpbfakrv01vvv8az1cbn13"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-package-anon" ,perl-package-anon)))
+    (home-page "http://search.cpan.org/dist/Package-Stash-XS")
+    (synopsis "Faster implementation of the Package::Stash API")
+    (description "This is a backend for Package::Stash, which provides the
+functionality in a way that's less buggy and much faster.  It will be used by
+default if it's installed, and should be preferred in all environments with a
+compiler.")
+    (license (package-license perl))))
+
 (define-public perl-params-util
   (package
     (name "perl-params-util")
