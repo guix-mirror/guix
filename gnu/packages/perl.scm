@@ -637,6 +637,25 @@ as flexible as possible to the tester.")
                               "Test-Output-" version))
     (license (package-license perl))))
 
+(define-public perl-test-requires
+  (package
+    (name "perl-test-requires")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+                           "Test-Requires-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08c29m0dn34384mmmpqqlbb899zpbkkc01c2lsp31mch1frv9cg7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Requires")
+    (synopsis "Checks to see if the module can be loaded")
+    (description "Test::Requires checks to see if the module can be loaded.
+If this fails, then rather than failing tests this skips all tests.")
+    (license (package-license perl))))
+
 (define-public perl-test-script
   (package
     (name "perl-test-script")
