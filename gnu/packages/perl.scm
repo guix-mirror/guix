@@ -300,6 +300,27 @@ import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
                               "Exporter-Lite-" version))
     (license (package-license perl))))
 
+(define-public perl-extutils-installpaths
+  (package
+    (name "perl-extutils-installpaths")
+    (version "0.010")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "ExtUtils-InstallPaths-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mi1px42in7i442jqncg3gmxd5zn7sw5b2s85h690rz433qvyk6i"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-extutils-config" ,perl-extutils-config)))
+    (home-page "http://search.cpan.org/dist/ExtUtils-InstallPaths")
+    (synopsis "Build.PL install path logic made easy")
+    (description "This module tries to make install path resolution as easy as
+possible.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-config
   (package
     (name "perl-extutils-config")
