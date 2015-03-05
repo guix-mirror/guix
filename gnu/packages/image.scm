@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -293,6 +294,25 @@ algorithm was patented.  Tools are also included to convert, manipulate,
 compose, and analyze GIF images.")
     (home-page "http://giflib.sourceforge.net/")
     (license license:x11)))
+
+(define-public libungif
+  (package
+    (name "libungif")
+    (version "4.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/giflib/libungif-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0cnksimmmjngdrys302ik1385sg1sj4i0gxivzldhgwd46n7x2kh"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))          ;package ships some perl tools
+    (home-page "http://giflib.sourceforge.net/")
+    (synopsis "GIF decompression library")
+    (description
+     "libungif is the old GIF decompression library by the GIFLIB project.")
+    (license license:expat)))
 
 (define-public imlib2
   (package
