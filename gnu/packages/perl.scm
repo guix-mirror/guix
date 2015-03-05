@@ -737,6 +737,26 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
 
+(define-public perl-inc-latest
+  (package
+    (name "perl-inc-latest")
+    (version "0.500")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "inc-latest-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04f6qf6ll2hkdsr9aglykg3wlgsnf0w4f264nzg4i9y6cgrhbafs"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/inc-latest")
+    (synopsis "Use modules in inc/ if newer than installed")
+    (description "The inc::latest module helps bootstrap configure-time
+dependencies for CPAN distributions.  These dependencies get bundled into the
+inc directory within a distribution and are used by Makefile.PL or Build.PL.")
+    (license asl2.0)))
+
 (define-public perl-io-tty
   (package
     (name "perl-io-tty")
