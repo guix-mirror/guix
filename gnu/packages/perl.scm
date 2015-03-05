@@ -943,6 +943,36 @@ Test::Exception.  It does much less, but should allow greater flexibility in
 testing exception-throwing code with about the same amount of typing.")
     (license (package-license perl))))
 
+(define-public perl-test-harness
+  (package
+    (name "perl-test-harness")
+    (version "3.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "Test-Harness-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06l29y1bpizb9vd9g49lgi0wzj1xy4rsk42ahdj3fpgqnvb9wp05"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases (alist-cons-before
+                 'check 'patch-test
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; This test looks for "#!/usr/bin/perl" in some source.
+                   ;; Patch what the test looks for.
+                   (substitute* "t/source.t"
+                     (("#!/usr/bin/perl")
+                      (string-append "#!" (assoc-ref inputs "perl")
+                                     "/bin/perl"))))
+                 %standard-phases)))
+    (home-page "http://search.cpan.org/dist/Test-Harness")
+    (synopsis "Run Perl standard test scripts with statistics")
+    (description "Simple test harness which allows tests to be run and results
+automatically aggregated and output to STDOUT.")
+    (license (package-license perl))))
+
 (define-public perl-test-nowarnings
   (package
     (name "perl-test-nowarnings")
