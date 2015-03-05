@@ -675,6 +675,27 @@ implementations.")
 handling of Perl modules, which are normally handled at compile time.")
     (license (package-license perl))))
 
+(define-public perl-mro-compat
+  (package
+    (name "perl-mro-compat")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "MRO-Compat-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mhma2g83ih9f8nkmg2k9l0x6izhhbb6k5lli4rpllxad4wbk9dv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/MRO-Compat")
+    (synopsis "MRO interface compatibility for Perls < 5.9.5")
+    (description "The \"mro\" namespace provides several utilities for dealing
+with method resolution order and method caching in general in Perl 5.9.5 and
+higher.  This module provides those interfaces for earlier versions of
+Perl (back to 5.6.0).")
+    (license (package-license perl))))
+
 (define-public perl-namespace-clean
   (package
     (name "perl-namespace-clean")
