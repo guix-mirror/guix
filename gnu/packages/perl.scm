@@ -409,6 +409,29 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
 handling of Perl modules, which are normally handled at compile time.")
     (license (package-license perl))))
 
+(define-public perl-package-anon
+  (package
+    (name "perl-package-anon")
+    (version "0.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AU/AUGGY/"
+                           "Package-Anon-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fj1fakkfklf2iwzsl64vfgshya3jgm6vhxiphw12wlac9g2il0m"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Package-Anon")
+    (synopsis "Anonymous packages")
+    (description "This module allows for anonymous packages that are
+independent of the main namespace and only available through an object
+instance, not by name.")
+    (license (package-license perl))))
+
 (define-public perl-params-util
   (package
     (name "perl-params-util")
