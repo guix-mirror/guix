@@ -1773,6 +1773,31 @@ for use in reading and writing CPAN metadata files like META.yml and
 MYMETA.yml.")
     (license (package-license perl))))
 
+(define-public perl-module-build
+  (package
+    (name "perl-module-build")
+    (version "0.4211")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "Module-Build-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1c5hfhajr963w4mdjivsc7yz4vf4pz1rrfch5a93fbac1x2mr58h"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cpan-meta" ,perl-cpan-meta)))
+    (home-page "http://search.cpan.org/dist/Module-Build")
+    (synopsis "Build and install Perl modules")
+    (description "\"Module::Build\" is a system for building, testing, and
+installing Perl modules.  It is meant to be an alternative to
+\"ExtUtils::MakeMaker\".  Developers may alter the behavior of the module
+through subclassing in a much more straightforward way than with
+\"MakeMaker\".  It also does not require a \"make\" on your system - most of
+the \"Module::Build\" code is pure-perl and written in a cross-platform way.")
+    (license (package-license perl))))
+
 (define-public perl-parse-cpan-meta
   (package
     (name "perl-parse-cpan-meta")
