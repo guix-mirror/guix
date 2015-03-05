@@ -731,6 +731,31 @@ types Perl-related files, or replicating search queries run on a distribution
 in various parts of the CPAN ecosystem.")
     (license (package-license perl))))
 
+(define-public perl-file-homedir
+  (package
+    (name "perl-file-homedir")
+    (version "1.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "File-HomeDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hvihydd0y4gdxafi8dpybk9ll8q35bz5ycibfic0gh92cslzfc5"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-which" ,perl-file-which)
+       ("perl-file-temp" ,perl-file-temp)))
+    (arguments `(#:tests? #f))          ;Not appropriate for chroot
+    (home-page "http://search.cpan.org/dist/File-HomeDir")
+    (synopsis "Find your home and other directories on any platform")
+    (description "File::HomeDir is a module for locating the directories that
+are \"owned\" by a user (typicaly your user) and to solve the various issues
+that arise trying to find them consistently across a wide variety of
+platforms.")
+    (license (package-license perl))))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
