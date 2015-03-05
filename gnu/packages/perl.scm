@@ -996,6 +996,26 @@ the unsightly mess of C<no strict> or typeglobs lying about where just anyone
 can see them.")
     (license (package-license perl))))
 
+(define-public perl-sub-uplevel
+  (package
+    (name "perl-sub-uplevel")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "Sub-Uplevel-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yzxqsim8vpavzqm2wfksh8dpmy6qbr9s3hdqqicp38br3lzd4qg"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Sub-Uplevel")
+    (synopsis "Apparently run a function in a higher stack frame")
+    (description "Like Tcl's uplevel() function, but not quite so dangerous.
+The idea is just to fool caller().  All the really naughty bits of Tcl's
+uplevel() are avoided.")
+    (license (package-license perl))))
+
 (define-public perl-sys-cpu
   (package
     (name "perl-sys-cpu")
