@@ -618,3 +618,32 @@ a minimum of effort.")
                               "Test-Tester-" version))
     ;; "Under the same license as Perl itself"
     (license (package-license perl))))
+
+
+;;; Some packaged modules need versions of core modules that are newer than
+;;; those in our perl 5.16.1.
+
+(define-public perl-cpan-meta-requirements
+  (package
+    (name "perl-cpan-meta-requirements")
+    (version "2.131")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "CPAN-Meta-Requirements-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12p5s7w3cwcrbpcrxzanvpr0syswhwlqzbaki6m044c45jix2fss"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/CPAN-Meta-Requirements")
+    (synopsis "Set of version requirements for a CPAN dist")
+    (description "A CPAN::Meta::Requirements object models a set of version
+constraints like those specified in the META.yml or META.json files in CPAN
+distributions, and as defined by CPAN::Meta::Spec.  It can be built up by
+adding more and more constraints, and will reduce them to the simplest
+representation.")
+    (license (package-license perl))))
+
+
+;;; END: Core module overrides
