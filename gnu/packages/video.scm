@@ -22,7 +22,8 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
+                               fsf-free))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -85,6 +87,34 @@
 A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license gpl2+)))
+
+(define-public libcaca
+  (package
+    (name "libcaca")
+    (version "0.99.beta19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://caca.zoy.org/files/libcaca/libcaca-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freeglut" ,freeglut)
+       ("ftgl" ,ftgl)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)))
+    (home-page "http://caca.zoy.org/wiki/libcaca")
+    (synopsis "Colour ASCII-art library")
+    (description "libcaca is a graphics library that outputs text instead of
+pixels, so that it can work on older video cards or text terminals.  It
+supports Unicode, 2048 colors, dithering of color images, and advanced text
+canvas operations.")
+    (license (fsf-free "file://COPYING")))) ;WTFPL version 2
 
 (define-public libdca
   (package
@@ -146,6 +176,7 @@ SMPTE 314M.")
        ("opus" ,opus)
        ("lame" ,lame)
        ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
@@ -189,7 +220,6 @@ SMPTE 314M.")
 ;;   --enable-ladspa          enable LADSPA audio filtering
 ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
 ;;   --enable-libass          enable libass subtitles rendering [no]
-;;   --enable-libcaca         enable textual display using libcaca
 ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
 ;;   --enable-libcdio         enable audio CD grabbing with libcdio
 ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
@@ -237,6 +267,7 @@ SMPTE 314M.")
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
                       "--enable-libbluray"
+                      "--enable-libcaca"
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
