@@ -170,6 +170,27 @@ objects.")
                               "Clone-" version))
     (license (package-license perl))))
 
+(define-public perl-cpan-meta-check
+  (package
+    (name "perl-cpan-meta-check")
+    (version "0.009")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                           "CPAN-Meta-Check-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qbk5dwvhd78qgq5x6nim2n0l78pylvlklpbrm56w9yss6pl6bgb"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-test-deep" ,perl-test-deep)))
+    (propagated-inputs `(("perl-cpan-meta" ,perl-cpan-meta)))
+    (home-page "http://search.cpan.org/dist/CPAN-Meta-Check")
+    (synopsis "Verify requirements in a CPAN::Meta object")
+    (description "This module verifies if requirements described in a
+CPAN::Meta object are present.")
+    (license (package-license perl))))
+
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
