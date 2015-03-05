@@ -312,6 +312,30 @@ CPAN::Meta object are present.")
 equivalent of \"${^GLOBAL_PHASE} eq 'DESTRUCT'\" for older perls.")
     (license (package-license perl))))
 
+(define-public perl-devel-overloadinfo
+  (package
+    (name "perl-devel-overloadinfo")
+    (version "0.002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "Devel-OverloadInfo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14gzjlsqhypqp0szqj6152qfn69snzydgk1yk6bji5zimzv86qyy"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-package-stash" ,perl-package-stash)
+       ("perl-sub-identify" ,perl-sub-identify)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Devel-OverloadInfo")
+    (synopsis "Introspect overloaded operators")
+    (description "Devel::OverloadInfo returns information about overloaded
+operators for a given class (or object), including where in the inheritance
+hierarchy the overloads are declared and where the code implementing it is.")
+    (license (package-license perl))))
+
 (define-public perl-digest-sha1
   (package
     (name "perl-digest-sha1")
