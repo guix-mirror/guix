@@ -720,6 +720,28 @@ a minimum of effort.")
     ;; "Under the same license as Perl itself"
     (license (package-license perl))))
 
+(define-public perl-test-warnings
+  (package
+    (name "perl-test-warnings")
+    (version "0.020")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Test-Warnings-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x262kybrdnbiiw53m1axp4zyh4lsfb9mm2shmpm8lwf7sp30isi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Warnings")
+    (synopsis "Test for warnings and the lack of them")
+    (description "This module is intended to be used as a drop-in replacement
+for Test::NoWarnings.  It also adds an extra test, but runs this test before
+done_testing calculates the test count, rather than after.  It does this by
+hooking into done_testing as well as via an END block.  You can declare a
+plan, or not, and things will still Just Work.")
+    (license (package-license perl))))
+
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
