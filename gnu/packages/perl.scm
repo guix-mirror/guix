@@ -101,6 +101,30 @@ manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
     (license (package-license perl))))
 
+(define-public perl-b-hooks-endofscope
+  (package
+    (name "perl-b-hooks-endofscope")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "B-Hooks-EndOfScope-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f5d0lbkwf23dfjn60g6fynmjhy5rxdyxcpdfb07srm73qpg2zpi"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-module-implementation" ,perl-module-implementation)
+       ("perl-sub-exporter-progressive" ,perl-sub-exporter-progressive)
+       ("perl-variable-magic" ,perl-variable-magic)))
+    (home-page "http://search.cpan.org/dist/B-Hooks-EndOfScope")
+    (synopsis "Execute code after a scope finished compilation")
+    (description "This module allows you to execute code when perl finished
+compiling the surrounding scope.")
+    (license (package-license perl))))
+
 (define-public perl-benchmark-timer
   (package
     (name "perl-benchmark-timer")
