@@ -1103,6 +1103,87 @@ which had a recent release that broke some versions of Moose.  It is called
 from Moose::Conflicts and moose-outdated.")
     (license (package-license perl))))
 
+(define-public perl-moose
+  (package
+    (name "perl-moose")
+    (version "2.1403")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                                  "Moose-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16iaazikbnq2jjjac84jrdpfzm4qwqg1nbfgs11jlwn84q4jp1n3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
+       ("perl-test-cleannamespaces" ,perl-test-cleannamespaces)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-warnings" ,perl-test-warnings)))
+    ;; XXX::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+    ;; # === Other Modules ===
+    ;; #
+    ;; #     Module                       Want    Have
+    ;; #     ---------------------------- ---- -------
+    ;; #     Algorithm::C3                 any missing
+    ;; #     DBM::Deep                     any missing
+    ;; #     DateTime                      any missing
+    ;; #     DateTime::Calendar::Mayan     any missing
+    ;; #     DateTime::Format::MySQL       any missing
+    ;; #     Declare::Constraints::Simple  any missing
+    ;; #     Dist::CheckConflicts          any    0.11
+    ;; #     HTTP::Headers                 any missing
+    ;; #     IO::File                      any    1.16
+    ;; #     IO::String                    any missing
+    ;; #     Locale::US                    any missing
+    ;; #     Module::Refresh               any missing
+    ;; #     MooseX::NonMoose              any missing
+    ;; #     Params::Coerce                any missing
+    ;; #     Regexp::Common                any missing
+    ;; #     SUPER                         any missing
+    ;; #     Test::Deep                    any missing
+    ;; #     Test::DependentModules        any missing
+    ;; #     Test::LeakTrace               any missing
+    ;; #     Test::Output                  any missing
+    ;; #     URI                           any missing
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-class-load-xs" ,perl-class-load-xs)
+       ("perl-data-optlist" ,perl-data-optlist)
+       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
+       ("perl-devel-overloadinfo" ,perl-devel-overloadinfo)
+       ("perl-devel-partialdump" ,perl-devel-partialdump)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
+       ("perl-eval-closure" ,perl-eval-closure)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-module-runtime-conflicts" ,perl-module-runtime-conflicts)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-package-deprecationmanager" ,perl-package-deprecationmanager)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-package-stash-xs" ,perl-package-stash-xs)
+       ("perl-params-util" ,perl-params-util)
+       ("perl-parent" ,perl-parent)
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-task-weaken" ,perl-task-weaken)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Moose")
+    (synopsis "Postmodern object system for Perl 5")
+    (description
+     "Moose is a complete object system for Perl 5.  It provides keywords for
+attribute declaration, object construction, inheritance, and maybe more.  With
+Moose, you define your class declaratively, without needing to know about
+blessed hashrefs, accessor methods, and so on.  You can concentrate on the
+logical structure of your classes, focusing on \"what\" rather than \"how\".
+A class definition with Moose reads like a list of very concise English
+sentences.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
