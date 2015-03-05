@@ -891,6 +891,28 @@ that are designed to minimize common mistakes with eval blocks, and nothing
 else.")
     (license x11)))
 
+(define-public perl-variable-magic
+  (package
+    (name "perl-variable-magic")
+    (version "0.55")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/V/VP/VPIT/"
+                           "Variable-Magic-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xzh2vy45ph80bp09j5fcjy8ydgn8yaxsa0fj831q6p1spvyniwg"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Variable-Magic")
+    (synopsis "Associate user-defined magic to variables from Perl")
+    (description "Magic is Perl's way of enhancing variables.  This mechanism
+lets the user add extra data to any variable and hook syntactical
+operations (such as access, assignment or destruction) that can be applied to
+it.  With this module, you can add your own magic to any variable without
+having to write a single line of XS.")
+    (license (package-license perl))))
+
 
 ;;; Some packaged modules need versions of core modules that are newer than
 ;;; those in our perl 5.16.1.
