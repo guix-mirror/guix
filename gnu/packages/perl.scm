@@ -460,6 +460,35 @@ independent of the main namespace and only available through an object
 instance, not by name.")
     (license (package-license perl))))
 
+(define-public perl-package-stash
+  (package
+    (name "perl-package-stash")
+    (version "0.37")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Package-Stash-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b3vg2nbzmz1m5qla4123rmfzmpfmwxkw78fghvwsc4iiww0baq6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-package-anon" ,perl-package-anon)))
+    (propagated-inputs
+     `(("perl-module-implementation" ,perl-module-implementation)
+       ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)
+       ("perl-package-stash-xs" ,perl-package-stash-xs)))
+    (home-page "http://search.cpan.org/dist/Package-Stash")
+    (synopsis "Routines for manipulating stashes")
+    (description "Manipulating stashes (Perl's symbol tables) is occasionally
+necessary, but incredibly messy, and easy to get wrong.  This module hides all
+of that behind a simple API.")
+    (license (package-license perl))))
+
 (define-public perl-package-stash-xs
   (package
     (name "perl-package-stash-xs")
