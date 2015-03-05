@@ -195,6 +195,27 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-class-data-inheritable
+  (package
+    (name "perl-class-data-inheritable")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TM/TMTM/"
+                           "Class-Data-Inheritable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jpi38wy5xh6p1mg2cbyjjw76vgbccqp46685r27w8hmxb7gwrwr"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-Data-Inheritable")
+    (synopsis "Inheritable, overridable class data")
+    (description "Class::Data::Inheritable is for creating accessor/mutators
+to class data.  That is, if you want to store something about your class as a
+whole (instead of about a single object).  This data is then inherited by your
+subclasses and can be overriden.")
+    (license (package-license perl))))
+
 (define-public perl-class-load
   (package
     (name "perl-class-load")
