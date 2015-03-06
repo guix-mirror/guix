@@ -4,7 +4,7 @@ exec guile -l "$0"                              \
              (cdr (command-line)))'
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -242,14 +242,13 @@ description-ids as formal parameters."
     (h2 "GNU Guix Package List")
     (div (@ (id "intro"))
          (div
-          (img (@ (src "graphics/guix-logo.small.png")
-                  (alt "GNU Guix and the GNU System")
+          (img (@ (src "graphics/GuixSD-V.png")
+                  (alt "Guix System Distribution")
                   (height "83"))))
          (p "This web page lists the packages currently provided by the "
             (a (@ (href "manual/guix.html#GNU-Distribution"))
-               "GNU system distribution")
-            " of "
-            (a (@ (href "/software/guix/guix.html")) "GNU Guix") ".  "
+               "Guix System Distribution")
+            ".  "
             "Our " (a (@ (href "http://hydra.gnu.org/jobset/gnu/master"))
                       "continuous integration system")
             " shows their current build status."))
