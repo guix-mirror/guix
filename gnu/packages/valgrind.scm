@@ -36,7 +36,8 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "15xrzhfnwwn7n1sfbkwvdbvs6zk0zx718n6zd5i1nrnvdp13s9gs"))))
+               "15xrzhfnwwn7n1sfbkwvdbvs6zk0zx718n6zd5i1nrnvdp13s9gs"))
+             (patches (list (search-patch "valgrind-glibc-2.21.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
