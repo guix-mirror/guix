@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
@@ -593,6 +594,32 @@ additional calls to tell the library of user interaction.  The whole
 DVD virtual machine and internal playback states are completely
 encapsulated.")
     (license gpl2+)))
+
+(define-public libdvdnav-4
+  (package
+    (inherit libdvdnav)
+    (version "4.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.videolan.org/videolan/libdvdnav/libdvdnav-"
+                version ".tar.xz"))
+              (sha256
+               (base32
+                "0wi3gy408c8xj0ism0hckv5jbfh3lg4pmgxv87gbch9jrhp2gjkz"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          (zero? (system* "autoreconf" "-vif")))
+        %standard-phases)))))
 
 (define-public libdvdcss
   (package
