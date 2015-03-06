@@ -25,16 +25,22 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gd)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module ((gnu packages linux) #:select (eudev)) ; FIXME: for pcb
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages tcl)
   #:use-module (srfi srfi-1))
 
 (define-public librecad
@@ -135,3 +141,58 @@ tool to forward annotation from your schematic to layout using PCB; some minor
 utilities.")
     (license license:gpl2+)))
 
+(define-public pcb
+  (package
+    (name "pcb")
+    (version "20140316")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ftp.geda-project.org/pcb/pcb-" version "/pcb-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0l6944hq79qsyp60i5ai02xwyp8l47q7xdm3js0jfkpf72ag7i42"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'use-wish8.6
+        (lambda _
+          (substitute* "configure"
+            (("wish85") "wish8.6")))
+        (alist-cons-after
+         'install 'wrap
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           ;; FIXME: Mesa tries to dlopen libudev.so.0 and fails.  Pending a
+           ;; fix of the mesa package we wrap the pcb executable such that
+           ;; Mesa can find libudev.so.0 through LD_LIBRARY_PATH.
+           (let* ((out (assoc-ref outputs "out"))
+                  (path (string-append (assoc-ref inputs "udev") "/lib")))
+             (wrap-program (string-append out "/bin/pcb")
+               `("LD_LIBRARY_PATH" ":" prefix (,path)))))
+         %standard-phases))))
+    (inputs
+     `(("dbus" ,dbus)
+       ("mesa" ,mesa)
+       ("udev" ,eudev) ;FIXME: required by mesa
+       ("glu" ,glu)
+       ("gd" ,gd)
+       ("gtk" ,gtk+-2)
+       ("gtkglext" ,gtkglext)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("shared-mime-info" ,shared-mime-info)
+       ("tk" ,tk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (home-page "http://pcb.geda-project.org/")
+    (synopsis "Design printed circuit board layouts")
+    (description
+     "GNU PCB is an interactive tool for editing printed circuit board
+layouts.  It features a rats-nest implementation, schematic/netlist import,
+and design rule checking.  It also includes an autorouter and a trace
+optimizer; and it can produce photorealistic and design review images.")
+    (license license:gpl2+)))
