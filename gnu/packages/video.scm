@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,25 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages zip))
+
+(define-public liba52
+  (package
+    (name "liba52")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/liba52/a52dec-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
+    (build-system gnu-build-system)
+    (home-page "http://liba52.sourceforge.net/")
+    (synopsis "ATSC A/52 stream decoder")
+    (description "liba52 is a library for decoding ATSC A/52 streams.  The
+A/52 standard is used in a variety of applications, including digital
+television and DVD.  It is also known as AC-3.")
+    (license gpl2+)))
 
 (define-public ffmpeg
   (package
