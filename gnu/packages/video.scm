@@ -153,6 +153,7 @@ SMPTE 314M.")
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
+       ("xvid" ,xvid)
        ("zlib", zlib)))
     (native-inputs
      `(("bc" ,bc)
@@ -223,8 +224,6 @@ SMPTE 314M.")
 ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
 ;;   --enable-libx264         enable H.264 encoding via x264 [no]
 ;;   --enable-libxavs         enable AVS encoding via xavs [no]
-;;   --enable-libxvid         enable Xvid encoding via xvidcore,
-;;                            native MPEG-4/Xvid encoder exists [no]
 ;;   --enable-libzmq          enable message passing via libzmq [no]
 ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
 ;;   --enable-openal          enable OpenAL 1.1 capture support [no]
@@ -247,6 +246,7 @@ SMPTE 314M.")
                       "--enable-libtwolame"
                       "--enable-libvorbis"
                       "--enable-libvpx"
+                      "--enable-libxvid"
 
                       "--enable-runtime-cpudetect"
 
@@ -866,3 +866,36 @@ capabilities.")
                   (string-append out "/share/ADM_addons"))))
             (alist-delete 'install
                %standard-phases)))))))))
+
+(define-public xvid
+  (package
+    (name "xvid")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xvid.org/downloads/xvidcore-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0m5g75qvapr7xpywg6a83v5x19kw1nm9l2q48lg7jvvpba0bmqdh"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("yasm" ,yasm)))
+    (arguments
+     '(#:phases
+       (alist-cons-before
+        'configure 'pre-configure
+        (lambda _
+          (chdir "build/generic")
+          (substitute* "configure"
+            (("#! /bin/sh") (string-append "#!" (which "sh")))))
+        %standard-phases)
+       ;; No 'check' target.
+       #:tests? #f))
+    (home-page "https://www.xvid.com/")
+    (synopsis "MPEG-4 Part 2 Advanced Simple Profile video codec")
+    (description "Xvid is an MPEG-4 Part 2 Advanced Simple Profile (ASP) video
+codec library.  It uses ASP features such as b-frames, global and quarter
+pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
+and custom quantization matrices.")
+    (license gpl2+)))
