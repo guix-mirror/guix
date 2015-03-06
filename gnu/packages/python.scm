@@ -3146,7 +3146,14 @@ libxml2 and libxslt.")
               version ".tar.gz"))
         (sha256
           (base32
-            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))))
+            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Adapt to newer freetype. As the package is unmaintained upstream,
+        ;; there is no use in creating a patch and reporting it.
+        '(substitute* "_imagingft.c"
+           (("freetype/")
+            "freetype2/")))))
     (build-system python-build-system)
     (inputs
       `(("freetype" ,freetype)
