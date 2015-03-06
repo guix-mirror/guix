@@ -263,6 +263,7 @@ SMPTE 314M.")
               (zero? (system*
                       "./configure"
                       (string-append "--prefix=" out)
+                      "--enable-avresample"
                       "--enable-gpl" ; enable optional gpl licensed parts
                       "--enable-shared"
                       "--enable-fontconfig"
