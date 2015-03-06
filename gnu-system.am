@@ -407,8 +407,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
-  gnu/packages/patches/gnunet-fix-scheduler.patch		\
-  gnu/packages/patches/gnunet-fix-tests.patch    		\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
