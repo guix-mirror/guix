@@ -594,6 +594,26 @@ DVD virtual machine and internal playback states are completely
 encapsulated.")
     (license gpl2+)))
 
+(define-public libdvdcss
+  (package
+    (name "libdvdcss")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.videolan.org/videolan/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "158k9zagmbk5bkbz96l6lwhh7xcgfcnzflkr4vblskhcab6llhbw"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libdvdcss.html")
+    (synopsis "Library for accessing DVDs as block devices")
+    (description
+     "libdvdcss is a simple library designed for accessing DVDs like a block
+device without having to bother about the decryption.")
+    (license gpl2+)))
+
 (define-public srt2vtt
   (package
     (name "srt2vtt")
