@@ -83,6 +83,25 @@ A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license gpl2+)))
 
+(define-public libdca
+  (package
+    (name "libdca")
+    (version "0.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.videolan.org/pub/videolan/libdca/"
+                    version "/libdca-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libdca.html")
+    (synopsis "DTS Coherent Acoustics decoder")
+    (description "libdca is a library for decoding DTS Coherent Acoustics
+streams.")
+    (license gpl2+)))
+
 (define-public ffmpeg
   (package
     (name "ffmpeg")
