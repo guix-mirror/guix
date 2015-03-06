@@ -558,8 +558,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/xmodmap-asprintf.patch 			\
   gnu/packages/patches/zathura-plugindir-environment-variable.patch
 
-MISC_DISTRO_FILES = gnu/packages/javac.in
-
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux

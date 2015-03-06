@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,14 +340,21 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
               #:separate-lib-output? #f))
 
+(define javac.in
+  (origin
+    (method url-fetch)
+    (uri (string-append "http://sources.gentoo.org/cgi-bin/viewvc.cgi/"
+                        "gentoo-x86/dev-java/gcj-jdk/files/javac.in"))
+    (sha256 (base32
+              "1c3dk4z5yfj6ic2fn3lyxs27n6pmn2wy9k0r1s17lnkf1bzkrciv"))))
+
 (define-public gcj-4.8
   (package (inherit gcc-4.8)
     (name "gcj")
     (inputs
      `(("fastjar" ,fastjar)
        ("perl" ,perl)
-       ("javac.in" ,(search-path %load-path
-                                 "gnu/packages/javac.in"))
+       ("javac.in" ,javac.in)
        ("ecj-bootstrap" ,ecj-bootstrap-4.8)
        ,@(package-inputs gcc-4.8)))
     ;; Suppress the separate "lib" output, because otherwise the
