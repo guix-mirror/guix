@@ -102,6 +102,29 @@ television and DVD.  It is also known as AC-3.")
 streams.")
     (license gpl2+)))
 
+(define-public libdv
+  (package
+    (name "libdv")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/libdv/libdv-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fl96f2xh2slkv1i1ix7kqk576a0ak1d33cylm0mbhm96d0761d3"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libxv" ,libxv)))
+    (home-page "http://libdv.sourceforge.net/")
+    (synopsis "DV video (IEC 61834 and SMPTE 314M) codec")
+    (description "The Quasar DV codec (libdv) is a software codec for DV
+video, the encoding format used by most digital camcorders, typically those
+that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
+developed according to the official standards for DV video: IEC 61834 and
+SMPTE 314M.")
+    (license lgpl2.1+)))
+
 (define-public ffmpeg
   (package
     (name "ffmpeg")
