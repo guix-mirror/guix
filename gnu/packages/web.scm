@@ -871,3 +871,25 @@ parse media stream properties.")
     (description "libquvi is a library with a C API for parsing media stream
 URLs and extracting their actual media files.")
     (license l:lgpl2.1+)))
+
+(define-public quvi
+  (package
+    (name "quvi")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/quvi/quvi-" version ".tar.xz"))
+       (sha256
+        (base32 "09lhl6dv5zpryasx7yjslfrcdcqlsbwapvd5lg7w6sm5x5n3k8ci"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libquvi" ,libquvi)))
+    (home-page "http://quvi.sourceforge.net/")
+    (synopsis "Media stream URL parser")
+    (description "quvi is a command-line-tool suite to extract media files
+from streaming URLs.  It is a command-line wrapper for the libquvi library.")
+    (license l:lgpl2.1+)))
