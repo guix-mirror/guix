@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +28,14 @@
 (define-public fish
   (package
     (name "fish")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://fishshell.com/files/"
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "096rhi911s3j618cvp8fj9pb4jniy3y6415jvjg8bhszsp1x7r5p"))
+                "1pgnz5lapm4qk48a13k9698jaswybzlbz2nyc621d852ldf0vhn6"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
