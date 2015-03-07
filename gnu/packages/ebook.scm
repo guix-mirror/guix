@@ -115,8 +115,7 @@
        ("python2-lxml" ,python2-lxml)
        ("python2-mechanize" ,python2-mechanize)
        ("python2-netifaces" ,python2-netifaces)
-       ;; pil is unmaintained, but the maintained fork pillow does not work.
-       ("python2-pil" ,python2-pil)
+       ("python2-pillow" ,python2-pillow)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("qt" ,qt)
