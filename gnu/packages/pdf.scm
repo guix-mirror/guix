@@ -127,7 +127,11 @@
              ("zlib" ,zlib)))
    (arguments
     `(#:tests? #f ; there is no check target
-      #:parallel-build? #f            ; build fails randomly on 8-way machines
+      #:parallel-build? #f ; build fails randomly on 8-way machines
+      #:configure-flags
+        (list (string-append "--with-freetype2-includes="
+                             (assoc-ref %build-inputs "freetype")
+                             "/include/freetype2"))
       #:phases
        (alist-replace
         'install
