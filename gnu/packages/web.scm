@@ -36,11 +36,14 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
@@ -834,4 +837,37 @@ of people.")
     (synopsis "Media stream URL parser")
     (description "This package contains support scripts called by libquvi to
 parse media stream properties.")
+    (license l:lgpl2.1+)))
+
+(define-public libquvi
+  (package
+    (name "libquvi")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/quvi/libquvi-" version ".tar.xz"))
+       (sha256
+        (base32 "00x9gbmzc5cns0gnfag0hsphcr3cb33vbbb9s7ppvvd6bxz2z1mm"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("libquvi-scripts" ,libquvi-scripts)
+       ("lua" ,lua-5.1)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; Lua provides no .pc file, so add CFLAGS/LIBS manually.
+     '(#:configure-flags
+       (let ((lua (assoc-ref %build-inputs "lua")))
+         (list
+          (string-append "liblua_CFLAGS=-I" lua "/include")
+          (string-append "liblua_LIBS=-L" lua "/libs -llua")))))
+    (home-page "http://quvi.sourceforge.net/")
+    (synopsis "Media stream URL parser")
+    (description "libquvi is a library with a C API for parsing media stream
+URLs and extracting their actual media files.")
     (license l:lgpl2.1+)))

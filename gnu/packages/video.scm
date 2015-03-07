@@ -63,6 +63,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -177,6 +178,7 @@ SMPTE 314M.")
        ("lame" ,lame)
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
+       ("libquvi" ,libquvi)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
@@ -239,7 +241,6 @@ SMPTE 314M.")
 ;;   --enable-libopencv       enable video filtering via libopencv [no]
 ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
 ;;   --enable-libpulse        enable Pulseaudio input via libpulse [no]
-;;   --enable-libquvi         enable quvi input via libquvi [no]
 ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
 ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
 ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
@@ -271,6 +272,7 @@ SMPTE 314M.")
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
+                      "--enable-libquvi"
                       "--enable-libsoxr"
                       "--enable-libspeex"
                       "--enable-libtheora"
