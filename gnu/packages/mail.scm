@@ -227,14 +227,16 @@ operating systems.")
        (alist-cons-after
         'unpack 'patch-paths-in-tests
         (lambda _
-          ;; The test programs run several programs using 'system'
-          ;; with hard-coded paths.  Here we patch them all.  We also
-          ;; change "gpg" to "gpg2".
-          (substitute* (find-files "tests" "\\.c$")
-            (("(system *\\(\")(/[^ ]*)" all pre prog-path)
-             (let* ((base (basename prog-path))
-                    (prog (which (if (string=? base "gpg") "gpg2" base))))
-              (string-append pre (or prog (error "not found: " base)))))))
+          ;; The test programs run several programs using 'system' with
+          ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
+          ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
+          ;; raw byte sequences in several different encodings.
+          (with-fluids ((%default-port-encoding #f))
+            (substitute* (find-files "tests" "\\.c$")
+              (("(system *\\(\")(/[^ ]*)" all pre prog-path)
+               (let* ((base (basename prog-path))
+                      (prog (which (if (string=? base "gpg") "gpg2" base))))
+                 (string-append pre (or prog (error "not found: " base))))))))
         %standard-phases)))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
