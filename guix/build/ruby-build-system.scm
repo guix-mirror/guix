@@ -58,11 +58,11 @@ directory."
 
 (define* (install #:key source inputs outputs #:allow-other-keys)
   (let* ((ruby-version
-          (match:substring (string-match "ruby-(.*)$"
+          (match:substring (string-match "ruby-(.*)\\.[0-9]$"
                                          (assoc-ref inputs "ruby"))
                            1))
          (out (assoc-ref outputs "out"))
-         (gem-home (string-append out "/lib/ruby/gems/" ruby-version)))
+         (gem-home (string-append out "/lib/ruby/gems/" ruby-version ".0")))
     (setenv "GEM_HOME" gem-home)
     (mkdir-p gem-home)
     (zero? (system* "gem" "install" "--local"
