@@ -196,10 +196,11 @@ terminal using ncurses.")
      `(("pkg-config" ,pkg-config)
        ("automake" ,automake)
        ("autoconf" ,autoconf)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("taglib" ,taglib)))
     (arguments
      '(#:configure-flags
-       '("BOOST_LIB_SUFFIX=")
+       '("BOOST_LIB_SUFFIX=" "--with-taglib")
        #:phases
        (alist-cons-after
         'unpack 'autogen
