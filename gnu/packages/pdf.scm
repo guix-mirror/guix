@@ -338,7 +338,16 @@ interaction.")
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"
-                           "-DPODOFO_BUILD_STATIC=ON")))
+                           "-DPODOFO_BUILD_STATIC=ON")
+       #:phases
+         (alist-cons-before
+         'configure 'patch
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((freetype (assoc-ref inputs "freetype")))
+             ;; Look for freetype include files in the correct place.
+             (substitute* "cmake/modules/FindFREETYPE.cmake"
+               (("/usr/local") freetype))))
+         %standard-phases)))
     (home-page "http://podofo.sourceforge.net")
     (synopsis "Tools to work with the PDF file format")
     (description
