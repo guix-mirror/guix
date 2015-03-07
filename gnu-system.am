@@ -164,6 +164,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lesstif.scm			\
   gnu/packages/libcanberra.scm			\
   gnu/packages/libdaemon.scm			\
+  gnu/packages/libedit.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffcall.scm			\
   gnu/packages/libffi.scm			\
