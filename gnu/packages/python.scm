@@ -3344,7 +3344,7 @@ Python style, together with a fast and comfortable execution environment.")
     (synopsis "Python micro test suite harness")
     (description "A micro unittest suite harness for Python.")
     (home-page "https://github.com/trentm/testlib")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-testlib
   (package-with-python2 python-testlib))
