@@ -3188,6 +3188,37 @@ bound to the @code{libreoffice} top-level attribute):
 @example
 guix import nix ~/path/to/nixpkgs libreoffice
 @end example
+
+@item hackage
+@cindex hackage
+Import meta-data from Haskell community's central package archive
+@uref{https://hackage.haskell.org/, Hackage}.  Information is taken from
+Cabal files and includes all the relevant information, including package
+dependencies.
+
+Specific command-line options are:
+
+@table @code
+@item --no-test-dependencies
+@itemx -t
+Do not include dependencies only required to run the test suite.
+@end table
+
+The command below imports meta-data for the latest version of the
+@code{HTTP} Haskell package without including test dependencies:
+
+@example
+guix import hackage -t HTTP
+@end example
+
+A specific package version may optionally be specified by following the
+package name by a hyphen and a version number as in the following example:
+
+@example
+guix import hackage mtl-2.1.3.1
+@end example
+
+Currently only indentation structured Cabal files are supported.
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
