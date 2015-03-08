@@ -158,26 +158,26 @@ which should be passed to this script as the first argument.  If not, the
           ;; environment variables that one gets when logging in on a tty, for
           ;; instance.
           (let* ((pw    (getpw (getuid)))
-                 (shell (passwd:shell pw))
-                 (st    (stat command #f)))
-            (when (and st (not (zero? (logand (stat:mode st) #o100))))
-              ;; Close any open file descriptors.  This is all the more
-              ;; important that SLiM itself exec's us directly without closing
-              ;; its own file descriptors!
-              (close-all-fdes)
+                 (shell (passwd:shell pw)))
+            ;; Close any open file descriptors.  This is all the more
+            ;; important that SLiM itself exec's us directly without closing
+            ;; its own file descriptors!
+            (close-all-fdes)
 
-              ;; The '--login' option is supported at least by Bash and zsh.
-              (execl shell shell "--login" "-c"
-                     (string-join (cons command args))))))
+            ;; The '--login' option is supported at least by Bash and zsh.
+            (execl shell shell "--login" "-c"
+                   (string-join (cons command args)))))
 
-        (let ((home (getenv "HOME"))
-              (session (match (command-line)
-                         ((_ x) x)
-                         (_     #$fallback-session))))
-          ;; First, try to run ~/.xsession.
-          (exec-from-login-shell (string-append home "/.xsession"))
-          ;; Then try to start the specified session.
-          (exec-from-login-shell session))))
+        (let* ((home          (getenv "HOME"))
+               (xsession-file (string-append home "/.xsession"))
+               (session       (match (command-line)
+                                ((_ x) x)
+                                (_     #$fallback-session))))
+          (if (file-exists? xsession-file)
+              ;; Run ~/.xsession when it exists.
+              (exec-from-login-shell xsession-file)
+              ;; Otherwise, start the specified session.
+              (exec-from-login-shell session)))))
   (gexp->script "xinitrc" builder))
 
 
