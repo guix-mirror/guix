@@ -1961,6 +1961,13 @@ also contains the libsysfs library.")
            (substitute* "configure"
              (("includedir='(\\$\\{prefix\\}/include)'" all orig)
               (string-append "includedir='" orig "/sysfs'")))))))
+    ;; XXX sysfsutils-1.3.0's config.guess fails on mips64el
+    (arguments `(#:configure-flags
+                 '(,@(if (%current-target-system)
+                         '()
+                         (let ((triplet
+                                (nix-system->gnu-triplet (%current-system))))
+                           (list (string-append "--build=" triplet)))))))
     (synopsis "System utilities based on Linux sysfs (version 1.x)")))
 
 (define-public cpufrequtils
