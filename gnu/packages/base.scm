@@ -151,14 +151,14 @@ standard utility.")
 (define-public patch
   (package
    (name "patch")
-    (version "2.7.5")
+    (version "2.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/patch/patch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))))
+                "02gikxjvcxysr4l65c8vivgz62xmalp0av5ypzff8vqhrq3vpb0f"))))
    (build-system gnu-build-system)
    (native-inputs `(("ed", ed)))
    (synopsis "Apply differences to originals, with optional backups")
