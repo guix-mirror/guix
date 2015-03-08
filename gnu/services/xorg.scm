@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,9 +26,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages slim)
-  #:use-module (gnu packages ratpoison)
   #:use-module (gnu packages gnustep)
-  #:use-module (gnu packages sawfish)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (guix gexp)
@@ -39,14 +38,6 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (xorg-start-command
-            %default-xsessions
-            %ratpoison-session-type
-            %windowmaker-session-type
-            %sawfish-session-type
-
-            session-type?
-            session-type-name
-
             %default-slim-theme
             %default-slim-theme-name
             slim-service))
@@ -194,61 +185,6 @@ which should be passed to this script as the first argument.  If not, the
 ;;; SLiM log-in manager.
 ;;;
 
-(define-record-type* <session-type> session-type make-session-type
-  session-type?
-  (name         session-type-name)                ;string
-  (executable   session-type-executable))         ;string-valued gexp
-
-(define %windowmaker-session-type
-  (session-type
-   (name "WindowMaker")
-   (executable #~(string-append #$windowmaker "/bin/wmaker"))))
-
-(define %ratpoison-session-type
-  (session-type
-   (name "Ratpoison")
-   (executable #~(string-append #$ratpoison "/bin/ratpoison"))))
-
-(define %sawfish-session-type
-  (session-type
-   (name "Sawfish")
-   (executable #~(string-append #$sawfish "/bin/sawfish"))))
-
-(define %default-xsessions
-  ;; Default session types available to the log-in manager.
-  (list %windowmaker-session-type %ratpoison-session-type))
-
-(define (xsessions-directory sessions)
-  "Return a directory containing SESSIONS, a list of <session-type> objects.
-The alphabetical order of the files in that directory match the order of the
-elements in SESSIONS."
-  (define builder
-    #~(begin
-        (use-modules (srfi srfi-1)
-                     (ice-9 format))
-
-        (mkdir #$output)
-        (chdir #$output)
-        (fold (lambda (name executable number)
-                ;; Create file names such that the order of the items in
-                ;; SESSION is respected.  SLiM gets them in lexicographic
-                ;; order and uses the first one as the default session.
-                (let ((file (format #f "~2,'0d-~a.desktop"
-                                    number (string-downcase name))))
-                  (call-with-output-file file
-                    (lambda (port)
-                      (format port "[Desktop Entry]
-Name=~a
-Exec=~a
-Type=Application~%"
-                              name executable)))
-                  (+ 1 number)))
-              1
-              '#$(map session-type-name sessions)
-              (list #$@(map session-type-executable sessions)))))
-
-  (gexp->derivation "xsessions-dir" builder))
-
 (define %default-slim-theme
   ;; Theme based on work by Felipe López.
   #~(string-append #$%artwork-repository "/slim"))
@@ -264,7 +200,6 @@ Type=Application~%"
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
                        (xauth xauth) (dmd dmd) (bash bash)
-                       (sessions %default-xsessions)
                        (auto-login-session #~(string-append #$windowmaker
                                                             "/bin/wmaker"))
                        startx)
@@ -279,17 +214,12 @@ password.  When @var{auto-login?} is true, log in automatically as
 If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
 @var{theme} must be a gexp denoting the name of a directory containing the
 theme to use.  In that case, @var{theme-name} specifies the name of the
-theme.
-
-Last, @var{session} is a list of @code{<session-type>} objects denoting the
-available session types that can be chosen from the log-in screen.  The first
-one is chosen by default."
+theme."
 
   (define (slim.cfg)
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))
                         (xinitrc (xinitrc #:fallback-session
-                                          auto-login-session))
-                        (sessiondir (xsessions-directory sessions)))
+                                          auto-login-session)))
       (text-file* "slim.cfg"  "
 default_path /run/current-system/profile/bin
 default_xserver " startx "
@@ -300,7 +230,7 @@ authfile /var/run/slim.auth
 # The login command.  '%session' is replaced by the chosen session name, one
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
 login_cmd  exec " xinitrc " %session
-sessiondir " sessiondir "
+sessiondir /run/current-system/profile/share/xsessions
 session_msg session (F1 to change):
 
 halt_cmd " dmd "/sbin/halt
