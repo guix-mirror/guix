@@ -140,13 +140,6 @@
               (copy-file (assoc-ref inputs "ghc-testsuite")
                          "ghc-testsuite.tar.xz")
               (system* "tar" "xvf" "ghc-testsuite.tar.xz"))
-            ;; We need to install an UTF-8 locale for the tests to produce results
-            ;; identical to the expected ones.
-            (system* "localedef" "--no-archive"
-                     "--prefix" (getcwd) "-i" "en_US"
-                     "-f" "UTF-8" "./en_US.UTF-8")
-            (setenv "LOCPATH" (getcwd))
-            (setenv "LC_ALL" "en_US.UTF-8")
             (substitute*
                 (list "testsuite/timeout/Makefile"
                       "testsuite/timeout/timeout.py"
