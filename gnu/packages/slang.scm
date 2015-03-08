@@ -56,6 +56,7 @@
        ("libpng" ,libpng)
        ("pcre" ,pcre)
        ("ncurses" ,ncurses)))
+    (arguments `(#:parallel-build? #f)) ; there's at least one race
     (home-page "http://www.jedsoft.org/slang/")
     (synopsis "Library for interactive applications and extensibility")
     (description
