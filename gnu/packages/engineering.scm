@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages audio)
+(define-module (gnu packages engineering)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
