@@ -237,17 +237,25 @@ many readers as needed).")
                                (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out   (assoc-ref outputs "out"))
-                          (dir   (string-append out "/share/guile/site/"))
-                          (files (find-files dir ".scm")))
-                    (substitute* files
-                      (("\"libguile-ncurses\"")
-                       (format #f "\"~a/lib/libguile-ncurses\""
-                               out)))))
-                 %standard-phases)))
+       #:phases (alist-cons-before
+                 'check 'change-locale
+                 (lambda _
+                   ;; Use the locale that's actually available in the build
+                   ;; environment.
+                   (substitute* "test/f009_form_wide.test"
+                     (("en_US\\.utf8")
+                      "en_US.UTF-8")))
+                 (alist-cons-after
+                  'install 'post-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out   (assoc-ref outputs "out"))
+                           (dir   (string-append out "/share/guile/site/"))
+                           (files (find-files dir ".scm")))
+                      (substitute* files
+                        (("\"libguile-ncurses\"")
+                         (format #f "\"~a/lib/libguile-ncurses\""
+                                 out)))))
+                  %standard-phases))))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
