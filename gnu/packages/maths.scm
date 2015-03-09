@@ -1028,6 +1028,43 @@ environments.")
                    license:public-domain
                    license:lgpl2.1+))))
 
+(define-public openspecfun
+  (package
+    (name "openspecfun")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/JuliaLang/openspecfun/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nsa3jjmlhcqkw5ba5ypbn3n0c8b6lc22zzlxnmxkxi9shhdx65z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f  ;no "check" target
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("fortran" ,gfortran-4.8)))
+    (home-page "https://github.com/JuliaLang/openspecfun")
+    (synopsis "Collection of special mathematical functions")
+    (description
+     "Openspecfun provides AMOS and Faddeeva.  AMOS (from Netlib) is a
+portable package for Bessel Functions of a Complex Argument and Nonnegative
+Order; it contains subroutines for computing Bessel functions and Airy
+functions.  Faddeeva allows computing the various error functions of arbitrary
+complex arguments (Faddeeva function, error function, complementary error
+function, scaled complementary error function, imaginary error function, and
+Dawson function); given these, one can also easily compute Voigt functions,
+Fresnel integrals, and similar related functions as well.")
+    ;; Faddeeva is released under the Expat license; AMOS is included as
+    ;; public domain software.
+    (license (list license:expat license:public-domain))))
+
 (define-public atlas
   (package
     (name "atlas")
