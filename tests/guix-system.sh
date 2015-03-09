@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -28,6 +28,8 @@ tmpfile="t-guix-system-$$"
 errorfile="t-guix-system-error-$$"
 trap 'rm -f "$tmpfile" "$errorfile"' EXIT
 
+# Reporting of syntax errors.
+
 cat > "$tmpfile"<<EOF
 ;; This is line 1, and the next one is line 2.
    (operating-system)
@@ -40,4 +42,37 @@ then
     exit 1
 else
     grep "$tmpfile:2:3:.*missing.* initializers" "$errorfile"
+fi
+
+
+# Reporting of duplicate service identifiers.
+
+cat > "$tmpfile" <<EOF
+(use-modules (gnu))
+(use-service-modules networking)
+
+(operating-system
+  (host-name "antelope")
+  (timezone "Europe/Paris")
+  (locale "en_US.UTF-8")
+
+  (bootloader (grub-configuration (device "/dev/sdX")))
+  (file-systems (cons (file-system
+                        (device "root")
+                        (title 'label)
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+
+  (services (cons* (dhcp-client-service)
+                   (dhcp-client-service) ;twice!
+                   %base-services)))
+EOF
+
+if guix system vm "$tmpfile" 2> "$errorfile"
+then
+    # This must not succeed.
+    exit 1
+else
+    grep "service 'networking'.*more than once" "$errorfile"
 fi
