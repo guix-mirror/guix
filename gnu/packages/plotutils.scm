@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages plotutils)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -26,6 +26,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages))
 
 (define-public plotutils
@@ -64,7 +65,7 @@ It includes a library, \"libplot\", for C and C++ for exporting 2D vector
 graphics in many file formats.  It also has support for 2D vector graphics
 animations.  The package also contains command-line programs for plotting
 scientific data.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public guile-charting
   (package
@@ -93,4 +94,65 @@ scientific data.")
     (description
      "Guile-Charting is a Guile Scheme library to create bar charts and graphs
 using the Cairo drawing library.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
+
+(define-public ploticus
+  (package
+    (name "ploticus")
+    (version "2.42")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ploticus/ploticus/"
+                                  version "/ploticus242_src.tar.gz"))
+              (sha256
+               (base32
+                "1c70cvfvgjh83hj1x21130wb9qfr2rc0x47cxy9kl805yjwy8a9z"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Install binaries in the right place.
+               '(substitute* "src/Makefile"
+                  (("INSTALLBIN =.*$")
+                   (string-append "INSTALLBIN = $(out)/bin"))))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace configure (lambda _ (chdir "src")))
+         (add-before install make-target-directories
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let ((out (assoc-ref outputs "out")))
+                         (mkdir-p (string-append out "/bin"))
+                         #t)))
+         (add-after install install-prefabs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (dir (string-append out
+                                                 "/share/ploticus/prefabs"))
+                             (bin (string-append out "/bin")))
+                        (mkdir-p dir)
+
+                        ;; Install "prefabs".
+                        (for-each (lambda (file)
+                                    (let ((target
+                                           (string-append dir "/"
+                                                          (basename file))))
+                                      (copy-file file target)))
+                                  (find-files "../prefabs" "."))
+
+                        ;; Allow them to be found.
+                        (wrap-program (string-append bin "/pl")
+                          `("PLOTICUS_PREFABS" ":" = (,dir)))))))))
+    (inputs
+     `(("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("zlib" ,zlib)))
+    (home-page "http://ploticus.sourceforge.net/")
+    (synopsis "Command-line tool for producing plots and charts")
+    (description
+     "Ploticus is a non-interactive software package for producing plots,
+charts, and graphics from data.  Ploticus is good for automated or
+just-in-time graph generation, handles date and time data nicely, and has
+basic statistical capabilities.  It allows significant user control over
+colors, styles, options and details.")
+    (license license:gpl2+)))
