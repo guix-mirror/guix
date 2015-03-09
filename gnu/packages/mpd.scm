@@ -191,13 +191,13 @@ terminal using ncurses.")
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
               ("readline" ,readline)
-              ("ncurses" ,ncurses)))
+              ("ncurses" ,ncurses)
+              ("taglib" ,taglib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("automake" ,automake)
        ("autoconf" ,autoconf)
-       ("libtool" ,libtool)
-       ("taglib" ,taglib)))
+       ("libtool" ,libtool)))
     (arguments
      '(#:configure-flags
        '("BOOST_LIB_SUFFIX=" "--with-taglib")
