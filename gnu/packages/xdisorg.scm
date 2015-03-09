@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -453,3 +454,35 @@ to access all XBindKeys internals, so you can have key combinations, double
 clicks or timed double clicks take actions.  Also all functions that work in
 Guile will work for XBindKeys.")
     (license license:gpl2+)))
+
+(define-public rxvt-unicode
+  (package
+    (name "rxvt-unicode")
+    (version "9.21")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "http://dist.schmorp.de/rxvt-unicode/"
+              name "-"
+              version
+              ".tar.bz2"))
+        (sha256
+          (base32
+            "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libXft" ,libxft)
+       ("libX11" ,libx11)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://software.schmorp.de/pkg/rxvt-unicode.html")
+    (synopsis "Rxvt clone with XFT and unicode support")
+    (description "Rxvt-unicode (urxvt) is a colour vt102 terminal emulator
+intended as an xterm replacement for users who do not require features such as
+Tektronix 4014 emulation and toolkit-style configurability.  It supports
+unicode, XFT and may be extended with Perl plugins.  It also comes with a
+client/daemon pair that lets you open any number of terminal windows from
+within a single process.")
+    (license license:gpl3+)))
