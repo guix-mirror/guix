@@ -991,6 +991,43 @@ based on transforming an expression into a bytecode and precalculating
 constant parts of it.")
     (license license:expat)))
 
+(define-public openlibm
+  (package
+    (name "openlibm")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/JuliaLang/openlibm/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cwqqqlblj3kzp9aq1wnpfs1fl0qd1wp1xzm5shb09w06i4rh9nn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       ;; no configure script
+       (alist-delete 'configure %standard-phases)
+       #:tests? #f)) ;the tests are part of the default target
+    (home-page "http://openlibm.org/")
+    (synopsis "Portable C mathematical library (libm)")
+    (description
+     "OpenLibm is an effort to have a high quality, portable, standalone C
+mathematical library (libm).  It can be used standalone in applications and
+programming language implementations.  The project was born out of a need to
+have a good libm for the Julia programming langage that worked consistently
+across compilers and operating systems, and in 32-bit and 64-bit
+environments.")
+    ;; See LICENSE.md for details.
+    (license (list license:expat
+                   license:isc
+                   license:bsd-2
+                   license:public-domain
+                   license:lgpl2.1+))))
+
 (define-public atlas
   (package
     (name "atlas")
