@@ -1881,6 +1881,28 @@ testing exception-throwing code with about the same amount of typing.")
 automatically aggregated and output to STDOUT.")
     (license (package-license perl))))
 
+(define-public perl-test-mocktime
+  (package
+    (name "perl-test-mocktime")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DD/DDICK/"
+                           "Test-MockTime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yrqmjg33akannwz2f99rfm7dvvxpzsdj23lsvlvfi4qslrlqfvw"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-MockTime")
+    (synopsis "Replaces actual time with simulated time")
+    (description "This module was created to enable test suites to test code
+at specific points in time.  Specifically it overrides localtime, gmtime and
+time at compile time and then relies on the user supplying a mock time via
+set_relative_time, set_absolute_time or set_fixed_time to alter future calls
+to gmtime,time or localtime.")
+    (license (package-license perl))))
+
 (define-public perl-test-most
   (package
     (name "perl-test-most")
