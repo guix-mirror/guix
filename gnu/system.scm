@@ -511,9 +511,8 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
       ((services     (operating-system-services os))
        (pam-services ->
                      ;; Services known to PAM.
-                     (delete-duplicates
-                      (append (operating-system-pam-services os)
-                              (append-map service-pam-services services))))
+                     (append (operating-system-pam-services os)
+                             (append-map service-pam-services services)))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os))
        (/etc/hosts  (or (operating-system-hosts-file os)
