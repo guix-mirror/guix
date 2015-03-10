@@ -72,6 +72,11 @@ handy front-end to the library.")
         (base32 "1xik00x0yvhswsw2isnclabhv536xk1s42cf5z54gfbpbhc7ni8l"))))
     (build-system gnu-build-system)
     (inputs `(("recode" ,recode)))
+
+    ;; Both 'test-convert-64.sh' and 'test-convert-filter.sh' manipulate a
+    ;; 'test.tmp' file, so they have to run in sequence.
+    (arguments '(#:parallel-tests? #f))
+
     (home-page "https://github.com/nijel/enca")
     (synopsis "Text encoding detection tool")
     (description "Enca (Extremely Naive Charset Analyser) consists of libenca,
