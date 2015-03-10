@@ -615,6 +615,31 @@ are invoked.")
 kinds of HTML parsing operations.")
     (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
 
+(define-public perl-http-body
+  (package
+    (name "perl-http-body")
+    (version "1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GE/GETTY/"
+                           "HTTP-Body-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ahhksj0zg6wq6glpjkxdr3byd5riwvq2f5aw21n1jcsl71nll01"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)))
+    (propagated-inputs
+     `(("perl-file-temp" ,perl-file-temp)
+       ("perl-http-message" ,perl-http-message))) ;For HTTP::Headers
+    (home-page "http://search.cpan.org/dist/HTTP-Body")
+    (synopsis "HTTP Body Parser")
+    (description "HTTP::Body parses chunks of HTTP POST data and supports
+application/octet-stream, application/json, application/x-www-form-urlencoded,
+and multipart/form-data.")
+    (license (package-license perl))))
+
 (define-public perl-http-cookiejar
   (package
     (name "perl-http-cookiejar")
