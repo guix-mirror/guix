@@ -63,6 +63,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages tbb)
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -1099,6 +1100,60 @@ Fresnel integrals, and similar related functions as well.")
     ;; Faddeeva is released under the Expat license; AMOS is included as
     ;; public domain software.
     (license (list license:expat license:public-domain))))
+
+(define-public suitesparse
+  (package
+    (name "suitesparse")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "100hdzr0mf4mzlwnqpmwpfw4pymgsf9n3g0ywb1yps2nk1zbkdy5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f ;cholmod build fails otherwise
+       #:tests? #f  ;no "check" target
+       #:make-flags
+       (list "CC=gcc"
+             "BLAS=-lblas"
+             "TBB=-ltbb"
+             "CHOLMOD_CONFIG=-DNPARTITION" ;required when METIS is not used
+             (string-append "INSTALL_LIB="
+                            (assoc-ref %outputs "out") "/lib")
+             (string-append "INSTALL_INCLUDE="
+                            (assoc-ref %outputs "out") "/include"))
+       #:phases
+       (alist-cons-before
+        'install 'prepare-out
+        ;; README.txt states that the target directories must exist prior to
+        ;; running "make install".
+        (lambda _
+          (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+          (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))
+        ;; no configure script
+        (alist-delete 'configure %standard-phases))))
+    (inputs
+     `(("tbb" ,tbb)
+       ("lapack" ,lapack)))
+    (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
+    (synopsis "Suite of sparse matrix software")
+    (description
+     "SuiteSparse is a suite of sparse matrix algorithms, including: UMFPACK,
+multifrontal LU factorization; CHOLMOD, supernodal Cholesky; SPQR,
+multifrontal QR; KLU and BTF, sparse LU factorization, well-suited for circuit
+simulation; ordering methods (AMD, CAMD, COLAMD, and CCOLAMD); CSparse and
+CXSparse, a concise sparse Cholesky factorization package; and many other
+packages.")
+    ;; LGPLv2.1+:
+    ;;   AMD, CAMD, BTF, COLAMD, CCOLAMD, CSparse, CXSparse, KLU, LDL
+    ;; GPLv2+:
+    ;;  GPUQREngine, RBio, SuiteSparse_GPURuntime, SuiteSparseQR, UMFPACK
+    (license (list license:gpl2+ license:lgpl2.1+))))
 
 (define-public atlas
   (package
