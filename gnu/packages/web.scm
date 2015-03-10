@@ -759,6 +759,31 @@ of the negotiable variants and the value of the various Accept* header
 fields in the request.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
 
+(define-public perl-http-tiny
+  (package
+    (name "perl-http-tiny")
+    (version "0.053")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "HTTP-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bwy31xrcz5zfx1n3vc50vj1aqvzn5ccr7lgacl8wmi03a6w2af2"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-cookiejar" ,perl-http-cookiejar)
+       ("perl-io-socket-ip" ,perl-io-socket-ip)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-net-ssleay" ,perl-net-ssleay)))
+    (home-page "http://search.cpan.org/dist/HTTP-Tiny")
+    (synopsis "HTTP/1.1 client")
+    (description "This is a very simple HTTP/1.1 client, designed for doing
+simple requests without the overhead of a large framework like LWP::UserAgent.
+It supports proxies and redirection.  It also correctly resumes after EINTR.")
+    (license (package-license perl))))
+
 (define-public perl-io-html
   (package
     (name "perl-io-html")
