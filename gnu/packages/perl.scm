@@ -2235,6 +2235,27 @@ the system epoch")
 time values and formating dates into ASCII strings.")
     (license (package-license perl))))
 
+(define-public perl-time-mock
+  (package
+    (name "perl-time-mock")
+    (version "v0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EW/EWILHELM/"
+                           "Time-Mock-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bwqyg8z98m8cjw1qcm4wg502n225k33j2fp8ywxkgfjdd1zgllv"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-timedate" ,perl-timedate))) ;For Date::Parse
+    (home-page "http://search.cpan.org/dist/Time-Mock")
+    (synopsis "Shift and scale time")
+    (description "This module allows you to speed up your sleep(), alarm(),
+and time() calls.")
+    (license (package-license perl))))
+
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
