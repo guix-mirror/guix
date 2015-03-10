@@ -69,7 +69,6 @@
             operating-system-users
             operating-system-groups
             operating-system-issue
-            operating-system-packages
             operating-system-timezone
             operating-system-locale
             operating-system-locale-definitions
