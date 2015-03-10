@@ -427,23 +427,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
-  gnu/packages/patches/icecat-CVE-2015-0822.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0827-pt-1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0827-pt-2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0827-pt-3.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0831-pt-1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0831-pt-2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-01.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-02.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-03.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-04.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-05.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-06.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-07.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-08.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-09.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-10.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-11.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
