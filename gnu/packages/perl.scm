@@ -868,6 +868,26 @@ provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List/")))
 
+(define-public perl-file-sharedir-install
+  (package
+    (name "perl-file-sharedir-install")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GW/GWYN/"
+                           "File-ShareDir-Install-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xz60bi7x8755lq24rx7y1jkyk3icssn7s55z665mysdxhfzg2kh"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-ShareDir-Install")
+    (synopsis "Install shared files")
+    (description "File::ShareDir::Install allows you to install read-only data
+files from a distribution.  It is a companion module to File::ShareDir, which
+allows you to locate these files after installation.")
+    (license (package-license perl))))
+
 (define-public perl-file-temp
   (package
     (name "perl-file-temp")
