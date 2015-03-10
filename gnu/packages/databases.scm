@@ -236,9 +236,12 @@ types are supported, as is encryption.")
               "04dl53iv5q0srv4jcgjfzsrdzkq6dg1sgmlmpw9lrd4xrmj6jmvl"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
-   ;; Add -DSQLITE_SECURE_DELETE.  GNU Icecat will refuse to use the system
-   ;; SQLite unless this option is enabled.
-   (arguments `(#:configure-flags '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE")))
+   (arguments
+    `(#:configure-flags
+      ;; Add -DSQLITE_SECURE_DELETE and -DSQLITE_ENABLE_UNLOCK_NOTIFY to
+      ;; CFLAGS.  GNU Icecat will refuse to use the system SQLite unless these
+      ;; options are enabled.
+      '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_UNLOCK_NOTIFY")))
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
