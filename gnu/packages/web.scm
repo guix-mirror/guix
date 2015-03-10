@@ -615,6 +615,32 @@ are invoked.")
 kinds of HTML parsing operations.")
     (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
 
+(define-public perl-http-cookiejar
+  (package
+    (name "perl-http-cookiejar")
+    (version "0.006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "HTTP-CookieJar-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c7l29ak6ba2j006ca00vnkxpyc1fvpikydjvsb24s50zf1mv7b2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-time-mock" ,perl-time-mock)))
+    (inputs
+     `(("perl-time-local" ,perl-time-local)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/HTTP-CookieJar")
+    (synopsis "Minimalist HTTP user agent cookie jar")
+    (description "This module implements a minimalist HTTP user agent cookie
+jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
+    (license l:asl2.0)))
+
 (define-public perl-http-cookies
   (package
     (name "perl-http-cookies")
