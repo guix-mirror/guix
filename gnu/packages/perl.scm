@@ -216,6 +216,25 @@ whole (instead of about a single object).  This data is then inherited by your
 subclasses and can be overriden.")
     (license (package-license perl))))
 
+(define-public perl-class-inspector
+  (package
+    (name "perl-class-inspector")
+    (version "1.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "Class-Inspector-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04iij8dbcgaim7g109frpyf7mh4ydsd8zh53r53chk0zxnivg91w"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-Inspector")
+    (synopsis "Get information about a class and its structure")
+    (description "Class::Inspector allows you to get information about a
+loaded class.")
+    (license (package-license perl))))
+
 (define-public perl-class-load
   (package
     (name "perl-class-load")
