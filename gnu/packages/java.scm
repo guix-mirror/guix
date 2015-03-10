@@ -227,7 +227,9 @@ build process and its dependencies, whereas Make uses Makefile format.")
                 (string-append "DEVTOOLS_PATH = " corebin))
                (("COMPILER_PATH *= */usr/bin/")
                 (string-append "COMPILER_PATH = "
-                               (assoc-ref %build-inputs "gcc") "/bin/")))
+                               (assoc-ref %build-inputs "gcc") "/bin/"))
+               (("DEF_OBJCOPY *=.*objcopy")
+                (string-append "DEF_OBJCOPY = " (which "objcopy"))))
 
              ;; fix hard-coded utility paths
              (substitute* '("openjdk/jdk/make/common/shared/Defs-utils.gmk"
