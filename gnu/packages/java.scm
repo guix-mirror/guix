@@ -184,6 +184,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (zero? (system* "tar" "xvjf"
                                (assoc-ref inputs "ant-bootstrap")))
                (begin
+                 (patch-shebang "apache-ant-1.9.4/bin/ant")
                  (chdir (string-append ,name "-" ,version))
                  (mkdir "openjdk")
                  (with-directory-excursion "openjdk"
@@ -193,8 +194,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
         (alist-cons-after
          'unpack 'patch-paths
          (lambda _
-           (patch-shebang "../apache-ant-1.9.4/bin/ant")
-
            ;; shebang in patches so that they apply cleanly
            (substitute* '("patches/jtreg-jrunscript.patch"
                           "patches/hotspot/hs23/drop_unlicensed_test.patch")
