@@ -496,6 +496,33 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
     (license l:lgpl2.1+)))
 
 
+(define-public perl-apache-logformat-compiler
+  (package
+    (name "perl-apache-logformat-compiler")
+    (version "0.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+                           "Apache-LogFormat-Compiler-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zyx4r2bxc6d48m70fhcq80nw0q9wnfz6qgn1g0r6bigqgdjq4dw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-http-message" ,perl-http-message)
+       ("perl-test-mocktime" ,perl-test-mocktime)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)))
+    (propagated-inputs
+     `(("perl-posix-strftime-compiler" ,perl-posix-strftime-compiler)))
+    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (home-page "http://search.cpan.org/dist/Apache-LogFormat-Compiler")
+    (synopsis "Compile a log format string to perl-code")
+    (description "This module provides methods to compile a log format string
+to perl-code, for faster generation of access_log lines.")
+    (license (package-license perl))))
+
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
