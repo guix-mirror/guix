@@ -569,6 +569,30 @@ information that can be retrieved via Perl's caller() function, as well as
 providing a simple interface to this data.")
     (license artistic2.0)))
 
+(define-public perl-devel-stacktrace-ashtml
+  (package
+    (name "perl-devel-stacktrace-ashtml")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Devel-StackTrace-AsHTML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yl296y0qfwybwjgqjzd4j2w2bj5a2nz342qqgxchnf5bqynl1c9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
+    (home-page "http://search.cpan.org/dist/Devel-StackTrace-AsHTML")
+    (synopsis "Displays stack trace in HTML")
+    (description "Devel::StackTrace::AsHTML adds as_html method to
+Devel::StackTrace which displays the stack trace in beautiful HTML, with code
+snippet context and function parameters.  If you call it on an instance of
+Devel::StackTrace::WithLexicals, you even get to see the lexical variables of
+each stack frame.")
+    (license (package-license perl))))
+
 (define-public perl-digest-sha1
   (package
     (name "perl-digest-sha1")
