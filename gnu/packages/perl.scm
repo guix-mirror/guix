@@ -1480,6 +1480,28 @@ checking parameters easier.")
 up inheritance from those modules at the same time.")
     (license (package-license perl))))
 
+(define-public perl-posix-strftime-compiler
+  (package
+    (name "perl-posix-strftime-compiler")
+    (version "0.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+                           "POSIX-strftime-Compiler-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0f9p3hx0vqx8zg5v24pz0s4zc8ln100c7c91ks681wq02phqj2v7"))))
+    (build-system perl-build-system)
+    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (home-page "http://search.cpan.org/dist/POSIX-strftime-Compiler")
+    (synopsis "GNU C library compatible strftime for loggers and servers")
+    (description "POSIX::strftime::Compiler provides GNU C library compatible
+strftime(3).  But this module is not affected by the system locale.  This
+feature is useful when you want to write loggers, servers, and portable
+applications.")
+    (license (package-license perl))))
+
 (define-public perl-probe-perl
   (package
     (name "perl-probe-perl")
