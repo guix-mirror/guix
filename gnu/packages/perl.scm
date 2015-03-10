@@ -868,6 +868,33 @@ provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List/")))
 
+(define-public perl-file-sharedir
+  (package
+    (name "perl-file-sharedir")
+    (version "1.102")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "File-ShareDir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04blqn4cms9zjmhlfvwyx6mrglaaq1mmy4xwv7xqf9c8fjwk8wvw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-file-sharedir-install" ,perl-file-sharedir-install)))
+    (propagated-inputs
+     `(("perl-class-inspector" ,perl-class-inspector)))
+    (home-page "http://search.cpan.org/dist/File-ShareDir")
+    (synopsis "Locate per-dist and per-module shared files")
+    (description "The intent of File::ShareDir is to provide a companion to
+Class::Inspector and File::HomeDir.  Quite often you want or need your Perl
+module to have access to a large amount of read-only data that is stored on
+the file-system at run-time.  Once the files have been installed to the
+correct directory, you can use File::ShareDir to find your files again after
+the installation.")
+    (license (package-license perl))))
+
 (define-public perl-file-sharedir-install
   (package
     (name "perl-file-sharedir-install")
