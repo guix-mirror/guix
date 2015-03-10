@@ -1002,6 +1002,25 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
 
+(define-public perl-hash-multivalue
+  (package
+    (name "perl-hash-multivalue")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Hash-MultiValue-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jc37kwpa1fl88va8bd1p95h0vjv1gsvmn7pc2pxj62ga6x0wpc0"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Hash-MultiValue")
+    (synopsis "Store multiple values per key")
+    (description "Hash::MultiValue is an object (and a plain hash reference)
+that may contain multiple values per key, inspired by MultiDict of WebOb.")
+    (license (package-license perl))))
+
 (define-public perl-inc-latest
   (package
     (name "perl-inc-latest")
