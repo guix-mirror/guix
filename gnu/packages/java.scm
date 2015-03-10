@@ -192,7 +192,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                               "openjdk6-src.tar.xz")
                    (zero? (system* "tar" "xvf" "openjdk6-src.tar.xz"))))))
         (alist-cons-after
-         'unpack 'patch-paths
+         'unpack 'patch-patches
          (lambda _
            ;; shebang in patches so that they apply cleanly
            (substitute* '("patches/jtreg-jrunscript.patch"
@@ -204,85 +204,87 @@ build process and its dependencies, whereas Make uses Makefile format.")
              (("ALSA_INCLUDE=/usr/include/alsa/version.h")
               (string-append "ALSA_INCLUDE="
                              (assoc-ref %build-inputs "alsa-lib")
-                             "/include/alsa/version.h")))
+                             "/include/alsa/version.h"))))
+         (alist-cons-after
+          'unpack 'patch-paths
+          (lambda _
+            ;; buildtree.make generates shell scripts, so we need to replace
+            ;; the generated shebang
+            (substitute* '("openjdk/hotspot/make/linux/makefiles/buildtree.make")
+              (("/bin/sh") (which "bash")))
 
-           ;; buildtree.make generates shell scripts, so we need to replace
-           ;; the generated shebang
-           (substitute* '("openjdk/hotspot/make/linux/makefiles/buildtree.make")
-             (("/bin/sh") (which "bash")))
+            (let ((corebin (string-append
+                            (assoc-ref %build-inputs "coreutils") "/bin/"))
+                  (binbin  (string-append
+                            (assoc-ref %build-inputs "binutils") "/bin/"))
+                  (grepbin (string-append
+                            (assoc-ref %build-inputs "grep") "/bin/")))
+              (substitute* '("openjdk/jdk/make/common/shared/Defs-linux.gmk"
+                             "openjdk/corba/make/common/shared/Defs-linux.gmk")
+                (("UNIXCOMMAND_PATH  = /bin/")
+                 (string-append "UNIXCOMMAND_PATH = " corebin))
+                (("USRBIN_PATH  = /usr/bin/")
+                 (string-append "USRBIN_PATH = " corebin))
+                (("DEVTOOLS_PATH *= */usr/bin/")
+                 (string-append "DEVTOOLS_PATH = " corebin))
+                (("COMPILER_PATH *= */usr/bin/")
+                 (string-append "COMPILER_PATH = "
+                                (assoc-ref %build-inputs "gcc") "/bin/"))
+                (("DEF_OBJCOPY *=.*objcopy")
+                 (string-append "DEF_OBJCOPY = " (which "objcopy"))))
 
-           (let ((corebin (string-append
-                           (assoc-ref %build-inputs "coreutils") "/bin/"))
-                 (binbin  (string-append
-                           (assoc-ref %build-inputs "binutils") "/bin/"))
-                 (grepbin (string-append
-                           (assoc-ref %build-inputs "grep") "/bin/")))
-             (substitute* '("openjdk/jdk/make/common/shared/Defs-linux.gmk"
-                            "openjdk/corba/make/common/shared/Defs-linux.gmk")
-               (("UNIXCOMMAND_PATH  = /bin/")
-                (string-append "UNIXCOMMAND_PATH = " corebin))
-               (("USRBIN_PATH  = /usr/bin/")
-                (string-append "USRBIN_PATH = " corebin))
-               (("DEVTOOLS_PATH *= */usr/bin/")
-                (string-append "DEVTOOLS_PATH = " corebin))
-               (("COMPILER_PATH *= */usr/bin/")
-                (string-append "COMPILER_PATH = "
-                               (assoc-ref %build-inputs "gcc") "/bin/"))
-               (("DEF_OBJCOPY *=.*objcopy")
-                (string-append "DEF_OBJCOPY = " (which "objcopy"))))
+              ;; fix hard-coded utility paths
+              (substitute* '("openjdk/jdk/make/common/shared/Defs-utils.gmk"
+                             "openjdk/corba/make/common/shared/Defs-utils.gmk")
+                (("ECHO *=.*echo")
+                 (string-append "ECHO = " (which "echo")))
+                (("^GREP *=.*grep")
+                 (string-append "GREP = " (which "grep")))
+                (("EGREP *=.*egrep")
+                 (string-append "EGREP = " (which "egrep")))
+                (("CPIO *=.*cpio")
+                 (string-append "CPIO = " (which "cpio")))
+                (("READELF *=.*readelf")
+                 (string-append "READELF = " (which "readelf")))
+                (("^ *AR *=.*ar")
+                 (string-append "AR = " (which "ar")))
+                (("^ *TAR *=.*tar")
+                 (string-append "TAR = " (which "tar")))
+                (("AS *=.*as")
+                 (string-append "AS = " (which "as")))
+                (("LD *=.*ld")
+                 (string-append "LD = " (which "ld")))
+                (("STRIP *=.*strip")
+                 (string-append "STRIP = " (which "strip")))
+                (("NM *=.*nm")
+                 (string-append "NM = " (which "nm")))
+                (("^SH *=.*sh")
+                 (string-append "SH = " (which "bash")))
+                (("^FIND *=.*find")
+                 (string-append "FIND = " (which "find")))
+                (("LDD *=.*ldd")
+                 (string-append "LDD = " (which "ldd")))
+                (("NAWK *=.*(n|g)awk")
+                 (string-append "NAWK = " (which "gawk")))
+                ;; (("NAWK *=.*gawk")
+                ;;  (string-append "NAWK = " (which "gawk")))
+                (("XARGS *=.*xargs")
+                 (string-append "XARGS = " (which "xargs")))
+                (("UNZIP *=.*unzip")
+                 (string-append "UNZIP = " (which "unzip")))
+                (("ZIPEXE *=.*zip")
+                 (string-append "ZIPEXE = " (which "zip")))
+                (("SED *=.*sed")
+                 (string-append "SED = " (which "sed"))))
 
-             ;; fix hard-coded utility paths
-             (substitute* '("openjdk/jdk/make/common/shared/Defs-utils.gmk"
-                            "openjdk/corba/make/common/shared/Defs-utils.gmk")
-               (("ECHO *=.*echo")
-                (string-append "ECHO = " (which "echo")))
-               (("^GREP *=.*grep")
-                (string-append "GREP = " (which "grep")))
-               (("EGREP *=.*egrep")
-                (string-append "EGREP = " (which "egrep")))
-               (("CPIO *=.*cpio")
-                (string-append "CPIO = " (which "cpio")))
-               (("READELF *=.*readelf")
-                (string-append "READELF = " (which "readelf")))
-               (("^ *AR *=.*ar")
-                (string-append "AR = " (which "ar")))
-               (("^ *TAR *=.*tar")
-                (string-append "TAR = " (which "tar")))
-               (("AS *=.*as")
-                (string-append "AS = " (which "as")))
-               (("LD *=.*ld")
-                (string-append "LD = " (which "ld")))
-               (("STRIP *=.*strip")
-                (string-append "STRIP = " (which "strip")))
-               (("NM *=.*nm")
-                (string-append "NM = " (which "nm")))
-               (("^SH *=.*sh")
-                (string-append "SH = " (which "bash")))
-               (("^FIND *=.*find")
-                (string-append "FIND = " (which "find")))
-               (("LDD *=.*ldd")
-                (string-append "LDD = " (which "ldd")))
-               (("NAWK *=.*(n|g)awk")
-                (string-append "NAWK = " (which "gawk")))
-               ;; (("NAWK *=.*gawk")
-               ;;  (string-append "NAWK = " (which "gawk")))
-               (("XARGS *=.*xargs")
-                (string-append "XARGS = " (which "xargs")))
-               (("UNZIP *=.*unzip")
-                (string-append "UNZIP = " (which "unzip")))
-               (("ZIPEXE *=.*zip")
-                (string-append "ZIPEXE = " (which "zip")))
-               (("SED *=.*sed")
-                (string-append "SED = " (which "sed"))))
-
-             ;; Some of these timestamps cause problems as they are more than
-             ;; 10 years ago, failing the build process.
-             (substitute*
-                 "openjdk/jdk/src/share/classes/java/util/CurrencyData.properties"
-               (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
-               (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
-               (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
-               (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY"))))
+              ;; Some of these timestamps cause problems as they are more than
+              ;; 10 years ago, failing the build process.
+              (substitute*
+                  "openjdk/jdk/src/share/classes/java/util/CurrencyData.properties"
+                (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
+                (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
+                (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
+                (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY"))))
           (alist-cons-before
            'configure 'set-paths
            (lambda* (#:key inputs #:allow-other-keys)
@@ -399,11 +401,11 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
                       (checker (lambda (port)
                                  (let loop ()
-                                  (let ((line (read-line port)))
-                                    (cond
-                                     ((eof-object? line) #t)
-                                     ((regexp-exec error-pattern line) #f)
-                                     (else (loop)))))))
+                                   (let ((line (read-line port)))
+                                     (cond
+                                      ((eof-object? line) #t)
+                                      ((regexp-exec error-pattern line) #f)
+                                      (else (loop)))))))
                       (run-test (lambda (test)
                                   (system* "make" test)
                                   (call-with-input-file
@@ -422,7 +424,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                   (copy-recursively "openjdk.build/docs" doc)
                   (copy-recursively "openjdk.build/j2re-image" jre)
                   (copy-recursively "openjdk.build/j2sdk-image" jdk)))
-              %standard-phases))))))))
+              %standard-phases)))))))))
     (native-inputs
      `(("ant-bootstrap"
         ,(origin
