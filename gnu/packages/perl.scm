@@ -2085,6 +2085,27 @@ used to match against text, rather than fetching names from a filesystem.  If
 you want to do full file globbing use the File::Glob module instead.")
     (license (package-license perl))))
 
+(define-public perl-time-local
+  (package
+    (name "perl-time-local")
+    (version "1.2300")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Time-Local-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jgvd6v93hlrcmy56yxbm4yrhzi8yvrq8c3xffpgh28af01wmb5j"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Time-Local")
+    (synopsis "Efficiently compute time from local and GMT time")
+    (description "This module provides functions that are the inverse of
+built-in perl functions localtime() and gmtime().  They accept a date as a
+six-element array, and return the corresponding time(2) value in seconds since
+the system epoch")
+    (license (package-license perl))))
+
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
