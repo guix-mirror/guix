@@ -780,6 +780,25 @@ automatically determining its encoding.  It uses the HTML5 encoding sniffing
 algorithm specified in section 8.2.2.1 of the draft standard.")
     (home-page "http://search.cpan.org/~cjm/IO-HTML/")))
 
+(define-public perl-io-socket-ip
+  (package
+    (name "perl-io-socket-ip")
+    (version "0.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
+                           "IO-Socket-IP-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ky20hmln6waipzqikizyw04vpszf70fgpshz7ib8zv8480ri456"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IO-Socket-IP")
+    (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
+    (description "This module provides a protocol-independent way to use IPv4
+and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
+    (license (package-license perl))))
+
 (define-public perl-io-socket-ssl
   (package
     (name "perl-io-socket-ssl")
