@@ -949,6 +949,44 @@ is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
     (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
 
+(define-public perl-plack
+  (package
+    (name "perl-plack")
+    (version "1.0033")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Plack-" version ".tar.gz"))
+       (sha256
+        (base32
+         "081jg0xddzpg2anmqi9i6d7vs6c8z7k557bf8xl6vgb3h95pin5w"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)
+       ("perl-file-sharedir-install" ,perl-file-sharedir-install)))
+    (propagated-inputs
+     `(("perl-apache-logformat-compiler" ,perl-apache-logformat-compiler)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-devel-stacktrace-ashtml" ,perl-devel-stacktrace-ashtml)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-hash-multivalue" ,perl-hash-multivalue)
+       ("perl-http-body" ,perl-http-body)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-tiny" ,perl-http-tiny)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-stream-buffered" ,perl-stream-buffered)
+       ("perl-test-tcp" ,perl-test-tcp)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/Plack")
+    (synopsis "Perl Superglue for Web frameworks and servers (PSGI toolkit)")
+    (description "Plack is a set of tools for using the PSGI stack.  It
+contains middleware components, a reference server, and utilities for Web
+application frameworks.  Plack is like Ruby's Rack or Python's Paste for
+WSGI.")
+    (license (package-license perl))))
+
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
