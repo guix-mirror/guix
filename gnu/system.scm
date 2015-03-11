@@ -415,11 +415,17 @@ settings for 'guix.el' to work out-of-the-box."
       ((pam.d      (pam-services->directory pam-services))
        (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
-       (shells     (text-file "shells"            ; used by xterm and others
+
+       ;; /etc/shells is used by xterm and other programs.   We don't check
+       ;; whether these shells are installed, should be OK.
+       (shells     (text-file "shells"
                               "\
 /bin/sh
 /run/current-system/profile/bin/sh
-/run/current-system/profile/bin/bash\n"))
+/run/current-system/profile/bin/bash
+/run/current-system/profile/bin/fish
+/run/current-system/profile/bin/tcsh
+/run/current-system/profile/bin/zsh\n"))
        (emacs      (emacs-site-directory))
        (issue      (text-file "issue" issue))
        (nsswitch   (text-file "nsswitch.conf"
