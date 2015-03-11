@@ -195,6 +195,30 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-class-c3-adopt-next
+  (package
+    (name "perl-class-c3-adopt-next")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                           "Class-C3-Adopt-NEXT-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rwgbx6dsy4rpas94p8wakzj7hrla1p15jnbm24kwhsv79gp91ld"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Class-C3-Adopt-NEXT")
+    (synopsis "Drop-in replacement for NEXT")
+    (description "This module is intended as a drop-in replacement for NEXT,
+supporting the same interface, but using Class::C3 to do the hard work.")
+    (license (package-license perl))))
+
 (define-public perl-class-data-inheritable
   (package
     (name "perl-class-data-inheritable")
