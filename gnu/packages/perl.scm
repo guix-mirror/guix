@@ -1041,6 +1041,26 @@ dependencies for CPAN distributions.  These dependencies get bundled into the
 inc directory within a distribution and are used by Makefile.PL or Build.PL.")
     (license asl2.0)))
 
+(define-public perl-io-stringy
+  (package
+    (name "perl-io-stringy")
+    (version "2.110")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DS/DSKOLL/"
+                           "IO-stringy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vh4n0k22hx20rwvf6h7lp25wb7spg0089shrf92d2lkncwg8g3y"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IO-stringy")
+    (synopsis "IO:: interface for reading/writing an array of lines")
+    (description "This toolkit primarily provides modules for performing both
+traditional and object-oriented i/o) on things *other* than normal
+filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
+    (license (package-license perl))))
+
 (define-public perl-io-tty
   (package
     (name "perl-io-tty")
