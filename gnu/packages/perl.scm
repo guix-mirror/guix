@@ -414,6 +414,26 @@ opportunities to Perl developers as GNU Autoconf does for Shell developers.")
 CPAN::Meta object are present.")
     (license (package-license perl))))
 
+(define-public perl-data-dump
+  (package
+    (name "perl-data-dump")
+    (version "1.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                           "Data-Dump-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ciqlwsy1q35s94dry9bjy1pwanbq6b7q4rhxm9z8prgkzbslg2k"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Data-Dump")
+    (synopsis "Pretty printing of data structures")
+    (description "This module provide functions that takes a list of values as
+their argument and produces a string as its result.  The string contains Perl
+code that, when \"eval\"ed, produces a deep copy of the original arguments.")
+    (license (package-license perl))))
+
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
