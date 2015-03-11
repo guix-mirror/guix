@@ -29,6 +29,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
@@ -624,6 +625,28 @@ Cambridge for use on Unix systems connected to the Internet.  In style it is
 similar to Smail 3, but its facilities are more general.  There is a great
 deal of flexibility in the way mail can be routed, and there are extensive
 facilities for checking incoming mail.")
+    (license gpl2+)))
+
+(define-public isync
+  (package
+    (name "isync")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/isync/isync/"
+                           version "/isync-" version ".tar.gz"))
+       (sha256 (base32
+                "1960ah3fmp75cakd06lcx50n5q0yvfsadjh3lffhyvjvj7ava9d2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("openssl" ,openssl)))
+    (home-page "http://isync.sourceforge.net/")
+    (synopsis "Mailbox synchronization program")
+    (description
+     "isync/mbsync is command line tool for two-way synchronization of
+mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
 
 ;;; mail.scm ends here
