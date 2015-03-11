@@ -545,6 +545,27 @@ replacement for CGI.pm.  It shares an identical OO interface to CGI.pm for
 parameter parsing, file upload, cookie handling and header generation.")
     (license (package-license perl))))
 
+(define-public perl-cgi-struct
+  (package
+    (name "perl-cgi-struct")
+    (version "1.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FU/FULLERMD/"
+                           "CGI-Struct-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v4xq2qpryr7i6jngw1wpn8yr2kiib10yxp4aih90vfdznkqsgfi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/CGI-Struct")
+    (synopsis "Build structures from CGI data")
+    (description "This is a module for building structured data from CGI
+inputs, in a manner reminiscent of how PHP does.")
+    (license l:bsd-2)))
+
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
