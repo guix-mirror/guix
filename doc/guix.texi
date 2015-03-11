@@ -3730,7 +3730,8 @@ kernel, initial RAM disk, and boot loader looks like this:
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
   (packages (cons emacs %base-packages))
-  (services (cons (lsh-service #:port 2222 #:root-login? #t)
+  (services (cons (lsh-service #:port 2222 #:root-login? #t
+                               #:initialize? #t)
                   %base-services)))
 @end lisp
 
