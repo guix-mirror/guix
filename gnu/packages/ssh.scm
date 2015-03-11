@@ -186,15 +186,15 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/libguile-ssh.git")
-                    (commit "e216e1d78bf93a9753ea813f930cac5e68e52180")))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1sbxhmynmpwfjwb3dp6lrc3cxi5kffqmb6klhx7wnkgqxvs61lsw"))))
+                "1wcv10xv7ayrhrg77zyng6flknnlkzhni24nf8x9nic00zha8znk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
