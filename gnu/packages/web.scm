@@ -949,6 +949,27 @@ is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
     (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
 
+(define-public perl-test-tcp
+  (package
+    (name "perl-test-tcp")
+    (version "2.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+                           "Test-TCP-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0acjwm21y2an4f3fasci9qa0isakh9cgp74fk0bzcdi506xmcjbi"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-sharedfork" ,perl-test-sharedfork)))
+    (arguments `(#:tests? #f))          ;related to signaling in t/05_sigint.t
+    (home-page "http://search.cpan.org/dist/Test-TCP")
+    (synopsis "Testing TCP programs")
+    (description "Test::TCP is test utilities for TCP/IP programs.")
+    (license (package-license perl))))
+
 (define-public perl-uri
   (package
     (name "perl-uri")
