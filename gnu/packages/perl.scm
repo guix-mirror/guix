@@ -1591,6 +1591,27 @@ codes.")
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
 
+(define-public perl-stream-buffered
+  (package
+    (name "perl-stream-buffered")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Stream-Buffered-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fs2n9zw6isfkha2kbqrvl9mwg572x1x0jlfaps0qsyynn846bcv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Stream-Buffered")
+    (synopsis "Temporary buffer to save bytes")
+    (description "Stream::Buffered is a buffer class to store arbitrary length
+of byte strings and then get a seekable filehandle once everything is
+buffered.  It uses PerlIO and/or temporary file to save the buffer depending
+on the length of the size.")
+    (license (package-license perl))))
+
 (define-public perl-sub-exporter
   (package
     (name "perl-sub-exporter")
