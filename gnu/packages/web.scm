@@ -523,6 +523,28 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 to perl-code, for faster generation of access_log lines.")
     (license (package-license perl))))
 
+(define-public perl-cgi-simple
+  (package
+    (name "perl-cgi-simple")
+    (version "1.115")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+                           "CGI-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+    (home-page "http://search.cpan.org/dist/CGI-Simple")
+    (synopsis "CGI interface that is CGI.pm compliant")
+    (description "CGI::Simple provides a relatively lightweight drop in
+replacement for CGI.pm.  It shares an identical OO interface to CGI.pm for
+parameter parsing, file upload, cookie handling and header generation.")
+    (license (package-license perl))))
+
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
