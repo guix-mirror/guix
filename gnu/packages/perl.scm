@@ -123,6 +123,27 @@ manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
     (license (package-license perl))))
 
+(define-public perl-base
+  (package
+    (name "perl-base")
+    (version "2.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RG/RGARCIA/"
+                           "base-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01n3l5ifmn2wd0aadpnzya27b75imibj9zdivkfzcpnviqgx5c2m"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/base")
+    (synopsis "Establish an ISA relationship with base classes at compile time")
+    (description "Allows you to both load one or more modules, while setting
+up inheritance from those modules at the same time.  Unless you are using the
+fields pragma, consider this module discouraged in favor of the lighter-weight
+parent.")
+    (license (package-license perl))))  ;See README
+
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
