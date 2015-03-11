@@ -416,6 +416,25 @@ objects.")
                               "Clone-" version))
     (license (package-license perl))))
 
+(define-public perl-common-sense
+  (package
+    (name "perl-common-sense")
+    (version "3.73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                           "common-sense-" version ".tar.gz"))
+       (sha256
+        (base32
+         "047xwgpn5611zrhk4c8vk9pzcbk1q7n3q0lfiwhhq7k4fbjca441"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/common-sense")
+    (synopsis "Sane defaults for Perl programs")
+    (description "This module implements some sane defaults for Perl programs,
+as defined by two typical specimens of Perl coders.")
+    (license (package-license perl))))
+
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
