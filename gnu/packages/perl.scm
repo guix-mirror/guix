@@ -2107,6 +2107,27 @@ bin as is also commonly used) paths of your Perl distribution.")
                               "Test-Script-" version))
     (license (package-license perl))))
 
+(define-public perl-test-sharedfork
+  (package
+    (name "perl-test-sharedfork")
+    (version "0.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
+                           "Test-SharedFork-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vlak10q4gcf0ch0rfcb9lvddav6r8h15iipzbkbgf9mrj47gbv3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (home-page "http://search.cpan.org/dist/Test-SharedFork")
+    (synopsis "Fork test in Perl")
+    (description "Test::SharedFork is a utility module for Test::Builder.  It
+makes fork(2) safe to use in test cases.")
+    (license (package-license perl))))
+
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
