@@ -826,6 +826,28 @@ of the negotiable variants and the value of the various Accept* header
 fields in the request.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
 
+(define-public perl-http-request-ascgi
+  (package
+    (name "perl-http-request-ascgi")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                           "HTTP-Request-AsCGI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1smwmiarwcgq7vjdblnb6ldi2x1s5sk5p15p7xvm5byiqq3znnwl"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)
+       ("perl-http-message" ,perl-http-message)))
+    (home-page "http://search.cpan.org/dist/HTTP-Request-AsCGI")
+    (synopsis "Set up a CGI environment from an HTTP::Request")
+    (description "This module provides a convenient way to set up a CGI
+environment from an HTTP::Request.")
+    (license (package-license perl))))
+
 (define-public perl-http-tiny
   (package
     (name "perl-http-tiny")
