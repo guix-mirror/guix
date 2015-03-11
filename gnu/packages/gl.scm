@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages pkg-config)
@@ -123,6 +124,38 @@ rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
 Polygon meshes, and Extruded polygon meshes")
     (license l:x11)))
 
+(define-public s2tc
+  (package
+    (name "s2tc")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/divVerent/s2tc/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "0ibfdib277fhbqvxzan0bmglwnsl1y1rw2g8skvz82l1sfmmn752"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("mesa-headers" ,mesa-headers)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after unpack autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))))
+    (home-page "https://github.com/divVerent/s2tc")
+    (synopsis "S3 Texture Compression implementation")
+    (description
+     "S2TC is a patent-free implementation of S3 Texture Compression (S3TC,
+also known as DXTn or DXTC) for Mesa.")
+    (license l:expat)))
+
 (define-public mesa
   (package
     (name "mesa")
@@ -195,6 +228,25 @@ a system for rendering interactive 3D graphics.  A variety of device drivers
 allows Mesa to be used in many different environments ranging from software
 emulation to complete hardware acceleration for modern GPUs.")
     (license l:x11)))
+
+(define-public mesa-headers
+  (package
+    (inherit mesa)
+    (name "mesa-headers")
+    (propagated-inputs '())
+    (inputs '())
+    (native-inputs '())
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete configure)
+         (delete build)
+         (delete check)
+         (replace install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (copy-recursively "include" (string-append
+                                                 (assoc-ref outputs "out")
+                                                 "/include")))))))))
 
 (define-public glew
   (package
