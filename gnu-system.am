@@ -202,6 +202,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mp3.scm				\
   gnu/packages/mpi.scm				\
   gnu/packages/multiprecision.scm		\
+  gnu/packages/music.scm			\
   gnu/packages/mtools.scm			\
   gnu/packages/nano.scm				\
   gnu/packages/ncdu.scm				\
