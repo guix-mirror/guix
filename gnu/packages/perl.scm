@@ -240,6 +240,26 @@ whole (instead of about a single object).  This data is then inherited by your
 subclasses and can be overriden.")
     (license (package-license perl))))
 
+(define-public perl-class-date
+  (package
+    (name "perl-class-date")
+    (version "1.1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+                           "Class-Date-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dd707sq8ix2dqbnp7ga77ba69r3vsn0cd6scnkn13s0gm2g4b00"))))
+    (build-system perl-build-system)
+    (arguments `(#:tests? #f))          ;timezone tests in chroot
+    (home-page "http://search.cpan.org/dist/Class-Date")
+    (synopsis "Class for easy date and time manipulation")
+    (description "This module provides a general-purpose date and datetime
+type for perl.")
+    (license (package-license perl))))
+
 (define-public perl-class-inspector
   (package
     (name "perl-class-inspector")
