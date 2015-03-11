@@ -216,6 +216,29 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-class-accessor
+  (package
+    (name "perl-class-accessor")
+    (version "0.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KASEI/"
+                           "Class-Accessor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z6fqg0yz8gay15r1iasslv8f1n1mzjkrhs47fvbj3rqz36y1cfd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-sub-name" ,perl-sub-name)))
+    (propagated-inputs
+     `(("perl-base" ,perl-base)))
+    (home-page "http://search.cpan.org/dist/Class-Accessor")
+    (synopsis "Automated accessor generation")
+    (description "This module automagically generates accessors/mutators for
+your class.")
+    (license (package-license perl))))
+
 (define-public perl-class-c3-adopt-next
   (package
     (name "perl-class-c3-adopt-next")
