@@ -1192,6 +1192,28 @@ which are changed by reverse-proxy.  You can specify the reverse proxy address
 and stop fake requests using 'enable_if' directive in your app.psgi.")
     (license (package-license perl))))
 
+(define-public perl-plack-test-externalserver
+  (package
+    (name "perl-plack-test-externalserver")
+    (version "0.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                           "Plack-Test-ExternalServer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dbg1p3rgvvbkkpvca5jlc2mzx8iqyiybk88al93pvbca65h1g7h"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "http://search.cpan.org/dist/Plack-Test-ExternalServer")
+    (synopsis "Run HTTP tests on external live servers")
+    (description "This module allows your to run your Plack::Test tests
+against an external server instead of just against a local application through
+either mocked HTTP or a locally spawned server.")
+    (license (package-license perl))))
+
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
