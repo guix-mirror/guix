@@ -250,6 +250,9 @@ SMPTE 314M.")
                 (("#! /bin/sh") (string-append "#!" (which "bash"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
+               ;; FIXME: only needed for ffmpeg-2.2.13, but easier to add
+               ;; globally; drop as soon as ffmpeg-2.2.13 is dropped
+              (setenv "LDFLAGS" "-ldl")
 ;; possible additional inputs:
 ;;   --enable-avisynth        enable reading of AviSynth script files [no]
 ;;   --enable-frei0r          enable frei0r video filtering
