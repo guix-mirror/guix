@@ -2088,6 +2088,27 @@ buffered.  It uses PerlIO and/or temporary file to save the buffer depending
 on the length of the size.")
     (license (package-license perl))))
 
+(define-public perl-string-rewriteprefix
+  (package
+    (name "perl-string-rewriteprefix")
+    (version "0.007")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "String-RewritePrefix-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18nxl1vgkcx0r7ifkmbl9fp73f8ihiqhqqf3vq6sj5b3cgawrfsw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/String-RewritePrefix")
+    (synopsis "Rewrite strings based on a set of known prefixes")
+    (description "This module allows you to rewrite strings based on a set of
+known pprefixes.")
+    (license (package-license perl))))
+
 (define-public perl-sub-exporter
   (package
     (name "perl-sub-exporter")
