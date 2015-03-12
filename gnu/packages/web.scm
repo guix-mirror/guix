@@ -1122,6 +1122,30 @@ WSGI.")
 already set.")
     (license (package-license perl))))
 
+(define-public perl-plack-middleware-methodoverride
+  (package
+    (name "perl-plack-middleware-methodoverride")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+                           "Plack-Middleware-MethodOverride-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1hb8dx7i4vs74n0p737wrvpdnnw6argxrjpr6kj6432zabp8325z"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "http://search.cpan.org/dist/Plack-Middleware-MethodOverride")
+    (synopsis "Override REST methods to Plack apps via POST")
+    (description "This middleware allows for POST requests that pretend to be
+something else: by adding either a header named X-HTTP-Method-Override to the
+request, or a query parameter named x-tunneled-method to the URI, the client
+can say what method it actually meant.")
+    (license (package-license perl))))
+
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
