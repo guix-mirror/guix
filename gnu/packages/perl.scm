@@ -1109,6 +1109,33 @@ shell.")
                               "File-Which-" version))
     (license (package-license perl))))
 
+(define-public perl-getopt-long-descriptive
+  (package
+    (name "perl-getopt-long-descriptive")
+    (version "0.098")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Getopt-Long-Descriptive-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08lphvqshcajvvd6z4rvcda6rx5kz8pysrsip4nfv2mbks95p9ma"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-warnings" ,perl-test-warnings)))
+    (propagated-inputs
+     `(("perl-params-validate" ,perl-params-validate)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Getopt-Long-Descriptive")
+    (synopsis "Getopt::Long, but simpler and more powerful")
+    (description "Getopt::Long::Descriptive is yet another Getopt library.
+It's built atop Getopt::Long, and gets a lot of its features, but tries to
+avoid making you think about its huge array of options.  It also provides
+usage (help) messages, data validation, and a few other useful features.")
+    (license (package-license perl))))
+
 (define-public perl-getopt-tabular
   (package
     (name "perl-getopt-tabular")
