@@ -198,7 +198,13 @@ without requiring the source code to be rewritten.")
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
     (inputs `(("guile" ,guile-2.0)))
-    (arguments `(#:configure-flags
+    (arguments `(;; The extract-*.sh scripts really expect to run in the C
+                 ;; locale.  Failing to do that, we end up with a build
+                 ;; failure while extracting doc.  (Fixed in Guile-Reader's
+                 ;; repo.)
+                 #:locale "C"
+
+                 #:configure-flags
                  (let ((out (assoc-ref %outputs "out")))
                    (list (string-append "--with-guilemoduledir="
                                         out "/share/guile/site/2.0")))))
