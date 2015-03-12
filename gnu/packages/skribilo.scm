@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages lout)
+  #:use-module (gnu packages plotutils)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages ghostscript))
 
@@ -60,10 +61,11 @@
                  %standard-phases)
 
        #:parallel-build? #f))
-    ;; TODO: Add Ploticus.
+
     (inputs `(("guile" ,guile-2.0)
               ("imagemagick" ,imagemagick)
               ("ghostscript" ,ghostscript)        ; for 'convert'
+              ("ploticus" ,ploticus)
               ("lout" ,lout)))
 
     ;; The 'skribilo' command needs them, and for people using Skribilo as a
