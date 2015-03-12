@@ -1514,6 +1514,31 @@ system.  The public API of Class::Accessor::Fast is wholly supported, but the
 private methods are not.")
     (license (package-license perl))))
 
+(define-public perl-moosex-role-withoverloading
+  (package
+    (name "perl-moosex-role-withoverloading")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Role-WithOverloading-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kfs203ip44vsxh282kshia8wqkwklz4i7fs2ngsbj6frv00nqdv"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-aliased" ,perl-aliased)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Role-WithOverloading")
+    (synopsis "Roles which support overloading")
+    (description "MooseX::Role::WithOverloading allows you to write a
+Moose::Role which defines overloaded operators and allows those overload
+methods to be composed into the classes/roles/instances it's compiled to,
+where plain Moose::Roles would lose the overloading.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
