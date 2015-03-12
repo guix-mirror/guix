@@ -1146,6 +1146,29 @@ request, or a query parameter named x-tunneled-method to the URI, the client
 can say what method it actually meant.")
     (license (package-license perl))))
 
+(define-public perl-plack-middleware-removeredundantbody
+  (package
+    (name "perl-plack-middleware-removeredundantbody")
+    (version "0.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SW/SWEETKID/"
+                           "Plack-Middleware-RemoveRedundantBody-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1n3wm0zi8dnk54jx937asl951lslj3jvw0fry4jpzsibg4f6wrx0"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page
+     "http://search.cpan.org/dist/Plack-Middleware-RemoveRedundantBody")
+    (synopsis "Plack::Middleware which removes body for HTTP response")
+    (description "This module removes the body in an HTTP response if it's not
+required.")
+    (license (package-license perl))))
+
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
