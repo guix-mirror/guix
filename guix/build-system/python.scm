@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -76,7 +76,10 @@ prepended to the name."
                                      (substring name (string-length old-prefix))
                                      name))))
           (arguments
-           (let ((arguments (package-arguments p)))
+           (let ((arguments (package-arguments p))
+                 (python    (if (promise? python)
+                                (force python)
+                                python)))
              (if (member #:python arguments)
                  (substitute-keyword-arguments arguments ((#:python p) python))
                  (append arguments `(#:python ,python)))))
@@ -86,7 +89,11 @@ prepended to the name."
         p)))
 
 (define package-with-python2
-  (cut package-with-explicit-python <> (default-python2) "python-" "python2-"))
+  ;; Note: delay call to 'default-python2' until after the 'arguments' field
+  ;; of packages is accessed to avoid a circular dependency when evaluating
+  ;; the top-level of (gnu packages python).
+  (cut package-with-explicit-python <> (delay (default-python2))
+       "python-" "python2-"))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
