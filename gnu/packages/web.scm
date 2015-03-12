@@ -1169,6 +1169,29 @@ can say what method it actually meant.")
 required.")
     (license (package-license perl))))
 
+(define-public perl-plack-middleware-reverseproxy
+  (package
+    (name "perl-plack-middleware-reverseproxy")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Plack-Middleware-ReverseProxy-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1zmsccdy6wr5hxzj07r1nsmaymyibk87p95z0wzknjw10lwmqs9f"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "http://search.cpan.org/dist/Plack-Middleware-ReverseProxy")
+    (synopsis "Supports app to run as a reverse proxy backend")
+    (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
+which are changed by reverse-proxy.  You can specify the reverse proxy address
+and stop fake requests using 'enable_if' directive in your app.psgi.")
+    (license (package-license perl))))
+
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
