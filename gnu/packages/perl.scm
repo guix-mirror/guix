@@ -1514,6 +1514,36 @@ system.  The public API of Class::Accessor::Fast is wholly supported, but the
 private methods are not.")
     (license (package-license perl))))
 
+(define-public perl-moosex-getopt
+  (package
+    (name "perl-moosex-getopt")
+    (version "0.65")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Getopt-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nkzvbsiwldmpn6207ns7rinh860djnw098h6cnvywf429rjnz60"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perl-test-warnings" ,perl-test-warnings)))
+    (propagated-inputs
+     `(("perl-getopt-long-descriptive" ,perl-getopt-long-descriptive)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-role-parameterized" ,perl-moosex-role-parameterized)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Getopt")
+    (synopsis "Moose role for processing command line options")
+    (description "This is a Moose role which provides an alternate constructor
+for creating objects using parameters passed in from the command line.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
