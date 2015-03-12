@@ -154,7 +154,7 @@ as well as the classic centralized workflow.")
              ;; TODO: Install the tcsh and zsh completions in the right place.
              (mkdir-p completions)
              (copy-file "contrib/completion/git-completion.bash"
-                        (string-append completions "/git.sh"))
+                        (string-append completions "/git"))
              #t))
          (alist-cons-after
           'install 'split
