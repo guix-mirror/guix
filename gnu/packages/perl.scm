@@ -2358,6 +2358,27 @@ hooking into done_testing as well as via an END block.  You can declare a
 plan, or not, and things will still Just Work.")
     (license (package-license perl))))
 
+(define-public perl-test-without-module
+  (package
+    (name "perl-test-without-module")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CO/CORION/"
+                           "Test-Without-Module-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zwc2dk5srd02j4p049w77m89iw5nbff381rmhcbaz8x2w5kdhz2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Without-Module")
+    (synopsis "Test fallback behaviour in absence of modules")
+    (description "This module allows you to deliberately hide modules from a
+program even though they are installed.  This is mostly useful for testing
+modules that have a fallback when a certain dependency module is not
+installed.")
+    (license (package-license perl))))
+
 (define-public perl-test-writevariants
   (package
     (name "perl-test-writevariants")
