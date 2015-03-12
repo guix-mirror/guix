@@ -523,6 +523,70 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 to perl-code, for faster generation of access_log lines.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-runtime
+  (package
+    (name "perl-catalyst-runtime")
+    (version "5.90082")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-Runtime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gs70nq4rikpq6siwds9disb1z03vwjzf979xi9kf7saa1drfncs"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-cgi-simple" ,perl-cgi-simple)
+       ("perl-cgi-struct" ,perl-cgi-struct)
+       ("perl-class-c3-adopt-next" ,perl-class-c3-adopt-next)
+       ("perl-class-data-inheritable" ,perl-class-data-inheritable)
+       ("perl-class-date" ,perl-class-date)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-data-dump" ,perl-data-dump)
+       ("perl-http-body" ,perl-http-body)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-request-ascgi" ,perl-http-request-ascgi)
+       ("perl-io-stringy" ,perl-io-stringy)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-moosex-getopt" ,perl-moosex-getopt)
+       ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
+       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-plack" ,perl-plack)
+       ("perl-plack-middleware-fixmissingbodyinredirect"
+        ,perl-plack-middleware-fixmissingbodyinredirect)
+       ("perl-plack-middleware-methodoverride"
+        ,perl-plack-middleware-methodoverride)
+       ("perl-plack-middleware-removeredundantbody"
+        ,perl-plack-middleware-removeredundantbody)
+       ("perl-plack-middleware-reverseproxy"
+        ,perl-plack-middleware-reverseproxy)
+       ("perl-plack-test-externalserver" ,perl-plack-test-externalserver)
+       ("perl-safe-isa" ,perl-safe-isa)
+       ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
+       ("perl-text-simpletable" ,perl-text-simpletable)
+       ("perl-tree-simple" ,perl-tree-simple)
+       ("perl-tree-simple-visitorfactory" ,perl-tree-simple-visitorfactory)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)
+       ("perl-uri-ws" ,perl-uri-ws)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Runtime")
+    (synopsis "The Catalyst Framework Runtime")
+    (description "Catalyst is a modern framework for making web applications.
+It is designed to make it easy to manage the various tasks you need to do to
+run an application on the web, either by doing them itself, or by letting you
+\"plug in\" existing Perl modules that do what you need.")
+    (license (package-license perl))))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
