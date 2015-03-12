@@ -1535,6 +1535,36 @@ higher.  This module provides those interfaces for earlier versions of
 Perl (back to 5.6.0).")
     (license (package-license perl))))
 
+(define-public perl-namespace-autoclean
+  (package
+    (name "perl-namespace-autoclean")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "namespace-autoclean-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0msggbg2zbixxjq1fda19h0yygavxndfzc4j4pq11nfghmawjsb0"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-sub-identify" ,perl-sub-identify)))
+    (home-page "http://search.cpan.org/dist/namespace-autoclean")
+    (synopsis "Keep imports out of your namespace")
+    (description "The namespace::autoclean pragma will remove all imported
+symbols at the end of the current package's compile cycle.  Functions called
+in the package itself will still be bound by their name, but they won't show
+up as methods on your class or instances.  It is very similar to
+namespace::clean, except it will clean all imported functions, no matter if
+you imported them before or after you used the pragma.  It will also not touch
+anything that looks like a method.")
+    (license (package-license perl))))
+
 (define-public perl-namespace-clean
   (package
     (name "perl-namespace-clean")
