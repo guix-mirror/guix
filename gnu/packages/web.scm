@@ -748,10 +748,9 @@ used by the HTTP protocol (and then some more).")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-date" ,perl-http-date)
+       ("perl-io-html" ,perl-io-html)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
        ("perl-uri" ,perl-uri)))
-    (inputs
-     `(("perl-io-html" ,perl-io-html)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
     (license (package-license perl))
     (synopsis "Perl HTTP style message")
     (description
