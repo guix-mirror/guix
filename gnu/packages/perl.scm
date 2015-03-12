@@ -2925,6 +2925,30 @@ and time() calls.")
 simple n-ary tree.")
     (license (package-license perl))))
 
+(define-public perl-tree-simple-visitorfactory
+  (package
+    (name "perl-tree-simple-visitorfactory")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSAVAGE/"
+                           "Tree-Simple-VisitorFactory-" version ".tgz"))
+       (sha256
+        (base32
+         "1g27xl48q1vr7aikhxg4vvcsj1si8allxz59vmnks61wsw4by7vg"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-tree-simple" ,perl-tree-simple)
+       ("perl-base" ,perl-base)))
+    (home-page "http://search.cpan.org/dist/Tree-Simple-VisitorFactory")
+    (synopsis "Factory object for dispensing Visitor objects")
+    (description "This module is a factory for dispensing
+Tree::Simple::Visitor::* objects.")
+    (license (package-license perl))))
+
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
