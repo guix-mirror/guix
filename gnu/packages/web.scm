@@ -1255,6 +1255,27 @@ represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
     (home-page "http://search.cpan.org/dist/URI/")))
 
+(define-public perl-uri-ws
+  (package
+    (name "perl-uri-ws")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
+                           "URI-ws-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vs1wm80sq685944g1l4a0fxcbccc00c0f9648yabdmcf90hwsvf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/URI-ws")
+    (synopsis "WebSocket support for URI package")
+    (description "With this module, the URI package provides the same set of
+methods for WebSocket URIs as it does for HTTP URIs.")
+    (license (package-license perl))))
+
 (define-public perl-www-curl
   (package
     (name "perl-www-curl")
