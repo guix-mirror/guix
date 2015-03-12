@@ -57,13 +57,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
   gnu/packages/certs.scm			\
-  gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
   gnu/packages/code.scm				\
   gnu/packages/commencement.scm			\
   gnu/packages/compression.scm			\
-  gnu/packages/complexity.scm			\
   gnu/packages/conkeror.scm			\
   gnu/packages/cook.scm				\
   gnu/packages/cpio.scm				\
@@ -123,7 +121,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gkrellm.scm			\
   gnu/packages/gl.scm				\
   gnu/packages/glib.scm				\
-  gnu/packages/global.scm			\
   gnu/packages/gnome.scm			\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
