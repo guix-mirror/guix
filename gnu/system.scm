@@ -352,6 +352,8 @@ explicitly appear in OS."
 
          e2fsprogs kbd
 
+         bash-completion
+
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
@@ -463,7 +465,25 @@ export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
 
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
+
+if [ -n \"$BASH_VERSION\" -a -f /etc/bashrc ]
+then
+  # Load Bash-specific initialization code.
+  source /etc/bashrc
+fi
 "))
+
+       (bashrc    (text-file "bashrc" "\
+# Bash-specific initialization.
+
+# The 'bash-completion' package.
+if [ -f /run/current-system/profile/etc/profile.d/bash_completion.sh ]
+then
+  # Bash-completion sources ~/.bash_completion.  It installs a dynamic
+  # completion loader that searches its own completion files as well
+  # as those in ~/.guix-profile and /run/current-system/profile.
+  source /run/current-system/profile/etc/profile.d/bash_completion.sh
+fi\n"))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
@@ -477,6 +497,7 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
                   ("profile" ,#~#$profile)
+                  ("bashrc" ,#~#$bashrc)
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
