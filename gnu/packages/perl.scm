@@ -1623,6 +1623,33 @@ methods to be composed into the classes/roles/instances it's compiled to,
 where plain Moose::Roles would lose the overloading.")
     (license (package-license perl))))
 
+(define-public perl-moosex-types
+  (package
+    (name "perl-moosex-types")
+    (version "0.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1iq90s1f0xbmr194q0mhnp9wxqxwwilkbdml040ibqbqvfiz87yh"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-carp-clan" ,perl-carp-clan)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Types")
+    (synopsis "Organise your Moose types in libraries")
+    (description "This package lets you declare types using short names, but
+behind the scenes it namespaces all your type declarations, effectively
+prevent name clashes between packages.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
