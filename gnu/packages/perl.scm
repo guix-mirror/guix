@@ -103,6 +103,27 @@ program.  It is guaranteed to find the *smallest possible* set of
 differences.")
     (license (package-license perl))))
 
+(define-public perl-aliased
+  (package
+    (name "perl-aliased")
+    (version "0.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "aliased-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1syyqzy462501kn5ma9gl6xbmcahqcn4qpafhsmpz0nd0x2m4l63"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/aliased")
+    (synopsis "Use shorter versions of class names")
+    (description "The alias module loads the class you specify and exports
+into your namespace a subroutine that returns the class name.  You can
+explicitly alias the class to another name or, if you prefer, you can do so
+implicitly.")
+    (license (package-license perl))))
+
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
