@@ -2901,6 +2901,30 @@ time values and formating dates into ASCII strings.")
 and time() calls.")
     (license (package-license perl))))
 
+(define-public perl-tree-simple
+  (package
+    (name "perl-tree-simple")
+    (version "1.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSAVAGE/"
+                           "Tree-Simple-" version ".tgz"))
+       (sha256
+        (base32
+         "1xj1n70v4qbx7m9k01bj9aixk77yssliavgvfds3xj755hcan0nr"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-scalar-list-utils" ,perl-scalar-list-utils)))
+    (home-page "http://search.cpan.org/dist/Tree-Simple")
+    (synopsis "Simple tree object")
+    (description "This module in a fully object-oriented implementation of a
+simple n-ary tree.")
+    (license (package-license perl))))
+
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
