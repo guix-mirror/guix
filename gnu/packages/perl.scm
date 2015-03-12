@@ -1514,6 +1514,37 @@ system.  The public API of Class::Accessor::Fast is wholly supported, but the
 private methods are not.")
     (license (package-license perl))))
 
+(define-public perl-moosex-role-parameterized
+  (package
+    (name "perl-moosex-role-parameterized")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Role-Parameterized-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12s2nmq13ri126yv02bx9h30j760zpal27i470z85ayw9s7il4jq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Role-Parameterized")
+    (synopsis "Moose roles with composition parameters")
+    (description "Because Moose roles serve many different masters, they
+usually provide only the least common denominator of functionality.  To
+empower roles further, more configurability than -alias and -excludes is
+required.  Perhaps your role needs to know which method to call when it is
+done processing, or what default value to use for its url attribute.
+Parameterized roles offer a solution to these (and other) kinds of problems.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-role-withoverloading
   (package
     (name "perl-moosex-role-withoverloading")
