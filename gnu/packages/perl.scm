@@ -237,6 +237,29 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-carp-clan
+  (package
+    (name "perl-carp-clan")
+    (version "6.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/ST/STBEY/"
+                           "Carp-Clan-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1v71k8s1pi16l5y579gnrg372c6pdvy6qqm6iddm8h1dx7n16bjl"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "http://search.cpan.org/dist/Carp-Clan")
+    (synopsis "Report errors from a \"clan\" of modules")
+    (description "This module allows errors from a clan (or family) of modules
+to appear to originate from the caller of the clan.  This is necessary in
+cases where the clan modules are not classes derived from each other, and thus
+the Carp.pm module doesn't help.")
+    (license (package-license perl))))
+
 (define-public perl-class-accessor
   (package
     (name "perl-class-accessor")
