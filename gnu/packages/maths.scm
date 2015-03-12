@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -317,6 +317,8 @@ plotting engine by third-party applications like Octave.")
       (sha256
        (base32 "0f9n0v3p3lwc7564791a39c6cn1d3dbrn7d1j3ikqsi27a8hy23d"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (arguments
      `(#:phases
         (alist-cons-before
