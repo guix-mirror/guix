@@ -2341,6 +2341,30 @@ a minimum of effort.")
     ;; "Under the same license as Perl itself"
     (license (package-license perl))))
 
+(define-public perl-test-trap
+  (package
+    (name "perl-test-trap")
+    (version "v0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EB/EBHANSSEN/"
+                           "Test-Trap-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05b4zc4087imwphls4yksg4chzx9yavbri301gaxas9kv1yhx13w"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-tester" ,perl-test-tester)
+       ("perl-data-dump" ,perl-data-dump)))
+    (home-page "http://search.cpan.org/dist/Test-Trap")
+    (synopsis "Trap exit codes, exceptions, output, etc.")
+    (description "This module is primarily (but not exclusively) for use in
+test scripts: A block eval configurable and extensible but by default trapping
+STDOUT, STDERR, warnings, exceptions, would-be exit codes, and return values
+from boxed blocks of test code.")
+    (license (package-license perl))))
+
 (define-public perl-test-warn
   (package
     (name "perl-test-warn")
