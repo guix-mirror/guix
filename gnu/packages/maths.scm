@@ -325,7 +325,6 @@ plotting engine by third-party applications like Octave.")
            (substitute* "configure"
              (("/bin/mv") "mv")))
          %standard-phases)))
-    (outputs '("out" "bin" "lib" "include"))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
@@ -358,8 +357,7 @@ extremely large and complex data collections.")
        ("fltk" ,fltk)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("hdf5-lib" ,hdf5 "lib")
-       ("hdf5-include" ,hdf5 "include")
+       ("hdf5" ,hdf5)
        ("libxft" ,libxft)
        ("mesa" ,mesa)
        ("zlib" ,zlib)))
@@ -411,8 +409,7 @@ files.")
      `(("fltk" ,fltk)
        ("gfortran" ,gfortran-4.8)
        ("gmp" ,gmp)
-       ("hdf5-lib" ,hdf5 "lib")
-       ("hdf5-include" ,hdf5 "include")
+       ("hdf5" ,hdf5)
        ("lapack" ,lapack)
        ("mesa" ,mesa)
        ("glu" ,glu)
@@ -1098,7 +1095,7 @@ Fresnel integrals, and similar related functions as well.")
                   (srfi srfi-1)
                   (guix build gnu-build-system)
                   (guix build utils))
-       #:configure-flags 
+       #:configure-flags
        `(;; Generate position independent code suitable for dynamic libraries
          ;; and use WALL timer to get more accurate timing.
          "-Fa" "alg" "-fPIC" "-D" "c" "-DWALL"
@@ -1125,10 +1122,10 @@ Fresnel integrals, and similar related functions as well.")
         (alist-cons-after
          'install 'install-doc
          (lambda* (#:key outputs inputs #:allow-other-keys)
-           (let ((doc (string-append (assoc-ref outputs "doc") 
+           (let ((doc (string-append (assoc-ref outputs "doc")
                                      "/share/doc/atlas")))
              (mkdir-p doc)
-             (fold (lambda (file previous) 
+             (fold (lambda (file previous)
                      (and previous (zero? (system* "cp" file doc))))
                    #t (find-files "../ATLAS/doc" ".*"))))
          (alist-cons-after
