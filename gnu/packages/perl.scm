@@ -1961,6 +1961,25 @@ function call parameters to an arbitrary level of specificity.")
 up inheritance from those modules at the same time.")
     (license (package-license perl))))
 
+(define-public perl-path-class
+  (package
+    (name "perl-path-class")
+    (version "0.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KW/KWILLIAMS/"
+                           "Path-Class-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1viaj8jyshcj135la0kgfgzalaw06xnbsg9h54jx09v1342v69lj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Path-Class")
+    (synopsis "Path specification manipulation")
+    (description "Path::Class is a module for manipulation of file and
+directory specifications in a cross-platform manner.")
+    (license (package-license perl))))
+
 (define-public perl-posix-strftime-compiler
   (package
     (name "perl-posix-strftime-compiler")
