@@ -1440,6 +1440,32 @@ A class definition with Moose reads like a list of very concise English
 sentences.")
     (license (package-license perl))))
 
+(define-public perl-moosex-emulate-class-accessor-fast
+  (package
+    (name "perl-moosex-emulate-class-accessor-fast")
+    (version "0.00903")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                           "MooseX-Emulate-Class-Accessor-Fast-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1lkn1h4sxr1483jicsgsgzclbfw63g2i2c3m4v4j9ar75yrb0kh8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)))
+    (home-page "http://search.cpan.org/dist/MooseX-Emulate-Class-Accessor-Fast")
+    (synopsis "Emulate Class::Accessor::Fast behavior using Moose attributes")
+    (description "This module attempts to emulate the behavior of
+Class::Accessor::Fast as accurately as possible using the Moose attribute
+system.  The public API of Class::Accessor::Fast is wholly supported, but the
+private methods are not.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
