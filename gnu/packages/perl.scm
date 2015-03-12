@@ -1677,6 +1677,30 @@ is particularly useful for debugging.")
 checking parameters easier.")
     (license (package-license perl))))
 
+(define-public perl-params-validate
+  (package
+    (name "perl-params-validate")
+    (version "1.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Params-Validate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wh23i9kkma6493c0q1kvy6wmahd6spg6xm3xbp2ar1iy1xhks5l"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-module-implementation" ,perl-module-implementation)))
+    (home-page "http://search.cpan.org/dist/Params-Validate")
+    (synopsis "Validate method/function parameters")
+    (description "The Params::Validate module allows you to validate method or
+function call parameters to an arbitrary level of specificity.")
+    (license artistic2.0)))
+
 (define-public perl-parent
   (package
     (name "perl-parent")
