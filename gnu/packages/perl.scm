@@ -1567,6 +1567,33 @@ private methods are not.")
 for creating objects using parameters passed in from the command line.")
     (license (package-license perl))))
 
+(define-public perl-moosex-methodattributes
+  (package
+    (name "perl-moosex-methodattributes")
+    (version "0.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-MethodAttributes-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pz3i67gadfmgzj87m1xp2ilcg3yhppdylcng2h6c11dy0a06hdk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-MethodAttributes")
+    (synopsis "Code attribute introspection")
+    (description "This module allows code attributes of methods to be
+introspected using Moose meta method objects.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
