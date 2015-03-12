@@ -2048,6 +2048,25 @@ codes.")
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
 
+(define-public perl-safe-isa
+  (package
+    (name "perl-safe-isa")
+    (version "1.000005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Safe-Isa-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vib54cp64dy3ic4n73skadp1pl4gn8s9qpxmzvi078dm3mpnbcw"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Safe-Isa")
+    (synopsis "Call isa, can, does, and DOES safely")
+    (description "This module allows you to call isa, can, does, and DOES
+safely on things that may not be objects.")
+    (license (package-license perl))))
+
 (define-public perl-stream-buffered
   (package
     (name "perl-stream-buffered")
