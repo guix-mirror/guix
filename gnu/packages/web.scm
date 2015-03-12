@@ -1097,6 +1097,31 @@ application frameworks.  Plack is like Ruby's Rack or Python's Paste for
 WSGI.")
     (license (package-license perl))))
 
+(define-public perl-plack-middleware-fixmissingbodyinredirect
+  (package
+    (name "perl-plack-middleware-fixmissingbodyinredirect")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SW/SWEETKID/"
+                           "Plack-Middleware-FixMissingBodyInRedirect-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "14dkrmccq7a5vpymx5dv8032gfcvhsw2i6v5sh3c4ym5ymlx08kc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-html-parser" ,perl-html-parser) ;for HTML::Entities
+       ("perl-http-message" ,perl-http-message)
+       ("perl-plack" ,perl-plack)))     ;for Plack::Test
+    (home-page
+     "http://search.cpan.org/dist/Plack-Middleware-FixMissingBodyInRedirect")
+    (synopsis "Plack::Middleware which sets body for redirect response")
+    (description "This module sets the body in redirect response, if it's not
+already set.")
+    (license (package-license perl))))
+
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
