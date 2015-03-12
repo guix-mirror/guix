@@ -1010,15 +1010,14 @@ WSGI.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "1.60")
+    (version "1.67")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/URI-"
-                   version ".tar.gz"))
+             (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                                 "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "0xr31mf7lfrwhyvlx4pzp6p7alls5gi4bj8pk5g89f5cckfd74hz"))))
+               "0ki7i830gs0cwwwjsyv3s6yy1l76ym8pfqp0lp7vw0j9bwyx923h"))))
     (build-system perl-build-system)
     (license (package-license perl))
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
@@ -1026,7 +1025,7 @@ WSGI.")
      "The URI module implements the URI class.  Objects of this class
 represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
-    (home-page "http://search.cpan.org/~gaas/URI/")))
+    (home-page "http://search.cpan.org/dist/URI/")))
 
 (define-public perl-www-curl
   (package
