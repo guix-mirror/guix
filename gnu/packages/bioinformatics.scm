@@ -238,6 +238,53 @@ gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
 
+(define-public bwa
+  (package
+    (name "bwa")
+    (version "0.7.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bio-bwa/bwa-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1330dpqncv0px3pbhjzz1gwgg39kkcv2r9qp2xs0sixf8z8wl7bh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:phases
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((bin (string-append
+                      (assoc-ref outputs "out") "/bin"))
+                (doc (string-append
+                      (assoc-ref outputs "out") "/share/doc/bwa"))
+                (man (string-append
+                      (assoc-ref outputs "out") "/share/man/man1")))
+            (mkdir-p bin)
+            (mkdir-p doc)
+            (mkdir-p man)
+            (copy-file "bwa" (string-append bin "/bwa"))
+            (copy-file "README.md" (string-append doc "/README.md"))
+            (copy-file "bwa.1" (string-append man "/bwa.1"))))
+        ;; no "configure" script
+        (alist-delete 'configure %standard-phases))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://bio-bwa.sourceforge.net/")
+    (synopsis "Burrows-Wheeler sequence aligner")
+    (description
+     "BWA is a software package for mapping low-divergent sequences against a
+large reference genome, such as the human genome.  It consists of three
+algorithms: BWA-backtrack, BWA-SW and BWA-MEM.  The first algorithm is
+designed for Illumina sequence reads up to 100bp, while the rest two for
+longer sequences ranged from 70bp to 1Mbp.  BWA-MEM and BWA-SW share similar
+features such as long-read support and split alignment, but BWA-MEM, which is
+the latest, is generally recommended for high-quality queries as it is faster
+and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
+70-100bp Illumina reads.")
+    (license license:gpl3+)))
+
 (define-public clipper
   (package
     (name "clipper")
