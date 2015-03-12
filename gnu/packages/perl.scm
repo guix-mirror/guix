@@ -2822,6 +2822,24 @@ used to match against text, rather than fetching names from a filesystem.  If
 you want to do full file globbing use the File::Glob module instead.")
     (license (package-license perl))))
 
+(define-public perl-text-simpletable
+  (package
+    (name "perl-text-simpletable")
+    (version "2.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MR/MRAMBERG/"
+                           "Text-SimpleTable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15hpry9jwrf1vbjyk21s65rllxrdvp2fdzzv9gsvczggby2yyzfs"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-SimpleTable")
+    (synopsis "Simple ASCII tables")
+    (description "Text::SimpleTable draws simple ASCII tables.")
+    (license artistic2.0)))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
