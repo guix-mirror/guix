@@ -1,0 +1,33 @@
+Bash-completion is written with FHS in mind where completion scripts
+all get added to /usr/share/bash-completion/completions and are picked
+up by the dynamic completion loader from there---whether they are
+part of bash-completion or installed by another package.
+
+On Guix systems, we want not only to search within bash-completion's own
+directory, but also in the user's profile and in the system profile.
+This is what this patch does.
+
+--- bash-completion-2.1/bash_completion	2015-03-11 09:45:45.056846446 +0100
++++ bash-completion-2.1/bash_completion	2015-03-11 09:52:43.248159504 +0100
+@@ -1928,9 +1928,20 @@ _completion_loader()
+     local compfile=./completions
+     [[ $BASH_SOURCE == */* ]] && compfile="${BASH_SOURCE%/*}/completions"
+     compfile+="/${1##*/}"
++    local base="${1##*/}"
+ 
++    # Look for completion files in the user and global profiles and
++    # lastly in 'bash-completion' itself.
++    for file in                                                                 \
++        "$HOME/.guix-profile/share/bash-completion/completions/$base"           \
++        "$HOME/.guix-profile/etc/bash_completion.d/$base"                       \
++        "/run/current-system/profile/share/bash-completion/completions/$base"   \
++        "/run/current-system/profile/etc/bash_completion.d/$base"               \
++        "$compfile"
++    do
+     # Avoid trying to source dirs; https://bugzilla.redhat.com/903540
+-    [[ -f "$compfile" ]] && . "$compfile" &>/dev/null && return 124
++        [[ -f "$file" ]] && . "$file" &>/dev/null && return 124
++    done
+ 
+     # Need to define *something*, otherwise there will be no completion at all.
+     complete -F _minimal "$1" && return 124
