@@ -303,6 +303,60 @@ extremely small.")
     (home-page "http://search.cpan.org/~timb/DBI-1.631/DBI.pm")
     (license (package-license perl))))
 
+(define-public perl-dbix-class
+  (package
+    (name "perl-dbix-class")
+    (version "0.082810")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "DBIx-Class-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zlsswk8j2k024gwhdhia8ksrmb8065n98dahkk8c0r69wv85n04"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-file-temp" ,perl-file-temp)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-class-accessor-grouped" ,perl-class-accessor-grouped)
+       ("perl-class-c3-componentised" ,perl-class-c3-componentised)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-config-any" ,perl-config-any)
+       ("perl-context-preserve" ,perl-context-preserve)
+       ("perl-data-dumper-concise" ,perl-data-dumper-concise)
+       ("perl-data-page" ,perl-data-page)
+       ("perl-dbi" ,perl-dbi)
+       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-module-find" ,perl-module-find)
+       ("perl-moo" ,perl-moo)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
+       ("perl-scope-guard" ,perl-scope-guard)
+       ("perl-sql-abstract" ,perl-sql-abstract)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-text-balanced" ,perl-text-balanced)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/DBIx-Class")
+    (synopsis "Extensible and flexible object <-> relational mapper")
+    (description "An SQL to OO mapper with an object API inspired by
+Class::DBI (with a compatibility layer as a springboard for porting) and a
+resultset API that allows abstract encapsulation of database operations.  It
+aims to make representing queries in your code as perl-ish as possible while
+still providing access to as many of the capabilities of the database as
+possible, including retrieving related records from multiple tables in a
+single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
+\"ORDER BY\" and \"HAVING\" support.")
+    (license (package-license perl))))
+
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
