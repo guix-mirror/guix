@@ -1491,6 +1491,31 @@ merged.")
 that may contain multiple values per key, inspired by MultiDict of WebOb.")
     (license (package-license perl))))
 
+(define-public perl-import-into
+  (package
+    (name "perl-import-into")
+    (version "1.002004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Import-Into-" version ".tar.gz"))
+       (sha256
+        (base32
+         "110hifk3cj14lxgjq2vaa2qfja21gll4lpn8vbimy0gzqadjbjyy"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)))
+    (home-page "http://search.cpan.org/dist/Import-Into")
+    (synopsis "Import packages into other packages")
+    (description "Writing exporters is a pain.  Some use Exporter, some use
+Sub::Exporter, some use Moose::Exporter, some use Exporter::Declare ... and
+some things are pragmas.  Exporting on someone else's behalf is harder.  The
+exporters don't provide a consistent API for this, and pragmas need to have
+their import method called directly, since they effect the current unit of
+compilation.  Import::Into provides global methods to make this painless.")
+    (license (package-license perl))))
+
 (define-public perl-inc-latest
   (package
     (name "perl-inc-latest")
