@@ -1748,6 +1748,37 @@ which had a recent release that broke some versions of Moose.  It is called
 from Moose::Conflicts and moose-outdated.")
     (license (package-license perl))))
 
+(define-public perl-moo
+  (package
+    (name "perl-moo")
+    (version "1.007000")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Moo-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y9s6s9jjd519wgal6lwc9id4sadrvfn8gjb51dl602d0kk0l7n5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
+       ("perl-class-xsaccessor" ,perl-class-xsaccessor)
+       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
+       ("perl-import-into" ,perl-import-into)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-role-tiny" ,perl-role-tiny)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "http://search.cpan.org/dist/Moo")
+    (synopsis "Minimalist Object Orientation (with Moose compatibility)")
+    (description "Moo is an extremely light-weight Object Orientation system.
+It allows one to concisely define objects and roles with a convenient syntax
+that avoids the details of Perl's object system.  Moo contains a subset of
+Moose and is optimised for rapid startup.")
+    (license (package-license perl))))
+
 (define-public perl-moose
   (package
     (name "perl-moose")
