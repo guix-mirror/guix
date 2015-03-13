@@ -327,6 +327,28 @@ your class.")
 different getters and setters.")
     (license (package-license perl))))
 
+(define-public perl-class-c3
+  (package
+    (name "perl-class-c3")
+    (version "0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Class-C3-" version ".tar.gz"))
+       (sha256
+        (base32
+         "185jdpr4applrkvh71ks9ildx5kdymhqr4hilsqxwqny1wr56qss"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-algorithm-c3" ,perl-algorithm-c3)))
+    (home-page "http://search.cpan.org/dist/Class-C3")
+    (synopsis "Pragma to use the C3 method resolution order algorithm")
+    (description "This is pragma to change Perl 5's standard method resolution
+order from depth-first left-to-right (a.k.a - pre-order) to the more
+sophisticated C3 method resolution order.")
+    (license (package-license perl))))
+
 (define-public perl-class-c3-adopt-next
   (package
     (name "perl-class-c3-adopt-next")
