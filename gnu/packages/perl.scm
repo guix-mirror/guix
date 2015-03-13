@@ -763,6 +763,31 @@ indentation and newlines plus sub deparsing.")
      "Data::OptList provides a simple syntax for name/value option pairs.")
     (license (package-license perl))))
 
+(define-public perl-data-page
+  (package
+    (name "perl-data-page")
+    (version "2.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+                           "Data-Page-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hvi92c4h2angryc6pngw7gbm3ysc2jfmyxk2wh9ia4vdwpbs554"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-accessor-chained" ,perl-class-accessor-chained)))
+    (home-page "http://search.cpan.org/dist/Data-Page")
+    (synopsis "Help when paging through sets of results")
+    (description "When searching through large amounts of data, it is often
+the case that a result set is returned that is larger than we want to display
+on one page.  This results in wanting to page through various pages of data.
+The maths behind this is unfortunately fiddly, hence this module.")
+    (license (package-license perl))))
+
 (define-public perl-data-tumbler
   (package
     (name "perl-data-tumbler")
