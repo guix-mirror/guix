@@ -261,6 +261,50 @@ emulation to complete hardware acceleration for modern GPUs.")
                                                  (assoc-ref outputs "out")
                                                  "/include")))))))))
 
+;;; The mesa-demos distribution contains non-free files, many files with no
+;;; clear license information, and many demos that aren't useful for most
+;;; people, so we just use this for the mesa-utils package below, and possibly
+;;; other packages in the future.  This is modeled after Debian's solution.
+(define (mesa-demos-source version)
+  (origin
+    (method url-fetch)
+    (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/demos/" version
+                        "/mesa-demos-" version ".tar.bz2"))
+    (sha256 (base32 "14msj0prbl3ljwd24yaqv9pz1xzicdmqgg616xxlppbdh6syrgz4"))))
+
+(define-public mesa-utils
+  (package
+    (name "mesa-utils")
+    (version "8.2.0")
+    (source (mesa-demos-source version))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mesa" ,mesa)
+       ("glut" ,freeglut)
+       ("glew" ,glew)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace
+          install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/bin"))
+              (for-each
+               (lambda (file)
+                 (copy-file file (string-append out "/bin/" (basename file))))
+               '("src/xdemos/glxdemo" "src/xdemos/glxgears"
+                 "src/xdemos/glxinfo" "src/xdemos/glxheads"))))))))
+    (home-page "http://mesa3d.org/")
+    (synopsis "Utility tools for Mesa")
+    (description
+     "The mesa-utils package contains several utility tools for Mesa: glxdemo,
+glxgears, glxheads, and glxinfo.")
+    ;; glxdemo is public domain; others expat.
+    (license (list l:expat l:public-domain))))
+
 (define-public glew
   (package
     (name "glew")
