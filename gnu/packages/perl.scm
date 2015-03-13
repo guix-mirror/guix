@@ -2439,6 +2439,30 @@ codes.")
 safely on things that may not be objects.")
     (license (package-license perl))))
 
+(define-public perl-scope-guard
+  (package
+    (name "perl-scope-guard")
+    (version "0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHOCOLATE/"
+                           "Scope-Guard-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lsagnz6pli035zvx5c1x4qm9fabi773vns86yd8lzfpldhfv3sv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Scope-Guard")
+    (synopsis "Lexically-scoped resource management")
+    (description "This module provides a convenient way to perform cleanup or
+other forms of resource management at the end of a scope.  It is particularly
+useful when dealing with exceptions: the Scope::Guard constructor takes a
+reference to a subroutine that is guaranteed to be called even if the thread
+of execution is aborted prematurely.  This effectively allows lexically-scoped
+\"promises\" to be made that are automatically honoured by perl's garbage
+collector.")
+    (license (package-license perl))))
+
 (define-public perl-stream-buffered
   (package
     (name "perl-stream-buffered")
