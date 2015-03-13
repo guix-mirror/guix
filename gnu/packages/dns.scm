@@ -17,7 +17,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages dns)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages xml)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -53,4 +59,54 @@ addresses to appear in the DNS with names configured either in each host or in
 a central configuration file.  Dnsmasq supports static and dynamic DHCP leases
 and BOOTP/TFTP for network booting of diskless machines.")
     ;; Source files only say GPL2 and GPL3 are allowed.
-    (license (list gpl2 gpl3))))
+    (license (list license:gpl2 license:gpl3))))
+
+(define-public bind-utils
+  (package
+    (name "bind-utils")
+    (version "9.10.1-P2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.isc.org/isc/bind9/" version
+                                  "/bind-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1svzia5vv0s4bv6r04j8bsvlf3klwyigmdz1iwb4fqds00iyvp22"))))
+    (build-system gnu-build-system)
+    (inputs
+     ;; it would be nice to add GeoIP and gssapi once there is package
+     `(("libcap" ,libcap)
+       ("libxml2" ,libxml2)
+       ("mysql" ,mysql)
+       ("openssl" ,openssl)
+       ("perl" ,perl)
+       ("p11-kit" ,p11-kit)))
+    (arguments
+     `(#:tests? #f ; no test phase implemented
+       #:configure-flags
+       (list (string-append "--with-openssl="
+                            (assoc-ref %build-inputs "openssl"))
+             (string-append "--with-dlz-mysql="
+                            (assoc-ref %build-inputs "mysql"))
+             (string-append "--with-pkcs11="
+                            (assoc-ref %build-inputs "p11-kit")))
+       #:phases
+       (alist-replace
+        'build
+        (lambda _
+          (and (zero? (system* "make" "-C" "lib/dns"))
+               (zero? (system* "make" "-C" "lib/isc"))
+               (zero? (system* "make" "-C" "lib/bind9"))
+               (zero? (system* "make" "-C" "lib/isccfg"))
+               (zero? (system* "make" "-C" "lib/lwres"))
+               (zero? (system* "make" "-C" "bin/dig"))))
+        (alist-replace
+         'install
+         (lambda _ (zero? (system* "make" "-C" "bin/dig" "install")))
+         %standard-phases))))
+    (home-page "https://www.isc.org/downloads/bind/")
+    (synopsis "Tools for querying nameservers")
+    (description
+     "These tools, included with ISC BIND, are useful for analysis of DNS
+issues or verification of configuration.")
+    (license (list license:isc))))
