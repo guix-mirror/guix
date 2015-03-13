@@ -534,6 +534,31 @@ names, not Class::Name.  For that, this module provides \"load_class
 Class::Load")
     (license artistic2.0)))
 
+(define-public perl-class-method-modifiers
+  (package
+    (name "perl-class-method-modifiers")
+    (version "2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Class-Method-Modifiers-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14nk2gin9cjwpysakli7f0gs4q1w220sn73xzv35rhlspngrggyy"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (home-page "http://search.cpan.org/dist/Class-Method-Modifiers")
+    (synopsis "Moose-like method modifiers")
+    (description "Class::Method::Modifiers provides three modifiers: before,
+around, and after.  before and after are run just before and after the method
+they modify, but can not really affect that original method.  around is run in
+place of the original method, with a hook to easily call that original
+method.")
+    (license (package-license perl))))
+
 (define-public perl-class-tiny
   (package
     (name "perl-class-tiny")
