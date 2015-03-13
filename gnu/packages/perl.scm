@@ -81,6 +81,25 @@
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
 
+(define-public perl-algorithm-c3
+  (package
+    (name "perl-algorithm-c3")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Algorithm-C3-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01hlcaxndls86bl92rkd3fvf9pfa3inxqaimv88bxs95803kmkss"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Algorithm-C3")
+    (synopsis "Module for merging hierarchies using the C3 algorithm")
+    (description "This module implements the C3 algorithm, which aims to
+provide a sane method resolution order under multiple inheritance.")
+    (license (package-license perl))))
+
 (define-public perl-algorithm-diff
   (package
     (name "perl-algorithm-diff")
