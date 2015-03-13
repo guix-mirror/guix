@@ -1089,7 +1089,14 @@ widgets built in the loading process.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))))
+                "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Adapt to newer freetype. As the package is deprecated, there
+               ;; is no use in creating a patch and reporting it.
+               '(substitute* '("libgnomeprint/gnome-font-face.c"
+                               "libgnomeprint/gnome-rfont.c")
+                  (("freetype/") "freetype2/")))))
     (build-system gnu-build-system)
     (inputs
      `(("popt" ,popt)
