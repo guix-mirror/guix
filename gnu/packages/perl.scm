@@ -593,6 +593,26 @@ objects.")
 as defined by two typical specimens of Perl coders.")
     (license (package-license perl))))
 
+(define-public perl-config-any
+  (package
+    (name "perl-config-any")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BR/BRICAS/"
+                           "Config-Any-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06n6jn3q3xhk57icwip0ihzqixxav6sgp6rrb35hahj1z748y3vi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Config-Any")
+    (synopsis "Load configuration from different file formats")
+    (description "Config::Any provides a facility for Perl applications and
+libraries to load configuration data from multiple different file formats.  It
+supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
+    (license (package-license perl))))
+
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
