@@ -1607,6 +1607,27 @@ replacement.  Whereas Module::Build has over 6,700 lines of code; this module
 has less than 120, yet supports the features needed by most distributions.")
     (license (package-license perl))))
 
+(define-public perl-module-find
+  (package
+    (name "perl-module-find")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CR/CRENZ/"
+                           "Module-Find-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lc33jdv4pgmm7nkr9bff0lhwjhhw91kaf6iiy2n7i7mw8dfv47l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Module-Find")
+    (synopsis "Find and use installed modules in a (sub)category")
+    (description "Module::Find lets you find and use modules in categories.
+This can be useful for auto-detecting driver or plugin modules.  You can
+differentiate between looking in the category itself or in all
+subcategories.")
+    (license (package-license perl))))
+
 (define-public perl-module-implementation
   (package
     (name "perl-module-implementation")
