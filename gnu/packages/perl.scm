@@ -1424,6 +1424,29 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
 
+(define-public perl-hash-merge
+  (package
+    (name "perl-hash-merge")
+    (version "0.200")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RE/REHSACK/"
+                           "Hash-Merge-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r1a2axz85wn6573zrl9rk8mkfl2cvf1gp9vwya5qndp60rz1ya7"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Hash-Merge")
+    (synopsis "Merge arbitrarily deep hashes into a single hash")
+    (description "Hash::Merge merges two arbitrarily deep hashes into a single
+hash.  That is, at any level, it will add non-conflicting key-value pairs from
+one hash to the other, and follows a set of specific rules when there are key
+value conflicts.  The hash is followed recursively, so that deeply nested
+hashes that are at the same level will be merged when the parent hashes are
+merged.")
+    (license (package-license perl))))
+
 (define-public perl-hash-multivalue
   (package
     (name "perl-hash-multivalue")
