@@ -698,6 +698,25 @@ their argument and produces a string as its result.  The string contains Perl
 code that, when \"eval\"ed, produces a deep copy of the original arguments.")
     (license (package-license perl))))
 
+(define-public perl-data-dumper-concise
+  (package
+    (name "perl-data-dumper-concise")
+    (version "2.022")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+                           "Data-Dumper-Concise-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z7vxgk1f2kw2zpiimdsyf7jq9f4s5dhh3dlimq5yrirypnk03sc"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Data-Dumper-Concise")
+    (synopsis "Concise data dumper")
+    (description "Data::Dumper::Concise provides a dumper with Less
+indentation and newlines plus sub deparsing.")
+    (license (package-license perl))))
+
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
