@@ -2429,6 +2429,25 @@ buffered.  It uses PerlIO and/or temporary file to save the buffer depending
 on the length of the size.")
     (license (package-license perl))))
 
+(define-public perl-strictures
+  (package
+    (name "perl-strictures")
+    (version "1.005005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "strictures-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bmpv8wr9jbc1lfj634xhq3y42nm28hh01jfsyzxhqhqf6dkdz59"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/strictures")
+    (synopsis "Turn on strict and make all warnings fatal")
+    (description "Strictures turns on strict and make all warnings fatal when
+run from within a source-controlled directory.")
+    (license (package-license perl))))
+
 (define-public perl-string-rewriteprefix
   (package
     (name "perl-string-rewriteprefix")
