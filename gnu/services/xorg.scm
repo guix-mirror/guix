@@ -175,7 +175,7 @@ which should be passed to this script as the first argument.  If not, the
                                 (_     #$fallback-session))))
           (if (file-exists? xsession-file)
               ;; Run ~/.xsession when it exists.
-              (exec-from-login-shell xsession-file)
+              (exec-from-login-shell xsession-file session)
               ;; Otherwise, start the specified session.
               (exec-from-login-shell session)))))
   (gexp->script "xinitrc" builder))
