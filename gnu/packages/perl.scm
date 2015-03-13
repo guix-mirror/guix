@@ -439,6 +439,29 @@ Class::Load")
 uses no non-core modules for any recent Perl.")
     (license asl2.0)))
 
+(define-public perl-class-xsaccessor
+  (package
+    (name "perl-class-xsaccessor")
+    (version "1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SM/SMUELLER/"
+                           "Class-XSAccessor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wm6013il899jnm0vn50a7iv9v6r4nqywbqzj0csyf8jbwwnpicr"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-XSAccessor")
+    (synopsis "Generate fast XS accessors without runtime compilation")
+    (description "Class::XSAccessor implements fast read, write, and
+read/write accessors in XS.  Additionally, it can provide predicates such as
+\"has_foo()\" for testing whether the attribute \"foo\" is defined in the
+object.  It only works with objects that are implemented as ordinary hashes.
+Class::XSAccessor::Array implements the same interface for objects that use
+arrays for their internal representation.")
+    (license (package-license perl))))
+
 (define-public perl-clone
   (package
     (name "perl-clone")
