@@ -3193,6 +3193,25 @@ installed.")
 generation of tests in nested combinations of contexts.")
     (license (package-license perl))))  ;See LICENSE
 
+(define-public perl-text-balanced
+  (package
+    (name "perl-text-balanced")
+    (version "2.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "Text-Balanced-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d3mba2sjpp044h16pkf231cksa34ripaz6rmgxp0ygpl917az57"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-Balanced")
+    (synopsis "Extract delimited text sequences from strings")
+    (description "The Text::Balanced module can be used to extract delimited
+text sequences from strings.")
+    (license (package-license perl))))
+
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
