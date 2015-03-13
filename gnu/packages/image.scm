@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,13 +23,18 @@
 
 (define-module (gnu packages image)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages ghostscript)         ;lcms
-  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -426,3 +432,46 @@ supplies a generic doubly-linked list and some string functions.")
 graphics image formats like PNG, BMP, JPEG, TIFF and others.")
    (license license:gpl2+)
    (home-page "http://freeimage.sourceforge.net")))
+
+(define-public vigra
+  (package
+   (name "vigra")
+   (version "1.10.0")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hci.iwr.uni-heidelberg.de/vigra/vigra-"
+                           version "-src.tar.gz"))
+       (sha256 (base32
+                 "16d0jvz3k49niljg9qvvlyxxl15yk0300xkymvyznlmvn1hs7m22"))))
+   (build-system cmake-build-system)
+   (inputs
+    `(("boost" ,boost)
+      ("fftw" ,fftw)
+      ("fftwf" ,fftwf)
+      ("hdf5" ,hdf5)
+      ("libjpeg" ,libjpeg)
+      ("libpng" ,libpng)
+      ("libtiff" ,libtiff)
+      ("python" ,python-2) ; print syntax
+      ("python2-numpy" ,python2-numpy)
+      ("zlib" ,zlib)))
+   (native-inputs
+    `(("doxygen" ,doxygen)
+      ("python2-nose" ,python2-nose)
+      ("python2-sphinx" ,python2-sphinx)))
+   (arguments
+    `(#:test-target "check"
+      #:configure-flags
+        (list "-Wno-dev" ; suppress developer mode with lots of warnings
+              (string-append "-DVIGRANUMPY_INSTALL_DIR="
+                             (assoc-ref %outputs "out")
+                             "/lib/python2.7/site-packages"))))
+   (synopsis "Computer vision library")
+   (description
+    "VIGRA stands for Vision with Generic Algorithms.  It is an image
+processing and analysis library that puts its main emphasis on customizable
+algorithms and data structures.  It is particularly strong for
+multi-dimensional image processing.")
+   (license license:expat)
+   (home-page "https://hci.iwr.uni-heidelberg.de/vigra")))
