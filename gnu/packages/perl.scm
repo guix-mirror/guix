@@ -2366,6 +2366,29 @@ codes.")
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
 
+(define-public perl-role-tiny
+  (package
+    (name "perl-role-tiny")
+    (version "1.003004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
+                           "Role-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ak60hakn0ixmsiw403si0lf5pagq5r6wjgl7p0pr979nlcikfmd"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)))
+    (home-page "http://search.cpan.org/dist/Role-Tiny")
+    (synopsis "Roles, as a slice of Moose")
+    (description "Role::Tiny is a minimalist role composition tool.")
+    (license (package-license perl))))
+
 (define-public perl-safe-isa
   (package
     (name "perl-safe-isa")
