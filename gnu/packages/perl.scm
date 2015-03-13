@@ -283,6 +283,31 @@ the Carp.pm module doesn't help.")
 your class.")
     (license (package-license perl))))
 
+(define-public perl-class-accessor-grouped
+  (package
+    (name "perl-class-accessor-grouped")
+    (version "0.10012")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "Class-Accessor-Grouped-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zp74yv023q3macrf4rv3i82z8pkffqyhh7xk9xg8fbr63ikwqf4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-sub-name" ,perl-sub-name)))
+    (home-page "http://search.cpan.org/dist/Class-Accessor-Grouped")
+    (synopsis "Build groups of accessors")
+    (description "This class lets you build groups of accessors that will call
+different getters and setters.")
+    (license (package-license perl))))
+
 (define-public perl-class-c3-adopt-next
   (package
     (name "perl-class-c3-adopt-next")
