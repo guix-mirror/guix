@@ -373,6 +373,31 @@ sophisticated C3 method resolution order.")
 supporting the same interface, but using Class::C3 to do the hard work.")
     (license (package-license perl))))
 
+(define-public perl-class-c3-componentised
+  (package
+    (name "perl-class-c3-componentised")
+    (version "1.001000")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+                           "Class-C3-Componentised-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nzav8arxll0rya7r2vp032s3acliihbb9mjlfa13rywhh77bzvl"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-c3" ,perl-class-c3)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Class-C3-Componentised")
+    (synopsis "Load mix-ins or components to your C3-based class")
+    (description "This module will inject base classes to your module using
+the Class::C3 method resolution order.")
+    (license (package-license perl))))
+
 (define-public perl-class-data-inheritable
   (package
     (name "perl-class-data-inheritable")
