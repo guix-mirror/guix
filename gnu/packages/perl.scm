@@ -302,6 +302,29 @@ the Carp.pm module doesn't help.")
 your class.")
     (license (package-license perl))))
 
+(define-public perl-class-accessor-chained
+  (package
+    (name "perl-class-accessor-chained")
+    (version "0.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "Class-Accessor-Chained-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lilrjy1s0q5hyr0888kf0ifxjyl2iyk4vxil4jsv0sgh39lkgx5"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)))
+    (home-page "http://search.cpan.org/dist/Class-Accessor-Chained")
+    (synopsis "Faster, but less expandable, chained accessors")
+    (description "A chained accessor is one that always returns the object
+when called with parameters (to set), and the value of the field when called
+with no arguments.  This module subclasses Class::Accessor in order to provide
+the same mk_accessors interface.")
+    (license (package-license perl))))
+
 (define-public perl-class-accessor-grouped
   (package
     (name "perl-class-accessor-grouped")
