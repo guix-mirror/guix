@@ -634,6 +634,29 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
 opportunities to Perl developers as GNU Autoconf does for Shell developers.")
     (license (package-license perl))))
 
+(define-public perl-context-preserve
+  (package
+    (name "perl-context-preserve")
+    (version "0.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JR/JROCKWAY/"
+                           "Context-Preserve-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gssillawjknqks81x7fg7w2x94bnyklgd8ry2pr1k6ifkjhwz46"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-simple" ,perl-test-simple)))
+    (home-page "http://search.cpan.org/dist/Context-Preserve")
+    (synopsis "Preserve context during subroutine call")
+    (description "This module runs code after a subroutine call, preserving
+the context the subroutine would have seen if it were the last statement in
+the caller.")
+    (license (package-license perl))))
+
 (define-public perl-cpan-meta-check
   (package
     (name "perl-cpan-meta-check")
