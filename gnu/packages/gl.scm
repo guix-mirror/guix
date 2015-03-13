@@ -171,18 +171,19 @@ also known as DXTn or DXTC) for Mesa.")
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
+        ;; The following are in the Requires.private field of gl.pc.
         ("libdrm" ,libdrm)
         ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
+        ("libxfixes" ,libxfixes)
+        ("libxshmfence" ,libxshmfence)
         ("libxxf86vm" ,libxxf86vm)))
     (inputs
       `(("udev" ,eudev)
         ("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
         ("presentproto" ,presentproto)
-        ("libxshmfence" ,libxshmfence)
         ("expat" ,expat)
-        ("libxfixes" ,libxfixes)
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libva'
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
