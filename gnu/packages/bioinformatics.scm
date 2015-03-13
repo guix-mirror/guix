@@ -570,6 +570,51 @@ resolution of binding sites through combining the information of both
 sequencing tag position and orientation.")
     (license license:bsd-3)))
 
+(define-public miso
+  (package
+    (name "miso")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://pypi.python.org/packages/source/m/misopy/misopy-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0x446867az8ir0z8c1vjqffkp0ma37wm4sylixnkhgawllzx8v5w"))
+              (modules '((guix build utils)))
+              ;; use "gcc" instead of "cc" for compilation
+              (snippet
+               '(substitute* "setup.py"
+                  (("^defines")
+                   "cc.set_executables(
+compiler='gcc',
+compiler_so='gcc',
+linker_exe='gcc',
+linker_so='gcc -shared'); defines")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:tests? #f)) ; no "test" target
+    (inputs
+     `(("samtools" ,samtools)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-scipy" ,python2-scipy)
+       ("python-matplotlib" ,python2-matplotlib)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://genes.mit.edu/burgelab/miso/index.html")
+    (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
+    (description
+     "MISO (Mixture-of-Isoforms) is a probabilistic framework that quantitates
+the expression level of alternatively spliced genes from RNA-Seq data, and
+identifies differentially regulated isoforms or exons across samples.  By
+modeling the generative process by which reads are produced from isoforms in
+RNA-Seq, the MISO model uses Bayesian inference to compute the probability
+that a read originated from a particular isoform.")
+    (license license:gpl2)))
+
 (define-public rseqc
   (package
     (name "rseqc")
