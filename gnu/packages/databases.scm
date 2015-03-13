@@ -326,6 +326,37 @@ module, and nothing else.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
 
+(define-public perl-sql-abstract
+  (package
+    (name "perl-sql-abstract")
+    (version "1.81")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "SQL-Abstract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17sgwq3mvqjhv3b77cnvrq60xgp8harjhlnvpwmxc914rqc5ckaz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-hash-merge" ,perl-hash-merge)
+       ("perl-moo" ,perl-moo)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-text-balanced" ,perl-text-balanced)))
+    (home-page "http://search.cpan.org/dist/SQL-Abstract")
+    (synopsis "Generate SQL from Perl data structures")
+    (description "This module was inspired by the excellent DBIx::Abstract.
+While based on the concepts used by DBIx::Abstract, the concepts used have
+been modified to make the SQL easier to generate from Perl data structures.
+The underlying idea is for this module to do what you mean, based on the data
+structures you provide it, so that you don't have to modify your code every
+time your data changes")
+    (license (package-license perl))))
 
 (define-public unixodbc
   (package
