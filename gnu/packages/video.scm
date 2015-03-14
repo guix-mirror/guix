@@ -191,14 +191,14 @@ SMPTE 314M.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.5.4")
+    (version "2.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "11m2hbhdgphjxjp6hk438cxmipqjg5ixbr1kqnn9mbdhq9kc34fc"))))
+               "14a7zp8pa1rvw6nr9l2rf57xr004n5kwkhn5lglybjnn1p68xhr3"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
