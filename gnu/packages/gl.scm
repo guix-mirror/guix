@@ -223,16 +223,30 @@ also known as DXTn or DXTC) for Mesa.")
                     (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
                       (("/usr/bin/env bash") (which "bash"))))
                   (alist-cons-before
-                   'build 'fix-dxtn-libname
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((s2tc (assoc-ref inputs "s2tc")))
+                   'build 'fix-dlopen-libnames
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let ((s2tc (assoc-ref inputs "s2tc"))
+                           (udev (assoc-ref inputs "udev"))
+                           (out (assoc-ref outputs "out")))
                        ;; Remain agnostic to .so.X.Y.Z versions while doing
                        ;; the substitutions so we're future-safe.
                        (substitute*
                            '("src/gallium/auxiliary/util/u_format_s3tc.c"
                              "src/mesa/main/texcompress_s3tc.c")
                          (("\"libtxc_dxtn\\.so")
-                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))))
+                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
+                       (substitute* "src/gallium/targets/egl-static/egl_st.c"
+                         (("\"libglapi\"")
+                          (string-append "\"" out "/lib/libglapi\"")))
+                       (substitute* "src/loader/loader.c"
+                         (("dlopen\\(\"libudev\\.so")
+                          (string-append "dlopen(\"" udev "/lib/libudev.so")))
+                       (substitute* "src/glx/dri_common.c"
+                         (("dlopen\\(\"libGL\\.so")
+                          (string-append "dlopen(\"" out "/lib/libGL.so")))
+                       (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+                         (("\"libglapi\\.so")
+                          (string-append "\"" out "/lib/libglapi.so")))))
                    %standard-phases)))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
