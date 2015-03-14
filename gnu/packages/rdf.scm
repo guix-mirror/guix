@@ -19,7 +19,7 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (bsd-style isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
+                #:select (non-copyleft isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -338,7 +338,7 @@ system.")
     (description
       "RDFLib is a Python library for working with RDF, a simple yet
 powerful language for representing information.")
-    (license (bsd-style "file://LICENSE"
+    (license (non-copyleft "file://LICENSE"
                         "See LICENSE in the distribution."))))
 
 (define-public python2-rdflib

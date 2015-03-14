@@ -187,8 +187,8 @@ and support for SSL3 and TLS.")
     "Gnurl is a microfork of cURL, a command line tool for transferring data
 with URL syntax.  While cURL supports many crypto backends, libgnurl only
 supports HTTPS, HTTPS and GnuTLS.")
-   (license (license:bsd-style "file://COPYING"
-                       "See COPYING in the distribution."))
+   (license (license:non-copyleft "file://COPYING"
+                                  "See COPYING in the distribution."))
    (home-page "https://gnunet.org/gnurl")))
 
 (define-public gnunet

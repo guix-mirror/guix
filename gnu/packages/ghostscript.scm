@@ -114,7 +114,7 @@ documents.  Programs included are psnup, for placing out several logical pages
 on a single sheet of paper, psselect, for selecting pages from a document,
 pstops, for general imposition, psbook, for signature generation for booklet
 printing, and psresize, for adjusting page sizes.")
-   (license (license:bsd-style "file://LICENSE"
+   (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))
    (home-page "http://knackered.org/angus/psutils/")))
 

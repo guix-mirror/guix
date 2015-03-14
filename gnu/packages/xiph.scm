@@ -65,7 +65,7 @@ format, which encapsulates raw compressed data and allows the interleaving of
 audio and video data.  In addition to encapsulation and interleaving of
 multiple data streams, ogg provides packet framing, error detection, and
 periodic timestamps for seeking.")
-   (license (license:bsd-style "file://COPYING"
+   (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
    (home-page "http://xiph.org/ogg/")))
 
@@ -91,7 +91,7 @@ a fully open, non-proprietary, patent-and-royalty-free, general-purpose
 compressed audio format for mid to high quality (8kHz-48.0kHz, 16+ bit,
 polyphonic) audio and music at fixed and variable bitrates from 16 to
 128 kbps/channel.")
-   (license (license:bsd-style "file://COPYING"
+   (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
    (home-page "http://xiph.org/vorbis/")))
 
@@ -141,7 +141,7 @@ for speech.  It is well-adapted to internet applications, such as VoIP.  It
 features compression of different bands in the same bitstream, intensity
 stereo encoding, and voice activity detection.")
     ;; 'src/getopt.c' is under LGPLv2+
-    (license (license:bsd-style "file://COPYING"
+    (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
 
 (define ao
@@ -209,7 +209,7 @@ OpenBSD's sndio.")
    (description
 "FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,
 meaning that audio is compressed in FLAC without any loss in quality.")
-   (license (license:bsd-style "file://COPYING"
+   (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution.")) ; and LGPL and GPL
    (home-page "http://xiph.org/flac/")))
 

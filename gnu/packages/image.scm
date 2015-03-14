@@ -126,8 +126,8 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
 used for storing image data.
 Included are a library, libtiff, for reading and writing TIFF and a small
 collection of tools for doing simple manipulations of TIFF images.")
-   (license (license:bsd-style "file://COPYRIGHT"
-                               "See COPYRIGHT in the distribution."))
+   (license (license:non-copyleft "file://COPYRIGHT"
+                                  "See COPYRIGHT in the distribution."))
    (home-page "http://www.libtiff.org/")))
 
 (define-public libwmf

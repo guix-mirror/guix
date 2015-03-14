@@ -238,7 +238,7 @@ be output in text, PostScript, PDF or HTML.")
     (description
      "ARPACK-NG is a collection of Fortran77 subroutines designed to solve
 large scale eigenvalue problems.")
-    (license (license:bsd-style "file://COPYING"
+    (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
 
 (define-public lapack
@@ -271,7 +271,7 @@ large scale eigenvalue problems.")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
 problems in numerical linear algebra.")
-    (license (license:bsd-style "file://LICENSE"
+    (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
 
 (define-public gnuplot
@@ -522,7 +522,7 @@ ASCII text files using Gmsh's own scripting language.")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
 data structures and routines for the scalable (parallel) solution of
 scientific applications modeled by partial differential equations.")
-    (license (license:bsd-style
+    (license (license:non-copyleft
               "http://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
 
 (define-public petsc-complex

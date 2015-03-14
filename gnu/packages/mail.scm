@@ -64,7 +64,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ bsd-style))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ non-copyleft))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -461,7 +461,7 @@ useful features.")
 framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
-    (license (bsd-style "file://COPYING"))))
+    (license (non-copyleft "file://COPYING"))))
 
 (define-public claws-mail
   (package

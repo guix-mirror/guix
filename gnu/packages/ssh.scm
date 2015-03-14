@@ -179,7 +179,7 @@ The connection layer multiplexes many different concurrent channels over the
 authenticated connection and allows tunneling of login sessions and
 TCP-forwarding.  It provides a flow control service for these channels.
 Additionally, various channel-specific options can be negotiated.")
-   (license (license:bsd-style "file://LICENSE"
+   (license (license:non-copyleft "file://LICENSE"
                                "See LICENSE in the distribution."))
    (home-page "http://www.openssh.org/")))
 

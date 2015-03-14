@@ -26,7 +26,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
-  #:use-module ((guix licenses) #:select (bsd-style)))
+  #:use-module ((guix licenses) #:select (non-copyleft)))
 
 (define-public gd
   (package
@@ -64,5 +64,5 @@ languages.  GD creates PNG, JPEG, GIF, WebP, XPM, BMP images, among other
 formats.  GD is commonly used to generate charts, graphics, thumbnails, and
 most anything else, on the fly.  While not restricted to use on the web, the
 most common applications of GD involve website development.")
-    (license (bsd-style "file://COPYING"
+    (license (non-copyleft "file://COPYING"
                         "See COPYING file in the distribution."))))

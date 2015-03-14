@@ -26,7 +26,7 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 x11 x11-style
+                #:select (asl2.0 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
@@ -723,7 +723,7 @@ Database API 2.0T.")
     (description
      "Mechanize implements stateful programmatic web browsing in Python,
 after Andy Lester’s Perl module WWW::Mechanize.")
-    (license (bsd-style "file://COPYING"
+    (license (non-copyleft "file://COPYING"
                         "See COPYING in the distribution."))))
 
 

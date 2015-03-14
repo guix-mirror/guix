@@ -392,7 +392,7 @@ things less distracting.")
     (description
      "XLockMore is a classic screen locker and screen saver for the
 X Window System.")
-    (license (license:bsd-style #f "See xlock.c.")
+    (license (license:non-copyleft #f "See xlock.c.")
              ;; + GPLv2 in modes/glx/biof.c.
              )))
 

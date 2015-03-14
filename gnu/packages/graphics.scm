@@ -151,4 +151,4 @@ output.")
 
     ;; The web site says it's under a BSD-3 license, but the 'LICENSE' file
     ;; and headers use different wording.
-    (license (license:bsd-style "file://LICENSE"))))
+    (license (license:non-copyleft "file://LICENSE"))))

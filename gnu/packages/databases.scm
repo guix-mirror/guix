@@ -35,7 +35,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style bsd-style
+                #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -84,8 +84,8 @@
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
 SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-    (license (bsd-style "file://LICENSE"
-                        "See LICENSE in the distribution."))
+    (license (non-copyleft "file://LICENSE"
+                           "See LICENSE in the distribution."))
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
 

@@ -1891,7 +1891,7 @@ thanks to the use of namespaces.")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
 is for enabling irq-unmasking and IDE multiplemode.")
-    (license (bsd-style "file://LICENSE.TXT"))))
+    (license (non-copyleft "file://LICENSE.TXT"))))
 
 (define-public acpid
   (package

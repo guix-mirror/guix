@@ -78,7 +78,7 @@
     (home-page "http://www.tcl.tk/")
     (synopsis "The Tcl scripting language")
     (description "The Tcl (Tool Command Language) scripting language.")
-    (license (bsd-style "http://www.tcl.tk/software/tcltk/license.html"
+    (license (non-copyleft "http://www.tcl.tk/software/tcltk/license.html"
                         "Tcl/Tk license"))))
 
 

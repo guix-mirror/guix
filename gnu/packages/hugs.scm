@@ -76,5 +76,5 @@ Haskell programs.  It provides an almost complete implementation of Haskell
 with support for simple interactive programs, handle-based I/O, and exception
 handling.  Hugs has a nearly complete implementation of the Haskell module
 system and supports a number of advanced extensions.")
-   (license (bsd-style "file://License"
-                       "See License in the distribution."))))
+   (license (non-copyleft "file://License"
+                          "See License in the distribution."))))
