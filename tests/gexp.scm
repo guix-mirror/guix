@@ -40,10 +40,14 @@
   (open-connection-for-tests))
 
 ;; For white-box testing.
-(define gexp-inputs (@@ (guix gexp) gexp-inputs))
-(define gexp-native-inputs (@@ (guix gexp) gexp-native-inputs))
-(define gexp-outputs (@@ (guix gexp) gexp-outputs))
-(define gexp->sexp  (@@ (guix gexp) gexp->sexp))
+(define (gexp-inputs x)
+  ((@@ (guix gexp) gexp-inputs) x))
+(define (gexp-native-inputs x)
+  ((@@ (guix gexp) gexp-native-inputs) x))
+(define (gexp-outputs x)
+  ((@@ (guix gexp) gexp-outputs) x))
+(define (gexp->sexp . x)
+  (apply (@@ (guix gexp) gexp->sexp) x))
 
 (define* (gexp->sexp* exp #:optional target)
   (run-with-store %store (gexp->sexp exp
