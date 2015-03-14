@@ -251,7 +251,7 @@ level's exit.  The game is presented in a 2D side view.")
      (origin
        (method url-fetch)
        (uri (string-append "http://www.hyperrealm.com/" name "/"
-                           name  "-" version  ".tar.gz")) 
+                           name  "-" version  ".tar.gz"))
        (sha256
         (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
     (build-system gnu-build-system)
@@ -441,21 +441,21 @@ Portable Game Notation.")
      `(#:tests? #f
        #:phases
        (alist-replace
-        'configure 
+        'configure
         (lambda* (#:key outputs #:allow-other-keys)
-          
-          (substitute* "Imakefile" 
+
+          (substitute* "Imakefile"
             (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
              (string-append "XPMINCLUDE = -I" (assoc-ref %build-inputs "libxpm")
                             "/include/X11")))
-          
-          (substitute* "Imakefile" 
+
+          (substitute* "Imakefile"
             (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
-          
+
           ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
-          
-          (zero? (system* "xmkmf" "-a" 
-                          (string-append "-DProjectRoot=" 
+
+          (zero? (system* "xmkmf" "-a"
+                          (string-append "-DProjectRoot="
                                          (assoc-ref outputs "out")))))
         (alist-replace 'install
                        (lambda* (#:key outputs #:allow-other-keys)
@@ -624,27 +624,16 @@ for common mesh file formats, and collision detection.")
                 "0h223svzkvp63b77nqfxy7k8whw4543gahs3kxd3x4myi5ax5z5f"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:modules ((guix build utils)
-                  (guix build cmake-build-system)
-                  (ice-9 match))
-       #:phases (alist-cons-before
-                 'configure 'set-cpath
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (use-modules (ice-9 match))
-                   ;; Adjust the CPATH so that cmake can find irrlicht,
-                   ;; openal, and curl headers.
-                   (set-path-environment-variable "CPATH"
-                                                  '("include/AL"
-                                                    "include/irrlicht"
-                                                    "include/curl"
-                                                    "include")
-                                                  (map (match-lambda
-                                                        ((_ . dir) dir))
-                                                       inputs)))
-                 %standard-phases)
-       #:configure-flags '("-DRUN_IN_PLACE=0"
-                           "-DENABLE_FREETYPE=1"
-                           "-DENABLE_GETTEXT=1")
+     '(#:configure-flags
+         (list "-DRUN_IN_PLACE=0"
+               "-DENABLE_FREETYPE=1"
+               "-DENABLE_GETTEXT=1"
+               (string-append "-DIRRLICHT_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "irrlicht")
+                              "/include/irrlicht")
+               (string-append "-DCURL_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "curl")
+                              "/include/curl"))
        #:tests? #f)) ; no check target
     (native-search-paths
      (list (search-path-specification
