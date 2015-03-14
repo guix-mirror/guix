@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.55.0")
+    (version "1.57.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,7 +41,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "0lkv5dzssbl5fmh2nkaszi8x9qbj80pr4acf9i26sj3rvlih1w7z"))))
+                "0rs94vdmg34bwwj23fllva6mhrml2i7mvmlb11zyrk1k5818q34i"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs
@@ -64,10 +65,10 @@
             (let ((out (assoc-ref outputs "out")))
               (substitute* '("libs/config/configure"
                              "libs/spirit/classic/phoenix/test/runtest.sh"
-                             "tools/build/v2/doc/bjam.qbk"
-                             "tools/build/v2/engine/execunix.c"
-                             "tools/build/v2/engine/Jambase"
-                             "tools/build/v2/engine/jambase.c")
+                             "tools/build/doc/bjam.qbk"
+                             "tools/build/src/engine/execunix.c"
+                             "tools/build/src/engine/Jambase"
+                             "tools/build/src/engine/jambase.c")
                 (("/bin/sh") (which "sh")))
 
               (setenv "SHELL" (which "sh"))
