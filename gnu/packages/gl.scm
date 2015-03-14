@@ -186,7 +186,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libva'
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
-        ("makedepend" ,makedepend)))
+        ("makedepend" ,makedepend)
+        ("s2tc" ,s2tc)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("gettext" ,gnu-gettext)
@@ -220,7 +221,18 @@ also known as DXTn or DXTC) for Mesa.")
                   (lambda _
                     (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
                       (("/usr/bin/env bash") (which "bash"))))
-                  %standard-phases))))
+                  (alist-cons-before
+                   'build 'fix-dxtn-libname
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((s2tc (assoc-ref inputs "s2tc")))
+                       ;; Remain agnostic to .so.X.Y.Z versions while doing
+                       ;; the substitutions so we're future-safe.
+                       (substitute*
+                           '("src/gallium/auxiliary/util/u_format_s3tc.c"
+                             "src/mesa/main/texcompress_s3tc.c")
+                         (("\"libtxc_dxtn\\.so")
+                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))))
+                   %standard-phases)))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
