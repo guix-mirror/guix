@@ -66,7 +66,8 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages zip))
 
 (define-public units
   (package
@@ -1193,3 +1194,25 @@ cpufreq-selector -g performance -c N-1
 where N is the number of cores of your CPU.  Failure to do so will result in a
 library with poor performance.")
     (license license:bsd-3)))
+
+(define-public glm
+  (package
+    (name "glm")
+    (version "0.9.6.3")
+    (source
+     (origin
+       (method url-fetch)
+      (uri (string-append "mirror://sourceforge/ogl-math/glm-"
+                          version ".zip"))
+       (sha256
+        (base32
+         "1cnjmi033a16a95v6xfkr1bvfmkd26hzdjka8j1819hgn5b1nr8l"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://glm.g-truc.net")
+    (synopsis "OpenGL Mathematics library")
+    (description "OpenGL Mathematics (GLM) is a header-only C++ mathematics
+library for graphics software based on the OpenGL Shading Language (GLSL)
+specifications.")
+    (license license:expat)))
