@@ -17,14 +17,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages dictionaries)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages texinfo)
-  #:use-module ((gnu packages compression)
-                #:select (gzip)))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo))
 
 (define-public vera
   (package
@@ -75,4 +79,37 @@
     (description
      "V.E.R.A. (Virtual Entity of Relevant Acronyms) is a list of computing
 acronyms distributed as an info document.")
-    (license fdl1.3+)))
+    (license license:fdl1.3+)))
+
+(define-public sdcv
+  (package
+    (name "sdcv")
+    (version "0.5.0-beta4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/project/sdcv/sdcv/sdcv-"
+                           version "-Source.tar.bz2"))
+       (sha256
+        (base32 "1b9v91al2c1499q6yx6q8jggid0714444mfj6myqgz3nvqjyrrqr"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gettext" ,gnu-gettext)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ; no tests implemented
+       #:phases
+       ;; this is known workaround for missing lang files
+       (alist-cons-after 'build 'build-lang
+                         (lambda _ (zero? (system* "make" "lang")))
+                         %standard-phases)))
+    (home-page "http://sdcv.sourceforge.net/")
+    (synopsis "Command line variant of StarDict")
+    (description
+     "Sdcv is command line dictionary utility, which supports StarDict dictinary
+format.")
+    (license license:gpl2+)))
