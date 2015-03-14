@@ -644,7 +644,7 @@ for common mesh file formats, and collision detection.")
     (inputs
      `(("irrlicht" ,irrlicht)
        ("libpng" ,libpng)
-       ("libjpeg-8" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("libxxf86vm" ,libxxf86vm)
        ("mesa" ,mesa)
        ("libogg" ,libogg)
