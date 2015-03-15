@@ -194,7 +194,8 @@ mixing several sounds into one are easily achieved using a sound server. ")
                    ".tar.xz"))
              (sha256
               (base32
-               "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))))
+               "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))
+             (patches (list (search-patch "pavucontrol-sigsegv.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("libcanberra" ,libcanberra)
