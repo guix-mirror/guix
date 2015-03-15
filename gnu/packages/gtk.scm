@@ -408,10 +408,12 @@ is part of the GNOME accessibility project.")
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
-    `(#:phases
+    `(#:make-flags '("CC=gcc")
+      #:phases
       (alist-cons-before
        'configure 'disable-tests
        (lambda _
