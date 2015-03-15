@@ -219,6 +219,16 @@
          (equal? (gexp->sexp* exp)                ;native
                  (gexp->sexp* exp "mips64el-linux")))))
 
+(test-assert "input list splicing + gexp-input + ungexp-native-splicing"
+  (let* ((inputs (list (gexp-input glibc "debug") %bootstrap-guile))
+         (exp    (gexp (list (ungexp-native-splicing (cons (+ 2 3) inputs))))))
+    (and (lset= equal?
+                `((,glibc "debug") (,%bootstrap-guile "out"))
+                (gexp-native-inputs exp))
+         (null? (gexp-inputs exp))
+         (equal? (gexp->sexp* exp)                ;native
+                 (gexp->sexp* exp "mips64el-linux")))))
+
 (test-equal "output list"
   2
   (let ((exp (gexp (begin (mkdir (ungexp output))

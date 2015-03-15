@@ -29,6 +29,10 @@
   #:use-module (ice-9 match)
   #:export (gexp
             gexp?
+
+            gexp-input
+            gexp-input?
+
             gexp->derivation
             gexp->file
             gexp->script
@@ -81,11 +85,18 @@
 
 ;; The input of a gexp.
 (define-record-type <gexp-input>
-  (gexp-input thing output native?)
+  (%gexp-input thing output native?)
   gexp-input?
   (thing     gexp-input-thing)       ;<package> | <origin> | <derivation> | ...
   (output    gexp-input-output)      ;string
   (native?   gexp-input-native?))    ;Boolean
+
+(define* (gexp-input thing                        ;convenience procedure
+                     #:optional (output "out")
+                     #:key native?)
+  "Return a new <gexp-input> for the OUTPUT of THING; NATIVE? determines
+whether this should be considered a \"native\" input or not."
+  (%gexp-input thing output native?))
 
 ;; Reference to one of the derivation's outputs, for gexps used in
 ;; derivations.
@@ -309,7 +320,10 @@ references."
        (fold-right add-reference-inputs result
                    ;; XXX: For now, automatically convert LST to a list of
                    ;; gexp-inputs.
-                   (map (cut gexp-input <> output native?) lst)))
+                   (map (match-lambda
+                         ((? gexp-input? x) x)
+                         (x (%gexp-input x "out" native?)))
+                        lst)))
       (_
        ;; Ignore references to other kinds of objects.
        result)))
@@ -331,7 +345,10 @@ references."
        (append (gexp-outputs exp) result))
       (($ <gexp-input> (lst ...) output native?)
        ;; XXX: Automatically convert LST.
-       (add-reference-output (map (cut gexp-input <> output native?) lst)
+       (add-reference-output (map (match-lambda
+                                   ((? gexp-input? x) x)
+                                   (x (%gexp-input x "out" native?)))
+                                  lst)
                              result))
       ((lst ...)
        (fold-right add-reference-output result lst))
@@ -379,8 +396,11 @@ and in the current monad setting (system type, etc.)"
          (sequence %store-monad
                    (map (lambda (ref)
                           ;; XXX: Automatically convert REF to an gexp-input.
-                          (reference->sexp (gexp-input ref "out"
-                                                       (or n? native?))))
+                          (reference->sexp
+                           (if (gexp-input? ref)
+                               ref
+                               (%gexp-input ref "out" n?))
+                           native?))
                         refs)))
         (($ <gexp-input> x)
          (return x))
@@ -453,17 +473,17 @@ and in the current monad setting (system type, etc.)"
         ((ungexp output name)
          #'(gexp-output name))
         ((ungexp thing)
-         #'(gexp-input thing "out" #f))
+         #'(%gexp-input thing "out" #f))
         ((ungexp drv-or-pkg out)
-         #'(gexp-input drv-or-pkg out #f))
+         #'(%gexp-input drv-or-pkg out #f))
         ((ungexp-splicing lst)
-         #'(gexp-input lst "out" #f))
+         #'(%gexp-input lst "out" #f))
         ((ungexp-native thing)
-         #'(gexp-input thing "out" #t))
+         #'(%gexp-input thing "out" #t))
         ((ungexp-native drv-or-pkg out)
-         #'(gexp-input drv-or-pkg out #t))
+         #'(%gexp-input drv-or-pkg out #t))
         ((ungexp-native-splicing lst)
-         #'(gexp-input lst "out" #t))))
+         #'(%gexp-input lst "out" #t))))
 
     (define (substitute-ungexp exp substs)
       ;; Given EXP, an 'ungexp' or 'ungexp-native' form, substitute it with
