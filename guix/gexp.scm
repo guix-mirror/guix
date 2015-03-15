@@ -83,6 +83,63 @@
 
 (set-record-type-printer! <gexp> write-gexp)
 
+
+;;;
+;;; Methods.
+;;;
+
+;; Compiler for a type of objects that may be introduced in a gexp.
+(define-record-type <gexp-compiler>
+  (gexp-compiler predicate lower)
+  gexp-compiler?
+  (predicate  gexp-compiler-predicate)
+  (lower      gexp-compiler-lower))
+
+(define %gexp-compilers
+  ;; List of <gexp-compiler>.
+  '())
+
+(define (register-compiler! compiler)
+  "Register COMPILER as a gexp compiler."
+  (set! %gexp-compilers (cons compiler %gexp-compilers)))
+
+(define (lookup-compiler object)
+  "Search a compiler for OBJECT.  Upon success, return the three argument
+procedure to lower it; otherwise return #f."
+  (any (match-lambda
+        (($ <gexp-compiler> predicate lower)
+         (and (predicate object) lower)))
+       %gexp-compilers))
+
+(define-syntax-rule (define-gexp-compiler (name (param predicate)
+                                                system target)
+                      body ...)
+  "Define NAME as a compiler for objects matching PREDICATE encountered in
+gexps.  BODY must return a derivation for PARAM, an object that matches
+PREDICATE, for SYSTEM and TARGET (the latter of which is #f except when
+cross-compiling.)"
+  (begin
+    (define name
+      (gexp-compiler predicate
+                     (lambda (param system target)
+                       body ...)))
+    (register-compiler! name)))
+
+(define-gexp-compiler (origin-compiler (origin origin?) system target)
+  ;; Compiler for origins.
+  (origin->derivation origin system))
+
+(define-gexp-compiler (package-compiler (package package?) system target)
+  ;; Compiler for packages.
+  (if target
+      (package->cross-derivation package target system)
+      (package->derivation package system)))
+
+
+;;;
+;;; Inputs & outputs.
+;;;
+
 ;; The input of a gexp.
 (define-record-type <gexp-input>
   (%gexp-input thing output native?)
@@ -116,15 +173,11 @@ the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
-                    (((? package? package) sub-drv ...)
-                     (mlet %store-monad
-                         ((drv (if target
-                                   (package->cross-derivation package target
-                                                              system)
-                                   (package->derivation package system))))
-                       (return `(,drv ,@sub-drv))))
-                    (((? origin? origin) sub-drv ...)
-                     (mlet %store-monad ((drv (origin->derivation origin)))
+                    ((and ((? derivation?) sub-drv ...) input)
+                     (return input))
+                    ((and ((? struct? thing) sub-drv ...) input)
+                     (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                                          (drv (lower thing system target)))
                        (return `(,drv ,@sub-drv))))
                     (input
                      (return input)))
@@ -152,14 +205,9 @@ names and file names suitable for the #:allowed-references argument to
       (match-lambda
        ((? string? output)
         (return output))
-       ((? package? package)
-        (mlet %store-monad ((drv
-                             (if target
-                                 (package->cross-derivation package target
-                                                            #:system system
-                                                            #:graft? #f)
-                                 (package->derivation package system
-                                                      #:graft? #f))))
+       (thing
+        (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                             (drv      (lower thing system target)))
           (return (derivation->output-path drv))))))
 
     (sequence %store-monad (map lower lst))))
@@ -302,15 +350,16 @@ references."
     (match ref
       (($ <gexp-input> (? derivation? drv) output)
        (cons `(,drv ,output) result))
-      (($ <gexp-input> (? package? pkg) output)
-       (cons `(,pkg ,output) result))
-      (($ <gexp-input> (? origin? o))
-       (cons `(,o "out") result))
       (($ <gexp-input> (? gexp? exp))
        (append (gexp-inputs exp references) result))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons `(,str) result)
+           result))
+      (($ <gexp-input> (? struct? thing) output)
+       (if (lookup-compiler thing)
+           ;; THING is a derivation, or a package, or an origin, etc.
+           (cons `(,thing ,output) result)
            result))
       (($ <gexp-input> (lst ...) output native?)
        (fold-right add-reference-inputs result
@@ -364,14 +413,6 @@ and in the current monad setting (system type, etc.)"
       (match ref
         (($ <gexp-input> (? derivation? drv) output)
          (return (derivation->output-path drv output)))
-        (($ <gexp-input> (? package? p) output n?)
-         (package-file p
-                       #:output output
-                       #:system system
-                       #:target (if (or n? native?) #f target)))
-        (($ <gexp-input> (? origin? o) output)
-         (mlet %store-monad ((drv (origin->derivation o)))
-           (return (derivation->output-path drv output))))
         (($ <gexp-output> output)
          ;; Output file names are not known in advance but the daemon defines
          ;; an environment variable for each of them at build time, so use
@@ -391,6 +432,11 @@ and in the current monad setting (system type, etc.)"
                                (%gexp-input ref "out" n?))
                            native?))
                         refs)))
+        (($ <gexp-input> (? struct? thing) output n?)
+         (let ((lower  (lookup-compiler thing))
+               (target (if (or n? native?) #f target)))
+           (mlet %store-monad ((drv (lower thing system target)))
+             (return (derivation->output-path drv output)))))
         (($ <gexp-input> x)
          (return x))
         (x
