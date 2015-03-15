@@ -312,10 +312,6 @@ references."
        (if (direct-store-path? str)
            (cons `(,str) result)
            result))
-      (($ <gexp-input> ((? package? p) (? string? output)) _ native?)
-       ;; XXX: For now, for backward-compatibility, automatically convert a
-       ;; pair like this to an gexp-input for OUTPUT of P.
-       (add-reference-inputs (gexp-input p output native?) result))
       (($ <gexp-input> (lst ...) output native?)
        (fold-right add-reference-inputs result
                    ;; XXX: For now, automatically convert LST to a list of
@@ -369,13 +365,6 @@ and in the current monad setting (system type, etc.)"
         (($ <gexp-input> (? derivation? drv) output)
          (return (derivation->output-path drv output)))
         (($ <gexp-input> (? package? p) output n?)
-         (package-file p
-                       #:output output
-                       #:system system
-                       #:target (if (or n? native?) #f target)))
-        (($ <gexp-input> ((? package? p) (? string? output)) _ n?)
-         ;; XXX: For backward compatibility, automatically interpret such a
-         ;; pair.
          (package-file p
                        #:output output
                        #:system system
