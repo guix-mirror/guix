@@ -155,9 +155,9 @@
 omitted or #f, use the first output of PACKAGE."
   (let ((deps (map (match-lambda
                     ((label package)
-                     `(,package "out"))
+                     (gexp-input package))
                     ((label package output)
-                     `(,package ,output)))
+                     (gexp-input package output)))
                    (package-transitive-propagated-inputs package))))
     (manifest-entry
      (name (package-name package))
@@ -356,22 +356,12 @@ replace it."
 ;;;
 
 (define (manifest-inputs manifest)
-  "Return the list of inputs for MANIFEST.  Each input has one of the
-following forms:
-
-  (PACKAGE OUTPUT-NAME)
-
-or
-
-  STORE-PATH
-"
+  "Return a list of <gexp-input> objects for MANIFEST."
   (append-map (match-lambda
-               (($ <manifest-entry> name version
-                                    output (? package? package) deps)
-                `((,package ,output) ,@deps))
-               (($ <manifest-entry> name version output path deps)
-                ;; Assume PATH and DEPS are already valid.
-                `(,path ,@deps)))
+               (($ <manifest-entry> name version output thing deps)
+                ;; THING may be a package or a file name.  In the latter case,
+                ;; assume it's already valid.  Ditto for DEPS.
+                (cons (gexp-input thing output) deps)))
               (manifest-entries manifest)))
 
 (define (info-dir-file manifest)
@@ -487,16 +477,11 @@ CA-CERTIFICATE-BUNDLE? is #f."
                                           (ca-certificate-bundle manifest)
                                           (return #f))))
     (define inputs
-      ;; XXX: Here we use tuples of the form (DIR "out") just so that the list
-      ;; is unambiguous for the gexp code when MANIFEST has a single input
-      ;; denoted as a string (the pattern (DRV STRING) is normally
-      ;; interpreted in a gexp as "the STRING output of DRV".).  See
-      ;; <http://lists.gnu.org/archive/html/guix-devel/2014-12/msg00292.html>.
       (append (if info-dir
-                  `((,info-dir "out"))
+                  (list (gexp-input info-dir))
                   '())
               (if ca-cert-bundle
-                  `((,ca-cert-bundle "out"))
+                  (list (gexp-input ca-cert-bundle))
                   '())
               (manifest-inputs manifest)))
 
