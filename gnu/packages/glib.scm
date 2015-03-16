@@ -520,6 +520,16 @@ useful for C++.")
      "Python bindings for GLib, GObject, and GIO.")
     (license license:lgpl2.1+)))
 
+(define-public python2-pygobject
+  (package (inherit python-pygobject)
+    (name "python2-pygobject")
+    (inputs
+     `(("python" ,python-2)
+       ("glib" ,glib)
+       ("python-pycairo" ,python2-pycairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libffi" ,libffi)))))
+
 (define telepathy-glib
   (package
     (name "telepathy-glib")
