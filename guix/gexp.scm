@@ -81,10 +81,10 @@
 
 ;; Reference to one of the derivation's outputs, for gexps used in
 ;; derivations.
-(define-record-type <output-ref>
-  (output-ref name)
-  output-ref?
-  (name output-ref-name))
+(define-record-type <gexp-output>
+  (gexp-output name)
+  gexp-output?
+  (name gexp-output-name))
 
 (define raw-derivation
   (store-lift derivation))
@@ -310,7 +310,7 @@ references."
   "Return the outputs referred to by EXP as a list of strings."
   (define (add-reference-output ref result)
     (match ref
-      (($ <output-ref> name)
+      (($ <gexp-output> name)
        (cons name result))
       ((? gexp? exp)
        (append (gexp-outputs exp) result))
@@ -340,7 +340,7 @@ and in the current monad setting (system type, etc.)"
         (((? origin? o) (? string? output))
          (mlet %store-monad ((drv (origin->derivation o)))
            (return (derivation->output-path drv output))))
-        (($ <output-ref> output)
+        (($ <gexp-output> output)
          ;; Output file names are not known in advance but the daemon defines
          ;; an environment variable for each of them at build time, so use
          ;; that trick.
@@ -441,9 +441,9 @@ package/derivation references."
                         ungexp-native ungexp-native-splicing
                         output)
         ((ungexp output)
-         #'(output-ref "out"))
+         #'(gexp-output "out"))
         ((ungexp output name)
-         #'(output-ref name))
+         #'(gexp-output name))
         ((ungexp thing)
          #'thing)
         ((ungexp drv-or-pkg out)
