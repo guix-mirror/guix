@@ -79,8 +79,8 @@ avoiding password prompts when X11 forwarding has already been setup.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
-       #:phases 
-       (alist-replace 'configure 
+       #:phases
+       (alist-replace 'configure
                       (lambda* (#:key outputs #:allow-other-keys #:rest args)
                         (setenv "PREFIX" (assoc-ref outputs "out"))
                         (setenv "LDFLAGS" (string-append "-Wl,-rpath="
@@ -485,4 +485,37 @@ Tektronix 4014 emulation and toolkit-style configurability.  It supports
 unicode, XFT and may be extended with Perl plugins.  It also comes with a
 client/daemon pair that lets you open any number of terminal windows from
 within a single process.")
+    (license license:gpl3+)))
+
+(define-public xcape
+  (package
+    (name "xcape")
+    (version "1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/alols/" name
+                            "/archive/v" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0jkdiaxc6sryrbibdgi2y1c48n4l9xyazhxr16l6h4ibddx95bk9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases (alist-delete 'configure %standard-phases) ; no configure script
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "MANDIR=/share/man/man1"
+                          "CC=gcc")))
+    (inputs
+     `(("libxtst" ,libxtst)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://github.com/alols/xcape")
+    (synopsis "Use a modifier key in X.org as another key")
+    (description
+     "This utility for X.org allows to use modifier key as another key when
+pressed and released on its own.  The default behaviour is to generate the
+Escape key when Left Control is pressed and released on its own.")
     (license license:gpl3+)))
