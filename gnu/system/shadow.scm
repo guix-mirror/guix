@@ -123,6 +123,10 @@ if [ -f ~/.bashrc ]; then . ~/.bashrc; fi\n"))
 # Bash initialization for interactive non-login shells and
 # for remote shells (info \"(bash) Bash Startup Files\").
 
+# Export 'SHELL' to child processes.  Programs such as 'screen'
+# honor it and otherwise use /bin/sh.
+export SHELL
+
 if [ -n \"$SSH_CLIENT\" -a -z \"`type -P cat`\" ]
 then
     # We are being invoked from a non-interactive SSH session
