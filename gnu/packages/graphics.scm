@@ -23,10 +23,16 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages boost))
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages sdl)
+)
 
 (define-public cgal
   (package
@@ -152,3 +158,50 @@ output.")
     ;; The web site says it's under a BSD-3 license, but the 'LICENSE' file
     ;; and headers use different wording.
     (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public agg
+  (package
+    (name "agg")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.antigrain.com/agg-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "07wii4i824vy9qsvjsgqxppgqmfdxq0xa87i5yk53fijriadq7mb"))
+              (patches (list (search-patch "am_c_prototype.patch")
+                             (search-patch
+                              "antigrain-geometry-no_rpath.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--x-includes=" (assoc-ref %build-inputs "libx11")
+                            "/include")
+             (string-append "--x-libraries=" (assoc-ref %build-inputs "libx11")
+                            "/lib"))
+       #:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          ;; let's call configure from configure phase and not now
+          (substitute* "autogen.sh" (("./configure") "# ./configure"))
+          (zero? (system* "sh" "autogen.sh")))
+        %standard-phases)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash" ,bash)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("freetype" ,freetype)
+       ("sdl" ,sdl)))
+
+    (home-page "http://antigrain.com")
+    (synopsis "High-quality 2D graphics rendering engine for C++")
+    (description
+     "Anti-Grain Geometry is a high quality rendering engine written in C++.
+It supports sub-pixel resolutions and anti-aliasing.  It is also library for
+rendering SVG graphics.")
+    (license license:gpl2+)))
