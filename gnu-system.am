@@ -146,6 +146,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/haskell.scm			\
   gnu/packages/hugs.scm				\
   gnu/packages/hurd.scm				\
+  gnu/packages/ibus.scm				\
   gnu/packages/icu4c.scm			\
   gnu/packages/idutils.scm			\
   gnu/packages/image.scm			\
