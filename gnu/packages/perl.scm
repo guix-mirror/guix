@@ -3056,6 +3056,25 @@ as flexible as possible to the tester.")
                               "Test-Output-" version))
     (license (package-license perl))))
 
+(define-public perl-test-pod
+  (package
+    (name "perl-test-pod")
+    (version "1.48")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+                           "Test-Pod-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hmwwhabyng4jrnll926b4ab73r40w3pfchlrvs0yx6kh6kwwy14"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-Pod")
+    (synopsis "Check for POD errors in files")
+    (description "Check POD files for errors or warnings in a test file, using
+Pod::Simple to do the heavy lifting.")
+    (license (package-license perl))))
+
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")
