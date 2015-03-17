@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -355,6 +356,31 @@ still providing access to as many of the capabilities of the database as
 possible, including retrieving related records from multiple tables in a
 single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 \"ORDER BY\" and \"HAVING\" support.")
+    (license (package-license perl))))
+
+(define-public perl-dbix-class-introspectablem2m
+  (package
+    (name "perl-dbix-class-introspectablem2m")
+    (version "0.001001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRODITI/"
+                           "DBIx-Class-IntrospectableM2M-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p9zx1yc1f6jg583l206wilsni2v8mlngc2vf2q8yn10pmy4y6wm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-dbix-class" ,perl-dbix-class)))
+    (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
+    (synopsis "Introspect many-to-many relationships")
+    (description "Because the many-to-many relationships are not real
+relationships, they can not be introspected with DBIx::Class.  Many-to-many
+relationships are actually just a collection of convenience methods installed
+to bridge two relationships.  This DBIx::Class component can be used to store
+all relevant information about these non-relationships so they can later be
+introspected and examined.")
     (license (package-license perl))))
 
 (define-public perl-dbd-sqlite
