@@ -682,6 +682,30 @@ supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
 opportunities to Perl developers as GNU Autoconf does for Shell developers.")
     (license (package-license perl))))
 
+(define-public perl-config-general
+  (package
+    (name "perl-config-general")
+    (version "2.56")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TL/TLINDEN/"
+                           "Config-General-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0szxxaihz71pr0r2jp9wvbrfc3hrsxi9xrd9vnyrxlrax8sci5h9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Config-General")
+    (synopsis "Generic Config Module")
+    (description "This module opens a config file and parses its contents for
+you.  The format of config files supported by Config::General is inspired by
+the well known Apache config format and is 100% compatible with Apache
+configs, but you can also just use simple name/value pairs in your config
+files.  In addition to the capabilities of an Apache config file it supports
+some enhancements such as here-documents, C-style comments, and multiline
+options.")
+    (license (package-license perl))))
+
 (define-public perl-context-preserve
   (package
     (name "perl-context-preserve")
