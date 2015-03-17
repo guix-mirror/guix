@@ -267,3 +267,22 @@ stemmer at http://snowball.tartarus.org.")
     (description "Lingua::Stem::Snowball::Se is a perl port of the swedish
 stemmer at http://snowball.sourceforge.net.")
     (license (package-license perl))))
+
+(define-public perl-text-german
+  (package
+    (name "perl-text-german")
+    (version "0.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/U/UL/ULPFR/"
+                           "Text-German-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p87pgap99lw0nv62i3ghvsi7yg90lhn8vsa3yqp75rd04clybcj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-German")
+    (synopsis "German grundform reduction")
+    (description "This module is a rather incomplete implementaion of work
+done by Gudrun Putze-Meier.")
+    (license (package-license perl))))
