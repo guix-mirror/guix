@@ -23,6 +23,28 @@
   #:use-module (guix build-system perl)
   #:use-module (guix download))
 
+(define-public perl-lingua-en-findnumber
+  (package
+    (name "perl-lingua-en-findnumber")
+    (version "1.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Lingua-EN-FindNumber-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g5h6bwwggizwh3dd3xyx92537s4qy8nspshp1lrm9qlxh3prc28"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-lingua-en-words2nums" ,perl-lingua-en-words2nums)))
+    (home-page "http://search.cpan.org/dist/Lingua-EN-FindNumber")
+    (synopsis "Locate (written) numbers in English text ")
+    (description "This module provides a regular expression for finding
+numbers in English text.  It also provides functions for extracting and
+manipulating such numbers.")
+    (license (package-license perl))))
+
 (define-public perl-lingua-en-words2nums
   (package
     (name "perl-lingua-en-words2nums")
