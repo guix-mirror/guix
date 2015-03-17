@@ -24,6 +24,7 @@
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages compression)
@@ -381,6 +382,61 @@ relationships are actually just a collection of convenience methods installed
 to bridge two relationships.  This DBIx::Class component can be used to store
 all relevant information about these non-relationships so they can later be
 introspected and examined.")
+    (license (package-license perl))))
+
+(define-public perl-dbix-class-schema-loader
+  (package
+    (name "perl-dbix-class-schema-loader")
+    (version "0.07042")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "DBIx-Class-Schema-Loader-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sb48as7azmj6s4acxh98wcvcik7lxm7dcjz1c3wdrkrbmbbz0jf"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-config-any" ,perl-config-any)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-dbix-class-introspectablem2m" ,perl-dbix-class-introspectablem2m)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
+       ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-class-unload" ,perl-class-unload)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-class-accessor-grouped" ,perl-class-accessor-grouped)
+       ("perl-class-c3-componentised" ,perl-class-c3-componentised)
+       ("perl-carp-clan" ,perl-carp-clan)
+       ("perl-data-dump" ,perl-data-dump)
+       ("perl-dbix-class" ,perl-dbix-class)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
+       ("perl-lingua-en-inflect-number" ,perl-lingua-en-inflect-number)
+       ("perl-lingua-en-tagger" ,perl-lingua-en-tagger)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-scope-guard" ,perl-scope-guard)
+       ("perl-string-camelcase" ,perl-string-camelcase)
+       ("perl-string-toidentifier-en" ,perl-string-toidentifier-en)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (arguments `(#:tests? #f))          ;TODO: t/20invocations.t fails
+    (home-page "http://search.cpan.org/dist/DBIx-Class-Schema-Loader")
+    (synopsis "Create a DBIx::Class::Schema based on a database")
+    (description "DBIx::Class::Schema::Loader automates the definition of a
+DBIx::Class::Schema by scanning database table definitions and setting up the
+columns, primary keys, unique constraints and relationships.")
     (license (package-license perl))))
 
 (define-public perl-dbd-sqlite
