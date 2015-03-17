@@ -1940,6 +1940,32 @@ private methods are not.")
 for creating objects using parameters passed in from the command line.")
     (license (package-license perl))))
 
+(define-public perl-moosex-markasmethods
+  (package
+    (name "perl-moosex-markasmethods")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSRCHBOY/"
+                           "MooseX-MarkAsMethods-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1y3yxwcjjajm66pvca54cv9fax7a6dy36xqr92x7vzyhfqrw3v69"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-MarkAsMethods")
+    (synopsis "Mark overload code symbols as methods")
+    (description "MooseX::MarkAsMethods allows one to easily mark certain
+functions as Moose methods.  This will allow other packages such as
+namespace::autoclean to operate without blowing away your overloads.  After
+using MooseX::MarkAsMethods your overloads will be recognized by Class::MOP as
+being methods, and class extension as well as composition from roles with
+overloads will \"just work\".")
+    (license lgpl2.1)))
+
 (define-public perl-moosex-methodattributes
   (package
     (name "perl-moosex-methodattributes")
