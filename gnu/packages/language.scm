@@ -153,6 +153,34 @@ proposed in the paper A Stemming Algorithm for the Portuguese Language by
 Moreira, V. and Huyck, C.")
     (license (package-license perl))))
 
+(define-public perl-lingua-stem
+  (package
+    (name "perl-lingua-stem")
+    (version "0.84")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SN/SNOWHARE/"
+                           "Lingua-Stem-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12avh2mnnc7llmmshrr5bgb473fvydxnlqrqbl2815mf2dp4pxcg"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-lingua-pt-stemmer" ,perl-lingua-pt-stemmer)
+       ("perl-lingua-stem-fr" ,perl-lingua-stem-fr)
+       ("perl-lingua-stem-it" ,perl-lingua-stem-it)
+       ("perl-lingua-stem-ru" ,perl-lingua-stem-ru)
+       ("perl-lingua-stem-snowball-da" ,perl-lingua-stem-snowball-da)
+       ("perl-snowball-norwegian" ,perl-snowball-norwegian)
+       ("perl-snowball-swedish" ,perl-snowball-swedish)
+       ("perl-text-german" ,perl-text-german)))
+    (home-page "http://search.cpan.org/dist/Lingua-Stem")
+    (synopsis "Stemming of words in various languages")
+    (description "This routine applies stemming algorithms to its parameters,
+returning the stemmed words as appropriate to the selected locale.")
+    (license (package-license perl))))
+
 (define-public perl-lingua-stem-fr
   (package
     (name "perl-lingua-stem-fr")
