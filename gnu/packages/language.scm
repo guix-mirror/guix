@@ -170,3 +170,22 @@ Moreira, V. and Huyck, C.")
     (description "This module uses a modified version of the Porter Stemming
 Algorithm to return a stemmed French word.")
     (license (package-license perl))))
+
+(define-public perl-lingua-stem-it
+  (package
+    (name "perl-lingua-stem-it")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AC/ACALPINI/"
+                           "Lingua-Stem-It-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1207r183s5hlh4mfwa6p46vzm0dhvrs2dnss5s41a0gyfkxp7riq"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-Stem-It")
+    (synopsis "Porter's stemming algorithm for Italian")
+    (description "This module applies the Porter Stemming Algorithm to its
+parameters, returning the stemmed Italian word.")
+    (license (package-license perl))))
