@@ -2464,6 +2464,11 @@ processes.
 When a package or derivation is unquoted inside a gexp, the result is as
 if its output file name had been introduced.
 
+Actually this mechanism is not limited to package and derivation
+objects; @dfn{compilers} able to ``lower'' other high-level objects to
+derivations can be defined, such that these objects can also be inserted
+into gexps.
+
 @item
 Gexps carry information about the packages or derivations they refer to,
 and these dependencies are automatically added as inputs to the build

@@ -22,6 +22,7 @@
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
@@ -111,6 +112,7 @@
             bag-transitive-target-inputs
 
             default-guile
+            default-guile-derivation
             set-guile-for-build
             package-file
             package->derivation
@@ -340,6 +342,12 @@ corresponds to the arguments expected by `set-path-environment-variable'."
 derivations."
   (let ((distro (resolve-interface '(gnu packages commencement))))
     (module-ref distro 'guile-final)))
+
+(define* (default-guile-derivation #:optional (system (%current-system)))
+  "Return the derivation for SYSTEM of the default Guile package used to run
+the build code of derivation."
+  (package->derivation (default-guile) system
+                       #:graft? #f))
 
 ;; TODO: Rewrite using %STORE-MONAD and gexps.
 (define* (patch-and-repack store source patches
@@ -939,6 +947,13 @@ cross-compilation target triplet."
 (define package->cross-derivation
   (store-lift package-cross-derivation))
 
+(define-gexp-compiler (package-compiler (package package?) system target)
+  ;; Compile PACKAGE to a derivation for SYSTEM, optionally cross-compiled for
+  ;; TARGET.  This is used when referring to a package from within a gexp.
+  (if target
+      (package->cross-derivation package target system)
+      (package->derivation package system)))
+
 (define patch-and-repack*
   (store-lift patch-and-repack))
 
@@ -975,6 +990,11 @@ outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
     ((? string? file)
      (interned-file file (basename file)
                     #:recursive? #t))))
+
+(define-gexp-compiler (origin-compiler (origin origin?) system target)
+  ;; Compile ORIGIN to a derivation for SYSTEM.  This is used when referring
+  ;; to an origin from within a gexp.
+  (origin->derivation origin system))
 
 (define package-source-derivation
   (store-lower origin->derivation))

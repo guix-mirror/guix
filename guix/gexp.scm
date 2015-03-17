@@ -20,7 +20,6 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
-  #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -39,7 +38,10 @@
             text-file*
             imported-files
             imported-modules
-            compiled-modules))
+            compiled-modules
+
+            define-gexp-compiler
+            gexp-compiler?))
 
 ;;; Commentary:
 ;;;
@@ -125,16 +127,6 @@ cross-compiling.)"
                        body ...)))
     (register-compiler! name)))
 
-(define-gexp-compiler (origin-compiler (origin origin?) system target)
-  ;; Compiler for origins.
-  (origin->derivation origin system))
-
-(define-gexp-compiler (package-compiler (package package?) system target)
-  ;; Compiler for packages.
-  (if target
-      (package->cross-derivation package target system)
-      (package->derivation package system)))
-
 
 ;;;
 ;;; Inputs & outputs.
@@ -211,6 +203,15 @@ names and file names suitable for the #:allowed-references argument to
           (return (derivation->output-path drv))))))
 
     (sequence %store-monad (map lower lst))))
+
+(define default-guile-derivation
+  ;; Here we break the abstraction by talking to the higher-level layer.
+  ;; Thus, do the resolution lazily to hide the circular dependency.
+  (let ((proc (delay
+                (let ((iface (resolve-interface '(guix packages))))
+                  (module-ref iface 'default-guile-derivation)))))
+    (lambda (system)
+      ((force proc) system))))
 
 (define* (gexp->derivation name exp
                            #:key
@@ -314,8 +315,7 @@ The other arguments are as for 'derivation'."
                                      (return #f)))
                        (guile    (if guile-for-build
                                      (return guile-for-build)
-                                     (package->derivation (default-guile)
-                                                          system))))
+                                     (default-guile-derivation system))))
     (mbegin %store-monad
       (set-grafting graft?)                       ;restore the initial setting
       (raw-derivation name
