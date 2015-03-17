@@ -67,6 +67,28 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
 -> \"brethren\", \"dogma\" -> \"dogmata\", etc.) are also provided.")
     (license (package-license perl))))
 
+(define-public perl-lingua-en-inflect-number
+  (package
+    (name "perl-lingua-en-inflect-number")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Lingua-EN-Inflect-Number-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rvgrff96ja7fqr79dszmiyv2wz4izw82znah0mx9szkir657gfz"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-lingua-en-inflect" ,perl-lingua-en-inflect)))
+    (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect-Number")
+    (synopsis "Force number of words to singular or plural")
+    (description "This module extends the functionality of Lingua::EN::Inflect
+with three new functions for determining plurality of a word and forcefully
+converting a word to singular or plural.")
+    (license (package-license perl))))
+
 (define-public perl-lingua-en-words2nums
   (package
     (name "perl-lingua-en-words2nums")
