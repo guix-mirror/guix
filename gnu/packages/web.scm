@@ -1038,6 +1038,30 @@ fields in the request.")
 environment from an HTTP::Request.")
     (license (package-license perl))))
 
+(define-public perl-http-server-simple
+  (package
+    (name "perl-http-server-simple")
+    (version "0.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JE/JESSE/"
+                           "HTTP-Server-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05klpfkss2a6i5ihmvcm27fyar0f2v4ispg2f49agab3va1gix6g"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; See the discussion of a related tests issue at
+     ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00346.html
+     `(#:tests? #f))
+    (home-page "http://search.cpan.org/dist/HTTP-Server-Simple")
+    (synopsis "Lightweight HTTP server")
+    (description "HTTP::Server::Simple is a simple standalone HTTP daemon with
+no non-core module dependencies.  It can be used for building a standalone
+http-based UI to your existing tools.")
+    (license (package-license perl))))
+
 (define-public perl-http-tiny
   (package
     (name "perl-http-tiny")
