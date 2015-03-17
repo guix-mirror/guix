@@ -3041,6 +3041,26 @@ testing exception-throwing code with about the same amount of typing.")
 automatically aggregated and output to STDOUT.")
     (license (package-license perl))))
 
+(define-public perl-test-longstring
+  (package
+    (name "perl-test-longstring")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RG/RGARCIA/"
+                           "Test-LongString-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kwp7rfr1i2amz4ckigkv13ah7jr30q6l5k4wk0vxl84myg39i5b"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-LongString")
+    (synopsis "Tests strings for equality, with more helpful failures")
+    (description "This module provides some drop-in replacements for the
+string comparison functions of Test::More, but which are more suitable when
+you test against long strings.")
+    (license (package-license perl))))
+
 (define-public perl-test-mocktime
   (package
     (name "perl-test-mocktime")
