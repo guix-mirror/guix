@@ -756,6 +756,29 @@ which can be used to parse directory listings.")
 <form> ... </form> instance.")
     (license (package-license perl))))
 
+(define-public perl-html-lint
+  (package
+    (name "perl-html-lint")
+    (version "2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "HTML-Lint-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15vrqjnlb0f8rib1kqdf4islqy6i33h08wy7b1bkgd550p7lfjwk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/HTML-Lint")
+    (synopsis "Check for HTML errors in a string or file")
+    (description "HTML::Lint is a pure-Perl HTML parser and checker for
+syntactic legitmacy.")
+    (license l:artistic2.0)))
+
 (define-public perl-html-parser
   (package
     (name "perl-html-parser")
