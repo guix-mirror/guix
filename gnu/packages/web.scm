@@ -683,6 +683,39 @@ run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
     (license (package-license perl))))
 
+(define-public perl-catalystx-component-traits
+  (package
+    (name "perl-catalystx-component-traits")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "CatalystX-Component-Traits-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iq4ci8m6g2c4g01fvdl568y7pjz28f3widk986v3pyhr7ll8j88"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-traits-pluggable" ,perl-moosex-traits-pluggable)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-list-moreutils" ,perl-list-moreutils)))
+    (home-page "http://search.cpan.org/dist/CatalystX-Component-Traits")
+    (synopsis "Trait Loading and Resolution for Catalyst Components")
+    (description "Adds a \"COMPONENT\" in Catalyst::Component method to your
+Catalyst component base class that reads the optional \"traits\" parameter
+from app and component config and instantiates the component subclass with
+those traits using \"new_with_traits\" in MooseX::Traits from
+MooseX::Traits::Pluggable.")
+    (license (package-license perl))))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
