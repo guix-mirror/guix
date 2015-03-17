@@ -523,6 +523,38 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 to perl-code, for faster generation of access_log lines.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-action-rest
+  (package
+    (name "perl-catalyst-action-rest")
+    (version "1.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+                                  "Catalyst-Action-REST-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rnxmsd9dsqz4xc0g9ynafxi934jwp0nixbg92q3bc2h46xcccy8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-uri-find" ,perl-uri-find)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Action-REST")
+    (synopsis "Automated REST Method Dispatching")
+    (description "This Action handles doing automatic method dispatching for
+REST requests.  It takes a normal Catalyst action, and changes the dispatch to
+append an underscore and method name.  First it will try dispatching to an
+action with the generated name, and failing that it will try to dispatch to a
+regular method.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
