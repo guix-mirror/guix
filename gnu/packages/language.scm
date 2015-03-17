@@ -21,6 +21,7 @@
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
+  #:use-module ((guix licenses) #:select (gpl2))
   #:use-module (guix download))
 
 (define-public perl-lingua-en-findnumber
@@ -208,3 +209,23 @@ parameters, returning the stemmed Italian word.")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Russian (KOI8-R only) word.")
     (license (package-license perl))))
+
+(define-public perl-lingua-stem-snowball-da
+  (package
+    (name "perl-lingua-stem-snowball-da")
+    (version "1.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CI/CINE/"
+                           "Lingua-Stem-Snowball-Da-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mm0m7glm1s6i9f6a78jslw6wh573208arxhq93yriqmw17bwf9f"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-Stem-Snowball-Da")
+    (synopsis "Porters stemming algorithm for Danish")
+    (description "Lingua::Stem::Snowball::Da is a perl port of the danish
+stemmer at http://snowball.sourceforge.net, it was originally altered from the
+Lingua::Stem::Snowball::Se.")
+    (license gpl2)))
