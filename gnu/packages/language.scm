@@ -89,6 +89,30 @@ with three new functions for determining plurality of a word and forcefully
 converting a word to singular or plural.")
     (license (package-license perl))))
 
+(define-public perl-lingua-en-number-isordinal
+  (package
+    (name "perl-lingua-en-number-isordinal")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "Lingua-EN-Number-IsOrdinal-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1321fm4pyqcamffd0qsjm1gb07ijqndlb29qkcqf22kaibngfm4i"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-try-tiny" ,perl-try-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-lingua-en-findnumber" ,perl-lingua-en-findnumber)))
+    (home-page "http://search.cpan.org/dist/Lingua-EN-Number-IsOrdinal")
+    (synopsis "Detect if English number is ordinal or cardinal")
+    (description "This module will tell you if a number, either in words or as
+digits, is a cardinal or ordinal number.")
+    (license (package-license perl))))
+
 (define-public perl-lingua-en-words2nums
   (package
     (name "perl-lingua-en-words2nums")
