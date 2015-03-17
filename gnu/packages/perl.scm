@@ -256,6 +256,25 @@ code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
 
+(define-public perl-carp-assert
+  (package
+    (name "perl-carp-assert")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Carp-Assert-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0km5fc6r6whxh6h5yd7g1j0bi96sgk0gkda6cardicrw9qmqwkwj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Carp-Assert")
+    (synopsis "Executable comments for Perl")
+    (description "Carp::Assert is intended for a purpose like the ANSI C
+library assert.h.")
+    (license (package-license perl))))
+
 (define-public perl-carp-clan
   (package
     (name "perl-carp-clan")
