@@ -779,6 +779,31 @@ which can be used to parse directory listings.")
 syntactic legitmacy.")
     (license l:artistic2.0)))
 
+(define-public perl-html-tree
+  (package
+    (name "perl-html-tree")
+    (version "5.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CJ/CJM/"
+                           "HTML-Tree-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13qlqbpixw470gnck0xgny8hyjj576m8y24bba2p9ai2lvy76vbx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/HTML-Tree")
+    (synopsis "Work with HTML in a DOM-like tree structure")
+    (description "This distribution contains a suite of modules for
+representing, creating, and extracting information from HTML syntax trees.")
+    (license (package-license perl))))
+
 (define-public perl-html-parser
   (package
     (name "perl-html-parser")
