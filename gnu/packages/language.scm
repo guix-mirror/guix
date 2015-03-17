@@ -91,6 +91,33 @@ with three new functions for determining plurality of a word and forcefully
 converting a word to singular or plural.")
     (license (package-license perl))))
 
+(define-public perl-lingua-en-inflect-phrase
+  (package
+    (name "perl-lingua-en-inflect-phrase")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "Lingua-EN-Inflect-Phrase-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19prg6pkgnznrc82ymdkdi3l9schg815axjig7adca5yqa7mn2i9"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (propagated-inputs
+     `(("perl-lingua-en-findnumber" ,perl-lingua-en-findnumber)
+       ("perl-lingua-en-inflect" ,perl-lingua-en-inflect)
+       ("perl-lingua-en-inflect-number" ,perl-lingua-en-inflect-number)
+       ("perl-lingua-en-number-isordinal" ,perl-lingua-en-number-isordinal)
+       ("perl-lingua-en-tagger" ,perl-lingua-en-tagger)))
+    (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect-Phrase")
+    (synopsis "Inflect short English phrases")
+    (description "This module attempts to pluralize or singularize short
+English phrases.")
+    (license (package-license perl))))
+
 (define-public perl-lingua-en-number-isordinal
   (package
     (name "perl-lingua-en-number-isordinal")
