@@ -555,6 +555,40 @@ action with the generated name, and failing that it will try to dispatch to a
 regular method.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-authentication
+  (package
+    (name "perl-catalyst-plugin-authentication")
+    (version "0.10023")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Authentication-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0v6hb4r1wv3djrnqvnjcn3xx1scgqzx8nyjdg9lfc1ybvamrl0rn"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Authentication")
+    (synopsis "Infrastructure plugin for the Catalyst authentication framework")
+    (description "The authentication plugin provides generic user support for
+Catalyst apps. It is the basis for both authentication (checking the user is
+who they claim to be), and authorization (allowing the user to do what the
+system authorises them to do).")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-session
   (package
     (name "perl-catalyst-plugin-session")
