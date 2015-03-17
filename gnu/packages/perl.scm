@@ -3617,6 +3617,28 @@ letters, the pronunciation expressed by the text in some other writing
 system.")
     (license (package-license perl))))
 
+(define-public perl-tie-ixhash
+  (package
+  (name "perl-tie-ixhash")
+  (version "1.23")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+                          "Tie-IxHash-" version ".tar.gz"))
+      (sha256
+        (base32
+          "0mmg9iyh42syal3z1p2pn9airq65yrkfs66cnqs9nz76jy60pfzs"))))
+  (build-system perl-build-system)
+  (home-page "http://search.cpan.org/dist/Tie-IxHash")
+  (synopsis "Ordered associative arrays for Perl")
+  (description "This Perl module implements Perl hashes that preserve the
+order in which the hash elements were added. The order is not affected when
+values corresponding to existing keys in the IxHash are changed. The elements
+can also be set to any arbitrary supplied order. The familiar perl array
+operations can also be performed on the IxHash.")
+  (license (package-license perl))))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
