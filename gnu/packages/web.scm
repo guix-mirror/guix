@@ -555,6 +555,36 @@ action with the generated name, and failing that it will try to dispatch to a
 regular method.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-session
+  (package
+    (name "perl-catalyst-plugin-session")
+    (version "0.39")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-Plugin-Session-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m4a003qgz7848iyckwbigg2vw3kmfxggh1razrnzxrbz3n6x5gi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-object-signature" ,perl-object-signature)
+       ("perl-test-www-mechanize-psgi" ,perl-test-www-mechanize-psgi)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Session")
+    (synopsis "Catalyst generic session plugin")
+    (description "This plugin links the two pieces required for session
+management in web applications together: the state, and the store.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
