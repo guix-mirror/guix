@@ -731,6 +731,31 @@ Encode::decode(locale => $string).")
 which can be used to parse directory listings.")
     (home-page "http://search.cpan.org/~gaas/File-Listing/")))
 
+(define-public perl-html-form
+  (package
+    (name "perl-html-form")
+    (version "6.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                           "HTML-Form-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dpwr7yz6hjc3bcqgcbdzjjk9l58ycdjmbam9nfcmm85y2a1vh38"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/HTML-Form")
+    (synopsis "Perl class representing an HTML form element")
+    (description "Objects of the HTML::Form class represents a single HTML
+<form> ... </form> instance.")
+    (license (package-license perl))))
+
 (define-public perl-html-parser
   (package
     (name "perl-html-parser")
