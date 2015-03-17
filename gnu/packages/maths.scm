@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -990,6 +991,40 @@ point numbers")
 based on transforming an expression into a bytecode and precalculating
 constant parts of it.")
     (license license:expat)))
+
+(define-public openblas
+  (package
+    (name "openblas")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/xianyi/OpenBLAS/tarball/v"
+                           version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1asg5mix13ipxgj5h2yj2p0r8km1di5jbcjkn5gmhb37nx7qfv6k"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f  ;no "check" target
+       #:substitutable? #f ;force local build because of CPU detection
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "SHELL=bash"
+             "NO_LAPACK=1")
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("fortran" ,gfortran-4.8)))
+    (native-inputs
+     `(("cunit" ,cunit)
+       ("perl" ,perl)))
+    (home-page "http://www.openblas.net/")
+    (synopsis "Optimized BLAS library based on GotoBLAS")
+    (description
+     "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
+    (license license:bsd-3)))
 
 (define-public openlibm
   (package
