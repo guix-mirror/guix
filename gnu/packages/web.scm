@@ -1515,6 +1515,33 @@ library.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
 
+(define-public perl-www-mechanize
+  (package
+    (name "perl-www-mechanize")
+    (version "1.73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "WWW-Mechanize-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zrw8aadhwy48q51x2z2rqlkwf17bya4j4h3hy89mw783j96rmg9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-form" ,perl-html-form)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-server-simple" ,perl-http-server-simple)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/WWW-Mechanize")
+    (synopsis "Web browsing in a Perl object")
+    (description "WWW::Mechanize is a Perl module for stateful programmatic
+web browsing, used for automating interaction with websites.")
+    (license (package-license perl))))
+
 (define-public perl-www-robotrules
   (package
     (name "perl-www-robotrules")
