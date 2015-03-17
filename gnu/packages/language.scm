@@ -45,6 +45,28 @@ numbers in English text.  It also provides functions for extracting and
 manipulating such numbers.")
     (license (package-license perl))))
 
+(define-public perl-lingua-en-inflect
+  (package
+    (name "perl-lingua-en-inflect")
+    (version "1.895")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DC/DCONWAY/"
+                           "Lingua-EN-Inflect-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0drzg9a2dkjxgf00n6jg0jzhd8972bh3j4wdnmdxpqi3zmfqhwcy"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect")
+    (synopsis "Convert singular to plural")
+    (description "Lingua::EN::Inflect provides plural inflections,
+\"a\"/\"an\" selection for English words, and manipulation of numbers as
+words.  Plural forms of all nouns, most verbs, and some adjectives are
+provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
+-> \"brethren\", \"dogma\" -> \"dogmata\", etc.) are also provided.")
+    (license (package-license perl))))
+
 (define-public perl-lingua-en-words2nums
   (package
     (name "perl-lingua-en-words2nums")
