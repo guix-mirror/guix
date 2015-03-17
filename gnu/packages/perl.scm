@@ -1669,6 +1669,26 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
 functionality on lists which is not going to go into List::Util.")
     (license (package-license perl))))
 
+(define-public perl-memoize-expirelru
+  (package
+    (name "perl-memoize-expirelru")
+    (version "0.55")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BP/BPOWERS/"
+                           "Memoize-ExpireLRU-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0klk0vj78lr259mnv1rbxib8gzf2cfp4zhkhbcxyhadkkl73myvj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Memoize-ExpireLRU")
+    (synopsis "Expiry plug-in for Memoize that adds LRU cache expiration")
+    (description "This module implements an expiry policy for Memoize that
+follows LRU semantics, that is, the last n results, where n is specified as
+the argument to the CACHESIZE parameter, will be cached.")
+    (license (package-license perl))))
+
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
