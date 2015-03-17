@@ -578,6 +578,27 @@ method.")
 uses no non-core modules for any recent Perl.")
     (license asl2.0)))
 
+(define-public perl-class-unload
+  (package
+    (name "perl-class-unload")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "Class-Unload-" version ".tar.gz"))
+       (sha256
+        (base32
+         "097gr3r2jgnm1175m4lpg4a97hv2mxrn9r0b2c6bn1x9xdhkywgh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-class-inspector" ,perl-class-inspector)))
+    (home-page "http://search.cpan.org/dist/Class-Unload")
+    (synopsis "Unload a class")
+    (description "Class:Unload unloads a given class by clearing out its
+symbol table and removing it from %INC.")
+    (license (package-license perl))))
+
 (define-public perl-class-xsaccessor
   (package
     (name "perl-class-xsaccessor")
