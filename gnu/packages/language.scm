@@ -131,3 +131,23 @@ digits, is a cardinal or ordinal number.")
     (description "This module converts English text into numbers.  It supports
 both ordinal and cardinal numbers, negative numbers, and very large numbers.")
     (license (package-license perl))))
+
+(define-public perl-lingua-pt-stemmer
+  (package
+    (name "perl-lingua-pt-stemmer")
+    (version "0.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/X/XE/XERN/"
+                           "Lingua-PT-Stemmer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11rqc5pqnkl9c13vy7sihiyas14ci0pj3k6chrgrgjv5sjv2m4a5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-PT-Stemmer")
+    (synopsis "Portuguese language stemming")
+    (description "This module implements a Portuguese stemming algorithm
+proposed in the paper A Stemming Algorithm for the Portuguese Language by
+Moreira, V. and Huyck, C.")
+    (license (package-license perl))))
