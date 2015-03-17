@@ -229,3 +229,22 @@ parameters, returning the stemmed Russian (KOI8-R only) word.")
 stemmer at http://snowball.sourceforge.net, it was originally altered from the
 Lingua::Stem::Snowball::Se.")
     (license gpl2)))
+
+(define-public perl-snowball-norwegian
+  (package
+    (name "perl-snowball-norwegian")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AS/ASKSH/"
+                           "Snowball-Norwegian-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0675v45bbsh7vr7kpf36xs2q79g02iq1kmfw22h20xdk4rzqvkqx"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Snowball-Norwegian")
+    (synopsis "Porters stemming algorithm for Norwegian")
+    (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
+stemmer at http://snowball.tartarus.org.")
+    (license (package-license perl))))
