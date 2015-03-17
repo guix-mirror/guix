@@ -275,6 +275,29 @@ is captured while being passed through to the original file handles.")
 library assert.h.")
     (license (package-license perl))))
 
+(define-public perl-carp-assert-more
+  (package
+    (name "perl-carp-assert-more")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "Carp-Assert-More-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cq7qk4qbhqppm4raby5k24b5mx5qjgy1884nrddhxillnzlq01z"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-carp-assert" ,perl-carp-assert)))
+    (home-page "http://search.cpan.org/dist/Carp-Assert-More")
+    (synopsis "Convenience wrappers around Carp::Assert")
+    (description "Carp::Assert::More is a set of handy assertion functions for
+Perl.")
+    (license artistic2.0)))
+
 (define-public perl-carp-clan
   (package
     (name "perl-carp-clan")
