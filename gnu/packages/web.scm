@@ -1319,6 +1319,29 @@ represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
     (home-page "http://search.cpan.org/dist/URI/")))
 
+(define-public perl-uri-find
+  (package
+    (name "perl-uri-find")
+    (version "20140709")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSCHWERN/"
+                           "URI-Find-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0czc4h182s7sx3k123m7qlg7yybnwxgh369hap3c3b6xgrglrhy0"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/URI-Find")
+    (synopsis "Find URIs in arbitrary text")
+    (description "This module finds URIs and URLs (according to what URI.pm
+considers a URI) in plain text.  It only finds URIs which include a
+scheme (http:// or the like), for something a bit less strict, consider
+URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
+    (license (package-license perl))))
+
 (define-public perl-uri-ws
   (package
     (name "perl-uri-ws")
