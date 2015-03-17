@@ -151,3 +151,22 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
 proposed in the paper A Stemming Algorithm for the Portuguese Language by
 Moreira, V. and Huyck, C.")
     (license (package-license perl))))
+
+(define-public perl-lingua-stem-fr
+  (package
+    (name "perl-lingua-stem-fr")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SD/SDP/"
+                           "Lingua-Stem-Fr-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vyrspwzaqjxm5mqshf4wvwa3938mkajd1918d9ii2l9m2rn8kwx"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-Stem-Fr")
+    (synopsis "Porter's stemming algorithm for French")
+    (description "This module uses a modified version of the Porter Stemming
+Algorithm to return a stemmed French word.")
+    (license (package-license perl))))
