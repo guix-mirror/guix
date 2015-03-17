@@ -2283,6 +2283,26 @@ name, but they won't show up as methods on your class or instances.")
 subroutine, which you can call with a value to be tested against.")
     (license (package-license perl))))
 
+(define-public perl-object-signature
+  (package
+    (name "perl-object-signature")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "Object-Signature-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c8l7195bjvx0v6zmkgdnxvwg7yj2zq8hi7xd25a3iikd12dc4f6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Object-Signature")
+    (synopsis "Generate cryptographic signatures for objects")
+    (description "Object::Signature is an abstract base class that you can
+inherit from in order to allow your objects to generate unique cryptographic
+signatures.")
+    (license (package-license perl))))
+
 (define-public perl-package-anon
   (package
     (name "perl-package-anon")
