@@ -18,6 +18,7 @@
 
 (define-module (gnu packages graphics)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -26,7 +27,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages boost))
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages qt))
 
 (define-public cgal
   (package
@@ -152,3 +155,65 @@ output.")
     ;; The web site says it's under a BSD-3 license, but the 'LICENSE' file
     ;; and headers use different wording.
     (license (license:non-copyleft "file://LICENSE"))))
+
+(define-public brdf-explorer
+  (package
+    (name "brdf-explorer")
+    (version "17")                                ;svn revision
+    (source (origin
+              ;; There are no release tarballs, and not even tags in the repo,
+              ;; so use the latest revision.
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "http://github.com/wdas/brdf")
+                    (revision (string->number version))))
+              (sha256
+               (base32
+                "1458fwsqxramh0gpnp24x7brfpl9afhvr1wqg6c78xqwf32960m5"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace configure
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (let ((out (assoc-ref outputs "out")))
+                               (chdir "trunk")
+                               (zero? (system* "qmake"
+                                               (string-append
+                                                "prefix=" out))))))
+                  (add-after install wrap-program
+                             (lambda* (#:key outputs #:allow-other-keys)
+                               (let* ((out (assoc-ref outputs "out"))
+                                      (bin (string-append out "/bin"))
+                                      (data (string-append
+                                             out "/share/brdf")))
+                                 (with-directory-excursion bin
+                                   (rename-file "brdf" ".brdf-real")
+                                   (call-with-output-file "brdf"
+                                     (lambda (port)
+                                       (format port "#!/bin/sh
+# Run the thing from its home, otherwise it just bails out.
+cd \"~a\"
+exec -a \"$0\" ~a/.brdf-real~%"
+                                               data bin)))
+                                   (chmod "brdf" #o555))))))))
+    (native-inputs
+     `(("qt" ,qt-4)))                             ;for 'qmake'
+    (inputs
+     `(("qt" ,qt-4)
+       ("mesa" ,mesa)
+       ("glew" ,glew)
+       ("freeglut" ,freeglut)
+       ("zlib" ,zlib)))
+    (home-page "http://www.disneyanimation.com/technology/brdf.html")
+    (synopsis
+     "Analyze bidirectional reflectance distribution functions (BRDFs)")
+    (description
+     "BRDF Explorer is an application that allows the development and analysis
+of bidirectional reflectance distribution functions (BRDFs).  It can load and
+plot analytic BRDF functions (coded as functions in OpenGL's GLSL shader
+language), measured material data from the MERL database, and anisotropic
+measured material data from MIT CSAIL.  Graphs and visualizations update in
+real time as parameters are changed, making it a useful tool for evaluating
+and understanding different BRDFs (and other component functions).")
+    (license license:ms-pl)))
