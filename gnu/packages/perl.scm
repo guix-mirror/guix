@@ -2795,6 +2795,28 @@ The idea is just to fool caller().  All the really naughty bits of Tcl's
 uplevel() are avoided.")
     (license (package-license perl))))
 
+(define-public perl-svg
+  (package
+    (name "perl-svg")
+    (version "2.63")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/SVG-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "12cbncsfxbwg1w3p1qmymfbqdb22kmyajxzdnxnxbq5xjl6yncha"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/SVG")
+    (synopsis "Perl extension for generating SVG documents")
+    (description "SVG is a Perl module which generates a nested data structure
+containing the DOM representation of an SVG (Scalable Vector Graphics) image.
+Using SVG, you can generate SVG objects, embed other SVG instances into it,
+access the DOM object, create and access Javascript, and generate SMIL
+animation content.")
+    (license (package-license perl))))
+
 (define-public perl-sys-cpu
   (package
     (name "perl-sys-cpu")
