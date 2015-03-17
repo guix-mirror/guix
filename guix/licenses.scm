@@ -44,6 +44,7 @@
             ipa
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl1.1 mpl2.0
+            ms-pl
             ncsa
             openldap2.8 openssl
             psfl public-domain
@@ -269,6 +270,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "MPL 2.0"
            "http://directory.fsf.org/wiki/License:MPLv2.0"
            "https://www.gnu.org/licenses/license-list#MPL-2.0"))
+
+(define ms-pl
+  (license "Ms-PL"                                ;Microsoft Public License
+           "http://directory.fsf.org/wiki/License:MsPL"
+           "http://www.gnu.org/licenses/license-list.html#ms-pl"))
 
 (define ncsa
   (license "NCSA/University of Illinois Open Source License"
