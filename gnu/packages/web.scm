@@ -555,6 +555,30 @@ action with the generated name, and failing that it will try to dispatch to a
 regular method.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-component-instancepercontext
+  (package
+    (name "perl-catalyst-component-instancepercontext")
+    (version "0.001001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRODITI/"
+                           "Catalyst-Component-InstancePerContext-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0wfj4vnn2cvk6jh62amwlg050p37fcwdgrn9amcz24z6w4qgjqvz"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Component-InstancePerContext")
+    (synopsis "Create only one instance of Moose component per context")
+    (description "Catalyst::Component::InstancePerContext returns a new
+instance of a component on each request.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-authentication
   (package
     (name "perl-catalyst-plugin-authentication")
