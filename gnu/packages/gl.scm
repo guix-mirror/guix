@@ -199,6 +199,13 @@ also known as DXTn or DXTC) for Mesa.")
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
          "--with-gallium-drivers=r600,svga,swrast"
+         ;; Enable various optional features.  TODO: opencl requires libclc,
+         ;; omx requires libomxil-bellagio
+         "--with-egl-platforms=x11,drm"
+         "--enable-glx-tls"        ;Thread Local Storage, improves performance
+         ;; "--enable-opencl"
+         ;; "--enable-omx"
+         "--enable-osmesa"
          "--enable-xa"
 
          ;; on non-intel systems, drop i915 and i965
@@ -246,7 +253,13 @@ also known as DXTn or DXTC) for Mesa.")
                           (string-append "dlopen(\"" out "/lib/libGL.so")))
                        (substitute* "src/egl/drivers/dri2/egl_dri2.c"
                          (("\"libglapi\\.so")
-                          (string-append "\"" out "/lib/libglapi.so")))))
+                          (string-append "\"" out "/lib/libglapi.so")))
+                       (substitute* "src/gbm/main/backend.c"
+                         ;; No need to patch the gbm_gallium_drm.so reference;
+                         ;; it's never installed since Mesa removed its
+                         ;; egl_gallium support.
+                         (("\"gbm_dri\\.so")
+                          (string-append "\"" out "/lib/dri/gbm_dri.so")))))
                    %standard-phases)))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
