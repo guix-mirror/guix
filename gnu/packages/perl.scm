@@ -2217,6 +2217,35 @@ behind the scenes it namespaces all your type declarations, effectively
 prevent name clashes between packages.")
     (license (package-license perl))))
 
+(define-public perl-moosex-types-loadableclass
+  (package
+    (name "perl-moosex-types-loadableclass")
+    (version "0.013")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Types-LoadableClass-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13v2hn3xr6adx15qik8b6966fbbw77ik1v4sxx24f766la10w2mq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-moose" ,perl-moose)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-class-load" ,perl-class-load)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Types-LoadableClass")
+    (synopsis "ClassName type constraints for Moose")
+    (description "MooseX::Types::LoadableClass provides a ClassName type
+constraint with coercion to load the class.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
