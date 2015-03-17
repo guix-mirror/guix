@@ -2162,6 +2162,34 @@ methods to be composed into the classes/roles/instances it's compiled to,
 where plain Moose::Roles would lose the overloading.")
     (license (package-license perl))))
 
+(define-public perl-moosex-traits-pluggable
+  (package
+    (name "perl-moosex-traits-pluggable")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "MooseX-Traits-Pluggable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jjqmcidy4kdgp5yffqqwxrsab62mbhbpvnzdy1rpwnb1savg5mb"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page
+     "http://search.cpan.org/dist/MooseX-Traits-Pluggable")
+    (synopsis "Trait loading and resolution for Moose")
+    (description "Adds support on top of MooseX::Traits for class precedence
+search for traits and some extra attributes")
+    (license (package-license perl))))
+
 (define-public perl-moosex-types
   (package
     (name "perl-moosex-types")
