@@ -3433,6 +3433,29 @@ you want to do full file globbing use the File::Glob module instead.")
     (description "Text::SimpleTable draws simple ASCII tables.")
     (license artistic2.0)))
 
+(define-public perl-text-unidecode
+  (package
+    (name "perl-text-unidecode")
+    (version "1.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SB/SBURKE/"
+                           "Text-Unidecode-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mnnq57amh0bs6z2ggkmgnn4hz8mqc9lfhr66xv2bsnlvhg7c7fb"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-Unidecode")
+    (synopsis "Provide plain ASCII transliterations of Unicode text")
+    (description "Text::Unidecode provides a function, unidecode(...) that
+takes Unicode data and tries to represent it in US-ASCII characters (i.e., the
+universally displayable characters between 0x00 and 0x7F).  The representation
+is almost always an attempt at transliteration-- i.e., conveying, in Roman
+letters, the pronunciation expressed by the text in some other writing
+system.")
+    (license (package-license perl))))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
