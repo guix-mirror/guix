@@ -189,3 +189,22 @@ Algorithm to return a stemmed French word.")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Italian word.")
     (license (package-license perl))))
+
+(define-public perl-lingua-stem-ru
+  (package
+    (name "perl-lingua-stem-ru")
+    (version "0.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AL/ALGDR/"
+                           "Lingua-Stem-Ru-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pqgg442fkf12ayh9fgmpa8q9x0iqx6s96181r52yn7s7pcs61h6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Lingua-Stem-Ru")
+    (synopsis "Porter's stemming algorithm for Russian")
+    (description "This module applies the Porter Stemming Algorithm to its
+parameters, returning the stemmed Russian (KOI8-R only) word.")
+    (license (package-license perl))))
