@@ -1428,6 +1428,36 @@ either mocked HTTP or a locally spawned server.")
     (description "Test::TCP is test utilities for TCP/IP programs.")
     (license (package-license perl))))
 
+(define-public perl-test-www-mechanize
+  (package
+    (name "perl-test-www-mechanize")
+    (version "1.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "Test-WWW-Mechanize-" version ".tar.gz"))
+       (sha256
+        (base32
+         "062pj242vsc73bw11jqpap92ax9wzc9f2m4xhyp1wzrwkfchpl2q"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-carp-assert-more" ,perl-carp-assert-more)
+       ("perl-html-form" ,perl-html-form)
+       ("perl-html-lint" ,perl-html-lint)
+       ("perl-html-tree" ,perl-html-tree)
+       ("perl-http-server-simple" ,perl-http-server-simple)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-test-longstring" ,perl-test-longstring)
+       ("perl-www-mechanize" ,perl-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize")
+    (synopsis "Testing-specific WWW::Mechanize subclass")
+    (description "Test::WWW::Mechanize is a subclass of the Perl module
+WWW::Mechanize that incorporates features for web application testing.")
+    (license l:artistic2.0)))
+
 (define-public perl-uri
   (package
     (name "perl-uri")
