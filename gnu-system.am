@@ -157,6 +157,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/java.scm				\
   gnu/packages/jrnl.scm				\
   gnu/packages/kde.scm				\
+  gnu/packages/key-mon.scm			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
