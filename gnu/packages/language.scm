@@ -354,6 +354,32 @@ stemmer at http://snowball.tartarus.org.")
 stemmer at http://snowball.sourceforge.net.")
     (license (package-license perl))))
 
+(define-public perl-string-toidentifier-en
+  (package
+    (name "perl-string-toidentifier-en")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "String-ToIdentifier-EN-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bawghkgkkx7j3avnrj5sg3vix1z5564ks6wf9az3jc2knh8s5nh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
+       ("perl-text-unidecode" ,perl-text-unidecode)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/String-ToIdentifier-EN")
+    (synopsis "Convert strings to english program identifiers")
+    (description "This module provides a utility method, \"to_identifier\" for
+converting an arbitrary string into a readable representation using the ASCII
+subset of \"\\w\" for use as an identifier in a computer program.  The intent
+is to make unique identifier names from which the content of the original
+string can be easily inferred by a human just by reading the identifier.")
+    (license (package-license perl))))
+
 (define-public perl-text-german
   (package
     (name "perl-text-german")
