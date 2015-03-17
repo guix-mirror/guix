@@ -1458,6 +1458,33 @@ either mocked HTTP or a locally spawned server.")
 WWW::Mechanize that incorporates features for web application testing.")
     (license l:artistic2.0)))
 
+(define-public perl-test-www-mechanize-psgi
+  (package
+    (name "perl-test-www-mechanize-psgi")
+    (version "0.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+                           "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hih8s49zf38bisvhnhzrrj0zwyiivkrbs7nmmdqm1qqy27wv7pc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)))
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)
+       ("perl-test-www-mechanize" ,perl-test-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-PSGI")
+    (synopsis "Test PSGI programs using WWW::Mechanize")
+    (description "PSGI is a specification to decouple web server environments
+from web application framework code.  Test::WWW::Mechanize is a subclass of
+WWW::Mechanize that incorporates features for web application testing.  The
+Test::WWW::Mechanize::PSGI module meshes the two to allow easy testing of PSGI
+applications.")
+    (license (package-license perl))))
+
 (define-public perl-uri
   (package
     (name "perl-uri")
