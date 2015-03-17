@@ -19,9 +19,10 @@
 (define-module (gnu packages language)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
-  #:use-module ((guix licenses) #:select (gpl2))
+  #:use-module ((guix licenses) #:select (gpl2 gpl3))
   #:use-module (guix download))
 
 (define-public perl-lingua-en-findnumber
@@ -113,6 +114,36 @@ converting a word to singular or plural.")
     (description "This module will tell you if a number, either in words or as
 digits, is a cardinal or ordinal number.")
     (license (package-license perl))))
+
+(define-public perl-lingua-en-tagger
+  (package
+    (name "perl-lingua-en-tagger")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AC/ACOBURN/"
+                           "Lingua-EN-Tagger-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qksqh1zi8fz76a29s2ll4g6yr8y6agmzgq7ngccvgj3gza5q241"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-memoize-expirelru" ,perl-memoize-expirelru)
+       ("perl-lingua-stem" ,perl-lingua-stem)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)))
+    (home-page "http://search.cpan.org/dist/Lingua-EN-Tagger")
+    (synopsis "Part-of-speech tagger for English natural language processing")
+    (description "This module is a probability based, corpus-trained tagger
+that assigns part-of-speech tags to English text based on a lookup dictionary
+and a set of probability values.  The tagger assigns appropriate tags based on
+conditional probabilities - it examines the preceding tag to determine the
+appropriate tag for the current word.  Unknown words are classified according
+to word morphology or can be set to be treated as nouns or other parts of
+speech.  The tagger also extracts as many nouns and noun phrases as it can,
+using a set of regular expressions.")
+    (license gpl3)))
 
 (define-public perl-lingua-en-words2nums
   (package
