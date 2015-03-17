@@ -105,6 +105,7 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/environment.scm			\
+  guix/scripts/publish.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -180,7 +181,8 @@ SCM_TESTS =					\
   tests/profiles.scm				\
   tests/syscalls.scm				\
   tests/gremlin.scm				\
-  tests/lint.scm
+  tests/lint.scm				\
+  tests/publish.scm
 
 if HAVE_GUILE_JSON
 

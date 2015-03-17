@@ -121,6 +121,7 @@ Utilities
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix environment::   Setting up development environments.
+* Invoking guix publish::       Sharing substitutes.
 
 GNU Distribution
 
@@ -2527,7 +2528,7 @@ To illustrate the idea, here is an example of a gexp:
   #~(begin
       (mkdir #$output)
       (chdir #$output)
-      (symlink (string-append #$coreutils "/bin/ls") 
+      (symlink (string-append #$coreutils "/bin/ls")
                "list-files")))
 @end example
 
@@ -2777,6 +2778,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix environment::   Setting up development environments.
+* Invoking guix publish::       Sharing substitutes.
 @end menu
 
 @node Invoking guix build
@@ -3438,6 +3440,54 @@ environment.
 
 It also supports all of the common build options that @command{guix
 build} supports (@pxref{Invoking guix build, common build options}).
+
+@node Invoking guix publish
+@section Invoking @command{guix publish}
+
+The purpose of @command{guix publish} is to enable users to easily share
+their store with others.  When @command{guix publish} runs, it spawns an
+HTTP server which allows anyone with network access to obtain
+substitutes from it.  This means that any machine running Guix can also
+act as if it were a build farm, since the HTTP interface is
+Hydra-compatible.
+
+For security, each substitute is signed, allowing recipients to check
+their authenticity and integrity (@pxref{Substitutes}).  Because
+@command{guix publish} uses the system's signing key, which is only
+readable by the system administrator, it must run as root.
+
+The general syntax is:
+
+@example
+guix publish @var{options}@dots{}
+@end example
+
+Running @command{guix publish} without any additional arguments will
+spawn an HTTP server on port 8080:
+
+@example
+guix publish
+@end example
+
+Once a publishing server has been authorized (@pxref{Invoking guix
+archive}), the daemon may download substitutes from it:
+
+@example
+guix-daemon --substitute-urls=http://example.org:8080
+@end example
+
+The following options are available:
+
+@table @code
+@item --port=@var{port}
+@itemx -p @var{port}
+Listen for HTTP requests on @var{port}.
+
+@item --repl[=@var{port}]
+@itemx -r [@var{port}]
+Spawn a Guile REPL server (@pxref{REPL Servers,,, guile, GNU Guile
+Reference Manual}) on @var{port} (37146 by default).
+@end table
 
 @c *********************************************************************
 @node GNU Distribution
