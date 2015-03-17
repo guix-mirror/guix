@@ -1993,6 +1993,36 @@ overloads will \"just work\".")
 introspected using Moose meta method objects.")
     (license (package-license perl))))
 
+(define-public perl-moosex-nonmoose
+(package
+  (name "perl-moosex-nonmoose")
+  (version "0.26")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                          "MooseX-NonMoose-" version ".tar.gz"))
+      (sha256
+        (base32
+          "0zdaiphc45s5xj0ax5mkijf5d8v6w6yccb3zplgj6f30y7n55gnb"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-moose" ,perl-moose)
+      ("perl-test-fatal" ,perl-test-fatal)))
+  (propagated-inputs
+    `(("perl-list-moreutils" ,perl-list-moreutils)
+      ("perl-module-runtime" ,perl-module-runtime)
+      ("perl-moose" ,perl-moose)
+      ("perl-try-tiny" ,perl-try-tiny)))
+  (home-page "http://search.cpan.org/dist/MooseX-NonMoose")
+  (synopsis "Subclassing of non-Moose classes")
+  (description "MooseX::NonMoose allows for easily subclassing non-Moose
+classes with Moose, taking care of the details connected with doing this, such
+as setting up proper inheritance from Moose::Object and installing (and
+inlining, at make_immutable time) a constructor that makes sure things like
+BUILD methods are called.  It tries to be as non-intrusive as possible.")
+  (license (package-license perl))))
+
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
