@@ -248,3 +248,22 @@ Lingua::Stem::Snowball::Se.")
     (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
 stemmer at http://snowball.tartarus.org.")
     (license (package-license perl))))
+
+(define-public perl-snowball-swedish
+  (package
+    (name "perl-snowball-swedish")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AS/ASKSH/"
+                           "Snowball-Swedish-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0agwc12jk5kmabnpsplw3wf4ii5w1zb159cpin44x3srb0sr5apg"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Snowball-Swedish")
+    (synopsis "Porters stemming algorithm for Swedish")
+    (description "Lingua::Stem::Snowball::Se is a perl port of the swedish
+stemmer at http://snowball.sourceforge.net.")
+    (license (package-license perl))))
