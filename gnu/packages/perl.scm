@@ -2624,6 +2624,25 @@ on the length of the size.")
 run from within a source-controlled directory.")
     (license (package-license perl))))
 
+(define-public perl-string-camelcase
+  (package
+    (name "perl-string-camelcase")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HI/HIO/"
+                           "String-CamelCase-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17kh8nap2z5g5rqcvw0m7mvbai7wr7h0al39w8l827zhqad8ss42"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/String-CamelCase")
+    (synopsis "Camelcase and de-camelcase")
+    (description "This module may be used to convert from under_score text to
+CamelCase and back again.")
+    (license (package-license perl))))
+
 (define-public perl-string-rewriteprefix
   (package
     (name "perl-string-rewriteprefix")
