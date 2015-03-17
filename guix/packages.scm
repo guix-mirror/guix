@@ -103,7 +103,6 @@
             &package-cross-build-system-error
             package-cross-build-system-error?
 
-            %graft?
             package->bag
             bag->derivation
             bag-transitive-inputs
@@ -112,9 +111,7 @@
             bag-transitive-target-inputs
 
             default-guile
-
             set-guile-for-build
-            set-grafting
             package-file
             package->derivation
             package->cross-derivation
@@ -678,10 +675,6 @@ information in exceptions."
                         (package package)
                         (input   x)))))))
 
-(define %graft?
-  ;; Whether to honor package grafts by default.
-  (make-parameter #t))
-
 (define* (package->bag package #:optional
                        (system (%current-system))
                        (target (%current-target-system))
@@ -917,12 +910,6 @@ code of derivations to GUILE, a package object."
   (lambda (store)
     (let ((guile (package-derivation store guile)))
       (values (%guile-for-build guile) store))))
-
-(define (set-grafting enable?)
-  "This monadic procedure enables grafting when ENABLE? is true, and disables
-it otherwise.  It returns the previous setting."
-  (lambda (store)
-    (values (%graft? enable?) store)))
 
 (define* (package-file package
                        #:optional file

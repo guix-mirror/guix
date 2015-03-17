@@ -97,6 +97,9 @@
             build-derivations
             built-derivations
 
+            %graft?
+            set-grafting
+
             build-expression->derivation)
 
   ;; Re-export it from here for backward compatibility.
@@ -1287,3 +1290,16 @@ ALLOWED-REFERENCES, and LOCAL-BUILD?."
 
 (define built-derivations
   (store-lift build-derivations))
+
+;; The following might feel more at home in (guix packages) but since (guix
+;; gexp), which is a lower level, needs them, we put them here.
+
+(define %graft?
+  ;; Whether to honor package grafts by default.
+  (make-parameter #t))
+
+(define (set-grafting enable?)
+  "This monadic procedure enables grafting when ENABLE? is true, and disables
+it otherwise.  It returns the previous setting."
+  (lambda (store)
+    (values (%graft? enable?) store)))
