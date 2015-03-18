@@ -38,6 +38,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
@@ -578,6 +579,51 @@ regular method.")
     (description "Catalyst::Component::InstancePerContext returns a new
 instance of a component on each request.")
     (license (package-license perl))))
+
+(define-public perl-catalyst-model-dbic-schema
+  (package
+  (name "perl-catalyst-model-dbic-schema")
+  (version "0.65")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/G/GB/GBJK/"
+                          "Catalyst-Model-DBIC-Schema-"
+                          version ".tar.gz"))
+      (sha256
+        (base32
+          "1spfjcjc0b9dv3k2gbanqj1m1cqzyxb32p76dhdwizzpbvpi3a96"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
+     ("perl-test-exception" ,perl-test-exception)
+     ("perl-test-requires" ,perl-test-requires)))
+  (propagated-inputs
+   `(("perl-carp-clan" ,perl-carp-clan)
+     ("perl-catalyst-component-instancepercontext"
+      ,perl-catalyst-component-instancepercontext)
+     ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+     ("perl-catalystx-component-traits" ,perl-catalystx-component-traits)
+     ("perl-dbix-class" ,perl-dbix-class)
+     ("perl-dbix-class-cursor-cached" ,perl-dbix-class-cursor-cached)
+     ("perl-dbix-class-schema-loader" ,perl-dbix-class-schema-loader)
+     ("perl-hash-merge" ,perl-hash-merge)
+     ("perl-list-moreutils" ,perl-list-moreutils)
+     ("perl-module-runtime" ,perl-module-runtime)
+     ("perl-moose" ,perl-moose)
+     ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
+     ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
+     ("perl-moosex-types" ,perl-moosex-types)
+     ("perl-moosex-types-loadableclass" ,perl-moosex-types-loadableclass)
+     ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+     ("perl-namespace-clean" ,perl-namespace-clean)
+     ("perl-tie-ixhash" ,perl-tie-ixhash)
+     ("perl-try-tiny" ,perl-try-tiny)))
+  (home-page "http://search.cpan.org/dist/Catalyst-Model-DBIC-Schema")
+  (synopsis "DBIx::Class::Schema Model Class")
+  (description "This is a Catalyst Model for DBIx::Class::Schema-based
+Models.")
+  (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-authentication
   (package
