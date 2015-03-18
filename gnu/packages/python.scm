@@ -324,6 +324,45 @@ etc. ")
 (define-public python2-babel
   (package-with-python2 python-babel))
 
+(define-public python-h5py
+  (package
+    (name "python-h5py")
+    (version "2.4.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/h/h5py/h5py-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0q4f9l8grf6pwp64xbv8bmyxx416s7h4522nnxac056ap3savbps"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("python-numpy" ,python-numpy)
+       ("hdf5" ,hdf5)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no test target
+    (home-page "http://www.h5py.org/")
+    (synopsis "Read and write HDF5 files from Python")
+    (description
+     "The h5py package provides both a high- and low-level interface to the
+HDF5 library from Python.  The low-level interface is intended to be a
+complete wrapping of the HDF5 API, while the high-level component supports
+access to HDF5 files, datasets and groups using established Python and NumPy
+concepts.")
+    (license bsd-3)))
+
+(define-public python2-h5py
+  (let ((h5py (package-with-python2 python-h5py)))
+    (package (inherit h5py)
+      (inputs
+       `(("python2-numpy" ,python2-numpy)
+         ,@(alist-delete
+            "python-numpy"
+            (package-inputs h5py)))))))
+
 (define-public python-lockfile
   (package
     (name "python-lockfile")
