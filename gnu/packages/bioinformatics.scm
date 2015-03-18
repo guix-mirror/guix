@@ -285,6 +285,41 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
 70-100bp Illumina reads.")
     (license license:gpl3+)))
 
+(define-public python2-bx-python
+  (package
+    (name "python2-bx-python")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/b/bx-python/bx-python-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ld49idhc5zjdvbhvjq1a2qmpjj7h5v58rqr25dzmfq7g34b50xh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "setup.py"
+                  ;; remove dependency on outdated "distribute" module
+                  (("^from distribute_setup import use_setuptools") "")
+                  (("^use_setuptools\\(\\)") "")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;tests fail because test data are not included
+       #:python ,python-2))
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://bitbucket.org/james_taylor/bx-python/")
+    (synopsis "Tools for manipulating biological data")
+    (description
+     "bx-python provides tools for manipulating biological data, particularly
+multiple sequence alignments.")
+    (license license:expat)))
+
 (define-public clipper
   (package
     (name "clipper")
