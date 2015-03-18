@@ -77,8 +77,11 @@
     (version "0.7.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/liba52/a52dec-"
-                                  version ".tar.gz"))
+              (uri (string-append
+                    ;; A mirror://sourceforge URI doesn't work, presumably
+                    ;; because the SourceForge project is misconfigured.
+                    "http://liba52.sourceforge.net/files/a52dec-" version
+                    ".tar.gz"))
               (sha256
                (base32
                 "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
