@@ -631,12 +631,11 @@ found."
   (assoc-ref (daemon-options) option))
 
 (define %cache-url
-  (match (and=> (string-append
-                 ;; TODO: Uncomment the following lines when multiple
-                 ;; substitute sources are supported.
-                 ;; (find-daemon-option "untrusted-substitute-urls") ;client
-                 ;; " "
-                 (find-daemon-option "substitute-urls"))          ;admin
+  (match (and=> ;; TODO: Uncomment the following lines when multiple
+                ;; substitute sources are supported.
+                ;; (find-daemon-option "untrusted-substitute-urls") ;client
+                ;; " "
+                (find-daemon-option "substitute-urls")          ;admin
                 string-tokenize)
     ((url)
      url)
