@@ -1706,6 +1706,25 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-ipc-sharelite
+  (package
+    (name "perl-ipc-sharelite")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AN/ANDYA/"
+                           "IPC-ShareLite-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gz7dbwxrzbzdsjv11kb49jlf9q6lci2va6is0hnavd93nwhdm0l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IPC-ShareLite")
+    (synopsis "Lightweight interface to shared memory")
+    (description "IPC::ShareLite provides a simple interface to shared memory,
+allowing data to be efficiently communicated between processes.")
+    (license (package-license perl))))
+
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
