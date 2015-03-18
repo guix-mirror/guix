@@ -459,7 +459,7 @@ encoding conversion errors."
                             (print-build-trace #t)
                             (build-cores (current-processor-count))
                             (use-substitutes? #t)
-                            (binary-caches '())) ; client "untrusted" cache URLs
+                            (substitute-urls '())) ; client "untrusted" cache URLs
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -484,11 +484,11 @@ encoding conversion errors."
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
-      (let ((pairs (if timeout
-                       `(("build-timeout" . ,(number->string timeout))
-                         ,@binary-caches)
-                       binary-caches)))
-        (send (string-pairs pairs))))
+      (let ((pairs `(,@(if timeout
+                           `(("build-timeout" . ,(number->string timeout)))
+                           '())
+                     ("substitute-urls" . ,(string-join substitute-urls)))))
+        (send (string-pairs (pk 'pairs pairs)))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
