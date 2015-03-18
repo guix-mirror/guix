@@ -517,8 +517,7 @@ which can add many functionalities to the base client.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://downloads.sourceforge.net/project/msmtp/msmtp/" version
-             "/msmtp-" version ".tar.bz2"))
+             "mirror://sourceforge/msmtp/msmtp-" version ".tar.bz2"))
        (sha256 (base32
                 "122z38pv4q03w3mbnhrhg4w85a51258sfdg2ips0b6cgwz3wbw1b"))))
     (build-system gnu-build-system)
