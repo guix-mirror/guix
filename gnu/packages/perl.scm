@@ -1141,6 +1141,26 @@ SHA-1 message digest algorithm for use by Perl programs.")
 modules separately and deal with them after the module is done installing.")
     (license (package-license perl))))
 
+(define-public perl-error
+  (package
+    (name "perl-error")
+    (version "0.17023")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                                  "Error-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dsxic78mxy30qvbbdzfyp501hbkwhnbmafqfxipr0yqfy8f2j5g"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Error")
+    (synopsis "OO-ish Error/Exception handling for Perl")
+    (description "The Error package provides two interfaces. Firstly Error
+provides a procedural interface to exception handling. Secondly Error is a
+base class for errors/exceptions that can either be thrown, for subsequent
+catch, or can simply be recorded.")
+    (license (package-license perl))))
+
 (define-public perl-eval-closure
   (package
     (name "perl-eval-closure")
