@@ -205,10 +205,7 @@
                                 (chmod "." #o777)
                                 (symlink "guile" "guile-rocks")
                                 (copy-recursively "../share/guile/2.0/scripts"
-                                                  "scripts")
-
-                                ;; These variables must exist.
-                                (pk %build-inputs %outputs))))))
+                                                  "scripts"))))))
          (package (package (inherit (dummy-package "with-snippet"))
                     (source source)
                     (build-system trivial-build-system)
