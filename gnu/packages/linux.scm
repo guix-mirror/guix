@@ -437,6 +437,8 @@ providing the system administrator with some help in common tasks.")
     (version "3.2.8")
     (source (origin
              (method url-fetch)
+             ;; A mirror://sourceforge URI doesn't work, presumably becuase
+             ;; the SourceForge project is misconfigured.
              (uri (string-append "http://procps.sourceforge.net/procps-"
                                  version ".tar.gz"))
              (sha256
