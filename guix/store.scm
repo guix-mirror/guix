@@ -488,7 +488,7 @@ encoding conversion errors."
                            `(("build-timeout" . ,(number->string timeout)))
                            '())
                      ("substitute-urls" . ,(string-join substitute-urls)))))
-        (send (string-pairs (pk 'pairs pairs)))))
+        (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
