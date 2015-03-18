@@ -470,8 +470,8 @@ MailCore 2.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.sourceforge.net/project/claws-mail/"
-                    "Claws Mail/" version "/" name "-" version ".tar.xz"))
+                    "mirror://sourceforge/claws-mail/claws-mail-" version
+                    ".tar.xz"))
               (sha256
                (base32 "0cyixz1jgfpi8abh9fbb8ylx9mcvw4jqj81cms666wpqr6v828yp"))))
     (build-system gnu-build-system)
