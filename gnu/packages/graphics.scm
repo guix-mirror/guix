@@ -24,12 +24,18 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages xorg))
 
 (define-public cgal
   (package
@@ -217,3 +223,47 @@ measured material data from MIT CSAIL.  Graphs and visualizations update in
 real time as parameters are changed, making it a useful tool for evaluating
 and understanding different BRDFs (and other component functions).")
     (license license:ms-pl)))
+
+(define-public agg
+  (package
+    (name "agg")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.antigrain.com/agg-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "07wii4i824vy9qsvjsgqxppgqmfdxq0xa87i5yk53fijriadq7mb"))
+              (patches (list (search-patch "agg-am_c_prototype.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--x-includes=" (assoc-ref %build-inputs "libx11")
+                            "/include")
+             (string-append "--x-libraries=" (assoc-ref %build-inputs "libx11")
+                            "/lib"))
+       #:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          ;; let's call configure from configure phase and not now
+          (substitute* "autogen.sh" (("./configure") "# ./configure"))
+          (zero? (system* "sh" "autogen.sh")))
+        %standard-phases)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash" ,bash)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("freetype" ,freetype)
+       ("sdl" ,sdl)))
+    (home-page "http://antigrain.com")
+    (synopsis "High-quality 2D graphics rendering engine for C++")
+    (description
+     "Anti-Grain Geometry is a high quality rendering engine written in C++.
+It supports sub-pixel resolutions and anti-aliasing.  It is also library for
+rendering SVG graphics.")
+    (license license:gpl2+)))

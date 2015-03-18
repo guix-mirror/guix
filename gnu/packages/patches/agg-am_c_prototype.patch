@@ -1,0 +1,10 @@
+--- a/configure.in	2015-03-15 18:59:12.557417149 +0100
++++ b/configure.in	2015-03-15 18:59:29.273416518 +0100
+@@ -8,7 +8,6 @@
+ AC_PROG_CC
+ AC_PROG_CXX
+ AC_ISC_POSIX
+-AM_C_PROTOTYPES
+ if test "x$U" != "x"; then
+   AC_MSG_ERROR(Compiler not ANSI compliant)
+ fi
