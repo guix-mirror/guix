@@ -233,6 +233,33 @@ but don't want to go all out and profile your code.")
                               "Benchmark-Timer-" version))
     (license gpl2)))
 
+(define-public perl-cache-cache
+  (package
+    (name "perl-cache-cache")
+    (version "1.08")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "Cache-Cache-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s6i670dc3yb6ngvdk48y6szdk5n1f4icdcjv2vi1l2xp9fzviyj"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-digest-sha1" ,perl-digest-sha1)
+       ("perl-error" ,perl-error)
+       ("perl-ipc-sharelite" ,perl-ipc-sharelite)))
+    (home-page "http://search.cpan.org/dist/Cache-Cache")
+    (synopsis "Cache interface for Perl")
+    (description "The Cache modules are designed to assist a developer in
+persisting data for a specified period of time.  Often these modules are used
+in web applications to store data locally to save repeated and redundant
+expensive calls to remote machines or databases.  People have also been known
+to use Cache::Cache for its straightforward interface in sharing data between
+runs of an application or invocations of a CGI-style script or simply as an
+easy to use abstraction of the filesystem or shared memory.")
+    (license (package-license perl))))
+
 (define-public perl-capture-tiny
   (package
     (name "perl-capture-tiny")
