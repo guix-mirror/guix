@@ -46,6 +46,7 @@
   #:use-module (gnu packages linux)
 ;;   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages nano)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -154,7 +155,7 @@ as well as the classic centralized workflow.")
              ;; TODO: Install the tcsh and zsh completions in the right place.
              (mkdir-p completions)
              (copy-file "contrib/completion/git-completion.bash"
-                        (string-append completions "/git.sh"))
+                        (string-append completions "/git"))
              #t))
          (alist-cons-after
           'install 'split
@@ -778,3 +779,28 @@ changes back into the master source of the program, with as little disruption
 as possible.  Resolution of contention for source files, a major headache for
 any project with more than one developer, is one of Aegis's major functions.")
     (license gpl3+)))
+
+(define-public tig
+  (package
+    (name "tig")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://jonas.nitro.dk/tig/releases/tig-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1c1w6w39a1dwx4whrg0ga1mhrlz095hz875z7ajn6xgmhkv8fqih"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:tests? #f)) ; no tests implemented
+    (home-page "http://jonas.nitro.dk/tig/")
+    (synopsis "Ncurses-based text user interface for Git")
+    (description
+     "Tig is an ncurses text user interface for Git, primarily intended as
+a history browser.  It can also stage hunks for commit, or colorize the
+output of the 'git' command.")
+    (license gpl2+)))

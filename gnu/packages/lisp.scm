@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,14 +232,16 @@ an interpreter, a compiler, a debugger, and much more.")
              (define (quoted-path input path)
                (string-append "\"" input path "\""))
              ;; Patch absolute paths in string literals.  Note that this
-             ;; occurs in some .sh files too (which contain Lisp code).
-             (substitute* (find-files "." "\\.(lisp|sh)$")
-               (("\"/bin/sh\"") (quoted-path bash "/bin/sh"))
-               (("\"/usr/bin/env\"") (quoted-path coreutils "/usr/bin/env"))
-               (("\"/bin/cat\"") (quoted-path coreutils "/bin/cat"))
-               (("\"/bin/ed\"") (quoted-path ed "/bin/ed"))
-               (("\"/bin/echo\"") (quoted-path coreutils "/bin/echo"))
-               (("\"/bin/uname\"") (quoted-path coreutils "/bin/uname")))
+             ;; occurs in some .sh files too (which contain Lisp code).  Use
+             ;; ISO-8859-1 because some of the files are ISO-8859-1 encoded.
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* (find-files "." "\\.(lisp|sh)$")
+                 (("\"/bin/sh\"") (quoted-path bash "/bin/sh"))
+                 (("\"/usr/bin/env\"") (quoted-path coreutils "/usr/bin/env"))
+                 (("\"/bin/cat\"") (quoted-path coreutils "/bin/cat"))
+                 (("\"/bin/ed\"") (quoted-path ed "/bin/ed"))
+                 (("\"/bin/echo\"") (quoted-path coreutils "/bin/echo"))
+                 (("\"/bin/uname\"") (quoted-path coreutils "/bin/uname"))))
              ;; This one script has a non-string occurrence of /bin/sh.
              (substitute* '("tests/foreign.test.sh")
                ;; Leave whitespace so we don't match the shebang.

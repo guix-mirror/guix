@@ -388,7 +388,11 @@ included.")
 
    (arguments
     `(#:out-of-source? #t
-      #:parallel-build? #f ; There's at least one race in the build.
+
+      ;; In version 2.21, there a race in the 'elf' directory, see
+      ;; <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00709.html>.
+      #:parallel-build? #f
+
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"

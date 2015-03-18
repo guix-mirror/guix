@@ -100,13 +100,19 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
                              services))))
     (define builder
       #~(begin
-          (use-modules (ice-9 match))
+          (use-modules (ice-9 match)
+                       (srfi srfi-1))
 
           (mkdir #$output)
           (for-each (match-lambda
                      ((name file)
                       (symlink file (string-append #$output "/" name))))
-                    '#$(zip names files))))
+
+                    ;; Since <pam-service> objects cannot be compared with
+                    ;; 'equal?' since they contain gexps, which contain
+                    ;; closures, use 'delete-duplicates' on the build-side
+                    ;; instead.  See <http://bugs.gnu.org/20037>.
+                    (delete-duplicates '#$(zip names files)))))
 
     (gexp->derivation "pam.d" builder)))
 

@@ -111,8 +111,6 @@ joystick, and graphics hardware.")
      ;; unless the right libalsa happens to be in $LD_LIBRARY_PATH.  Pass
      ;; '--disable-dl' to avoid that.
      '(#:configure-flags '("--disable-dl")))
-    (inputs `(("alsa-lib" ,alsa-lib)
-              ("libx11" ,libx11)))
     (synopsis "Library for module sound formats")
     (description
      "MikMod is able to play a wide range of module formats, as well as

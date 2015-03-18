@@ -179,22 +179,22 @@ The connection layer multiplexes many different concurrent channels over the
 authenticated connection and allows tunneling of login sessions and
 TCP-forwarding.  It provides a flow control service for these channels.
 Additionally, various channel-specific options can be negotiated.")
-   (license (license:bsd-style "file://LICENSE"
+   (license (license:non-copyleft "file://LICENSE"
                                "See LICENSE in the distribution."))
    (home-page "http://www.openssh.org/")))
 
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/libguile-ssh.git")
-                    (commit "e216e1d78bf93a9753ea813f930cac5e68e52180")))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "1sbxhmynmpwfjwb3dp6lrc3cxi5kffqmb6klhx7wnkgqxvs61lsw"))))
+                "1wcv10xv7ayrhrg77zyng6flknnlkzhni24nf8x9nic00zha8znk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

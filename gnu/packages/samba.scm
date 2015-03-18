@@ -114,11 +114,13 @@ anywhere.")
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let* ((out (assoc-ref outputs "out"))
                            (lib (string-append out "/lib")))
-                      ;; Add LIB to the RUNPATH of all the executables.
+                      ;; Add LIB to the RUNPATH of all the executables and
+                      ;; dynamic libraries.
                       (with-directory-excursion out
                         (for-each (cut augment-rpath <> lib)
                                   (append (find-files "bin" ".*")
-                                          (find-files "sbin" ".*"))))))
+                                          (find-files "sbin" ".*")
+                                          (find-files "lib" ".*"))))))
                   %standard-phases))
 
        #:modules ((guix build gnu-build-system)

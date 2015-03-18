@@ -27,6 +27,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -95,17 +96,17 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "4.99")
+   (version "7.05")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256 (base32
-                     "1rd8pap455wzkx19i0sy3cqap524b6fwcjvqynxp6lhm01di4bd6"))))
+                     "1i102yr8yp2ny587n6pd966443h1pqxyw5q0n5afq575046jj98g"))))
    (build-system gnu-build-system)
    (inputs
     `(("libxml2" ,libxml2)
-      ("openssl" ,openssl)
+      ("gnutls" ,gnutls)
       ("vpnc" ,vpnc)
       ("zlib" ,zlib)))
    (native-inputs

@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,10 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages djvu)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
@@ -122,7 +127,11 @@
              ("zlib" ,zlib)))
    (arguments
     `(#:tests? #f ; there is no check target
-      #:parallel-build? #f            ; build fails randomly on 8-way machines
+      #:parallel-build? #f ; build fails randomly on 8-way machines
+      #:configure-flags
+        (list (string-append "--with-freetype2-includes="
+                             (assoc-ref %build-inputs "freetype")
+                             "/include/freetype2"))
       #:phases
        (alist-replace
         'install
@@ -142,6 +151,173 @@
     "Xpdf is a viewer for Portable Document Format (PDF) files")
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
+
+(define-public zathura-cb
+  (package
+    (name "zathura-cb")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-cb/download/zathura-cb-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "09ln4fpjxmhcq6cw1ka7mdkmca36gyd4gzrynbw3waz0ri0b277j"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs `(("libarchive" ,libarchive)
+              ("gtk+" ,gtk+)
+              ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not contain tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-cb/")
+    (synopsis "Comic book support for zathura (libarchive backend)")
+    (description "The zathura-cb plugin adds comic book support to zathura
+using libarchive.")
+    (license license:zlib)))
+
+(define-public zathura-ps
+  (package
+    (name "zathura-ps")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-ps/download/zathura-ps-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1a6ps5v1wk18qvslbkjln6w8wfzzr6fi13ls96vbdc03vdhn4m76"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs `(("libspectre" ,libspectre)
+              ("gtk+" ,gtk+)
+              ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not contain tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-ps/")
+    (synopsis "PS support for zathura (libspectre backend)")
+    (description "The zathura-ps plugin adds PS support to zathura
+using libspectre.")
+    (license license:zlib)))
+
+(define-public zathura-djvu
+  (package
+    (name "zathura-djvu")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-djvu/download/zathura-djvu-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1lafmrjbx0xv7fljdmyqxx0k334sq4q6jy4a0q5xfrgz0bh45c"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs
+     `(("djvulibre" ,djvulibre)
+       ("gtk+" ,gtk+)
+       ("zathura" ,zathura)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not contain tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-djvu/")
+    (synopsis "DjVu support for zathura (DjVuLibre backend)")
+    (description "The zathura-djvu plugin adds DjVu support to zathura
+using the DjVuLibre library.")
+    (license license:zlib)))
+
+(define-public zathura-pdf-poppler
+  (package
+    (name "zathura-pdf-poppler")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura-pdf-poppler/download/zathura-pdf-poppler-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1b0chsds8iwjm4g629p6a67nb6wgra65pw2vvngd7g35dmcjgcv0"))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("girara" ,girara)))
+    (inputs
+     `(("poppler" ,poppler)
+       ("gtk+" ,gtk+)
+       ("zathura" ,zathura)
+       ("cairo" ,cairo)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
+          "PLUGINDIR=/lib/zathura" "CC=gcc")
+       #:tests? #f ; Package does not include tests.
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura-pdf-poppler/")
+    (synopsis "PDF support for zathura (poppler backend)")
+    (description "The zathura-pdf-poppler plugin adds PDF support to zathura
+by using the poppler rendering engine.")
+    (license license:zlib)))
+
+(define-public zathura
+  (package
+    (name "zathura")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://pwmt.org/projects/zathura/download/zathura-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "1qk5s7cyqp4l673yhma5igk9g24p5jyqyy81fdk7q7xjqlym19px"))
+              (patches
+               (list
+                (search-patch "zathura-plugindir-environment-variable.patch")))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gettext" ,gnu-gettext)))
+    (inputs `(("girara" ,girara)
+              ("sqlite" ,sqlite)
+              ("gtk+" ,gtk+)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "ZATHURA_PLUGIN_PATH")
+            (files '("lib/zathura")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
+         "CC=gcc" "COLOR=0")
+       #:tests? #f ; Tests fail: "Gtk cannot open display".
+       #:test-target "test"
+       #:phases
+       (alist-delete 'configure %standard-phases)))
+    (home-page "https://pwmt.org/projects/zathura/")
+    (synopsis "Lightweight keyboard-driven PDF viewer")
+    (description "Zathura is a customizable document viewer.  It provides a
+minimalistic interface and an interface that mainly focuses on keyboard
+interaction.")
+    (license license:zlib)))
 
 (define-public podofo
   (package
@@ -166,7 +342,16 @@
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"
-                           "-DPODOFO_BUILD_STATIC=ON")))
+                           "-DPODOFO_BUILD_STATIC=ON")
+       #:phases
+         (alist-cons-before
+         'configure 'patch
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((freetype (assoc-ref inputs "freetype")))
+             ;; Look for freetype include files in the correct place.
+             (substitute* "cmake/modules/FindFREETYPE.cmake"
+               (("/usr/local") freetype))))
+         %standard-phases)))
     (home-page "http://podofo.sourceforge.net")
     (synopsis "Tools to work with the PDF file format")
     (description

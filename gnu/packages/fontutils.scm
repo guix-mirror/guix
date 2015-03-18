@@ -103,7 +103,7 @@ efficiently and quickly find needed fonts among the set of installed fonts;
 be used in concert with the X Render Extension and FreeType to implement
 high quality, anti-aliased and subpixel rendered text on a display.")
    ; The exact license is more X11-style than BSD-style.
-   (license (license:bsd-style "file://COPYING"
+   (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "http://www.freedesktop.org/wiki/Software/fontconfig")))
 

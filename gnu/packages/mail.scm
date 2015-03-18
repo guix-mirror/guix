@@ -29,6 +29,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
@@ -63,7 +64,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ bsd-style))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ non-copyleft))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -227,14 +228,16 @@ operating systems.")
        (alist-cons-after
         'unpack 'patch-paths-in-tests
         (lambda _
-          ;; The test programs run several programs using 'system'
-          ;; with hard-coded paths.  Here we patch them all.  We also
-          ;; change "gpg" to "gpg2".
-          (substitute* (find-files "tests" "\\.c$")
-            (("(system *\\(\")(/[^ ]*)" all pre prog-path)
-             (let* ((base (basename prog-path))
-                    (prog (which (if (string=? base "gpg") "gpg2" base))))
-              (string-append pre (or prog (error "not found: " base)))))))
+          ;; The test programs run several programs using 'system' with
+          ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
+          ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
+          ;; raw byte sequences in several different encodings.
+          (with-fluids ((%default-port-encoding #f))
+            (substitute* (find-files "tests" "\\.c$")
+              (("(system *\\(\")(/[^ ]*)" all pre prog-path)
+               (let* ((base (basename prog-path))
+                      (prog (which (if (string=? base "gpg") "gpg2" base))))
+                 (string-append pre (or prog (error "not found: " base))))))))
         %standard-phases)))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
@@ -458,7 +461,7 @@ useful features.")
 framework for different kinds of mail access: IMAP, SMTP, POP and NNTP.  It
 provides an API for C language.  It's the low-level API used by MailCore and
 MailCore 2.")
-    (license (bsd-style "file://COPYING"))))
+    (license (non-copyleft "file://COPYING"))))
 
 (define-public claws-mail
   (package
@@ -622,6 +625,28 @@ Cambridge for use on Unix systems connected to the Internet.  In style it is
 similar to Smail 3, but its facilities are more general.  There is a great
 deal of flexibility in the way mail can be routed, and there are extensive
 facilities for checking incoming mail.")
+    (license gpl2+)))
+
+(define-public isync
+  (package
+    (name "isync")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/isync/isync/"
+                           version "/isync-" version ".tar.gz"))
+       (sha256 (base32
+                "1960ah3fmp75cakd06lcx50n5q0yvfsadjh3lffhyvjvj7ava9d2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("openssl" ,openssl)))
+    (home-page "http://isync.sourceforge.net/")
+    (synopsis "Mailbox synchronization program")
+    (description
+     "isync/mbsync is command line tool for two-way synchronization of
+mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
 
 ;;; mail.scm ends here

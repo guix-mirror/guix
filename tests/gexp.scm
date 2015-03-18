@@ -40,10 +40,14 @@
   (open-connection-for-tests))
 
 ;; For white-box testing.
-(define gexp-inputs (@@ (guix gexp) gexp-inputs))
-(define gexp-native-inputs (@@ (guix gexp) gexp-native-inputs))
-(define gexp-outputs (@@ (guix gexp) gexp-outputs))
-(define gexp->sexp  (@@ (guix gexp) gexp->sexp))
+(define (gexp-inputs x)
+  ((@@ (guix gexp) gexp-inputs) x))
+(define (gexp-native-inputs x)
+  ((@@ (guix gexp) gexp-native-inputs) x))
+(define (gexp-outputs x)
+  ((@@ (guix gexp) gexp-outputs) x))
+(define (gexp->sexp . x)
+  (apply (@@ (guix gexp) gexp->sexp) x))
 
 (define* (gexp->sexp* exp #:optional target)
   (run-with-store %store (gexp->sexp exp
@@ -192,7 +196,7 @@
                  (gexp->sexp* exp target)))))
 
 (test-assert "input list splicing"
-  (let* ((inputs  (list (list glibc "debug") %bootstrap-guile))
+  (let* ((inputs  (list (gexp-input glibc "debug") %bootstrap-guile))
          (outputs (list (derivation->output-path
                          (package-derivation %store glibc)
                          "debug")
@@ -206,7 +210,7 @@
                  `(list ,@(cons 5 outputs))))))
 
 (test-assert "input list splicing + ungexp-native-splicing"
-  (let* ((inputs (list (list glibc "debug") %bootstrap-guile))
+  (let* ((inputs (list (gexp-input glibc "debug") %bootstrap-guile))
          (exp    (gexp (list (ungexp-native-splicing (cons (+ 2 3) inputs))))))
     (and (lset= equal?
                 `((,glibc "debug") (,%bootstrap-guile "out"))
@@ -539,7 +543,7 @@
            (file (text-file "bar" "This is bar."))
            (text (text-file* "foo"
                              %bootstrap-guile "/bin/guile "
-                             `(,%bootstrap-guile "out") "/bin/guile "
+                             (gexp-input %bootstrap-guile "out") "/bin/guile "
                              drv "/bin/guile "
                              file))
            (done (built-derivations (list text)))

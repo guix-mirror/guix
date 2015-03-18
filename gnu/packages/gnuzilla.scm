@@ -89,7 +89,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.10.7")
+    (version "4.10.8")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -97,7 +97,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "0f1ri51yzjikigf6z31g03cdv6sgi9gw2c3vvv39psk3m37zb6iq"))))
+               "05aaakz24ba2hdzlqx8qamwrsp7gni1acms8mr6m432wa9yaazjh"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("perl", perl)))
@@ -216,7 +216,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.4.0")
+    (version "31.5.0")
     (source
      (origin
       (method url-fetch)
@@ -224,29 +224,12 @@ standards.")
                           version "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0q5ilgfybcrbwf9hq9zc1cpnlhq1pddnnjmdrxrcrrg8lgx5kkc2"))
-      (patches (map search-patch
-                    '("icecat-CVE-2015-0822.patch"
-                      "icecat-CVE-2015-0827-pt-1.patch"
-                      "icecat-CVE-2015-0827-pt-2.patch"
-                      "icecat-CVE-2015-0827-pt-3.patch"
-                      "icecat-CVE-2015-0831-pt-1.patch"
-                      "icecat-CVE-2015-0831-pt-2.patch"
-                      "icecat-CVE-2015-0836-pt-01.patch"
-                      "icecat-CVE-2015-0836-pt-02.patch"
-                      "icecat-CVE-2015-0836-pt-03.patch"
-                      "icecat-CVE-2015-0836-pt-04.patch"
-                      "icecat-CVE-2015-0836-pt-05.patch"
-                      "icecat-CVE-2015-0836-pt-06.patch"
-                      "icecat-CVE-2015-0836-pt-07.patch"
-                      "icecat-CVE-2015-0836-pt-08.patch"
-                      "icecat-CVE-2015-0836-pt-09.patch"
-                      "icecat-CVE-2015-0836-pt-10.patch"
-                      "icecat-CVE-2015-0836-pt-11.patch")))))
+        "1rr4axghaypdkrf60i1qp6dz4cd29ya02fs3vyffvp4x9kgcq2dd"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bzip2" ,bzip2)
+       ("cairo" ,cairo)
        ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("glib" ,glib)
@@ -264,6 +247,8 @@ standards.")
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
+       ("nspr" ,nspr)
+       ("nss" ,nss)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
        ("zip" ,zip)
@@ -290,19 +275,15 @@ standards.")
                            "--with-system-libevent"
                            "--with-system-libvpx"
                            "--with-system-icu"
+                           "--with-system-nspr"
+                           "--with-system-nss"
                            "--enable-system-pixman"
-
-                           ;; XXX unsure whether to use these.
-                           ;; "--with-system-nspr"
-                           ;; "--with-system-nss"
-
-                           ;; Fails with "configure: error: Library requirements
-                           ;; (cairo-tee >= 1.10) not met".
-                           ;; "--enable-system-cairo"
+                           "--enable-system-cairo"
+                           "--enable-system-ffi"
 
                            ;; Fails with "configure: error: System
                            ;; SQLite library is not compiled with
-                           ;; SQLITE_SECURE_DELETE."
+                           ;; SQLITE_ENABLE_UNLOCK_NOTIFY."
                            ;; "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
@@ -324,8 +305,7 @@ standards.")
                            ;; to accelerate baseline JPEG compression/
                            ;; decompression", so we had better not use it
                            ;; "--with-system-jpeg"
-
-                           "--enable-system-ffi")
+                           )
 
        #:phases
        (alist-replace

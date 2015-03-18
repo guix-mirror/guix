@@ -27,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -235,6 +236,53 @@ genome with an FM Index to keep its memory footprint small: for the human
 genome, its memory footprint is typically around 3.2 GB.  Bowtie 2 supports
 gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
+    (license license:gpl3+)))
+
+(define-public bwa
+  (package
+    (name "bwa")
+    (version "0.7.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bio-bwa/bwa-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1330dpqncv0px3pbhjzz1gwgg39kkcv2r9qp2xs0sixf8z8wl7bh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:phases
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((bin (string-append
+                      (assoc-ref outputs "out") "/bin"))
+                (doc (string-append
+                      (assoc-ref outputs "out") "/share/doc/bwa"))
+                (man (string-append
+                      (assoc-ref outputs "out") "/share/man/man1")))
+            (mkdir-p bin)
+            (mkdir-p doc)
+            (mkdir-p man)
+            (copy-file "bwa" (string-append bin "/bwa"))
+            (copy-file "README.md" (string-append doc "/README.md"))
+            (copy-file "bwa.1" (string-append man "/bwa.1"))))
+        ;; no "configure" script
+        (alist-delete 'configure %standard-phases))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://bio-bwa.sourceforge.net/")
+    (synopsis "Burrows-Wheeler sequence aligner")
+    (description
+     "BWA is a software package for mapping low-divergent sequences against a
+large reference genome, such as the human genome.  It consists of three
+algorithms: BWA-backtrack, BWA-SW and BWA-MEM.  The first algorithm is
+designed for Illumina sequence reads up to 100bp, while the rest two for
+longer sequences ranged from 70bp to 1Mbp.  BWA-MEM and BWA-SW share similar
+features such as long-read support and split alignment, but BWA-MEM, which is
+the latest, is generally recommended for high-quality queries as it is faster
+and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
+70-100bp Illumina reads.")
     (license license:gpl3+)))
 
 (define-public clipper
@@ -446,6 +494,51 @@ particular, reads spanning multiple exons.")
 from high-throughput sequencing assays.")
     (license license:gpl3+)))
 
+(define-public htsjdk
+  (package
+    (name "htsjdk")
+    (version "1.129")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htsjdk/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0asdk9b8jx2ij7yd6apg9qx03li8q7z3ml0qy2r2qczkra79y6fw"))
+              (modules '((guix build utils)))
+              ;; remove build dependency on git
+              (snippet '(substitute* "build.xml"
+                          (("failifexecutionfails=\"true\"")
+                           "failifexecutionfails=\"false\"")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases (alist-replace
+                 'build
+                 (lambda _
+                   (setenv "JAVA_HOME" (assoc-ref %build-inputs "jdk"))
+                   (zero? (system* "ant" "all"
+                                   (string-append "-Ddist="
+                                                  (assoc-ref %outputs "out")
+                                                  "/share/java/htsjdk/"))))
+                 (fold alist-delete %standard-phases
+                       '(configure install check)))))
+    (native-inputs
+     `(("ant" ,ant)
+       ("jdk" ,icedtea6 "jdk")))
+    (home-page "http://samtools.github.io/htsjdk/")
+    (synopsis "Java API for high-throughput sequencing data (HTS) formats")
+    (description
+     "HTSJDK is an implementation of a unified Java library for accessing
+common file formats, such as SAM and VCF, used for high-throughput
+sequencing (HTS) data.  There are also an number of useful utilities for
+manipulating HTS data.")
+    (license license:expat)))
+
 (define-public macs
   (package
     (name "macs")
@@ -476,6 +569,51 @@ the significance of enriched ChIP regions and it improves the spatial
 resolution of binding sites through combining the information of both
 sequencing tag position and orientation.")
     (license license:bsd-3)))
+
+(define-public miso
+  (package
+    (name "miso")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://pypi.python.org/packages/source/m/misopy/misopy-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0x446867az8ir0z8c1vjqffkp0ma37wm4sylixnkhgawllzx8v5w"))
+              (modules '((guix build utils)))
+              ;; use "gcc" instead of "cc" for compilation
+              (snippet
+               '(substitute* "setup.py"
+                  (("^defines")
+                   "cc.set_executables(
+compiler='gcc',
+compiler_so='gcc',
+linker_exe='gcc',
+linker_so='gcc -shared'); defines")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:tests? #f)) ; no "test" target
+    (inputs
+     `(("samtools" ,samtools)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-scipy" ,python2-scipy)
+       ("python-matplotlib" ,python2-matplotlib)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://genes.mit.edu/burgelab/miso/index.html")
+    (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
+    (description
+     "MISO (Mixture-of-Isoforms) is a probabilistic framework that quantitates
+the expression level of alternatively spliced genes from RNA-Seq data, and
+identifies differentially regulated isoforms or exons across samples.  By
+modeling the generative process by which reads are produced from isoforms in
+RNA-Seq, the MISO model uses Bayesian inference to compute the probability
+that a read originated from a particular isoform.")
+    (license license:gpl2)))
 
 (define-public rseqc
   (package

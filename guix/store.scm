@@ -418,15 +418,18 @@ encoding conversion errors."
              (write-padding len p)
              #f))
           ((= k %stderr-next)
-           ;; Log a string.
-           (let ((s (read-latin1-string p)))
+           ;; Log a string.  Build logs are usually UTF-8-encoded, but they
+           ;; may also contain arbitrary byte sequences that should not cause
+           ;; this to fail.  Thus, use the permissive
+           ;; 'read-maybe-utf8-string'.
+           (let ((s (read-maybe-utf8-string p)))
              (display s (current-build-output-port))
              (when (string-any %newlines s)
                (flush-output-port (current-build-output-port)))
              #f))
           ((= k %stderr-error)
            ;; Report an error.
-           (let ((error  (read-latin1-string p))
+           (let ((error  (read-maybe-utf8-string p))
                  ;; Currently the daemon fails to send a status code for early
                  ;; errors like DB schema version mismatches, so check for EOF.
                  (status (if (and (>= (nix-server-minor-version server) 8)
@@ -456,7 +459,7 @@ encoding conversion errors."
                             (print-build-trace #t)
                             (build-cores (current-processor-count))
                             (use-substitutes? #t)
-                            (binary-caches '())) ; client "untrusted" cache URLs
+                            (substitute-urls '())) ; client "untrusted" cache URLs
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -481,10 +484,10 @@ encoding conversion errors."
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
-      (let ((pairs (if timeout
-                       `(("build-timeout" . ,(number->string timeout))
-                         ,@binary-caches)
-                       binary-caches)))
+      (let ((pairs `(,@(if timeout
+                           `(("build-timeout" . ,(number->string timeout)))
+                           '())
+                     ("substitute-urls" . ,(string-join substitute-urls)))))
         (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))

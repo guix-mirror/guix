@@ -48,4 +48,4 @@
     (description
      "AVR Libc is a project whose goal is to provide a high quality C library
 for use with GCC on Atmel AVR microcontrollers.")
-    (license (bsd-style "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+    (license (non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))

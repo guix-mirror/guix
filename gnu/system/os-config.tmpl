@@ -2,7 +2,7 @@
 
 (use-modules (gnu))
 (use-service-modules xorg networking dbus avahi)
-(use-package-modules avahi)
+(use-package-modules xorg avahi)
 
 (operating-system
   (host-name "antelope")
@@ -34,6 +34,9 @@
                 (supplementary-groups '("wheel"
                                         "audio" "video"))
                 (home-directory "/home/alice"))))
+
+  ;; Globally-installed packages.
+  (packages (cons xterm %base-packages))
 
   ;; Add services to the baseline: the SLiM log-in manager
   ;; for Xorg sessions, a DHCP client, Avahi, and D-Bus.

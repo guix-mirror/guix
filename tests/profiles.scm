@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (gnu packages bootstrap)
+  #:use-module ((gnu packages base) #:prefix packages:)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-11)
@@ -190,6 +191,14 @@
     (return (and (file-exists? (string-append bindir "/guile"))
                  (string=? (dirname (readlink bindir))
                            (derivation->output-path guile))))))
+
+(test-assertm "profile-derivation, inputs"
+  (mlet* %store-monad
+      ((entry ->   (package->manifest-entry packages:glibc "debug"))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:info-dir? #f
+                                       #:ca-certificate-bundle? #f)))
+    (return (derivation-inputs drv))))
 
 (test-end "profiles")
 

@@ -5,6 +5,7 @@ Source: http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/dev-libs/nss/fil
 Modifications:
   Change libdir from ${prefix}/lib64 to ${prefix}/lib/nss.
   Remove optional patching in nss/Makefile.
+  Include -L$libdir in output from "nss-config --libs".
 
 --- nss-3.17.1/nss/config/Makefile
 +++ nss-3.17.1/nss/config/Makefile
@@ -181,7 +182,7 @@ Modifications:
 +fi
 +
 +if test "$echo_libs" = "yes"; then
-+      libdirs=""
++      libdirs=-L$libdir
 +      if test -n "$lib_ssl"; then
 +	libdirs="$libdirs -lssl${major_version}"
 +      fi

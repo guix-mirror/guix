@@ -568,25 +568,24 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
                               (shadow shadow))
   "Return a list of COUNT user accounts for Guix build users, with UIDs
 starting at FIRST-UID, and under GID."
-  (with-monad %store-monad
-    (return (unfold (cut > <> count)
-                    (lambda (n)
-                      (user-account
-                       (name (format #f "guixbuilder~2,'0d" n))
-                       (system? #t)
-                       (uid (+ first-uid n -1))
-                       (group group)
+  (unfold (cut > <> count)
+          (lambda (n)
+            (user-account
+             (name (format #f "guixbuilder~2,'0d" n))
+             (system? #t)
+             (uid (+ first-uid n -1))
+             (group group)
 
-                       ;; guix-daemon expects GROUP to be listed as a
-                       ;; supplementary group too:
-                       ;; <http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html>.
-                       (supplementary-groups (list group "kvm"))
+             ;; guix-daemon expects GROUP to be listed as a
+             ;; supplementary group too:
+             ;; <http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html>.
+             (supplementary-groups (list group "kvm"))
 
-                       (comment (format #f "Guix Build User ~2d" n))
-                       (home-directory "/var/empty")
-                       (shell #~(string-append #$shadow "/sbin/nologin"))))
-                    1+
-                    1))))
+             (comment (format #f "Guix Build User ~2d" n))
+             (home-directory "/var/empty")
+             (shell #~(string-append #$shadow "/sbin/nologin"))))
+          1+
+          1))
 
 (define (hydra-key-authorization guix)
   "Return a gexp with code to register the hydra.gnu.org public key with
@@ -636,8 +635,7 @@ passed to @command{guix-daemon}."
     (and authorize-hydra-key?
          (hydra-key-authorization guix)))
 
-  (mlet %store-monad ((accounts (guix-build-accounts build-accounts
-                                                     #:group builder-group)))
+  (with-monad %store-monad
     (return (service
              (provision '(guix-daemon))
              (requirement '(user-processes))
@@ -650,7 +648,8 @@ passed to @command{guix-daemon}."
                               '("--no-substitutes"))
                        #$@extra-options)))
              (stop #~(make-kill-destructor))
-             (user-accounts accounts)
+             (user-accounts (guix-build-accounts build-accounts
+                                                 #:group builder-group))
              (user-groups (list (user-group
                                  (name builder-group)
                                  (system? #t)

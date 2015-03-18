@@ -19,6 +19,7 @@
 
 (define-module (gnu packages check)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -47,6 +48,37 @@ catch both assertion failures and code errors that cause segmentation
 faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license lgpl2.1+)))
+
+(define-public cunit
+  (package
+    (name "cunit")
+    (version "2.1-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/cunit/CUnit/"
+                           version "/CUnit-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "057j82da9vv4li4z5ri3227ybd18nzyq81f6gsvhifs5z0vr3cpm"))))
+    (build-system gnu-build-system)
+    (arguments '(#:phases
+                 (alist-cons-before
+                  'configure 'autoconf
+                  (lambda _
+                    (zero? (system* "autoreconf" "-vfi")))
+                  %standard-phases)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)))
+    (home-page "http://cunit.sourceforge.net/")
+    (synopsis "Automated testing framework for C")
+    (description
+     "CUnit is a lightweight system for writing, administering, and running
+unit tests in C.  It provides C programmers with basic testing functionality
+with a flexible variety of user interfaces.")
+    (license gpl2+)))
 
 (define-public cppunit
   (package

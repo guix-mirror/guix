@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -24,7 +24,9 @@
             agpl3 agpl3+
             asl2.0
             boost1.0
-            bsd-2 bsd-3 bsd-4 bsd-style
+            bsd-2 bsd-3 bsd-4
+            non-copyleft
+            bsd-style                             ;deprecated!
             cc0
             cddl1.0
             cecill-c
@@ -42,6 +44,7 @@
             ipa
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl1.1 mpl2.0
+            ms-pl
             ncsa
             openldap2.8 openssl
             psfl public-domain
@@ -105,15 +108,22 @@
            "http://directory.fsf.org/wiki/License:BSD_4Clause"
            "https://www.gnu.org/licenses/license-list#OriginalBSD"))
 
-(define* (bsd-style uri #:optional (comment ""))
-  "Return a BSD-style license, whose full text can be found at URI,
-which may be a file:// URI pointing the package's tree."
-  (license "BSD-style"
+(define* (non-copyleft uri #:optional (comment ""))
+  "Return a lax, permissive, non-copyleft license (for example a variant of
+the 3-clause BSD license or the Expat license), whose full text can be found
+at URI, which may be a file:// URI pointing the package's tree."
+  (license "non-copyleft"
            uri
            (string-append
-            "This is a BSD-style, non-copyleft free software license.  "
+            "This is a lax, non-copyleft free software license.  "
             "Check the URI for details.  "
             comment)))
+
+(define bsd-style
+  ;; This alias is kept for backward-compatibility.  Do not use it for new
+  ;; packages: it is ambiguous, as rightfully explained at
+  ;; <http://www.gnu.org/philosophy/words-to-avoid.html#BSD-style>.
+  non-copyleft)
 
 (define cc0
   (license "CC0"
@@ -260,6 +270,11 @@ which may be a file:// URI pointing the package's tree."
   (license "MPL 2.0"
            "http://directory.fsf.org/wiki/License:MPLv2.0"
            "https://www.gnu.org/licenses/license-list#MPL-2.0"))
+
+(define ms-pl
+  (license "Ms-PL"                                ;Microsoft Public License
+           "http://directory.fsf.org/wiki/License:MsPL"
+           "http://www.gnu.org/licenses/license-list.html#ms-pl"))
 
 (define ncsa
   (license "NCSA/University of Illinois Open Source License"

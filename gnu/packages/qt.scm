@@ -92,7 +92,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.4.0")
+    (version "5.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -102,7 +102,7 @@ X11 (yet).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "176351k8ngczb324i8bbkrsz9pby7cvy2qnixfjwybzxp53xzndj"))
+               "0q6qzakq8xihw91xv310qi3vyylq7x2bzdkjgy8sqxii2lgbjzhv"))
              (snippet
               '(begin
                  ;; Remove broken symlinks.

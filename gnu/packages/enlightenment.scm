@@ -28,6 +28,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -233,4 +234,41 @@ The only supported now is VLC.")
 based on Enlightenment Foundation Libraries.  It supports multiple tabs, UTF-8,
 URL and local path detection, themes, popup based content viewer for non-text
 contents and more.")
+    (license license:bsd-2)))
+
+(define-public enlightenment
+  (package
+    (name "enlightenment")
+    (version "0.19.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.enlightenment.org/rel/apps/enlightenment/enlightenment-"
+                version ".tar.gz"))
+              (sha256
+               (base32 "01pg3ng4m3vmwzzivlssdmvhf72bsvcmm3xwf45849cibllaib8v"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dbus" ,dbus)
+       ("freetype" ,freetype)
+       ("gettext" ,gnu-gettext)
+       ("libxcb" ,libxcb)
+       ("libxext" ,libxext)
+       ("linux-pam" ,linux-pam)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+    (propagated-inputs
+     ;; both these inputs are present in pkgconfig file in Require section
+     `(("efl" ,efl) ; enlightenment.pc
+       ("elementary" ,elementary))) ; enlightenment.pc
+    (home-page "http://www.enlightenment.org")
+    (synopsis "Lightweight desktop environment")
+    (description
+     "Enlightenment is resource friendly desktop environment with integrated
+file manager, wide range of configuration options, plugin system allowing to
+unload unused functionality, with support for touchscreen and suitable for
+embedded systems.")
     (license license:bsd-2)))

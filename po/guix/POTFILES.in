@@ -2,6 +2,7 @@
 # This should be source files of the various tools, and not package modules.
 gnu/packages.scm
 gnu/system.scm
+gnu/services/dmd.scm
 guix/scripts/build.scm
 guix/scripts/download.scm
 guix/scripts/package.scm

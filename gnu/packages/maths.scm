@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -65,7 +66,8 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages zip))
 
 (define-public units
   (package
@@ -236,7 +238,7 @@ be output in text, PostScript, PDF or HTML.")
     (description
      "ARPACK-NG is a collection of Fortran77 subroutines designed to solve
 large scale eigenvalue problems.")
-    (license (license:bsd-style "file://COPYING"
+    (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
 
 (define-public lapack
@@ -269,7 +271,7 @@ large scale eigenvalue problems.")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
 problems in numerical linear algebra.")
-    (license (license:bsd-style "file://LICENSE"
+    (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
 
 (define-public gnuplot
@@ -316,6 +318,8 @@ plotting engine by third-party applications like Octave.")
       (sha256
        (base32 "0f9n0v3p3lwc7564791a39c6cn1d3dbrn7d1j3ikqsi27a8hy23d"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (arguments
      `(#:phases
         (alist-cons-before
@@ -324,7 +328,6 @@ plotting engine by third-party applications like Octave.")
            (substitute* "configure"
              (("/bin/mv") "mv")))
          %standard-phases)))
-    (outputs '("out" "bin" "lib" "include"))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
@@ -357,8 +360,7 @@ extremely large and complex data collections.")
        ("fltk" ,fltk)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("hdf5-lib" ,hdf5 "lib")
-       ("hdf5-include" ,hdf5 "include")
+       ("hdf5" ,hdf5)
        ("libxft" ,libxft)
        ("mesa" ,mesa)
        ("zlib" ,zlib)))
@@ -410,8 +412,7 @@ files.")
      `(("fltk" ,fltk)
        ("gfortran" ,gfortran-4.8)
        ("gmp" ,gmp)
-       ("hdf5-lib" ,hdf5 "lib")
-       ("hdf5-include" ,hdf5 "include")
+       ("hdf5" ,hdf5)
        ("lapack" ,lapack)
        ("mesa" ,mesa)
        ("glu" ,glu)
@@ -521,7 +522,7 @@ ASCII text files using Gmsh's own scripting language.")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
 data structures and routines for the scalable (parallel) solution of
 scientific applications modeled by partial differential equations.")
-    (license (license:bsd-style
+    (license (license:non-copyleft
               "http://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
 
 (define-public petsc-complex
@@ -965,6 +966,105 @@ point numbers")
     ;; GPLv2 only is therefore the smallest subset.
     (license license:gpl2)))
 
+(define-public muparser
+  (package
+    (name "muparser")
+    (version "2.2.5")
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (svn-reference
+             (url "http://muparser.googlecode.com/svn/trunk/")
+             (revision 34)))
+       (sha256
+        (base32
+         "1d6bdbhx9zj3srwj3m7c9hvr18gnx1fx43h6d25my7q85gicpcwn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-samples=no")
+       #:tests? #f)) ;no "check" target
+    (home-page "http://muparser.beltoforion.de/")
+    (synopsis "Fast parser library for mathematical expressions")
+    (description
+     "muParser is an extensible high performance math parser library.  It is
+based on transforming an expression into a bytecode and precalculating
+constant parts of it.")
+    (license license:expat)))
+
+(define-public openlibm
+  (package
+    (name "openlibm")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/JuliaLang/openlibm/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cwqqqlblj3kzp9aq1wnpfs1fl0qd1wp1xzm5shb09w06i4rh9nn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       ;; no configure script
+       (alist-delete 'configure %standard-phases)
+       #:tests? #f)) ;the tests are part of the default target
+    (home-page "http://openlibm.org/")
+    (synopsis "Portable C mathematical library (libm)")
+    (description
+     "OpenLibm is an effort to have a high quality, portable, standalone C
+mathematical library (libm).  It can be used standalone in applications and
+programming language implementations.  The project was born out of a need to
+have a good libm for the Julia programming langage that worked consistently
+across compilers and operating systems, and in 32-bit and 64-bit
+environments.")
+    ;; See LICENSE.md for details.
+    (license (list license:expat
+                   license:isc
+                   license:bsd-2
+                   license:public-domain
+                   license:lgpl2.1+))))
+
+(define-public openspecfun
+  (package
+    (name "openspecfun")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/JuliaLang/openspecfun/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nsa3jjmlhcqkw5ba5ypbn3n0c8b6lc22zzlxnmxkxi9shhdx65z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f  ;no "check" target
+       #:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("fortran" ,gfortran-4.8)))
+    (home-page "https://github.com/JuliaLang/openspecfun")
+    (synopsis "Collection of special mathematical functions")
+    (description
+     "Openspecfun provides AMOS and Faddeeva.  AMOS (from Netlib) is a
+portable package for Bessel Functions of a Complex Argument and Nonnegative
+Order; it contains subroutines for computing Bessel functions and Airy
+functions.  Faddeeva allows computing the various error functions of arbitrary
+complex arguments (Faddeeva function, error function, complementary error
+function, scaled complementary error function, imaginary error function, and
+Dawson function); given these, one can also easily compute Voigt functions,
+Fresnel integrals, and similar related functions as well.")
+    ;; Faddeeva is released under the Expat license; AMOS is included as
+    ;; public domain software.
+    (license (list license:expat license:public-domain))))
+
 (define-public atlas
   (package
     (name "atlas")
@@ -998,7 +1098,7 @@ point numbers")
                   (srfi srfi-1)
                   (guix build gnu-build-system)
                   (guix build utils))
-       #:configure-flags 
+       #:configure-flags
        `(;; Generate position independent code suitable for dynamic libraries
          ;; and use WALL timer to get more accurate timing.
          "-Fa" "alg" "-fPIC" "-D" "c" "-DWALL"
@@ -1025,10 +1125,10 @@ point numbers")
         (alist-cons-after
          'install 'install-doc
          (lambda* (#:key outputs inputs #:allow-other-keys)
-           (let ((doc (string-append (assoc-ref outputs "doc") 
+           (let ((doc (string-append (assoc-ref outputs "doc")
                                      "/share/doc/atlas")))
              (mkdir-p doc)
-             (fold (lambda (file previous) 
+             (fold (lambda (file previous)
                      (and previous (zero? (system* "cp" file doc))))
                    #t (find-files "../ATLAS/doc" ".*"))))
          (alist-cons-after
@@ -1094,3 +1194,25 @@ cpufreq-selector -g performance -c N-1
 where N is the number of cores of your CPU.  Failure to do so will result in a
 library with poor performance.")
     (license license:bsd-3)))
+
+(define-public glm
+  (package
+    (name "glm")
+    (version "0.9.6.3")
+    (source
+     (origin
+       (method url-fetch)
+      (uri (string-append "mirror://sourceforge/ogl-math/glm-"
+                          version ".zip"))
+       (sha256
+        (base32
+         "1cnjmi033a16a95v6xfkr1bvfmkd26hzdjka8j1819hgn5b1nr8l"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://glm.g-truc.net")
+    (synopsis "OpenGL Mathematics library")
+    (description "OpenGL Mathematics (GLM) is a header-only C++ mathematics
+library for graphics software based on the OpenGL Shading Language (GLSL)
+specifications.")
+    (license license:expat)))

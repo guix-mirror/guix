@@ -69,7 +69,6 @@
             operating-system-users
             operating-system-groups
             operating-system-issue
-            operating-system-packages
             operating-system-timezone
             operating-system-locale
             operating-system-locale-definitions
@@ -353,6 +352,8 @@ explicitly appear in OS."
 
          e2fsprogs kbd
 
+         bash-completion
+
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
@@ -416,11 +417,17 @@ settings for 'guix.el' to work out-of-the-box."
       ((pam.d      (pam-services->directory pam-services))
        (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
-       (shells     (text-file "shells"            ; used by xterm and others
+
+       ;; /etc/shells is used by xterm and other programs.   We don't check
+       ;; whether these shells are installed, should be OK.
+       (shells     (text-file "shells"
                               "\
 /bin/sh
 /run/current-system/profile/bin/sh
-/run/current-system/profile/bin/bash\n"))
+/run/current-system/profile/bin/bash
+/run/current-system/profile/bin/fish
+/run/current-system/profile/bin/tcsh
+/run/current-system/profile/bin/zsh\n"))
        (emacs      (emacs-site-directory))
        (issue      (text-file "issue" issue))
        (nsswitch   (text-file "nsswitch.conf"
@@ -458,7 +465,25 @@ export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
 
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
+
+if [ -n \"$BASH_VERSION\" -a -f /etc/bashrc ]
+then
+  # Load Bash-specific initialization code.
+  source /etc/bashrc
+fi
 "))
+
+       (bashrc    (text-file "bashrc" "\
+# Bash-specific initialization.
+
+# The 'bash-completion' package.
+if [ -f /run/current-system/profile/etc/profile.d/bash_completion.sh ]
+then
+  # Bash-completion sources ~/.bash_completion.  It installs a dynamic
+  # completion loader that searches its own completion files as well
+  # as those in ~/.guix-profile and /run/current-system/profile.
+  source /run/current-system/profile/etc/profile.d/bash_completion.sh
+fi\n"))
        (skel      (skeleton-directory skeletons)))
     (file-union "etc"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
@@ -472,6 +497,7 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
                   ("profile" ,#~#$profile)
+                  ("bashrc" ,#~#$bashrc)
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
@@ -511,9 +537,8 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
       ((services     (operating-system-services os))
        (pam-services ->
                      ;; Services known to PAM.
-                     (delete-duplicates
-                      (append (operating-system-pam-services os)
-                              (append-map service-pam-services services))))
+                     (append (operating-system-pam-services os)
+                             (append-map service-pam-services services)))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os))
        (/etc/hosts  (or (operating-system-hosts-file os)

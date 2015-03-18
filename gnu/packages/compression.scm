@@ -191,7 +191,7 @@ compressor.  It typically compresses files to within 10% to 15% of the best
 available techniques (the PPM family of statistical compressors), whilst
 being around twice as fast at compression and six times faster at
 decompression.")
-      (license (license:bsd-style "file://LICENSE"
+      (license (license:non-copyleft "file://LICENSE"
                                   "See LICENSE in the distribution."))
       (home-page "http://www.bzip.org/"))))
 

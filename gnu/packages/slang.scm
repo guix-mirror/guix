@@ -49,7 +49,8 @@
                     (("-ltermcap") ""))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:parallel-tests? #f))
+     '(#:parallel-tests? #f
+       #:parallel-build? #f)) ; there's at least one race
     (inputs
      `(("readline" ,readline)
        ("zlib" ,zlib)

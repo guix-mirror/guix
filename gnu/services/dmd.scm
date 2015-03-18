@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services dmd)
+  #:use-module (guix ui)
+  #:use-module (guix sets)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -24,6 +26,8 @@
   #:use-module (gnu services)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (dmd-configuration-file))
 
 ;;; Commentary:
@@ -32,6 +36,26 @@
 ;;;
 ;;; Code:
 
+(define (assert-no-duplicates services)
+  "Raise an error if SERVICES provide the same dmd service more than once.
+
+This is a constraint that dmd's 'register-service' verifies but we'd better
+verify it here statically than wait until PID 1 halts with an assertion
+failure."
+  (fold (lambda (service set)
+          (define (assert-unique symbol)
+            (when (set-contains? set symbol)
+              (raise (condition
+                      (&message
+                       (message
+                        (format #f (_ "service '~a' provided more than once")
+                                symbol)))))))
+
+          (for-each assert-unique (service-provision service))
+          (fold set-insert set (service-provision service)))
+        (setq)
+        services))
+
 (define (dmd-configuration-file services)
   "Return the dmd configuration file for SERVICES."
   (define modules
@@ -39,6 +63,8 @@
     '((guix build syscalls)
       (gnu build file-systems)
       (guix build utils)))
+
+  (assert-no-duplicates services)
 
   (mlet %store-monad ((modules  (imported-modules modules))
                       (compiled (compiled-modules modules)))

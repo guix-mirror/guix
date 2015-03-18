@@ -1089,7 +1089,14 @@ widgets built in the loading process.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))))
+                "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Adapt to newer freetype. As the package is deprecated, there
+               ;; is no use in creating a patch and reporting it.
+               '(substitute* '("libgnomeprint/gnome-font-face.c"
+                               "libgnomeprint/gnome-rfont.c")
+                  (("freetype/") "freetype2/")))))
     (build-system gnu-build-system)
     (inputs
      `(("popt" ,popt)
@@ -1583,3 +1590,34 @@ Extension known as XKB.  This library is indended to support XFree86 and other
 commercial X servers. It is useful for creating XKB-related software (layout
 indicators etc).")
     (license license:lgpl2.0+)))
+
+(define-public python2-rsvg
+  ;; XXX: This is actually a subset of gnome-python-desktop.
+  (package
+    (name "python2-rsvg")
+    (version "2.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://gnome/sources/gnome-python-desktop/2.32/gnome-python-desktop-"
+             version ".tar.bz2"))
+       (sha256
+        (base32
+         "1s8f9rns9v7qlwjv9qh9lr8crp88dpzfm45hj47zc3ivpy0dbnq9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pygtk" ,python2-pygtk)
+       ("librsvg" ,librsvg)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Python bindings to librsvg")
+    (description
+     "This packages provides Python bindings to librsvg, the SVG rendering
+library.")
+
+    ;; This is the license of the rsvg bindings.  The license of each module
+    ;; of gnome-python-desktop is given in 'COPYING'.
+    (license license:lgpl2.1+)))

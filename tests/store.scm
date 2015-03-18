@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix serialization)
+  #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
@@ -267,6 +268,42 @@
                        (list a b c w x d y)
                        (list a b c d w x y)))
            (lset= string=? s1 s3)))))
+
+(test-assert "current-build-output-port, UTF-8"
+  ;; Are UTF-8 strings in the build log properly interpreted?
+  (string-contains
+   (with-fluids ((%default-port-encoding "UTF-8")) ;for the string port
+     (call-with-output-string
+      (lambda (port)
+        (parameterize ((current-build-output-port port))
+          (let* ((s "Here’s a Greek letter: λ.")
+                 (d (build-expression->derivation
+                     %store "foo" `(display ,s)
+                     #:guile-for-build
+                     (package-derivation s %bootstrap-guile (%current-system)))))
+            (guard (c ((nix-protocol-error? c) #t))
+              (build-derivations %store (list d))))))))
+   "Here’s a Greek letter: λ."))
+
+(test-assert "current-build-output-port, UTF-8 + garbage"
+  ;; What about a mixture of UTF-8 + garbage?
+  (string-contains
+   (with-fluids ((%default-port-encoding "UTF-8")) ;for the string port
+     (call-with-output-string
+      (lambda (port)
+        (parameterize ((current-build-output-port port))
+          (let ((d (build-expression->derivation
+                    %store "foo"
+                    `(begin
+                       (use-modules (rnrs io ports))
+                       (display "garbage: ")
+                       (put-bytevector (current-output-port) #vu8(128))
+                       (display "lambda: λ\n"))
+                     #:guile-for-build
+                     (package-derivation %store %bootstrap-guile))))
+            (guard (c ((nix-protocol-error? c) #t))
+              (build-derivations %store (list d))))))))
+   "garbage: ?lambda: λ"))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))

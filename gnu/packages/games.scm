@@ -33,6 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -250,7 +251,7 @@ level's exit.  The game is presented in a 2D side view.")
      (origin
        (method url-fetch)
        (uri (string-append "http://www.hyperrealm.com/" name "/"
-                           name  "-" version  ".tar.gz")) 
+                           name  "-" version  ".tar.gz"))
        (sha256
         (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
     (build-system gnu-build-system)
@@ -440,21 +441,21 @@ Portable Game Notation.")
      `(#:tests? #f
        #:phases
        (alist-replace
-        'configure 
+        'configure
         (lambda* (#:key outputs #:allow-other-keys)
-          
-          (substitute* "Imakefile" 
+
+          (substitute* "Imakefile"
             (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
              (string-append "XPMINCLUDE = -I" (assoc-ref %build-inputs "libxpm")
                             "/include/X11")))
-          
-          (substitute* "Imakefile" 
+
+          (substitute* "Imakefile"
             (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
-          
+
           ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
-          
-          (zero? (system* "xmkmf" "-a" 
-                          (string-append "-DProjectRoot=" 
+
+          (zero? (system* "xmkmf" "-a"
+                          (string-append "-DProjectRoot="
                                          (assoc-ref outputs "out")))))
         (alist-replace 'install
                        (lambda* (#:key outputs #:allow-other-keys)
@@ -511,35 +512,6 @@ tutorials for the standard QWERTY layout, there are also tutorials for the
 alternative layouts Dvorak and Colemak, as well as for the numpad.  Tutorials
 are primarily in English, however some in other languages are provided.")
     (license license:gpl3+)))
-
-(define-public openal
-  (package
-    (name "openal")
-    (version "1.15.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://kcat.strangesoft.net/openal-releases/openal-soft-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "0mmhdqiyb3c9dzvxspm8h2v8jibhi8pfjxnf6m0wn744y1ia2a8f"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f)) ; no check target
-    (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("pulseaudio" ,pulseaudio)))
-    (synopsis "3D audio API")
-    (description
-     "OpenAL provides capabilities for playing audio in a virtual 3D
-environment.  Distance attenuation, doppler shift, and directional sound
-emitters are among the features handled by the API.  More advanced effects,
-including air absorption, occlusion, and environmental reverb, are available
-through the EFX extension.  It also facilitates streaming audio, multi-channel
-buffers, and audio capture.")
-    (home-page "http://kcat.strangesoft.net/openal.html")
-    (license license:lgpl2.0+)))
 
 (define-public irrlicht
   (package
@@ -599,7 +571,7 @@ for common mesh file formats, and collision detection.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.11")
+    (version "0.4.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -608,7 +580,7 @@ for common mesh file formats, and collision detection.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hzb27srv6f2j84dpxx2p0p0aaq9vdp5jvbrfpklb5q5ssdjxvc6"))))
+                "0642vy6r6sv96mz6wbs9qvyr95vd69zj4fxiljdg9801javrmm9p"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -640,7 +612,7 @@ for common mesh file formats, and collision detection.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.11")
+    (version "0.4.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -649,30 +621,19 @@ for common mesh file formats, and collision detection.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0h223svzkvp63b77nqfxy7k8whw4543gahs3kxd3x4myi5ax5z5f"))))
+                "1pqp8hfwg5wkimig8j5jrihzgjjgplxr24w5xisrxvx1hlvnczdk"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:modules ((guix build utils)
-                  (guix build cmake-build-system)
-                  (ice-9 match))
-       #:phases (alist-cons-before
-                 'configure 'set-cpath
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (use-modules (ice-9 match))
-                   ;; Adjust the CPATH so that cmake can find irrlicht,
-                   ;; openal, and curl headers.
-                   (set-path-environment-variable "CPATH"
-                                                  '("include/AL"
-                                                    "include/irrlicht"
-                                                    "include/curl"
-                                                    "include")
-                                                  (map (match-lambda
-                                                        ((_ . dir) dir))
-                                                       inputs)))
-                 %standard-phases)
-       #:configure-flags '("-DRUN_IN_PLACE=0"
-                           "-DENABLE_FREETYPE=1"
-                           "-DENABLE_GETTEXT=1")
+     '(#:configure-flags
+         (list "-DRUN_IN_PLACE=0"
+               "-DENABLE_FREETYPE=1"
+               "-DENABLE_GETTEXT=1"
+               (string-append "-DIRRLICHT_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "irrlicht")
+                              "/include/irrlicht")
+               (string-append "-DCURL_INCLUDE_DIR="
+                              (assoc-ref %build-inputs "curl")
+                              "/include/curl"))
        #:tests? #f)) ; no check target
     (native-search-paths
      (list (search-path-specification
@@ -683,7 +644,7 @@ for common mesh file formats, and collision detection.")
     (inputs
      `(("irrlicht" ,irrlicht)
        ("libpng" ,libpng)
-       ("libjpeg-8" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("libxxf86vm" ,libxxf86vm)
        ("mesa" ,mesa)
        ("libogg" ,libogg)

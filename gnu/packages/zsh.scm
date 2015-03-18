@@ -41,20 +41,22 @@
                  #:phases (alist-cons-before
                            'configure 'fix-sh
                            (lambda _
-                             (substitute*
-                                 '("configure"
-                                   "configure.ac"
-                                   "Src/exec.c"
-                                   "Src/mkmakemod.sh"
-                                   "Config/installfns.sh"
-                                   "Config/defs.mk.in"
-                                   "Test/E01options.ztst"
-                                   "Test/A05execution.ztst"
-                                   "Test/A01grammar.ztst"
-                                   "Test/B02typeset.ztst"
-                                   "Completion/Unix/Command/_init_d"
-                                   "Util/preconfig")
-                               (("/bin/sh") (which "sh"))))
+                             ;; Some of the files are ISO-8859-1 encoded.
+                             (with-fluids ((%default-port-encoding #f))
+                               (substitute*
+                                   '("configure"
+                                     "configure.ac"
+                                     "Src/exec.c"
+                                     "Src/mkmakemod.sh"
+                                     "Config/installfns.sh"
+                                     "Config/defs.mk.in"
+                                     "Test/E01options.ztst"
+                                     "Test/A05execution.ztst"
+                                     "Test/A01grammar.ztst"
+                                     "Test/B02typeset.ztst"
+                                     "Completion/Unix/Command/_init_d"
+                                     "Util/preconfig")
+                                 (("/bin/sh") (which "sh")))))
                            %standard-phases)))
     (native-inputs `(("autoconf", autoconf)))
     (inputs `(("ncurses", ncurses)

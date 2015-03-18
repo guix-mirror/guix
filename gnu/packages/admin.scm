@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -968,6 +969,31 @@ characters can be replaced as well, as can UTF-8 characters.")
 recover lost partitions and/or make non-booting disks bootable again.")
     (license license:gpl2+)))
 
+(define-public tree
+  (package
+    (name "tree")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mama.indstate.edu/users/ice/tree/src/tree-"
+                    version ".tgz"))
+              (sha256
+               (base32 "04kviw799qxly08zb8n5mgxfd96gyis6x69q2qiw86jnh87c4mv9"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f                      ; no check target
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                               (list (string-append "prefix=" out)))))
+    (synopsis "Recursively list the contents of a directory")
+    (description
+     "Tree is a recursive directory listing command that produces a depth
+indented listing of files, which is colorized ala dircolors if the LS_COLORS
+environment variable is set and output is to tty.")
+    (home-page "http://mama.indstate.edu/users/ice/tree/")
+    (license license:gpl2+)))
+
 (define-public direvent
   (package
     (name "direvent")
@@ -1055,3 +1081,29 @@ Technology System (S.M.A.R.T.) built into most modern ATA and SCSI harddisks.
 In many cases, these utilities will provide advanced warning of disk
 degradation and failure.")
     (license license:gpl2+)))
+
+(define-public fdupes
+  (package
+    (name "fdupes")
+    (version "1.51")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/adrianlopezroche/fdupes/archive/fdupes-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "11j96vxl9vg3jsnxqxskrv3gad6dh7hz2zpyc8n31xzyxka1c7kn"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f ; no 'check' target
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))))
+    (home-page "https://github.com/adrianlopezroche/fdupes")
+    (synopsis "Identify duplicate files")
+    (description
+     "fdupes is a program for identifying duplicate files residing within
+specified directories.")
+    (license license:expat)))

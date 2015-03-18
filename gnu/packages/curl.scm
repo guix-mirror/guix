@@ -83,6 +83,6 @@ curl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading,
 HTTP form based upload, proxies, cookies, user+password authentication
 (Basic, Digest, NTLM, Negotiate, kerberos...), file transfer resume,
 proxy tunneling, and so on")
-   (license (license:bsd-style "file://COPYING"
+   (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "http://curl.haxx.se/")))

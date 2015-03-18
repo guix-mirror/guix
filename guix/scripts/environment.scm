@@ -220,21 +220,22 @@ packages."
   (define (handle-argument arg result)
     (alist-cons 'package arg result))
 
-  (with-store store
-    (let* ((opts  (parse-command-line args %options (list %default-options)
-                                      #:argument-handler handle-argument))
-           (pure? (assoc-ref opts 'pure))
-           (command (assoc-ref opts 'exec))
-           (inputs (packages->transitive-inputs
-                    (pick-all (options/resolve-packages opts) 'package)))
-           (drvs (run-with-store store
-                   (mbegin %store-monad
-                     (set-guile-for-build (default-guile))
-                     (build-inputs inputs opts)))))
-      (cond ((assoc-ref opts 'dry-run?)
-             #t)
-            ((assoc-ref opts 'search-paths)
-             (show-search-paths inputs drvs pure?))
-            (else
-             (create-environment inputs drvs pure?)
-             (system command))))))
+  (with-error-handling
+    (with-store store
+      (let* ((opts  (parse-command-line args %options (list %default-options)
+                                        #:argument-handler handle-argument))
+             (pure? (assoc-ref opts 'pure))
+             (command (assoc-ref opts 'exec))
+             (inputs (packages->transitive-inputs
+                      (pick-all (options/resolve-packages opts) 'package)))
+             (drvs (run-with-store store
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (build-inputs inputs opts)))))
+        (cond ((assoc-ref opts 'dry-run?)
+               #t)
+              ((assoc-ref opts 'search-paths)
+               (show-search-paths inputs drvs pure?))
+              (else
+               (create-environment inputs drvs pure?)
+               (system command)))))))

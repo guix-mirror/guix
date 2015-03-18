@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,8 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ bsd-3 public-domain))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
+                               fsf-free isc))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -30,10 +32,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
@@ -48,6 +52,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -56,37 +61,166 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages zip))
 
+(define-public liba52
+  (package
+    (name "liba52")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/liba52/a52dec-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
+    (build-system gnu-build-system)
+    (home-page "http://liba52.sourceforge.net/")
+    (synopsis "ATSC A/52 stream decoder")
+    (description "liba52 is a library for decoding ATSC A/52 streams.  The
+A/52 standard is used in a variety of applications, including digital
+television and DVD.  It is also known as AC-3.")
+    (license gpl2+)))
+
+(define-public libass
+  (package
+    (name "libass")
+    (version "0.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libass/libass/releases/download/"
+                    version "/libass-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1mwj2nk9g6cq6f8m1hf0ijg1299rghhy9naahqq43sc2whblb1l7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
+    (propagated-inputs
+     `(("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("fontconfig" ,fontconfig)
+       ("harfbuzz" ,harfbuzz)
+       ("enca" ,enca)))
+    (home-page "https://github.com/libass/libass")
+    (synopsis "Subtitle rendering library for the ASS/SSA format")
+    (description "libass is a subtitle rendering library for the
+ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
+    (license isc)))
+
+(define-public libcaca
+  (package
+    (name "libcaca")
+    (version "0.99.beta19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://caca.zoy.org/files/libcaca/libcaca-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1x3j6yfyxl52adgnabycr0n38j9hx2j74la0hz0n8cnh9ry4d2qj"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freeglut" ,freeglut)
+       ("ftgl" ,ftgl)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("ncurses" ,ncurses)
+       ("zlib" ,zlib)))
+    (home-page "http://caca.zoy.org/wiki/libcaca")
+    (synopsis "Colour ASCII-art library")
+    (description "libcaca is a graphics library that outputs text instead of
+pixels, so that it can work on older video cards or text terminals.  It
+supports Unicode, 2048 colors, dithering of color images, and advanced text
+canvas operations.")
+    (license (fsf-free "file://COPYING")))) ;WTFPL version 2
+
+(define-public libdca
+  (package
+    (name "libdca")
+    (version "0.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.videolan.org/pub/videolan/libdca/"
+                    version "/libdca-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libdca.html")
+    (synopsis "DTS Coherent Acoustics decoder")
+    (description "libdca is a library for decoding DTS Coherent Acoustics
+streams.")
+    (license gpl2+)))
+
+(define-public libdv
+  (package
+    (name "libdv")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/libdv/libdv-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fl96f2xh2slkv1i1ix7kqk576a0ak1d33cylm0mbhm96d0761d3"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libxv" ,libxv)))
+    (home-page "http://libdv.sourceforge.net/")
+    (synopsis "DV video (IEC 61834 and SMPTE 314M) codec")
+    (description "The Quasar DV codec (libdv) is a software codec for DV
+video, the encoding format used by most digital camcorders, typically those
+that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
+developed according to the official standards for DV video: IEC 61834 and
+SMPTE 314M.")
+    (license lgpl2.1+)))
+
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.5.4")
+    (version "2.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "11m2hbhdgphjxjp6hk438cxmipqjg5ixbr1kqnn9mbdhq9kc34fc"))))
+               "14a7zp8pa1rvw6nr9l2rf57xr004n5kwkhn5lglybjnn1p68xhr3"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("opus" ,opus)
+       ("ladspa" ,ladspa)
        ("lame" ,lame)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libquvi" ,libquvi)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
+       ("openal" ,openal)
        ("patchelf" ,patchelf)
+       ("pulseaudio" ,pulseaudio)
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
+       ("xvid" ,xvid)
        ("zlib", zlib)))
     (native-inputs
      `(("bc" ,bc)
@@ -116,16 +250,14 @@
                 (("#! /bin/sh") (string-append "#!" (which "bash"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
+               ;; FIXME: only needed for ffmpeg-2.2.13, but easier to add
+               ;; globally; drop as soon as ffmpeg-2.2.13 is dropped
+              (setenv "LDFLAGS" "-ldl")
 ;; possible additional inputs:
 ;;   --enable-avisynth        enable reading of AviSynth script files [no]
 ;;   --enable-frei0r          enable frei0r video filtering
-;;   --enable-ladspa          enable LADSPA audio filtering
 ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
-;;   --enable-libass          enable libass subtitles rendering [no]
-;;   --enable-libbluray       enable BluRay reading using libbluray [no]
-;;   --enable-libcaca         enable textual display using libcaca
 ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
-;;   --enable-libcdio         enable audio CD grabbing with libcdio
 ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
 ;;                            and libraw1394 [no]
 ;;   --enable-libfaac         enable AAC encoding via libfaac [no]
@@ -142,8 +274,6 @@
 ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
 ;;   --enable-libopencv       enable video filtering via libopencv [no]
 ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-;;   --enable-libpulse        enable Pulseaudio input via libpulse [no]
-;;   --enable-libquvi         enable quvi input via libquvi [no]
 ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
 ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
 ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
@@ -158,29 +288,36 @@
 ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
 ;;   --enable-libx264         enable H.264 encoding via x264 [no]
 ;;   --enable-libxavs         enable AVS encoding via xavs [no]
-;;   --enable-libxvid         enable Xvid encoding via xvidcore,
-;;                            native MPEG-4/Xvid encoder exists [no]
 ;;   --enable-libzmq          enable message passing via libzmq [no]
 ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
-;;   --enable-openal          enable OpenAL 1.1 capture support [no]
 ;;   --enable-opencl          enable OpenCL code
 ;;   --enable-x11grab         enable X11 grabbing [no]
               (zero? (system*
                       "./configure"
                       (string-append "--prefix=" out)
+                      "--enable-avresample"
                       "--enable-gpl" ; enable optional gpl licensed parts
                       "--enable-shared"
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
+                      "--enable-ladspa"
+                      "--enable-libass"
+                      "--enable-libbluray"
+                      "--enable-libcaca"
+                      "--enable-libcdio"
                       "--enable-libfreetype"
                       "--enable-libmp3lame"
                       "--enable-libopus"
+                      "--enable-libpulse"
+                      "--enable-libquvi"
                       "--enable-libsoxr"
                       "--enable-libspeex"
                       "--enable-libtheora"
                       "--enable-libtwolame"
                       "--enable-libvorbis"
                       "--enable-libvpx"
+                      "--enable-libxvid"
+                      "--enable-openal"
 
                       "--enable-runtime-cpudetect"
 
@@ -223,7 +360,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.0")
+    (version "2.1.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -231,7 +368,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "05smn9hqdp7iscc1dj4cxp1mrlad7b50lhlnlqisfzf493i2f2jy"))))
+               "0whzbn7ahn5maarcwl1yhk9lq10b0q0y9w5pjl9kh3frdjmncrbg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
@@ -446,6 +583,34 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 YouTube.com and a few more sites.")
     (license public-domain)))
 
+(define-public libbluray
+  (package
+    (name "libbluray")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.videolan.org/videolan/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "13dngs4b4cv29f6b825dq14n77mfhvk1kjb42axpq494pfgyp6zp"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("doxygen" ,doxygen)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)                   ;for doxygen
+       ("texlive" ,texlive)))
+    (home-page "http://www.videolan.org/developers/libbluray.html")
+    (synopsis "Blu-Ray Disc playback library")
+    (description
+     "libbluray is a library designed for Blu-Ray Disc playback for media
+players, like VLC or MPlayer.")
+    (license lgpl2.1+)))
+
 (define-public libdvdread
   (package
     (name "libdvdread")
@@ -499,6 +664,52 @@ a loop regularly calling a function to get the next block, surrounded by
 additional calls to tell the library of user interaction.  The whole
 DVD virtual machine and internal playback states are completely
 encapsulated.")
+    (license gpl2+)))
+
+(define-public libdvdnav-4
+  (package
+    (inherit libdvdnav)
+    (version "4.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.videolan.org/videolan/libdvdnav/libdvdnav-"
+                version ".tar.xz"))
+              (sha256
+               (base32
+                "0wi3gy408c8xj0ism0hckv5jbfh3lg4pmgxv87gbch9jrhp2gjkz"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          (zero? (system* "autoreconf" "-vif")))
+        %standard-phases)))))
+
+(define-public libdvdcss
+  (package
+    (name "libdvdcss")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.videolan.org/videolan/"
+                                  name "/" version "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "158k9zagmbk5bkbz96l6lwhh7xcgfcnzflkr4vblskhcab6llhbw"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.videolan.org/developers/libdvdcss.html")
+    (synopsis "Library for accessing DVDs as block devices")
+    (description
+     "libdvdcss is a simple library designed for accessing DVDs like a block
+device without having to bother about the decryption.")
     (license gpl2+)))
 
 (define-public srt2vtt
@@ -726,3 +937,36 @@ capabilities.")
                   (string-append out "/share/ADM_addons"))))
             (alist-delete 'install
                %standard-phases)))))))))
+
+(define-public xvid
+  (package
+    (name "xvid")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xvid.org/downloads/xvidcore-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0m5g75qvapr7xpywg6a83v5x19kw1nm9l2q48lg7jvvpba0bmqdh"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("yasm" ,yasm)))
+    (arguments
+     '(#:phases
+       (alist-cons-before
+        'configure 'pre-configure
+        (lambda _
+          (chdir "build/generic")
+          (substitute* "configure"
+            (("#! /bin/sh") (string-append "#!" (which "sh")))))
+        %standard-phases)
+       ;; No 'check' target.
+       #:tests? #f))
+    (home-page "https://www.xvid.com/")
+    (synopsis "MPEG-4 Part 2 Advanced Simple Profile video codec")
+    (description "Xvid is an MPEG-4 Part 2 Advanced Simple Profile (ASP) video
+codec library.  It uses ASP features such as b-frames, global and quarter
+pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
+and custom quantization matrices.")
+    (license gpl2+)))

@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages compression)
@@ -35,7 +37,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style bsd-style
+                #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -84,8 +86,8 @@
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
 SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-    (license (bsd-style "file://LICENSE"
-                        "See LICENSE in the distribution."))
+    (license (non-copyleft "file://LICENSE"
+                           "See LICENSE in the distribution."))
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
 
@@ -306,6 +308,140 @@ extremely small.")
     (home-page "http://search.cpan.org/~timb/DBI-1.631/DBI.pm")
     (license (package-license perl))))
 
+(define-public perl-dbix-class
+  (package
+    (name "perl-dbix-class")
+    (version "0.082810")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "DBIx-Class-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zlsswk8j2k024gwhdhia8ksrmb8065n98dahkk8c0r69wv85n04"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-file-temp" ,perl-file-temp)
+       ("perl-package-stash" ,perl-package-stash)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-class-accessor-grouped" ,perl-class-accessor-grouped)
+       ("perl-class-c3-componentised" ,perl-class-c3-componentised)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-config-any" ,perl-config-any)
+       ("perl-context-preserve" ,perl-context-preserve)
+       ("perl-data-dumper-concise" ,perl-data-dumper-concise)
+       ("perl-data-page" ,perl-data-page)
+       ("perl-dbi" ,perl-dbi)
+       ("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-module-find" ,perl-module-find)
+       ("perl-moo" ,perl-moo)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)
+       ("perl-scope-guard" ,perl-scope-guard)
+       ("perl-sql-abstract" ,perl-sql-abstract)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-text-balanced" ,perl-text-balanced)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/DBIx-Class")
+    (synopsis "Extensible and flexible object <-> relational mapper")
+    (description "An SQL to OO mapper with an object API inspired by
+Class::DBI (with a compatibility layer as a springboard for porting) and a
+resultset API that allows abstract encapsulation of database operations.  It
+aims to make representing queries in your code as perl-ish as possible while
+still providing access to as many of the capabilities of the database as
+possible, including retrieving related records from multiple tables in a
+single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
+\"ORDER BY\" and \"HAVING\" support.")
+    (license (package-license perl))))
+
+(define-public perl-dbix-class-introspectablem2m
+  (package
+    (name "perl-dbix-class-introspectablem2m")
+    (version "0.001001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRODITI/"
+                           "DBIx-Class-IntrospectableM2M-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p9zx1yc1f6jg583l206wilsni2v8mlngc2vf2q8yn10pmy4y6wm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-dbix-class" ,perl-dbix-class)))
+    (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
+    (synopsis "Introspect many-to-many relationships")
+    (description "Because the many-to-many relationships are not real
+relationships, they can not be introspected with DBIx::Class.  Many-to-many
+relationships are actually just a collection of convenience methods installed
+to bridge two relationships.  This DBIx::Class component can be used to store
+all relevant information about these non-relationships so they can later be
+introspected and examined.")
+    (license (package-license perl))))
+
+(define-public perl-dbix-class-schema-loader
+  (package
+    (name "perl-dbix-class-schema-loader")
+    (version "0.07042")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "DBIx-Class-Schema-Loader-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sb48as7azmj6s4acxh98wcvcik7lxm7dcjz1c3wdrkrbmbbz0jf"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-config-any" ,perl-config-any)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-dbix-class-introspectablem2m" ,perl-dbix-class-introspectablem2m)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
+       ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-class-unload" ,perl-class-unload)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-class-accessor-grouped" ,perl-class-accessor-grouped)
+       ("perl-class-c3-componentised" ,perl-class-c3-componentised)
+       ("perl-carp-clan" ,perl-carp-clan)
+       ("perl-data-dump" ,perl-data-dump)
+       ("perl-dbix-class" ,perl-dbix-class)
+       ("perl-hash-merge" ,perl-hash-merge)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
+       ("perl-lingua-en-inflect-number" ,perl-lingua-en-inflect-number)
+       ("perl-lingua-en-tagger" ,perl-lingua-en-tagger)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-scope-guard" ,perl-scope-guard)
+       ("perl-string-camelcase" ,perl-string-camelcase)
+       ("perl-string-toidentifier-en" ,perl-string-toidentifier-en)
+       ("perl-sub-name" ,perl-sub-name)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (arguments `(#:tests? #f))          ;TODO: t/20invocations.t fails
+    (home-page "http://search.cpan.org/dist/DBIx-Class-Schema-Loader")
+    (synopsis "Create a DBIx::Class::Schema based on a database")
+    (description "DBIx::Class::Schema::Loader automates the definition of a
+DBIx::Class::Schema by scanning database table definitions and setting up the
+columns, primary keys, unique constraints and relationships.")
+    (license (package-license perl))))
+
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
@@ -329,6 +465,37 @@ module, and nothing else.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
 
+(define-public perl-sql-abstract
+  (package
+    (name "perl-sql-abstract")
+    (version "1.81")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RI/RIBASUSHI/"
+                           "SQL-Abstract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17sgwq3mvqjhv3b77cnvrq60xgp8harjhlnvpwmxc914rqc5ckaz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-hash-merge" ,perl-hash-merge)
+       ("perl-moo" ,perl-moo)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-text-balanced" ,perl-text-balanced)))
+    (home-page "http://search.cpan.org/dist/SQL-Abstract")
+    (synopsis "Generate SQL from Perl data structures")
+    (description "This module was inspired by the excellent DBIx::Abstract.
+While based on the concepts used by DBIx::Abstract, the concepts used have
+been modified to make the SQL easier to generate from Perl data structures.
+The underlying idea is for this module to do what you mean, based on the data
+structures you provide it, so that you don't have to modify your code every
+time your data changes")
+    (license (package-license perl))))
 
 (define-public unixodbc
   (package

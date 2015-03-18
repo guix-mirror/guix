@@ -19,6 +19,7 @@
 
 (define-module (gnu packages bash)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages bison)
@@ -242,7 +243,9 @@ without modification.")
                     "bash-completion-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kxf8s5bw7y50x0ksb77d3kv0dwadixhybl818w27y6mlw26hq1b"))))
+                "0kxf8s5bw7y50x0ksb77d3kv0dwadixhybl818w27y6mlw26hq1b"))
+              (patches
+               (list (search-patch "bash-completion-directories.patch")))))
     (build-system gnu-build-system)
     (synopsis "Bash completions for common commands")
     (description

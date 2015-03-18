@@ -198,7 +198,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.18.8")
+  (let* ((version "3.18.9")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -271,7 +271,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1ai2krm0svq52z4nm0qyw3q3ybfia83zvpv1f38q1wkllwq0gi6j"))))
+               "0n3p9ci8w71hd168df7xlccafxzb3agr8rk3xmvnj7dnbfiddqv6"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -1891,7 +1891,7 @@ thanks to the use of namespaces.")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
 is for enabling irq-unmasking and IDE multiplemode.")
-    (license (bsd-style "file://LICENSE.TXT"))))
+    (license (non-copyleft "file://LICENSE.TXT"))))
 
 (define-public acpid
   (package
@@ -1961,6 +1961,13 @@ also contains the libsysfs library.")
            (substitute* "configure"
              (("includedir='(\\$\\{prefix\\}/include)'" all orig)
               (string-append "includedir='" orig "/sysfs'")))))))
+    ;; XXX sysfsutils-1.3.0's config.guess fails on mips64el
+    (arguments `(#:configure-flags
+                 '(,@(if (%current-target-system)
+                         '()
+                         (let ((triplet
+                                (nix-system->gnu-triplet (%current-system))))
+                           (list (string-append "--build=" triplet)))))))
     (synopsis "System utilities based on Linux sysfs (version 1.x)")))
 
 (define-public cpufrequtils

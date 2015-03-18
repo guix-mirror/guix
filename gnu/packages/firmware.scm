@@ -80,4 +80,4 @@
      "This is the firmware for the Qualcomm Atheros AR7010 and AR9271 USB
 802.11n NICs (aka. Wi-Fi USB dongles.)  It is used by the ath9k driver of
 Linux-libre.")
-    (license (bsd-style "http://directory.fsf.org/wiki/License:ClearBSD"))))
+    (license (non-copyleft "http://directory.fsf.org/wiki/License:ClearBSD"))))

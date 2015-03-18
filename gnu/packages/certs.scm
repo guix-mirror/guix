@@ -33,10 +33,11 @@
     (name "certdata2pem")
     (version "2013")
     (source
-    (origin
+     (origin
       (method url-fetch)
         (uri
           "http://pkgs.fedoraproject.org/cgit/ca-certificates.git/plain/certdata2pem.py?id=053dde8a2f5901e97028a58bf54e7d0ef8095a54")
+        (file-name "certdata2pem.py")
         (sha256
           (base32
             "0zscrm41gnsf14zvlkxhy00h3dmgidyz645ldpda3y3vabnwv8dx"))))
@@ -107,10 +108,6 @@
                  (system* "certdata2pem.py" "certdata.txt")
                  ;; copy selected .pem files into the output
                  (for-each maybe-install-cert
-                           ;; FIXME: Some of the file names are UTF8 (?) and
-                           ;; cause an error message such as find-files:
-                           ;; ./EBG_Elektronik_Sertifika_Hizmet_Sa??lay??c??s??:2.8.76.175.115.66.28.142.116.2.pem:
-                           ;; No such file or directory
                            (find-files "." ".*\\.pem")))
 
                (with-directory-excursion certsdir
@@ -123,7 +120,7 @@
                  (system* "c_rehash" "."))))
 
            (map (cut assq <> %standard-phases)
-                '(set-paths unpack)))))
+                '(set-paths install-locale unpack)))))
     (synopsis "CA certificates from Mozilla")
     (description
       "This package provides certificates for Certification Authorities (CA)

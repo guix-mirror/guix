@@ -47,7 +47,8 @@
             check-inputs-should-be-native
             check-patches
             check-synopsis-style
-            check-home-page))
+            check-home-page
+            check-source))
 
 
 ;;;

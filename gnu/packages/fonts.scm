@@ -359,3 +359,50 @@ fonts are intended to support the characters necessary to render or display
 text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.
 ")
     (license license:asl2.0)))
+
+(define-public font-wqy-zenhei
+  (package
+    (name "font-wqy-zenhei")
+    (version "0.9.45")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/wqy/wqy-zenhei-"
+                    version ".tar.gz"))
+              (file-name (string-append "wqy-zenhei-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mkmxq8g2hjcglb3zajfqj20r4r88l78ymsp2xyl5yav8w3f7dz4"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((PATH (string-append (assoc-ref %build-inputs "tar")  "/bin:"
+                                    (assoc-ref %build-inputs "gzip") "/bin"))
+               (font-dir (string-append (assoc-ref %outputs "out")
+                                        "/share/fonts/wenquanyi/")))
+           (setenv "PATH" PATH)
+           (mkdir-p font-dir)
+           (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (chdir "wqy-zenhei")
+           (copy-file "wqy-zenhei.ttc"
+                      (string-append font-dir "wqy-zenhei.ttc"))))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("tar" ,tar)))
+    (home-page "http://wenq.org/wqy2/")
+    (synopsis "CJK font")
+    (description
+     "WenQuanYi Zen Hei is a Hei-Ti style (sans-serif type) Chinese outline
+font.  It is designed for general purpose text formatting and on-screen
+display of Chinese characters and symbols from many other languages.
+WenQuanYi Zen Hei provides a rather complete coverage to Chinese Hanzi glyphs,
+including both simplified and traditional forms.  The total glyph number in
+this font is over 35,000, including over 21,000 Chinese Hanzi.  This font has
+full coverage to GBK(CP936) charset, CJK Unified Ideographs, as well as the
+code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
+ko (Korean) locales for fontconfig.")
+    ;; GPLv2 with font embedding exception
+    (license license:gpl2)))

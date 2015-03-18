@@ -26,7 +26,7 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 x11 x11-style
+                #:select (asl2.0 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
@@ -723,7 +723,7 @@ Database API 2.0T.")
     (description
      "Mechanize implements stateful programmatic web browsing in Python,
 after Andy Lester’s Perl module WWW::Mechanize.")
-    (license (bsd-style "file://COPYING"
+    (license (non-copyleft "file://COPYING"
                         "See COPYING in the distribution."))))
 
 
@@ -3146,7 +3146,14 @@ libxml2 and libxslt.")
               version ".tar.gz"))
         (sha256
           (base32
-            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))))
+            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Adapt to newer freetype. As the package is unmaintained upstream,
+        ;; there is no use in creating a patch and reporting it.
+        '(substitute* "_imagingft.c"
+           (("freetype/")
+            "freetype2/")))))
     (build-system python-build-system)
     (inputs
       `(("freetype" ,freetype)
@@ -3305,3 +3312,64 @@ interfaces in an easy and portable manner.")
 providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
+
+(define-public python-testlib
+  (package
+    (name "python-testlib")
+    (version "0.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testlib/testlib-"
+             version ".zip"))
+       (sha256
+        (base32 "1mz26cxn4x8bbgv0rn0mvj2z05y31rkc8009nvdlb3lam5b4mj3y"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:phases
+       (alist-replace
+        'unpack
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((unzip (string-append (assoc-ref inputs "unzip")
+                                      "/bin/unzip"))
+                (source (assoc-ref inputs "source")))
+            (and (zero? (system* unzip source))
+                 (chdir (string-append "testlib-" ,version)))))
+        %standard-phases)))
+    (synopsis "Python micro test suite harness")
+    (description "A micro unittest suite harness for Python.")
+    (home-page "https://github.com/trentm/testlib")
+    (license license:expat)))
+
+(define-public python2-testlib
+  (package-with-python2 python-testlib))
+
+(define-public python2-xlib
+  (package
+    (name "python2-xlib")
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/python-xlib/"
+                                  "python-xlib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sv0447j0rx8cgs3jhjl695p5pv13ihglcjlrrz1kq05lsvb0wa7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2                         ;Python 2 only
+       #:tests? #f))                              ;no tests
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://python-xlib.sourceforge.net/")
+    (synopsis "Python X11 client library")
+    (description
+     "The Python X Library is intended to be a fully functional X client
+library for Python programs.  It is useful to implement low-level X clients.
+It is written entirely in Python.")
+    (license gpl2+)))

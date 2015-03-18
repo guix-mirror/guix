@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,8 +60,6 @@
                   ;; enable verbose output from builds
                   "-DCMAKE_VERBOSE_MAKEFILE=ON"
                   ,@configure-flags)))
-      (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
       (format #t "running 'cmake' with arguments ~s~%" args)
       (zero? (apply system* "cmake" args)))))
 

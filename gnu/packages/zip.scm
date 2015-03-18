@@ -67,7 +67,7 @@ directory structure can be packed into a ZIP archive with a single command.
 Zip has one compression method (deflation) and can also store files without
 compression.  Zip automatically chooses the better of the two for each file.
 Compression ratios of 2:1 to 3:1 are common for text files.")
-  (license (license:bsd-style "file://LICENSE"
+  (license (license:non-copyleft "file://LICENSE"
                                "See LICENSE in the distribution."))))
 
 (define-public unzip
@@ -108,7 +108,7 @@ UnZip lists, tests, or extracts files from a .zip archive.  The default
 behaviour (with no options) is to extract into the current directory, and
 subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
-  (license (license:bsd-style "file://LICENSE"
+  (license (license:non-copyleft "file://LICENSE"
                                "See LICENSE in the distribution."))))
 
 (define-public zziplib

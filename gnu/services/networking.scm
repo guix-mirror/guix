@@ -286,6 +286,14 @@ configuration file."
      (service
       (provision '(bitlbee))
       (requirement '(user-processes loopback))
+      (activate #~(begin
+                    (use-modules (guix build utils))
+
+                    ;; This directory is used to store OTR data.
+                    (mkdir-p "/var/lib/bitlbee")
+                    (let ((user (getpwnam "bitlbee")))
+                      (chown "/var/lib/bitlbee"
+                             (passwd:uid user) (passwd:gid user)))))
       (start #~(make-forkexec-constructor
                 (list (string-append #$bitlbee "/sbin/bitlbee")
                       "-n" "-F" "-u" "bitlbee" "-c" #$conf)))

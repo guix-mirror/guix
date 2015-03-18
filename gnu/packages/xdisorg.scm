@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,8 +79,8 @@ avoiding password prompts when X11 forwarding has already been setup.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
-       #:phases 
-       (alist-replace 'configure 
+       #:phases
+       (alist-replace 'configure
                       (lambda* (#:key outputs #:allow-other-keys #:rest args)
                         (setenv "PREFIX" (assoc-ref outputs "out"))
                         (setenv "LDFLAGS" (string-append "-Wl,-rpath="
@@ -391,7 +392,7 @@ things less distracting.")
     (description
      "XLockMore is a classic screen locker and screen saver for the
 X Window System.")
-    (license (license:bsd-style #f "See xlock.c.")
+    (license (license:non-copyleft #f "See xlock.c.")
              ;; + GPLv2 in modes/glx/biof.c.
              )))
 
@@ -453,3 +454,68 @@ to access all XBindKeys internals, so you can have key combinations, double
 clicks or timed double clicks take actions.  Also all functions that work in
 Guile will work for XBindKeys.")
     (license license:gpl2+)))
+
+(define-public rxvt-unicode
+  (package
+    (name "rxvt-unicode")
+    (version "9.21")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "http://dist.schmorp.de/rxvt-unicode/"
+              name "-"
+              version
+              ".tar.bz2"))
+        (sha256
+          (base32
+            "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libXft" ,libxft)
+       ("libX11" ,libx11)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://software.schmorp.de/pkg/rxvt-unicode.html")
+    (synopsis "Rxvt clone with XFT and unicode support")
+    (description "Rxvt-unicode (urxvt) is a colour vt102 terminal emulator
+intended as an xterm replacement for users who do not require features such as
+Tektronix 4014 emulation and toolkit-style configurability.  It supports
+unicode, XFT and may be extended with Perl plugins.  It also comes with a
+client/daemon pair that lets you open any number of terminal windows from
+within a single process.")
+    (license license:gpl3+)))
+
+(define-public xcape
+  (package
+    (name "xcape")
+    (version "1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/alols/" name
+                            "/archive/v" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0jkdiaxc6sryrbibdgi2y1c48n4l9xyazhxr16l6h4ibddx95bk9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases (alist-delete 'configure %standard-phases) ; no configure script
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "MANDIR=/share/man/man1"
+                          "CC=gcc")))
+    (inputs
+     `(("libxtst" ,libxtst)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://github.com/alols/xcape")
+    (synopsis "Use a modifier key in X.org as another key")
+    (description
+     "This utility for X.org allows to use modifier key as another key when
+pressed and released on its own.  The default behaviour is to generate the
+Escape key when Left Control is pressed and released on its own.")
+    (license license:gpl3+)))

@@ -28,6 +28,17 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages fontutils))
 
+(define ratpoison.desktop
+  (origin
+    (method url-fetch)
+    (uri (string-append "http://sources.gentoo.org/cgi-bin/viewvc.cgi/"
+                        "gentoo-x86/x11-wm/ratpoison/files/ratpoison.desktop"
+                        "?revision=1.1"))
+    (file-name "ratpoison.desktop")
+    (sha256
+     (base32
+      "1rh3f4c3rhn6q2hmkraam0831xqcqyj3qkqf019ahaxsxaan3553"))))
+
 (define-public ratpoison
   (package
     (name "ratpoison")
@@ -41,6 +52,17 @@
                "0v4mh8d3vsh5xbbycfdl3g8zfygi1rkslh1x7k5hi1d05bfq3cdr"))
              (patches (list (search-patch "ratpoison-shell.patch")))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'install 'install-xsession
+        (lambda _
+          (let* ((file      (assoc-ref %build-inputs "ratpoison.desktop"))
+                 (xsessions (string-append %output "/share/xsessions"))
+                 (target    (string-append xsessions "/ratpoison.desktop")))
+            (mkdir-p xsessions)
+            (copy-file file target)))
+        %standard-phases)))
     (inputs
      `(("libXi" ,libxi)
        ("readline" ,readline)
@@ -52,7 +74,8 @@
        ("libXpm" ,libxpm)
        ("libXt" ,libxt)
        ("inputproto" ,inputproto)
-       ("libX11" ,libx11)))
+       ("libX11" ,libx11)
+       ("ratpoison.desktop" ,ratpoison.desktop)))
     (native-inputs
       `(("perl" ,perl)
         ("pkg-config" ,pkg-config)))

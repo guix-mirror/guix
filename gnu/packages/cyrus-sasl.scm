@@ -61,6 +61,6 @@
 standards-track method for remote computers to authenticate.  The Cyrus SASL
 library makes supporting various SASL mechanisms easy for both client and
 server writers.")
-   (license (license:bsd-style "file://COPYING"
-                       "See COPYING in the distribution."))
+   (license (license:non-copyleft "file://COPYING"
+                                  "See COPYING in the distribution."))
    (home-page "http://cyrusimap.web.cmu.edu/index.php")))

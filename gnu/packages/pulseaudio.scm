@@ -112,7 +112,7 @@ rates. ")
 (define pulseaudio
   (package
     (name "pulseaudio")
-    (version "5.0")
+    (version "6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -120,7 +120,7 @@ rates. ")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0fgrr8v7yfh0byhzdv4c87v9lkj8g7gpjm8r9xrbvpa92a5kmhcr"))
+               "1xpnfxa0d8pgf6b4qdgnkcvrvdxbbbjd5ync19h0f5hbp3h401mm"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -128,12 +128,14 @@ rates. ")
               '(substitute* "src/daemon/default.pa.in"
                  (("load-module module-console-kit" all)
                   (string-append "#" all "\n"))))
-             (patches (list (search-patch "pulseaudio-fix-mult-test.patch")
-                            (search-patch "pulseaudio-CVE-2014-3970.patch")))))
+             (patches (list (search-patch "pulseaudio-fix-mult-test.patch")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
-                           "--disable-oss-output")
+     `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"
+                               "--disable-oss-output"
+                               (string-append "--with-udev-rules-dir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))
        #:phases (alist-cons-before
                  'check 'pre-check
                  (lambda _
@@ -160,6 +162,7 @@ rates. ")
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
+       ("eudev" ,eudev)           ;for the detection of hardware audio devices
        ("check" ,check)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
@@ -191,7 +194,8 @@ mixing several sounds into one are easily achieved using a sound server. ")
                    ".tar.xz"))
              (sha256
               (base32
-               "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))))
+               "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))
+             (patches (list (search-patch "pavucontrol-sigsegv.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("libcanberra" ,libcanberra)

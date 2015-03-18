@@ -198,7 +198,13 @@ without requiring the source code to be rewritten.")
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
     (inputs `(("guile" ,guile-2.0)))
-    (arguments `(#:configure-flags
+    (arguments `(;; The extract-*.sh scripts really expect to run in the C
+                 ;; locale.  Failing to do that, we end up with a build
+                 ;; failure while extracting doc.  (Fixed in Guile-Reader's
+                 ;; repo.)
+                 #:locale "C"
+
+                 #:configure-flags
                  (let ((out (assoc-ref %outputs "out")))
                    (list (string-append "--with-guilemoduledir="
                                         out "/share/guile/site/2.0")))))
@@ -237,17 +243,25 @@ many readers as needed).")
                                (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out   (assoc-ref outputs "out"))
-                          (dir   (string-append out "/share/guile/site/"))
-                          (files (find-files dir ".scm")))
-                    (substitute* files
-                      (("\"libguile-ncurses\"")
-                       (format #f "\"~a/lib/libguile-ncurses\""
-                               out)))))
-                 %standard-phases)))
+       #:phases (alist-cons-before
+                 'check 'change-locale
+                 (lambda _
+                   ;; Use the locale that's actually available in the build
+                   ;; environment.
+                   (substitute* "test/f009_form_wide.test"
+                     (("en_US\\.utf8")
+                      "en_US.UTF-8")))
+                 (alist-cons-after
+                  'install 'post-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out   (assoc-ref outputs "out"))
+                           (dir   (string-append out "/share/guile/site/"))
+                           (files (find-files dir ".scm")))
+                      (substitute* files
+                        (("\"libguile-ncurses\"")
+                         (format #f "\"~a/lib/libguile-ncurses\""
+                                 out)))))
+                  %standard-phases))))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description

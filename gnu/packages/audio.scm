@@ -50,6 +50,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
 (define-public alsa-modular-synth
@@ -244,20 +245,20 @@ plugins are provided.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0bsacx3l9065gk8g4137qmz2ij7s9x06aldvacinzlcslw7bd1kq"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "libs/Makefile"
-                  (("/sbin/ldconfig") "true")))))
+                "0bsacx3l9065gk8g4137qmz2ij7s9x06aldvacinzlcslw7bd1kq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
-        'unpack
-        'enter-directory
-        (lambda _ (chdir "libs"))
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("/sbin/ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs")
+          #t)
         (alist-cons-after
          'install
          'install-symlink
@@ -276,6 +277,38 @@ plugins are provided.")
      "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
 ALSA PCM devices.")
     (license license:gpl2+)))
+
+(define-public faad2
+  (package
+    (name "faad2")
+    (version "2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/faac/faad2-" version ".zip"))
+              (sha256
+               (base32
+                "16f3l16c00sg0wkrkm3vzv0gy3g97x309vw788igs0cap2x1ak3z"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("unzip" ,unzip)))
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'unpack 'bootstrap
+        (lambda _
+          (substitute* "bootstrap" (("\r\n") "\n"))
+          (zero? (system* "sh" "bootstrap")))
+        %standard-phases)))
+    (home-page "http://www.audiocoding.com/faad2.html")
+    (synopsis "MPEG-4 and MPEG-2 AAC decoder")
+    (description
+     "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR,
+PS, and DAB+.")
+    (license license:gpl2)))
 
 (define-public freepats
   (package
@@ -491,6 +524,29 @@ applications, restoring program state (i.e. loaded patches) and the
 connections between them.")
     (license license:gpl2+)))
 
+(define-public libbs2b
+  (package
+    (name "libbs2b")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bs2b/libbs2b-" version ".tar.lzma"))
+              (sha256
+               (base32
+                "1mcc4gjkmphczjybnsrip3gq1f974knzys7x49bv197xk3fn8wdr"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libsndfile" ,libsndfile)))
+    (home-page "http://sourceforge.net/projects/bs2b/")
+    (synopsis "Bauer stereophonic-to-binaural DSP")
+    (description
+     "The Bauer stereophonic-to-binaural DSP (bs2b) library and plugins is
+designed to improve headphone listening of stereo audio records.  Recommended
+for headphone prolonged listening to disable superstereo fatigue without
+essential distortions.")
+    (license license:expat)))
+
 (define-public liblo
   (package
     (name "liblo")
@@ -656,6 +712,35 @@ software.")
 extensions into easy to use C++ classes.  It is the successor of
 lv2-c++-tools.")
     (license license:gpl3+)))
+
+(define-public openal
+  (package
+    (name "openal")
+    (version "1.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kcat.strangesoft.net/openal-releases/openal-soft-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0mmhdqiyb3c9dzvxspm8h2v8jibhi8pfjxnf6m0wn744y1ia2a8f"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; no check target
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "3D audio API")
+    (description
+     "OpenAL provides capabilities for playing audio in a virtual 3D
+environment.  Distance attenuation, doppler shift, and directional sound
+emitters are among the features handled by the API.  More advanced effects,
+including air absorption, occlusion, and environmental reverb, are available
+through the EFX extension.  It also facilitates streaming audio, multi-channel
+buffers, and audio capture.")
+    (home-page "http://kcat.strangesoft.net/openal.html")
+    (license license:lgpl2.0+)))
 
 (define-public patchage
   (package
@@ -1020,6 +1105,46 @@ to record and/or play sound using a callback function or a blocking read/write
 interface.")
     (license license:expat)))
 
+(define-public rsound
+  (package
+    (name "rsound")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Themaister/RSound/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1wzs40c0k5zpkmm5ffl6c17xmr399sxli7ys0fbb9ib0fd334knx"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-2)
+       ("ao" ,ao)
+       ("libsamplerate" ,libsamplerate)
+       ("openal" ,openal)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)))
+    (arguments
+     '(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (setenv "CC" "gcc")
+          (zero?
+           (system* "./configure"
+                    (string-append "--prefix=" (assoc-ref outputs "out")))))
+        %standard-phases)
+       ;; No 'check' target.
+       #:tests? #f))
+    (home-page "http://themaister.net/rsound.html")
+    (synopsis "Networked audio system")
+    (description
+     "RSound allows you to send audio from an application and transfer it
+directly to a different computer on your LAN network.  It is an audio daemon
+with a much different focus than most other audio daemons.")
+    (license license:gpl3+)))
+
 (define-public zita-alsa-pcmi
   (package
     (name "zita-alsa-pcmi")
@@ -1032,20 +1157,20 @@ interface.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "libs/Makefile"
-                  (("ldconfig") "true")))))
+                "1rgv332g82rrrlm4vdam6p2pyrisxbi7b3izfaa0pcjglafsy7j9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
-        'unpack
-        'enter-directory
-        (lambda _ (chdir "libs"))
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs")
+          #t)
         (alist-cons-after
          'install
          'install-symlink

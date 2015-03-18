@@ -251,8 +251,8 @@ must be a symbol: 'dsa, 'ecc, or 'rsa."
            (bytevector->base16-string bv))))
 
 (define (key-type sexp)
-  "Return a symbol denoting the type of key representing by SEXP--e.g., 'rsa',
-'ecc'--or #f if SEXP does not denote a valid key."
+  "Return a symbol denoting the type of public or private key represented by
+SEXP--e.g., 'rsa', 'ecc'--or #f if SEXP does not denote a valid key."
   (case (canonical-sexp-nth-data sexp 0)
     ((public-key private-key)
      (canonical-sexp-nth-data (canonical-sexp-nth sexp 1) 0))

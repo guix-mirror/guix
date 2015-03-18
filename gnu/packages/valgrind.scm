@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,15 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.10.0")
+    (version "3.10.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://valgrind.org/downloads/valgrind-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1jgd42vsx0bcblp91bd61hd5wpy0gghh09wxgm65m666vy17y103"))))
+               "15xrzhfnwwn7n1sfbkwvdbvs6zk0zx718n6zd5i1nrnvdp13s9gs"))
+             (patches (list (search-patch "valgrind-glibc-2.21.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

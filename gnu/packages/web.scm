@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,11 +37,14 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
@@ -322,360 +326,6 @@ used to validate and fix HTML data.")
     (home-page "http://tidy.sourceforge.net/")
     (license (l:x11-style "file:///include/tidy.h"))))
 
-(define-public perl-html-tagset
-  (package
-    (name "perl-html-tagset")
-    (version "3.20")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/P/PE/PETDANCE/HTML-Tagset-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "1qh8249wgr4v9vgghq77zh1d2zs176bir223a8gh3k9nksn7vcdd"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl data tables useful in parsing HTML")
-    (description
-     "The HTML::Tagset module contains several data tables useful in various
-kinds of HTML parsing operations.")
-    (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
-
-(define-public perl-html-parser
-  (package
-    (name "perl-html-parser")
-    (version "3.71")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTML-Parser-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "00nqzdgl7c3jilx7mil19k5jwcw3as14pvkjgxi97zyk94vqp4dy"))))
-    (build-system perl-build-system)
-    (inputs
-     `(("perl-html-tagset" ,perl-html-tagset)))
-    (license (package-license perl))
-    (synopsis "Perl HTML parser class")
-    (description
-     "Objects of the HTML::Parser class will recognize markup and separate
-it from plain text (alias data content) in HTML documents.  As different
-kinds of markup and text are recognized, the corresponding event handlers
-are invoked.")
-    (home-page "http://search.cpan.org/~gaas/HTML-Parser/")))
-
-(define-public perl-http-date
-  (package
-    (name "perl-http-date")
-    (version "6.02")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Date-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl date conversion routines")
-    (description
-     "The HTTP::Date module provides functions that deal with date formats
-used by the HTTP protocol (and then some more).")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Date/")))
-
-(define-public perl-uri
-  (package
-    (name "perl-uri")
-    (version "1.60")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/URI-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0xr31mf7lfrwhyvlx4pzp6p7alls5gi4bj8pk5g89f5cckfd74hz"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
-    (description
-     "The URI module implements the URI class.  Objects of this class
-represent \"Uniform Resource Identifier references\" as specified in RFC 2396
-(and updated by RFC 2732).")
-    (home-page "http://search.cpan.org/~gaas/URI/")))
-
-(define-public perl-lwp-mediatypes
-  (package
-    (name "perl-lwp-mediatypes")
-    (version "6.02")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/LWP-MediaTypes-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl module to guess the media type for a file or a URL")
-    (description
-     "The LWP::MediaTypes module provides functions for handling media (also
-known as MIME) types and encodings.  The mapping from file extensions to
-media types is defined by the media.types file.  If the ~/.media.types file
-exists it is used instead.")
-    (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
-
-(define-public perl-io-html
-  (package
-    (name "perl-io-html")
-    (version "1.00")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/C/CJ/CJM/IO-HTML-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "06nj3a0xgp5jxwxx6ayglfk2v7npf5a7gwkqsjlkapjkybarzqh4"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl module to open an HTML file with automatic charset detection")
-    (description
-     "IO::HTML provides an easy way to open a file containing HTML while
-automatically determining its encoding.  It uses the HTML5 encoding sniffing
-algorithm specified in section 8.2.2.1 of the draft standard.")
-    (home-page "http://search.cpan.org/~cjm/IO-HTML/")))
-
-(define-public perl-http-message
-  (package
-    (name "perl-http-message")
-    (version "6.06")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Message-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)
-       ("perl-uri" ,perl-uri)))
-    (inputs
-     `(("perl-io-html" ,perl-io-html)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
-    (license (package-license perl))
-    (synopsis "Perl HTTP style message")
-    (description
-     "An HTTP::Message object contains some headers and a content body.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Message/")))
-
-(define-public perl-http-cookies
-  (package
-    (name "perl-http-cookies")
-    (version "6.01")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Cookies-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "087bqmg22dg3vj7gssh3pcsh9y1scimkbl5h1kc8jqyfhgisvlzm"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)))
-    (license (package-license perl))
-    (synopsis "Perl HTTP cookie jars")
-    (description
-     "The HTTP::Cookies class is for objects that represent a cookie jar,
-that is, a database of all the HTTP cookies that a given LWP::UserAgent
-object knows about.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Cookies/")))
-
-(define-public perl-http-daemon
-  (package
-    (name "perl-http-daemon")
-    (version "6.01")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Daemon-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "1hmd2isrkilf0q0nkxms1q64kikjmcw9imbvrjgky6kh89vqdza3"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
-    (license (package-license perl))
-    (synopsis "Perl simple http server class")
-    (description
-     "Instances of the HTTP::Daemon class are HTTP/1.1 servers that listen
-on a socket for incoming requests.  The HTTP::Daemon is a subclass of
-IO::Socket::INET, so you can perform socket operations directly on it too.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Daemon/")))
-
-(define-public perl-http-negotiate
-  (package
-    (name "perl-http-negotiate")
-    (version "6.01")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Negotiate-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "05p053vjs5g91v5cmjnny7a3xzddz5k7vnjw81wfh01ilqg9qwhw"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-http-message" ,perl-http-message)))
-    (license (package-license perl))
-    (synopsis "Perl http content negotiation")
-    (description
-     "The HTTP::Negotiate module provides a complete implementation of the
-HTTP content negotiation algorithm specified in
-draft-ietf-http-v11-spec-00.ps chapter 12.  Content negotiation allows for
-the selection of a preferred content representation based upon attributes
-of the negotiable variants and the value of the various Accept* header
-fields in the request.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
-
-(define-public perl-www-robotrules
-  (package
-    (name "perl-www-robotrules")
-    (version "6.02")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/WWW-RobotRules-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "07m50dp5n5jxv3m93i55qvnd67a6g7cvbvlik115kmc8lbkh5da6"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-uri" ,perl-uri)))
-    (license (package-license perl))
-    (synopsis "Perl database of robots.txt-derived permissions")
-    (description
-     "The WWW::RobotRules module parses /robots.txt files as specified in
-\"A Standard for Robot Exclusion\", at
-<http://www.robotstxt.org/wc/norobots.html>.  Webmasters can use the
-/robots.txt file to forbid conforming robots from accessing parts of
-their web site.")
-    (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
-
-(define-public perl-net-http
-  (package
-    (name "perl-net-http")
-    (version "6.06")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/Net-HTTP-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "1m1rvniffadq99gsy25298ia3lixwymr6kan64jd3ylyi7nkqkhx"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl low-level HTTP connection (client)")
-    (description
-     "The Net::HTTP class is a low-level HTTP client.  An instance of the
-Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
-is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
-HTTP/1.1.")
-    (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
-
-(define-public perl-file-listing
-  (package
-    (name "perl-file-listing")
-    (version "6.04")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/File-Listing-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "1xcwjlnxaiwwpn41a5yi6nz95ywh3szq5chdxiwj36kqsvy5000y"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)))
-    (license (package-license perl))
-    (synopsis "Perl directory listing parser")
-    (description
-     "The File::Listing module exports a single function called parse_dir(),
-which can be used to parse directory listings.")
-    (home-page "http://search.cpan.org/~gaas/File-Listing/")))
-
-(define-public perl-encode-locale
-  (package
-    (name "perl-encode-locale")
-    (version "1.03")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/Encode-Locale-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0m9d1vdphlyzybgmdanipwd9ndfvyjgk3hzw250r299jjgh3fqzp"))))
-    (build-system perl-build-system)
-    (license (package-license perl))
-    (synopsis "Perl locale encoding determination")
-    (description
-     "The POSIX locale system is used to specify both the language
-conventions requested by the user and the preferred character set to consume
-and output.  The Encode::Locale module looks up the charset and encoding
-(called a CODESET in the locale jargon) and arranges for the Encode module
-to know this encoding under the name \"locale\".  It means bytes obtained
-from the environment can be converted to Unicode strings by calling
-Encode::encode(locale => $bytes) and converted back again with
-Encode::decode(locale => $string).")
-    (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
-
-(define-public perl-libwww
-  (package
-    (name "perl-libwww")
-    (version "6.05")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/libwww-perl-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "08wgwyz7748pv5cyngxia0xl6nragfnhrp4p9s78xhgfyygpj9bv"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-encode-locale" ,perl-encode-locale)
-       ("perl-file-listing" ,perl-file-listing)
-       ("perl-html-parser" ,perl-html-parser)
-       ("perl-http-cookies" ,perl-http-cookies)
-       ("perl-http-daemon" ,perl-http-daemon)
-       ("perl-http-negotiate" ,perl-http-negotiate)
-       ("perl-net-http" ,perl-net-http)
-       ("perl-www-robotrules" ,perl-www-robotrules)))
-    (license (package-license perl))
-    (synopsis "Perl modules for the WWW")
-    (description
-     "The libwww-perl collection is a set of Perl modules which provides a
-simple and consistent application programming interface to the
-World-Wide Web.  The main focus of the library is to provide classes
-and functions that allow you to write WWW clients.  The library also
-contains modules that are of more general use and even classes that
-help you implement simple HTTP servers.")
-    (home-page "http://search.cpan.org/~gaas/libwww-perl/")))
-
 (define-public tinyproxy
   (package
     (name "tinyproxy")
@@ -718,52 +368,6 @@ solution for use cases such as embedded deployments where a full featured HTTP
 proxy is required, but the system resources for a larger proxy are
 unavailable.")
     (license l:gpl2+)))
-
-(define-public perl-www-curl
-  (package
-    (name "perl-www-curl")
-    (version "4.17")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://cpan/authors/id/S/SZ/SZBALINT/WWW-Curl-"
-                    version".tar.gz"))
-              (sha256
-               (base32
-                "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))
-    (build-system perl-build-system)
-    (arguments
-     '(#:tests? #f))                        ;XXX: tests require network access
-    (inputs `(("curl" ,curl)))
-    (synopsis "Perl extension interface for libcurl")
-    (description
-     "This is a Perl extension interface for the libcurl file downloading
-library.")
-    (license (package-license perl))
-    (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
-
-(define-public perl-io-socket-ssl
-  (package
-    (name "perl-io-socket-ssl")
-    (version "2.002")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
-                                  "IO-Socket-SSL-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))))
-    (build-system perl-build-system)
-    (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
-    (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
-    (description
-     "IO::Socket::SSL makes using SSL/TLS much easier by wrapping the
-necessary functionality into the familiar IO::Socket interface and providing
-secure defaults whenever possible.  This way existing applications can be made
-SSL-aware without much effort, at least if you do blocking I/O and don't use
-select or poll.")
-    (license (package-license perl))
-    (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
 
 (define-public polipo
   (package
@@ -817,3 +421,969 @@ of people.")
     (description
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license l:expat)))
+
+(define-public libquvi-scripts
+  (package
+    (name "libquvi-scripts")
+    (version "0.4.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/quvi/libquvi-scripts-" version ".tar.xz"))
+       (sha256
+        (base32 "0d0giry6bb57pnidymvdl7i5x9bq3ljk3g4bs294hcr5mj3cq0kw"))))
+    (build-system gnu-build-system)
+    (home-page "http://quvi.sourceforge.net/")
+    (synopsis "Media stream URL parser")
+    (description "This package contains support scripts called by libquvi to
+parse media stream properties.")
+    (license l:lgpl2.1+)))
+
+(define-public libquvi
+  (package
+    (name "libquvi")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/quvi/libquvi-" version ".tar.xz"))
+       (sha256
+        (base32 "00x9gbmzc5cns0gnfag0hsphcr3cb33vbbb9s7ppvvd6bxz2z1mm"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("libquvi-scripts" ,libquvi-scripts)
+       ("lua" ,lua-5.1)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; Lua provides no .pc file, so add CFLAGS/LIBS manually.
+     '(#:configure-flags
+       (let ((lua (assoc-ref %build-inputs "lua")))
+         (list
+          (string-append "liblua_CFLAGS=-I" lua "/include")
+          (string-append "liblua_LIBS=-L" lua "/libs -llua")))))
+    (home-page "http://quvi.sourceforge.net/")
+    (synopsis "Media stream URL parser")
+    (description "libquvi is a library with a C API for parsing media stream
+URLs and extracting their actual media files.")
+    (license l:lgpl2.1+)))
+
+(define-public quvi
+  (package
+    (name "quvi")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/quvi/quvi-" version ".tar.xz"))
+       (sha256
+        (base32 "09lhl6dv5zpryasx7yjslfrcdcqlsbwapvd5lg7w6sm5x5n3k8ci"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("libquvi" ,libquvi)))
+    (home-page "http://quvi.sourceforge.net/")
+    (synopsis "Media stream URL parser")
+    (description "quvi is a command-line-tool suite to extract media files
+from streaming URLs.  It is a command-line wrapper for the libquvi library.")
+    (license l:lgpl2.1+)))
+
+
+(define-public perl-apache-logformat-compiler
+  (package
+    (name "perl-apache-logformat-compiler")
+    (version "0.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZEBURO/"
+                           "Apache-LogFormat-Compiler-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zyx4r2bxc6d48m70fhcq80nw0q9wnfz6qgn1g0r6bigqgdjq4dw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-http-message" ,perl-http-message)
+       ("perl-test-mocktime" ,perl-test-mocktime)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)))
+    (propagated-inputs
+     `(("perl-posix-strftime-compiler" ,perl-posix-strftime-compiler)))
+    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (home-page "http://search.cpan.org/dist/Apache-LogFormat-Compiler")
+    (synopsis "Compile a log format string to perl-code")
+    (description "This module provides methods to compile a log format string
+to perl-code, for faster generation of access_log lines.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-runtime
+  (package
+    (name "perl-catalyst-runtime")
+    (version "5.90082")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-Runtime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gs70nq4rikpq6siwds9disb1z03vwjzf979xi9kf7saa1drfncs"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-cgi-simple" ,perl-cgi-simple)
+       ("perl-cgi-struct" ,perl-cgi-struct)
+       ("perl-class-c3-adopt-next" ,perl-class-c3-adopt-next)
+       ("perl-class-data-inheritable" ,perl-class-data-inheritable)
+       ("perl-class-date" ,perl-class-date)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-data-dump" ,perl-data-dump)
+       ("perl-http-body" ,perl-http-body)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-request-ascgi" ,perl-http-request-ascgi)
+       ("perl-io-stringy" ,perl-io-stringy)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-moosex-getopt" ,perl-moosex-getopt)
+       ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
+       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-plack" ,perl-plack)
+       ("perl-plack-middleware-fixmissingbodyinredirect"
+        ,perl-plack-middleware-fixmissingbodyinredirect)
+       ("perl-plack-middleware-methodoverride"
+        ,perl-plack-middleware-methodoverride)
+       ("perl-plack-middleware-removeredundantbody"
+        ,perl-plack-middleware-removeredundantbody)
+       ("perl-plack-middleware-reverseproxy"
+        ,perl-plack-middleware-reverseproxy)
+       ("perl-plack-test-externalserver" ,perl-plack-test-externalserver)
+       ("perl-safe-isa" ,perl-safe-isa)
+       ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
+       ("perl-text-simpletable" ,perl-text-simpletable)
+       ("perl-tree-simple" ,perl-tree-simple)
+       ("perl-tree-simple-visitorfactory" ,perl-tree-simple-visitorfactory)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)
+       ("perl-uri-ws" ,perl-uri-ws)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Runtime")
+    (synopsis "The Catalyst Framework Runtime")
+    (description "Catalyst is a modern framework for making web applications.
+It is designed to make it easy to manage the various tasks you need to do to
+run an application on the web, either by doing them itself, or by letting you
+\"plug in\" existing Perl modules that do what you need.")
+    (license (package-license perl))))
+
+(define-public perl-cgi-simple
+  (package
+    (name "perl-cgi-simple")
+    (version "1.115")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+                           "CGI-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+    (home-page "http://search.cpan.org/dist/CGI-Simple")
+    (synopsis "CGI interface that is CGI.pm compliant")
+    (description "CGI::Simple provides a relatively lightweight drop in
+replacement for CGI.pm.  It shares an identical OO interface to CGI.pm for
+parameter parsing, file upload, cookie handling and header generation.")
+    (license (package-license perl))))
+
+(define-public perl-cgi-struct
+  (package
+    (name "perl-cgi-struct")
+    (version "1.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FU/FULLERMD/"
+                           "CGI-Struct-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v4xq2qpryr7i6jngw1wpn8yr2kiib10yxp4aih90vfdznkqsgfi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/CGI-Struct")
+    (synopsis "Build structures from CGI data")
+    (description "This is a module for building structured data from CGI
+inputs, in a manner reminiscent of how PHP does.")
+    (license l:bsd-2)))
+
+(define-public perl-cpanel-json-xs
+  (package
+    (name "perl-cpanel-json-xs")
+    (version "3.0114")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
+                           "Cpanel-JSON-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Cpanel-JSON-XS")
+    (synopsis "JSON::XS for Cpanel")
+    (description "This module converts Perl data structures to JSON and vice
+versa.")
+    (license (package-license perl))))
+
+(define-public perl-encode-locale
+  (package
+    (name "perl-encode-locale")
+    (version "1.03")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/Encode-Locale-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0m9d1vdphlyzybgmdanipwd9ndfvyjgk3hzw250r299jjgh3fqzp"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl locale encoding determination")
+    (description
+     "The POSIX locale system is used to specify both the language
+conventions requested by the user and the preferred character set to consume
+and output.  The Encode::Locale module looks up the charset and encoding
+(called a CODESET in the locale jargon) and arranges for the Encode module
+to know this encoding under the name \"locale\".  It means bytes obtained
+from the environment can be converted to Unicode strings by calling
+Encode::encode(locale => $bytes) and converted back again with
+Encode::decode(locale => $string).")
+    (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
+
+(define-public perl-file-listing
+  (package
+    (name "perl-file-listing")
+    (version "6.04")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/File-Listing-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1xcwjlnxaiwwpn41a5yi6nz95ywh3szq5chdxiwj36kqsvy5000y"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-date" ,perl-http-date)))
+    (license (package-license perl))
+    (synopsis "Perl directory listing parser")
+    (description
+     "The File::Listing module exports a single function called parse_dir(),
+which can be used to parse directory listings.")
+    (home-page "http://search.cpan.org/~gaas/File-Listing/")))
+
+(define-public perl-html-parser
+  (package
+    (name "perl-html-parser")
+    (version "3.71")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTML-Parser-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "00nqzdgl7c3jilx7mil19k5jwcw3as14pvkjgxi97zyk94vqp4dy"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-html-tagset" ,perl-html-tagset)))
+    (license (package-license perl))
+    (synopsis "Perl HTML parser class")
+    (description
+     "Objects of the HTML::Parser class will recognize markup and separate
+it from plain text (alias data content) in HTML documents.  As different
+kinds of markup and text are recognized, the corresponding event handlers
+are invoked.")
+    (home-page "http://search.cpan.org/~gaas/HTML-Parser/")))
+
+(define-public perl-html-tagset
+  (package
+    (name "perl-html-tagset")
+    (version "3.20")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/P/PE/PETDANCE/HTML-Tagset-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1qh8249wgr4v9vgghq77zh1d2zs176bir223a8gh3k9nksn7vcdd"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl data tables useful in parsing HTML")
+    (description
+     "The HTML::Tagset module contains several data tables useful in various
+kinds of HTML parsing operations.")
+    (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
+
+(define-public perl-http-body
+  (package
+    (name "perl-http-body")
+    (version "1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GE/GETTY/"
+                           "HTTP-Body-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ahhksj0zg6wq6glpjkxdr3byd5riwvq2f5aw21n1jcsl71nll01"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)))
+    (propagated-inputs
+     `(("perl-file-temp" ,perl-file-temp)
+       ("perl-http-message" ,perl-http-message))) ;For HTTP::Headers
+    (home-page "http://search.cpan.org/dist/HTTP-Body")
+    (synopsis "HTTP Body Parser")
+    (description "HTTP::Body parses chunks of HTTP POST data and supports
+application/octet-stream, application/json, application/x-www-form-urlencoded,
+and multipart/form-data.")
+    (license (package-license perl))))
+
+(define-public perl-http-cookiejar
+  (package
+    (name "perl-http-cookiejar")
+    (version "0.006")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "HTTP-CookieJar-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c7l29ak6ba2j006ca00vnkxpyc1fvpikydjvsb24s50zf1mv7b2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-time-mock" ,perl-time-mock)))
+    (inputs
+     `(("perl-time-local" ,perl-time-local)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/HTTP-CookieJar")
+    (synopsis "Minimalist HTTP user agent cookie jar")
+    (description "This module implements a minimalist HTTP user agent cookie
+jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
+    (license l:asl2.0)))
+
+(define-public perl-http-cookies
+  (package
+    (name "perl-http-cookies")
+    (version "6.01")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Cookies-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "087bqmg22dg3vj7gssh3pcsh9y1scimkbl5h1kc8jqyfhgisvlzm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-message" ,perl-http-message)))
+    (license (package-license perl))
+    (synopsis "Perl HTTP cookie jars")
+    (description
+     "The HTTP::Cookies class is for objects that represent a cookie jar,
+that is, a database of all the HTTP cookies that a given LWP::UserAgent
+object knows about.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Cookies/")))
+
+(define-public perl-http-daemon
+  (package
+    (name "perl-http-daemon")
+    (version "6.01")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Daemon-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1hmd2isrkilf0q0nkxms1q64kikjmcw9imbvrjgky6kh89vqdza3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-message" ,perl-http-message)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
+    (license (package-license perl))
+    (synopsis "Perl simple http server class")
+    (description
+     "Instances of the HTTP::Daemon class are HTTP/1.1 servers that listen
+on a socket for incoming requests.  The HTTP::Daemon is a subclass of
+IO::Socket::INET, so you can perform socket operations directly on it too.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Daemon/")))
+
+(define-public perl-http-date
+  (package
+    (name "perl-http-date")
+    (version "6.02")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Date-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl date conversion routines")
+    (description
+     "The HTTP::Date module provides functions that deal with date formats
+used by the HTTP protocol (and then some more).")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Date/")))
+
+(define-public perl-http-message
+  (package
+    (name "perl-http-message")
+    (version "6.06")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Message-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-date" ,perl-http-date)
+       ("perl-io-html" ,perl-io-html)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl HTTP style message")
+    (description
+     "An HTTP::Message object contains some headers and a content body.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Message/")))
+
+(define-public perl-http-negotiate
+  (package
+    (name "perl-http-negotiate")
+    (version "6.01")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Negotiate-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "05p053vjs5g91v5cmjnny7a3xzddz5k7vnjw81wfh01ilqg9qwhw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-message" ,perl-http-message)))
+    (license (package-license perl))
+    (synopsis "Perl http content negotiation")
+    (description
+     "The HTTP::Negotiate module provides a complete implementation of the
+HTTP content negotiation algorithm specified in
+draft-ietf-http-v11-spec-00.ps chapter 12.  Content negotiation allows for
+the selection of a preferred content representation based upon attributes
+of the negotiable variants and the value of the various Accept* header
+fields in the request.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
+
+(define-public perl-http-request-ascgi
+  (package
+    (name "perl-http-request-ascgi")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                           "HTTP-Request-AsCGI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1smwmiarwcgq7vjdblnb6ldi2x1s5sk5p15p7xvm5byiqq3znnwl"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)
+       ("perl-http-message" ,perl-http-message)))
+    (home-page "http://search.cpan.org/dist/HTTP-Request-AsCGI")
+    (synopsis "Set up a CGI environment from an HTTP::Request")
+    (description "This module provides a convenient way to set up a CGI
+environment from an HTTP::Request.")
+    (license (package-license perl))))
+
+(define-public perl-http-tiny
+  (package
+    (name "perl-http-tiny")
+    (version "0.053")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                           "HTTP-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bwy31xrcz5zfx1n3vc50vj1aqvzn5ccr7lgacl8wmi03a6w2af2"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-cookiejar" ,perl-http-cookiejar)
+       ("perl-io-socket-ip" ,perl-io-socket-ip)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-net-ssleay" ,perl-net-ssleay)))
+    (home-page "http://search.cpan.org/dist/HTTP-Tiny")
+    (synopsis "HTTP/1.1 client")
+    (description "This is a very simple HTTP/1.1 client, designed for doing
+simple requests without the overhead of a large framework like LWP::UserAgent.
+It supports proxies and redirection.  It also correctly resumes after EINTR.")
+    (license (package-license perl))))
+
+(define-public perl-io-html
+  (package
+    (name "perl-io-html")
+    (version "1.00")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/C/CJ/CJM/IO-HTML-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "06nj3a0xgp5jxwxx6ayglfk2v7npf5a7gwkqsjlkapjkybarzqh4"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl module to open an HTML file with automatic charset detection")
+    (description
+     "IO::HTML provides an easy way to open a file containing HTML while
+automatically determining its encoding.  It uses the HTML5 encoding sniffing
+algorithm specified in section 8.2.2.1 of the draft standard.")
+    (home-page "http://search.cpan.org/~cjm/IO-HTML/")))
+
+(define-public perl-io-socket-ip
+  (package
+    (name "perl-io-socket-ip")
+    (version "0.36")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
+                           "IO-Socket-IP-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ky20hmln6waipzqikizyw04vpszf70fgpshz7ib8zv8480ri456"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IO-Socket-IP")
+    (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
+    (description "This module provides a protocol-independent way to use IPv4
+and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
+    (license (package-license perl))))
+
+(define-public perl-io-socket-ssl
+  (package
+    (name "perl-io-socket-ssl")
+    (version "2.002")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
+                                  "IO-Socket-SSL-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))))
+    (build-system perl-build-system)
+    (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
+    (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
+    (description
+     "IO::Socket::SSL makes using SSL/TLS much easier by wrapping the
+necessary functionality into the familiar IO::Socket interface and providing
+secure defaults whenever possible.  This way existing applications can be made
+SSL-aware without much effort, at least if you do blocking I/O and don't use
+select or poll.")
+    (license (package-license perl))
+    (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
+
+(define-public perl-json-maybexs
+  (package
+    (name "perl-json-maybexs")
+    (version "1.003003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "JSON-MaybeXS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q21wzz87drrvblxcm2py8fcvkzwx1hxzfybynz8ln7wv66vbx3f"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-without-module" ,perl-test-without-module)))
+    (inputs
+     `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
+    (home-page "http://search.cpan.org/dist/JSON-MaybeXS")
+    (synopsis "Cpanel::JSON::XS with fallback")
+    (description "This module first checks to see if either Cpanel::JSON::XS
+or JSON::XS is already loaded, in which case it uses that module.  Otherwise
+it tries to load Cpanel::JSON::XS, then JSON::XS, then JSON::PP in order, and
+either uses the first module it finds or throws an error.")
+    (license (package-license perl))))
+
+(define-public perl-libwww
+  (package
+    (name "perl-libwww")
+    (version "6.05")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/libwww-perl-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "08wgwyz7748pv5cyngxia0xl6nragfnhrp4p9s78xhgfyygpj9bv"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-encode-locale" ,perl-encode-locale)
+       ("perl-file-listing" ,perl-file-listing)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-http-cookies" ,perl-http-cookies)
+       ("perl-http-daemon" ,perl-http-daemon)
+       ("perl-http-negotiate" ,perl-http-negotiate)
+       ("perl-net-http" ,perl-net-http)
+       ("perl-www-robotrules" ,perl-www-robotrules)))
+    (license (package-license perl))
+    (synopsis "Perl modules for the WWW")
+    (description
+     "The libwww-perl collection is a set of Perl modules which provides a
+simple and consistent application programming interface to the
+World-Wide Web.  The main focus of the library is to provide classes
+and functions that allow you to write WWW clients.  The library also
+contains modules that are of more general use and even classes that
+help you implement simple HTTP servers.")
+    (home-page "http://search.cpan.org/~gaas/libwww-perl/")))
+
+(define-public perl-lwp-mediatypes
+  (package
+    (name "perl-lwp-mediatypes")
+    (version "6.02")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/LWP-MediaTypes-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl module to guess the media type for a file or a URL")
+    (description
+     "The LWP::MediaTypes module provides functions for handling media (also
+known as MIME) types and encodings.  The mapping from file extensions to
+media types is defined by the media.types file.  If the ~/.media.types file
+exists it is used instead.")
+    (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
+
+(define-public perl-net-http
+  (package
+    (name "perl-net-http")
+    (version "6.06")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/Net-HTTP-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1m1rvniffadq99gsy25298ia3lixwymr6kan64jd3ylyi7nkqkhx"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl low-level HTTP connection (client)")
+    (description
+     "The Net::HTTP class is a low-level HTTP client.  An instance of the
+Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
+is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
+HTTP/1.1.")
+    (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
+
+(define-public perl-plack
+  (package
+    (name "perl-plack")
+    (version "1.0033")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Plack-" version ".tar.gz"))
+       (sha256
+        (base32
+         "081jg0xddzpg2anmqi9i6d7vs6c8z7k557bf8xl6vgb3h95pin5w"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)
+       ("perl-file-sharedir-install" ,perl-file-sharedir-install)))
+    (propagated-inputs
+     `(("perl-apache-logformat-compiler" ,perl-apache-logformat-compiler)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-devel-stacktrace-ashtml" ,perl-devel-stacktrace-ashtml)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-hash-multivalue" ,perl-hash-multivalue)
+       ("perl-http-body" ,perl-http-body)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-tiny" ,perl-http-tiny)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-stream-buffered" ,perl-stream-buffered)
+       ("perl-test-tcp" ,perl-test-tcp)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/Plack")
+    (synopsis "Perl Superglue for Web frameworks and servers (PSGI toolkit)")
+    (description "Plack is a set of tools for using the PSGI stack.  It
+contains middleware components, a reference server, and utilities for Web
+application frameworks.  Plack is like Ruby's Rack or Python's Paste for
+WSGI.")
+    (license (package-license perl))))
+
+(define-public perl-plack-middleware-fixmissingbodyinredirect
+  (package
+    (name "perl-plack-middleware-fixmissingbodyinredirect")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SW/SWEETKID/"
+                           "Plack-Middleware-FixMissingBodyInRedirect-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "14dkrmccq7a5vpymx5dv8032gfcvhsw2i6v5sh3c4ym5ymlx08kc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-html-parser" ,perl-html-parser) ;for HTML::Entities
+       ("perl-http-message" ,perl-http-message)
+       ("perl-plack" ,perl-plack)))     ;for Plack::Test
+    (home-page
+     "http://search.cpan.org/dist/Plack-Middleware-FixMissingBodyInRedirect")
+    (synopsis "Plack::Middleware which sets body for redirect response")
+    (description "This module sets the body in redirect response, if it's not
+already set.")
+    (license (package-license perl))))
+
+(define-public perl-plack-middleware-methodoverride
+  (package
+    (name "perl-plack-middleware-methodoverride")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DW/DWHEELER/"
+                           "Plack-Middleware-MethodOverride-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1hb8dx7i4vs74n0p737wrvpdnnw6argxrjpr6kj6432zabp8325z"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "http://search.cpan.org/dist/Plack-Middleware-MethodOverride")
+    (synopsis "Override REST methods to Plack apps via POST")
+    (description "This middleware allows for POST requests that pretend to be
+something else: by adding either a header named X-HTTP-Method-Override to the
+request, or a query parameter named x-tunneled-method to the URI, the client
+can say what method it actually meant.")
+    (license (package-license perl))))
+
+(define-public perl-plack-middleware-removeredundantbody
+  (package
+    (name "perl-plack-middleware-removeredundantbody")
+    (version "0.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SW/SWEETKID/"
+                           "Plack-Middleware-RemoveRedundantBody-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1n3wm0zi8dnk54jx937asl951lslj3jvw0fry4jpzsibg4f6wrx0"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page
+     "http://search.cpan.org/dist/Plack-Middleware-RemoveRedundantBody")
+    (synopsis "Plack::Middleware which removes body for HTTP response")
+    (description "This module removes the body in an HTTP response if it's not
+required.")
+    (license (package-license perl))))
+
+(define-public perl-plack-middleware-reverseproxy
+  (package
+    (name "perl-plack-middleware-reverseproxy")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Plack-Middleware-ReverseProxy-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1zmsccdy6wr5hxzj07r1nsmaymyibk87p95z0wzknjw10lwmqs9f"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "http://search.cpan.org/dist/Plack-Middleware-ReverseProxy")
+    (synopsis "Supports app to run as a reverse proxy backend")
+    (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
+which are changed by reverse-proxy.  You can specify the reverse proxy address
+and stop fake requests using 'enable_if' directive in your app.psgi.")
+    (license (package-license perl))))
+
+(define-public perl-plack-test-externalserver
+  (package
+    (name "perl-plack-test-externalserver")
+    (version "0.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+                           "Plack-Test-ExternalServer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dbg1p3rgvvbkkpvca5jlc2mzx8iqyiybk88al93pvbca65h1g7h"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)))
+    (home-page "http://search.cpan.org/dist/Plack-Test-ExternalServer")
+    (synopsis "Run HTTP tests on external live servers")
+    (description "This module allows your to run your Plack::Test tests
+against an external server instead of just against a local application through
+either mocked HTTP or a locally spawned server.")
+    (license (package-license perl))))
+
+(define-public perl-test-tcp
+  (package
+    (name "perl-test-tcp")
+    (version "2.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+                           "Test-TCP-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0acjwm21y2an4f3fasci9qa0isakh9cgp74fk0bzcdi506xmcjbi"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-sharedfork" ,perl-test-sharedfork)))
+    (arguments `(#:tests? #f))          ;related to signaling in t/05_sigint.t
+    (home-page "http://search.cpan.org/dist/Test-TCP")
+    (synopsis "Testing TCP programs")
+    (description "Test::TCP is test utilities for TCP/IP programs.")
+    (license (package-license perl))))
+
+(define-public perl-uri
+  (package
+    (name "perl-uri")
+    (version "1.67")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                                 "URI-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0ki7i830gs0cwwwjsyv3s6yy1l76ym8pfqp0lp7vw0j9bwyx923h"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
+    (description
+     "The URI module implements the URI class.  Objects of this class
+represent \"Uniform Resource Identifier references\" as specified in RFC 2396
+and updated by RFC 2732.")
+    (home-page "http://search.cpan.org/dist/URI/")))
+
+(define-public perl-uri-ws
+  (package
+    (name "perl-uri-ws")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PL/PLICEASE/"
+                           "URI-ws-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vs1wm80sq685944g1l4a0fxcbccc00c0f9648yabdmcf90hwsvf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/URI-ws")
+    (synopsis "WebSocket support for URI package")
+    (description "With this module, the URI package provides the same set of
+methods for WebSocket URIs as it does for HTTP URIs.")
+    (license (package-license perl))))
+
+(define-public perl-www-curl
+  (package
+    (name "perl-www-curl")
+    (version "4.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SZ/SZBALINT/WWW-Curl-"
+                    version".tar.gz"))
+              (sha256
+               (base32
+                "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:tests? #f))                        ;XXX: tests require network access
+    (inputs `(("curl" ,curl)))
+    (synopsis "Perl extension interface for libcurl")
+    (description
+     "This is a Perl extension interface for the libcurl file downloading
+library.")
+    (license (package-license perl))
+    (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
+
+(define-public perl-www-robotrules
+  (package
+    (name "perl-www-robotrules")
+    (version "6.02")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/WWW-RobotRules-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "07m50dp5n5jxv3m93i55qvnd67a6g7cvbvlik115kmc8lbkh5da6"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl database of robots.txt-derived permissions")
+    (description
+     "The WWW::RobotRules module parses /robots.txt files as specified in
+\"A Standard for Robot Exclusion\", at
+<http://www.robotstxt.org/wc/norobots.html>.  Webmasters can use the
+/robots.txt file to forbid conforming robots from accessing parts of
+their web site.")
+    (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))

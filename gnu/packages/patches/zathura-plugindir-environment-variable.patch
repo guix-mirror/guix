@@ -1,0 +1,35 @@
+From ae8e4cc9ab57ff25d2ba6c4b369e8531ce43a6d2 Mon Sep 17 00:00:00 2001
+From: Paul van der Walt <paul@denknerd.org>
+Date: Mon, 2 Mar 2015 22:15:39 +0100
+Subject: [PATCH] Search path environment variable for Zathura.
+
+Adds a search path environment variable for zathura plugins (for reading
+different file formats) called ZATHURA_PLUGIN_PATH. Command line option
+-p still takes precedence.
+
+Patch by Paul van der Walt <paul@denknerd.org>
+---
+ zathura/zathura.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/zathura/zathura.c b/zathura/zathura.c
+index 589dd28..375ec54 100644
+--- a/zathura/zathura.c
++++ b/zathura/zathura.c
+@@ -413,6 +413,13 @@ zathura_set_plugin_dir(zathura_t* zathura, const char* dir)
+   g_return_if_fail(zathura != NULL);
+   g_return_if_fail(zathura->plugins.manager != NULL);
+ 
++  /* Added for Guix: check if environment variable
++   * is set to specify location of zathura plugins.
++   */
++
++  if (dir == NULL)
++    dir = g_getenv("ZATHURA_PLUGIN_PATH");
++
+   if (dir != NULL) {
+     girara_list_t* paths = girara_split_path_array(dir);
+     GIRARA_LIST_FOREACH(paths, char*, iter, path)
+-- 
+2.3.1
+

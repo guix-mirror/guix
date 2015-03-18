@@ -57,12 +57,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
   gnu/packages/certs.scm			\
-  gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
+  gnu/packages/code.scm				\
   gnu/packages/commencement.scm			\
   gnu/packages/compression.scm			\
-  gnu/packages/complexity.scm			\
   gnu/packages/conkeror.scm			\
   gnu/packages/cook.scm				\
   gnu/packages/cpio.scm				\
@@ -81,7 +80,8 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/dejagnu.scm			\
   gnu/packages/dictionaries.scm			\
   gnu/packages/disk.scm				\
-  gnu/packages/dnsmasq.scm			\
+  gnu/packages/djvu.scm				\
+  gnu/packages/dns.scm				\
   gnu/packages/docbook.scm			\
   gnu/packages/doxygen.scm			\
   gnu/packages/dwm.scm				\
@@ -90,6 +90,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/elf.scm				\
   gnu/packages/emacs.scm			\
   gnu/packages/enchant.scm			\
+  gnu/packages/engineering.scm			\
   gnu/packages/enlightenment.scm		\
   gnu/packages/feh.scm                          \
   gnu/packages/file.scm				\
@@ -120,7 +121,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gkrellm.scm			\
   gnu/packages/gl.scm				\
   gnu/packages/glib.scm				\
-  gnu/packages/global.scm			\
   gnu/packages/gnome.scm			\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
@@ -143,6 +143,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/guile-wm.scm			\
   gnu/packages/gv.scm				\
   gnu/packages/gxmessage.scm			\
+  gnu/packages/haskell.scm			\
   gnu/packages/hugs.scm				\
   gnu/packages/hurd.scm				\
   gnu/packages/icu4c.scm			\
@@ -156,11 +157,14 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/java.scm				\
   gnu/packages/jrnl.scm				\
   gnu/packages/kde.scm				\
+  gnu/packages/key-mon.scm			\
+  gnu/packages/language.scm			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
   gnu/packages/libcanberra.scm			\
   gnu/packages/libdaemon.scm			\
+  gnu/packages/libedit.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffcall.scm			\
   gnu/packages/libffi.scm			\
@@ -181,6 +185,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
   gnu/packages/lua.scm				\
+  gnu/packages/lxqt.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
   gnu/packages/man.scm				\
@@ -199,6 +204,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mp3.scm				\
   gnu/packages/mpi.scm				\
   gnu/packages/multiprecision.scm		\
+  gnu/packages/music.scm			\
   gnu/packages/mtools.scm			\
   gnu/packages/nano.scm				\
   gnu/packages/ncdu.scm				\
@@ -274,6 +280,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/telephony.scm			\
   gnu/packages/texinfo.scm			\
   gnu/packages/texlive.scm			\
+  gnu/packages/textutils.scm			\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
@@ -352,6 +359,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/aegis-perl-tempdir2.patch           	\
   gnu/packages/patches/aegis-test-fixup-1.patch            	\
   gnu/packages/patches/aegis-test-fixup-2.patch            	\
+  gnu/packages/patches/agg-am_c_prototype.patch			\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
@@ -360,10 +368,12 @@ dist_patch_DATA =						\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
+  gnu/packages/patches/bash-completion-directories.patch	\
   gnu/packages/patches/bowtie-fix-makefile.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
+  gnu/packages/patches/calibre-drop-unrar.patch			\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/chmlib-inttypes.patch			\
   gnu/packages/patches/clucene-pkgconfig.patch			\
@@ -404,13 +414,12 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
-  gnu/packages/patches/gnunet-fix-scheduler.patch		\
-  gnu/packages/patches/gnunet-fix-tests.patch    		\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
   gnu/packages/patches/grep-CVE-2015-1345.patch			\
   gnu/packages/patches/grub-gets-undeclared.patch		\
+  gnu/packages/patches/grub-freetype.patch			\
   gnu/packages/patches/gstreamer-0.10-bison3.patch		\
   gnu/packages/patches/gstreamer-0.10-silly-test.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
@@ -421,26 +430,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
-  gnu/packages/patches/icecat-CVE-2015-0822.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0827-pt-1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0827-pt-2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0827-pt-3.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0831-pt-1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0831-pt-2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-01.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-02.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-03.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-04.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-05.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-06.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-07.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-08.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-09.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-10.patch		\
-  gnu/packages/patches/icecat-CVE-2015-0836-pt-11.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
+  gnu/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
   gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
   gnu/packages/patches/libarchive-fix-lzo-test-case.patch	\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
@@ -485,6 +478,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchelf-rework-for-arm.patch		\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
+  gnu/packages/patches/pavucontrol-sigsegv.patch		\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/petsc-fix-threadcomm.patch		\
@@ -492,7 +486,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/procps-make-3.82.patch			\
-  gnu/packages/patches/pulseaudio-CVE-2014-3970.patch		\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
@@ -525,6 +518,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
   gnu/packages/patches/util-linux-tests.patch			\
+  gnu/packages/patches/valgrind-glibc-2.21.patch		\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
@@ -550,9 +544,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-trident-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-vmware-glibc-2.20.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
-  gnu/packages/patches/xmodmap-asprintf.patch
-
-MISC_DISTRO_FILES = gnu/packages/javac.in
+  gnu/packages/patches/xmodmap-asprintf.patch 			\
+  gnu/packages/patches/zathura-plugindir-environment-variable.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

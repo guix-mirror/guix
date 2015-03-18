@@ -20,14 +20,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnupg)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
-  #:use-module ((gnu packages compression) #:prefix guix:)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
@@ -56,7 +56,7 @@
 for all GnuPG components.  Among these are GPG, GPGSM, GPGME,
 GPG-Agent, libgcrypt, Libksba, DirMngr, Pinentry, SmartCard
 Daemon and possibly more in the future.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public libgcrypt
   (package
@@ -90,7 +90,7 @@ Daemon and possibly more in the future.")
 standard cryptographic building blocks such as symmetric ciphers, hash
 algorithms, public key algorithms, large integer functions and random number
 generation.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
@@ -127,7 +127,7 @@ generation.")
 protocol.  This protocol is used for IPC between most newer
 GnuPG components.  Both, server and client side functions are
 provided.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public libksba
   (package
@@ -160,7 +160,7 @@ provided.")
      "KSBA (pronounced Kasbah) is a library to make X.509 certificates
 as well as the CMS easily accessible by other applications.  Both
 specifications are building blocks of S/MIME and TLS.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public npth
   (package
@@ -185,7 +185,7 @@ threads implementation.
 In contrast to GNU Pth is is based on the system's standard threads
 implementation.  This allows the use of libraries which are not
 compatible to GNU Pth.")
-    (license (list lgpl3+ gpl2+)))) ; dual license
+    (license (list license:lgpl3+ license:gpl2+)))) ; dual license
 
 (define-public gnupg
   (package
@@ -200,7 +200,7 @@ compatible to GNU Pth.")
                 "14k7c5spai3yppz6izf1ggbnffskl54ln87v1wgy9pwism1mlks0"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bzip2" ,guix:bzip2)
+     `(("bzip2" ,bzip2)
        ("curl" ,curl)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
@@ -208,7 +208,7 @@ compatible to GNU Pth.")
        ("libksba" ,libksba)
        ("npth" ,npth)
        ("openldap" ,openldap)
-       ("zlib" ,guix:zlib)
+       ("zlib" ,zlib)
        ("readline" ,readline)))
    (arguments
     `(#:phases
@@ -227,7 +227,7 @@ features powerful key management and the ability to access public key
 servers.  It includes several libraries: libassuan (IPC between GnuPG
 components), libgpg-error (centralized GnuPG error values), and
 libskba (working with X.509 certificates and CMS data).")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public gnupg-2.0
   (package (inherit gnupg)
@@ -240,7 +240,7 @@ libskba (working with X.509 certificates and CMS data).")
                (base32
                 "1wihx7dphacg9fy5wfj93h236lr1w5gwzh7ir3js37wi9cz6sr2p"))))
     (inputs
-     `(("bzip2" ,guix:bzip2)
+     `(("bzip2" ,bzip2)
        ("curl" ,curl)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
@@ -248,7 +248,7 @@ libskba (working with X.509 certificates and CMS data).")
        ("libksba" ,libksba)
        ("pth" ,pth)
        ("openldap" ,openldap)
-       ("zlib" ,guix:zlib)
+       ("zlib" ,zlib)
        ("readline" ,readline)))
    (arguments
     `(#:phases
@@ -270,8 +270,8 @@ libskba (working with X.509 certificates and CMS data).")
                (base32
                 "11pxx26sfilh0vswylh9mhiifw5yffw7nn733zknw3sb0jfk22bz"))))
     (inputs
-     `(("zlib" ,guix:zlib)
-       ("bzip2" ,guix:bzip2)
+     `(("zlib" ,zlib)
+       ("bzip2" ,bzip2)
        ("curl" ,curl)
        ("readline" ,readline)
        ("libgpg-error" ,libgpg-error)))
@@ -315,7 +315,7 @@ Because the direct use of GnuPG from an application can be a complicated
 programming task, it is suggested that all software should try to use GPGME
 instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public pius
   (package
@@ -363,7 +363,7 @@ to the process.
 
 pius-keyring-mgr and pius-party-worksheet help organisers of
 PGP keysigning parties.")
-   (license gpl2)
+   (license license:gpl2)
    (home-page "http://www.phildev.net/pius/index.shtml")))
 
 (define-public signing-party
@@ -463,7 +463,7 @@ including tools for signing keys, keyring analysis, and party preparation.
    ;; gpl2+ for almost all programs, except for keyanalyze: gpl2
    ;; and caff and gpgsigs: bsd-3, see
    ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
-   (license gpl2)
+   (license license:gpl2)
    (home-page "http://pgp-tools.alioth.debian.org/")))
 
 (define-public pinentry
@@ -489,7 +489,7 @@ including tools for signing keys, keyring analysis, and party preparation.
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to
 enter a passphrase when `gpg' or `gpg2' is run and needs it.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public paperkey
   (package
@@ -521,4 +521,4 @@ for printing with paper and ink, which have amazingly long retention
 qualities.  To reconstruct a secret key, you re-enter those
 bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
 them to transform your existing public key into a secret key.")
-    (license gpl2+)))
+    (license license:gpl2+)))

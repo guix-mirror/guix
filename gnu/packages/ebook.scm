@@ -17,11 +17,27 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ebook)
-  #:use-module ((guix licenses) #:select (lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl3 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages ebook)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages pdf)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xorg))
 
 (define-public chmlib
   (package
@@ -40,3 +56,90 @@
     (synopsis "Library for CHM files")
     (description "CHMLIB is a library for dealing with ITSS/CHM format files.")
     (license lgpl2.1+)))
+
+(define-public calibre
+  (package
+    (name "calibre")
+    (version "2.21.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://download.calibre-ebook.com/"
+                            version "/calibre-"
+                            version ".tar.xz"))
+        (sha256
+          (base32
+           "1adig2jxwbmsxcs36jaybhc8zdb8mnkc23kabw0c72izrsg4c5gb"))
+        ;; Remove non-free or doubtful code, see
+        ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
+        (modules '((guix build utils)))
+        (snippet
+          '(begin
+            (delete-file-recursively "src/unrar")
+            (delete-file "src/odf/thumbnail.py")))
+        (patches (list (search-patch "calibre-drop-unrar.patch")))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qt" ,qt) ; for qmake
+       ;; xdg-utils is supposed to be used for desktop integration, but it
+       ;; also creates lots of messages
+       ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
+       ("xdg-utils" ,xdg-utils)))
+    ;; FIXME: The following are missing inputs according to the documentation,
+    ;; but the package can apparently be used without them,
+    ;; They may need to be added if a deficiency is detected.
+    ;; BeautifulSoup >= 3.0.5
+    ;; dnspython >= 1.6.0
+    ;; poppler >= 0.20.2
+    ;; libwmf >= 0.2.8
+    ;; psutil >= 0.6.1
+    ;; python-pygments >= 2.0.1 ; used for ebook editing
+    (inputs
+     `(("chmlib" ,chmlib)
+       ("fontconfig" ,fontconfig)
+       ("glib" ,glib)
+       ("icu4c" ,icu4c)
+       ("imagemagick" ,imagemagick)
+       ("libmtp" ,libmtp)
+       ("libpng" ,libpng)
+       ("libusb" ,libusb)
+       ("libxrender" ,libxrender)
+       ("podofo" ,podofo)
+       ("python" ,python-2)
+       ("python2-apsw" ,python2-apsw)
+       ("python2-cssselect" ,python2-cssselect)
+       ("python2-cssutils" ,python2-cssutils)
+       ("python2-dateutil" ,python2-dateutil)
+       ("python2-dbus" ,python2-dbus)
+       ("python2-lxml" ,python2-lxml)
+       ("python2-mechanize" ,python2-mechanize)
+       ("python2-netifaces" ,python2-netifaces)
+       ("python2-pillow" ,python2-pillow)
+       ("python2-pyqt" ,python2-pyqt)
+       ("python2-sip" ,python2-sip)
+       ("qt" ,qt)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:python ,python-2
+       #:test-target "check"
+       #:tests? #f ; FIXME: enable once flake8 is packaged
+       #:phases
+         (alist-cons-before
+          'build 'configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((podofo (assoc-ref inputs "podofo"))
+                  (pyqt (assoc-ref inputs "python2-pyqt")))
+              (substitute* "setup/build_environment.py"
+                (("sys.prefix") (string-append "'" pyqt "'")))
+              (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
+              (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))))
+          %standard-phases)))
+    (home-page "http://calibre-ebook.com/")
+    (synopsis "E-book library management software")
+    (description "Calibre is an ebook library manager.  It can view, convert
+and catalog ebooks in most of the major ebook formats.  It can also talk
+to many ebook reader devices.  It can go out to the Internet and fetch
+metadata for books.  It can download newspapers and convert them into
+ebooks for convenient reading.")
+    (license gpl3))) ; some files are under various other licenses, see COPYRIGHT

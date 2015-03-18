@@ -19,7 +19,7 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (bsd-style isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
+                #:select (non-copyleft isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -127,24 +127,24 @@ Java Lucene text search engine API to C++.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
-                 'unpack 'remove-out-of-tree-references
+                 'remove-out-of-tree-references 'autoreconf
                  (lambda _
-                   ;; remove symlinks to files in /usr/
-                   (delete-file-recursively "m4")
-                   (for-each delete-file '("config.guess"
-                                           "config.sub"
-                                           "depcomp"
-                                           "install-sh"
-                                           "ltmain.sh"
-                                           "missing"))
-                   ;; remove_test depends on an out-of-tree RDF file
-                   (substitute* "examples/Makefile.am"
-                     (("instances_test remove_test") "instances_test")
-                     (("\\$\\(TESTS\\) remove_test") "$(TESTS)")))
+                   (zero? (system* "autoreconf" "-vfi")))
                  (alist-cons-after
-                  'remove-out-of-tree-references 'autoreconf
+                  'unpack 'remove-out-of-tree-references
                   (lambda _
-                    (zero? (system* "autoreconf" "-vfi")))
+                    ;; remove symlinks to files in /usr/
+                    (delete-file-recursively "m4")
+                    (for-each delete-file '("config.guess"
+                                            "config.sub"
+                                            "depcomp"
+                                            "install-sh"
+                                            "ltmain.sh"
+                                            "missing"))
+                    ;; remove_test depends on an out-of-tree RDF file
+                    (substitute* "examples/Makefile.am"
+                      (("instances_test remove_test") "instances_test")
+                      (("\\$\\(TESTS\\) remove_test") "$(TESTS)")))
                   %standard-phases))))
     (inputs
      `(("raptor" ,raptor2)
@@ -338,7 +338,7 @@ system.")
     (description
       "RDFLib is a Python library for working with RDF, a simple yet
 powerful language for representing information.")
-    (license (bsd-style "file://LICENSE"
+    (license (non-copyleft "file://LICENSE"
                         "See LICENSE in the distribution."))))
 
 (define-public python2-rdflib

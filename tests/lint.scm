@@ -21,7 +21,7 @@
 
 (define-module (test-packages)
   #:use-module (guix tests)
-  #:use-module (guix build download)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (guix scripts lint)
@@ -45,6 +45,11 @@
   ;; URL to use for 'home-page' tests.
   (string-append "http://localhost:" (number->string %http-server-port)
                  "/foo/bar"))
+
+(define %null-sha256
+  ;; SHA256 of the empty string.
+  (base32
+   "0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73"))
 
 (define %http-server-socket
   ;; Socket used by the Web server.
@@ -361,6 +366,34 @@ requests."
                      (inherit (dummy-package "x"))
                      (home-page %local-url))))
           (check-home-page pkg))))
+    "not reachable: 404")))
+
+(test-skip (if %http-server-socket 0 1))
+(test-equal "source: 200"
+  ""
+  (with-warnings
+   (with-http-server 200
+     (let ((pkg (package
+                  (inherit (dummy-package "x"))
+                  (source (origin
+                            (method url-fetch)
+                            (uri %local-url)
+                            (sha256 %null-sha256))))))
+       (check-source pkg)))))
+
+(test-skip (if %http-server-socket 0 1))
+(test-assert "source: 404"
+  (->bool
+   (string-contains
+    (with-warnings
+      (with-http-server 404
+        (let ((pkg (package
+                     (inherit (dummy-package "x"))
+                     (source (origin
+                               (method url-fetch)
+                               (uri %local-url)
+                               (sha256 %null-sha256))))))
+          (check-source pkg))))
     "not reachable: 404")))
 
 (test-end "lint")
