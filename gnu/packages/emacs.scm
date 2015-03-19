@@ -79,9 +79,9 @@
        ("ncurses" ,ncurses)
 
        ;; TODO: Add the optional dependencies.
-       ("xlibs" ,libx11)
+       ("libx11" ,libx11)
        ("gtk+" ,gtk+)
-       ("libXft" ,libxft)
+       ("libxft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("libjpeg" ,libjpeg-8)
@@ -92,7 +92,7 @@
        ("libpng" ,libpng)
        ("zlib" ,zlib)
 
-       ("libXpm" ,libxpm)
+       ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
        ("libsm" ,libsm)
