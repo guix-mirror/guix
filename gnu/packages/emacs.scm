@@ -114,6 +114,23 @@ large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license license:gpl3+)))
 
+(define-public emacs-no-x
+  ;; This is the version that you should use as an input to packages that just
+  ;; need to byte-compile .el files.
+  (package (inherit emacs)
+    (location (source-properties->location (current-source-location)))
+    (name "emacs-no-x")
+    (synopsis "The extensible, customizable, self-documenting text
+editor (console only)")
+    (build-system gnu-build-system)
+    (inputs (fold alist-delete
+                  (package-inputs emacs)
+                  '("libx11" "gtk+" "libxft" "libtiff" "giflib" "libjpeg"
+                    "libpng" "libxpm" "libice" "libsm"
+
+                    ;; D-Bus depends on libx11, so remove it as well.
+                    "dbus")))))
+
 (define-public emacs-no-x-toolkit
   (package (inherit emacs)
     (location (source-properties->location (current-source-location)))
