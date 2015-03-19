@@ -83,6 +83,7 @@ package management tool written for the GNU system.
 Installation
 
 * Requirements::                Software needed to build and run Guix.
+* Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 
@@ -156,12 +157,12 @@ Services
 
 Packaging Guidelines
 
-* Software Freedom::     What may go into the distribution.
-* Package Naming::       What's in a name?
-* Version Numbers::      When the name is not enough.
-* Python Modules::       Taming the snake.
-* Perl Modules::         Little pearls.
-* Fonts::                Fond of fonts.
+* Software Freedom::            What may go into the distribution.
+* Package Naming::              What's in a name?
+* Version Numbers::             When the name is not enough.
+* Python Modules::              Taming the snake.
+* Perl Modules::                Little pearls.
+* Fonts::                       Fond of fonts.
 
 @end detailmenu
 @end menu
@@ -239,6 +240,7 @@ is not covered here.  Please see the files @file{README} and
 
 @menu
 * Requirements::                Software needed to build and run Guix.
+* Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 @end menu
@@ -294,6 +296,32 @@ located, among other things.  The default values for Nix are
 @code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
 Note that @code{--disable-daemon} is not required if
 your goal is to share the store with Nix.
+
+@node Running the Test Suite
+@section Running the Test Suite
+
+After a successful @command{configure} and @code{make} run, it is a good
+idea to run the test suite.  It can help catch issues with the setup or
+environment, or bugs in Guix itself---and really, reporting test
+failures is a good way to help improve the software.  To run the test
+suite, type:
+
+@example
+make check
+@end example
+
+Test cases can run in parallel: you can use the @code{-j} option of
+GNU@tie{}make to speed things up.  The first run may take a few minutes
+on a recent machine; subsequent runs will be faster because the store
+that is created for test purposes will already have various things in
+cache.
+
+Upon failure, please email @email{bug-guix@@gnu.org} and attach the
+@file{test-suite.log} file.  When @file{tests/@var{something}.scm}
+fails, please also attach the @file{@var{something}.log} file available
+in the top-level build directory.  Please specify the Guix version being
+used as well as version numbers of the dependencies
+(@pxref{Requirements}) in your message.
 
 @node Setting Up the Daemon
 @section Setting Up the Daemon
@@ -5398,12 +5426,12 @@ needed is to review and apply the patch.
 
 
 @menu
-* Software Freedom::     What may go into the distribution.
-* Package Naming::       What's in a name?
-* Version Numbers::      When the name is not enough.
-* Python Modules::       Taming the snake.
-* Perl Modules::         Little pearls.
-* Fonts::                Fond of fonts.
+* Software Freedom::            What may go into the distribution.
+* Package Naming::              What's in a name?
+* Version Numbers::             When the name is not enough.
+* Python Modules::              Taming the snake.
+* Perl Modules::                Little pearls.
+* Fonts::                       Fond of fonts.
 @end menu
 
 @node Software Freedom
