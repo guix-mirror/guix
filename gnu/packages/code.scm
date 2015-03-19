@@ -20,9 +20,12 @@
 (define-module (gnu packages code)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages autogen)
@@ -54,7 +57,7 @@
 control flow of the program.  It can output the graph in several styles and
 in either the POSIX format or in an extended GNU format. cflow also includes
 a major mode for Emacs for examining the flowcharts that it produces.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public complexity
   (package
@@ -78,7 +81,7 @@ a major mode for Emacs for examining the flowcharts that it produces.")
 convoluted, overly long or otherwise difficult to understand.  This
 may help in learning or reviewing unfamiliar code or perhaps
 highlighting your own code that seemed comprehensible when you wrote it.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public global                             ; a global variable
   (package
@@ -119,7 +122,7 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 across a wide array of environments, such as different text editors, shells
 and web browsers.  The resulting tags are useful for quickly moving around in
 a large, deeply nested project.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public sloccount
   (package
@@ -175,4 +178,46 @@ code (SLOC) in large software systems.  It can automatically identify and
 measure a wide range of programming languages.  It automatically estimates the
 effort, time, and money it would take to develop the software, using the
 COCOMO model or user-provided parameters.")
-    (license gpl2+)))
+    (license license:gpl2+)))
+
+(define-public the-silver-searcher
+  (package
+    (name "the-silver-searcher")
+    (version "0.29.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ggreer/the_silver_searcher/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ah7vcqprl9hhafi68bvzaiywy7dfm28zf7kpw3xrlqzfn0vg7kp"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("pcre" ,pcre)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       ;; There is no configure yet, so let's create it, but let configure and
+       ;; make do the work in later phases.
+       (alist-cons-before 'configure 'autoconf
+                          (lambda _
+                            (substitute* "build.sh"
+                              (("./configure") "true")
+                              (("make -j4") "true"))
+                            (zero? (system* "sh" "build.sh")))
+                          %standard-phases)))
+    (home-page "http://geoff.greer.fm/ag/")
+    (synopsis "Fast code searching tool")
+    (description
+     "The silver searcher, or 'ag', is tool for quickly searching through
+files, but compared to grep is much faster and respects files like .gitignore,
+.hgignore, etc.")
+    (license license:asl2.0)))
