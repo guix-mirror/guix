@@ -52,9 +52,10 @@ AC_SUBST([guix_sbindir])
 
 GUIX_CHECK_FILE_NAME_LIMITS
 
-dnl We require the pkg.m4 set of macros from pkg-config.
-dnl Make sure it's available.
+dnl We require pkg.m4 (from pkg-config) and guile.m4 (from Guile.)
+dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
+m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 
 PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.5])
 AC_PATH_PROG([GUILE], [guile])
