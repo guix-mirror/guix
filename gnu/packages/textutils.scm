@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,3 +84,41 @@ handy front-end to the library.")
 an encoding detection library, and enca, a command line frontend, integrating
 libenca and several charset conversion libraries and tools.")
     (license license:gpl2)))
+
+(define-public utf8proc
+  (package
+    (name "utf8proc")
+    (version "1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/JuliaLang/utf8proc/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0wmsi672knii0q70wh6a3ll0gv7qk33c50zbpzasrs3b16bqy659"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:make-flags '("CC=gcc")
+       #:phases
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((lib (string-append (assoc-ref outputs "out") "/lib/"))
+                (include (string-append (assoc-ref outputs "out") "/include/")))
+            (mkdir-p lib)
+            (mkdir-p include)
+            (copy-file "utf8proc.h" (string-append include "utf8proc.h"))
+            (for-each (lambda (file)
+                        (copy-file file (string-append lib (basename file))))
+                      '("libutf8proc.a" "libutf8proc.so"))))
+        ;; no configure script
+        (alist-delete 'configure %standard-phases))))
+    (home-page "http://julialang.org/utf8proc/")
+    (synopsis "C library for processing UTF-8 Unicode data")
+    (description "utf8proc is a small C library that provides Unicode
+normalization, case-folding, and other operations for data in the UTF-8
+encoding, supporting Unicode version 7.0.")
+    (license license:expat)))
