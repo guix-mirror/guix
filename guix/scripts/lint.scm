@@ -268,11 +268,11 @@ response from URI, and additional details, such as the actual HTTP response."
                    (ftp-size conn (basename (uri-path uri))))
                  (lambda ()
                    (ftp-close conn))))
-             (values 'ftp-response #t)))
+             (values 'ftp-response '(ok))))
          (lambda (key . args)
            (case key
-             ((or ftp-error)
-              (values 'ftp-response #f))
+             ((ftp-error)
+              (values 'ftp-response `(error ,@args)))
              ((getaddrinfo-error system-error gnutls-error)
               (values key args))
              (else
@@ -296,11 +296,14 @@ warning for PACKAGE mentionning the FIELD."
                                  (response-reason-phrase argument))
                          field)))
       ((ftp-response)
-       (when (not argument)
-         (emit-warning package
-                       (format #f
-                               (_ "URI ~a not reachable")
-                               (uri->string uri)))))
+       (match argument
+         (('ok) #t)
+         (('error port command code message)
+          (emit-warning package
+                        (format #f
+                                (_ "URI ~a not reachable: ~a (~s)")
+                                (uri->string uri)
+                                code (string-trim-both message))))))
       ((getaddrinfo-error)
        (emit-warning package
                      (format #f
