@@ -478,7 +478,7 @@ operations.")
                           (string-append "\"" alsa "/bin/amixer\"")))
                        (substitute* "emms-tag-editor.el"
                          (("\"mp3info\"")
-                          (string-append mp3info "/bin/mp3info"))))))
+                          (string-append "\"" mp3info "/bin/mp3info\""))))))
                  (alist-cons-before
                   'install 'pre-install
                   (lambda* (#:key outputs #:allow-other-keys)
