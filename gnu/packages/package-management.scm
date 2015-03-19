@@ -96,7 +96,7 @@
                    #t)
                  %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs)))           ;for guix.el
+                     ("emacs" ,emacs-no-x)))      ;for guix.el
     (inputs
      (let ((boot-guile (lambda (arch hash)
                          (origin

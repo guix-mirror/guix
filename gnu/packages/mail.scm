@@ -329,7 +329,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
-       ("emacs" ,emacs)
+       ("emacs" ,emacs-no-x)
        ("guile" ,guile-2.0)
        ("glib" ,glib)
        ("gmime" ,gmime)

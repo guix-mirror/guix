@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
@@ -192,7 +192,7 @@ pictures, sounds, or video.")
     ;; torture/utils.
     (arguments '(#:parallel-tests? #f))
 
-    (native-inputs `(("emacs" ,emacs)
+    (native-inputs `(("emacs" ,emacs-no-x)
                      ("bc" ,bc)))
 
     ;; TODO: Add more optional inputs.

@@ -619,7 +619,7 @@ RCS, PRCS, and Aegis packages.")
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("inetutils" ,inetutils)     ; for `hostname', used in the tests
-              ("emacs" ,emacs)))           ; for `ctags'
+              ("emacs" ,emacs-no-x)))      ; for `ctags'
     (home-page "http://www.gnu.org/software/vc-dwim/")
     (synopsis "Version-control-agnostic ChangeLog diff and commit tool")
     (description
