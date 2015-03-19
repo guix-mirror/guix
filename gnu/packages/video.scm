@@ -30,6 +30,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
@@ -666,6 +667,91 @@ several areas.")
     ;; See file Copyright.  Most files are gpl2+ or compatible, but talloc.c
     ;; is under lgpl3+, thus the whole project becomes gpl3+.
     (license gpl3+)))
+
+(define-public mpv
+  (package
+    (name "mpv")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mpv-player/mpv/archive/v" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1kw9hr957cxqgm2i94bgqc6sskm6bwhm0akzckilhs460b43h409"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system waf-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-docutils" ,python-docutils)))
+    ;; Missing features: libguess, LIRC, Wayland, VDPAU, V4L2
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("enca" ,enca)
+       ("ffmpeg" ,ffmpeg)
+       ("jack" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("lcms" ,lcms)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
+       ("libbs2b" ,libbs2b)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdvdread" ,libdvdread)
+       ("libdvdnav" ,libdvdnav)
+       ("libjpeg" ,libjpeg)
+       ("libva" ,libva)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxv" ,libxv)
+       ("lua" ,lua)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("pulseaudio" ,pulseaudio)
+       ("rsound" ,rsound)
+       ("samba" ,samba)
+       ("vapoursynth" ,vapoursynth)
+       ("waf" ,(origin
+                 (method url-fetch)
+                 ;; Keep this in sync with the version in the bootstrap.py
+                 ;; script of the source tarball.
+                 (uri "http://www.freehackers.org/~tnagy/release/waf-1.8.4")
+                 (sha256
+                  (base32
+                   "1a7skwgpl91adhcwlmdr76xzdpidh91hvcmj34zz6548bpx3a87h"))))
+       ("youtube-dl" ,youtube-dl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          configure setup-waf
+          (lambda* (#:key inputs #:allow-other-keys)
+            (copy-file (assoc-ref inputs "waf") "waf")
+            (setenv "CC" "gcc")))
+         (add-before
+          configure patch-wscript
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "wscript"
+              ;; XXX Remove this when our Samba package provides a .pc file.
+              (("check_pkg_config\\('smbclient'\\)")
+               "check_cc(lib='smbclient')")
+              ;; XXX Remove this when our Lua package provides a .pc file.
+              (("check_lua")
+               "check_cc(lib='lua')")))))
+       ;; No check function defined.
+       #:tests? #f))
+    (home-page "http://mpv.io/")
+    (synopsis "Audio and video player")
+    (description "mpv is a general-purpose audio and video player.  It is a
+fork of mplayer2 and MPlayer.  It shares some features with the former
+projects while introducing many more.")
+    (license gpl2+)))
 
 (define-public libvpx
   (package
