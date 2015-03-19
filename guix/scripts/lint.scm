@@ -259,15 +259,15 @@ response from URI, and additional details, such as the actual HTTP response."
       ('ftp
        (catch #t
          (lambda ()
-           (let ((port (ftp-open (uri-host uri) 21)))
+           (let ((conn (ftp-open (uri-host uri) 21)))
              (define response
                (dynamic-wind
                  (const #f)
                  (lambda ()
-                   (ftp-chdir port (dirname (uri-path uri)))
-                   (ftp-size port (basename (uri-path uri))))
+                   (ftp-chdir conn (dirname (uri-path uri)))
+                   (ftp-size conn (basename (uri-path uri))))
                  (lambda ()
-                   (ftp-close port))))
+                   (ftp-close conn))))
              (values 'ftp-response #t)))
          (lambda (key . args)
            (case key
