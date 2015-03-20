@@ -1547,6 +1547,27 @@ provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List/")))
 
+(define-public perl-file-remove
+  (package
+    (name "perl-file-remove")
+    (version "1.52")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "File-Remove-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p8bal9qhwkjbghivxn1d5m3qdj2qwm1agrjbmakm6la9dbxqm21"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Remove")
+    (synopsis "Remove files and directories in Perl")
+    (description "File::Remove::remove removes files and directories.  It acts
+like /bin/rm, for the most part.  Although \"unlink\" can be given a list of
+files, it will not remove directories; this module remedies that.  It also
+accepts wildcards, * and ?, as arguments for filenames.")
+    (license (package-license perl))))
+
 (define-public perl-file-sharedir
   (package
     (name "perl-file-sharedir")
