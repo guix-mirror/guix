@@ -2203,6 +2203,33 @@ inlining, at make_immutable time) a constructor that makes sure things like
 BUILD methods are called.  It tries to be as non-intrusive as possible.")
   (license (package-license perl))))
 
+(define-public perl-moosex-params-validate
+  (package
+    (name "perl-moosex-params-validate")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "MooseX-Params-Validate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16isvyfsnzp63qr9cwsn094hasb6m7rzldmzav6spk7rih4mxdwk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-devel-caller" ,perl-devel-caller)
+       ("perl-moose" ,perl-moose)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/MooseX-Params-Validate")
+    (synopsis "Extension of Params::Validate using Moose's types")
+    (description "This module fills a gap in Moose by adding method parameter
+validation to Moose.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
