@@ -685,6 +685,34 @@ who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-configloader
+  (package
+    (name "perl-catalyst-plugin-configloader")
+    (version "0.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-ConfigLoader-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "19j7p4v7mbx6wrmpvmrnd974apx7hdl2s095ga3b9zcbdrl77h5q"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-path-class" ,perl-path-class)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-config-any" ,perl-config-any)
+       ("perl-data-visitor" ,perl-data-visitor)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-ConfigLoader")
+    (synopsis "Load config files of various types")
+    (description "This module will attempt to load find and load configuration
+files of various types.  Currently it supports YAML, JSON, XML, INI and Perl
+formats.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-session
   (package
     (name "perl-catalyst-plugin-session")
