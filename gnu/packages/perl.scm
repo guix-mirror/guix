@@ -143,6 +143,27 @@ explicitly alias the class to another name or, if you prefer, you can do so
 implicitly.")
     (license (package-license perl))))
 
+(define-public perl-appconfig
+  (package
+    (name "perl-appconfig")
+    (version "1.71")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "AppConfig-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03vvi3mk4833mx2c6dkm9zhvakf02mb2b7wz9pk9xc7c4mq04xqi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)))
+    (home-page "http://search.cpan.org/dist/AppConfig")
+    (synopsis "Configuration files and command line parsing")
+    (description "AppConfig is a bundle of Perl5 modules for reading
+configuration files and parsing command line arguments.")
+    (license (package-license perl))))
+
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
