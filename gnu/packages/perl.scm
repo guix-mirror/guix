@@ -1895,6 +1895,31 @@ allowing data to be efficiently communicated between processes.")
 versa using either JSON::XS or JSON::PP.")
     (license (package-license perl))))
 
+(define-public perl-json-maybexs
+  (package
+    (name "perl-json-maybexs")
+    (version "1.003003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "JSON-MaybeXS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q21wzz87drrvblxcm2py8fcvkzwx1hxzfybynz8ln7wv66vbx3f"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-without-module" ,perl-test-without-module)))
+    (inputs
+     `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
+    (home-page "http://search.cpan.org/dist/JSON-MaybeXS")
+    (synopsis "Cpanel::JSON::XS with fallback")
+    (description "This module first checks to see if either Cpanel::JSON::XS
+or JSON::XS is already loaded, in which case it uses that module.  Otherwise
+it tries to load Cpanel::JSON::XS, then JSON::XS, then JSON::PP in order, and
+either uses the first module it finds or throws an error.")
+    (license (package-license perl))))
+
 (define-public perl-json-xs
   (package
     (name "perl-json-xs")
