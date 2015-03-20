@@ -2090,6 +2090,44 @@ implementation for a given OS or any other case of needing to provide multiple
 implementations.")
     (license artistic2.0)))
 
+(define-public perl-module-install
+  (package
+    (name "perl-module-install")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/"
+                           "Module-Install-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0j8dz87k60i1khd9xadd8kl6bgm9s5s5zl86rzsz5bq36siz00iz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-yaml-tiny" ,perl-yaml-tiny)))
+    (propagated-inputs
+     `(("perl-archive-zip" ,perl-archive-zip)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-file-remove" ,perl-file-remove)
+       ("perl-json" ,perl-json)
+       ;; The LWP::Simple and LWP::UserAgent modules are recommended, but
+       ;; would cause a circular dependency with (gnu packages web), so we
+       ;; leave it out.  It may be resolved at runtime, however.
+       ;("perl-libwww-perl" ,perl-libwww-perl)
+       ("perl-module-scandeps" ,perl-module-scandeps)
+       ("perl-par-dist" ,perl-par-dist)
+       ("perl-yaml-tiny" ,perl-yaml-tiny)))
+    ;; TODO: One test requires Test::More >= 0.99, another fails with unicode
+    ;; character handling.
+    (arguments `(#:tests? #f))
+    (home-page "http://search.cpan.org/dist/Module-Install")
+    (synopsis "Standalone, extensible Perl module installer")
+    (description "Module::Install is a package for writing installers for
+CPAN (or CPAN-like) distributions that are clean, simple, minimalist, act in a
+strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl
+installation version 5.005 or newer.")
+    (license (package-license perl))))
+
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
