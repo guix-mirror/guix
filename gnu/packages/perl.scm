@@ -2086,6 +2086,27 @@ which had a recent release that broke some versions of Moose.  It is called
 from Moose::Conflicts and moose-outdated.")
     (license (package-license perl))))
 
+(define-public perl-module-scandeps
+  (package
+    (name "perl-module-scandeps")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSCHUPP/"
+                           "Module-ScanDeps-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17mbyqwd8c20nqw01hjshl524vkw8pq6y2lwndmw36xkqr945npz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (home-page "http://search.cpan.org/dist/Module-ScanDeps")
+    (synopsis "Recursively scan Perl code for dependencies")
+    (description "Module::ScanDeps is a module to recursively scan Perl
+programs for dependencies.")
+    (license (package-license perl))))
+
 (define-public perl-moo
   (package
     (name "perl-moo")
