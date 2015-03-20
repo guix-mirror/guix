@@ -92,6 +92,32 @@ effectively as a scientific calculator.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
 
+(define-public double-conversion
+  (package
+    (name "double-conversion")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/floitsch/double-conversion/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cnr8xhyjfxijay8ymkqcph3672wp2lj23qhdmr3m4kia5kpdf83"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DBUILD_TESTING=ON")))
+    (home-page "https://github.com/floitsch/double-conversion")
+    (synopsis "Conversion routines for IEEE doubles")
+    (description
+     "The double-conversion library provides binary-decimal and decimal-binary
+routines for IEEE doubles.  The library consists of efficient conversion
+routines that have been extracted from the V8 JavaScript engine.")
+    (license license:bsd-3)))
+
 (define-public dionysus
   (package
     (name "dionysus")
