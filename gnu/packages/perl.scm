@@ -1376,6 +1376,35 @@ it ties together a family of modern toolchain modules.")
 module building modules.")
     (license (package-license perl))))
 
+(define-public perl-file-changenotify
+  (package
+    (name "perl-file-changenotify")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "File-ChangeNotify-" version ".tar.gz"))
+       (sha256
+        (base32
+         "090i265f73jlcl5rv250791vw32j9vvl4nd5abc7myg0klb8109w"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-params-validate" ,perl-moosex-params-validate)
+       ("perl-moosex-semiaffordanceaccessor"
+        ,perl-moosex-semiaffordanceaccessor)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/File-ChangeNotify")
+    (synopsis "Watch for changes to files")
+    (description "This module provides a class to monitor a directory for
+changes made to any file.")
+    (license artistic2.0)))
+
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
