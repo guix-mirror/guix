@@ -524,6 +524,32 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 to perl-code, for faster generation of access_log lines.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-action-renderview
+  (package
+    (name "perl-catalyst-action-renderview")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Action-RenderView-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0j1rrld13cjk7ks92b5hv3xw4rfm2lvmksb4rlzd8mx0a0wj0rc5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-http-request-ascgi" ,perl-http-request-ascgi)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-data-visitor" ,perl-data-visitor)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Action-RenderView")
+    (synopsis "Sensible default Catalyst action")
+    (description "This Catalyst action implements a sensible default end
+action, which will forward to the first available view.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-action-rest
   (package
     (name "perl-catalyst-action-rest")
