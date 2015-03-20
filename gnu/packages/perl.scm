@@ -3377,6 +3377,26 @@ testing exception-throwing code with about the same amount of typing.")
 automatically aggregated and output to STDOUT.")
     (license (package-license perl))))
 
+(define-public perl-test-leaktrace
+  (package
+    (name "perl-test-leaktrace")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+                           "Test-LeakTrace-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pp6ip012c474ibw0mwd7jgig34gf98bb8xlqk4wdvw1d65vbf7g"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-LeakTrace")
+    (synopsis "Traces memory leaks in Perl")
+    (description "Test::LeakTrace provides several functions that trace memory
+leaks. This module scans arenas, the memory allocation system, so it can
+detect any leaked SVs in given blocks.")
+    (license (package-license perl))))
+
 (define-public perl-test-longstring
   (package
     (name "perl-test-longstring")
