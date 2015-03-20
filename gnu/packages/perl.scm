@@ -4245,6 +4245,31 @@ it.  With this module, you can add your own magic to any variable without
 having to write a single line of XS.")
     (license (package-license perl))))
 
+(define-public perl-yaml-tiny
+  (package
+    (name "perl-yaml-tiny")
+    (version "1.66")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "YAML-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c17l8pvpraznpb31ncmr4wxlyww8sg8dhvp3s3q02yqll3cnygv"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)))
+    (arguments
+     `(#:tests? #f))                    ;requires Test::More >= 0.99
+    (home-page "http://search.cpan.org/dist/YAML-Tiny")
+    (synopsis "Read/Write YAML files")
+    (description "YAML::Tiny is a perl class for reading and writing
+YAML-style files, written with as little code as possible, reducing load time
+and memory overhead.")
+    (license (package-license perl))))
+
 
 ;;; Some packaged modules need versions of core modules that are newer than
 ;;; those in our perl 5.16.1.
