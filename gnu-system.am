@@ -221,7 +221,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/nutrition.scm			\
   gnu/packages/nvi.scm				\
   gnu/packages/ocaml.scm			\
-  gnu/packages/ocrad.scm			\
+  gnu/packages/ocr.scm				\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openbox.scm			\
   gnu/packages/openldap.scm			\

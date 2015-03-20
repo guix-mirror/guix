@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages ocrad)
+(define-module (gnu packages ocr)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
