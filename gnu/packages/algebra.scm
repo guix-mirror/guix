@@ -158,14 +158,14 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.4.4")
+   (version "2.4.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://flintlib.org/flint-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "1isv1sfv8sg3qvf0d99apdfi3jnql95xfzszcawdf1pgjj9rwyf4"))))
+                     "1qq11sxliy499a9g656dgk47ffb951q4gl6ddjbq838gy16kb2g4"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gmp" ,gmp)
