@@ -156,6 +156,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/iso-codes.scm			\
   gnu/packages/java.scm				\
   gnu/packages/jrnl.scm				\
+  gnu/packages/julia.scm			\
   gnu/packages/kde.scm				\
   gnu/packages/key-mon.scm			\
   gnu/packages/language.scm			\
