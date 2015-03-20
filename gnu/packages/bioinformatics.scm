@@ -615,6 +615,35 @@ RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
     (license license:gpl2)))
 
+(define-public python2-pbcore
+  (package
+    (name "python2-pbcore")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/PacificBiosciences/pbcore/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z46rwjac93jm87cbj2zgjg6qvsgs65140wkbbxsvxps7ai4pm09"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
+    (inputs
+     `(("python-cython" ,python2-cython)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-h5py" ,python2-h5py)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://pacificbiosciences.github.io/pbcore/")
+    (synopsis "Library for reading and writing PacBio data files")
+    (description
+     "The pbcore package provides Python APIs for interacting with PacBio data
+files and writing bioinformatics applications.")
+    (license license:bsd-3)))
+
 (define-public rseqc
   (package
     (name "rseqc")
