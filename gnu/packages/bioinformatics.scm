@@ -19,6 +19,7 @@
 (define-module (gnu packages bioinformatics)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -400,6 +401,46 @@ multiple sequence alignments.")
 files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
+
+(define-public cutadapt
+  (package
+    (name "cutadapt")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/marcelm/cutadapt/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "161bp87y6gd6r5bmvjpn2b1k942i3fizfpa139f0jn6jv1wcp5h5"))))
+    (build-system python-build-system)
+    (arguments
+     ;; tests must be run after install
+     `(#:phases (alist-cons-after
+                 'install 'check
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (setenv "PYTHONPATH"
+                           (string-append
+                            (getenv "PYTHONPATH")
+                            ":" (assoc-ref outputs "out")
+                            "/lib/python"
+                            (string-take (string-take-right
+                                          (assoc-ref inputs "python") 5) 3)
+                            "/site-packages"))
+                   (zero? (system* "nosetests" "-P" "tests")))
+                 (alist-delete 'check %standard-phases))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://code.google.com/p/cutadapt/")
+    (synopsis "Remove adapter sequences from nucleotide sequencing reads")
+    (description
+     "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
+other types of unwanted sequence from high-throughput sequencing reads.")
+    (license license:expat)))
 
 (define-public flexbar
   (package
