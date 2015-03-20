@@ -219,9 +219,10 @@ fast arithmetic.")
             (sha256 (base32
                      "0a8cgzznkmr59ngj4di9a37b5h4i00gbnixnxlwd34bcbflvjzyr"))))
    (build-system gnu-build-system)
+   (propagated-inputs
+    `(("flint" ,flint))) ; flint.h is included by arf.h
    (inputs
-    `(("flint" ,flint)
-      ("gmp" ,gmp)
+    `(("gmp" ,gmp)
       ("mpfr" ,mpfr)))
    (arguments
     `(#:phases
