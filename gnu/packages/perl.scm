@@ -861,6 +861,27 @@ the caller.")
 CPAN::Meta object are present.")
     (license (package-license perl))))
 
+(define-public perl-cpanel-json-xs
+  (package
+    (name "perl-cpanel-json-xs")
+    (version "3.0114")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
+                           "Cpanel-JSON-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Cpanel-JSON-XS")
+    (synopsis "JSON::XS for Cpanel")
+    (description "This module converts Perl data structures to JSON and vice
+versa.")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
