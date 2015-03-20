@@ -167,9 +167,9 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
             (sha256 (base32
                      "1isv1sfv8sg3qvf0d99apdfi3jnql95xfzszcawdf1pgjj9rwyf4"))))
    (build-system gnu-build-system)
-   (inputs
+   (propagated-inputs
     `(("gmp" ,gmp)
-      ("mpfr" ,mpfr)))
+      ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
    (arguments
     `(#:phases
         (alist-replace
