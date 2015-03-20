@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -678,6 +679,60 @@ that a read originated from a particular isoform.")
      "The pbcore package provides Python APIs for interacting with PacBio data
 files and writing bioinformatics applications.")
     (license license:bsd-3)))
+
+(define-public pbtranscript-tofu
+  (let ((commit "c7bbd5472"))
+    (package
+      (name "pbtranscript-tofu")
+      (version (string-append "0.4.1." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/PacificBiosciences/cDNA_primer.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "148xkzi689c49g6fdhckp6mnmj2qhjdf1j4wifm6ja7ij95d7fxx"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:python ,python-2
+         ;; With standard flags, the install phase attempts to create a zip'd
+         ;; egg file, and fails with an error: 'ZIP does not support timestamps
+         ;; before 1980'
+         #:configure-flags '("--single-version-externally-managed"
+                             "--record=pbtranscript-tofu.txt")
+         #:phases
+         (alist-cons-after
+          'unpack 'enter-directory-and-clean-up
+          (lambda _
+            (chdir "pbtranscript-tofu/pbtranscript/")
+            ;; Delete clutter
+            (delete-file-recursively "dist/")
+            (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
+            (delete-file-recursively "pbtools.pbtranscript.egg-info")
+            (delete-file "Cython-0.20.1.tar.gz")
+            (delete-file "setuptools_cython-0.2.1-py2.7.egg")
+            (delete-file "setuptools_cython-0.2.1.tar.gz")
+            (delete-file "setup.cfg")
+            ;; files should be writable for install phase
+            (for-each (lambda (f) (chmod f #o755))
+                      (find-files "." "\\.py")))
+          %standard-phases)))
+      (inputs
+       `(("python-cython" ,python2-cython)
+         ("python-numpy" ,python2-numpy)
+         ("python-bx-python" ,python2-bx-python)
+         ("python-pbcore" ,python2-pbcore)))
+      (native-inputs
+       `(("python-nose" ,python2-nose)
+         ("python-setuptools" ,python2-setuptools)))
+      (home-page "https://github.com/PacificBiosciences/cDNA_primer")
+      (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
+      (description
+       "pbtranscript-tofu contains scripts to analyze transcriptome data
+generated using the PacBio Iso-Seq protocol.")
+      (license license:bsd-3))))
 
 (define-public rseqc
   (package
