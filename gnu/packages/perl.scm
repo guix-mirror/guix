@@ -1405,6 +1405,26 @@ module building modules.")
 changes made to any file.")
     (license artistic2.0)))
 
+(define-public perl-file-copy-recursive
+  (package
+    (name "perl-file-copy-recursive")
+    (version "0.38")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DM/DMUEY/"
+                           "File-Copy-Recursive-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1syyyvylr51iicialdmv0dw06q49xzv8zrkb5cn8ma4l73gvvk44"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Copy-Recursive")
+    (synopsis "Recursively copy files and directories")
+    (description "This module has 3 functions: one to copy files only, one to
+copy directories only, and one to do either depending on the argument's
+type.")
+    (license (package-license perl))))
+
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
