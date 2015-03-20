@@ -69,6 +69,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -194,6 +195,35 @@ that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
 developed according to the official standards for DV video: IEC 61834 and
 SMPTE 314M.")
     (license lgpl2.1+)))
+
+(define-public libva
+  (package
+    (name "libva")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.freedesktop.org/software/vaapi/releases/libva/libva-"
+             version".tar.bz2"))
+       (sha256
+        (base32 "01d01mm9fgpwzqycmjjcj3in3vvzcibi3f64icsw2sksmmgb4495"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("mesa" ,mesa)))
+    (home-page "http://www.freedesktop.org/wiki/Software/vaapi/")
+    (synopsis "Video acceleration library")
+    (description "The main motivation for VA-API (Video Acceleration API) is
+to enable hardware accelerated video decode/encode at various
+entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
+standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
+    (license expat)))
 
 (define-public ffmpeg
   (package
