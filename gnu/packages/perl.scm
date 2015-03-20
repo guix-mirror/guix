@@ -4073,6 +4073,27 @@ that are designed to minimize common mistakes with eval blocks, and nothing
 else.")
     (license x11)))
 
+(define-public perl-types-serialiser
+  (package
+    (name "perl-types-serialiser")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                           "Types-Serialiser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03bk0hm5ys8k7265dkap825ybn2zmzb1hl0kf1jdm8yq95w39lvs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Types-Serialiser")
+    (synopsis "Data types for common serialisation formats")
+    (description "This module provides some extra datatypes that are used by
+common serialisation formats such as JSON or CBOR.")
+    (license (package-license perl))))
+
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
