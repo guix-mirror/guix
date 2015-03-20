@@ -2259,6 +2259,29 @@ methods to be composed into the classes/roles/instances it's compiled to,
 where plain Moose::Roles would lose the overloading.")
     (license (package-license perl))))
 
+(define-public perl-moosex-semiaffordanceaccessor
+  (package
+    (name "perl-moosex-semiaffordanceaccessor")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "MooseX-SemiAffordanceAccessor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mdil9ckgmgr78z59p8wfa35ixn5855ndzx14y01dvfxpiv5gf55"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)))
+    (home-page "http://search.cpan.org/dist/MooseX-SemiAffordanceAccessor")
+    (synopsis "Name your accessors foo() and set_foo()")
+    (description "This module does not provide any methods.  Simply loading it
+changes the default naming policy for the loading class so that accessors are
+separated into get and set methods.  The get methods have the same name as the
+accessor, while set methods are prefixed with \"_set_\".")
+    (license artistic2.0)))
+
 (define-public perl-moosex-traits-pluggable
   (package
     (name "perl-moosex-traits-pluggable")
