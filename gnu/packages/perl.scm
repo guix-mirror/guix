@@ -3705,6 +3705,28 @@ can also be set to any arbitrary supplied order. The familiar perl array
 operations can also be performed on the IxHash.")
   (license (package-license perl))))
 
+(define-public perl-tie-toobject
+  (package
+    (name "perl-tie-toobject")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NU/NUFFIN/"
+                           "Tie-ToObject-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x1smn1kw383xc5h9wajxk9dlx92bgrbf7gk4abga57y6120s6m3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-simple" ,perl-test-simple)))
+    (home-page "http://search.cpan.org/dist/Tie-ToObject")
+    (synopsis "Tie to an existing Perl object")
+    (description "This class provides a tie constructor that returns the
+object it was given as it's first argument.  This way side effects of calling
+$object->TIEHASH are avoided.")
+    (license (package-license perl))))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
