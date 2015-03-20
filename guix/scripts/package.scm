@@ -240,6 +240,8 @@ DURATION-RELATION with the current time."
 (define (find-packages-by-description rx)
   "Return the list of packages whose name, synopsis, or description matches
 RX."
+  (define version<? (negate version>=?))
+
   (sort
    (fold-packages (lambda (package result)
                     (define matches?
@@ -254,8 +256,11 @@ RX."
                         result))
                   '())
    (lambda (p1 p2)
-     (string<? (package-name p1)
-               (package-name p2)))))
+     (case (string-compare (package-name p1) (package-name p2)
+                           (const '<) (const '=) (const '>))
+       ((=)  (version<? (package-version p1) (package-version p2)))
+       ((<)  #t)
+       (else #f)))))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
   "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'
