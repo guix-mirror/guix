@@ -2833,6 +2833,25 @@ checking parameters easier.")
 function call parameters to an arbitrary level of specificity.")
     (license artistic2.0)))
 
+(define-public perl-par-dist
+  (package
+    (name "perl-par-dist")
+    (version "0.49")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSCHUPP/"
+                           "PAR-Dist-" version ".tar.gz"))
+       (sha256
+        (base32
+         "078ycyn8pw3rba4k3qwcqrqfcym5c1pivymwa0bvs9sab45j4iwy"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/PAR-Dist")
+    (synopsis "Create and manipulate PAR distributions")
+    (description "PAR::Dist is a toolkit to create and manipulate PAR
+distributions.")
+    (license (package-license perl))))
+
 (define-public perl-parent
   (package
     (name "perl-parent")
