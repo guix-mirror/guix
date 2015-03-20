@@ -606,6 +606,48 @@ regular method.")
 instance of a component on each request.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-devel
+  (package
+    (name "perl-catalyst-devel")
+    (version "1.39")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "Catalyst-Devel-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12m50bbkggjmpxihv3wnvr0g2qng0zwhlzi5ygppjz8wh2x73qxw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-catalyst-action-renderview" ,perl-catalyst-action-renderview)
+       ("perl-catalyst-plugin-configloader" ,perl-catalyst-plugin-configloader)
+       ("perl-catalyst-plugin-static-simple" ,perl-catalyst-plugin-static-simple)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-file-changenotify" ,perl-file-changenotify)
+       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-module-install" ,perl-module-install)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-template-toolkit" ,perl-template-toolkit)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Devel")
+    (synopsis "Catalyst Development Tools")
+    (description "The Catalyst-Devel distribution includes a variety of
+modules useful for the development of Catalyst applications, but not required
+to run them.  Catalyst-Devel includes the Catalyst::Helper system, which
+autogenerates scripts and tests; Module::Install::Catalyst, a Module::Install
+extension for Catalyst; and requirements for a variety of development-related
+modules.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-model-dbic-schema
   (package
   (name "perl-catalyst-model-dbic-schema")
