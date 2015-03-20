@@ -950,6 +950,37 @@ The maths behind this is unfortunately fiddly, hence this module.")
 variants")
     (license (package-license perl))))
 
+(define-public perl-data-visitor
+  (package
+    (name "perl-data-visitor")
+    (version "0.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Data-Visitor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m7d1505af9z2hj5aw020grcmjjlvnkjpvjam457d7k5qfy4m8lf"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-task-weaken" ,perl-task-weaken)
+       ("perl-tie-toobject" ,perl-tie-toobject)))
+    (home-page "http://search.cpan.org/dist/Data-Visitor")
+    (synopsis "Visitor style traversal of Perl data structures")
+    (description "This module is a simple visitor implementation for Perl
+values.  It has a main dispatcher method, visit, which takes a single perl
+value and then calls the methods appropriate for that value.  It can
+recursively map (cloning as necessary) or just traverse most structures, with
+support for per-object behavior, circular structures, visiting tied
+structures, and all ref types (hashes, arrays, scalars, code, globs).")
+    (license (package-license perl))))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
