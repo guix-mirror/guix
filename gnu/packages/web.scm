@@ -743,6 +743,36 @@ formats.")
 management in web applications together: the state, and the store.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-static-simple
+  (package
+    (name "perl-catalyst-plugin-static-simple")
+    (version "0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-Plugin-Static-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1h8f12bhzh0ssq9gs8r9g3hqn8zn2k0q944vc1vm8j81bns16msy"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-mime-types" ,perl-mime-types)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Static-Simple")
+    (synopsis "Simple serving of static pages")
+    (description "The Static::Simple plugin is designed to make serving static
+content in your application during development quick and easy, without
+requiring a single line of code from you.  This plugin detects static files by
+looking at the file extension in the URL (such as .css or .png or .js).  The
+plugin uses the lightweight MIME::Types module to map file extensions to
+IANA-registered MIME types, and will serve your static files with the correct
+MIME type directly to the browser, without being processed through Catalyst.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
