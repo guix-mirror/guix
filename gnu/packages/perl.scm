@@ -1874,6 +1874,27 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
 allowing data to be efficiently communicated between processes.")
     (license (package-license perl))))
 
+(define-public perl-json
+  (package
+    (name "perl-json")
+    (version "2.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+                           "JSON-" version ".tar.gz"))
+       (sha256
+        (base32
+         "127yppvr17qik9pkd1vy901hs4l13kg6rhp76jdgcyask35v7nsd"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-json-xs" ,perl-json-xs))) ;recommended
+    (home-page "http://search.cpan.org/dist/JSON")
+    (synopsis "JSON encoder/decoder for Perl")
+    (description "This module converts Perl data structures to JSON and vice
+versa using either JSON::XS or JSON::PP.")
+    (license (package-license perl))))
+
 (define-public perl-json-xs
   (package
     (name "perl-json-xs")
