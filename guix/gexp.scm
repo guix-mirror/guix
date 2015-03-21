@@ -127,6 +127,12 @@ cross-compiling.)"
                        body ...)))
     (register-compiler! name)))
 
+(define-gexp-compiler (derivation-compiler (drv derivation?) system target)
+  ;; Derivations are the lowest-level representation, so this is the identity
+  ;; compiler.
+  (with-monad %store-monad
+    (return drv)))
+
 
 ;;;
 ;;; Inputs & outputs.
@@ -165,8 +171,6 @@ the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
-                    ((and ((? derivation?) sub-drv ...) input)
-                     (return input))
                     ((and ((? struct? thing) sub-drv ...) input)
                      (mlet* %store-monad ((lower -> (lookup-compiler thing))
                                           (drv (lower thing system target)))
@@ -262,6 +266,7 @@ The other arguments are as for 'derivation'."
   (define (graphs-file-names graphs)
     ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
     (map (match-lambda
+          ;; TODO: Remove 'derivation?' special cases.
            ((file-name (? derivation? drv))
             (cons file-name (derivation->output-path drv)))
            ((file-name (? derivation? drv) sub-drv)
@@ -348,8 +353,6 @@ The other arguments are as for 'derivation'."
 references."
   (define (add-reference-inputs ref result)
     (match ref
-      (($ <gexp-input> (? derivation? drv) output)
-       (cons `(,drv ,output) result))
       (($ <gexp-input> (? gexp? exp))
        (append (gexp-inputs exp references) result))
       (($ <gexp-input> (? string? str))
@@ -411,8 +414,6 @@ and in the current monad setting (system type, etc.)"
   (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
       (match ref
-        (($ <gexp-input> (? derivation? drv) output)
-         (return (derivation->output-path drv output)))
         (($ <gexp-output> output)
          ;; Output file names are not known in advance but the daemon defines
          ;; an environment variable for each of them at build time, so use
