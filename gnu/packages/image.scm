@@ -24,6 +24,7 @@
 (define-module (gnu packages image)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
@@ -163,6 +164,65 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
 
     ;; 'COPYING' is the GPLv2, but file headers say LGPLv2.0+.
     (license license:lgpl2.0+)))
+
+(define-public leptonica
+  (package
+    (name "leptonica")
+    (version "1.71")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.leptonica.com/source/leptonica-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0j5qgrff6im5n9waflbi7w643q1p6mahyf2z35gb4vj9h5p76pfc"))
+       (modules '((guix build utils)))
+       ;; zlib and openjpg should be under Libs, not Libs.private.  See:
+       ;; https://code.google.com/p/tesseract-ocr/issues/detail?id=1436
+       (snippet
+        '(substitute* "lept.pc.in"
+           (("^(Libs\\.private: .*)@ZLIB_LIBS@(.*)" all pre post)
+            (string-append pre post))
+           (("^(Libs\\.private: .*)@JPEG_LIBS@(.*)" all pre post)
+            (string-append pre post))
+           (("^Libs: .*" all)
+            (string-append all " @ZLIB_LIBS@ @JPEG_LIBS@"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gnuplot" ,gnuplot)))           ;needed for test suite
+    (inputs
+     `(("giflib" ,giflib)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)))
+    (propagated-inputs
+     `(("openjpeg" ,openjpeg)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Prevent make from trying to regenerate config.h.in.
+         (add-after
+          unpack set-config-h-in-file-time
+          (lambda _
+            (set-file-time "config/config.h.in" (stat "configure"))))
+         (add-after
+          unpack patch-reg-wrapper
+          (lambda _
+            (substitute* "prog/reg_wrapper.sh"
+              ((" /bin/sh ")
+               (string-append " " (which "sh") " "))))))))
+    (home-page "http://www.leptonica.com/")
+    (synopsis "Library and tools for image processing and analysis")
+    (description
+     "Leptonica is a C library and set of command-line tools for efficient
+image processing and image analysis operations.  It supports rasterop, affine
+transformations, binary and grayscale morphology, rank order, and convolution,
+seedfill and connected components, image transformations combining changes in
+scale and pixel depth, and pixelwise masking, blending, enhancement, and
+arithmetic ops.")
+    (license license:bsd-2)))
 
 (define-public jbig2dec
   (package
