@@ -353,7 +353,7 @@ the build code of derivation."
 
 (define* (patch-and-repack source patches
                            #:key
-                           (inputs (%standard-patch-inputs))
+                           inputs
                            (snippet #f)
                            (flags '("-p1"))
                            (modules '())
@@ -371,10 +371,14 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
         (derivation->output-path source)
         source))
 
-  (define (lookup-input name)
-    (match (assoc-ref inputs name)
-      ((package) package)
-      (#f        #f)))
+  (define lookup-input
+    ;; The default value of the 'patch-inputs' field, and thus INPUTS is #f,
+    ;; so deal with that.
+    (let ((inputs (or inputs (%standard-patch-inputs))))
+      (lambda (name)
+        (match (assoc-ref inputs name)
+          ((package) package)
+          (#f        #f)))))
 
   (define decompression-type
     (cond ((string-suffix? "gz" source-file-name)  "gzip")
