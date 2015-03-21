@@ -29,6 +29,7 @@
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -475,3 +476,39 @@ algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
    (license license:expat)
    (home-page "https://hci.iwr.uni-heidelberg.de/vigra")))
+
+(define-public libwebp
+  (package
+    (name "libwebp")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://downloads.webmproject.org/releases/webp/libwebp-" version
+             ".tar.gz"))
+       (sha256
+        (base32 "1i4hfczjm3b1qj1g4cc9hgb69l47f3nkgf6hk7nz4dm9zmc0vgpg"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("freeglut" ,freeglut)
+       ("giflib" ,giflib)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)))
+    (arguments
+     '(#:configure-flags '("--enable-libwebpmux"
+                           "--enable-libwebpdemux"
+                           "--enable-libwebpdecoder")))
+    (home-page "https://developers.google.com/speed/webp/")
+    (synopsis "Lossless and lossy image compression")
+    (description
+     "WebP is a new image format that provides lossless and lossy compression
+for images. WebP lossless images are 26% smaller in size compared to
+PNGs. WebP lossy images are 25-34% smaller in size compared to JPEG images at
+equivalent SSIM index. WebP supports lossless transparency (also known as
+alpha channel) with just 22% additional bytes. Transparency is also supported
+with lossy compression and typically provides 3x smaller file sizes compared
+to PNG when lossy compression is acceptable for the red/green/blue color
+channels.")
+    (license license:bsd-3)))
