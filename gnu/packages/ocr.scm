@@ -17,12 +17,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ocr)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module ((gnu packages compression)
-                #:select (lzip)))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages pkg-config))
 
 (define-public ocrad
   (package
@@ -43,4 +45,49 @@
      "GNU Ocrad is an optical character recognition program based on a
 feature extraction method.  It can read images in PBM, PGM or PPM formats and
 it produces text in 8-bit or UTF-8 formats.")
-    (license gpl3+)))
+    (license license:gpl3+)))
+
+(define-public tesseract-ocr
+  (package
+    (name "tesseract-ocr")
+    (version "3.02.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://tesseract-ocr.googlecode.com/files/tesseract-ocr-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0g81m9y4iydp7kgr56mlkvjdwpp3mb01q385yhdnyvra7z5kkk96"))
+       (modules '((guix build utils)))
+       ;; Leptonica added a pkg-config file in the meanwhile.
+       (snippet
+        '(substitute* "tesseract.pc.in"
+           (("^# Requires: lept  ## .*")
+            "Requires: lept\n")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (propagated-inputs
+     `(("leptonica" ,leptonica)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          unpack autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))
+       #:configure-flags
+       (let ((leptonica (assoc-ref %build-inputs "leptonica")))
+         (list (string-append "LIBLEPT_HEADERSDIR=" leptonica "/include")))))
+    (home-page "https://code.google.com/p/tesseract-ocr/")
+    (synopsis "Optical character recognition engine")
+    (description
+     "Tesseract is an optical character recognition (OCR) engine with very
+high accuracy.  It supports many languages, output text formatting, hOCR
+positional information and page layout analysis.  Several image formats are
+supported through the Leptonica library.  It can also detect whether text is
+monospaced or proportional.")
+    (license license:asl2.0)))
