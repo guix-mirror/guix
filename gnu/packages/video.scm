@@ -56,6 +56,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1094,6 +1095,47 @@ capabilities.")
                   (string-append out "/share/ADM_addons"))))
             (alist-delete 'install
                %standard-phases)))))))))
+
+(define-public vapoursynth
+  (package
+    (name "vapoursynth")
+    (version "26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/vapoursynth/vapoursynth/archive/R"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1qbg5kg0kgrxldd0ckn1s7vy7vx2ig8nqzv6djp38fxccpzw3x9k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cython" ,python-cython)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libass" ,libass)
+       ("tesseract-ocr" ,tesseract-ocr)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          unpack autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))))
+    (home-page "http://www.vapoursynth.com/")
+    (synopsis "Video processing framework")
+    (description "VapourSynth is a C++ library and Python module for video
+manipulation.  It aims to be a modern rewrite of Avisynth, supporting
+multithreading, generalized colorspaces, per frame properties, and videos with
+format changes.")
+    ;; As seen from the source files.
+    (license lgpl2.1+)))
 
 (define-public xvid
   (package
