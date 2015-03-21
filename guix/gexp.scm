@@ -201,6 +201,11 @@ names and file names suitable for the #:allowed-references argument to
       (match-lambda
        ((? string? output)
         (return output))
+       (($ <gexp-input> thing output native?)
+        (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                             (drv      (lower thing system
+                                              (if native? #f target))))
+          (return (derivation->output-path drv output))))
        (thing
         (mlet* %store-monad ((lower -> (lookup-compiler thing))
                              (drv      (lower thing system target)))

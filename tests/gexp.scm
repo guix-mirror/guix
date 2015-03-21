@@ -497,6 +497,23 @@
                                              (list "out" %bootstrap-guile))))
     (built-derivations (list drv))))
 
+(test-assertm "gexp->derivation #:allowed-references, specific output"
+  (mlet* %store-monad ((in  (gexp->derivation "thing"
+                                              #~(begin
+                                                  (mkdir #$output:ok)
+                                                  (mkdir #$output:not-ok))))
+                       (drv (gexp->derivation "allowed-refs"
+                                              #~(begin
+                                                  (pk #$in:not-ok)
+                                                  (mkdir #$output)
+                                                  (chdir #$output)
+                                                  (symlink #$output "self")
+                                                  (symlink #$in:ok "ok"))
+                                              #:allowed-references
+                                              (list "out"
+                                                    (gexp-input in "ok")))))
+    (built-derivations (list drv))))
+
 (test-assert "gexp->derivation #:allowed-references, disallowed"
   (let ((drv (run-with-store %store
                (gexp->derivation "allowed-refs"
