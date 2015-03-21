@@ -64,7 +64,11 @@
        ;; OpenGL library is still dlopened at runtime.
        #:configure-flags '("--disable-alsa-shared"
                            "--disable-pulseaudio-shared"
-                           "--disable-x11-shared")
+                           "--disable-x11-shared"
+                           ;; Explicitly link with mesa.
+                           ;; This add mesa to libsdl's RUNPATH, to make dlopen
+                           ;; finding the libGL from mesa at runtime.
+                           "LDFLAGS=-lGL")
 
        #:tests? #f)) ; no check target
     (propagated-inputs
