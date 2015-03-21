@@ -336,7 +336,8 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("gzip"  ,(ref '(gnu packages compression) 'gzip))
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
       ("patch" ,(ref '(gnu packages base) 'patch))
-      ("locales" ,(ref '(gnu packages base) 'glibc-utf8-locales)))))
+      ("locales" ,(ref '(gnu packages commencement)
+                       'glibc-utf8-locales-final)))))
 
 (define (default-guile)
   "Return the default Guile package used to run the build code of

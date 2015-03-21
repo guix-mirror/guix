@@ -616,7 +616,7 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
-(define glibc-utf8-locales-final
+(define-public glibc-utf8-locales-final
   ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed
   ;; by the build processes afterwards so their 'scm_to_locale_string' works
   ;; with the full range of Unicode codepoints (remember
