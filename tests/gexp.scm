@@ -160,6 +160,12 @@
          (equal? `(list ,guile ,cu ,libc ,bu)
                  (gexp->sexp* exp target)))))
 
+(test-equal "ungexp + ungexp-native, nested"
+  (list `((,%bootstrap-guile "out")) '<> `((,coreutils "out")))
+  (let* ((exp (gexp (list (ungexp-native (gexp (ungexp coreutils)))
+                          (ungexp %bootstrap-guile)))))
+    (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
+
 (test-assert "input list"
   (let ((exp   (gexp (display
                       '(ungexp (list %bootstrap-guile coreutils)))))

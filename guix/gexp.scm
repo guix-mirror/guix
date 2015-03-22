@@ -353,13 +353,23 @@ The other arguments are as for 'derivation'."
                       #:allowed-references allowed
                       #:local-build? local-build?))))
 
-(define* (gexp-inputs exp #:optional (references gexp-references))
-  "Return the input list for EXP, using REFERENCES to get its list of
-references."
+(define* (gexp-inputs exp #:key native?)
+  "Return the input list for EXP.  When NATIVE? is true, return only native
+references; otherwise, return only non-native references."
   (define (add-reference-inputs ref result)
     (match ref
-      (($ <gexp-input> (? gexp? exp))
-       (append (gexp-inputs exp references) result))
+      (($ <gexp-input> (? gexp? exp) _ #t)
+       (if native?
+           (append (gexp-inputs exp)
+                   (gexp-inputs exp #:native? #t)
+                   result)
+           result))
+      (($ <gexp-input> (? gexp? exp) _ #f)
+       (if native?
+           (append (gexp-inputs exp #:native? #t)
+                   result)
+           (append (gexp-inputs exp)
+                   result)))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons `(,str) result)
@@ -369,13 +379,13 @@ references."
            ;; THING is a derivation, or a package, or an origin, etc.
            (cons `(,thing ,output) result)
            result))
-      (($ <gexp-input> (lst ...) output native?)
+      (($ <gexp-input> (lst ...) output n?)
        (fold-right add-reference-inputs result
                    ;; XXX: For now, automatically convert LST to a list of
                    ;; gexp-inputs.
                    (map (match-lambda
                          ((? gexp-input? x) x)
-                         (x (%gexp-input x "out" native?)))
+                         (x (%gexp-input x "out" (or n? native?))))
                         lst)))
       (_
        ;; Ignore references to other kinds of objects.
@@ -383,10 +393,12 @@ references."
 
   (fold-right add-reference-inputs
               '()
-              (references exp)))
+              (if native?
+                  (gexp-native-references exp)
+                  (gexp-references exp))))
 
 (define gexp-native-inputs
-  (cut gexp-inputs <> gexp-native-references))
+  (cut gexp-inputs <> #:native? #t))
 
 (define (gexp-outputs exp)
   "Return the outputs referred to by EXP as a list of strings."
