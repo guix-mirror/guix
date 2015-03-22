@@ -447,6 +447,10 @@ encoding conversion errors."
                               (message "invalid error code")
                               (status   k))))))))
 
+(define %default-substitute-urls
+  ;; Default list of substituters.
+  '("http://hydra.gnu.org"))
+
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
@@ -459,7 +463,12 @@ encoding conversion errors."
                             (print-build-trace #t)
                             (build-cores (current-processor-count))
                             (use-substitutes? #t)
-                            (substitute-urls '())) ; client "untrusted" cache URLs
+
+                            ;; Client-provided substitute URLs.  For
+                            ;; unprivileged clients, these are considered
+                            ;; "untrusted"; for root, they override the
+                            ;; daemon's settings.
+                            (substitute-urls %default-substitute-urls))
   ;; Must be called after `open-connection'.
 
   (define socket
