@@ -474,13 +474,20 @@ and in the current monad setting (system type, etc.)"
       ;; Return all the 'ungexp' present in EXP.
       (let loop ((exp    exp)
                  (result '()))
-        (syntax-case exp (ungexp ungexp-splicing)
+        (syntax-case exp (ungexp
+                          ungexp-splicing
+                          ungexp-native
+                          ungexp-native-splicing)
           ((ungexp _)
            (cons exp result))
           ((ungexp _ _)
            (cons exp result))
           ((ungexp-splicing _ ...)
            (cons exp result))
+          ((ungexp-native _ ...)
+           result)
+          ((ungexp-native-splicing _ ...)
+           result)
           ((exp0 exp ...)
            (let ((result (loop #'exp0 result)))
              (fold loop result #'(exp ...))))
@@ -491,13 +498,20 @@ and in the current monad setting (system type, etc.)"
       ;; Return all the 'ungexp-native' forms present in EXP.
       (let loop ((exp    exp)
                  (result '()))
-        (syntax-case exp (ungexp-native ungexp-native-splicing)
+        (syntax-case exp (ungexp
+                          ungexp-splicing
+                          ungexp-native
+                          ungexp-native-splicing)
           ((ungexp-native _)
            (cons exp result))
           ((ungexp-native _ _)
            (cons exp result))
           ((ungexp-native-splicing _ ...)
            (cons exp result))
+          ((ungexp _ ...)
+           result)
+          ((ungexp-splicing _ ...)
+           result)
           ((exp0 exp ...)
            (let ((result (loop #'exp0 result)))
              (fold loop result #'(exp ...))))
