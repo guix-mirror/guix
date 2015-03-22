@@ -154,6 +154,7 @@ Services
 * Base Services::               Essential system services.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Various Services::            Other services.
 
 Packaging Guidelines
 
@@ -4350,6 +4351,7 @@ declaration.
 * Base Services::               Essential system services.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Various Services::            Other services.
 @end menu
 
 @node Base Services
@@ -4684,6 +4686,25 @@ this order---e.g., @code{("modesetting" "vesa")}.
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
+@end deffn
+
+@node Various Services
+@subsubsection Various Services
+
+The @code{(gnu services lirc)} module provides the following service.
+
+@deffn {Monadic Procedure} lirc-service [#:lirc lirc] @
+       [#:device #f] [#:driver #f] [#:config-file #f] @
+       [#:extra-options '()]
+Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
+decodes infrared signals from remote controls.
+
+Optionally, @var{device}, @var{driver} and @var{config-file}
+(configuration file name) may be specified.  See @command{lircd} manual
+for details.
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{lircd}.
 @end deffn
 
 @node Setuid Programs
