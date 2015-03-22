@@ -1,0 +1,13 @@
+Do not try to create $localstatedir as we cannot do this when it is /var.
+
+--- lirc-0.9.2a/daemons/Makefile.in
++++ lirc-0.9.2a/daemons/Makefile.in
+@@ -790,9 +790,6 @@
+ 	uninstall-local uninstall-sbinPROGRAMS
+ 
+ 
+-install-exec-local:
+-	test -d  $(DESTDIR)$(varrundir)/$(PACKAGE) \
+-		 || mkdir -p $(DESTDIR)$(varrundir)/$(PACKAGE)
+ uninstall-local:
+ 	-$(RM) $(DESTDIR)$(varrundir)/$(PACKAGE)/lircd
