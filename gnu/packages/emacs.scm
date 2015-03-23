@@ -174,20 +174,12 @@ editor (without an X toolkit)" )
     (home-page "http://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
-     "Geiser is a collection of Emacs major and minor modes that
-conspire with one or more Scheme interpreters to keep the Lisp Machine
-Spirit alive.  It draws inspiration (and a bit more) from environments
-such as Common Lisp’s Slime, Factor’s FUEL, Squeak or Emacs itself, and
-does its best to make Scheme hacking inside Emacs (even more) fun.
-
-Or, to be precise, what i consider fun.  Geiser is thus my humble
-contribution to the dynamic school of expression, and a reaction against
-what i perceive as a derailment, in modern times, of standard Scheme
-towards the static camp.  Because i prefer growing and healing to poking
-at corpses, the continuously running Scheme interpreter takes the center
-of the stage in Geiser.  A bundle of Elisp shims orchestrates the dialog
-between the Scheme interpreter, Emacs and, ultimately, the schemer,
-giving her access to live metadata.")
+     "Geiser is a collection of Emacs major and minor modes that conspire with
+one or more Scheme implementations to keep the Lisp Machine Spirit alive.  The
+continuously running Scheme interpreter takes the center of the stage in
+Geiser.  A bundle of Elisp shims orchestrates the dialog between the Scheme
+implementation, Emacs and, ultimately, the schemer, giving them access to live
+metadata.")
     (license license:bsd-3)))
 
 (define-public paredit
