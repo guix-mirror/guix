@@ -199,7 +199,7 @@ features an integrated Emacs-like editor and a large runtime library.")
                                       (string-append "EMACSDIR=" dir)))))
                   %standard-phases))))
     (inputs
-     `(("emacs" ,emacs-no-x)
+     `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
 
        ;; Optional APIs for which Bigloo has bindings.
        ("avahi" ,avahi)
