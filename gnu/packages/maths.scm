@@ -283,7 +283,6 @@ large scale eigenvalue problems.")
         "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
-    (native-inputs `(("patchelf" ,patchelf))) ;for augment-rpath
     (inputs `(("fortran" ,gfortran-4.8)
               ("python" ,python-2)))
     (arguments
@@ -435,7 +434,6 @@ files.")
        ;; Remove non-free METIS code
        '(delete-file-recursively "contrib/Metis"))))
     (build-system cmake-build-system)
-    (native-inputs `(("patchelf" ,patchelf))) ;for augment-rpath
     (propagated-inputs
      `(("fltk" ,fltk)
        ("gfortran" ,gfortran-4.8)
