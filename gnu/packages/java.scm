@@ -286,7 +286,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                 (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
                 (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY"))))
           (alist-cons-before
-           'configure 'set-paths
+           'configure 'set-additional-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((gcjdir  (assoc-ref %build-inputs "gcj"))
                     (gcjlib  (string-append gcjdir "/lib"))
