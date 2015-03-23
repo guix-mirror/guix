@@ -291,7 +291,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
              (let* ((gcjdir  (assoc-ref %build-inputs "gcj"))
                     (gcjlib  (string-append gcjdir "/lib"))
                     (antpath (string-append (getcwd) "/../apache-ant-1.9.4")))
-               (setenv "CC" (which "gcc"))
                (setenv "CPATH"
                        (string-append (assoc-ref %build-inputs "libxrender")
                                       "/include/X11/extensions" ":"
@@ -309,8 +308,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (setenv "ALT_FREETYPE_LIB_PATH"
                        (string-append (assoc-ref %build-inputs "freetype")
                                       "/lib"))
-               (setenv "LD_LIBRARY_PATH"
-                       (string-append antpath "/lib" ":" gcjlib))
                (setenv "PATH" (string-append antpath "/bin:"
                                              (getenv "PATH")))))
            (alist-cons-before
