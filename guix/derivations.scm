@@ -225,22 +225,28 @@ download with a fixed hash (aka. `fetchurl')."
 (define* (substitution-oracle store drv)
   "Return a one-argument procedure that, when passed a store file name,
 returns #t if it's substitutable and #f otherwise.  The returned procedure
-knows about all substitutes for all the derivations listed in DRV and their
-prerequisites.
+knows about all substitutes for all the derivations listed in DRV; it also
+knows about their prerequisites, unless they are themselves substitutable.
 
 Creating a single oracle (thus making a single 'substitutable-paths' call) and
 reusing it is much more efficient than calling 'has-substitutes?' or similar
 repeatedly, because it avoids the costs associated with launching the
 substituter many times."
+  (define valid?
+    (cut valid-path? store <>))
+
   (let* ((paths (delete-duplicates
                  (fold (lambda (drv result)
                          (let ((self (match (derivation->output-paths drv)
                                        (((names . paths) ...)
-                                        paths)))
-                               (deps (append-map derivation-input-output-paths
-                                                 (derivation-prerequisites
-                                                  drv))))
-                           (append self deps result)))
+                                        paths))))
+                           (if (every valid? self)
+                               result
+                               (let ((deps
+                                      (append-map derivation-input-output-paths
+                                                  (derivation-prerequisites drv))))
+                                 (append (remove valid? (append self deps))
+                                         result)))))
                        '()
                        drv)))
          (subst (list->set (substitutable-paths store paths))))
