@@ -335,6 +335,7 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
       ("gzip"  ,(ref '(gnu packages compression) 'gzip))
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
+      ("unzip" ,(ref '(gnu packages zip) 'unzip))
       ("patch" ,(ref '(gnu packages base) 'patch))
       ("locales" ,(ref '(gnu packages commencement)
                        'glibc-utf8-locales-final)))))
@@ -384,6 +385,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
     (cond ((string-suffix? "gz" source-file-name)  "gzip")
           ((string-suffix? "bz2" source-file-name) "bzip2")
           ((string-suffix? "lz" source-file-name)  "lzip")
+          ((string-suffix? "zip" source-file-name) "unzip")
           (else "xz")))
 
   (define original-file-name
@@ -464,8 +466,10 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                      (mkdir directory)
                      (copy-recursively #$source directory)
                      #t)
-                   (zero? (system* (string-append #$tar "/bin/tar")
-                                   "xvf" #$source)))
+                   #$(if (string=? decompression-type "unzip")
+                         #~(zero? (system* "unzip" #$source))
+                         #~(zero? (system* (string-append #$tar "/bin/tar")
+                                           "xvf" #$source))))
                (let ((directory (first-file ".")))
                  (format (current-error-port)
                          "source is under '~a'~%" directory)
