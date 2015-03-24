@@ -375,6 +375,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/calibre-drop-unrar.patch			\
+  gnu/packages/patches/calibre-no-updates-dialog.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/chmlib-inttypes.patch			\
   gnu/packages/patches/clucene-pkgconfig.patch			\

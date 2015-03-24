@@ -77,7 +77,8 @@
           '(begin
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")))
-        (patches (list (search-patch "calibre-drop-unrar.patch")))))
+        (patches (list (search-patch "calibre-drop-unrar.patch")
+                       (search-patch "calibre-no-updates-dialog.patch")))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
