@@ -1033,11 +1033,14 @@ constant parts of it.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ;no "check" target
-       #:substitutable? #f ;force local build because of CPU detection
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
-             "NO_LAPACK=1")
+             "NO_LAPACK=1"
+             ;; Build the library for all supported CPUs.  This allows
+             ;; switching CPU targets at runtime with the environment variable
+             ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
+             "DYNAMIC_ARCH=1")
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
