@@ -60,6 +60,7 @@
             derivation-input-path
             derivation-input-sub-derivations
             derivation-input-output-paths
+            valid-derivation-input?
 
             &derivation-error
             derivation-error?
@@ -187,12 +188,25 @@ download with a fixed hash (aka. `fetchurl')."
      (map (cut derivation-path->output-path path <>)
           sub-drvs))))
 
-(define (derivation-prerequisites drv)
-  "Return the list of derivation-inputs required to build DRV, recursively."
+(define (valid-derivation-input? store input)
+  "Return true if INPUT is valid--i.e., if all the outputs it requests are in
+the store."
+  (every (cut valid-path? store <>)
+         (derivation-input-output-paths input)))
+
+(define* (derivation-prerequisites drv #:optional (cut? (const #f)))
+  "Return the list of derivation-inputs required to build DRV, recursively.
+
+CUT? is a predicate that is passed a derivation-input and returns true to
+eliminate the given input and its dependencies from the search.  An example of
+search a predicate is 'valid-derivation-input?'; when it is used as CUT?, the
+result is the set of prerequisites of DRV not already in valid."
   (let loop ((drv       drv)
              (result    '())
              (input-set (set)))
-    (let ((inputs (remove (cut set-contains? input-set <>)
+    (let ((inputs (remove (lambda (input)
+                            (or (set-contains? input-set input)
+                                (cut? input)))
                           (derivation-inputs drv))))
       (fold2 loop
              (append inputs result)
