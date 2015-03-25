@@ -17,7 +17,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix scripts substitute-binary)
+(define-module (guix scripts substitute)
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -53,7 +53,7 @@
   #:export (narinfo-signature->canonical-sexp
             read-narinfo
             write-narinfo
-            guix-substitute-binary))
+            guix-substitute))
 
 ;;; Comment:
 ;;;
@@ -675,7 +675,7 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix substitute-binary [OPTION]...
+  (display (_ "Usage: guix substitute [OPTION]...
 Internal tool to substitute a pre-built binary to a local build.\n"))
   (display (_ "
       --query            report on the availability of substitutes for the
@@ -761,7 +761,7 @@ found."
      ;; daemon.
      "http://hydra.gnu.org")))
 
-(define (guix-substitute-binary . args)
+(define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
   (maybe-remove-expired-cached-narinfo)
@@ -882,7 +882,7 @@ substituter disabled~%")
 
             (every (compose zero? cdr waitpid) pids))))
        (("--version")
-        (show-version-and-exit "guix substitute-binary"))
+        (show-version-and-exit "guix substitute"))
        (("--help")
         (show-help))
        (opts
@@ -893,4 +893,4 @@ substituter disabled~%")
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; End:
 
-;;; substitute-binary.scm ends here
+;;; substitute.scm ends here

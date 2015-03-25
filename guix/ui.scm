@@ -815,7 +815,7 @@ parameter of 'args-fold'."
 
 (define (show-guix-help)
   (define (internal? command)
-    (member command '("substitute-binary" "authenticate" "offload")))
+    (member command '("substitute" "authenticate" "offload")))
 
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))

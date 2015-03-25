@@ -44,7 +44,7 @@ export PATH
 # Daemon helpers.
 
 NIX_ROOT_FINDER="$abs_top_builddir/nix/scripts/list-runtime-roots"
-NIX_SUBSTITUTERS="$abs_top_builddir/nix/scripts/substitute-binary"
+NIX_SUBSTITUTERS="$abs_top_builddir/nix/scripts/substitute"
 NIX_BUILD_HOOK="$abs_top_builddir/nix/scripts/offload"
 NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'guix-authenticate'
 
