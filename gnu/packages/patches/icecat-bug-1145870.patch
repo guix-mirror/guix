@@ -1,0 +1,43 @@
+From a40e2ebc2ab57dacb539d4e49ed4193764ff7112 Mon Sep 17 00:00:00 2001
+From: Kyle Huey <khuey@kylehuey.com>
+Date: Fri, 20 Mar 2015 19:05:56 -0700
+Subject: [PATCH] Bug 1145870. r=bz a=lmandel
+
+---
+ docshell/base/nsDocShell.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/docshell/base/nsDocShell.cpp b/docshell/base/nsDocShell.cpp
+index 14ff3f2..4cddcef 100644
+--- a/docshell/base/nsDocShell.cpp
++++ b/docshell/base/nsDocShell.cpp
+@@ -8900,6 +8900,8 @@ nsDocShell::InternalLoad(nsIURI * aURI,
+ 
+     NS_ENSURE_TRUE(!mIsBeingDestroyed, NS_ERROR_NOT_AVAILABLE);
+ 
++    NS_ENSURE_TRUE(!mBlockNavigation, NS_ERROR_UNEXPECTED);
++
+     // wyciwyg urls can only be loaded through history. Any normal load of
+     // wyciwyg through docshell is  illegal. Disallow such loads.
+     if (aLoadType & LOAD_CMD_NORMAL) {
+@@ -12570,7 +12572,7 @@ nsDocShell::OnLinkClick(nsIContent* aContent,
+ {
+   NS_ASSERTION(NS_IsMainThread(), "wrong thread");
+ 
+-  if (!IsOKToLoadURI(aURI)) {
++  if (!IsOKToLoadURI(aURI) || mBlockNavigation) {
+     return NS_OK;
+   }
+ 
+@@ -12626,7 +12628,7 @@ nsDocShell::OnLinkClickSync(nsIContent *aContent,
+     *aRequest = nullptr;
+   }
+ 
+-  if (!IsOKToLoadURI(aURI)) {
++  if (!IsOKToLoadURI(aURI) || mBlockNavigation) {
+     return NS_OK;
+   }
+ 
+-- 
+2.2.1
+

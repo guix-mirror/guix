@@ -1,0 +1,25 @@
+From cf1de3d04302841aaa05aed8364da3399cbca9b4 Mon Sep 17 00:00:00 2001
+From: Bobby Holley <bobbyholley@gmail.com>
+Date: Tue, 17 Feb 2015 17:47:12 -0500
+Subject: [PATCH] Bug 1127780 - Add null check. r=bz, a=bkerensa
+
+---
+ js/xpconnect/wrappers/XrayWrapper.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/js/xpconnect/wrappers/XrayWrapper.h b/js/xpconnect/wrappers/XrayWrapper.h
+index ead095f1..cc8c580 100644
+--- a/js/xpconnect/wrappers/XrayWrapper.h
++++ b/js/xpconnect/wrappers/XrayWrapper.h
+@@ -131,7 +131,7 @@ class XrayWrapper : public Base {
+     {
+         if (!Base::getPrototypeOf(cx, wrapper, protop))
+             return false;
+-        if (WrapperFactory::IsXrayWrapper(protop))
++        if (!protop || WrapperFactory::IsXrayWrapper(protop))
+             return true;
+ 
+         protop.set(JS_GetObjectPrototype(cx, wrapper));
+-- 
+2.2.1
+
