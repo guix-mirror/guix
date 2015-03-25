@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages bootstrap)
@@ -224,5 +225,32 @@
      "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
 interactive environment for the functional language Haskell.")
     (license bsd-3)))
+
+(define-public ghc-mtl
+  (package
+    (name "ghc-mtl")
+    (version "2.1.3.1")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/mtl/mtl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1xpn2wjmqbh2cg1yssc6749xpgcqlrrg4iilwqgkcjgvaxlpdbvp"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/ekmett/mtl")
+    (synopsis
+     "Monad classes, using functional dependencies")
+    (description
+     "Monad classes using functional dependencies, with instances
+for various monad transformers, inspired by the paper
+'Functional Programming with Overloading and Higher-Order Polymorphism',
+by Mark P Jones, in 'Advanced School of Functional Programming', 1995
+http://web.cecs.pdx.edu/~mpj/pubs/springschool.html.")
+  (license bsd-3)))
 
 ;;; haskell.scm ends here
