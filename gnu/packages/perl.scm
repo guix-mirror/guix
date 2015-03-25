@@ -143,6 +143,27 @@ explicitly alias the class to another name or, if you prefer, you can do so
 implicitly.")
     (license (package-license perl))))
 
+(define-public perl-appconfig
+  (package
+    (name "perl-appconfig")
+    (version "1.71")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "AppConfig-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03vvi3mk4833mx2c6dkm9zhvakf02mb2b7wz9pk9xc7c4mq04xqi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)))
+    (home-page "http://search.cpan.org/dist/AppConfig")
+    (synopsis "Configuration files and command line parsing")
+    (description "AppConfig is a bundle of Perl5 modules for reading
+configuration files and parsing command line arguments.")
+    (license (package-license perl))))
+
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
@@ -233,6 +254,33 @@ but don't want to go all out and profile your code.")
                               "Benchmark-Timer-" version))
     (license gpl2)))
 
+(define-public perl-cache-cache
+  (package
+    (name "perl-cache-cache")
+    (version "1.08")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                                  "Cache-Cache-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s6i670dc3yb6ngvdk48y6szdk5n1f4icdcjv2vi1l2xp9fzviyj"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-digest-sha1" ,perl-digest-sha1)
+       ("perl-error" ,perl-error)
+       ("perl-ipc-sharelite" ,perl-ipc-sharelite)))
+    (home-page "http://search.cpan.org/dist/Cache-Cache")
+    (synopsis "Cache interface for Perl")
+    (description "The Cache modules are designed to assist a developer in
+persisting data for a specified period of time.  Often these modules are used
+in web applications to store data locally to save repeated and redundant
+expensive calls to remote machines or databases.  People have also been known
+to use Cache::Cache for its straightforward interface in sharing data between
+runs of an application or invocations of a CGI-style script or simply as an
+easy to use abstraction of the filesystem or shared memory.")
+    (license (package-license perl))))
+
 (define-public perl-capture-tiny
   (package
     (name "perl-capture-tiny")
@@ -255,6 +303,48 @@ sent to STDOUT or STDERR, regardless of whether it comes from Perl, from XS
 code or from an external program.  Optionally, output can be teed so that it
 is captured while being passed through to the original file handles.")
     (license asl2.0)))
+
+(define-public perl-carp-assert
+  (package
+    (name "perl-carp-assert")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Carp-Assert-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0km5fc6r6whxh6h5yd7g1j0bi96sgk0gkda6cardicrw9qmqwkwj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Carp-Assert")
+    (synopsis "Executable comments for Perl")
+    (description "Carp::Assert is intended for a purpose like the ANSI C
+library assert.h.")
+    (license (package-license perl))))
+
+(define-public perl-carp-assert-more
+  (package
+    (name "perl-carp-assert-more")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "Carp-Assert-More-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cq7qk4qbhqppm4raby5k24b5mx5qjgy1884nrddhxillnzlq01z"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-carp-assert" ,perl-carp-assert)))
+    (home-page "http://search.cpan.org/dist/Carp-Assert-More")
+    (synopsis "Convenience wrappers around Carp::Assert")
+    (description "Carp::Assert::More is a set of handy assertion functions for
+Perl.")
+    (license artistic2.0)))
 
 (define-public perl-carp-clan
   (package
@@ -771,6 +861,27 @@ the caller.")
 CPAN::Meta object are present.")
     (license (package-license perl))))
 
+(define-public perl-cpanel-json-xs
+  (package
+    (name "perl-cpanel-json-xs")
+    (version "3.0114")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
+                           "Cpanel-JSON-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Cpanel-JSON-XS")
+    (synopsis "JSON::XS for Cpanel")
+    (description "This module converts Perl data structures to JSON and vice
+versa.")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
@@ -879,6 +990,37 @@ The maths behind this is unfortunately fiddly, hence this module.")
     (synopsis "Dynamic generation of nested combinations of variants")
     (description "Data::Tumbler - Dynamic generation of nested combinations of
 variants")
+    (license (package-license perl))))
+
+(define-public perl-data-visitor
+  (package
+    (name "perl-data-visitor")
+    (version "0.30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Data-Visitor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m7d1505af9z2hj5aw020grcmjjlvnkjpvjam457d7k5qfy4m8lf"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-task-weaken" ,perl-task-weaken)
+       ("perl-tie-toobject" ,perl-tie-toobject)))
+    (home-page "http://search.cpan.org/dist/Data-Visitor")
+    (synopsis "Visitor style traversal of Perl data structures")
+    (description "This module is a simple visitor implementation for Perl
+values.  It has a main dispatcher method, visit, which takes a single perl
+value and then calls the methods appropriate for that value.  It can
+recursively map (cloning as necessary) or just traverse most structures, with
+support for per-object behavior, circular structures, visiting tied
+structures, and all ref types (hashes, arrays, scalars, code, globs).")
     (license (package-license perl))))
 
 (define-public perl-devel-caller
@@ -1099,6 +1241,26 @@ SHA-1 message digest algorithm for use by Perl programs.")
 modules separately and deal with them after the module is done installing.")
     (license (package-license perl))))
 
+(define-public perl-error
+  (package
+    (name "perl-error")
+    (version "0.17023")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                                  "Error-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dsxic78mxy30qvbbdzfyp501hbkwhnbmafqfxipr0yqfy8f2j5g"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Error")
+    (synopsis "OO-ish Error/Exception handling for Perl")
+    (description "The Error package provides two interfaces. Firstly Error
+provides a procedural interface to exception handling. Secondly Error is a
+base class for errors/exceptions that can either be thrown, for subsequent
+catch, or can simply be recorded.")
+    (license (package-license perl))))
+
 (define-public perl-eval-closure
   (package
     (name "perl-eval-closure")
@@ -1256,6 +1418,55 @@ it ties together a family of modern toolchain modules.")
 module building modules.")
     (license (package-license perl))))
 
+(define-public perl-file-changenotify
+  (package
+    (name "perl-file-changenotify")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "File-ChangeNotify-" version ".tar.gz"))
+       (sha256
+        (base32
+         "090i265f73jlcl5rv250791vw32j9vvl4nd5abc7myg0klb8109w"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-params-validate" ,perl-moosex-params-validate)
+       ("perl-moosex-semiaffordanceaccessor"
+        ,perl-moosex-semiaffordanceaccessor)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/File-ChangeNotify")
+    (synopsis "Watch for changes to files")
+    (description "This module provides a class to monitor a directory for
+changes made to any file.")
+    (license artistic2.0)))
+
+(define-public perl-file-copy-recursive
+  (package
+    (name "perl-file-copy-recursive")
+    (version "0.38")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DM/DMUEY/"
+                           "File-Copy-Recursive-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1syyyvylr51iicialdmv0dw06q49xzv8zrkb5cn8ma4l73gvvk44"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Copy-Recursive")
+    (synopsis "Recursively copy files and directories")
+    (description "This module has 3 functions: one to copy files only, one to
+copy directories only, and one to do either depending on the argument's
+type.")
+    (license (package-license perl))))
+
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
@@ -1356,6 +1567,27 @@ lists of files")
 provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List/")))
+
+(define-public perl-file-remove
+  (package
+    (name "perl-file-remove")
+    (version "1.52")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "File-Remove-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p8bal9qhwkjbghivxn1d5m3qdj2qwm1agrjbmakm6la9dbxqm21"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Remove")
+    (synopsis "Remove files and directories in Perl")
+    (description "File::Remove::remove removes files and directories.  It acts
+like /bin/rm, for the most part.  Although \"unlink\" can be given a list of
+files, it will not remove directories; this module remedies that.  It also
+accepts wildcards, * and ?, as arguments for filenames.")
+    (license (package-license perl))))
 
 (define-public perl-file-sharedir
   (package
@@ -1644,6 +1876,93 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
 
+(define-public perl-ipc-sharelite
+  (package
+    (name "perl-ipc-sharelite")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AN/ANDYA/"
+                           "IPC-ShareLite-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gz7dbwxrzbzdsjv11kb49jlf9q6lci2va6is0hnavd93nwhdm0l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IPC-ShareLite")
+    (synopsis "Lightweight interface to shared memory")
+    (description "IPC::ShareLite provides a simple interface to shared memory,
+allowing data to be efficiently communicated between processes.")
+    (license (package-license perl))))
+
+(define-public perl-json
+  (package
+    (name "perl-json")
+    (version "2.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+                           "JSON-" version ".tar.gz"))
+       (sha256
+        (base32
+         "127yppvr17qik9pkd1vy901hs4l13kg6rhp76jdgcyask35v7nsd"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-json-xs" ,perl-json-xs))) ;recommended
+    (home-page "http://search.cpan.org/dist/JSON")
+    (synopsis "JSON encoder/decoder for Perl")
+    (description "This module converts Perl data structures to JSON and vice
+versa using either JSON::XS or JSON::PP.")
+    (license (package-license perl))))
+
+(define-public perl-json-maybexs
+  (package
+    (name "perl-json-maybexs")
+    (version "1.003003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "JSON-MaybeXS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q21wzz87drrvblxcm2py8fcvkzwx1hxzfybynz8ln7wv66vbx3f"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-without-module" ,perl-test-without-module)))
+    (inputs
+     `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
+    (home-page "http://search.cpan.org/dist/JSON-MaybeXS")
+    (synopsis "Cpanel::JSON::XS with fallback")
+    (description "This module first checks to see if either Cpanel::JSON::XS
+or JSON::XS is already loaded, in which case it uses that module.  Otherwise
+it tries to load Cpanel::JSON::XS, then JSON::XS, then JSON::PP in order, and
+either uses the first module it finds or throws an error.")
+    (license (package-license perl))))
+
+(define-public perl-json-xs
+  (package
+    (name "perl-json-xs")
+    (version "3.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                           "JSON-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1aviik480m61ykwvyix83grywzbk828wvfz19hqfvaasd8jz73af"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)
+       ("perl-types-serialiser" ,perl-types-serialiser)))
+    (home-page "http://search.cpan.org/dist/JSON-XS")
+    (synopsis "JSON serialising/deserialising for Perl")
+    (description "This module converts Perl data structures to JSON and vice
+versa.")
+    (license (package-license perl))))
+
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
@@ -1771,6 +2090,44 @@ implementation for a given OS or any other case of needing to provide multiple
 implementations.")
     (license artistic2.0)))
 
+(define-public perl-module-install
+  (package
+    (name "perl-module-install")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/"
+                           "Module-Install-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0j8dz87k60i1khd9xadd8kl6bgm9s5s5zl86rzsz5bq36siz00iz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-yaml-tiny" ,perl-yaml-tiny)))
+    (propagated-inputs
+     `(("perl-archive-zip" ,perl-archive-zip)
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-file-remove" ,perl-file-remove)
+       ("perl-json" ,perl-json)
+       ;; The LWP::Simple and LWP::UserAgent modules are recommended, but
+       ;; would cause a circular dependency with (gnu packages web), so we
+       ;; leave it out.  It may be resolved at runtime, however.
+       ;("perl-libwww-perl" ,perl-libwww-perl)
+       ("perl-module-scandeps" ,perl-module-scandeps)
+       ("perl-par-dist" ,perl-par-dist)
+       ("perl-yaml-tiny" ,perl-yaml-tiny)))
+    ;; TODO: One test requires Test::More >= 0.99, another fails with unicode
+    ;; character handling.
+    (arguments `(#:tests? #f))
+    (home-page "http://search.cpan.org/dist/Module-Install")
+    (synopsis "Standalone, extensible Perl module installer")
+    (description "Module::Install is a package for writing installers for
+CPAN (or CPAN-like) distributions that are clean, simple, minimalist, act in a
+strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl
+installation version 5.005 or newer.")
+    (license (package-license perl))))
+
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
@@ -1811,6 +2168,27 @@ handling of Perl modules, which are normally handled at compile time.")
     (description "This module provides conflicts checking for Module::Runtime,
 which had a recent release that broke some versions of Moose.  It is called
 from Moose::Conflicts and moose-outdated.")
+    (license (package-license perl))))
+
+(define-public perl-module-scandeps
+  (package
+    (name "perl-module-scandeps")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSCHUPP/"
+                           "Module-ScanDeps-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17mbyqwd8c20nqw01hjshl524vkw8pq6y2lwndmw36xkqr945npz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (home-page "http://search.cpan.org/dist/Module-ScanDeps")
+    (synopsis "Recursively scan Perl code for dependencies")
+    (description "Module::ScanDeps is a module to recursively scan Perl
+programs for dependencies.")
     (license (package-license perl))))
 
 (define-public perl-moo
@@ -2064,6 +2442,33 @@ inlining, at make_immutable time) a constructor that makes sure things like
 BUILD methods are called.  It tries to be as non-intrusive as possible.")
   (license (package-license perl))))
 
+(define-public perl-moosex-params-validate
+  (package
+    (name "perl-moosex-params-validate")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "MooseX-Params-Validate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16isvyfsnzp63qr9cwsn094hasb6m7rzldmzav6spk7rih4mxdwk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-devel-caller" ,perl-devel-caller)
+       ("perl-moose" ,perl-moose)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/MooseX-Params-Validate")
+    (synopsis "Extension of Params::Validate using Moose's types")
+    (description "This module fills a gap in Moose by adding method parameter
+validation to Moose.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
@@ -2120,6 +2525,57 @@ methods to be composed into the classes/roles/instances it's compiled to,
 where plain Moose::Roles would lose the overloading.")
     (license (package-license perl))))
 
+(define-public perl-moosex-semiaffordanceaccessor
+  (package
+    (name "perl-moosex-semiaffordanceaccessor")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "MooseX-SemiAffordanceAccessor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mdil9ckgmgr78z59p8wfa35ixn5855ndzx14y01dvfxpiv5gf55"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)))
+    (home-page "http://search.cpan.org/dist/MooseX-SemiAffordanceAccessor")
+    (synopsis "Name your accessors foo() and set_foo()")
+    (description "This module does not provide any methods.  Simply loading it
+changes the default naming policy for the loading class so that accessors are
+separated into get and set methods.  The get methods have the same name as the
+accessor, while set methods are prefixed with \"_set_\".")
+    (license artistic2.0)))
+
+(define-public perl-moosex-traits-pluggable
+  (package
+    (name "perl-moosex-traits-pluggable")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "MooseX-Traits-Pluggable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jjqmcidy4kdgp5yffqqwxrsab62mbhbpvnzdy1rpwnb1savg5mb"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-load" ,perl-class-load)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page
+     "http://search.cpan.org/dist/MooseX-Traits-Pluggable")
+    (synopsis "Trait loading and resolution for Moose")
+    (description "Adds support on top of MooseX::Traits for class precedence
+search for traits and some extra attributes")
+    (license (package-license perl))))
+
 (define-public perl-moosex-types
   (package
     (name "perl-moosex-types")
@@ -2145,6 +2601,35 @@ where plain Moose::Roles would lose the overloading.")
     (description "This package lets you declare types using short names, but
 behind the scenes it namespaces all your type declarations, effectively
 prevent name clashes between packages.")
+    (license (package-license perl))))
+
+(define-public perl-moosex-types-loadableclass
+  (package
+    (name "perl-moosex-types-loadableclass")
+    (version "0.013")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Types-LoadableClass-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13v2hn3xr6adx15qik8b6966fbbw77ik1v4sxx24f766la10w2mq"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-moose" ,perl-moose)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-class-load" ,perl-class-load)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Types-LoadableClass")
+    (synopsis "ClassName type constraints for Moose")
+    (description "MooseX::Types::LoadableClass provides a ClassName type
+constraint with coercion to load the class.")
     (license (package-license perl))))
 
 (define-public perl-mro-compat
@@ -2239,6 +2724,26 @@ name, but they won't show up as methods on your class or instances.")
     (synopsis "Numeric comparisons")
     (description "Number::Compare compiles a simple comparison to an anonymous
 subroutine, which you can call with a value to be tested against.")
+    (license (package-license perl))))
+
+(define-public perl-object-signature
+  (package
+    (name "perl-object-signature")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+                           "Object-Signature-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c8l7195bjvx0v6zmkgdnxvwg7yj2zq8hi7xd25a3iikd12dc4f6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Object-Signature")
+    (synopsis "Generate cryptographic signatures for objects")
+    (description "Object::Signature is an abstract base class that you can
+inherit from in order to allow your objects to generate unique cryptographic
+signatures.")
     (license (package-license perl))))
 
 (define-public perl-package-anon
@@ -2411,6 +2916,25 @@ checking parameters easier.")
     (description "The Params::Validate module allows you to validate method or
 function call parameters to an arbitrary level of specificity.")
     (license artistic2.0)))
+
+(define-public perl-par-dist
+  (package
+    (name "perl-par-dist")
+    (version "0.49")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RS/RSCHUPP/"
+                           "PAR-Dist-" version ".tar.gz"))
+       (sha256
+        (base32
+         "078ycyn8pw3rba4k3qwcqrqfcym5c1pivymwa0bvs9sab45j4iwy"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/PAR-Dist")
+    (synopsis "Create and manipulate PAR distributions")
+    (description "PAR::Dist is a toolkit to create and manipulate PAR
+distributions.")
+    (license (package-license perl))))
 
 (define-public perl-parent
   (package
@@ -2795,6 +3319,28 @@ The idea is just to fool caller().  All the really naughty bits of Tcl's
 uplevel() are avoided.")
     (license (package-license perl))))
 
+(define-public perl-svg
+  (package
+    (name "perl-svg")
+    (version "2.63")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/SVG-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "12cbncsfxbwg1w3p1qmymfbqdb22kmyajxzdnxnxbq5xjl6yncha"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/SVG")
+    (synopsis "Perl extension for generating SVG documents")
+    (description "SVG is a Perl module which generates a nested data structure
+containing the DOM representation of an SVG (Scalable Vector Graphics) image.
+Using SVG, you can generate SVG objects, embed other SVG instances into it,
+access the DOM object, create and access Javascript, and generate SMIL
+animation content.")
+    (license (package-license perl))))
+
 (define-public perl-sys-cpu
   (package
     (name "perl-sys-cpu")
@@ -2837,6 +3383,31 @@ Scalar::Util is not available at all, it will issue a normal dependency on the
 module.  However, if Scalar::Util is relatively new ( it is >= 1.19 ) and the
 module does not have weaken, the install will bail out altogether with a long
 error encouraging the user to seek support.")
+    (license (package-license perl))))
+
+(define-public perl-template-toolkit
+  (package
+    (name "perl-template-toolkit")
+    (version "2.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AB/ABW/"
+                           "Template-Toolkit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gknrm8hdci5ryg67p4y23lsy7lynczqmq9kh9nzj7kg08vczqg7"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-appconfig" ,perl-appconfig)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (home-page "http://search.cpan.org/dist/Template-Toolkit")
+    (synopsis "Template processing system for Perl")
+    (description "The Template Toolkit is a collection of modules which
+implement an extensible template processing system.  It was originally
+designed and remains primarily useful for generating dynamic web content, but
+it can be used equally well for processing any other kind of text based
+documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
     (license (package-license perl))))
 
 (define-public perl-test-cleannamespaces
@@ -3017,6 +3588,46 @@ testing exception-throwing code with about the same amount of typing.")
     (synopsis "Run Perl standard test scripts with statistics")
     (description "Simple test harness which allows tests to be run and results
 automatically aggregated and output to STDOUT.")
+    (license (package-license perl))))
+
+(define-public perl-test-leaktrace
+  (package
+    (name "perl-test-leaktrace")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GF/GFUJI/"
+                           "Test-LeakTrace-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pp6ip012c474ibw0mwd7jgig34gf98bb8xlqk4wdvw1d65vbf7g"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-LeakTrace")
+    (synopsis "Traces memory leaks in Perl")
+    (description "Test::LeakTrace provides several functions that trace memory
+leaks. This module scans arenas, the memory allocation system, so it can
+detect any leaked SVs in given blocks.")
+    (license (package-license perl))))
+
+(define-public perl-test-longstring
+  (package
+    (name "perl-test-longstring")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RG/RGARCIA/"
+                           "Test-LongString-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kwp7rfr1i2amz4ckigkv13ah7jr30q6l5k4wk0vxl84myg39i5b"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-LongString")
+    (synopsis "Tests strings for equality, with more helpful failures")
+    (description "This module provides some drop-in replacements for the
+string comparison functions of Test::More, but which are more suitable when
+you test against long strings.")
     (license (package-license perl))))
 
 (define-public perl-test-mocktime
@@ -3456,6 +4067,50 @@ letters, the pronunciation expressed by the text in some other writing
 system.")
     (license (package-license perl))))
 
+(define-public perl-tie-ixhash
+  (package
+  (name "perl-tie-ixhash")
+  (version "1.23")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/C/CH/CHORNY/"
+                          "Tie-IxHash-" version ".tar.gz"))
+      (sha256
+        (base32
+          "0mmg9iyh42syal3z1p2pn9airq65yrkfs66cnqs9nz76jy60pfzs"))))
+  (build-system perl-build-system)
+  (home-page "http://search.cpan.org/dist/Tie-IxHash")
+  (synopsis "Ordered associative arrays for Perl")
+  (description "This Perl module implements Perl hashes that preserve the
+order in which the hash elements were added. The order is not affected when
+values corresponding to existing keys in the IxHash are changed. The elements
+can also be set to any arbitrary supplied order. The familiar perl array
+operations can also be performed on the IxHash.")
+  (license (package-license perl))))
+
+(define-public perl-tie-toobject
+  (package
+    (name "perl-tie-toobject")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NU/NUFFIN/"
+                           "Tie-ToObject-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x1smn1kw383xc5h9wajxk9dlx92bgrbf7gk4abga57y6120s6m3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-simple" ,perl-test-simple)))
+    (home-page "http://search.cpan.org/dist/Tie-ToObject")
+    (synopsis "Tie to an existing Perl object")
+    (description "This class provides a tie constructor that returns the
+object it was given as it's first argument.  This way side effects of calling
+$object->TIEHASH are avoided.")
+    (license (package-license perl))))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
@@ -3585,6 +4240,27 @@ that are designed to minimize common mistakes with eval blocks, and nothing
 else.")
     (license x11)))
 
+(define-public perl-types-serialiser
+  (package
+    (name "perl-types-serialiser")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
+                           "Types-Serialiser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03bk0hm5ys8k7265dkap825ybn2zmzb1hl0kf1jdm8yq95w39lvs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-common-sense" ,perl-common-sense)))
+    (home-page "http://search.cpan.org/dist/Types-Serialiser")
+    (synopsis "Data types for common serialisation formats")
+    (description "This module provides some extra datatypes that are used by
+common serialisation formats such as JSON or CBOR.")
+    (license (package-license perl))))
+
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
@@ -3605,6 +4281,31 @@ lets the user add extra data to any variable and hook syntactical
 operations (such as access, assignment or destruction) that can be applied to
 it.  With this module, you can add your own magic to any variable without
 having to write a single line of XS.")
+    (license (package-license perl))))
+
+(define-public perl-yaml-tiny
+  (package
+    (name "perl-yaml-tiny")
+    (version "1.66")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "YAML-Tiny-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0c17l8pvpraznpb31ncmr4wxlyww8sg8dhvp3s3q02yqll3cnygv"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)))
+    (arguments
+     `(#:tests? #f))                    ;requires Test::More >= 0.99
+    (home-page "http://search.cpan.org/dist/YAML-Tiny")
+    (synopsis "Read/Write YAML files")
+    (description "YAML::Tiny is a perl class for reading and writing
+YAML-style files, written with as little code as possible, reducing load time
+and memory overhead.")
     (license (package-license perl))))
 
 

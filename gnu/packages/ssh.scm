@@ -72,7 +72,6 @@
                ;; fields of 'gcry_thread_cbs' that are now private:
                ;; src/threads.c:72:26: error: 'struct gcry_thread_cbs' has no member named 'mutex_init'
               ("libgcrypt", libgcrypt-1.5)))
-    (native-inputs `(("patchelf" ,patchelf)))
     (synopsis "SSH client library")
     (description
      "libssh is a C library implementing the SSHv2 and SSHv1 protocol for

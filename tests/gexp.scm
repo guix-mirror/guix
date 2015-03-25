@@ -160,6 +160,12 @@
          (equal? `(list ,guile ,cu ,libc ,bu)
                  (gexp->sexp* exp target)))))
 
+(test-equal "ungexp + ungexp-native, nested"
+  (list `((,%bootstrap-guile "out")) '<> `((,coreutils "out")))
+  (let* ((exp (gexp (list (ungexp-native (gexp (ungexp coreutils)))
+                          (ungexp %bootstrap-guile)))))
+    (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
+
 (test-assert "input list"
   (let ((exp   (gexp (display
                       '(ungexp (list %bootstrap-guile coreutils)))))
@@ -495,6 +501,23 @@
                                                           "guile"))
                                              #:allowed-references
                                              (list "out" %bootstrap-guile))))
+    (built-derivations (list drv))))
+
+(test-assertm "gexp->derivation #:allowed-references, specific output"
+  (mlet* %store-monad ((in  (gexp->derivation "thing"
+                                              #~(begin
+                                                  (mkdir #$output:ok)
+                                                  (mkdir #$output:not-ok))))
+                       (drv (gexp->derivation "allowed-refs"
+                                              #~(begin
+                                                  (pk #$in:not-ok)
+                                                  (mkdir #$output)
+                                                  (chdir #$output)
+                                                  (symlink #$output "self")
+                                                  (symlink #$in:ok "ok"))
+                                              #:allowed-references
+                                              (list "out"
+                                                    (gexp-input in "ok")))))
     (built-derivations (list drv))))
 
 (test-assert "gexp->derivation #:allowed-references, disallowed"

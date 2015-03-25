@@ -35,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -62,6 +63,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages tbb)
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -89,6 +91,32 @@ Fahrenheit to Celsius.  Its interpreter is powerful enough to be used
 effectively as a scientific calculator.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
+
+(define-public double-conversion
+  (package
+    (name "double-conversion")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/floitsch/double-conversion/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cnr8xhyjfxijay8ymkqcph3672wp2lj23qhdmr3m4kia5kpdf83"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DBUILD_TESTING=ON")))
+    (home-page "https://github.com/floitsch/double-conversion")
+    (synopsis "Conversion routines for IEEE doubles")
+    (description
+     "The double-conversion library provides binary-decimal and decimal-binary
+routines for IEEE doubles.  The library consists of efficient conversion
+routines that have been extracted from the V8 JavaScript engine.")
+    (license license:bsd-3)))
 
 (define-public dionysus
   (package
@@ -255,7 +283,6 @@ large scale eigenvalue problems.")
         "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
-    (native-inputs `(("patchelf" ,patchelf))) ;for augment-rpath
     (inputs `(("fortran" ,gfortran-4.8)
               ("python" ,python-2)))
     (arguments
@@ -407,7 +434,6 @@ files.")
        ;; Remove non-free METIS code
        '(delete-file-recursively "contrib/Metis"))))
     (build-system cmake-build-system)
-    (native-inputs `(("patchelf" ,patchelf))) ;for augment-rpath
     (propagated-inputs
      `(("fltk" ,fltk)
        ("gfortran" ,gfortran-4.8)
@@ -991,6 +1017,40 @@ based on transforming an expression into a bytecode and precalculating
 constant parts of it.")
     (license license:expat)))
 
+(define-public openblas
+  (package
+    (name "openblas")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/xianyi/OpenBLAS/tarball/v"
+                           version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1asg5mix13ipxgj5h2yj2p0r8km1di5jbcjkn5gmhb37nx7qfv6k"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f  ;no "check" target
+       #:substitutable? #f ;force local build because of CPU detection
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "SHELL=bash"
+             "NO_LAPACK=1")
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("fortran" ,gfortran-4.8)))
+    (native-inputs
+     `(("cunit" ,cunit)
+       ("perl" ,perl)))
+    (home-page "http://www.openblas.net/")
+    (synopsis "Optimized BLAS library based on GotoBLAS")
+    (description
+     "OpenBLAS is a BLAS library forked from the GotoBLAS2-1.13 BSD version.")
+    (license license:bsd-3)))
+
 (define-public openlibm
   (package
     (name "openlibm")
@@ -1064,6 +1124,60 @@ Fresnel integrals, and similar related functions as well.")
     ;; Faddeeva is released under the Expat license; AMOS is included as
     ;; public domain software.
     (license (list license:expat license:public-domain))))
+
+(define-public suitesparse
+  (package
+    (name "suitesparse")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "100hdzr0mf4mzlwnqpmwpfw4pymgsf9n3g0ywb1yps2nk1zbkdy5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f ;cholmod build fails otherwise
+       #:tests? #f  ;no "check" target
+       #:make-flags
+       (list "CC=gcc"
+             "BLAS=-lblas"
+             "TBB=-ltbb"
+             "CHOLMOD_CONFIG=-DNPARTITION" ;required when METIS is not used
+             (string-append "INSTALL_LIB="
+                            (assoc-ref %outputs "out") "/lib")
+             (string-append "INSTALL_INCLUDE="
+                            (assoc-ref %outputs "out") "/include"))
+       #:phases
+       (alist-cons-before
+        'install 'prepare-out
+        ;; README.txt states that the target directories must exist prior to
+        ;; running "make install".
+        (lambda _
+          (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+          (mkdir-p (string-append (assoc-ref %outputs "out") "/include")))
+        ;; no configure script
+        (alist-delete 'configure %standard-phases))))
+    (inputs
+     `(("tbb" ,tbb)
+       ("lapack" ,lapack)))
+    (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
+    (synopsis "Suite of sparse matrix software")
+    (description
+     "SuiteSparse is a suite of sparse matrix algorithms, including: UMFPACK,
+multifrontal LU factorization; CHOLMOD, supernodal Cholesky; SPQR,
+multifrontal QR; KLU and BTF, sparse LU factorization, well-suited for circuit
+simulation; ordering methods (AMD, CAMD, COLAMD, and CCOLAMD); CSparse and
+CXSparse, a concise sparse Cholesky factorization package; and many other
+packages.")
+    ;; LGPLv2.1+:
+    ;;   AMD, CAMD, BTF, COLAMD, CCOLAMD, CSparse, CXSparse, KLU, LDL
+    ;; GPLv2+:
+    ;;  GPUQREngine, RBio, SuiteSparse_GPURuntime, SuiteSparseQR, UMFPACK
+    (license (list license:gpl2+ license:lgpl2.1+))))
 
 (define-public atlas
   (package

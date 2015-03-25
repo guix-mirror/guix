@@ -79,9 +79,9 @@
        ("ncurses" ,ncurses)
 
        ;; TODO: Add the optional dependencies.
-       ("xlibs" ,libx11)
+       ("libx11" ,libx11)
        ("gtk+" ,gtk+)
-       ("libXft" ,libxft)
+       ("libxft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("libjpeg" ,libjpeg-8)
@@ -92,7 +92,7 @@
        ("libpng" ,libpng)
        ("zlib" ,zlib)
 
-       ("libXpm" ,libxpm)
+       ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
        ("libsm" ,libsm)
@@ -114,6 +114,23 @@ large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license license:gpl3+)))
 
+(define-public emacs-no-x
+  ;; This is the version that you should use as an input to packages that just
+  ;; need to byte-compile .el files.
+  (package (inherit emacs)
+    (location (source-properties->location (current-source-location)))
+    (name "emacs-no-x")
+    (synopsis "The extensible, customizable, self-documenting text
+editor (console only)")
+    (build-system gnu-build-system)
+    (inputs (fold alist-delete
+                  (package-inputs emacs)
+                  '("libx11" "gtk+" "libxft" "libtiff" "giflib" "libjpeg"
+                    "libpng" "libxpm" "libice" "libsm"
+
+                    ;; D-Bus depends on libx11, so remove it as well.
+                    "dbus")))))
+
 (define-public emacs-no-x-toolkit
   (package (inherit emacs)
     (location (source-properties->location (current-source-location)))
@@ -134,13 +151,14 @@ editor (without an X toolkit)" )
 (define-public geiser
   (package
     (name "geiser")
-    (version "0.6")
+    (version "0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/geiser/" version
                                  "/geiser-" version ".tar.gz"))
              (sha256
-              (base32 "1mrk0bzqcpfhsw6635qznn47nzfy9ps7wrhkpymswdfpw5mdsry5"))))
+              (base32
+               "0cp7r91ibw45yw9k3fz1s13y7ryfsxjgpk57qv37qsznb9lmqylx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -152,24 +170,16 @@ editor (without an X toolkit)" )
                                            "geiser-autoloads.el")))
                  %standard-phases)))
     (inputs `(("guile" ,guile-2.0)
-              ("emacs" ,emacs)))
+              ("emacs" ,emacs-no-x)))
     (home-page "http://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
-     "Geiser is a collection of Emacs major and minor modes that
-conspire with one or more Scheme interpreters to keep the Lisp Machine
-Spirit alive.  It draws inspiration (and a bit more) from environments
-such as Common Lisp’s Slime, Factor’s FUEL, Squeak or Emacs itself, and
-does its best to make Scheme hacking inside Emacs (even more) fun.
-
-Or, to be precise, what i consider fun.  Geiser is thus my humble
-contribution to the dynamic school of expression, and a reaction against
-what i perceive as a derailment, in modern times, of standard Scheme
-towards the static camp.  Because i prefer growing and healing to poking
-at corpses, the continuously running Scheme interpreter takes the center
-of the stage in Geiser.  A bundle of Elisp shims orchestrates the dialog
-between the Scheme interpreter, Emacs and, ultimately, the schemer,
-giving her access to live metadata.")
+     "Geiser is a collection of Emacs major and minor modes that conspire with
+one or more Scheme implementations to keep the Lisp Machine Spirit alive.  The
+continuously running Scheme interpreter takes the center of the stage in
+Geiser.  A bundle of Elisp shims orchestrates the dialog between the Scheme
+implementation, Emacs and, ultimately, the schemer, giving them access to live
+metadata.")
     (license license:bsd-3)))
 
 (define-public paredit
@@ -183,7 +193,7 @@ giving her access to live metadata.")
              (sha256
               (base32 "1np882jzvxckljx3cjz4absyzmc5hw65cs21sjmbic82163m9lf8"))))
     (build-system trivial-build-system)
-    (inputs `(("emacs" ,emacs)))
+    (inputs `(("emacs" ,emacs-no-x)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build emacs-utils))
@@ -230,7 +240,7 @@ when typing parentheses directly or commenting out code line by line.")
               (base32 "1in48g5l5xdc9cf2apnpgx73mqlz2njrpi1w52dgql4qxv3kg6gr"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)))
-    (inputs `(("emacs" ,emacs)
+    (inputs `(("emacs" ,emacs-no-x)
               ("git" ,git)
               ("git:gui" ,git "gui")))
     (arguments
@@ -293,7 +303,7 @@ operations.")
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("w3m" ,w3m)
               ("imagemagick" ,imagemagick)
-              ("emacs" ,emacs)))
+              ("emacs" ,emacs-no-x)))
     (arguments
      '(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -361,7 +371,7 @@ operations.")
               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system gnu-build-system)
     (inputs `(("wget" ,wget)
-              ("emacs" ,emacs)))
+              ("emacs" ,emacs-no-x)))
     (arguments
      '(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -478,7 +488,7 @@ operations.")
                           (string-append "\"" alsa "/bin/amixer\"")))
                        (substitute* "emms-tag-editor.el"
                          (("\"mp3info\"")
-                          (string-append mp3info "/bin/mp3info"))))))
+                          (string-append "\"" mp3info "/bin/mp3info\""))))))
                  (alist-cons-before
                   'install 'pre-install
                   (lambda* (#:key outputs #:allow-other-keys)
@@ -502,7 +512,7 @@ operations.")
                        (chmod target #o555)))
                    %standard-phases)))
        #:tests? #f))
-    (native-inputs `(("emacs" ,emacs)            ;for (guix build emacs-utils)
+    (native-inputs `(("emacs" ,emacs-no-x)       ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
     (inputs `(("alsa-utils" ,alsa-utils)
               ("vorbis-tools" ,vorbis-tools)
@@ -552,7 +562,7 @@ light user interface.")
                      (with-directory-excursion site
                        (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el"))))
                  %standard-phases)))
-    (native-inputs `(("emacs" ,emacs)))
+    (native-inputs `(("emacs" ,emacs-no-x)))
     (home-page "http://savannah.nongnu.org/projects/bbdb/")
     (synopsis "Contact management utility for Emacs")
     (description

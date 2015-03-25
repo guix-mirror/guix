@@ -127,6 +127,12 @@ cross-compiling.)"
                        body ...)))
     (register-compiler! name)))
 
+(define-gexp-compiler (derivation-compiler (drv derivation?) system target)
+  ;; Derivations are the lowest-level representation, so this is the identity
+  ;; compiler.
+  (with-monad %store-monad
+    (return drv)))
+
 
 ;;;
 ;;; Inputs & outputs.
@@ -165,8 +171,6 @@ the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
-                    ((and ((? derivation?) sub-drv ...) input)
-                     (return input))
                     ((and ((? struct? thing) sub-drv ...) input)
                      (mlet* %store-monad ((lower -> (lookup-compiler thing))
                                           (drv (lower thing system target)))
@@ -197,6 +201,11 @@ names and file names suitable for the #:allowed-references argument to
       (match-lambda
        ((? string? output)
         (return output))
+       (($ <gexp-input> thing output native?)
+        (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                             (drv      (lower thing system
+                                              (if native? #f target))))
+          (return (derivation->output-path drv output))))
        (thing
         (mlet* %store-monad ((lower -> (lookup-compiler thing))
                              (drv      (lower thing system target)))
@@ -262,6 +271,7 @@ The other arguments are as for 'derivation'."
   (define (graphs-file-names graphs)
     ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
     (map (match-lambda
+          ;; TODO: Remove 'derivation?' special cases.
            ((file-name (? derivation? drv))
             (cons file-name (derivation->output-path drv)))
            ((file-name (? derivation? drv) sub-drv)
@@ -343,15 +353,23 @@ The other arguments are as for 'derivation'."
                       #:allowed-references allowed
                       #:local-build? local-build?))))
 
-(define* (gexp-inputs exp #:optional (references gexp-references))
-  "Return the input list for EXP, using REFERENCES to get its list of
-references."
+(define* (gexp-inputs exp #:key native?)
+  "Return the input list for EXP.  When NATIVE? is true, return only native
+references; otherwise, return only non-native references."
   (define (add-reference-inputs ref result)
     (match ref
-      (($ <gexp-input> (? derivation? drv) output)
-       (cons `(,drv ,output) result))
-      (($ <gexp-input> (? gexp? exp))
-       (append (gexp-inputs exp references) result))
+      (($ <gexp-input> (? gexp? exp) _ #t)
+       (if native?
+           (append (gexp-inputs exp)
+                   (gexp-inputs exp #:native? #t)
+                   result)
+           result))
+      (($ <gexp-input> (? gexp? exp) _ #f)
+       (if native?
+           (append (gexp-inputs exp #:native? #t)
+                   result)
+           (append (gexp-inputs exp)
+                   result)))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons `(,str) result)
@@ -361,13 +379,13 @@ references."
            ;; THING is a derivation, or a package, or an origin, etc.
            (cons `(,thing ,output) result)
            result))
-      (($ <gexp-input> (lst ...) output native?)
+      (($ <gexp-input> (lst ...) output n?)
        (fold-right add-reference-inputs result
                    ;; XXX: For now, automatically convert LST to a list of
                    ;; gexp-inputs.
                    (map (match-lambda
                          ((? gexp-input? x) x)
-                         (x (%gexp-input x "out" native?)))
+                         (x (%gexp-input x "out" (or n? native?))))
                         lst)))
       (_
        ;; Ignore references to other kinds of objects.
@@ -375,10 +393,12 @@ references."
 
   (fold-right add-reference-inputs
               '()
-              (references exp)))
+              (if native?
+                  (gexp-native-references exp)
+                  (gexp-references exp))))
 
 (define gexp-native-inputs
-  (cut gexp-inputs <> gexp-native-references))
+  (cut gexp-inputs <> #:native? #t))
 
 (define (gexp-outputs exp)
   "Return the outputs referred to by EXP as a list of strings."
@@ -411,8 +431,6 @@ and in the current monad setting (system type, etc.)"
   (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
       (match ref
-        (($ <gexp-input> (? derivation? drv) output)
-         (return (derivation->output-path drv output)))
         (($ <gexp-output> output)
          ;; Output file names are not known in advance but the daemon defines
          ;; an environment variable for each of them at build time, so use
@@ -468,13 +486,20 @@ and in the current monad setting (system type, etc.)"
       ;; Return all the 'ungexp' present in EXP.
       (let loop ((exp    exp)
                  (result '()))
-        (syntax-case exp (ungexp ungexp-splicing)
+        (syntax-case exp (ungexp
+                          ungexp-splicing
+                          ungexp-native
+                          ungexp-native-splicing)
           ((ungexp _)
            (cons exp result))
           ((ungexp _ _)
            (cons exp result))
           ((ungexp-splicing _ ...)
            (cons exp result))
+          ((ungexp-native _ ...)
+           result)
+          ((ungexp-native-splicing _ ...)
+           result)
           ((exp0 exp ...)
            (let ((result (loop #'exp0 result)))
              (fold loop result #'(exp ...))))
@@ -485,13 +510,20 @@ and in the current monad setting (system type, etc.)"
       ;; Return all the 'ungexp-native' forms present in EXP.
       (let loop ((exp    exp)
                  (result '()))
-        (syntax-case exp (ungexp-native ungexp-native-splicing)
+        (syntax-case exp (ungexp
+                          ungexp-splicing
+                          ungexp-native
+                          ungexp-native-splicing)
           ((ungexp-native _)
            (cons exp result))
           ((ungexp-native _ _)
            (cons exp result))
           ((ungexp-native-splicing _ ...)
            (cons exp result))
+          ((ungexp _ ...)
+           result)
+          ((ungexp-splicing _ ...)
+           result)
           ((exp0 exp ...)
            (let ((result (loop #'exp0 result)))
              (fold loop result #'(exp ...))))

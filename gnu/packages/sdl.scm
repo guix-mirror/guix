@@ -60,8 +60,15 @@
     (build-system gnu-build-system)
     (arguments
      '(;; Explicitly link against shared libraries instead of dlopening them.
-       ;; For X11, ALSA, PulseAudio, etc.
-       #:configure-flags '("--disable-sdl-dlopen")
+       ;; For X11, ALSA, and PulseAudio.
+       ;; OpenGL library is still dlopened at runtime.
+       #:configure-flags '("--disable-alsa-shared"
+                           "--disable-pulseaudio-shared"
+                           "--disable-x11-shared"
+                           ;; Explicitly link with mesa.
+                           ;; This add mesa to libsdl's RUNPATH, to make dlopen
+                           ;; finding the libGL from mesa at runtime.
+                           "LDFLAGS=-lGL")
 
        #:tests? #f)) ; no check target
     (propagated-inputs
@@ -71,6 +78,7 @@
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("alsa-lib" ,alsa-lib)
               ("pulseaudio" ,pulseaudio)))
     (synopsis "Cross platform game development library")

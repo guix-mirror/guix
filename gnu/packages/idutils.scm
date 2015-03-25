@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +38,7 @@
              (patches (list
                        (search-patch "diffutils-gets-undeclared.patch")))))
     (build-system gnu-build-system)
-    (native-inputs `(("emacs" ,emacs)))
+    (native-inputs `(("emacs" ,emacs-no-x)))
     (home-page "http://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
@@ -192,7 +192,7 @@ pictures, sounds, or video.")
     ;; torture/utils.
     (arguments '(#:parallel-tests? #f))
 
-    (native-inputs `(("emacs" ,emacs)
+    (native-inputs `(("emacs" ,emacs-no-x)
                      ("bc" ,bc)))
 
     ;; TODO: Add more optional inputs.
@@ -360,6 +360,31 @@ still providing access to as many of the capabilities of the database as
 possible, including retrieving related records from multiple tables in a
 single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
 \"ORDER BY\" and \"HAVING\" support.")
+    (license (package-license perl))))
+
+(define-public perl-dbix-class-cursor-cached
+  (package
+    (name "perl-dbix-class-cursor-cached")
+    (version "1.001002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARCANEZ/"
+                           "DBIx-Class-Cursor-Cached-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19r7jr6pknxiirrybq0cd0lnr76xiw05arnfqgk9nrhp6c7vvil0"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-cache-cache" ,perl-cache-cache)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+    (propagated-inputs
+     `(("perl-carp-clan" ,perl-carp-clan)
+       ("perl-dbix-class" ,perl-dbix-class)))
+    (home-page "http://search.cpan.org/dist/DBIx-Class-Cursor-Cached")
+    (synopsis "Cursor with built-in caching support")
+    (description "DBIx::Class::Cursor::Cached provides a cursor class with
+built-in caching support.")
     (license (package-license perl))))
 
 (define-public perl-dbix-class-introspectablem2m

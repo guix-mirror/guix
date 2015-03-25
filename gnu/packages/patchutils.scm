@@ -28,7 +28,8 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages less)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages xml))
 
 (define-public patchutils
   (package
@@ -140,3 +141,32 @@ listing the files modified by a patch.")
 track of the changes each patch makes.  Patches can be applied, un-applied,
 refreshed, and more.")
     (license gpl2)))
+
+(define-public colordiff
+  (package
+    (name "colordiff")
+    (version "1.0.13")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.colordiff.org/colordiff-"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "0akcz1p3klsjnhwcqdfq4grs6paljc5c0jzr3mqla5f862hhaa6f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                          "INSTALL_DIR=/bin" "MAN_DIR=/share/man/man1")
+       #:phases
+       (alist-delete 'configure
+                     (alist-delete 'build %standard-phases))))
+    (inputs
+     `(("perl" ,perl)
+       ("xmlto" ,xmlto)))
+    (home-page "http://www.colordiff.org")
+    (synopsis "Display diff output with colors")
+    (description
+     "Colordiff is Perl script wrapper on top of diff command which provides
+'syntax highlighting' for various patch formats.")
+    (license gpl2+)))

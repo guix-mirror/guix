@@ -156,6 +156,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/iso-codes.scm			\
   gnu/packages/java.scm				\
   gnu/packages/jrnl.scm				\
+  gnu/packages/julia.scm			\
   gnu/packages/kde.scm				\
   gnu/packages/key-mon.scm			\
   gnu/packages/language.scm			\
@@ -374,6 +375,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/calibre-drop-unrar.patch			\
+  gnu/packages/patches/calibre-no-updates-dialog.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/chmlib-inttypes.patch			\
   gnu/packages/patches/clucene-pkgconfig.patch			\
@@ -461,6 +463,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
+  gnu/packages/patches/mplayer2-theora-fix.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
   gnu/packages/patches/mupdf-buildsystem-fix.patch		\
   gnu/packages/patches/mutt-CVE-2014-9116.patch			\

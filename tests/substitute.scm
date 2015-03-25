@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,8 +17,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-substitute-binary)
-  #:use-module (guix scripts substitute-binary)
+(define-module (test-substitute)
+  #:use-module (guix scripts substitute)
   #:use-module (guix base64)
   #:use-module (guix hash)
   #:use-module (guix serialization)
@@ -95,7 +95,7 @@ version identifier.."
 
 
 
-(test-begin "substitute-binary")
+(test-begin "substitute")
 
 (test-quit "not a number"
     "signature version"
@@ -132,7 +132,7 @@ a file for NARINFO."
                                                 "GUIX_BINARY_SUBSTITUTE_URL"))
                                   uri-path))
         (cache-directory   (string-append (getenv "XDG_CACHE_HOME")
-                                          "/guix/substitute-binary/")))
+                                          "/guix/substitute/")))
     (dynamic-wind
       (lambda ()
         (when (file-exists? cache-directory)
@@ -156,7 +156,7 @@ a file for NARINFO."
           (cute write-file
                 (string-append narinfo-directory "/example.out") <>))
 
-        (set! (@@ (guix scripts substitute-binary)
+        (set! (@@ (guix scripts substitute)
                   %allow-unauthenticated-substitutes?)
               #f))
       thunk
@@ -166,8 +166,8 @@ a file for NARINFO."
 (define-syntax-rule (with-narinfo narinfo body ...)
   (call-with-narinfo narinfo (lambda () body ...)))
 
-;; Transmit these options to 'guix substitute-binary'.
-(set! (@@ (guix scripts substitute-binary) %cache-url)
+;; Transmit these options to 'guix substitute'.
+(set! (@@ (guix scripts substitute) %cache-url)
       (getenv "GUIX_BINARY_SUBSTITUTE_URL"))
 
 (test-equal "query narinfo without signature"
@@ -180,7 +180,7 @@ a file for NARINFO."
          (with-input-from-string (string-append "have " (%store-prefix)
                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
            (lambda ()
-             (guix-substitute-binary "--query"))))))))
+             (guix-substitute "--query"))))))))
 
 (test-equal "query narinfo with invalid hash"
   ;; The hash in the signature differs from the hash of %NARINFO.
@@ -195,7 +195,7 @@ a file for NARINFO."
          (with-input-from-string (string-append "have " (%store-prefix)
                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
            (lambda ()
-             (guix-substitute-binary "--query"))))))))
+             (guix-substitute "--query"))))))))
 
 (test-equal "query narinfo signed with authorized key"
   (string-append (%store-prefix) "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
@@ -209,7 +209,7 @@ a file for NARINFO."
          (with-input-from-string (string-append "have " (%store-prefix)
                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
            (lambda ()
-             (guix-substitute-binary "--query"))))))))
+             (guix-substitute "--query"))))))))
 
 (test-equal "query narinfo signed with unauthorized key"
   ""                                              ; not substitutable
@@ -225,15 +225,15 @@ a file for NARINFO."
          (with-input-from-string (string-append "have " (%store-prefix)
                                                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
            (lambda ()
-             (guix-substitute-binary "--query"))))))))
+             (guix-substitute "--query"))))))))
 
 (test-quit "substitute, no signature"
     "lacks a signature"
   (with-narinfo %narinfo
-    (guix-substitute-binary "--substitute"
-                            (string-append (%store-prefix)
-                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                            "foo")))
+    (guix-substitute "--substitute"
+                     (string-append (%store-prefix)
+                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                     "foo")))
 
 (test-quit "substitute, invalid hash"
     "hash"
@@ -241,10 +241,10 @@ a file for NARINFO."
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field "different body")
                                "\n")
-    (guix-substitute-binary "--substitute"
-                            (string-append (%store-prefix)
-                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                            "foo")))
+    (guix-substitute "--substitute"
+                     (string-append (%store-prefix)
+                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                     "foo")))
 
 (test-quit "substitute, unauthorized key"
     "unauthorized"
@@ -253,10 +253,10 @@ a file for NARINFO."
                                 %narinfo
                                 #:public-key %wrong-public-key)
                                "\n")
-    (guix-substitute-binary "--substitute"
-                            (string-append (%store-prefix)
-                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                            "foo")))
+    (guix-substitute "--substitute"
+                     (string-append (%store-prefix)
+                                    "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                     "foo")))
 
 (test-equal "substitute, authorized key"
   "Substitutable data."
@@ -265,15 +265,15 @@ a file for NARINFO."
     (dynamic-wind
       (const #t)
       (lambda ()
-        (guix-substitute-binary "--substitute"
-                                (string-append (%store-prefix)
-                                               "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
-                                "substitute-retrieved")
+        (guix-substitute "--substitute"
+                         (string-append (%store-prefix)
+                                        "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                         "substitute-retrieved")
         (call-with-input-file "substitute-retrieved" get-string-all))
       (lambda ()
         (false-if-exception (delete-file "substitute-retrieved"))))))
 
-(test-end "substitute-binary")
+(test-end "substitute")
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))

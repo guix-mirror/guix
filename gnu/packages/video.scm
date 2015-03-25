@@ -26,6 +26,7 @@
                                fsf-free isc))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -34,6 +35,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -42,6 +44,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
@@ -59,6 +62,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texlive)
@@ -77,8 +81,11 @@
     (version "0.7.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/liba52/a52dec-"
-                                  version ".tar.gz"))
+              (uri (string-append
+                    ;; A mirror://sourceforge URI doesn't work, presumably
+                    ;; because the SourceForge project is misconfigured.
+                    "http://liba52.sourceforge.net/files/a52dec-" version
+                    ".tar.gz"))
               (sha256
                (base32
                 "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
@@ -508,6 +515,126 @@ Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
 NuppelVideo, FLI, YUV4MPEG, FILM, RoQ, PVA files.  One can watch VideoCD,
 SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (license gpl2)))
+
+;;; This is not version 2; it's a fork literally named "mplayer2".
+(define-public mplayer2
+  (package
+    (name "mplayer2")
+    ;; There are no tarballs.  The 2.0 git tag, which is actually the first
+    ;; release is from 2011.  The latest commit is from 2013 October, so we
+    ;; use that commit.
+    (version "201310")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    ;; XXX Change this if mplayer2.org goes up again.
+                    (url "http://repo.or.cz/mplayer2.git")
+                    (commit "2c378c71a4d9b1df382db9aa787b646628b4e3f9")))
+              (sha256
+               (base32
+                "0s8554sanj6cvnf0h148nsmjgy5v0568nmcza7grpv6fnmddpfam"))
+              (file-name (string-append name "-" version "-checkout"))
+              ;; Warning: after using this patch, one must pass the -ltheora
+              ;; linker flag manually to configure; see below.
+              (patches (list (search-patch "mplayer2-theora-fix.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("python-2" ,python-2)
+       ("python-docutils" ,python-docutils)
+       ;; ./configure uses which(1) to find rst2man.py.
+       ("which" ,which)))
+    ;; Missing features: DirectFB, Xss screensaver extensions, VDPAU, MNG,
+    ;; libnut, DirectShow TV interface, Radio interfaces of all kinds, vstream
+    ;; client, XMSS inputplugin support, joystick, lirc/lircc, and openal.
+    ;; OpenAL support is experimental and causes compilation to fail with
+    ;; linker errors.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("gettext" ,gnu-gettext)
+       ("jack" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("lcms" ,lcms)
+       ("liba52" ,liba52)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libbs2b" ,libbs2b)
+       ("libcaca" ,libcaca)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdca" ,libdca)
+       ("libdv" ,libdv)
+       ("libdvdread" ,libdvdread)
+       ("libdvdnav" ,libdvdnav-4)
+       ("libjpeg" ,libjpeg)
+       ("libmad" ,libmad)
+       ("libpng" ,libpng)
+       ("libquvi" ,libquvi)
+       ("libtheora" ,libtheora)
+       ("libungif" ,libungif)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)
+       ("libxv" ,libxv)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("ncurses" ,ncurses)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("rsound" ,rsound)
+       ("samba" ,samba)
+       ("sdl" ,sdl)
+       ("speex" ,speex)
+       ("xvid" ,xvid)))
+    (arguments
+     '(#:phases
+       (alist-replace
+        'configure
+        ;; ./configure does not work followed by "SHELL=..." and
+        ;; "CONFIG_SHELL=..."; set environment variables instead.
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (setenv "SHELL" (which "bash"))
+          (setenv "CONFIG_SHELL" (which "bash"))
+          (substitute* "configure"
+            (("/usr/X11") (assoc-ref inputs "libx11")))
+          (zero?
+           (system* "./configure"
+                    (string-append "--prefix=" (assoc-ref outputs "out"))
+                    "--enable-translation"
+                    "--enable-runtime-cpudetection"
+                    ;; This is needed in accordance with the theora patch.
+                    "--extra-libs=-ltheoradec")))
+        (alist-cons-before
+         'build 'fix-TOOLS-shebangs
+         (lambda _
+           (substitute* (find-files "TOOLS" "\\.(sh|pl|py)$")
+             (("/usr/bin/env") (which "env"))
+             (("/usr/bin/perl") (which "perl"))
+             (("/usr/bin/python3") (which "python3"))
+             (("/usr/bin/python") (which "python"))))
+         (alist-cons-before
+          'build 'fix-input-buffer-padding-size
+          (lambda _
+            (substitute* "libmpdemux/demuxer.h"
+              ;; This has to match with FFmpeg's FF_INPUT_BUFFER_PADDING_SIZE,
+              ;; which has changed at some point.
+              (("(#define MP_INPUT_BUFFER_PADDING_SIZE )[0-9]*" all)
+               (string-append all "32"))))
+          %standard-phases)))
+       ;; No 'check' target.
+       #:tests? #f))
+    ;; XXX Change this if mplayer2.org goes up again.
+    (home-page "http://repo.or.cz/w/mplayer2.git")
+    (synopsis "Audio and video player")
+    (description "mplayer2 is a general-purpose audio and video player.  It's
+a fork of the original MPlayer project, and contains further development in
+several areas.")
+    ;; See file Copyright.  Most files are gpl2+ or compatible, but talloc.c
+    ;; is under lgpl3+, thus the whole project becomes gpl3+.
+    (license gpl3+)))
 
 (define-public libvpx
   (package

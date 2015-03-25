@@ -240,28 +240,27 @@ DURATION-RELATION with the current time."
 (define (find-packages-by-description rx)
   "Return the list of packages whose name, synopsis, or description matches
 RX."
-  (define (same-location? p1 p2)
-    ;; Compare locations of two packages.
-    (equal? (package-location p1) (package-location p2)))
+  (define version<? (negate version>=?))
 
-  (delete-duplicates
-   (sort
-    (fold-packages (lambda (package result)
-                     (define matches?
-                       (cut regexp-exec rx <>))
+  (sort
+   (fold-packages (lambda (package result)
+                    (define matches?
+                      (cut regexp-exec rx <>))
 
-                     (if (or (matches? (package-name package))
-                             (and=> (package-synopsis package)
-                                    (compose matches? P_))
-                             (and=> (package-description package)
-                                    (compose matches? P_)))
-                         (cons package result)
-                         result))
-                   '())
-    (lambda (p1 p2)
-      (string<? (package-name p1)
-                (package-name p2))))
-   same-location?))
+                    (if (or (matches? (package-name package))
+                            (and=> (package-synopsis package)
+                                   (compose matches? P_))
+                            (and=> (package-description package)
+                                   (compose matches? P_)))
+                        (cons package result)
+                        result))
+                  '())
+   (lambda (p1 p2)
+     (case (string-compare (package-name p1) (package-name p2)
+                           (const '<) (const '=) (const '>))
+       ((=)  (version<? (package-version p1) (package-version p2)))
+       ((<)  #t)
+       (else #f)))))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
   "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'

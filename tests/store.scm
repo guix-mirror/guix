@@ -367,15 +367,15 @@
   (with-store s
     (let* ((d (package-derivation s %bootstrap-guile (%current-system)))
            (o (derivation->output-path d)))
-      ;; Create fake substituter data, to be read by `substitute-binary'.
+      ;; Create fake substituter data, to be read by 'guix substitute'.
       (with-derivation-narinfo d
         ;; Remove entry from the local cache.
         (false-if-exception
          (delete-file (string-append (getenv "XDG_CACHE_HOME")
-                                     "/guix/substitute-binary/"
+                                     "/guix/substitute/"
                                      (store-path-hash-part o))))
 
-        ;; Make sure `substitute-binary' correctly communicates the above
+        ;; Make sure 'guix substitute' correctly communicates the above
         ;; data.
         (set-build-options s #:use-substitutes? #t)
         (and (has-substitutes? s o)
@@ -439,7 +439,7 @@
       (with-derivation-substitute d c
         (sha256 => (make-bytevector 32 0)) ;select a hash that doesn't match C
 
-        ;; Make sure we use `substitute-binary'.
+        ;; Make sure we use 'guix substitute'.
         (set-build-options s
                            #:use-substitutes? #t
                            #:fallback? #f)
@@ -464,9 +464,9 @@
                  #:guile-for-build
                  (package-derivation s %bootstrap-guile (%current-system))))
            (o   (derivation->output-path d)))
-      ;; Create fake substituter data, to be read by `substitute-binary'.
+      ;; Create fake substituter data, to be read by 'guix substitute'.
       (with-derivation-narinfo d
-        ;; Make sure we use `substitute-binary'.
+        ;; Make sure we use 'guix substitute'.
         (set-build-options s #:use-substitutes? #t)
         (and (has-substitutes? s o)
              (guard (c ((nix-protocol-error? c)

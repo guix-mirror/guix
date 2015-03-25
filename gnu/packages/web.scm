@@ -38,6 +38,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
@@ -523,6 +524,297 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
 to perl-code, for faster generation of access_log lines.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-action-renderview
+  (package
+    (name "perl-catalyst-action-renderview")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Action-RenderView-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0j1rrld13cjk7ks92b5hv3xw4rfm2lvmksb4rlzd8mx0a0wj0rc5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-http-request-ascgi" ,perl-http-request-ascgi)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-data-visitor" ,perl-data-visitor)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Action-RenderView")
+    (synopsis "Sensible default Catalyst action")
+    (description "This Catalyst action implements a sensible default end
+action, which will forward to the first available view.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-action-rest
+  (package
+    (name "perl-catalyst-action-rest")
+    (version "1.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/F/FR/FREW/"
+                                  "Catalyst-Action-REST-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1rnxmsd9dsqz4xc0g9ynafxi934jwp0nixbg92q3bc2h46xcccy8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-uri-find" ,perl-uri-find)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Action-REST")
+    (synopsis "Automated REST Method Dispatching")
+    (description "This Action handles doing automatic method dispatching for
+REST requests.  It takes a normal Catalyst action, and changes the dispatch to
+append an underscore and method name.  First it will try dispatching to an
+action with the generated name, and failing that it will try to dispatch to a
+regular method.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-component-instancepercontext
+  (package
+    (name "perl-catalyst-component-instancepercontext")
+    (version "0.001001")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRODITI/"
+                           "Catalyst-Component-InstancePerContext-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0wfj4vnn2cvk6jh62amwlg050p37fcwdgrn9amcz24z6w4qgjqvz"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Component-InstancePerContext")
+    (synopsis "Create only one instance of Moose component per context")
+    (description "Catalyst::Component::InstancePerContext returns a new
+instance of a component on each request.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-devel
+  (package
+    (name "perl-catalyst-devel")
+    (version "1.39")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "Catalyst-Devel-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12m50bbkggjmpxihv3wnvr0g2qng0zwhlzi5ygppjz8wh2x73qxw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-catalyst-action-renderview" ,perl-catalyst-action-renderview)
+       ("perl-catalyst-plugin-configloader" ,perl-catalyst-plugin-configloader)
+       ("perl-catalyst-plugin-static-simple" ,perl-catalyst-plugin-static-simple)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-file-changenotify" ,perl-file-changenotify)
+       ("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-module-install" ,perl-module-install)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-template-toolkit" ,perl-template-toolkit)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Devel")
+    (synopsis "Catalyst Development Tools")
+    (description "The Catalyst-Devel distribution includes a variety of
+modules useful for the development of Catalyst applications, but not required
+to run them.  Catalyst-Devel includes the Catalyst::Helper system, which
+autogenerates scripts and tests; Module::Install::Catalyst, a Module::Install
+extension for Catalyst; and requirements for a variety of development-related
+modules.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-model-dbic-schema
+  (package
+  (name "perl-catalyst-model-dbic-schema")
+  (version "0.65")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://cpan/authors/id/G/GB/GBJK/"
+                          "Catalyst-Model-DBIC-Schema-"
+                          version ".tar.gz"))
+      (sha256
+        (base32
+          "1spfjcjc0b9dv3k2gbanqj1m1cqzyxb32p76dhdwizzpbvpi3a96"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
+     ("perl-test-exception" ,perl-test-exception)
+     ("perl-test-requires" ,perl-test-requires)))
+  (propagated-inputs
+   `(("perl-carp-clan" ,perl-carp-clan)
+     ("perl-catalyst-component-instancepercontext"
+      ,perl-catalyst-component-instancepercontext)
+     ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+     ("perl-catalystx-component-traits" ,perl-catalystx-component-traits)
+     ("perl-dbix-class" ,perl-dbix-class)
+     ("perl-dbix-class-cursor-cached" ,perl-dbix-class-cursor-cached)
+     ("perl-dbix-class-schema-loader" ,perl-dbix-class-schema-loader)
+     ("perl-hash-merge" ,perl-hash-merge)
+     ("perl-list-moreutils" ,perl-list-moreutils)
+     ("perl-module-runtime" ,perl-module-runtime)
+     ("perl-moose" ,perl-moose)
+     ("perl-moosex-markasmethods" ,perl-moosex-markasmethods)
+     ("perl-moosex-nonmoose" ,perl-moosex-nonmoose)
+     ("perl-moosex-types" ,perl-moosex-types)
+     ("perl-moosex-types-loadableclass" ,perl-moosex-types-loadableclass)
+     ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+     ("perl-namespace-clean" ,perl-namespace-clean)
+     ("perl-tie-ixhash" ,perl-tie-ixhash)
+     ("perl-try-tiny" ,perl-try-tiny)))
+  (home-page "http://search.cpan.org/dist/Catalyst-Model-DBIC-Schema")
+  (synopsis "DBIx::Class::Schema Model Class")
+  (description "This is a Catalyst Model for DBIx::Class::Schema-based
+Models.")
+  (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-authentication
+  (package
+    (name "perl-catalyst-plugin-authentication")
+    (version "0.10023")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Authentication-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0v6hb4r1wv3djrnqvnjcn3xx1scgqzx8nyjdg9lfc1ybvamrl0rn"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-inspector" ,perl-class-inspector)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Authentication")
+    (synopsis "Infrastructure plugin for the Catalyst authentication framework")
+    (description "The authentication plugin provides generic user support for
+Catalyst apps. It is the basis for both authentication (checking the user is
+who they claim to be), and authorization (allowing the user to do what the
+system authorises them to do).")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-configloader
+  (package
+    (name "perl-catalyst-plugin-configloader")
+    (version "0.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-ConfigLoader-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "19j7p4v7mbx6wrmpvmrnd974apx7hdl2s095ga3b9zcbdrl77h5q"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-path-class" ,perl-path-class)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-config-any" ,perl-config-any)
+       ("perl-data-visitor" ,perl-data-visitor)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-ConfigLoader")
+    (synopsis "Load config files of various types")
+    (description "This module will attempt to load find and load configuration
+files of various types.  Currently it supports YAML, JSON, XML, INI and Perl
+formats.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-session
+  (package
+    (name "perl-catalyst-plugin-session")
+    (version "0.39")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-Plugin-Session-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m4a003qgz7848iyckwbigg2vw3kmfxggh1razrnzxrbz3n6x5gi"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-object-signature" ,perl-object-signature)
+       ("perl-test-www-mechanize-psgi" ,perl-test-www-mechanize-psgi)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Session")
+    (synopsis "Catalyst generic session plugin")
+    (description "This plugin links the two pieces required for session
+management in web applications together: the state, and the store.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-static-simple
+  (package
+    (name "perl-catalyst-plugin-static-simple")
+    (version "0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-Plugin-Static-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1h8f12bhzh0ssq9gs8r9g3hqn8zn2k0q944vc1vm8j81bns16msy"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-mime-types" ,perl-mime-types)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Static-Simple")
+    (synopsis "Simple serving of static pages")
+    (description "The Static::Simple plugin is designed to make serving static
+content in your application during development quick and easy, without
+requiring a single line of code from you.  This plugin detects static files by
+looking at the file extension in the URL (such as .css or .png or .js).  The
+plugin uses the lightweight MIME::Types module to map file extensions to
+IANA-registered MIME types, and will serve your static files with the correct
+MIME type directly to the browser, without being processed through Catalyst.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
@@ -587,6 +879,39 @@ run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
     (license (package-license perl))))
 
+(define-public perl-catalystx-component-traits
+  (package
+    (name "perl-catalystx-component-traits")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RK/RKITOVER/"
+                           "CatalystX-Component-Traits-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iq4ci8m6g2c4g01fvdl568y7pjz28f3widk986v3pyhr7ll8j88"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-traits-pluggable" ,perl-moosex-traits-pluggable)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-list-moreutils" ,perl-list-moreutils)))
+    (home-page "http://search.cpan.org/dist/CatalystX-Component-Traits")
+    (synopsis "Trait Loading and Resolution for Catalyst Components")
+    (description "Adds a \"COMPONENT\" in Catalyst::Component method to your
+Catalyst component base class that reads the optional \"traits\" parameter
+from app and component config and instantiates the component subclass with
+those traits using \"new_with_traits\" in MooseX::Traits from
+MooseX::Traits::Pluggable.")
+    (license (package-license perl))))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
@@ -629,27 +954,6 @@ parameter parsing, file upload, cookie handling and header generation.")
     (description "This is a module for building structured data from CGI
 inputs, in a manner reminiscent of how PHP does.")
     (license l:bsd-2)))
-
-(define-public perl-cpanel-json-xs
-  (package
-    (name "perl-cpanel-json-xs")
-    (version "3.0114")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
-                           "Cpanel-JSON-XS-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0jhi1v0631x4d14a7cpfnpjqhs34zkygxjn1nwvvr927awx5jx71"))))
-    (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-common-sense" ,perl-common-sense)))
-    (home-page "http://search.cpan.org/dist/Cpanel-JSON-XS")
-    (synopsis "JSON::XS for Cpanel")
-    (description "This module converts Perl data structures to JSON and vice
-versa.")
-    (license (package-license perl))))
 
 (define-public perl-encode-locale
   (package
@@ -698,6 +1002,79 @@ Encode::decode(locale => $string).")
      "The File::Listing module exports a single function called parse_dir(),
 which can be used to parse directory listings.")
     (home-page "http://search.cpan.org/~gaas/File-Listing/")))
+
+(define-public perl-html-form
+  (package
+    (name "perl-html-form")
+    (version "6.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                           "HTML-Form-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dpwr7yz6hjc3bcqgcbdzjjk9l58ycdjmbam9nfcmm85y2a1vh38"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/HTML-Form")
+    (synopsis "Perl class representing an HTML form element")
+    (description "Objects of the HTML::Form class represents a single HTML
+<form> ... </form> instance.")
+    (license (package-license perl))))
+
+(define-public perl-html-lint
+  (package
+    (name "perl-html-lint")
+    (version "2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "HTML-Lint-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15vrqjnlb0f8rib1kqdf4islqy6i33h08wy7b1bkgd550p7lfjwk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/HTML-Lint")
+    (synopsis "Check for HTML errors in a string or file")
+    (description "HTML::Lint is a pure-Perl HTML parser and checker for
+syntactic legitmacy.")
+    (license l:artistic2.0)))
+
+(define-public perl-html-tree
+  (package
+    (name "perl-html-tree")
+    (version "5.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CJ/CJM/"
+                           "HTML-Tree-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13qlqbpixw470gnck0xgny8hyjj576m8y24bba2p9ai2lvy76vbx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/HTML-Tree")
+    (synopsis "Work with HTML in a DOM-like tree structure")
+    (description "This distribution contains a suite of modules for
+representing, creating, and extracting information from HTML syntax trees.")
+    (license (package-license perl))))
 
 (define-public perl-html-parser
   (package
@@ -933,6 +1310,30 @@ fields in the request.")
 environment from an HTTP::Request.")
     (license (package-license perl))))
 
+(define-public perl-http-server-simple
+  (package
+    (name "perl-http-server-simple")
+    (version "0.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JE/JESSE/"
+                           "HTTP-Server-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05klpfkss2a6i5ihmvcm27fyar0f2v4ispg2f49agab3va1gix6g"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; See the discussion of a related tests issue at
+     ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00346.html
+     `(#:tests? #f))
+    (home-page "http://search.cpan.org/dist/HTTP-Server-Simple")
+    (synopsis "Lightweight HTTP server")
+    (description "HTTP::Server::Simple is a simple standalone HTTP daemon with
+no non-core module dependencies.  It can be used for building a standalone
+http-based UI to your existing tools.")
+    (license (package-license perl))))
+
 (define-public perl-http-tiny
   (package
     (name "perl-http-tiny")
@@ -1021,31 +1422,6 @@ select or poll.")
     (license (package-license perl))
     (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
 
-(define-public perl-json-maybexs
-  (package
-    (name "perl-json-maybexs")
-    (version "1.003003")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
-                           "JSON-MaybeXS-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0q21wzz87drrvblxcm2py8fcvkzwx1hxzfybynz8ln7wv66vbx3f"))))
-    (build-system perl-build-system)
-    (native-inputs
-     `(("perl-test-without-module" ,perl-test-without-module)))
-    (inputs
-     `(("perl-cpanel-json-xs" ,perl-cpanel-json-xs)))
-    (home-page "http://search.cpan.org/dist/JSON-MaybeXS")
-    (synopsis "Cpanel::JSON::XS with fallback")
-    (description "This module first checks to see if either Cpanel::JSON::XS
-or JSON::XS is already loaded, in which case it uses that module.  Otherwise
-it tries to load Cpanel::JSON::XS, then JSON::XS, then JSON::PP in order, and
-either uses the first module it finds or throws an error.")
-    (license (package-license perl))))
-
 (define-public perl-libwww
   (package
     (name "perl-libwww")
@@ -1100,6 +1476,26 @@ known as MIME) types and encodings.  The mapping from file extensions to
 media types is defined by the media.types file.  If the ~/.media.types file
 exists it is used instead.")
     (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
+
+(define-public perl-mime-types
+  (package
+    (name "perl-mime-types")
+    (version "2.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                           "MIME-Types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s7s2z9xc1nc2l59rk80iaa04r36k0y95231212kz5p3ln7szk1c"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/MIME-Types")
+    (synopsis "Definition of MIME types")
+    (description "This module provides a list of known mime-types, combined
+from various sources.  For instance, it contains all IANA types and the
+knowledge of Apache.")
+    (license (package-license perl))))
 
 (define-public perl-net-http
   (package
@@ -1299,6 +1695,63 @@ either mocked HTTP or a locally spawned server.")
     (description "Test::TCP is test utilities for TCP/IP programs.")
     (license (package-license perl))))
 
+(define-public perl-test-www-mechanize
+  (package
+    (name "perl-test-www-mechanize")
+    (version "1.44")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "Test-WWW-Mechanize-" version ".tar.gz"))
+       (sha256
+        (base32
+         "062pj242vsc73bw11jqpap92ax9wzc9f2m4xhyp1wzrwkfchpl2q"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-carp-assert-more" ,perl-carp-assert-more)
+       ("perl-html-form" ,perl-html-form)
+       ("perl-html-lint" ,perl-html-lint)
+       ("perl-html-tree" ,perl-html-tree)
+       ("perl-http-server-simple" ,perl-http-server-simple)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-test-longstring" ,perl-test-longstring)
+       ("perl-www-mechanize" ,perl-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize")
+    (synopsis "Testing-specific WWW::Mechanize subclass")
+    (description "Test::WWW::Mechanize is a subclass of the Perl module
+WWW::Mechanize that incorporates features for web application testing.")
+    (license l:artistic2.0)))
+
+(define-public perl-test-www-mechanize-psgi
+  (package
+    (name "perl-test-www-mechanize-psgi")
+    (version "0.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+                           "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hih8s49zf38bisvhnhzrrj0zwyiivkrbs7nmmdqm1qqy27wv7pc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)))
+    (propagated-inputs
+     `(("perl-plack" ,perl-plack)
+       ("perl-test-www-mechanize" ,perl-test-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-PSGI")
+    (synopsis "Test PSGI programs using WWW::Mechanize")
+    (description "PSGI is a specification to decouple web server environments
+from web application framework code.  Test::WWW::Mechanize is a subclass of
+WWW::Mechanize that incorporates features for web application testing.  The
+Test::WWW::Mechanize::PSGI module meshes the two to allow easy testing of PSGI
+applications.")
+    (license (package-license perl))))
+
 (define-public perl-uri
   (package
     (name "perl-uri")
@@ -1318,6 +1771,29 @@ either mocked HTTP or a locally spawned server.")
 represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
     (home-page "http://search.cpan.org/dist/URI/")))
+
+(define-public perl-uri-find
+  (package
+    (name "perl-uri-find")
+    (version "20140709")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSCHWERN/"
+                           "URI-Find-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0czc4h182s7sx3k123m7qlg7yybnwxgh369hap3c3b6xgrglrhy0"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/URI-Find")
+    (synopsis "Find URIs in arbitrary text")
+    (description "This module finds URIs and URLs (according to what URI.pm
+considers a URI) in plain text.  It only finds URIs which include a
+scheme (http:// or the like), for something a bit less strict, consider
+URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
+    (license (package-license perl))))
 
 (define-public perl-uri-ws
   (package
@@ -1362,6 +1838,33 @@ methods for WebSocket URIs as it does for HTTP URIs.")
 library.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
+
+(define-public perl-www-mechanize
+  (package
+    (name "perl-www-mechanize")
+    (version "1.73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "WWW-Mechanize-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zrw8aadhwy48q51x2z2rqlkwf17bya4j4h3hy89mw783j96rmg9"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-form" ,perl-html-form)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-server-simple" ,perl-http-server-simple)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/WWW-Mechanize")
+    (synopsis "Web browsing in a Perl object")
+    (description "WWW::Mechanize is a Perl module for stateful programmatic
+web browsing, used for automating interaction with websites.")
+    (license (package-license perl))))
 
 (define-public perl-www-robotrules
   (package

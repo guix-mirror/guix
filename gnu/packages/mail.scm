@@ -329,7 +329,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
-       ("emacs" ,emacs)
+       ("emacs" ,emacs-no-x)
        ("guile" ,guile-2.0)
        ("glib" ,glib)
        ("gmime" ,gmime)
@@ -470,8 +470,8 @@ MailCore 2.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://downloads.sourceforge.net/project/claws-mail/"
-                    "Claws Mail/" version "/" name "-" version ".tar.xz"))
+                    "mirror://sourceforge/claws-mail/claws-mail-" version
+                    ".tar.xz"))
               (sha256
                (base32 "0cyixz1jgfpi8abh9fbb8ylx9mcvw4jqj81cms666wpqr6v828yp"))))
     (build-system gnu-build-system)
@@ -517,8 +517,7 @@ which can add many functionalities to the base client.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://downloads.sourceforge.net/project/msmtp/msmtp/" version
-             "/msmtp-" version ".tar.bz2"))
+             "mirror://sourceforge/msmtp/msmtp-" version ".tar.bz2"))
        (sha256 (base32
                 "122z38pv4q03w3mbnhrhg4w85a51258sfdg2ips0b6cgwz3wbw1b"))))
     (build-system gnu-build-system)

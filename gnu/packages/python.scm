@@ -33,7 +33,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages gcc)
@@ -134,7 +133,8 @@
               (sqlite (assoc-ref %build-inputs "sqlite"))
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
-              (zlib (assoc-ref %build-inputs "zlib")))
+              (zlib (assoc-ref %build-inputs "zlib"))
+              (out (assoc-ref %outputs "out")))
          (list "--enable-shared"                  ; allow embedding
                "--with-system-ffi"                ; build ctypes
                (string-append "CPPFLAGS="
@@ -151,43 +151,27 @@
                 "-L" sqlite "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
-                "-L" zlib "/lib")))
-
-        #:modules ((guix build gnu-build-system)
-                   (guix build utils)
-                   (guix build rpath)
-                   (srfi srfi-26))
-        #:imported-modules ((guix build gnu-build-system)
-                            (guix build utils)
-                            (guix build rpath))
+                "-L" zlib "/lib "
+                "-Wl,-rpath=" out "/lib")))
 
         #:phases
-        (alist-cons-after
-         'strip 'add-lib-to-runpath
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib")))
-             ;; Add LIB to the RUNPATH of all the executables.
-             (with-directory-excursion out
-               (for-each (cut augment-rpath <> lib)
-                         (find-files "bin" ".*")))))
+        (alist-cons-before
+         'configure 'patch-lib-shells
+         (lambda _
+           ;; Filter for existing files, since some may not exist in all
+           ;; versions of python that are built with this recipe.
+           (substitute* (filter file-exists?
+                                '("Lib/subprocess.py"
+                                  "Lib/popen2.py"
+                                  "Lib/distutils/tests/test_spawn.py"
+                                  "Lib/test/test_subprocess.py"))
+             (("/bin/sh") (which "sh"))))
          (alist-cons-before
-          'configure 'patch-lib-shells
+          'check 'pre-check
           (lambda _
-            ;; Filter for existing files, since some may not exist in all
-            ;; versions of python that are built with this recipe.
-            (substitute* (filter file-exists?
-                                 '("Lib/subprocess.py"
-                                   "Lib/popen2.py"
-                                   "Lib/distutils/tests/test_spawn.py"
-                                   "Lib/test/test_subprocess.py"))
-              (("/bin/sh") (which "sh"))))
-          (alist-cons-before
-           'check 'pre-check
-           (lambda _
-             ;; 'Lib/test/test_site.py' needs a valid $HOME
-             (setenv "HOME" (getcwd)))
-           %standard-phases)))))
+            ;; 'Lib/test/test_site.py' needs a valid $HOME
+            (setenv "HOME" (getcwd)))
+          %standard-phases))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
@@ -195,8 +179,7 @@
        ("sqlite" ,sqlite)                         ; for sqlite extension
        ("openssl" ,openssl)
        ("readline" ,readline)
-       ("zlib" ,zlib)
-       ("patchelf" ,patchelf)))                   ; for (guix build rpath)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (native-search-paths
@@ -230,14 +213,8 @@ data types.")
               (sha256
                (base32
                 "1rdncc7g8g6f3lfdg33rli1yffbiq8z283xy4f5ksl1l8i49psdb"))))
-    (arguments
-     (let ((args `(#:modules ((guix build gnu-build-system)
-                              (guix build utils)
-                             (srfi srfi-1)
-                              (srfi srfi-26))
-                   ,@(package-arguments python-2))))
-       (substitute-keyword-arguments args
-         ((#:tests? _) #t))))
+    (arguments (substitute-keyword-arguments (package-arguments python-2)
+                 ((#:tests? _) #t)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
@@ -323,6 +300,45 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
+(define-public python-h5py
+  (package
+    (name "python-h5py")
+    (version "2.4.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/h/h5py/h5py-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0q4f9l8grf6pwp64xbv8bmyxx416s7h4522nnxac056ap3savbps"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("python-numpy" ,python-numpy)
+       ("hdf5" ,hdf5)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no test target
+    (home-page "http://www.h5py.org/")
+    (synopsis "Read and write HDF5 files from Python")
+    (description
+     "The h5py package provides both a high- and low-level interface to the
+HDF5 library from Python.  The low-level interface is intended to be a
+complete wrapping of the HDF5 API, while the high-level component supports
+access to HDF5 files, datasets and groups using established Python and NumPy
+concepts.")
+    (license bsd-3)))
+
+(define-public python2-h5py
+  (let ((h5py (package-with-python2 python-h5py)))
+    (package (inherit h5py)
+      (inputs
+       `(("python2-numpy" ,python2-numpy)
+         ,@(alist-delete
+            "python-numpy"
+            (package-inputs h5py)))))))
 
 (define-public python-lockfile
   (package

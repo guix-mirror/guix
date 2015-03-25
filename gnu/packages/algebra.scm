@@ -158,18 +158,18 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.4.4")
+   (version "2.4.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://flintlib.org/flint-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "1isv1sfv8sg3qvf0d99apdfi3jnql95xfzszcawdf1pgjj9rwyf4"))))
+                     "1qq11sxliy499a9g656dgk47ffb951q4gl6ddjbq838gy16kb2g4"))))
    (build-system gnu-build-system)
-   (inputs
+   (propagated-inputs
     `(("gmp" ,gmp)
-      ("mpfr" ,mpfr)))
+      ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
    (arguments
     `(#:phases
         (alist-replace
@@ -209,7 +209,7 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.2.0")
+   (version "2.3.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -217,11 +217,12 @@ fast arithmetic.")
                   version ".tar.gz"))
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256 (base32
-                     "0a8cgzznkmr59ngj4di9a37b5h4i00gbnixnxlwd34bcbflvjzyr"))))
+                     "0yvabxyyj1g0d8b5mfgzrxq6qya8cmq97vz60ss6aajzm3nwrabk"))))
    (build-system gnu-build-system)
+   (propagated-inputs
+    `(("flint" ,flint))) ; flint.h is included by arf.h
    (inputs
-    `(("flint" ,flint)
-      ("gmp" ,gmp)
+    `(("gmp" ,gmp)
       ("mpfr" ,mpfr)))
    (arguments
     `(#:phases

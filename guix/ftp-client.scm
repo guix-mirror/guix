@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,6 +144,11 @@ or a TCP port number), and return it."
 
 (define (ftp-size conn file)
   "Return the size in bytes of FILE."
+
+  ;; Ask for "binary mode", otherwise some servers, such as sourceware.org,
+  ;; fail with 550 ("SIZE not allowed in ASCII mode").
+  (%ftp-command "TYPE I" 200 (ftp-connection-socket conn))
+
   (let ((message (%ftp-command (string-append "SIZE " file) 213
                                (ftp-connection-socket conn))))
     (string->number (string-trim-both message))))

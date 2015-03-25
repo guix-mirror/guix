@@ -499,6 +499,20 @@
            (string=? path (derivation-file-name (%guile-for-build)))))
          (derivation-prerequisites drv))))
 
+(test-assert "derivation-prerequisites and derivation-input-is-valid?"
+  (let* ((a (build-expression->derivation %store "a" '(mkdir %output)))
+         (b (build-expression->derivation %store "b" `(list ,(random-text))))
+         (c (build-expression->derivation %store "c" `(mkdir %output)
+                                          #:inputs `(("a" ,a) ("b" ,b)))))
+    (build-derivations %store (list a))
+    (match (derivation-prerequisites c
+                                     (cut valid-derivation-input? %store
+                                          <>))
+      ((($ <derivation-input> file ("out")))
+       (string=? file (derivation-file-name b)))
+      (x
+       (pk 'fail x #f)))))
+
 (test-assert "build-expression->derivation without inputs"
   (let* ((builder    '(begin
                         (mkdir %output)

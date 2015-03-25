@@ -28,6 +28,8 @@
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages lsh)
+  #:use-module (gnu packages lsof)
   #:use-module ((gnu build file-systems)
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
@@ -612,7 +614,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
                        (build-accounts 10) (authorize-hydra-key? #t)
                        (use-substitutes? #t)
-                       (extra-options '()))
+                       (extra-options '())
+                       (lsof lsof) (lsh lsh))
   "Return a service that runs the build daemon from @var{guix}, and has
 @var{build-accounts} user accounts available under @var{builder-group}.
 
@@ -646,7 +649,13 @@ passed to @command{guix-daemon}."
                        #$@(if use-substitutes?
                               '()
                               '("--no-substitutes"))
-                       #$@extra-options)))
+                       #$@extra-options)
+
+                 ;; Add 'lsof' (for the GC) and 'lsh' (for offloading) to the
+                 ;; daemon's $PATH.
+                 #:environment-variables
+                 (list (string-append "PATH=" #$lsof "/bin:"
+                                      #$lsh "/bin"))))
              (stop #~(make-kill-destructor))
              (user-accounts (guix-build-accounts build-accounts
                                                  #:group builder-group))

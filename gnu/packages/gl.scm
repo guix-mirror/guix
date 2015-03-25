@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages pkg-config)
@@ -123,6 +124,38 @@ rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
 Polygon meshes, and Extruded polygon meshes")
     (license l:x11)))
 
+(define-public s2tc
+  (package
+    (name "s2tc")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/divVerent/s2tc/archive/v" version ".tar.gz"))
+       (sha256
+        (base32 "0ibfdib277fhbqvxzan0bmglwnsl1y1rw2g8skvz82l1sfmmn752"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("mesa-headers" ,mesa-headers)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after unpack autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))))
+    (home-page "https://github.com/divVerent/s2tc")
+    (synopsis "S3 Texture Compression implementation")
+    (description
+     "S2TC is a patent-free implementation of S3 Texture Compression (S3TC,
+also known as DXTn or DXTC) for Mesa.")
+    (license l:expat)))
+
 (define-public mesa
   (package
     (name "mesa")
@@ -138,22 +171,24 @@ Polygon meshes, and Extruded polygon meshes")
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
+        ;; The following are in the Requires.private field of gl.pc.
         ("libdrm" ,libdrm)
         ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
+        ("libxfixes" ,libxfixes)
+        ("libxshmfence" ,libxshmfence)
         ("libxxf86vm" ,libxxf86vm)))
     (inputs
       `(("udev" ,eudev)
         ("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
         ("presentproto" ,presentproto)
-        ("libxshmfence" ,libxshmfence)
         ("expat" ,expat)
-        ("libxfixes" ,libxfixes)
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libva'
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
-        ("makedepend" ,makedepend)))
+        ("makedepend" ,makedepend)
+        ("s2tc" ,s2tc)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("gettext" ,gnu-gettext)
@@ -164,6 +199,13 @@ Polygon meshes, and Extruded polygon meshes")
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
          "--with-gallium-drivers=r600,svga,swrast"
+         ;; Enable various optional features.  TODO: opencl requires libclc,
+         ;; omx requires libomxil-bellagio
+         "--with-egl-platforms=x11,drm"
+         "--enable-glx-tls"        ;Thread Local Storage, improves performance
+         ;; "--enable-opencl"
+         ;; "--enable-omx"
+         "--enable-osmesa"
          "--enable-xa"
 
          ;; on non-intel systems, drop i915 and i965
@@ -187,7 +229,38 @@ Polygon meshes, and Extruded polygon meshes")
                   (lambda _
                     (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
                       (("/usr/bin/env bash") (which "bash"))))
-                  %standard-phases))))
+                  (alist-cons-before
+                   'build 'fix-dlopen-libnames
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let ((s2tc (assoc-ref inputs "s2tc"))
+                           (udev (assoc-ref inputs "udev"))
+                           (out (assoc-ref outputs "out")))
+                       ;; Remain agnostic to .so.X.Y.Z versions while doing
+                       ;; the substitutions so we're future-safe.
+                       (substitute*
+                           '("src/gallium/auxiliary/util/u_format_s3tc.c"
+                             "src/mesa/main/texcompress_s3tc.c")
+                         (("\"libtxc_dxtn\\.so")
+                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
+                       (substitute* "src/gallium/targets/egl-static/egl_st.c"
+                         (("\"libglapi\"")
+                          (string-append "\"" out "/lib/libglapi\"")))
+                       (substitute* "src/loader/loader.c"
+                         (("dlopen\\(\"libudev\\.so")
+                          (string-append "dlopen(\"" udev "/lib/libudev.so")))
+                       (substitute* "src/glx/dri_common.c"
+                         (("dlopen\\(\"libGL\\.so")
+                          (string-append "dlopen(\"" out "/lib/libGL.so")))
+                       (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+                         (("\"libglapi\\.so")
+                          (string-append "\"" out "/lib/libglapi.so")))
+                       (substitute* "src/gbm/main/backend.c"
+                         ;; No need to patch the gbm_gallium_drm.so reference;
+                         ;; it's never installed since Mesa removed its
+                         ;; egl_gallium support.
+                         (("\"gbm_dri\\.so")
+                          (string-append "\"" out "/lib/dri/gbm_dri.so")))))
+                   %standard-phases)))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
@@ -195,6 +268,69 @@ a system for rendering interactive 3D graphics.  A variety of device drivers
 allows Mesa to be used in many different environments ranging from software
 emulation to complete hardware acceleration for modern GPUs.")
     (license l:x11)))
+
+(define-public mesa-headers
+  (package
+    (inherit mesa)
+    (name "mesa-headers")
+    (propagated-inputs '())
+    (inputs '())
+    (native-inputs '())
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete configure)
+         (delete build)
+         (delete check)
+         (replace install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (copy-recursively "include" (string-append
+                                                 (assoc-ref outputs "out")
+                                                 "/include")))))))))
+
+;;; The mesa-demos distribution contains non-free files, many files with no
+;;; clear license information, and many demos that aren't useful for most
+;;; people, so we just use this for the mesa-utils package below, and possibly
+;;; other packages in the future.  This is modeled after Debian's solution.
+(define (mesa-demos-source version)
+  (origin
+    (method url-fetch)
+    (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/demos/" version
+                        "/mesa-demos-" version ".tar.bz2"))
+    (sha256 (base32 "14msj0prbl3ljwd24yaqv9pz1xzicdmqgg616xxlppbdh6syrgz4"))))
+
+(define-public mesa-utils
+  (package
+    (name "mesa-utils")
+    (version "8.2.0")
+    (source (mesa-demos-source version))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mesa" ,mesa)
+       ("glut" ,freeglut)
+       ("glew" ,glew)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace
+          install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/bin"))
+              (for-each
+               (lambda (file)
+                 (copy-file file (string-append out "/bin/" (basename file))))
+               '("src/xdemos/glxdemo" "src/xdemos/glxgears"
+                 "src/xdemos/glxinfo" "src/xdemos/glxheads"))))))))
+    (home-page "http://mesa3d.org/")
+    (synopsis "Utility tools for Mesa")
+    (description
+     "The mesa-utils package contains several utility tools for Mesa: glxdemo,
+glxgears, glxheads, and glxinfo.")
+    ;; glxdemo is public domain; others expat.
+    (license (list l:expat l:public-domain))))
 
 (define-public glew
   (package

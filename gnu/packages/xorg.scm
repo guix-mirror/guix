@@ -4344,12 +4344,12 @@ graphics cards.")
             "1b95p3l84ppv6j7dbbmg0zrz6k8xdwvnag1l6ajm3gk9qwdb79ya"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("libxext" ,libxext)
-        ("randrproto" ,randrproto)))
-    (inputs
-      `(("libxrender" ,libxrender)
-        ("xproto" ,xproto)
-        ("libx11" ,libx11)))
+      ;; In accordance with xrandr.pc.
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("libxrender" ,libxrender)
+        ("randrproto" ,randrproto)
+        ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")

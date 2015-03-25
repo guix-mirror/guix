@@ -640,7 +640,7 @@ software.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://gitorious.org/lv2-synths/lv2-mdametapiano.git")
+                    (url "http://git.elephly.net/software/lv2-mdametapiano.git")
                     (commit version)))
               (sha256
                (base32

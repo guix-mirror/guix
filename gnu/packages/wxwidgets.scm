@@ -79,8 +79,8 @@ and many other languages.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://sourceforge.net/projects/wxwindows/files/"
-                           version "/wxGTK-" version ".tar.gz"))
+       (uri (string-append
+             "mirror://sourceforge/wxwindows/wxGTK-" version ".tar.gz"))
        (sha256
         (base32 "1gjs9vfga60mk4j4ngiwsk9h6c7j22pw26m3asxr1jwvqbr8kkqk"))))
     (inputs

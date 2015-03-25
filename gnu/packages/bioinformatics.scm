@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -284,6 +285,41 @@ the latest, is generally recommended for high-quality queries as it is faster
 and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
 70-100bp Illumina reads.")
     (license license:gpl3+)))
+
+(define-public python2-bx-python
+  (package
+    (name "python2-bx-python")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/b/bx-python/bx-python-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ld49idhc5zjdvbhvjq1a2qmpjj7h5v58rqr25dzmfq7g34b50xh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "setup.py"
+                  ;; remove dependency on outdated "distribute" module
+                  (("^from distribute_setup import use_setuptools") "")
+                  (("^use_setuptools\\(\\)") "")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;tests fail because test data are not included
+       #:python ,python-2))
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://bitbucket.org/james_taylor/bx-python/")
+    (synopsis "Tools for manipulating biological data")
+    (description
+     "bx-python provides tools for manipulating biological data, particularly
+multiple sequence alignments.")
+    (license license:expat)))
 
 (define-public clipper
   (package
@@ -614,6 +650,89 @@ modeling the generative process by which reads are produced from isoforms in
 RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
     (license license:gpl2)))
+
+(define-public python2-pbcore
+  (package
+    (name "python2-pbcore")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/PacificBiosciences/pbcore/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z46rwjac93jm87cbj2zgjg6qvsgs65140wkbbxsvxps7ai4pm09"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
+    (inputs
+     `(("python-cython" ,python2-cython)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-h5py" ,python2-h5py)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://pacificbiosciences.github.io/pbcore/")
+    (synopsis "Library for reading and writing PacBio data files")
+    (description
+     "The pbcore package provides Python APIs for interacting with PacBio data
+files and writing bioinformatics applications.")
+    (license license:bsd-3)))
+
+(define-public pbtranscript-tofu
+  (let ((commit "c7bbd5472"))
+    (package
+      (name "pbtranscript-tofu")
+      (version (string-append "0.4.1." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/PacificBiosciences/cDNA_primer.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "148xkzi689c49g6fdhckp6mnmj2qhjdf1j4wifm6ja7ij95d7fxx"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:python ,python-2
+         ;; With standard flags, the install phase attempts to create a zip'd
+         ;; egg file, and fails with an error: 'ZIP does not support timestamps
+         ;; before 1980'
+         #:configure-flags '("--single-version-externally-managed"
+                             "--record=pbtranscript-tofu.txt")
+         #:phases
+         (alist-cons-after
+          'unpack 'enter-directory-and-clean-up
+          (lambda _
+            (chdir "pbtranscript-tofu/pbtranscript/")
+            ;; Delete clutter
+            (delete-file-recursively "dist/")
+            (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
+            (delete-file-recursively "pbtools.pbtranscript.egg-info")
+            (delete-file "Cython-0.20.1.tar.gz")
+            (delete-file "setuptools_cython-0.2.1-py2.7.egg")
+            (delete-file "setuptools_cython-0.2.1.tar.gz")
+            (delete-file "setup.cfg")
+            ;; files should be writable for install phase
+            (for-each (lambda (f) (chmod f #o755))
+                      (find-files "." "\\.py")))
+          %standard-phases)))
+      (inputs
+       `(("python-cython" ,python2-cython)
+         ("python-numpy" ,python2-numpy)
+         ("python-bx-python" ,python2-bx-python)
+         ("python-pbcore" ,python2-pbcore)))
+      (native-inputs
+       `(("python-nose" ,python2-nose)
+         ("python-setuptools" ,python2-setuptools)))
+      (home-page "https://github.com/PacificBiosciences/cDNA_primer")
+      (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
+      (description
+       "pbtranscript-tofu contains scripts to analyze transcriptome data
+generated using the PacBio Iso-Seq protocol.")
+      (license license:bsd-3))))
 
 (define-public rseqc
   (package

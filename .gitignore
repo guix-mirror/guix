@@ -96,7 +96,7 @@ stamp-h[0-9]
 /doc/guix.tp
 /doc/guix.vr
 /doc/guix.vrs
-/nix/scripts/substitute-binary
+/nix/scripts/substitute
 /doc/images/bootstrap-graph.png
 /doc/images/bootstrap-graph.eps
 /guix-register

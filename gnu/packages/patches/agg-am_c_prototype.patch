@@ -1,3 +1,17 @@
+AM_C_PROTOTYPES is no longer supported.
+
+https://lists.gnu.org/archive/html/automake-patches/2011-06/msg00082.html
+
+Failure without patch:
+
+starting phase `autoreconf'
+aclocal: warning: autoconf input should be named 'configure.ac', not 'configure.in'
+configure.in:11: error: automatic de-ANSI-fication support has been removed
+/gnu/store/…-automake-1.15/share/aclocal-1.15/obsolete.m4:26: AM_C_PROTOTYPES is expanded from...
+configure.in:11: the top level
+
+
+Upstream is dead.
 --- a/configure.in	2015-03-15 18:59:12.557417149 +0100
 +++ b/configure.in	2015-03-15 18:59:29.273416518 +0100
 @@ -8,7 +8,6 @@

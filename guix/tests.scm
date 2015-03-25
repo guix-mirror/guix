@@ -126,7 +126,7 @@ Deriver: ~a~%"
 (define* (call-with-derivation-narinfo drv thunk
                                        #:key (sha256 (make-bytevector 32 0)))
   "Call THUNK in a context where fake substituter data, as read by 'guix
-substitute-binary', has been installed for DRV.  SHA256 is the hash of the
+substitute', has been installed for DRV.  SHA256 is the hash of the
 expected output of DRV."
   (let* ((output  (derivation->output-path drv))
          (dir     (%substitute-directory))
@@ -178,7 +178,7 @@ CONTENTS."
     (lambda ()
       (let ((hash (call-with-input-file (string-append dir "/example.nar")
                     port-sha256)))
-        ;; Create fake substituter data, to be read by `substitute-binary'.
+        ;; Create fake substituter data, to be read by 'guix substitute'.
         (call-with-derivation-narinfo drv
           thunk
           #:sha256 (or sha256 hash))))

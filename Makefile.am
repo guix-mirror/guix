@@ -96,7 +96,7 @@ MODULES =					\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pull.scm				\
-  guix/scripts/substitute-binary.scm		\
+  guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
@@ -162,7 +162,7 @@ SCM_TESTS =					\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
   tests/sets.scm				\
-  tests/substitute-binary.scm			\
+  tests/substitute.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/ui.scm					\

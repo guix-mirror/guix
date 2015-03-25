@@ -514,11 +514,21 @@ useful for C++.")
      ;; test_callback_user_data_middle_single
      ;; test_callback_user_data_middle_tuple
      '(#:tests? #f))
-    (home-page "https://pypi.python.org/pypi/PyGObject")
+    (home-page "https://live.gnome.org/PyGObject")
     (synopsis "Python bindings for GObject")
     (description
      "Python bindings for GLib, GObject, and GIO.")
     (license license:lgpl2.1+)))
+
+(define-public python2-pygobject
+  (package (inherit python-pygobject)
+    (name "python2-pygobject")
+    (inputs
+     `(("python" ,python-2)
+       ("glib" ,glib)
+       ("python-pycairo" ,python2-pycairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libffi" ,libffi)))))
 
 (define telepathy-glib
   (package

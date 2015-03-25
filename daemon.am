@@ -165,7 +165,7 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 
 nodist_pkglibexec_SCRIPTS =			\
   nix/scripts/list-runtime-roots		\
-  nix/scripts/substitute-binary
+  nix/scripts/substitute
 
 if BUILD_DAEMON_OFFLOAD
 
