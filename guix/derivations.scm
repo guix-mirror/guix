@@ -249,6 +249,17 @@ substituter many times."
   (define valid?
     (cut valid-path? store <>))
 
+  (define valid-input?
+    (cut valid-derivation-input? store <>))
+
+  (define (dependencies drv)
+    ;; Skip prerequisite sub-trees of DRV whose root is valid.  This allows us
+    ;; to ask the substituter for just as much as needed, instead of asking it
+    ;; for the whole world, which can be significantly faster when substitute
+    ;; info is not already in cache.
+    (append-map derivation-input-output-paths
+                (derivation-prerequisites drv valid-input?)))
+
   (let* ((paths (delete-duplicates
                  (fold (lambda (drv result)
                          (let ((self (match (derivation->output-paths drv)
@@ -256,11 +267,8 @@ substituter many times."
                                         paths))))
                            (if (every valid? self)
                                result
-                               (let ((deps
-                                      (append-map derivation-input-output-paths
-                                                  (derivation-prerequisites drv))))
-                                 (append (remove valid? (append self deps))
-                                         result)))))
+                               (append (append self (dependencies drv))
+                                       result))))
                        '()
                        drv)))
          (subst (list->set (substitutable-paths store paths))))
