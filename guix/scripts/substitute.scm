@@ -69,8 +69,8 @@
 (define %narinfo-cache-directory
   ;; A local cache of narinfos, to avoid going to the network.
   (or (and=> (getenv "XDG_CACHE_HOME")
-             (cut string-append <> "/guix/substitute-binary"))
-      (string-append %state-directory "/substitute-binary/cache")))
+             (cut string-append <> "/guix/substitute"))
+      (string-append %state-directory "/substitute/cache")))
 
 (define %allow-unauthenticated-substitutes?
   ;; Whether to allow unchecked substitutes.  This is useful for testing

@@ -372,7 +372,7 @@
         ;; Remove entry from the local cache.
         (false-if-exception
          (delete-file (string-append (getenv "XDG_CACHE_HOME")
-                                     "/guix/substitute-binary/"
+                                     "/guix/substitute/"
                                      (store-path-hash-part o))))
 
         ;; Make sure 'guix substitute' correctly communicates the above

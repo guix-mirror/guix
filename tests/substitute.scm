@@ -132,7 +132,7 @@ a file for NARINFO."
                                                 "GUIX_BINARY_SUBSTITUTE_URL"))
                                   uri-path))
         (cache-directory   (string-append (getenv "XDG_CACHE_HOME")
-                                          "/guix/substitute-binary/")))
+                                          "/guix/substitute/")))
     (dynamic-wind
       (lambda ()
         (when (file-exists? cache-directory)
