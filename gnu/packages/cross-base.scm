@@ -298,8 +298,13 @@ XBINUTILS and the cross tool chain."
     ;; "linux-headers" input to point to the right thing.
     (propagated-inputs `(("linux-headers" ,xlinux-headers)))
 
+    ;; FIXME: 'static-bash' should really be an input, not a native input, but
+    ;; to do that will require building an intermediate cross libc.
+    (inputs '())
+
     (native-inputs `(("cross-gcc" ,xgcc)
                      ("cross-binutils" ,xbinutils)
+                     ,@(package-inputs glibc)     ;FIXME: static-bash
                      ,@(package-native-inputs glibc)))))
 
 
