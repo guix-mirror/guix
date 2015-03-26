@@ -783,7 +783,15 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
               (close-port port))
             #t)
-          ,phases))))))
+          (alist-cons-after
+           'install-man-pages 'install-dbus-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/etc/dbus-1/system.d")))
+               (mkdir-p dir)
+               (copy-file "dbus/dbus-wpa_supplicant.conf"
+                          (string-append dir "/wpa_supplicant.conf"))))
+           ,phases)))))))
 
 (define-public wakelan
   (package
