@@ -431,7 +431,8 @@ included.")
       #:tests? #f                                 ; XXX
       #:phases (alist-cons-before
                 'configure 'pre-configure
-                (lambda* (#:key inputs outputs #:allow-other-keys)
+                (lambda* (#:key inputs native-inputs outputs
+                          #:allow-other-keys)
                   (let* ((out  (assoc-ref outputs "out"))
                          (bin  (string-append out "/bin")))
                     ;; Use `pwd', not `/bin/pwd'.
@@ -455,8 +456,13 @@ included.")
 
                     ;; Copy a statically-linked Bash in the output, with
                     ;; no references to other store paths.
+                    ;; FIXME: Normally we would look it up only in INPUTS but
+                    ;; cross-base uses it as a native input.
                     (mkdir-p bin)
-                    (copy-file (string-append (assoc-ref inputs "static-bash")
+                    (copy-file (string-append (or (assoc-ref inputs
+                                                             "static-bash")
+                                                  (assoc-ref native-inputs
+                                                             "static-bash"))
                                               "/bin/bash")
                                (string-append bin "/bash"))
                     (remove-store-references (string-append bin "/bash"))
