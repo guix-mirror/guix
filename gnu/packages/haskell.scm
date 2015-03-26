@@ -253,4 +253,27 @@ by Mark P Jones, in 'Advanced School of Functional Programming', 1995
 http://web.cecs.pdx.edu/~mpj/pubs/springschool.html.")
   (license bsd-3)))
 
+(define-public ghc-paths
+  (package
+    (name "ghc-paths")
+    (version "0.1.0.9")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/ghc-paths/ghc-paths-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0ibrr1dxa35xx20cpp8jzgfak1rdmy344dfwq4vlq013c6w8z9mg"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/simonmar/ghc-paths")
+    (synopsis
+     "Knowledge of GHC's installation directories")
+    (description
+     "Knowledge of GHC's installation directories.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
