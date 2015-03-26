@@ -947,12 +947,22 @@ and/or output name in addition to the package name.  For instance,
 @itemx -u [@var{regexp} @dots{}]
 Upgrade all the installed packages.  If one or more @var{regexp}s are
 specified, upgrade only installed packages whose name matches a
-@var{regexp}.
+@var{regexp}.  Also see the @code{--do-not-upgrade} option below.
 
 Note that this upgrades package to the latest version of packages found
 in the distribution currently installed.  To update your distribution,
 you should regularly run @command{guix pull} (@pxref{Invoking guix
 pull}).
+
+@item --do-not-upgrade[=@var{regexp} @dots{}]
+When used together with the @code{--upgrade} option, do @emph{not}
+upgrade any packages whose name matches a @var{regexp}.  For example, to
+upgrade all packages in the current profile except those containing the
+substring ``emacs'':
+
+@example
+$ guix package --upgrade . --do-not-upgrade emacs
+@end example
 
 @item --roll-back
 Roll back to the previous @dfn{generation} of the profile---i.e., undo
