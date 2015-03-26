@@ -17,7 +17,7 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Test the daemon and its interaction with 'guix substitute-binary'.
+# Test the daemon and its interaction with 'guix substitute'.
 #
 
 set -e

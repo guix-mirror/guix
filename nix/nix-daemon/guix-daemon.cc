@@ -310,7 +310,7 @@ main (int argc, char *argv[])
 	  if (subs == "default")
 	    {
 	      string subst =
-		settings.nixLibexecDir + "/guix/substitute-binary";
+		settings.nixLibexecDir + "/guix/substitute";
 	      setenv ("NIX_SUBSTITUTERS", subst.c_str (), 1);
 	    }
 	}
