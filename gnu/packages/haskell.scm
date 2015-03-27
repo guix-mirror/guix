@@ -691,4 +691,29 @@ optimized for performance critical use, both in terms of large data quantities
 and high speed.")
     (license bsd-3)))
 
+(define-public ghc-split
+  (package
+    (name "ghc-split")
+    (version "0.2.2")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/split/split-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0xa3j0gwr6k5vizxybnzk5fgb3pppgspi6mysnp2gwjp2dbrxkzr"))))
+    (build-system haskell-build-system)
+    (inputs 
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://hackage.haskell.org/package/split")
+    (synopsis
+     "Combinator library for splitting lists")
+    (description "A collection of various methods for splitting lists into
+parts, akin to the 'split' function found in several mainstream languages.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
