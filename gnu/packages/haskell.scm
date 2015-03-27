@@ -455,4 +455,28 @@ JUnit tool for Java.")
     (description "This package provides a basic random number generation
 library, including the ability to split random number generators.")
     (license bsd-3)))
+
+(define-public ghc-primitive
+  (package
+    (name "ghc-primitive")
+    (version "0.5.4.0")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/primitive/primitive-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "05gdgj383xdrdkhxh26imlvs8ji0z28ny38ms9snpvv5i8l2lg10"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://github.com/haskell/primitive")
+    (synopsis "Primitive memory-related operations")
+    (description
+     "This package provides various primitive memory-related operations.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
