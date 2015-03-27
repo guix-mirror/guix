@@ -838,4 +838,37 @@ mutable and immutable), with a powerful loop optimisation framework.")
 package into this package.")
     (license bsd-3)))
 
+(define-public ghc-http
+  (package
+    (name "ghc-http")
+    (version "4000.2.19")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/HTTP/HTTP-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1yzm8gimh8g0wwbixcbxg60v4l3vgi63w9v55ms0x9qnm6vrgysz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (propagated-inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)))
+    (arguments
+     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
+    (home-page "https://github.com/haskell/HTTP")
+    (synopsis "Library for client-side HTTP")
+    (description
+     "The HTTP package supports client-side web programming in Haskell. It
+lets you set up HTTP connections, transmitting requests and processing the
+responses coming back.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
