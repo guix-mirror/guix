@@ -1955,6 +1955,25 @@ Python package is used to run the script can be specified with the
 @code{#:python} parameter.
 @end defvr
 
+@defvr {Scheme Variable} haskell-build-system
+This variable is exported by @code{(guix build-system haskell)}.  It
+implements the Cabal build procedure used by Haskell packages, which
+involves running @code{runhaskell Setup.hs configure
+--prefix=/gnu/store/@dots{}} and @code{runhaskell Setup.hs build}.
+Instead of installing the package by running @code{runhaskell Setup.hs
+install}, to avoid trying to register libraries in the read-only
+compiler store directory, the build system uses @code{runhaskell
+Setup.hs copy}, followed by @code{runhaskell Setup.hs register}.  In
+addition, the build system generates the package documentation by
+running @code{runhaskell Setup.hs haddock}, unless @code{#:haddock? #f}
+is passed.  Optional Haddock parameters can be passed with the help of
+the @code{#:haddock-flags} parameter.  If the file @code{Setup.hs} is
+not found, the build system looks for @code{Setup.lhs} instead.
+
+Which Haskell compiler is used can be specified with the @code{#:haskell}
+parameter which defaults to @code{ghc}. 
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,
