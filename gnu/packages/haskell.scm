@@ -412,4 +412,27 @@ data structures.  The package provides instances for basic types and a way to
 combine hash values.")
     (license bsd-3)))
 
+(define-public ghc-hunit
+  (package
+    (name "ghc-hunit")
+    (version "1.2.5.2")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/HUnit/HUnit-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0hcs6qh8bqhip1kkjjnw7ccgcsmawdz5yvffjj5y8zd2vcsavx8a"))))
+    (build-system haskell-build-system)
+    (home-page "http://hunit.sourceforge.net/")
+    (synopsis "Unit testing framework for Haskell")
+    (description
+     "HUnit is a unit testing framework for Haskell, inspired by the
+JUnit tool for Java.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
