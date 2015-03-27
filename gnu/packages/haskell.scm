@@ -807,4 +807,35 @@ mutable and immutable), with a powerful loop optimisation framework.")
      "This package provides a low-level networking interface.")
     (license bsd-3)))
 
+(define-public ghc-network-uri
+  (package
+    (name "ghc-network-uri")
+    (version "2.6.0.1")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/network-uri/network-uri-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "09ymamb128jgqghpda4nixncr73all8qc6q53976aricm6a27p37"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-network" ,ghc-network)))
+    (arguments
+     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
+    (propagated-inputs
+     `(("ghc-parsec" ,ghc-parsec)))
+    (home-page
+     "https://github.com/haskell/network-uri")
+    (synopsis "Labrary for URI manipulation")
+    (description "This package provides an URI manipulation inteface.  In
+'network-2.6' the 'Network.URI' module was split off from the 'network'
+package into this package.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
