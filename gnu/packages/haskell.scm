@@ -716,4 +716,36 @@ and high speed.")
 parts, akin to the 'split' function found in several mainstream languages.")
     (license bsd-3)))
 
+(define-public ghc-parsec
+  (package
+    (name "ghc-parsec")
+    (version "3.1.9")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/parsec/parsec-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "1ja20cmj6v336jy87c6h3jzjp00sdbakwbdwp11iln499k913xvi"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    ;; these inputs are necessary to use this library
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-mtl" ,ghc-mtl)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    (home-page
+     "https://github.com/aslatter/parsec")
+    (synopsis "Monadic parser combinators")
+    (description "Parsec is a parser library.  It is simple, safe, well
+documented, has extensive libraries, good error messages, and is fast.  It is
+defined as a monad transformer that can be stacked on arbitrary monads, and it
+is also parametric in the input stream type.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
