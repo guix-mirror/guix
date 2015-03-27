@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,11 +19,13 @@
 
 (define-module (gnu packages search)
   #:use-module ((guix licenses)
-                #:select (gpl2+ bsd-3 x11))
+                #:select (gpl2+ gpl3+ bsd-3 x11))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages linux)
   #:export (xapian))
 
@@ -54,5 +57,69 @@ supports the Probabilistic Information Retrieval model and also supports a
 rich set of boolean query operators.")
     (home-page "http://xapian.org/")
     (license (list gpl2+ bsd-3 x11))))
+
+(define-public libtocc
+  (package
+    (name "libtocc")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/aidin36/tocc/releases/download/"
+                           "v" version "/tocc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kd2jd74m8ksc8s7hh0haz0q0c3n0mr39bbky262kk4l58f1g068"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("catch" ,catch-framework)))
+    (inputs `(("unqlite" ,unqlite)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   configure chdir-source
+                   (lambda _ (chdir "libtocc/src")))
+                  (replace
+                   check
+                   (lambda _
+                     (with-directory-excursion "../tests"
+                       (and (zero? (system* "./configure"
+                                            (string-append "CONFIG_SHELL="
+                                                           (which "sh"))
+                                            (string-append "SHELL="
+                                                           (which "sh"))
+                                            "CPPFLAGS=-I../src"
+                                            "LDFLAGS=-L../src/.libs"))
+                            (zero? (system* "make"))
+                            (zero? (system* "./libtocctests")))))))))
+    (home-page "http://t-o-c-c.com/")
+    (synopsis "Tool for Obsessive Compulsive Classifiers")
+    (description
+     "libtocc is the engine of the Tocc project, a tag-based file management
+system.  The goal of Tocc is to provide a better system for classifying files
+that is more flexible than classic file systems that are based on a tree of
+files and directories.")
+    (license gpl3+)))
+
+(define-public tocc
+  (package
+    (name "tocc")
+    (version (package-version libtocc))
+    (source (package-source libtocc))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libtocc" ,libtocc)
+       ("unqlite" ,unqlite)))
+    (arguments
+     `(#:tests? #f                      ;No tests
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   unpack chdir-source
+                   (lambda _ (chdir "cli/src"))))))
+    (home-page "http://t-o-c-c.com/")
+    (synopsis "Command-line interface to libtocc")
+    (description
+     "Tocc is a tag-based file management system.  This package contains the
+command line tool for interacting with libtocc.")
+    (license gpl3+)))
 
 ;;; search.scm ends here
