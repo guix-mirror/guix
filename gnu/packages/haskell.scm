@@ -479,4 +479,32 @@ library, including the ability to split random number generators.")
      "This package provides various primitive memory-related operations.")
     (license bsd-3)))
 
+(define-public ghc-tf-random
+  (package
+    (name "ghc-tf-random")
+    (version "0.5")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tf-random/tf-random-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "0445r2nns6009fmq0xbfpyv7jpzwv0snccjdg7hwj4xk4z0cwc1f"))))
+    (build-system haskell-build-system)
+    ;; these inputs are necessary to use this package
+    (propagated-inputs
+     `(("ghc-primitive" ,ghc-primitive)
+       ("ghc-random" ,ghc-random)))
+    (home-page "http://hackage.haskell.org/package/tf-random")
+    (synopsis "High-quality splittable pseudorandom number generator")
+    (description "This package contains an implementation of a high-quality
+splittable pseudorandom number generator.  The generator is based on a
+cryptographic hash function built on top of the ThreeFish block cipher.  See
+the paper \"Splittable Pseudorandom Number Generators Using Cryptographic
+Hashing\" by Claessen, Pałka for details and the rationale of the design.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
