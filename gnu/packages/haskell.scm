@@ -571,4 +571,35 @@ which can be parameterised by a string-like type like: 'String', 'ByteString',
 to cases.")
     (license bsd-3)))
 
+(define-public ghc-syb
+  (package
+    (name "ghc-syb")
+    (version "0.4.4")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/syb/syb-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "11sc9kmfvcn9bfxf227fgmny502z2h9xs3z0m9ak66lk0dw6f406"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-mtl" ,ghc-mtl)))
+    (home-page
+     "http://www.cs.uu.nl/wiki/GenericProgramming/SYB")
+    (synopsis "Scrap Your Boilerplate")
+    (description
+     "This package contains the generics system described in the
+/Scrap Your Boilerplate/ papers (see
+<http://www.cs.uu.nl/wiki/GenericProgramming/SYB>).
+It defines the 'Data' class of types permitting folding and unfolding
+of constructor applications, instances of this class for primitive
+types, and a variety of traversals.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
