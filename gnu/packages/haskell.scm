@@ -658,4 +658,37 @@ is an inductive definition of graphs in the style of algebraic data types that
 encourages inductive, recursive definitions of graph algorithms.")
     (license bsd-3)))
 
+(define-public ghc-unordered-containers
+  (package
+    (name "ghc-unordered-containers")
+    (version "0.2.5.1")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/unordered-containers/unordered-containers-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "06l1xv7vhpxly75saxdrbc6p2zlgz1az278arfkz4rgawfnphn3f"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    ;; these inputs are necessary to use this library
+    (propagated-inputs `(("ghc-hashable" ,ghc-hashable)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    (home-page
+     "https://github.com/tibbe/unordered-containers")
+    (synopsis
+     "Efficient hashing-based container types")
+    (description
+     "Efficient hashing-based container types.  The containers have been
+optimized for performance critical use, both in terms of large data quantities
+and high speed.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
