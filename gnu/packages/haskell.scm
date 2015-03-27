@@ -537,4 +537,38 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
      "QuickCheck is a library for random testing of program properties.")
     (license bsd-3)))
 
+(define-public ghc-case-insensitive
+  (package
+    (name "ghc-case-insensitive")
+    (version "1.2.0.4")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/case-insensitive/case-insensitive-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "07nm40r9yw2p9qsfp3pjbsmyn4dabrxw34p48171zmccdd5hv0v3"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    ;; these inputs are necessary to use this library
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-hashable" ,ghc-hashable)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    (home-page
+     "https://github.com/basvandijk/case-insensitive")
+    (synopsis "Case insensitive string comparison")
+    (description
+     "The module 'Data.CaseInsensitive' provides the 'CI' type constructor
+which can be parameterised by a string-like type like: 'String', 'ByteString',
+'Text', etc..  Comparisons of values of the resulting type will be insensitive
+to cases.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
