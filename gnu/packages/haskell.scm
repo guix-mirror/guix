@@ -632,4 +632,30 @@ is either worst-case or amortized, but remains valid even if structures are
 shared.")
     (license bsd-3)))
 
+(define-public ghc-fgl
+  (package
+    (name "ghc-fgl")
+    (version "5.5.1.0")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/fgl/fgl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0rcmz0xlyr1wj490ffja29z1jgl51gz19ka609da6bx39bwx7nga"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://web.engr.oregonstate.edu/~erwig/fgl/haskell")
+    (synopsis
+     "Martin Erwig's Functional Graph Library")
+    (description "The functional graph library, FGL, is a collection of type
+and function definitions to address graph problems.  The basis of the library
+is an inductive definition of graphs in the style of algebraic data types that
+encourages inductive, recursive definitions of graph algorithms.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
