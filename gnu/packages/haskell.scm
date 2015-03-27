@@ -306,4 +306,26 @@ most tasks and for the few cases where more control is needed it provides
 access to the full zlib feature set.")
     (license bsd-3)))
 
+(define-public ghc-stm
+  (package
+    (name "ghc-stm")
+    (version "2.4.4")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/stm/stm-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gc8zvdijp3rwmidkpxv76b4i0dc8dw6nbd92rxl4vxl0655iysx"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/stm")
+    (synopsis "Software Transactional Memory")
+    (description
+     "A modular composable concurrency abstraction.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
