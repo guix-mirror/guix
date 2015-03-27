@@ -777,4 +777,34 @@ is also parametric in the input stream type.")
 mutable and immutable), with a powerful loop optimisation framework.")
   (license bsd-3)))
 
+(define-public ghc-network
+  (package
+    (name "ghc-network")
+    (version "2.6.0.2")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/network/network-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "12b7saam5ga6l4cplgkad49xa4vkynz2ri9jxidx1cxiqjcl0vc4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (arguments
+     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure set-sh
+                     (lambda _ (setenv "CONFIG_SHELL" "sh"))))))
+    (home-page "https://github.com/haskell/network")
+    (synopsis "Low-level networking interface")
+    (description
+     "This package provides a low-level networking interface.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
