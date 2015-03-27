@@ -350,4 +350,35 @@ access to the full zlib feature set.")
      "This package provides a library for parallel programming.")
     (license bsd-3)))
 
+(define-public ghc-text
+  (package
+    (name "ghc-text")
+    (version "1.2.0.4")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/text/text-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "004p1c74crs8wmjafwsmw3mmycspq1j8fpm1lvfpq6acha7bnpc6"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    (home-page "https://github.com/bos/text")
+    (synopsis
+     "Efficient packed Unicode text type library.")
+    (description
+     "An efficient packed, immutable Unicode text type (both strict and
+lazy), with a powerful loop fusion optimization framework.
+
+The 'Text' type represents Unicode character strings, in a time and
+space-efficient manner. This package provides text processing
+capabilities that are optimized for performance critical use, both
+in terms of large data quantities and high speed.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
