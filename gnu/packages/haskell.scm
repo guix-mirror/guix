@@ -435,4 +435,24 @@ combine hash values.")
 JUnit tool for Java.")
     (license bsd-3)))
 
+(define-public ghc-random
+  (package
+    (name "ghc-random")
+    (version "1.1")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/random/random-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "0nis3lbkp8vfx8pkr6v7b7kr5m334bzb0fk9vxqklnp2aw8a865p"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/random")
+    (synopsis "Random number library")
+    (description "This package provides a basic random number generation
+library, including the ability to split random number generators.")
+    (license bsd-3)))
 ;;; haskell.scm ends here
