@@ -328,4 +328,26 @@ access to the full zlib feature set.")
      "A modular composable concurrency abstraction.")
     (license bsd-3)))
 
+(define-public ghc-parallel
+  (package
+    (name "ghc-parallel")
+    (version "3.2.0.6")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/parallel/parallel-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0hp6vf4zxsw6vz6lj505xihmnfhgjp39c9q7nyzlgcmps3xx6a5r"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/parallel")
+    (synopsis "Parallel programming library")
+    (description
+     "This package provides a library for parallel programming.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
