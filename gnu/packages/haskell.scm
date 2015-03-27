@@ -381,4 +381,35 @@ capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
     (license bsd-3)))
 
+(define-public ghc-hashable
+  (package
+    (name "ghc-hashable")
+    (version "1.2.3.2")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hashable/hashable-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0h9295pv2sgbaqlwpwbx2bap6nngm0jcdhkqham1wpjwyxqgqrlc"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    ;; these inputs are necessary to use this library
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)))
+    (home-page "http://github.com/tibbe/hashable")
+    (synopsis
+     "Class for types that can be converted to a hash value")
+    (description
+     "This package defines a class, 'Hashable', for types that can be
+converted to a hash value.  This class exists for the benefit of hashing-based
+data structures.  The package provides instances for basic types and a way to
+combine hash values.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
