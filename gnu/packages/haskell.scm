@@ -18,13 +18,14 @@
 
 (define-module (gnu packages haskell)
   #:use-module (ice-9 regex)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages ghostscript)
@@ -274,6 +275,35 @@ http://web.cecs.pdx.edu/~mpj/pubs/springschool.html.")
      "Knowledge of GHC's installation directories")
     (description
      "Knowledge of GHC's installation directories.")
+    (license bsd-3)))
+
+(define-public ghc-zlib
+  (package
+    (name "ghc-zlib")
+    (version "0.5.4.2")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/zlib/zlib-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15hhsk7z3gvm7sz2ic2z1ca5c6rpsln2rr391mdbm1bxlzc1gmkm"))))
+    (build-system haskell-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://hackage.haskell.org/package/zlib")
+    (synopsis
+     "Compression and decompression in the gzip and zlib formats")
+    (description
+     "This package provides a pure interface for compressing and decompressing
+streams of data represented as lazy 'ByteString's.  It uses the zlib C library
+so it has high performance.  It supports the 'zlib', 'gzip' and 'raw'
+compression formats.  It provides a convenient high level API suitable for
+most tasks and for the few cases where more control is needed it provides
+access to the full zlib feature set.")
     (license bsd-3)))
 
 ;;; haskell.scm ends here
