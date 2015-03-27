@@ -748,4 +748,33 @@ defined as a monad transformer that can be stacked on arbitrary monads, and it
 is also parametric in the input stream type.")
     (license bsd-3)))
 
+(define-public ghc-vector
+  (package
+    (name "ghc-vector")
+    (version "0.10.12.2")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/vector/vector-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "01hc71k1z9m0g0dv4zsvq5d2dvbgyc5p01hryw5c53792yi2fm25"))))
+    (build-system haskell-build-system)
+    (inputs 
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    ;; these inputs are necessary to use this library
+    (propagated-inputs
+     `(("ghc-primitive" ,ghc-primitive)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+    (home-page "https://github.com/haskell/vector")
+    (synopsis "Efficient Arrays")
+    (description "An efficient implementation of Int-indexed arrays (both
+mutable and immutable), with a powerful loop optimisation framework.")
+  (license bsd-3)))
+
 ;;; haskell.scm ends here
