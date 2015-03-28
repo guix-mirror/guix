@@ -4508,8 +4508,9 @@ external name servers do not even need to be queried.
 @end defvr
 
 
-@deffn {Monadic Procedure} syslog-service
-Return a service that runs @code{syslogd} with reasonable default
+@deffn {Monadic Procedure} syslog-service [#:config-file #f]
+Return a service that runs @code{syslogd}.  If configuration file name
+@var{config-file} is not specified, use some reasonable default
 settings.
 @end deffn
 
