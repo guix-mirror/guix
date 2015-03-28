@@ -2503,7 +2503,10 @@ processes that use them.
 Actually this mechanism is not limited to package and derivation
 objects; @dfn{compilers} able to ``lower'' other high-level objects to
 derivations can be defined, such that these objects can also be inserted
-into gexps.
+into gexps.  Another useful type of high-level object that can be
+inserted in a gexp is @dfn{local files}, which allows files from the
+local file system to be added to the store and referred to by
+derivations and such (see @code{local-file} below.)
 
 To illustrate the idea, here is an example of a gexp:
 
@@ -2666,6 +2669,20 @@ refer to.  Any reference to another store item will lead to a build error.
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
+@deffn {Scheme Procedure} local-file @var{file} [@var{name}] @
+   [#:recursive? #t]
+Return an object representing local file @var{file} to add to the store; this
+object can be used in a gexp.  @var{file} will be added to the store under @var{name}--by
+default the base name of @var{file}.
+
+When @var{recursive?} is true, the contents of @var{file} are added recursively; if @var{file}
+designates a flat file and @var{recursive?} is true, its contents are added, and its
+permission bits are kept.
+
+This is the declarative counterpart of the @code{interned-file} monadic
+procedure (@pxref{The Store Monad, @code{interned-file}}).
+@end deffn
+
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
 Return an executable script @var{name} that runs @var{exp} using
 @var{guile} with @var{modules} in its search path.
@@ -2703,8 +2720,9 @@ or a subset thereof.
 @deffn {Monadic Procedure} text-file* @var{name} @var{text} @dots{}
 Return as a monadic value a derivation that builds a text file
 containing all of @var{text}.  @var{text} may list, in addition to
-strings, packages, derivations, and store file names; the resulting
-store file holds references to all these.
+strings, objects of any type that can be used in a gexp: packages,
+derivations, local file objects, etc.  The resulting store file holds
+references to all these.
 
 This variant should be preferred over @code{text-file} anytime the file
 to create will reference items from the store.  This is typically the
