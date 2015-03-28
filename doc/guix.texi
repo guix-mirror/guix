@@ -2490,19 +2490,20 @@ Gexps are meant to be written to a file and run or manipulated by other
 processes.
 
 @item
-When a package or derivation is unquoted inside a gexp, the result is as
-if its output file name had been introduced.
-
-Actually this mechanism is not limited to package and derivation
-objects; @dfn{compilers} able to ``lower'' other high-level objects to
-derivations can be defined, such that these objects can also be inserted
-into gexps.
+When a high-level object such as a package or derivation is unquoted
+inside a gexp, the result is as if its output file name had been
+introduced.
 
 @item
 Gexps carry information about the packages or derivations they refer to,
 and these dependencies are automatically added as inputs to the build
 processes that use them.
 @end itemize
+
+Actually this mechanism is not limited to package and derivation
+objects; @dfn{compilers} able to ``lower'' other high-level objects to
+derivations can be defined, such that these objects can also be inserted
+into gexps.
 
 To illustrate the idea, here is an example of a gexp:
 
@@ -2563,24 +2564,24 @@ or more of the following forms:
 @table @code
 @item #$@var{obj}
 @itemx (ungexp @var{obj})
-Introduce a reference to @var{obj}.  @var{obj} may be a package or a
+Introduce a reference to @var{obj}.  @var{obj} may have one of the
+supported types, for example a package or a
 derivation, in which case the @code{ungexp} form is replaced by its
 output file name---e.g., @code{"/gnu/store/@dots{}-coreutils-8.22}.
 
-If @var{obj} is a list, it is traversed and any package or derivation
-references are substituted similarly.
+If @var{obj} is a list, it is traversed and references to supported
+objects are substituted similarly.
 
 If @var{obj} is another gexp, its contents are inserted and its
 dependencies are added to those of the containing gexp.
 
 If @var{obj} is another kind of object, it is inserted as is.
 
-@item #$@var{package-or-derivation}:@var{output}
-@itemx (ungexp @var{package-or-derivation} @var{output})
+@item #$@var{obj}:@var{output}
+@itemx (ungexp @var{obj} @var{output})
 This is like the form above, but referring explicitly to the
-@var{output} of @var{package-or-derivation}---this is useful when
-@var{package-or-derivation} produces multiple outputs (@pxref{Packages
-with Multiple Outputs}).
+@var{output} of @var{obj}---this is useful when @var{obj} produces
+multiple outputs (@pxref{Packages with Multiple Outputs}).
 
 @item #+@var{obj}
 @itemx #+@var{obj}:output
