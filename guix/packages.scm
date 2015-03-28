@@ -436,8 +436,8 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
 
             ;; Use '--force' so that patches that do not apply perfectly are
             ;; rejected.
-            (zero? (system* (string-append #$patch "/bin/patch")
-                            "--force" #$@flags "--input" patch)))
+            (zero? (system* (string-append #+patch "/bin/patch")
+                            "--force" #+@flags "--input" patch)))
 
           (define (first-file directory)
             ;; Return the name of the first file in DIRECTORY.
@@ -448,49 +448,49 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
           ;; Encoding/decoding errors shouldn't be silent.
           (fluid-set! %default-port-conversion-strategy 'error)
 
-          (when #$locales
+          (when #+locales
             ;; First of all, install a UTF-8 locale so that UTF-8 file names
             ;; are correctly interpreted.  During bootstrap, LOCALES is #f.
-            (setenv "LOCPATH" (string-append #$locales "/lib/locale"))
+            (setenv "LOCPATH" (string-append #+locales "/lib/locale"))
             (setlocale LC_ALL "en_US.UTF-8"))
 
-          (setenv "PATH" (string-append #$xz "/bin" ":"
-                                        #$decomp "/bin"))
+          (setenv "PATH" (string-append #+xz "/bin" ":"
+                                        #+decomp "/bin"))
 
           ;; SOURCE may be either a directory or a tarball.
-          (and (if (file-is-directory? #$source)
+          (and (if (file-is-directory? #+source)
                    (let* ((store     (or (getenv "NIX_STORE") "/gnu/store"))
                           (len       (+ 1 (string-length store)))
-                          (base      (string-drop #$source len))
+                          (base      (string-drop #+source len))
                           (dash      (string-index base #\-))
                           (directory (string-drop base (+ 1 dash))))
                      (mkdir directory)
-                     (copy-recursively #$source directory)
+                     (copy-recursively #+source directory)
                      #t)
-                   #$(if (string=? decompression-type "unzip")
-                         #~(zero? (system* "unzip" #$source))
-                         #~(zero? (system* (string-append #$tar "/bin/tar")
-                                           "xvf" #$source))))
+                   #+(if (string=? decompression-type "unzip")
+                         #~(zero? (system* "unzip" #+source))
+                         #~(zero? (system* (string-append #+tar "/bin/tar")
+                                           "xvf" #+source))))
                (let ((directory (first-file ".")))
                  (format (current-error-port)
                          "source is under '~a'~%" directory)
                  (chdir directory)
 
-                 (and (every apply-patch '#$patches)
-                      #$@(if snippet
+                 (and (every apply-patch '#+patches)
+                      #+@(if snippet
                              #~((let ((module (make-fresh-user-module)))
                                   (module-use-interfaces! module
                                                           (map resolve-interface
-                                                               '#$modules))
+                                                               '#+modules))
                                   ((@ (system base compile) compile)
-                                   '#$snippet
+                                   '#+snippet
                                    #:to 'value
                                    #:opts %auto-compilation-options
                                    #:env module)))
                              #~())
 
                       (begin (chdir "..") #t)
-                      (zero? (system* (string-append #$tar "/bin/tar")
+                      (zero? (system* (string-append #+tar "/bin/tar")
                                       "cvfa" #$output directory)))))))
 
     (let ((name    (tarxz-name original-file-name))

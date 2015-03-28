@@ -66,7 +66,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                    '#$(cvs-reference-module ref)
                    '#$(cvs-reference-revision ref)
                    #$output
-                   #:cvs-command (string-append #$cvs "/bin/cvs"))))
+                   #:cvs-command (string-append #+cvs "/bin/cvs"))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "cvs-checkout") build

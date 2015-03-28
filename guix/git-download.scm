@@ -76,7 +76,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
         ;; The 'git submodule' commands expects Coreutils, sed,
         ;; grep, etc. to be in $PATH.
         (set-path-environment-variable "PATH" '("bin")
-                                       (match '#$inputs
+                                       (match '#+inputs
                                          (((names dirs) ...)
                                           dirs)))
 
@@ -84,7 +84,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                    '#$(git-reference-commit ref)
                    #$output
                    #:recursive? '#$(git-reference-recursive? ref)
-                   #:git-command (string-append #$git "/bin/git"))))
+                   #:git-command (string-append #+git "/bin/git"))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "git-checkout") build
