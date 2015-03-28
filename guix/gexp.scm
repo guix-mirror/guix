@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -941,6 +941,15 @@ second element is the derivation to compile them."
            modules
            system extensions guile deprecation-warnings module-path))
 
+(define (sexp->string sexp)
+  "Like 'object->string', but deterministic and slightly faster."
+  ;; Explicitly use UTF-8 for determinism, and also because UTF-8 output is
+  ;; faster.
+  (with-fluids ((%default-port-encoding "UTF-8"))
+    (call-with-output-string
+     (lambda (port)
+       (write sexp port)))))
+
 (define* (lower-gexp exp
                      #:key
                      (module-path %load-path)
@@ -1159,7 +1168,7 @@ The other arguments are as for 'derivation'."
                                        (return #f)))
                        (guile -> (lowered-gexp-guile lowered))
                        (builder  (text-file script-name
-                                            (object->string
+                                            (sexp->string
                                              (lowered-gexp-sexp lowered)))))
     (mbegin %store-monad
       (set-grafting graft?)                       ;restore the initial setting
