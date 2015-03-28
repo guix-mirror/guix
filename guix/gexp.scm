@@ -204,12 +204,12 @@ the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
-                    ((and ((? struct? thing) sub-drv ...) input)
-                     (mlet* %store-monad ((lower -> (lookup-compiler thing))
-                                          (drv (lower thing system target)))
-                       (return `(,drv ,@sub-drv))))
-                    (input
-                     (return input)))
+                     (((? struct? thing) sub-drv ...)
+                      (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                                           (drv (lower thing system target)))
+                        (return `(,drv ,@sub-drv))))
+                     (input
+                      (return input)))
                    inputs))))
 
 (define* (lower-reference-graphs graphs #:key system target)
