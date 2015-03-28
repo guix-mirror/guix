@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix memoization)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
@@ -281,7 +283,7 @@ standard packages used as implicit inputs of the GNU build system."
                 #:rest arguments)
   "Return a bag for NAME from the given arguments."
   (define private-keywords
-    `(#:source #:inputs #:native-inputs #:outputs
+    `(#:inputs #:native-inputs #:outputs
       #:implicit-inputs? #:implicit-cross-inputs?
       ,@(if target '() '(#:target))))
 
@@ -328,8 +330,9 @@ standard packages used as implicit inputs of the GNU build system."
   ;; Typical names of Autotools "bootstrap" scripts.
   '("bootstrap" "bootstrap.sh" "autogen.sh"))
 
-(define* (gnu-build store name input-drvs
-                    #:key (guile #f)
+(define* (gnu-build name inputs
+                    #:key
+                    guile source
                     (outputs '("out"))
                     (search-paths '())
                     (bootstrap-scripts (list 'quote %bootstrap-scripts))
@@ -374,80 +377,48 @@ SUBSTITUTABLE? determines whether users may be able to use substitutes of the
 returned derivations, or whether they should always build it locally.
 
 ALLOWED-REFERENCES can be either #f, or a list of packages that the outputs
-are allowed to refer to.  Likewise for DISALLOWED-REFERENCES, which lists
-packages that must not be referenced."
-  (define canonicalize-reference
-    (match-lambda
-     ((? package? p)
-      (derivation->output-path (package-derivation store p system
-                                                   #:graft? #f)))
-     (((? package? p) output)
-      (derivation->output-path (package-derivation store p system
-                                                   #:graft? #f)
-                               output))
-     ((? string? output)
-      output)))
-
+are allowed to refer to."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (gnu-build #:source ,(match (assoc-ref input-drvs "source")
-                              (((? derivation? source))
-                               (derivation->output-path source))
-                              ((source)
-                               source)
-                              (source
-                               source))
-                  #:system ,system
-                  #:build ,build
-                  #:outputs %outputs
-                  #:inputs %build-inputs
-                  #:search-paths ',(map search-path-specification->sexp
-                                        search-paths)
-                  #:phases ,phases
-                  #:locale ,locale
-                  #:bootstrap-scripts ,bootstrap-scripts
-                  #:configure-flags ,configure-flags
-                  #:make-flags ,make-flags
-                  #:out-of-source? ,out-of-source?
-                  #:tests? ,tests?
-                  #:test-target ,test-target
-                  #:parallel-build? ,parallel-build?
-                  #:parallel-tests? ,parallel-tests?
-                  #:patch-shebangs? ,patch-shebangs?
-                  #:strip-binaries? ,strip-binaries?
-                  #:validate-runpath? ,validate-runpath?
-                  #:make-dynamic-linker-cache? ,make-dynamic-linker-cache?
-                  #:license-file-regexp ,license-file-regexp
-                  #:strip-flags ,strip-flags
-                  #:strip-directories ,strip-directories)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system
-                             #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(gnu-build #:source #+source
+                           #:system #$system
+                           #:build #$build
+                           #:outputs %outputs
+                           #:inputs %build-inputs
+                           #:search-paths '#$(map search-path-specification->sexp
+                                                  search-paths)
+                           #:phases #$phases
+                           #:locale #$locale
+                           #:bootstrap-scripts #$bootstrap-scripts
+                           #:configure-flags #$configure-flags
+                           #:make-flags #$make-flags
+                           #:out-of-source? #$out-of-source?
+                           #:tests? #$tests?
+                           #:test-target #$test-target
+                           #:parallel-build? #$parallel-build?
+                           #:parallel-tests? #$parallel-tests?
+                           #:patch-shebangs? #$patch-shebangs?
+                           #:license-file-regexp #$license-file-regexp
+                           #:strip-binaries? #$strip-binaries?
+                           #:validate-runpath? #$validate-runpath?
+                           #:make-dynamic-linker-cache? #$make-dynamic-linker-cache?
+                           #:license-file-regexp #$license-file-regexp
+                           #:strip-flags #$strip-flags
+                           #:strip-directories #$strip-directories)))))
 
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs input-drvs
-                                #:outputs outputs
-                                #:modules imported-modules
-                                #:substitutable? substitutable?
-
-                                #:allowed-references
-                                (and allowed-references
-                                     (map canonicalize-reference
-                                          allowed-references))
-                                #:disallowed-references
-                                (and disallowed-references
-                                     (map canonicalize-reference
-                                          disallowed-references))
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target #f
+                      #:substitutable? substitutable?
+                      #:allowed-references allowed-references
+                      #:disallowed-references disallowed-references
+                      #:guile-for-build guile)))
 
 
 ;;;
@@ -483,11 +454,11 @@ is one of `host' or `target'."
                    `(("cross-libc:static" ,libc "static"))
                    '()))))))))
 
-(define* (gnu-cross-build store name
+(define* (gnu-cross-build name
                           #:key
-                          target native-drvs target-drvs
-                          (guile #f)
-                          source
+                          target
+                          build-inputs target-inputs host-inputs
+                          guile source
                           (outputs '("out"))
                           (search-paths '())
                           (native-search-paths '())
@@ -525,104 +496,67 @@ is one of `host' or `target'."
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
 platform."
-  (define canonicalize-reference
-    (match-lambda
-     ((? package? p)
-      (derivation->output-path (package-cross-derivation store p
-                                                         target system)))
-     (((? package? p) output)
-      (derivation->output-path (package-cross-derivation store p
-                                                         target system)
-                               output))
-     ((? string? output)
-      output)))
-
   (define builder
-    `(begin
-       (use-modules ,@modules)
+    #~(begin
+        (use-modules #$@modules)
 
-       (let ()
-         (define %build-host-inputs
-           ',(map (match-lambda
-                   ((name (? derivation? drv) sub ...)
-                    `(,name . ,(apply derivation->output-path drv sub)))
-                   ((name path)
-                    `(,name . ,path)))
-                  native-drvs))
+        (define %build-host-inputs
+          (map (lambda (tuple)
+                 (apply cons tuple))
+               '#+build-inputs))
 
-         (define %build-target-inputs
-           ',(map (match-lambda
-                   ((name (? derivation? drv) sub ...)
-                    `(,name . ,(apply derivation->output-path drv sub)))
-                   ((name (? package? pkg) sub ...)
-                    (let ((drv (package-cross-derivation store pkg
-                                                         target system)))
-                      `(,name . ,(apply derivation->output-path drv sub))))
-                   ((name path)
-                    `(,name . ,path)))
-                  target-drvs))
+        (define %build-target-inputs
+          (map (lambda (tuple)
+                 (apply cons tuple))
+               (append '#$host-inputs '#+target-inputs)))
 
-         (gnu-build #:source ,(match (assoc-ref native-drvs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:build ,build
-                    #:target ,target
-                    #:outputs %outputs
-                    #:inputs %build-target-inputs
-                    #:native-inputs %build-host-inputs
-                    #:search-paths ',(map search-path-specification->sexp
+        (define %outputs
+          (list #$@(map (lambda (name)
+                          #~(cons #$name
+                                  (ungexp output name)))
+                        outputs)))
+
+        (gnu-build #:source #+source
+                   #:system #$system
+                   #:build #$build
+                   #:target #$target
+                   #:outputs %outputs
+                   #:inputs %build-target-inputs
+                   #:native-inputs %build-host-inputs
+                   #:search-paths '#$(map search-path-specification->sexp
                                           search-paths)
-                    #:native-search-paths ',(map
+                   #:native-search-paths '#$(map
                                              search-path-specification->sexp
                                              native-search-paths)
-                    #:phases ,phases
-                    #:locale ,locale
-                    #:bootstrap-scripts ,bootstrap-scripts
-                    #:configure-flags ,configure-flags
-                    #:make-flags ,make-flags
-                    #:out-of-source? ,out-of-source?
-                    #:tests? ,tests?
-                    #:test-target ,test-target
-                    #:parallel-build? ,parallel-build?
-                    #:parallel-tests? ,parallel-tests?
-                    #:patch-shebangs? ,patch-shebangs?
-                    #:strip-binaries? ,strip-binaries?
-                    #:validate-runpath? ,validate-runpath?
-                    #:make-dynamic-linker-cache? ,make-dynamic-linker-cache?
-                    #:license-file-regexp ,license-file-regexp
-                    #:strip-flags ,strip-flags
-                    #:strip-directories ,strip-directories))))
+                   #:phases #$phases
+                   #:locale #$locale
+                   #:bootstrap-scripts #$bootstrap-scripts
+                   #:configure-flags #$configure-flags
+                   #:make-flags #$make-flags
+                   #:out-of-source? #$out-of-source?
+                   #:tests? #$tests?
+                   #:test-target #$test-target
+                   #:parallel-build? #$parallel-build?
+                   #:parallel-tests? #$parallel-tests?
+                   #:patch-shebangs? #$patch-shebangs?
+                   #:license-file-regexp #$license-file-regexp
+                   #:strip-binaries? #$strip-binaries?
+                   #:validate-runpath? #$validate-runpath?
+                   #:make-dynamic-linker-cache? #$make-dynamic-linker-cache?
+                   #:license-file-regexp #$license-file-regexp
+                   #:strip-flags #$strip-flags
+                   #:strip-directories #$strip-directories)))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs (append native-drvs target-drvs)
-                                #:outputs outputs
-                                #:modules imported-modules
-                                #:substitutable? substitutable?
-
-                                #:allowed-references
-                                (and allowed-references
-                                     (map canonicalize-reference
-                                          allowed-references))
-                                #:disallowed-references
-                                (and disallowed-references
-                                     (map canonicalize-reference
-                                          disallowed-references))
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target target
+                      #:modules imported-modules
+                      #:substitutable? substitutable?
+                      #:allowed-references allowed-references
+                      #:disallowed-references disallowed-references
+                      #:guile-for-build guile)))
 
 (define gnu-build-system
   (build-system

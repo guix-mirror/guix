@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2021 Lars-Dominik Braun <lars@6xq.net>
@@ -25,6 +25,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix memoization)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
@@ -147,7 +149,7 @@ pre-defined variants."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:python #:inputs #:native-inputs))
+    '(#:target #:python #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -167,8 +169,8 @@ pre-defined variants."
          (build python-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (python-build store name inputs
-                       #:key
+(define* (python-build name inputs
+                       #:key source
                        (tests? #t)
                        (test-target "test")
                        (use-setuptools? #t)
@@ -184,43 +186,32 @@ pre-defined variants."
                                   (guix build utils))))
   "Build SOURCE using PYTHON, and with INPUTS.  This assumes that SOURCE
 provides a 'setup.py' file as its build system."
-  (define builder
-    `(begin
-       (use-modules ,@modules)
-       (python-build #:name ,name
-                     #:source ,(match (assoc-ref inputs "source")
-                                 (((? derivation? source))
-                                  (derivation->output-path source))
-                                 ((source)
-                                  source)
-                                 (source
-                                  source))
-                     #:configure-flags ,configure-flags
-                     #:system ,system
-                     #:test-target ,test-target
-                     #:tests? ,tests?
-                     #:use-setuptools? ,use-setuptools?
-                     #:phases ,phases
-                     #:outputs %outputs
-                     #:search-paths ',(map search-path-specification->sexp
-                                           search-paths)
-                     #:inputs %build-inputs)))
+  (define build
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          #$(with-build-variables inputs outputs
+              #~(python-build #:name #$name
+                              #:source #+source
+                              #:configure-flags #$configure-flags
+                              #:use-setuptools? #$use-setuptools?
+                              #:system #$system
+                              #:test-target #$test-target
+                              #:tests? #$tests?
+                              #:phases #$phases
+                              #:outputs %outputs
+                              #:search-paths '#$(map search-path-specification->sexp
+                                                     search-paths)
+                              #:inputs %build-inputs)))))
 
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name build
+                      #:system system
+                      #:target #f
+                      #:guile-for-build guile)))
 
 (define python-build-system
   (build-system

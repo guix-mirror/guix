@@ -32,11 +32,13 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module ((guix store)
-                #:select (run-with-store add-to-store add-text-to-store))
+                #:select (%store-monad interned-file text-file store-lift))
   #:use-module ((guix derivations)
-                #:select (derivation derivation-input derivation->output-path))
-  #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
+                #:select (raw-derivation derivation-input derivation->output-path))
+  #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (elf-file?))
   #:use-module ((guix gexp) #:select (lower-object))
+  #:use-module (guix monads)
   #:use-module (guix memoization)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
@@ -376,59 +378,58 @@ or false to signal an error."
               %bootstrap-base-urls))
     (sha256 (bootstrap-guile-hash system))))
 
-(define (download-bootstrap-guile store system)
+(define (download-bootstrap-guile system)
   "Return a derivation that downloads the bootstrap Guile tarball for SYSTEM."
   (let* ((path (bootstrap-guile-url-path system))
          (base (basename path))
          (urls (map (cut string-append <> path) %bootstrap-base-urls)))
-    (run-with-store store
-      (url-fetch urls 'sha256 (bootstrap-guile-hash system)
-                 #:system system))))
+    (url-fetch urls 'sha256 (bootstrap-guile-hash system)
+               #:system system)))
 
-(define* (raw-build store name inputs
+(define* (raw-build name inputs
                     #:key outputs system search-paths
                     #:allow-other-keys)
   (define (->store file)
-    (run-with-store store
-      (lower-object (bootstrap-executable file system)
-                    system)))
+    (lower-object (bootstrap-executable file system)
+                  system))
 
-  (let* ((tar   (->store "tar"))
-         (xz    (->store "xz"))
-         (mkdir (->store "mkdir"))
-         (bash  (->store "bash"))
-         (guile (download-bootstrap-guile store system))
-         ;; The following code, run by the bootstrap guile after it is
-         ;; unpacked, creates a wrapper for itself to set its load path.
-         ;; This replaces the previous non-portable method based on
-         ;; reading the /proc/self/exe symlink.
-         (make-guile-wrapper
-          '(begin
-             (use-modules (ice-9 match))
-             (match (command-line)
-               ((_ out bash)
-                (let ((bin-dir    (string-append out "/bin"))
-                      (guile      (string-append out "/bin/guile"))
-                      (guile-real (string-append out "/bin/.guile-real"))
-                      ;; We must avoid using a bare dollar sign in this code,
-                      ;; because it would be interpreted by the shell.
-                      (dollar     (string (integer->char 36))))
-                  (chmod bin-dir #o755)
-                  (rename-file guile guile-real)
-                  (call-with-output-file guile
-                    (lambda (p)
-                      (format p "\
+  (define (make-guile-wrapper bash guile-real)
+    ;; The following code, run by the bootstrap guile after it is unpacked,
+    ;; creates a wrapper for itself to set its load path.  This replaces the
+    ;; previous non-portable method based on reading the /proc/self/exe
+    ;; symlink.
+    '(begin
+       (use-modules (ice-9 match))
+       (match (command-line)
+         ((_ out bash)
+          (let ((bin-dir    (string-append out "/bin"))
+                (guile      (string-append out "/bin/guile"))
+                (guile-real (string-append out "/bin/.guile-real"))
+                ;; We must avoid using a bare dollar sign in this code,
+                ;; because it would be interpreted by the shell.
+                (dollar     (string (integer->char 36))))
+            (chmod bin-dir #o755)
+            (rename-file guile guile-real)
+            (call-with-output-file guile
+              (lambda (p)
+                (format p "\
 #!~a
 export GUILE_SYSTEM_PATH=~a/share/guile/2.0
 export GUILE_SYSTEM_COMPILED_PATH=~a/lib/guile/2.0/ccache
 exec -a \"~a0\" ~a \"~a@\"\n"
-                              bash out out dollar guile-real dollar)))
-                  (chmod guile   #o555)
-                  (chmod bin-dir #o555))))))
-         (builder
-          (add-text-to-store store
-                             "build-bootstrap-guile.sh"
-                             (format #f "
+                        bash out out dollar guile-real dollar)))
+            (chmod guile   #o555)
+            (chmod bin-dir #o555))))))
+
+  (mlet* %store-monad ((tar   (->store "tar"))
+                       (xz    (->store "xz"))
+                       (mkdir (->store "mkdir"))
+                       (bash  (->store "bash"))
+                       (guile (download-bootstrap-guile system))
+                       (wrapper -> (make-guile-wrapper bash guile))
+                       (builder
+                        (text-file "build-bootstrap-guile.sh"
+                                   (format #f "
 echo \"unpacking bootstrap Guile to '$out'...\"
 ~a $out
 cd $out
@@ -441,19 +442,19 @@ $out/bin/guile -c ~s $out ~a
 
 # Sanity check.
 $out/bin/guile --version~%"
-                                     (derivation->output-path mkdir)
-                                     (derivation->output-path xz)
-                                     (derivation->output-path tar)
-                                     (format #f "~s" make-guile-wrapper)
-                                     (derivation->output-path bash)))))
-    (derivation store name
-                (derivation->output-path bash) `(,builder)
-                #:system system
-                #:inputs (map derivation-input
-                              (list bash mkdir tar xz guile))
-                #:sources (list builder)
-                #:env-vars `(("GUILE_TARBALL"
-                              . ,(derivation->output-path guile))))))
+                                           (derivation->output-path mkdir)
+                                           (derivation->output-path xz)
+                                           (derivation->output-path tar)
+                                           (object->string wrapper)
+                                           (derivation->output-path bash)))))
+    (raw-derivation name
+                    (derivation->output-path bash) `(,builder)
+                    #:system system
+                    #:inputs (map derivation-input
+                                  (list bash mkdir tar xz guile))
+                    #:sources (list builder)
+                    #:env-vars `(("GUILE_TARBALL"
+                                  . ,(derivation->output-path guile))))))
 
 (define* (make-raw-bag name
                        #:key source inputs native-inputs outputs

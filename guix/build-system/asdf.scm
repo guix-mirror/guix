@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,8 @@
   #:use-module (guix utils)
   #:use-module (guix memoization)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
@@ -92,7 +94,7 @@
          (build asdf-build/source)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (asdf-build/source store name inputs
+(define* (asdf-build/source name inputs
                             #:key source outputs
                             (phases '(@ (guix build asdf-build-system)
                                         %standard-phases/source))
@@ -102,36 +104,23 @@
                             (imported-modules %asdf-build-system-modules)
                             (modules %asdf-build-modules))
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (asdf-build/source #:name ,name
-                          #:source ,(match (assoc-ref inputs "source")
-                                      (((? derivation? source))
-                                       (derivation->output-path source))
-                                      ((source) source)
-                                      (source source))
-                          #:system ,system
-                          #:phases ,phases
-                          #:outputs %outputs
-                          #:search-paths ',(map search-path-specification->sexp
-                                                search-paths)
-                          #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
+          (asdf-build/source #:name #$name
+                             #:source #+source
+                             #:system #$system
+                             #:phases #$phases
+                             #:outputs #$(outputs->gexp outputs)
+                             #:search-paths '#$(map search-path-specification->sexp
+                                                    search-paths)
+                             #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define* (package-with-build-system from-build-system to-build-system
                                     from-prefix to-prefix
@@ -277,19 +266,19 @@ set up using CL source package conventions."
            (arguments (strip-keyword-arguments private-keywords arguments))))))
 
 (define (asdf-build lisp-type)
-  (lambda* (store name inputs
-                  #:key source outputs
-                  (tests? #t)
-                  (asd-files ''())
-                  (asd-systems ''())
-                  (test-asd-file #f)
-                  (phases '(@ (guix build asdf-build-system)
-                              %standard-phases))
-                  (search-paths '())
-                  (system (%current-system))
-                  (guile #f)
-                  (imported-modules %asdf-build-system-modules)
-                  (modules %asdf-build-modules))
+  (lambda* (name inputs
+                 #:key source outputs
+                 (tests? #t)
+                 (asd-files ''())
+                 (asd-systems ''())
+                 (test-asd-file #f)
+                 (phases '(@ (guix build asdf-build-system)
+                             %standard-phases))
+                 (search-paths '())
+                 (system (%current-system))
+                 (guile #f)
+                 (imported-modules %asdf-build-system-modules)
+                 (modules %asdf-build-modules))
 
     ;; FIXME: The definition of 'systems' is pretty hacky.
     ;; Is there a more elegant way to do it?
@@ -300,48 +289,35 @@ set up using CL source package conventions."
               (string-drop
                ;; NAME is the value returned from `package-full-name'.
                (hyphen-separated-name->name+version name)
-               (1+ (string-length lisp-type))))) ; drop the "<lisp>-" prefix.
+               (1+ (string-length lisp-type)))))  ; drop the "<lisp>-" prefix.
           asd-systems))
 
     (define builder
-      `(begin
-         (use-modules ,@modules)
-         (parameterize ((%lisp (string-append
-                                (assoc-ref %build-inputs ,lisp-type)
-                                "/bin/" ,lisp-type))
-                        (%lisp-type ,lisp-type))
-           (asdf-build #:name ,name
-                       #:source ,(match (assoc-ref inputs "source")
-                                   (((? derivation? source))
-                                    (derivation->output-path source))
-                                   ((source) source)
-                                   (source source))
-                       #:asd-files ,asd-files
-                       #:asd-systems ,systems
-                       #:test-asd-file ,test-asd-file
-                       #:system ,system
-                       #:tests? ,tests?
-                       #:phases ,phases
-                       #:outputs %outputs
-                       #:search-paths ',(map search-path-specification->sexp
-                                             search-paths)
-                       #:inputs %build-inputs))))
+      (with-imported-modules imported-modules
+        #~(begin
+            (use-modules #$@modules)
+            (parameterize ((%lisp (string-append
+                                   (assoc-ref %build-inputs #$lisp-type)
+                                   "/bin/" #$lisp-type))
+                           (%lisp-type #$lisp-type))
+              (asdf-build #:name #$name
+                          #:source #+source
+                          #:asd-files #$asd-files
+                          #:asd-systems #$systems
+                          #:test-asd-file #$test-asd-file
+                          #:system #$system
+                          #:tests? #$tests?
+                          #:phases #$phases
+                          #:outputs #$(outputs->gexp outputs)
+                          #:search-paths '#$(map search-path-specification->sexp
+                                                 search-paths)
+                          #:inputs #$(input-tuples->gexp inputs))))))
 
-    (define guile-for-build
-      (match guile
-        ((? package?)
-         (package-derivation store guile system #:graft? #f))
-        (#f
-         (let* ((distro (resolve-interface '(gnu packages commencement)))
-                (guile (module-ref distro 'guile-final)))
-           (package-derivation store guile system #:graft? #f)))))
-
-    (build-expression->derivation store name builder
-                                  #:inputs inputs
-                                  #:system system
-                                  #:modules imported-modules
-                                  #:outputs outputs
-                                  #:guile-for-build guile-for-build)))
+    (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                    system #:graft? #f)))
+      (gexp->derivation name builder
+                        #:system system
+                        #:guile-for-build guile))))
 
 (define asdf-build-system/sbcl
   (build-system

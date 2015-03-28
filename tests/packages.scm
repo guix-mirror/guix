@@ -868,9 +868,9 @@
                         (system system) (target target)
                         (build-inputs inputs)
                         (build
-                         (lambda* (store name inputs
-                                         #:key outputs system search-paths)
-                           search-paths)))))))
+                         (lambda* (name inputs
+                                        #:key outputs system search-paths)
+                           (abort-to-prompt p search-paths))))))))
          (x (list (search-path-specification
                    (variable "GUILE_LOAD_PATH")
                    (files '("share/guile/site/2.0")))
@@ -1170,11 +1170,11 @@
                        (bag (name name) (system system) (target target)
                             (build-inputs native-inputs)
                             (host-inputs inputs)
-                            (build (lambda* (store name inputs
-                                                   #:key system target
-                                                   #:allow-other-keys)
-                                     (build-expression->derivation
-                                      store "foo" '(mkdir %output))))))))
+                            (build (lambda* (name inputs
+                                                  #:key system target
+                                                  #:allow-other-keys)
+                                     (gexp->derivation "foo"
+                                                       #~(mkdir #$output))))))))
          (bs    (build-system
                   (name 'build-system-without-cross-compilation)
                   (description "Does not support cross compilation.")

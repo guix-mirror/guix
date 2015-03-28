@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -55,7 +57,7 @@ registry."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:node #:inputs #:native-inputs))
+    '(#:target #:node #:inputs #:native-inputs))
 
   (and (not target)                    ;XXX: no cross-compilation
        (bag
@@ -74,8 +76,9 @@ registry."
          (build node-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (node-build store name inputs
+(define* (node-build name inputs
                      #:key
+                     source
                      (npm-flags ''())
                      (tests? #t)
                      (phases '(@ (guix build node-build-system)
@@ -91,40 +94,25 @@ registry."
                                 (guix build utils))))
   "Build SOURCE using NODE and INPUTS."
   (define builder
-    `(begin
-       (use-modules ,@modules)
-       (node-build #:name ,name
-                   #:source ,(match (assoc-ref inputs "source")
-                               (((? derivation? source))
-                                (derivation->output-path source))
-                               ((source)
-                                source)
-                               (source
-                                source))
-                   #:system ,system
-                   #:npm-flags ,npm-flags
-                   #:tests? ,tests?
-                   #:phases ,phases
-                   #:outputs %outputs
-                   #:search-paths ',(map search-path-specification->sexp
-                                         search-paths)
-                   #:inputs %build-inputs)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
+          (node-build #:name #$name
+                      #:source #+source
+                      #:system #$system
+                      #:npm-flags #$npm-flags
+                      #:tests? #$tests?
+                      #:phases #$phases
+                      #:outputs #$(outputs->gexp outputs)
+                      #:search-paths '#$(map search-path-specification->sexp
+                                             search-paths)
+                      #:inputs #$(input-tuples->gexp inputs)))))
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
-
-  (build-expression->derivation store name builder
-                                #:inputs inputs
-                                #:system system
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build))
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:guile-for-build guile)))
 
 (define node-build-system
   (build-system

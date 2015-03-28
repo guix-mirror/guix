@@ -52,6 +52,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages xml)
+  #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -3375,7 +3376,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
    ;; if 'allowed-references' were per-output.
    (arguments
     `(#:allowed-references
-      ((,gcc-boot0 "lib")
+      (,(gexp-input gcc-boot0 "lib")
        ,(kernel-headers-boot0)
        ,static-bash-for-glibc
        ,@(if (hurd-system?)

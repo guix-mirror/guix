@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2021 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,9 +19,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system meson)
-  #:use-module (guix store)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
-  #:use-module (guix derivations)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -66,7 +68,7 @@
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    `(#:source #:meson #:ninja #:inputs #:native-inputs #:outputs #:target))
+    `(#:meson #:ninja #:inputs #:native-inputs #:outputs #:target))
 
   (and (not target) ;; TODO: add support for cross-compilation.
        (bag
@@ -85,8 +87,9 @@
          (build meson-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
-(define* (meson-build store name inputs
-                      #:key (guile #f)
+(define* (meson-build name inputs
+                      #:key
+                      guile source
                       (outputs '("out"))
                       (configure-flags ''())
                       (search-paths '())
@@ -114,76 +117,48 @@
                       disallowed-references)
   "Build SOURCE using MESON, and with INPUTS, assuming that SOURCE
 has a 'meson.build' file."
-
-  ;; TODO: Copied from build-system/gnu, factorize this!
-  (define canonicalize-reference
-    (match-lambda
-     ((? package? p)
-      (derivation->output-path (package-derivation store p system
-                                                   #:graft? #f)))
-     (((? package? p) output)
-      (derivation->output-path (package-derivation store p system
-                                                   #:graft? #f)
-                               output))
-     ((? string? output)
-      output)))
-
   (define builder
-    `(let ((build-phases (if ,glib-or-gtk?
-                             ,phases
-                             (modify-phases ,phases
-                               (delete 'glib-or-gtk-compile-schemas)
-                               (delete 'glib-or-gtk-wrap)))))
-       (use-modules ,@modules)
-       (meson-build #:source ,(match (assoc-ref inputs "source")
-                                (((? derivation? source))
-                                 (derivation->output-path source))
-                                ((source)
-                                 source)
-                                (source
-                                 source))
-                    #:system ,system
-                    #:outputs %outputs
-                    #:inputs %build-inputs
-                    #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
-                    #:phases build-phases
-                    #:configure-flags ,configure-flags
-                    #:build-type ,build-type
-                    #:tests? ,tests?
-                    #:test-target ,test-target
-                    #:parallel-build? ,parallel-build?
-                    #:parallel-tests? ,parallel-tests?
-                    #:validate-runpath? ,validate-runpath?
-                    #:patch-shebangs? ,patch-shebangs?
-                    #:strip-binaries? ,strip-binaries?
-                    #:strip-flags ,strip-flags
-                    #:strip-directories ,strip-directories
-                    #:elf-directories ,elf-directories)))
+    (with-imported-modules imported-modules
+      #~(begin
+          (use-modules #$@modules)
 
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system #:graft? #f))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages commencement)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system #:graft? #f)))))
+          (define build-phases
+            #$(if glib-or-gtk?
+                  phases
+                  #~(modify-phases #$phases
+                      (delete 'glib-or-gtk-compile-schemas)
+                      (delete 'glib-or-gtk-wrap))))
 
-  (build-expression->derivation store name builder
-                                #:system system
-                                #:inputs inputs
-                                #:modules imported-modules
-                                #:outputs outputs
-                                #:guile-for-build guile-for-build
-                                #:allowed-references
-                                (and allowed-references
-                                     (map canonicalize-reference
-                                          allowed-references))
-                                #:disallowed-references
-                                (and disallowed-references
-                                     (map canonicalize-reference
-                                          disallowed-references))))
+          #$(with-build-variables inputs outputs
+              #~(meson-build #:source #+source
+                             #:system #$system
+                             #:outputs %outputs
+                             #:inputs %build-inputs
+                             #:search-paths '#$(map search-path-specification->sexp
+                                                    search-paths)
+                             #:phases build-phases
+                             #:configure-flags #$configure-flags
+                             #:build-type #$build-type
+                             #:tests? #$tests?
+                             #:test-target #$test-target
+                             #:parallel-build? #$parallel-build?
+                             #:parallel-tests? #$parallel-tests?
+                             #:validate-runpath? #$validate-runpath?
+                             #:patch-shebangs? #$patch-shebangs?
+                             #:strip-binaries? #$strip-binaries?
+                             #:strip-flags #$strip-flags
+                             #:strip-directories #$strip-directories
+                             #:elf-directories #$elf-directories)))))
+
+  (mlet %store-monad ((guile (package->derivation (or guile (default-guile))
+                                                  system #:graft? #f)))
+    (gexp->derivation name builder
+                      #:system system
+                      #:target #f
+                      #:substitutable? substitutable?
+                      #:allowed-references allowed-references
+                      #:disallowed-references disallowed-references
+                      #:guile-for-build guile)))
 
 (define meson-build-system
   (build-system

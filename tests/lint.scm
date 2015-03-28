@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
@@ -432,7 +432,7 @@
       (single-lint-warning-message (check-patch-headers pkg)))))
 
 (test-equal "derivation: invalid arguments"
-  "failed to create x86_64-linux derivation: (wrong-type-arg \"map\" \"Wrong type argument: ~S\" (invalid-module) ())"
+  "failed to create x86_64-linux derivation: (match-error \"match\" \"no matching pattern\" invalid-module)"
   (match (let ((pkg (dummy-package "x"
                                    (arguments
                                     '(#:imported-modules (invalid-module))))))
