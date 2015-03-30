@@ -24,6 +24,7 @@
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
                                fsf-free isc))
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -93,6 +94,13 @@
                (base32
                 "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags
+                 '(;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
+                   ,@(if (%current-target-system)
+                         '()
+                         (let ((triplet
+                                (nix-system->gnu-triplet (%current-system))))
+                           (list (string-append "--build=" triplet)))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
     (description "liba52 is a library for decoding ATSC A/52 streams.  The
