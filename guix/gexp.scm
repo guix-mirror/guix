@@ -179,6 +179,15 @@ This is the declarative counterpart of the 'interned-file' monadic procedure."
   (output    gexp-input-output)      ;string
   (native?   gexp-input-native?))    ;Boolean
 
+(define (write-gexp-input input port)
+  (match input
+    (($ <gexp-input> thing output #f)
+     (format port "#<gexp-input ~s:~a>" thing output))
+    (($ <gexp-input> thing output #t)
+     (format port "#<gexp-input native ~s:~a>" thing output))))
+
+(set-record-type-printer! <gexp-input> write-gexp-input)
+
 (define* (gexp-input thing                        ;convenience procedure
                      #:optional (output "out")
                      #:key native?)
@@ -192,6 +201,13 @@ whether this should be considered a \"native\" input or not."
   (gexp-output name)
   gexp-output?
   (name gexp-output-name))
+
+(define (write-gexp-output output port)
+  (match output
+    (($ <gexp-output> name)
+     (format port "#<gexp-output ~a>" name))))
+
+(set-record-type-printer! <gexp-output> write-gexp-output)
 
 (define raw-derivation
   (store-lift derivation))
