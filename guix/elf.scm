@@ -1,6 +1,6 @@
 ;;; Guile ELF reader and writer
 
-;; Copyright (C)  2011, 2012, 2013, 2014 Free Software Foundation, Inc.
+;; Copyright (C)  2011, 2012, 2013, 2014, 2015 Free Software Foundation, Inc.
 
 ;;;; This library is free software; you can redistribute it and/or
 ;;;; modify it under the terms of the GNU Lesser General Public
@@ -571,6 +571,7 @@
      ((4) parse-elf32-program-header)
      ((8) parse-elf64-program-header)
      (else (error "unhandled pointer size")))
+   n
    (elf-bytes elf)
    (+ (elf-phoff elf) (* n (elf-phentsize elf)))
    (elf-byte-order elf)))
