@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +118,7 @@ STORE."
 
     (directory "/bin")
     (directory "/tmp" 0 0 #o1777)                 ; sticky bit
+    (directory "/var/tmp" 0 0 #o1777)
 
     (directory "/root" 0 0)                       ; an exception
     (directory "/home" 0 0)))
