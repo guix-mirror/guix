@@ -640,6 +640,7 @@ passed to @command{guix-daemon}."
 
   (with-monad %store-monad
     (return (service
+             (documentation "Run the Guix daemon.")
              (provision '(guix-daemon))
              (requirement '(user-processes))
              (start

@@ -38,6 +38,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/asciidoc.scm			\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
+  gnu/packages/audacity.scm			\
   gnu/packages/audio.scm			\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
@@ -146,6 +147,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/haskell.scm			\
   gnu/packages/hugs.scm				\
   gnu/packages/hurd.scm				\
+  gnu/packages/ibus.scm				\
   gnu/packages/icu4c.scm			\
   gnu/packages/idutils.scm			\
   gnu/packages/image.scm			\
@@ -180,6 +182,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lightning.scm			\
   gnu/packages/links.scm			\
   gnu/packages/linux.scm			\
+  gnu/packages/lirc.scm				\
   gnu/packages/lisp.scm				\
   gnu/packages/llvm.scm				\
   gnu/packages/lout.scm				\
@@ -219,7 +222,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/nutrition.scm			\
   gnu/packages/nvi.scm				\
   gnu/packages/ocaml.scm			\
-  gnu/packages/ocrad.scm			\
+  gnu/packages/ocr.scm				\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openbox.scm			\
   gnu/packages/openldap.scm			\
@@ -323,6 +326,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/base.scm				\
   gnu/services/dbus.scm				\
   gnu/services/dmd.scm				\
+  gnu/services/lirc.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
   gnu/services/xorg.scm				\
@@ -366,6 +370,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
   gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
+  gnu/packages/patches/audacity-fix-ffmpeg-binding.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
@@ -432,6 +437,13 @@ dist_patch_DATA =						\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
+  gnu/packages/patches/icecat-bug-1127780.patch			\
+  gnu/packages/patches/icecat-bug-1144991.patch			\
+  gnu/packages/patches/icecat-bug-1145870.patch			\
+  gnu/packages/patches/icecat-bug-1146339.patch			\
+  gnu/packages/patches/icecat-CVE-2015-0817.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0818-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0818-pt2.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
@@ -451,6 +463,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libvpx-fix-armhf-link.patch		\
   gnu/packages/patches/libvpx-fix-ssse3-quantize.patch		\
   gnu/packages/patches/libvpx-vp9-out-of-bounds-access.patch	\
+  gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua51-liblua-so.patch                    \
   gnu/packages/patches/luajit-no_ldconfig.patch			\
@@ -488,6 +501,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
+  gnu/packages/patches/portaudio-audacity-compat.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pybugz-encode-error.patch		\

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +24,9 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial))
 
 (define-public check
   (package
@@ -99,3 +102,43 @@ with a flexible variety of user interfaces.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
+
+(define-public catch-framework
+  (package
+    (name "catch")
+    (version "1.0.53")                  ;Sub-minor is the build number
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/philsquared/Catch")
+                    ;; Semi-arbitrary.  Contains mostly documentation fixes
+                    ;; since build 53.
+                    (commit "b9ec8a1")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "05iijiwjwcjbza7qamwd32d0jypi0lpywmilmmj2xh280mcl4dbd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let* ((source (assoc-ref %build-inputs "source"))
+                          (output (assoc-ref %outputs "out"))
+                          (incdir (string-append output "/include"))
+                          (docdir (string-append output "/share/doc/catch-"
+                                                 ,version)))
+                     (begin
+                       (for-each mkdir-p (list incdir docdir))
+                       (copy-file (string-append source
+                                                 "/single_include/catch.hpp")
+                                  (string-append incdir
+                                                 "/catch.hpp"))
+                       (copy-recursively (string-append source "/docs")
+                                         docdir))))))
+    (home-page "http://catch-lib.net/")
+    (synopsis "Automated test framework for C++ and Objective-C")
+    (description
+     "Catch stands for C++ Automated Test Cases in Headers and is a
+multi-paradigm automated test framework for C++ and Objective-C.")
+    (license boost1.0)))

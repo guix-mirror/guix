@@ -1621,3 +1621,48 @@ library.")
     ;; This is the license of the rsvg bindings.  The license of each module
     ;; of gnome-python-desktop is given in 'COPYING'.
     (license license:lgpl2.1+)))
+
+(define-public gnome-mines
+  (package
+    (name "gnome-mines")
+    (version "3.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0nbgvzlsznn3v83pdcx2d52r4ig1mvaijh633rjddx9rgq2ja7kv"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true")))))
+         (add-after install wrap-pixbuf
+                    ;; Use librsvg's loaders.cache to support SVG files.
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out    (assoc-ref outputs "out"))
+                             (prog   (string-append out "/bin/gnome-mines"))
+                             (rsvg   (assoc-ref inputs "librsvg"))
+                             (pixbuf (find-files rsvg "^loaders\\.cache$")))
+                        (wrap-program prog
+                          `("GDK_PIXBUF_MODULE_FILE" = ,pixbuf))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Mines")
+    (synopsis "Minesweeper game")
+    (description
+     "Mines (previously gnomine) is a puzzle game where you locate mines
+floating in an ocean using only your brain and a little bit of luck.")
+    (license license:gpl2+)))

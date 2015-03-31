@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
@@ -86,21 +87,24 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.3.4")
+    (version "6.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0hcplcayyjf42d8ygzla6142b5dq4ybq4wg3n3cgx3b5yfhvic85"))))
+               "13i4zwx6gaibc4j79wd0hgxysw8ibxz9c018zxhydnxlyadzcnri"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
-              ("libltdl" ,libltdl)))
+              ("libltdl" ,libltdl)
+              ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ncurses="
-                            (assoc-ref %build-inputs "ncurses")))
+                            (assoc-ref %build-inputs "ncurses"))
+             (string-append "--with-sqlite3="
+                            (assoc-ref %build-inputs "sqlite")))
 
        #:phases (alist-cons-after
                  'install 'post-install

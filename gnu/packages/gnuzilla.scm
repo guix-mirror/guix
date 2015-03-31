@@ -224,7 +224,14 @@ standards.")
                           version "/" name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1rr4axghaypdkrf60i1qp6dz4cd29ya02fs3vyffvp4x9kgcq2dd"))))
+        "1rr4axghaypdkrf60i1qp6dz4cd29ya02fs3vyffvp4x9kgcq2dd"))
+      (patches (map search-patch '("icecat-bug-1127780.patch"
+                                   "icecat-CVE-2015-0817.patch"
+                                   "icecat-bug-1144991.patch"
+                                   "icecat-CVE-2015-0818-pt1.patch"
+                                   "icecat-bug-1145870.patch"
+                                   "icecat-CVE-2015-0818-pt2.patch"
+                                   "icecat-bug-1146339.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

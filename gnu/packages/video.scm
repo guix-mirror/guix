@@ -24,12 +24,14 @@
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
                                fsf-free isc))
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
@@ -56,6 +58,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -69,6 +72,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -90,6 +94,13 @@
                (base32
                 "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags
+                 '(;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
+                   ,@(if (%current-target-system)
+                         '()
+                         (let ((triplet
+                                (nix-system->gnu-triplet (%current-system))))
+                           (list (string-append "--build=" triplet)))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
     (description "liba52 is a library for decoding ATSC A/52 streams.  The
@@ -194,6 +205,35 @@ that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
 developed according to the official standards for DV video: IEC 61834 and
 SMPTE 314M.")
     (license lgpl2.1+)))
+
+(define-public libva
+  (package
+    (name "libva")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.freedesktop.org/software/vaapi/releases/libva/libva-"
+             version".tar.bz2"))
+       (sha256
+        (base32 "01d01mm9fgpwzqycmjjcj3in3vvzcibi3f64icsw2sksmmgb4495"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("mesa" ,mesa)))
+    (home-page "http://www.freedesktop.org/wiki/Software/vaapi/")
+    (synopsis "Video acceleration library")
+    (description "The main motivation for VA-API (Video Acceleration API) is
+to enable hardware accelerated video decode/encode at various
+entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
+standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
+    (license expat)))
 
 (define-public ffmpeg
   (package
@@ -636,6 +676,91 @@ several areas.")
     ;; is under lgpl3+, thus the whole project becomes gpl3+.
     (license gpl3+)))
 
+(define-public mpv
+  (package
+    (name "mpv")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mpv-player/mpv/archive/v" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1kw9hr957cxqgm2i94bgqc6sskm6bwhm0akzckilhs460b43h409"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system waf-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-docutils" ,python-docutils)))
+    ;; Missing features: libguess, LIRC, Wayland, VDPAU, V4L2
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("enca" ,enca)
+       ("ffmpeg" ,ffmpeg)
+       ("jack" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("lcms" ,lcms)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
+       ("libbs2b" ,libbs2b)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdvdread" ,libdvdread)
+       ("libdvdnav" ,libdvdnav)
+       ("libjpeg" ,libjpeg)
+       ("libva" ,libva)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxv" ,libxv)
+       ("lua" ,lua)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("pulseaudio" ,pulseaudio)
+       ("rsound" ,rsound)
+       ("samba" ,samba)
+       ("vapoursynth" ,vapoursynth)
+       ("waf" ,(origin
+                 (method url-fetch)
+                 ;; Keep this in sync with the version in the bootstrap.py
+                 ;; script of the source tarball.
+                 (uri "http://www.freehackers.org/~tnagy/release/waf-1.8.4")
+                 (sha256
+                  (base32
+                   "1a7skwgpl91adhcwlmdr76xzdpidh91hvcmj34zz6548bpx3a87h"))))
+       ("youtube-dl" ,youtube-dl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          configure setup-waf
+          (lambda* (#:key inputs #:allow-other-keys)
+            (copy-file (assoc-ref inputs "waf") "waf")
+            (setenv "CC" "gcc")))
+         (add-before
+          configure patch-wscript
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "wscript"
+              ;; XXX Remove this when our Samba package provides a .pc file.
+              (("check_pkg_config\\('smbclient'\\)")
+               "check_cc(lib='smbclient')")
+              ;; XXX Remove this when our Lua package provides a .pc file.
+              (("check_lua")
+               "check_cc(lib='lua')")))))
+       ;; No check function defined.
+       #:tests? #f))
+    (home-page "http://mpv.io/")
+    (synopsis "Audio and video player")
+    (description "mpv is a general-purpose audio and video player.  It is a
+fork of mplayer2 and MPlayer.  It shares some features with the former
+projects while introducing many more.")
+    (license gpl2+)))
+
 (define-public libvpx
   (package
     (name "libvpx")
@@ -1064,6 +1189,47 @@ capabilities.")
                   (string-append out "/share/ADM_addons"))))
             (alist-delete 'install
                %standard-phases)))))))))
+
+(define-public vapoursynth
+  (package
+    (name "vapoursynth")
+    (version "26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/vapoursynth/vapoursynth/archive/R"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1qbg5kg0kgrxldd0ckn1s7vy7vx2ig8nqzv6djp38fxccpzw3x9k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cython" ,python-cython)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libass" ,libass)
+       ("tesseract-ocr" ,tesseract-ocr)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          unpack autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))))
+    (home-page "http://www.vapoursynth.com/")
+    (synopsis "Video processing framework")
+    (description "VapourSynth is a C++ library and Python module for video
+manipulation.  It aims to be a modern rewrite of Avisynth, supporting
+multithreading, generalized colorspaces, per frame properties, and videos with
+format changes.")
+    ;; As seen from the source files.
+    (license lgpl2.1+)))
 
 (define-public xvid
   (package

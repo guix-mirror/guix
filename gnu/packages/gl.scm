@@ -84,7 +84,10 @@ as ASCII text.")
 	      ("libxxf86vm" ,libxxf86vm)
 	      ("inputproto" ,inputproto)
 	      ("xinput" ,xinput)))
-    (propagated-inputs `(("glu" ,glu)))
+    (propagated-inputs
+     ;; Headers from Mesa and GLU are needed.
+     `(("glu" ,glu)
+       ("mesa" ,mesa)))
     (home-page "http://freeglut.sourceforge.net/")
     (synopsis "Alternative to the OpenGL Utility Toolkit (GLUT)")
     (description

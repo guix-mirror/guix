@@ -201,7 +201,22 @@ dictionaries.  HexChat can be extended with multiple addons.")
         'configure 'post-configure
         (lambda _
           (substitute* "src/ngircd/Makefile"
-            (("/bin/sh") (which "sh"))))
+            (("/bin/sh") (which "sh")))
+          ;; The default getpid.sh does a sloppy grep over 'ps -ax' output,
+          ;; which fails arbitrarily.
+          (with-output-to-file "src/testsuite/getpid.sh"
+            (lambda ()
+              (display
+               (string-append
+                "#!" (which "sh") "\n"
+                "ps -C \"$1\" -o pid=\n"))))
+          ;; Our variant of getpid.sh does not work for interpreter names if a
+          ;; shebang script is run directly as "./foo", so patch cases where
+          ;; the test suite relies on this.
+          (substitute* "src/testsuite/start-server.sh"
+            ;; It runs 'getpid.sh sh' to test if it works at all.  Run it on
+            ;; 'make' instead.
+            (("getpid.sh sh") "getpid.sh make")))
         %standard-phases)))
     (home-page "http://ngircd.barton.de/")
     (synopsis "Lightweight Internet Relay Chat server for small networks")

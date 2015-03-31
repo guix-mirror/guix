@@ -19,6 +19,7 @@
 (define-module (gnu packages bioinformatics)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -401,6 +402,46 @@ files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
 
+(define-public cutadapt
+  (package
+    (name "cutadapt")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/marcelm/cutadapt/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "161bp87y6gd6r5bmvjpn2b1k942i3fizfpa139f0jn6jv1wcp5h5"))))
+    (build-system python-build-system)
+    (arguments
+     ;; tests must be run after install
+     `(#:phases (alist-cons-after
+                 'install 'check
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (setenv "PYTHONPATH"
+                           (string-append
+                            (getenv "PYTHONPATH")
+                            ":" (assoc-ref outputs "out")
+                            "/lib/python"
+                            (string-take (string-take-right
+                                          (assoc-ref inputs "python") 5) 3)
+                            "/site-packages"))
+                   (zero? (system* "nosetests" "-P" "tests")))
+                 (alist-delete 'check %standard-phases))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://code.google.com/p/cutadapt/")
+    (synopsis "Remove adapter sequences from nucleotide sequencing reads")
+    (description
+     "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
+other types of unwanted sequence from high-throughput sequencing reads.")
+    (license license:expat)))
+
 (define-public flexbar
   (package
     (name "flexbar")
@@ -709,20 +750,25 @@ files and writing bioinformatics applications.")
             (chdir "pbtranscript-tofu/pbtranscript/")
             ;; Delete clutter
             (delete-file-recursively "dist/")
+            (delete-file-recursively "build/")
             (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
             (delete-file-recursively "pbtools.pbtranscript.egg-info")
             (delete-file "Cython-0.20.1.tar.gz")
             (delete-file "setuptools_cython-0.2.1-py2.7.egg")
             (delete-file "setuptools_cython-0.2.1.tar.gz")
             (delete-file "setup.cfg")
+            (for-each delete-file
+                      (find-files "." "\\.so$"))
             ;; files should be writable for install phase
             (for-each (lambda (f) (chmod f #o755))
-                      (find-files "." "\\.py")))
+                      (find-files "." "\\.py$")))
           %standard-phases)))
       (inputs
        `(("python-cython" ,python2-cython)
          ("python-numpy" ,python2-numpy)
          ("python-bx-python" ,python2-bx-python)
+         ("python-networkx" ,python2-networkx)
+         ("python-scipy" ,python2-scipy)
          ("python-pbcore" ,python2-pbcore)))
       (native-inputs
        `(("python-nose" ,python2-nose)
@@ -929,3 +975,43 @@ chimeric (fusion) transcripts, and is also capable of mapping full-length RNA
 sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
+
+(define-public vcftools
+  (package
+    (name "vcftools")
+    (version "0.1.12b")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/vcftools/vcftools_"
+                     version ".tar.gz"))
+              (sha256
+               (base32
+                "148al9h7f8g8my2qdnpax51kdd2yjrivlx6frvakf4lz5r8j88wx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list
+                     (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                     (string-append "MANDIR=" (assoc-ref %outputs "out")
+                                    "/share/man/man1"))
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-manpage-install
+        (lambda _
+          (substitute* "Makefile"
+            (("cp \\$\\{PREFIX\\}/cpp/vcftools.1") "cp ./cpp/vcftools.1")))
+        (alist-delete 'configure %standard-phases))))
+    (inputs
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
+    (home-page "http://vcftools.sourceforge.net/")
+    (synopsis "Tools for working with VCF files")
+    (description
+     "VCFtools is a program package designed for working with VCF files, such
+as those generated by the 1000 Genomes Project.  The aim of VCFtools is to
+provide easily accessible methods for working with complex genetic variation
+data in the form of VCF files.")
+    ;; The license is declared as LGPLv3 in the README and
+    ;; at http://vcftools.sourceforge.net/license.html
+    (license license:lgpl3)))

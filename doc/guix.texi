@@ -154,6 +154,7 @@ Services
 * Base Services::               Essential system services.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Various Services::            Other services.
 
 Packaging Guidelines
 
@@ -2489,19 +2490,23 @@ Gexps are meant to be written to a file and run or manipulated by other
 processes.
 
 @item
-When a package or derivation is unquoted inside a gexp, the result is as
-if its output file name had been introduced.
-
-Actually this mechanism is not limited to package and derivation
-objects; @dfn{compilers} able to ``lower'' other high-level objects to
-derivations can be defined, such that these objects can also be inserted
-into gexps.
+When a high-level object such as a package or derivation is unquoted
+inside a gexp, the result is as if its output file name had been
+introduced.
 
 @item
 Gexps carry information about the packages or derivations they refer to,
 and these dependencies are automatically added as inputs to the build
 processes that use them.
 @end itemize
+
+Actually this mechanism is not limited to package and derivation
+objects; @dfn{compilers} able to ``lower'' other high-level objects to
+derivations can be defined, such that these objects can also be inserted
+into gexps.  Another useful type of high-level object that can be
+inserted in a gexp is @dfn{local files}, which allows files from the
+local file system to be added to the store and referred to by
+derivations and such (see @code{local-file} below.)
 
 To illustrate the idea, here is an example of a gexp:
 
@@ -2562,24 +2567,24 @@ or more of the following forms:
 @table @code
 @item #$@var{obj}
 @itemx (ungexp @var{obj})
-Introduce a reference to @var{obj}.  @var{obj} may be a package or a
+Introduce a reference to @var{obj}.  @var{obj} may have one of the
+supported types, for example a package or a
 derivation, in which case the @code{ungexp} form is replaced by its
 output file name---e.g., @code{"/gnu/store/@dots{}-coreutils-8.22}.
 
-If @var{obj} is a list, it is traversed and any package or derivation
-references are substituted similarly.
+If @var{obj} is a list, it is traversed and references to supported
+objects are substituted similarly.
 
 If @var{obj} is another gexp, its contents are inserted and its
 dependencies are added to those of the containing gexp.
 
 If @var{obj} is another kind of object, it is inserted as is.
 
-@item #$@var{package-or-derivation}:@var{output}
-@itemx (ungexp @var{package-or-derivation} @var{output})
+@item #$@var{obj}:@var{output}
+@itemx (ungexp @var{obj} @var{output})
 This is like the form above, but referring explicitly to the
-@var{output} of @var{package-or-derivation}---this is useful when
-@var{package-or-derivation} produces multiple outputs (@pxref{Packages
-with Multiple Outputs}).
+@var{output} of @var{obj}---this is useful when @var{obj} produces
+multiple outputs (@pxref{Packages with Multiple Outputs}).
 
 @item #+@var{obj}
 @itemx #+@var{obj}:output
@@ -2664,6 +2669,20 @@ refer to.  Any reference to another store item will lead to a build error.
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
+@deffn {Scheme Procedure} local-file @var{file} [@var{name}] @
+   [#:recursive? #t]
+Return an object representing local file @var{file} to add to the store; this
+object can be used in a gexp.  @var{file} will be added to the store under @var{name}--by
+default the base name of @var{file}.
+
+When @var{recursive?} is true, the contents of @var{file} are added recursively; if @var{file}
+designates a flat file and @var{recursive?} is true, its contents are added, and its
+permission bits are kept.
+
+This is the declarative counterpart of the @code{interned-file} monadic
+procedure (@pxref{The Store Monad, @code{interned-file}}).
+@end deffn
+
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
 Return an executable script @var{name} that runs @var{exp} using
 @var{guile} with @var{modules} in its search path.
@@ -2701,8 +2720,9 @@ or a subset thereof.
 @deffn {Monadic Procedure} text-file* @var{name} @var{text} @dots{}
 Return as a monadic value a derivation that builds a text file
 containing all of @var{text}.  @var{text} may list, in addition to
-strings, packages, derivations, and store file names; the resulting
-store file holds references to all these.
+strings, objects of any type that can be used in a gexp: packages,
+derivations, local file objects, etc.  The resulting store file holds
+references to all these.
 
 This variant should be preferred over @code{text-file} anytime the file
 to create will reference items from the store.  This is typically the
@@ -4350,6 +4370,7 @@ declaration.
 * Base Services::               Essential system services.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Various Services::            Other services.
 @end menu
 
 @node Base Services
@@ -4684,6 +4705,25 @@ this order---e.g., @code{("modesetting" "vesa")}.
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
+@end deffn
+
+@node Various Services
+@subsubsection Various Services
+
+The @code{(gnu services lirc)} module provides the following service.
+
+@deffn {Monadic Procedure} lirc-service [#:lirc lirc] @
+       [#:device #f] [#:driver #f] [#:config-file #f] @
+       [#:extra-options '()]
+Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
+decodes infrared signals from remote controls.
+
+Optionally, @var{device}, @var{driver} and @var{config-file}
+(configuration file name) may be specified.  See @command{lircd} manual
+for details.
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{lircd}.
 @end deffn
 
 @node Setuid Programs

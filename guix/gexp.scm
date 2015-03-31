@@ -31,6 +31,8 @@
 
             gexp-input
             gexp-input?
+            local-file
+            local-file?
 
             gexp->derivation
             gexp->file
@@ -135,6 +137,37 @@ cross-compiling.)"
 
 
 ;;;
+;;; Local files.
+;;;
+
+(define-record-type <local-file>
+  (%local-file file name recursive?)
+  local-file?
+  (file       local-file-file)                    ;string
+  (name       local-file-name)                    ;string
+  (recursive? local-file-recursive?))             ;Boolean
+
+(define* (local-file file #:optional (name (basename file))
+                     #:key (recursive? #t))
+  "Return an object representing local file FILE to add to the store; this
+object can be used in a gexp.  FILE will be added to the store under NAME--by
+default the base name of FILE.
+
+When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
+designates a flat file and RECURSIVE? is true, its contents are added, and its
+permission bits are kept.
+
+This is the declarative counterpart of the 'interned-file' monadic procedure."
+  (%local-file file name recursive?))
+
+(define-gexp-compiler (local-file-compiler (file local-file?) system target)
+  ;; "Compile" FILE by adding it to the store.
+  (match file
+    (($ <local-file> file name recursive?)
+     (interned-file file name #:recursive? recursive?))))
+
+
+;;;
 ;;; Inputs & outputs.
 ;;;
 
@@ -171,12 +204,12 @@ the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
-                    ((and ((? struct? thing) sub-drv ...) input)
-                     (mlet* %store-monad ((lower -> (lookup-compiler thing))
-                                          (drv (lower thing system target)))
-                       (return `(,drv ,@sub-drv))))
-                    (input
-                     (return input)))
+                     (((? struct? thing) sub-drv ...)
+                      (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                                           (drv (lower thing system target)))
+                        (return `(,drv ,@sub-drv))))
+                     (input
+                      (return input)))
                    inputs))))
 
 (define* (lower-reference-graphs graphs #:key system target)
@@ -453,8 +486,13 @@ and in the current monad setting (system type, etc.)"
         (($ <gexp-input> (? struct? thing) output n?)
          (let ((lower  (lookup-compiler thing))
                (target (if (or n? native?) #f target)))
-           (mlet %store-monad ((drv (lower thing system target)))
-             (return (derivation->output-path drv output)))))
+           (mlet %store-monad ((obj (lower thing system target)))
+             ;; OBJ must be either a derivation or a store file name.
+             (return (match obj
+                       ((? derivation? drv)
+                        (derivation->output-path drv output))
+                       ((? string? file)
+                        file))))))
         (($ <gexp-input> x)
          (return x))
         (x
@@ -809,8 +847,9 @@ its search path."
 
 (define* (text-file* name #:rest text)
   "Return as a monadic value a derivation that builds a text file containing
-all of TEXT.  TEXT may list, in addition to strings, packages, derivations,
-and store file names; the resulting store file holds references to all these."
+all of TEXT.  TEXT may list, in addition to strings, objects of any type that
+can be used in a gexp: packages, derivations, local file objects, etc.  The
+resulting store file holds references to all these."
   (define builder
     (gexp (call-with-output-file (ungexp output "out")
             (lambda (port)

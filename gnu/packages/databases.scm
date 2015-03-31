@@ -38,7 +38,7 @@
   #:use-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          public-domain))
+                          bsd-2 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -541,3 +541,29 @@ Driver.")
    (license lgpl2.1+) 
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
+
+(define-public unqlite
+  (package
+    (name "unqlite")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              ;; Contains bug fixes against the official release, and has an
+              ;; autotooled build system.
+              (uri (string-append "https://github.com/aidin36/tocc/releases/"
+                                  "download/v1.0.0/"
+                                  "unqlite-unofficial-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sbpvhg15gadq0mpcy16q7k3rkg4b4dicpnn5xifpkpn02sqik3s"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f))          ;No check target
+    (home-page "http://www.unqlite.org")
+    (synopsis "In-memory key/value and document store")
+    (description
+     "UnQLite is an in-process software library which implements a
+self-contained, serverless, zero-configuration, transactional NoSQL
+database engine.  UnQLite is a document store database similar to
+MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
+similar to BerkelyDB, LevelDB, etc.")
+    (license bsd-2)))

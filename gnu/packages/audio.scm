@@ -1088,15 +1088,28 @@ portions of LAME.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))))
+        (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))
+       (patches (list (search-patch "portaudio-audacity-compat.patch")))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add ASIHPI.
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (arguments '(#:tests? #f))          ;no 'check' target
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       ;; Autoreconf is necessary because the audacity-compat patch modifies
+       ;; .in files.
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          (zero? (system* "autoreconf" "-vif")))
+        %standard-phases)
+       #:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
     (description
