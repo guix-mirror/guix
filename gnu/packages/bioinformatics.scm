@@ -767,6 +767,8 @@ files and writing bioinformatics applications.")
        `(("python-cython" ,python2-cython)
          ("python-numpy" ,python2-numpy)
          ("python-bx-python" ,python2-bx-python)
+         ("python-networkx" ,python2-networkx)
+         ("python-scipy" ,python2-scipy)
          ("python-pbcore" ,python2-pbcore)))
       (native-inputs
        `(("python-nose" ,python2-nose)
