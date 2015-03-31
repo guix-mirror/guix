@@ -3335,6 +3335,35 @@ interfaces in an easy and portable manner.")
 (define-public python2-netifaces
   (package-with-python2 python-netifaces))
 
+(define-public python-networkx
+  (package
+    (name "python-networkx")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/n/networkx/networkx-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0n8wy0yq1kmdq4wh68mlhwhkndvwzx48lg41a1z0sxxms0wfp033"))))
+    (build-system python-build-system)
+    ;; python-decorator is needed at runtime
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose" ,python-nose)))
+    (home-page "http://networkx.github.io/")
+    (synopsis "Python module for creating and manipulating graphs and networks")
+    (description
+      "NetworkX is a Python package for the creation, manipulation, and study
+of the structure, dynamics, and functions of complex networks.")
+    (license bsd-3)))
+
+(define-public python2-networkx
+  (package-with-python2 python-networkx))
+
 (define-public snakemake
   (package
     (name "snakemake")
