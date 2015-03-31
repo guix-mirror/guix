@@ -750,15 +750,18 @@ files and writing bioinformatics applications.")
             (chdir "pbtranscript-tofu/pbtranscript/")
             ;; Delete clutter
             (delete-file-recursively "dist/")
+            (delete-file-recursively "build/")
             (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
             (delete-file-recursively "pbtools.pbtranscript.egg-info")
             (delete-file "Cython-0.20.1.tar.gz")
             (delete-file "setuptools_cython-0.2.1-py2.7.egg")
             (delete-file "setuptools_cython-0.2.1.tar.gz")
             (delete-file "setup.cfg")
+            (for-each delete-file
+                      (find-files "." "\\.so$"))
             ;; files should be writable for install phase
             (for-each (lambda (f) (chmod f #o755))
-                      (find-files "." "\\.py")))
+                      (find-files "." "\\.py$")))
           %standard-phases)))
       (inputs
        `(("python-cython" ,python2-cython)
