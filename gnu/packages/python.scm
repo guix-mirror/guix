@@ -2837,6 +2837,34 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python2-cairocffi
   (package-with-python2 python-cairocffi))
 
+(define-public python-decorator
+  (package
+    (name "python-decorator")
+    (version "3.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/decorator/decorator-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0i2bnlkh0p9gs76hb28mafandcrig2fmv56w9ai6mshxwqn0083k"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; no test target
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/decorator/")
+    (synopsis "Python module to simplify usage of decorators")
+    (description
+      "The aim of the decorator module is to simplify the usage of decorators
+for the average programmer, and to popularize decorators usage giving examples
+of useful decorators, such as memoize, tracing, redirecting_stdout, locked,
+etc.  The core of this module is a decorator factory.")
+    (license license:expat)))
+
+(define-public python2-decorator
+  (package-with-python2 python-decorator))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
