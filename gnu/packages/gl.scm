@@ -149,7 +149,7 @@ Polygon meshes, and Extruded polygon meshes")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after unpack autogen
+         (add-after 'unpack 'autogen
           (lambda _
             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://github.com/divVerent/s2tc")
@@ -282,10 +282,10 @@ emulation to complete hardware acceleration for modern GPUs.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete configure)
-         (delete build)
-         (delete check)
-         (replace install
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (copy-recursively "include" (string-append
                                                  (assoc-ref outputs "out")
@@ -318,7 +318,7 @@ emulation to complete hardware acceleration for modern GPUs.")
      '(#:phases
        (modify-phases %standard-phases
          (replace
-          install
+          'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir-p (string-append out "/bin"))

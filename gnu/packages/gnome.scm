@@ -1639,11 +1639,11 @@ library.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/true
+         (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
                          (("/bin/true") (which "true")))))
-         (add-after install wrap-pixbuf
+         (add-after 'install 'wrap-pixbuf
                     ;; Use librsvg's loaders.cache to support SVG files.
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out    (assoc-ref outputs "out"))

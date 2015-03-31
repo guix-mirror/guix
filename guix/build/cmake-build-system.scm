@@ -73,8 +73,8 @@
   ;; Everything is as with the GNU Build System except for the `configure'
   ;; and 'check' phases.
   (modify-phases gnu:%standard-phases
-    (replace check check)
-    (replace configure configure)))
+    (replace 'check check)
+    (replace 'configure configure)))
 
 (define* (cmake-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)

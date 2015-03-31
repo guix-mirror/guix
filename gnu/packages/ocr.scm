@@ -76,7 +76,7 @@ it produces text in 8-bit or UTF-8 formats.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after
-          unpack autogen
+          'unpack 'autogen
           (lambda _
             (zero? (system* "sh" "autogen.sh")))))
        #:configure-flags

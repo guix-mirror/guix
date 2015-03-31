@@ -193,8 +193,8 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
         #:tests? #f
 
         #:phases (modify-phases %standard-phases
-                   (add-after install post-install ,post-install-phase)
-                   (add-after install install-headers
+                   (add-after 'install 'post-install ,post-install-phase)
+                   (add-after 'install 'install-headers
                               ,install-headers-phase))))
      (synopsis "The GNU Bourne-Again SHell")
      (description

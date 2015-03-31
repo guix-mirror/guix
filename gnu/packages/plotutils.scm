@@ -118,13 +118,13 @@ using the Cairo drawing library.")
      '(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (replace configure (lambda _ (chdir "src")))
-         (add-before install make-target-directories
+         (replace 'configure (lambda _ (chdir "src")))
+         (add-before 'install 'make-target-directories
                      (lambda* (#:key outputs #:allow-other-keys)
                        (let ((out (assoc-ref outputs "out")))
                          (mkdir-p (string-append out "/bin"))
                          #t)))
-         (add-after install install-prefabs
+         (add-after 'install 'install-prefabs
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (dir (string-append out

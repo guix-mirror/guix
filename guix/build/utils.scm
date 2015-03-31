@@ -446,13 +446,13 @@ an expression evaluating to a procedure."
 (define-syntax %modify-phases
   (syntax-rules (delete replace add-before add-after)
     ((_ phases (delete old-phase-name))
-     (alist-delete 'old-phase-name phases))
+     (alist-delete old-phase-name phases))
     ((_ phases (replace old-phase-name new-phase))
-     (alist-replace 'old-phase-name new-phase phases))
+     (alist-replace old-phase-name new-phase phases))
     ((_ phases (add-before old-phase-name new-phase-name new-phase))
-     (alist-cons-before 'old-phase-name 'new-phase-name new-phase phases))
+     (alist-cons-before old-phase-name new-phase-name new-phase phases))
     ((_ phases (add-after old-phase-name new-phase-name new-phase))
-     (alist-cons-after 'old-phase-name 'new-phase-name new-phase phases))))
+     (alist-cons-after old-phase-name new-phase-name new-phase phases))))
 
 
 ;;;

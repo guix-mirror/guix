@@ -123,12 +123,12 @@ installed with setuptools."
   ;; 'configure' and 'build' phases are not needed.  Everything is done during
   ;; 'install'.
   (modify-phases gnu:%standard-phases
-    (delete configure)
-    (replace install install)
-    (replace check check)
-    (replace build build)
-    (add-after install wrap wrap)
-    (add-before strip rename-pth-file rename-pth-file)))
+    (delete 'configure)
+    (replace 'install install)
+    (replace 'check check)
+    (replace 'build build)
+    (add-after 'install 'wrap wrap)
+    (add-before 'strip 'rename-pth-file rename-pth-file)))
 
 (define* (python-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)

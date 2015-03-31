@@ -142,8 +142,8 @@ a large, deeply nested project.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (delete configure)
-                  (add-before build make-dotl-files-older
+                  (delete 'configure)
+                  (add-before 'build 'make-dotl-files-older
                               (lambda _
                                 ;; Make the '.l' files as old as the '.c'
                                 ;; files to avoid triggering the rule that
@@ -155,7 +155,7 @@ a large, deeply nested project.")
                                             (set-file-time file ref))
                                           (find-files "." "\\.[chl]$"))
                                 #t))
-                  (add-before install make-target-directories
+                  (add-before 'install 'make-target-directories
                               (lambda* (#:key outputs #:allow-other-keys)
                                 (let ((out (assoc-ref outputs "out")))
                                   (mkdir-p (string-append out "/bin"))
@@ -163,7 +163,7 @@ a large, deeply nested project.")
                                                           "/share/man/man1"))
                                   (mkdir-p (string-append out
                                                           "/share/doc")))))
-                  (replace check
+                  (replace 'check
                            (lambda _
                              (setenv "HOME" (getcwd))
                              (setenv "PATH"

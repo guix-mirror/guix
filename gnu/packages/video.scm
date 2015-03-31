@@ -738,12 +738,12 @@ several areas.")
      '(#:phases
        (modify-phases %standard-phases
          (add-before
-          configure setup-waf
+          'configure 'setup-waf
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc")))
          (add-before
-          configure patch-wscript
+          'configure 'patch-wscript
           (lambda* (#:key inputs #:allow-other-keys)
             (substitute* "wscript"
               ;; XXX Remove this when our Samba package provides a .pc file.
@@ -1219,7 +1219,7 @@ capabilities.")
      '(#:phases
        (modify-phases %standard-phases
          (add-after
-          unpack autogen
+          'unpack 'autogen
           (lambda _
             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "http://www.vapoursynth.com/")
