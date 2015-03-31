@@ -82,6 +82,7 @@ MODULES =					\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
   guix/build/syscalls.scm			\
+  guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
   guix/packages.scm				\
@@ -178,6 +179,7 @@ SCM_TESTS =					\
   tests/union.scm				\
   tests/profiles.scm				\
   tests/syscalls.scm				\
+  tests/gremlin.scm				\
   tests/lint.scm
 
 if HAVE_GUILE_JSON
