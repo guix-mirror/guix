@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,7 +128,9 @@ rates. ")
               '(substitute* "src/daemon/default.pa.in"
                  (("load-module module-console-kit" all)
                   (string-append "#" all "\n"))))
-             (patches (list (search-patch "pulseaudio-fix-mult-test.patch")))))
+             (patches
+              (list (search-patch "pulseaudio-fix-mult-test.patch")
+                    (search-patch "pulseaudio-longer-test-timeout.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"
