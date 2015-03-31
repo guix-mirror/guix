@@ -31,10 +31,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -232,6 +235,39 @@ sections, two polyphonic sections with nine drawbars each and one monophonic
 bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
+
+(define-public csound
+  (package
+    (name "csound")
+    (version "6.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/csound/csound6/Csound"
+                    version "/Csound" version ".tar.gz"))
+              (sha256
+               (base32
+                "1030w38lxdwjz1irr32m9cl0paqmgr02lab2m7f7j1yihwxj1w0g"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("pulseaudio" ,pulseaudio)
+       ("libsndfile" ,libsndfile)
+       ("liblo" ,liblo)
+       ("ladspa" ,ladspa)
+       ("jack" ,jack-1)
+       ("gettext" ,gnu-gettext)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("zlib" ,zlib)))
+    (home-page "http://csound.github.io/")
+    (synopsis "Sound and music computing system")
+    (description
+     "Csound is a user-programmable and user-extensible sound processing
+language and software synthesizer.")
+    (license license:lgpl2.1+)))
 
 (define-public clalsadrv
   (package
