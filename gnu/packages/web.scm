@@ -723,6 +723,32 @@ when the dispatch type is first seen in your application.")
 Models.")
   (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-accesslog
+  (package
+    (name "perl-catalyst-plugin-accesslog")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARODLAND/"
+                           "Catalyst-Plugin-AccessLog-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hqvckaw91q5yc25a33bp0d4qqxlgkp7rxlvi8n8svxd1406r55s"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (arguments `(#:tests? #f))          ;Unexpected http responses
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-AccessLog")
+    (synopsis "Request logging from within Catalyst")
+    (description "This Catalyst plugin enables you to create \"access logs\"
+from within a Catalyst application instead of requiring a webserver to do it
+for you.  It will work even with Catalyst debug logging turned off.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-authentication
   (package
     (name "perl-catalyst-plugin-authentication")
