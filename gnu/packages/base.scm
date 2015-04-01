@@ -393,6 +393,12 @@ included.")
       ;; <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00709.html>.
       #:parallel-build? #f
 
+      ;; The libraries have an empty RUNPATH, but some, such as the versioned
+      ;; libraries (libdl-2.21.so, etc.) have ld.so marked as NEEDED.  Since
+      ;; these libraries are always going to be found anyway, just skip
+      ;; RUNPATH checks.
+      #:validate-runpath? #f
+
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"

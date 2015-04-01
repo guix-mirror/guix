@@ -18,12 +18,15 @@
 
 (define-module (guix build gnu-build-system)
   #:use-module (guix build utils)
+  #:use-module (guix build gremlin)
+  #:use-module (guix elf)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (rnrs io ports)
   #:export (%standard-phases
             gnu-build))
 
@@ -398,6 +401,64 @@ makefiles."
                                        strip-directories)))
                          outputs))))
 
+(define (every* pred lst)
+  "This is like 'every', but process all the elements of LST instead of
+stopping as soon as PRED returns false.  This is useful when PRED has side
+effects, such as displaying warnings or error messages."
+  (let loop ((lst    lst)
+             (result #t))
+    (match lst
+      (()
+       result)
+      ((head . tail)
+       (loop tail (and (pred head) result))))))
+
+(define* (validate-runpath #:key
+                           validate-runpath?
+                           (elf-directories '("lib" "lib64" "libexec"
+                                              "bin" "sbin"))
+                           outputs #:allow-other-keys)
+  "When VALIDATE-RUNPATH? is true, validate that all the ELF files in
+ELF-DIRECTORIES have their dependencies found in their 'RUNPATH'.
+
+Since the ELF parser needs to have a copy of files in memory, better run this
+phase after stripping."
+  (define (sub-directory parent)
+    (lambda (directory)
+      (let ((directory (string-append parent "/" directory)))
+        (and (directory-exists? directory) directory))))
+
+  (define (validate directory)
+    (define (file=? file1 file2)
+      (let ((st1 (stat file1))
+            (st2 (stat file2)))
+        (= (stat:ino st1) (stat:ino st2))))
+
+    ;; There are always symlinks from '.so' to '.so.1' and so on, so delete
+    ;; duplicates.
+    (let ((files (delete-duplicates (find-files directory (lambda (file stat)
+                                                            (elf-file? file)))
+                                    file=?)))
+      (format (current-error-port)
+              "validating RUNPATH of ~a binaries in ~s...~%"
+              (length files) directory)
+      (every* validate-needed-in-runpath files)))
+
+  (if validate-runpath?
+      (let ((dirs (append-map (match-lambda
+                                (("debug" . _)
+                                 ;; The "debug" output is full of ELF files
+                                 ;; that are not worth checking.
+                                 '())
+                                ((name . output)
+                                 (filter-map (sub-directory output)
+                                             elf-directories)))
+                              outputs)))
+        (every* validate dirs))
+      (begin
+        (format (current-error-port) "skipping RUNPATH validation~%")
+        #t)))
+
 (define* (validate-documentation-location #:key outputs
                                           #:allow-other-keys)
   "Documentation should go to 'share/info' and 'share/man', not just 'info/'
@@ -486,6 +547,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
             patch-shebangs strip
+            validate-runpath
             validate-documentation-location
             compress-documentation)))
 

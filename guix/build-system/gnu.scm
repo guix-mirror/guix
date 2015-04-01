@@ -45,7 +45,9 @@
 (define %gnu-build-system-modules
   ;; Build-side modules imported and used by default.
   '((guix build gnu-build-system)
-    (guix build utils)))
+    (guix build utils)
+    (guix build gremlin)
+    (guix elf)))
 
 (define %default-modules
   ;; Modules in scope in the build-side environment.
@@ -283,6 +285,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (strip-flags ''("--strip-debug"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
+                    (validate-runpath? #t)
                     (phases '%standard-phases)
                     (locale "en_US.UTF-8")
                     (system (%current-system))
@@ -345,6 +348,7 @@ are allowed to refer to."
                   #:parallel-tests? ,parallel-tests?
                   #:patch-shebangs? ,patch-shebangs?
                   #:strip-binaries? ,strip-binaries?
+                  #:validate-runpath? ,validate-runpath?
                   #:strip-flags ,strip-flags
                   #:strip-directories ,strip-directories)))
 
@@ -417,6 +421,7 @@ is one of `host' or `target'."
                           (strip-flags ''("--strip-debug"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
+                          (validate-runpath? #t)
                           (phases '%standard-phases)
                           (locale "en_US.UTF-8")
                           (system (%current-system))
@@ -490,6 +495,7 @@ platform."
                     #:parallel-tests? ,parallel-tests?
                     #:patch-shebangs? ,patch-shebangs?
                     #:strip-binaries? ,strip-binaries?
+                    #:validate-runpath? ,validate-runpath?
                     #:strip-flags ,strip-flags
                     #:strip-directories ,strip-directories))))
 
