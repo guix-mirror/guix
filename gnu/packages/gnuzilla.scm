@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -153,8 +153,6 @@ in the Mozilla clients.")
                   (ice-9 ftw)
                   (ice-9 match)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils))
        #:phases
        (alist-replace
         'configure

@@ -569,9 +569,6 @@ on your desktop.")
                   (guix build glib-or-gtk-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build glib-or-gtk-build-system)
-                           (guix build utils))
        #:phases
        (alist-replace
         'install

@@ -176,8 +176,6 @@ This package contains the binaries.")
     `(#:modules ((guix build gnu-build-system)
                  (guix build utils)
                  (srfi srfi-26))
-      #:imported-modules ((guix build gnu-build-system)
-                          (guix build utils))
       #:phases
         (alist-cons-before
          'texmf-config 'install
