@@ -648,6 +648,36 @@ extension for Catalyst; and requirements for a variety of development-related
 modules.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-dispatchtype-regex
+  (package
+    (name "perl-catalyst-dispatchtype-regex")
+    (version "5.90035")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MG/MGRIMES/"
+                           "Catalyst-DispatchType-Regex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06jq1lmpq88rmp9zik5gqczg234xac0hiyc3l698iif7zsgcyb80"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build) ;needs Module::Build >= 0.4004
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-text-simpletable" ,perl-text-simpletable)))
+    (home-page "http://search.cpan.org/dist/Catalyst-DispatchType-Regex")
+    (synopsis "Regex DispatchType for Catalyst")
+    (description "Dispatch type managing path-matching behaviour using
+regexes.  Regex dispatch types have been deprecated and removed from Catalyst
+core.  It is recommend that you use Chained methods or other techniques
+instead.  As part of the refactoring, the dispatch priority of Regex vs Regexp
+vs LocalRegex vs LocalRegexp may have changed.  Priority is now influenced by
+when the dispatch type is first seen in your application.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-model-dbic-schema
   (package
   (name "perl-catalyst-model-dbic-schema")
