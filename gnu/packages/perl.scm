@@ -1043,6 +1043,38 @@ support for per-object behavior, circular structures, visiting tied
 structures, and all ref types (hashes, arrays, scalars, code, globs).")
     (license (package-license perl))))
 
+(define-public perl-datetime-timezone
+  (package
+    (name "perl-datetime-timezone")
+    (version "1.86")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "DateTime-TimeZone-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1aj5liy9as7yci2s9cqv9gqna5wggah8yg2jqrc89dnrin25s26z"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-class-singleton" ,perl-class-singleton)
+       ("perl-list-allutils" ,perl-list-allutils)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/DateTime-TimeZone")
+    (synopsis "Time zone object for Perl")
+    (description "This class is the base class for all time zone objects.  A
+time zone is represented internally as a set of observances, each of which
+describes the offset from GMT for a given time period.  Note that without the
+DateTime module, this module does not do much.  It's primary interface is
+through a DateTime object, and most users will not need to directly use
+DateTime::TimeZone methods.")
+    (license (package-license perl))))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
