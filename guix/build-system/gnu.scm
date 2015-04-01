@@ -24,7 +24,8 @@
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (gnu-build
+  #:export (%gnu-build-system-modules
+            gnu-build
             gnu-build-system
             standard-packages
             package-with-explicit-inputs
@@ -41,8 +42,13 @@
 ;;
 ;; Code:
 
-(define %default-modules
+(define %gnu-build-system-modules
   ;; Build-side modules imported and used by default.
+  '((guix build gnu-build-system)
+    (guix build utils)))
+
+(define %default-modules
+  ;; Modules in scope in the build-side environment.
   '((guix build gnu-build-system)
     (guix build utils)))
 
@@ -182,7 +188,7 @@ runs `make distcheck' and whose result is one or more source tarballs."
        (let* ((args (default-keyword-arguments (package-arguments p)
                       `(#:phases #f
                         #:modules ,%default-modules
-                        #:imported-modules ,%default-modules))))
+                        #:imported-modules ,%gnu-build-system-modules))))
          (substitute-keyword-arguments args
            ((#:modules modules)
             `((guix build gnu-dist)
@@ -280,7 +286,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (phases '%standard-phases)
                     (locale "en_US.UTF-8")
                     (system (%current-system))
-                    (imported-modules %default-modules)
+                    (imported-modules %gnu-build-system-modules)
                     (modules %default-modules)
                     (substitutable? #t)
                     allowed-references)
@@ -414,10 +420,8 @@ is one of `host' or `target'."
                           (phases '%standard-phases)
                           (locale "en_US.UTF-8")
                           (system (%current-system))
-                          (imported-modules '((guix build gnu-build-system)
-                                              (guix build utils)))
-                          (modules '((guix build gnu-build-system)
-                                     (guix build utils)))
+                          (imported-modules %gnu-build-system-modules)
+                          (modules %default-modules)
                           (substitutable? #t)
                           allowed-references)
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
