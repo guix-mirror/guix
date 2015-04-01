@@ -169,8 +169,7 @@ files.")
                   (guix build utils)
                   (guix build rpath)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build rpath))
        #:phases
         (alist-cons-after

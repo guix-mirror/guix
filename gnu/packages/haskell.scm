@@ -110,8 +110,7 @@
                   (guix build rpath)
                   (srfi srfi-26)
                   (srfi srfi-1))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,%gnu-build-system-modules
                            (guix build rpath))
        #:configure-flags
        (list

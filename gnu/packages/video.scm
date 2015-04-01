@@ -283,8 +283,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                   (guix build utils)
                   (guix build rpath)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build rpath))
        #:phases
          (alist-replace

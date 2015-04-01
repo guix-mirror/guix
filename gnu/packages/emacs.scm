@@ -247,8 +247,7 @@ when typing parentheses directly or commenting out code line by line.")
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
        #:tests? #f  ; no check target
        #:phases
@@ -308,8 +307,7 @@ operations.")
      '(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
        #:configure-flags
        (let ((out (assoc-ref %outputs "out")))
@@ -376,8 +374,7 @@ operations.")
      '(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,%gnu-build-system-modules
                            (guix build emacs-utils))
        #:tests? #f  ; no check target
        #:phases
@@ -444,8 +441,7 @@ operations.")
      '(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,%gnu-build-system-modules
                            (guix build emacs-utils))
 
        #:phases (alist-replace
