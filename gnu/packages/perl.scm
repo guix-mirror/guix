@@ -649,6 +649,26 @@ place of the original method, with a hook to easily call that original
 method.")
     (license (package-license perl))))
 
+(define-public perl-class-singleton
+  (package
+    (name "perl-class-singleton")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHAY/"
+                           "Class-Singleton-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y7ngrjf551bjgmijp5rsidbkq6c8hb5lmy2jcqq0fify020s8iq"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-Singleton")
+    (synopsis "Implementation of a singleton class for Perl")
+    (description "This module implements a Singleton class from which other
+classes can be derived. By itself, the Class::Singleton module does very
+little other than manage the instantiation of a single object.")
+    (license (package-license perl))))
+
 (define-public perl-class-tiny
   (package
     (name "perl-class-tiny")
