@@ -197,6 +197,7 @@ value of DT_NEEDED entries is a string.)"
     "libc.so"
     "libdl.so"
     "libm.so"
+    "libnsl.so"                                   ;NEEDED by nscd
     "libpthread.so"
     "libresolv.so"
     "librt.so"
