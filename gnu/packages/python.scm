@@ -2867,6 +2867,37 @@ etc.  The core of this module is a decorator factory.")
 (define-public python2-decorator
   (package-with-python2 python-decorator))
 
+(define-public python-drmaa
+  (package
+    (name "python-drmaa")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/drmaa/drmaa-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0bzl9f9g34dlhwf09i3fdv7dqqzf2iq0w7d6c2bafx1nlap8qfbh"))))
+    (build-system python-build-system)
+    ;; The test suite requires libdrmaa which is provided by the cluster
+    ;; environment.  At runtime the environment variable DRMAA_LIBRARY_PATH
+    ;; should be set to the path of the libdrmaa library.
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/drmaa")
+    (synopsis "Python bindings for the DRMAA library")
+    (description
+      "A Python package for Distributed Resource Management (DRM) job
+submission and control.  This package is an implementation of the DRMAA 1.0
+Python language binding specification.")
+    (license bsd-3)))
+
+(define-public python2-drmaa
+  (package-with-python2 python-drmaa))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
