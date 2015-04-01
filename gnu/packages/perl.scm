@@ -1983,6 +1983,30 @@ either uses the first module it finds or throws an error.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-list-allutils
+  (package
+    (name "perl-list-allutils")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "List-AllUtils-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qmfpmly0pghc94k6ifnd1vwzlv8nks27qkqs6h4p7vcricn7zjc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-warnings" ,perl-test-warnings)))
+    (propagated-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-scalar-list-utils" ,perl-scalar-list-utils)))
+    (home-page "http://search.cpan.org/dist/List-AllUtils")
+    (synopsis "Combination of List::Util and List::MoreUtils")
+    (description "This module exports all of the functions that either
+List::Util or List::MoreUtils defines, with preference to List::Util.")
+    (license (package-license perl))))
+
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
