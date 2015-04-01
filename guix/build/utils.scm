@@ -273,11 +273,12 @@ name matches REGEXP."
     (lambda (file stat)
       (regexp-exec file-rx (basename file)))))
 
-(define (find-files dir pred)
+(define* (find-files dir #:optional (pred (const #t)))
   "Return the lexicographically sorted list of files under DIR for which PRED
 returns true.  PRED is passed two arguments: the absolute file name, and its
-stat buffer.  PRED can also be a regular expression, in which case it is
-equivalent to (file-name-predicate PRED)."
+stat buffer; the default predicate always returns true.  PRED can also be a
+regular expression, in which case it is equivalent to (file-name-predicate
+PRED)."
   (let ((pred (if (procedure? pred)
                   pred
                   (file-name-predicate pred))))
