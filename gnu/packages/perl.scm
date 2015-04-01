@@ -1043,6 +1043,28 @@ support for per-object behavior, circular structures, visiting tied
 structures, and all ref types (hashes, arrays, scalars, code, globs).")
     (license (package-license perl))))
 
+(define-public perl-datetime-locale
+  (package
+    (name "perl-datetime-locale")
+    (version "0.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "DateTime-Locale-" version ".tar.gz"))
+       (sha256
+        (base32
+         "175grkrxiv012n6ch3z1sip4zprcili6m5zqi3njdk5c1gdvi8ca"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Locale")
+    (synopsis "Localization support for DateTime.pm")
+    (description "The DateTime::Locale modules provide localization data for
+the DateTime.pm class.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-timezone
   (package
     (name "perl-datetime-timezone")
