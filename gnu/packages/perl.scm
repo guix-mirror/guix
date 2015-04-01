@@ -1043,6 +1043,34 @@ support for per-object behavior, circular structures, visiting tied
 structures, and all ref types (hashes, arrays, scalars, code, globs).")
     (license (package-license perl))))
 
+(define-public perl-datetime
+  (package
+    (name "perl-datetime")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "DateTime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fli1ls298qa8nfki15myxqqqfpxvslxk4j5r3vjk577wfgjrnms"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-warnings" ,perl-test-warnings)))
+    (propagated-inputs
+     `(("perl-datetime-locale" ,perl-datetime-locale)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/DateTime")
+    (synopsis "Date and time object for Perl")
+    (description "DateTime is a class for the representation of date/time
+combinations.  It represents the Gregorian calendar, extended backwards in
+time before its creation (in 1582).")
+    (license artistic2.0)))
+
 (define-public perl-datetime-locale
   (package
     (name "perl-datetime-locale")
