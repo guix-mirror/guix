@@ -85,6 +85,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                        '("CC"  "CXX" "LD" "AR" "NM" "RANLIB" "STRIP")
                        '("gcc" "g++" "ld" "ar" "nm" "ranlib" "strip"))
                   '()))))
+         (libdir
+          (let ((base '(or (assoc-ref outputs "lib")
+                           (assoc-ref outputs "out"))))
+            (lambda ()
+              ;; Return the directory that contains lib/libgcc_s.so et al.
+              (if (%current-target-system)
+                  `(string-append ,base "/" ,(%current-target-system))
+                  base))))
          (configure-flags
           (lambda ()
             ;; This is terrible.  Since we have two levels of quasiquotation,
@@ -185,8 +193,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((libdir (or (assoc-ref outputs "lib")
-                              (assoc-ref outputs "out")))
+            (let ((libdir ,(libdir))
                   (libc   (assoc-ref inputs "libc")))
               (when libc
                 ;; The following is not performed for `--without-headers'
