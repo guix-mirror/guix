@@ -438,9 +438,13 @@ dist_patch_DATA =						\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/icecat-bug-1127780.patch			\
-  gnu/packages/patches/icecat-bug-1144991.patch			\
   gnu/packages/patches/icecat-bug-1145870.patch			\
-  gnu/packages/patches/icecat-bug-1146339.patch			\
+  gnu/packages/patches/icecat-CVE-2015-0801.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0807.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0815-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0815-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0815-pt3.patch		\
+  gnu/packages/patches/icecat-CVE-2015-0816.patch		\
   gnu/packages/patches/icecat-CVE-2015-0817.patch		\
   gnu/packages/patches/icecat-CVE-2015-0818-pt1.patch		\
   gnu/packages/patches/icecat-CVE-2015-0818-pt2.patch		\

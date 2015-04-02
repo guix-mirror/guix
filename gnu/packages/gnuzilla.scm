@@ -225,13 +225,17 @@ standards.")
       (sha256
        (base32
         "1rr4axghaypdkrf60i1qp6dz4cd29ya02fs3vyffvp4x9kgcq2dd"))
-      (patches (map search-patch '("icecat-bug-1127780.patch"
+      (patches (map search-patch '("icecat-CVE-2015-0815-pt1.patch"
+                                   "icecat-CVE-2015-0815-pt2.patch"
+                                   "icecat-bug-1127780.patch"
+                                   "icecat-CVE-2015-0807.patch"
+                                   "icecat-CVE-2015-0815-pt3.patch"
                                    "icecat-CVE-2015-0817.patch"
-                                   "icecat-bug-1144991.patch"
+                                   "icecat-CVE-2015-0816.patch"
                                    "icecat-CVE-2015-0818-pt1.patch"
                                    "icecat-bug-1145870.patch"
                                    "icecat-CVE-2015-0818-pt2.patch"
-                                   "icecat-bug-1146339.patch")))))
+                                   "icecat-CVE-2015-0801.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
