@@ -1314,7 +1314,9 @@ guix package}).
 @cindex garbage collector
 Packages that are installed but not used may be @dfn{garbage-collected}.
 The @command{guix gc} command allows users to explicitly run the garbage
-collector to reclaim space from the @file{/gnu/store} directory.
+collector to reclaim space from the @file{/gnu/store} directory.  It is
+the @emph{only} way to remove files from @file{/gnu/store}---removing
+files or directories manually may break it beyond repair!
 
 The garbage collector has a set of known @dfn{roots}: any file under
 @file{/gnu/store} reachable from a root is considered @dfn{live} and
