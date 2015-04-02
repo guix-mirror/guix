@@ -43,14 +43,6 @@
                             (string-append "CONFIG_SHELL=" bash)
                             (string-append "--prefix=" out)
                             configure-flags)))))
-        (cross-pre-install-phase
-         '(lambda _
-            ;; Run the native `tic' program, not the cross-built one.
-            (substitute* "misc/run_tic.sh"
-              (("\\{TIC_PATH:=.*\\}")
-               "{TIC_PATH:=true}")
-              (("cross_compiling:=no")
-               "cross_compiling:=yes"))))
         (post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -116,12 +108,9 @@
                       `(alist-cons-before         ; cross build
                         'configure 'patch-makefile-SHELL
                         ,patch-makefile-phase
-                        (alist-cons-before
-                         'install 'pre-install
-                         ,cross-pre-install-phase
-                         (alist-cons-after
-                          'install 'post-install ,post-install-phase
-                          %standard-phases)))
+                        (alist-cons-after
+                         'install 'post-install ,post-install-phase
+                         %standard-phases))
 
                       `(alist-cons-after          ; native build
                         'install 'post-install ,post-install-phase
