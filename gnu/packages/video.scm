@@ -21,9 +21,7 @@
 
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
-  #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
-                               fsf-free isc))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -106,7 +104,7 @@
     (description "liba52 is a library for decoding ATSC A/52 streams.  The
 A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libass
   (package
@@ -134,7 +132,7 @@ television and DVD.  It is also known as AC-3.")
     (synopsis "Subtitle rendering library for the ASS/SSA format")
     (description "libass is a subtitle rendering library for the
 ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public libcaca
   (package
@@ -162,7 +160,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
 pixels, so that it can work on older video cards or text terminals.  It
 supports Unicode, 2048 colors, dithering of color images, and advanced text
 canvas operations.")
-    (license (fsf-free "file://COPYING")))) ;WTFPL version 2
+    (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
 
 (define-public libdca
   (package
@@ -181,7 +179,7 @@ canvas operations.")
     (synopsis "DTS Coherent Acoustics decoder")
     (description "libdca is a library for decoding DTS Coherent Acoustics
 streams.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libdv
   (package
@@ -204,7 +202,7 @@ video, the encoding format used by most digital camcorders, typically those
 that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
 developed according to the official standards for DV video: IEC 61834 and
 SMPTE 314M.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libva
   (package
@@ -233,7 +231,7 @@ SMPTE 314M.")
 to enable hardware accelerated video decode/encode at various
 entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
 standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ffmpeg
   (package
@@ -390,7 +388,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
     (description "FFmpeg is a complete, cross-platform solution to record,
 convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 ;; We need this older ffmpeg because vlc-2.1.5 doesn't work with ffmpeg-2.4.
 (define-public ffmpeg-2.2
@@ -466,7 +464,7 @@ audio/video codec library.")
     (description "VLC is a cross-platform multimedia player and framework
 that plays most multimedia files as well as DVD, Audio CD, VCD, and various
 treaming protocols.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public mplayer
   (package
@@ -554,7 +552,7 @@ treaming protocols.")
 Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
 NuppelVideo, FLI, YUV4MPEG, FILM, RoQ, PVA files.  One can watch VideoCD,
 SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 ;;; This is not version 2; it's a fork literally named "mplayer2".
 (define-public mplayer2
@@ -674,7 +672,7 @@ a fork of the original MPlayer project, and contains further development in
 several areas.")
     ;; See file Copyright.  Most files are gpl2+ or compatible, but talloc.c
     ;; is under lgpl3+, thus the whole project becomes gpl3+.
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public mpv
   (package
@@ -759,7 +757,7 @@ several areas.")
     (description "mpv is a general-purpose audio and video player.  It is a
 fork of mplayer2 and MPlayer.  It shares some features with the former
 projects while introducing many more.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libvpx
   (package
@@ -811,7 +809,7 @@ projects while introducing many more.")
        ("yasm" ,yasm)))
     (synopsis "VP8/VP9 video codec")
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
-    (license bsd-3)
+    (license license:bsd-3)
     (home-page "http://www.webmproject.org/")))
 
 (define-public youtube-dl
@@ -833,7 +831,7 @@ projects while introducing many more.")
     (description
      "youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public libbluray
   (package
@@ -861,7 +859,7 @@ YouTube.com and a few more sites.")
     (description
      "libbluray is a library designed for Blu-Ray Disc playback for media
 players, like VLC or MPlayer.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libdvdread
   (package
@@ -884,7 +882,7 @@ disks.  It provides the functionality that is required to access many
 DVDs.  It parses IFO files, reads NAV-blocks, and performs CSS
 authentication and descrambling (if an external libdvdcss library is
 installed).")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libdvdnav
   (package
@@ -916,7 +914,7 @@ a loop regularly calling a function to get the next block, surrounded by
 additional calls to tell the library of user interaction.  The whole
 DVD virtual machine and internal playback states are completely
 encapsulated.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libdvdnav-4
   (package
@@ -962,7 +960,7 @@ encapsulated.")
     (description
      "libdvdcss is a simple library designed for accessing DVDs like a block
 device without having to bother about the decryption.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public srt2vtt
   (package
@@ -983,7 +981,7 @@ device without having to bother about the decryption.")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
     (home-page "http://dthompson.us/pages/software/srt2vtt")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public avidemux
   (package
@@ -1098,7 +1096,7 @@ DVD compatible MPEG files, MP4 and ASF, using a variety of codecs.  Tasks
 can be automated using projects, job queue and powerful scripting
 capabilities.")
     ;; Software with various licenses is included, see License.txt.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public avidemux-2.5
   (package (inherit avidemux)
@@ -1229,7 +1227,7 @@ manipulation.  It aims to be a modern rewrite of Avisynth, supporting
 multithreading, generalized colorspaces, per frame properties, and videos with
 format changes.")
     ;; As seen from the source files.
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public xvid
   (package
@@ -1262,4 +1260,4 @@ format changes.")
 codec library.  It uses ASP features such as b-frames, global and quarter
 pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
 and custom quantization matrices.")
-    (license gpl2+)))
+    (license license:gpl2+)))
