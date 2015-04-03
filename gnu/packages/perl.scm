@@ -3277,6 +3277,29 @@ of execution is aborted prematurely.  This effectively allows lexically-scoped
 collector.")
     (license (package-license perl))))
 
+(define-public perl-spiffy
+  (package
+    (name "perl-spiffy")
+    (version "0.46")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+                           "Spiffy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18qxshrjh0ibpzjm2314157mxlibh3smyg64nr4mq990hh564n4g"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Spiffy")
+    (synopsis "Spiffy Perl Interface Framework For You")
+    (description "Spiffy is a framework and methodology for doing object
+oriented (OO) programming in Perl.  Spiffy combines the best parts of
+Exporter.pm, base.pm, mixin.pm and SUPER.pm into one magic foundation class.
+It attempts to fix all the nits and warts of traditional Perl OO, in a clean,
+straightforward and (perhaps someday) standard way.  Spiffy borrows ideas from
+other OO languages like Python, Ruby, Java and Perl 6.")
+    (license (package-license perl))))
+
 (define-public perl-stream-buffered
   (package
     (name "perl-stream-buffered")
