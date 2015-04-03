@@ -1416,10 +1416,9 @@ libraries written in C.")
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin") ; for glib-genmarshal, etc.
        ("xmllint" ,libxml2)))
-    (inputs
-     `(("gnutls" ,gnutls)))
     (propagated-inputs
-     `(("gtk+" ,gtk+))) ; required by libvte-2.91.pc
+     `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
+       ("gnutls" ,gnutls)))                       ;ditto
     (arguments
      `(#:phases
        (alist-cons-before
