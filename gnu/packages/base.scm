@@ -358,6 +358,62 @@ included.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 
+(define* (make-ld-wrapper name #:key binutils guile bash
+                          (guile-for-build guile))
+  "Return a package called NAME that contains a wrapper for the 'ld' program
+of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  The
+wrapper uses GUILE and BASH."
+  (package
+    (name name)
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("binutils" ,binutils)
+              ("guile"    ,guile)
+              ("bash"     ,bash)
+              ("wrapper"  ,(search-path %load-path
+                                        "gnu/packages/ld-wrapper.scm"))))
+    (arguments
+     `(#:guile ,guile-for-build
+       #:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (system base compile))
+
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (bin (string-append out "/bin"))
+                          (ld  (string-append bin "/ld"))
+                          (go  (string-append bin "/ld.go")))
+
+                     (setvbuf (current-output-port) _IOLBF)
+                     (format #t "building ~s/bin/ld wrapper in ~s~%"
+                             (assoc-ref %build-inputs "binutils")
+                             out)
+
+                     (mkdir-p bin)
+                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
+                     (substitute* ld
+                       (("@GUILE@")
+                        (string-append (assoc-ref %build-inputs "guile")
+                                       "/bin/guile"))
+                       (("@BASH@")
+                        (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
+                       (("@LD@")
+                        (string-append (assoc-ref %build-inputs "binutils")
+                                       "/bin/ld")))
+                     (chmod ld #o555)
+                     (compile-file ld #:output-file go)))))
+    (synopsis "The linker wrapper")
+    (description
+     "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
+missing '-rpath' flags, and to detect any misuse of libraries outside of the
+store.")
+    (home-page "http://www.gnu.org/software/guix/")
+    (license gpl3+)))
+
+(export make-ld-wrapper)
+
 (define-public glibc
   (package
    (name "glibc")

@@ -545,54 +545,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define ld-wrapper-boot3
   ;; A linker wrapper that uses the bootstrap Guile.
-  (package
-    (name "ld-wrapper-boot3")
-    (version "0")
-    (source #f)
-    (build-system trivial-build-system)
-    (inputs `(("binutils" ,binutils-final)
-              ("guile"    ,%bootstrap-guile)
-              ("bash"     ,@(assoc-ref %boot2-inputs "bash"))
-              ("wrapper"  ,(search-path %load-path
-                                        "gnu/packages/ld-wrapper.scm"))))
-    (arguments
-     `(#:guile ,%bootstrap-guile
-       #:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (system base compile))
-
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (ld  (string-append bin "/ld"))
-                          (go  (string-append bin "/ld.go")))
-
-                     (setvbuf (current-output-port) _IOLBF)
-                     (format #t "building ~s/bin/ld wrapper in ~s~%"
-                             (assoc-ref %build-inputs "binutils")
-                             out)
-
-                     (mkdir-p bin)
-                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
-                     (substitute* ld
-                       (("@GUILE@")
-                        (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                       (("@BASH@")
-                        (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash"))
-                       (("@LD@")
-                        (string-append (assoc-ref %build-inputs "binutils")
-                                       "/bin/ld")))
-                     (chmod ld #o555)
-                     (compile-file ld #:output-file go)))))
-    (synopsis "The linker wrapper")
-    (description
-     "The linker wrapper (or `ld-wrapper') wraps the linker to add any
-missing `-rpath' flags, and to detect any misuse of libraries outside of the
-store.")
-    (home-page #f)
-    (license gpl3+)))
+  (make-ld-wrapper "ld-wrapper-boot3"
+                   #:binutils binutils-final
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
 
 (define %boot3-inputs
   ;; 4th stage inputs.
