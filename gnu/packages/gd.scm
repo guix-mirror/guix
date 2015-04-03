@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
@@ -116,4 +117,31 @@ most common applications of GD involve website development.")
     (description "GD.pm is an autoloadable interface module for libgd, a
 popular library for creating and manipulating PNG files.  With this library
 you can create PNG images on the fly or modify existing files.")
+    (license (package-license perl))))
+
+(define-public perl-gd-securityimage
+  (package
+    (name "perl-gd-securityimage")
+    (version "1.73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BU/BURAK/"
+                           "GD-SecurityImage-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kaxs67rfd4w46lxgcg3pa05a596l0h1k8n4zk2gwrrar4022wpx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-gd" ,perl-gd)
+       ("perl-image-magick" ,perl-image-magick)))
+    (home-page "http://search.cpan.org/dist/GD-SecurityImage")
+    (synopsis "Security image generator.")
+    (description "This module provides a basic interface to create
+security (captcha) images.  The final output is the actual graphic data, the
+mime type of the graphic, and the created random string.  The module also has
+some \"styles\" that are used to create the background (or foreground) of the
+image.")
     (license (package-license perl))))
