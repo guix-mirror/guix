@@ -4172,6 +4172,26 @@ generation of tests in nested combinations of contexts.")
 text sequences from strings.")
     (license (package-license perl))))
 
+(define-public perl-text-csv
+  (package
+    (name "perl-text-csv")
+    (version "1.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MAKAMAKA/"
+                           "Text-CSV-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05a1nayxv04n0hx7y3m8327ijm34k9nhngrbxl18zmgzpawqynww"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-CSV")
+    (synopsis "Manipulate comma-separated values")
+    (description "Text::CSV provides facilities for the composition and
+decomposition of comma-separated values.  An instance of the Text::CSV class
+can combine fields into a CSV string and parse a CSV string into fields.")
+    (license (package-license perl))))
+
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
