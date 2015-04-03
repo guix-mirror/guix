@@ -1944,6 +1944,41 @@ either mocked HTTP or a locally spawned server.")
 WWW::Mechanize that incorporates features for web application testing.")
     (license l:artistic2.0)))
 
+(define-public perl-test-www-mechanize-catalyst
+  (package
+    (name "perl-test-www-mechanize-catalyst")
+    (version "0.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Test-WWW-Mechanize-Catalyst-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nhhfrrai3ndziz873vpa1j0vljjnib4wqafd6yyvkf58ad7v0lv"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-plugin-session-state-cookie"
+        ,perl-catalyst-plugin-session-state-cookie)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-utf8" ,perl-test-utf8)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-test-www-mechanize" ,perl-test-www-mechanize)
+       ("perl-www-mechanize" ,perl-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-Catalyst")
+    (synopsis "Test::WWW::Mechanize for Catalyst")
+    (description "The Test::WWW::Mechanize::Catalyst module meshes the
+Test::WWW:Mechanize module and the Catalyst web application framework to allow
+testing of Catalyst applications without needing to start up a web server.")
+    (license (package-license perl))))
+
 (define-public perl-test-www-mechanize-psgi
   (package
     (name "perl-test-www-mechanize-psgi")
