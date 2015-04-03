@@ -39,6 +39,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages image)
@@ -1398,7 +1399,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.38.2")
+    (version "0.40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1406,7 +1407,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rbxrigff9yszbgdw0gw4c2saz4d1hbbpz21phzxx14w49wvmnmj"))))
+                "0lnq0bgkmsixjwmfacb2ch9qfjqjxa8zkk1hiv3l29kgca0n3nal"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1415,6 +1416,8 @@ libraries written in C.")
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin") ; for glib-genmarshal, etc.
        ("xmllint" ,libxml2)))
+    (inputs
+     `(("gnutls" ,gnutls)))
     (propagated-inputs
      `(("gtk+" ,gtk+))) ; required by libvte-2.91.pc
     (arguments
