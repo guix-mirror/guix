@@ -86,7 +86,7 @@
                       (tcp/ip-forwarding? #t)
                       (password-authentication? #t)
                       (public-key-authentication? #t)
-                      initialize?)
+                      (initialize? #t))
   "Run the @command{lshd} program from @var{lsh} to listen on port @var{port-number}.
 @var{host-key} must designate a file containing the host key, and readable
 only by root.
