@@ -40,6 +40,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
@@ -781,6 +782,30 @@ for you.  It will work even with Catalyst debug logging turned off.")
 Catalyst apps. It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-captcha
+  (package
+    (name "perl-catalyst-plugin-captcha")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DI/DIEGOK/"
+                           "Catalyst-Plugin-Captcha-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0llyj3v5nx9cx46jdbbvxf1lc9s9cxq5ml22xmx3wkb201r5qgaa"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-gd-securityimage" ,perl-gd-securityimage)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Captcha")
+    (synopsis "Captchas for Catalyst")
+    (description "This plugin creates and validates Captcha images for
+Catalyst.")
     (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-configloader
