@@ -1101,6 +1101,31 @@ downloading data into many supportable formats.  For example, downloading a
 table based report in a variety of formats (CSV, HTML, etc.). ")
     (license (package-license perl))))
 
+(define-public perl-catalyst-view-json
+  (package
+    (name "perl-catalyst-view-json")
+    (version "0.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-View-JSON-" version ".tar.gz"))
+       (sha256
+        (base32
+         "184pyghlrkl7p387bnyvswi2d9myvdg4v3lax6xrd59shskvpmkm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-yaml" ,perl-yaml)))
+    (inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-View-JSON")
+    (synopsis "Catalyst JSON view")
+    (description "Catalyst::View::JSON is a Catalyst View handler that returns
+stash data in JSON format.")
+    (license (package-license perl))))
+
 (define-public perl-catalystx-component-traits
   (package
     (name "perl-catalystx-component-traits")
