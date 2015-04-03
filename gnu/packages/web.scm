@@ -1075,6 +1075,32 @@ behind a proxy.  Using this module, the request base ($c->req->base) is
 replaced with the contents of the X-Request-Base header.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-view-download
+  (package
+    (name "perl-catalyst-view-download")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAUDEON/"
+                           "Catalyst-View-Download-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qgq6y9iwfbhbkbgpw9czang2ami6z8jk1zlagrzdisy4igqzkvs"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-test-simple" ,perl-test-simple)
+       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)
+       ("perl-text-csv" ,perl-text-csv)
+       ("perl-xml-simple" ,perl-xml-simple)))
+    (home-page "http://search.cpan.org/dist/Catalyst-View-Download")
+    (synopsis "Download data in many formats")
+    (description "The purpose of this module is to provide a method for
+downloading data into many supportable formats.  For example, downloading a
+table based report in a variety of formats (CSV, HTML, etc.). ")
+    (license (package-license perl))))
+
 (define-public perl-catalystx-component-traits
   (package
     (name "perl-catalystx-component-traits")
