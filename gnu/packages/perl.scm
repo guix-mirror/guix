@@ -4043,6 +4043,27 @@ STDOUT, STDERR, warnings, exceptions, would-be exit codes, and return values
 from boxed blocks of test code.")
     (license (package-license perl))))
 
+(define-public perl-test-utf8
+  (package
+    (name "perl-test-utf8")
+    (version "1.01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MARKF/"
+                           "Test-utf8-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yhvf735v334qqvp9zg7i66qyk6r4cbk5s2psv93d3fdd4bindzg"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Test-utf8")
+    (synopsis "UTF-8 testing in Perl")
+    (description "This module is a collection of tests useful for dealing with
+UTF-8 strings in Perl.  This module has two types of tests: The validity tests
+check if a string is valid and not corrupt, whereas the characteristics tests
+will check that string has a given set of characteristics.")
+    (license (package-license perl))))
+
 (define-public perl-test-warn
   (package
     (name "perl-test-warn")
