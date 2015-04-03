@@ -1044,6 +1044,37 @@ run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-traitfor-request-proxybase
+  (package
+    (name "perl-catalyst-traitfor-request-proxybase")
+    (version "0.000005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-TraitFor-Request-ProxyBase-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "02kir63d5cs2ipj3fn1qlmmx3gqi1xqzrxfr4pv5vjhjgsm0zgx7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-catalystx-roleapplicator" ,perl-catalystx-roleapplicator)
+       ("perl-http-message" ,perl-http-message)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-uri" ,perl-uri)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-TraitFor-Request-ProxyBase")
+    (synopsis "Replace request base with value passed by HTTP proxy")
+    (description "This module is a Moose::Role which allows you more
+flexibility in your application's deployment configurations when deployed
+behind a proxy.  Using this module, the request base ($c->req->base) is
+replaced with the contents of the X-Request-Base header.")
+    (license (package-license perl))))
+
 (define-public perl-catalystx-component-traits
   (package
     (name "perl-catalystx-component-traits")
