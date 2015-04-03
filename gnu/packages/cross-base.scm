@@ -130,12 +130,16 @@ may be either a libc package or #f.)"
                                                   ,target))
                          (binutils (string-append
                                     (assoc-ref inputs "binutils-cross")
-                                    "/bin/" ,target "-")))
+                                    "/bin/" ,target "-"))
+                         (wrapper  (string-append
+                                    (assoc-ref inputs "ld-wrapper-cross")
+                                    "/bin/" ,target "-ld")))
                     (for-each (lambda (file)
                                 (symlink (string-append binutils file)
                                          (string-append libexec "/"
                                                         file)))
-                              '("as" "ld" "nm"))
+                              '("as" "nm"))
+                    (symlink wrapper (string-append libexec "/ld"))
                     #t))
                 ,phases)))
          (if libc
@@ -214,7 +218,11 @@ GCC that does not target a libc; otherwise, target that libc."
        ,@(cross-gcc-arguments target libc)))
 
     (native-inputs
-     `(("binutils-cross" ,xbinutils)
+     `(("ld-wrapper-cross" ,(make-ld-wrapper
+                             (string-append "ld-wrapper-" target)
+                             #:target target
+                             #:binutils xbinutils))
+       ("binutils-cross" ,xbinutils)
 
        ;; Call it differently so that the builder can check whether the "libc"
        ;; input is #f.

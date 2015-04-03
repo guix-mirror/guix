@@ -358,11 +358,14 @@ included.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 
-(define* (make-ld-wrapper name #:key binutils guile bash
+(define* (make-ld-wrapper name #:key binutils
+                          (guile (canonical-package guile-2.0))
+                          (bash (canonical-package bash)) target
                           (guile-for-build guile))
   "Return a package called NAME that contains a wrapper for the 'ld' program
-of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  The
-wrapper uses GUILE and BASH."
+of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  When
+TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
+'TARGET-ld'.  The wrapper uses GUILE and BASH."
   (package
     (name name)
     (version "0")
@@ -382,8 +385,10 @@ wrapper uses GUILE and BASH."
 
                    (let* ((out (assoc-ref %outputs "out"))
                           (bin (string-append out "/bin"))
-                          (ld  (string-append bin "/ld"))
-                          (go  (string-append bin "/ld.go")))
+                          (ld  ,(if target
+                                    `(string-append bin "/" ,target "-ld")
+                                    '(string-append bin "/ld")))
+                          (go  (string-append ld ".go")))
 
                      (setvbuf (current-output-port) _IOLBF)
                      (format #t "building ~s/bin/ld wrapper in ~s~%"
@@ -403,7 +408,10 @@ wrapper uses GUILE and BASH."
                                        "/bin/bash"))
                        (("@LD@")
                         (string-append (assoc-ref %build-inputs "binutils")
-                                       "/bin/ld")))
+                                       ,(if target
+                                            (string-append "/bin/"
+                                                           target "-ld")
+                                            "/bin/ld"))))
                      (chmod ld #o555)
                      (compile-file ld #:output-file go)))))
     (synopsis "The linker wrapper")
