@@ -4202,6 +4202,27 @@ installed.")
 generation of tests in nested combinations of contexts.")
     (license (package-license perl))))  ;See LICENSE
 
+(define-public perl-test-yaml
+  (package
+    (name "perl-test-yaml")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+                           "Test-YAML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "079nayc0fp2fwjv8s2yr069bdffln699j6z3lqr5dpx1v2qg82ck"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-test-base" ,perl-test-base)))
+    (home-page "http://search.cpan.org/dist/Test-YAML")
+    (synopsis "Testing module for YAML implementations")
+    (description "Test::YAML is a subclass of Test::Base with YAML specific
+support.")
+    (license (package-license perl))))
+
 (define-public perl-text-balanced
   (package
     (name "perl-text-balanced")
