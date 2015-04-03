@@ -1077,6 +1077,29 @@ those traits using \"new_with_traits\" in MooseX::Traits from
 MooseX::Traits::Pluggable.")
     (license (package-license perl))))
 
+(define-public perl-catalystx-roleapplicator
+  (package
+    (name "perl-catalystx-roleapplicator")
+    (version "0.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HD/HDP/"
+                           "CatalystX-RoleApplicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vwaapxn8g5hs2xp63c4dwv9jmapmji4272fakssvgc9frklg3p2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-relatedclassroles" ,perl-moosex-relatedclassroles)))
+    (home-page "http://search.cpan.org/dist/CatalystX-RoleApplicator")
+    (synopsis "Apply roles to Catalyst classes")
+    (description "CatalystX::RoleApplicator applies roles to Catalyst
+application classes.")
+    (license (package-license perl))))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
