@@ -866,6 +866,35 @@ formats.")
 management in web applications together: the state, and the store.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-session-state-cookie
+  (package
+    (name "perl-catalyst-plugin-session-state-cookie")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTROUT/"
+                           "Catalyst-Plugin-Session-State-Cookie-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rvxbfnpf9x2pc2zgpazlcgdlr2dijmxgmcs0m5nazs0w6xikssb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Session-State-Cookie")
+    (synopsis "Maintain session IDs using cookies")
+    (description "In order for Catalyst::Plugin::Session to work, the session
+ID needs to be stored on the client, and the session data needs to be stored
+on the server.  This plugin stores the session ID on the client using the
+cookie mechanism.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-static-simple
   (package
     (name "perl-catalyst-plugin-static-simple")
