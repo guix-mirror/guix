@@ -895,6 +895,36 @@ on the server.  This plugin stores the session ID on the client using the
 cookie mechanism.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-session-store-fastmmap
+  (package
+    (name "perl-catalyst-plugin-session-store-fastmmap")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Session-Store-FastMmap-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0x3j6zv3wr41jlwr6yb2jpmcx019ibyn11y8653ffnwhpzbpzsxs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cache-fastmmap" ,perl-cache-fastmmap)
+       ("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-path-class" ,perl-path-class)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Session-Store-FastMmap")
+    (synopsis "FastMmap session storage backend.")
+    (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
+storage plugin for Catalyst that uses an mmap'ed file to act as a shared
+memory interprocess cache.  It is based on Cache::FastMmap.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-static-simple
   (package
     (name "perl-catalyst-plugin-static-simple")
