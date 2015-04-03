@@ -2616,6 +2616,28 @@ BUILD methods are called.  It tries to be as non-intrusive as possible.")
 validation to Moose.")
     (license (package-license perl))))
 
+(define-public perl-moosex-relatedclassroles
+  (package
+    (name "perl-moosex-relatedclassroles")
+    (version "0.004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HD/HDP/"
+                           "MooseX-RelatedClassRoles-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17vynkf6m5d039qkr4in1c9lflr8hnwp1fgzdwhj4q6jglipmnrh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-moosex-role-parameterized" ,perl-moosex-role-parameterized)))
+    (home-page "http://search.cpan.org/dist/MooseX-RelatedClassRoles")
+    (synopsis "Apply roles to a related Perl class")
+    (description "This module applies roles to make a subclass instead of
+manually setting up a subclass.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-role-parameterized
   (package
     (name "perl-moosex-role-parameterized")
