@@ -3602,6 +3602,32 @@ it can be used equally well for processing any other kind of text based
 documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
     (license (package-license perl))))
 
+(define-public perl-test-base
+  (package
+    (name "perl-test-base")
+    (version "0.88")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+                           "Test-Base-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fch1cvivnszbnwhpfmwv1rin04j5xkj1n1ylfmlxg6bm72qqdjj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-algorithm-diff" ,perl-algorithm-diff)
+       ("perl-text-diff" ,perl-text-diff)))
+    (propagated-inputs
+     `(("perl-spiffy" ,perl-spiffy)
+       ("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/Test-Base")
+    (synopsis "Data-driven testing framework for Perl")
+    (description "Test::Base gives a way to trivially write your own test
+framework base class.  It concentrates on offering reusable data driven
+patterns, so that you can write tests with a minimum of code.")
+    (license (package-license perl))))
+
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
