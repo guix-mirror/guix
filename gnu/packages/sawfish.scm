@@ -36,15 +36,14 @@
 (define-public librep
   (package
     (name "librep")
-    (version "0.92.4")
+    (version "0.92.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.tuxfamily.org/" name "/"
                                   name "_" version ".tar.xz"))
               (sha256
                (base32
-                "0297m24p2y8j3wavf8qqyriic7ls2392cmfn96y0pi83r5qckc25"))
-              (patches (list (search-patch "librep-rules.mk.patch")))))
+                "0zsy5gi8kvz5vq41y5rzm6lfi3dpiwbg4diwb6d30qfi72mrpni2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("makeinfo"   ,texinfo)
