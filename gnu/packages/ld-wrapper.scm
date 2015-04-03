@@ -8,7 +8,7 @@
 # .go file (see <http://bugs.gnu.org/12519>).
 
 main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
-exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "$@"
+exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>

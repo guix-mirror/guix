@@ -393,6 +393,8 @@ wrapper uses GUILE and BASH."
                      (mkdir-p bin)
                      (copy-file (assoc-ref %build-inputs "wrapper") ld)
                      (substitute* ld
+                       (("@SELF@")
+                        ld)
                        (("@GUILE@")
                         (string-append (assoc-ref %build-inputs "guile")
                                        "/bin/guile"))
