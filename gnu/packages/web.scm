@@ -925,6 +925,31 @@ storage plugin for Catalyst that uses an mmap'ed file to act as a shared
 memory interprocess cache.  It is based on Cache::FastMmap.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-stacktrace
+  (package
+    (name "perl-catalyst-plugin-stacktrace")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-StackTrace-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b2ksz74cpigxqzf63rddar3vfmnbpwpdcbs11v0ml89pb8ar79j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-StackTrace")
+    (synopsis "Stack trace on the Catalyst debug screen")
+    (description "This plugin enhances the standard Catalyst debug screen by
+including a stack trace of your appliation up to the point where the error
+occurred.  Each stack frame is displayed along with the package name, line
+number, file name, and code context surrounding the line number.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-static-simple
   (package
     (name "perl-catalyst-plugin-static-simple")
