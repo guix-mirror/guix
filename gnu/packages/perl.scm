@@ -281,6 +281,27 @@ runs of an application or invocations of a CGI-style script or simply as an
 easy to use abstraction of the filesystem or shared memory.")
     (license (package-license perl))))
 
+(define-public perl-cache-fastmmap
+  (package
+    (name "perl-cache-fastmmap")
+    (version "1.40")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RO/ROBM/"
+                           "Cache-FastMmap-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h3ckr04cdn6dvl40m4m97vl5ybf30v1lwhw3jvkr92kpksvq4hd"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Cache-FastMmap")
+    (synopsis "Shared memory interprocess cache via mmap")
+    (description "A shared memory cache through an mmap'ed file.  It's core is
+written in C for performance.  It uses fcntl locking to ensure multiple
+processes can safely access the cache at the same time.  It uses a basic LRU
+algorithm to keep the most used entries in the cache.")
+    (license (package-license perl))))
+
 (define-public perl-capture-tiny
   (package
     (name "perl-capture-tiny")
