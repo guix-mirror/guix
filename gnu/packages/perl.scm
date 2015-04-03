@@ -4563,6 +4563,27 @@ it.  With this module, you can add your own magic to any variable without
 having to write a single line of XS.")
     (license (package-license perl))))
 
+(define-public perl-yaml
+  (package
+    (name "perl-yaml")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+                           "YAML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sswbkyisgny7ksw34n7zdaxrhsbbn7dgjb9gjybpzhcnml476kc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-yaml" ,perl-test-yaml)))
+    (home-page "http://search.cpan.org/dist/YAML")
+    (synopsis "YAML for Perl")
+    (description "The YAML.pm module implements a YAML Loader and Dumper based
+on the YAML 1.0 specification.")
+    (license (package-license perl))))
+
 (define-public perl-yaml-tiny
   (package
     (name "perl-yaml-tiny")
