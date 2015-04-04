@@ -1571,9 +1571,9 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python2-certifi
   (package-with-python2 python-certifi))
 
-(define-public python2-requests
+(define-public python-requests
   (package
-    (name "python2-requests")
+    (name "python-requests")
     (version "2.4.0")
     (source (origin
              (method url-fetch)
@@ -1588,14 +1588,16 @@ is used by the Requests library to verify HTTPS requests.")
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-certifi" ,python-certifi)))
-    (arguments `(#:tests? #f ; no tests
-                 #:python ,python-2))
+    (arguments `(#:tests? #f)) ; no tests
     (home-page "http://python-requests.org/")
     (synopsis "Python HTTP library")
     (description
      "Requests is a Python HTTP client library.  It aims to be easier to use
 than Python’s urllib2 library.")
     (license asl2.0)))
+
+(define-public python2-requests
+  (package-with-python2 python-requests))
 
 (define-public python-jsonschema
   (package
