@@ -4831,6 +4831,27 @@ Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{lircd}.
 @end deffn
 
+@code{(gnu services upower)} provides a power-management daemon:
+
+@deffn {Monadic Procedure} upower-service [#:upower @var{upower}] @
+                         [#:watts-up-pro? #f] @
+                         [#:poll-batteries? #t] @
+                         [#:ignore-lid? #f] @
+                         [#:use-percentage-for-policy? #f] @
+                         [#:percentage-low 10] @
+                         [#:percentage-critical 3] @
+                         [#:percentage-action 2] @
+                         [#:time-low 1200] @
+                         [#:time-critical 300] @
+                         [#:time-action 120] @
+                         [#:critical-power-action 'hybrid-sleep]
+Return a service that runs @uref{http://upower.freedesktop.org/,
+@command{upowerd}}, a system-wide monitor for power consumption and battery
+levels, with the given configuration settings.  It implements the
+@code{org.freedesktop.UPower} D-Bus interface, and is notably used by
+GNOME.
+@end deffn
+
 @code{(gnu services colord)} provides a color management service:
 
 @deffn {Monadic Procedure} colord-service [#:colord @var{colord}]

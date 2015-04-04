@@ -330,6 +330,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/lirc.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
+  gnu/services/upower.scm			\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\
