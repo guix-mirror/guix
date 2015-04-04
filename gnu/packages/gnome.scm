@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1668,3 +1670,51 @@ library.")
      "Mines (previously gnomine) is a puzzle game where you locate mines
 floating in an ocean using only your brain and a little bit of luck.")
     (license license:gpl2+)))
+
+(define-public gnome-terminal
+  (package
+    (name "gnome-terminal")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1s3zwqxs4crlqmh6l7s7n87pbmh2nnjdvhxlkalh58pbl0bk0qrd"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--disable-migration" "--disable-search-provider"
+             "--without-nautilus-extension")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("vte" ,vte)
+       ("gnutls" ,gnutls)
+       ("dconf" ,dconf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("util-linux" ,util-linux)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/Terminal")
+    (synopsis "Terminal emulator")
+    (description
+     "GNOME Terminal is a terminal emulator application for accessing a
+UNIX shell environment which can be used to run programs available on
+your system.
+
+It supports several profiles, multiple tabs and implements several
+keyboard shortcuts.")
+    (license license:gpl3+)))
