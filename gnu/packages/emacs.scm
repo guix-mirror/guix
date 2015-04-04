@@ -28,6 +28,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gnutls)
@@ -92,6 +93,7 @@
        ("libpng" ,libpng)
        ("zlib" ,zlib)
 
+       ("librsvg" ,librsvg)
        ("libxpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("libice" ,libice)
@@ -126,7 +128,7 @@ editor (console only)")
     (inputs (fold alist-delete
                   (package-inputs emacs)
                   '("libx11" "gtk+" "libxft" "libtiff" "giflib" "libjpeg"
-                    "libpng" "libxpm" "libice" "libsm"
+                    "libpng" "librsvg" "libxpm" "libice" "libsm"
 
                     ;; D-Bus depends on libx11, so remove it as well.
                     "dbus")))))
