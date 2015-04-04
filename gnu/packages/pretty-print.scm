@@ -152,11 +152,7 @@ different programming languages.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "18xdalxg7yzrxc1njzgw7aryq2jdm7zq2yqz41sc7k6il5z6lcq1"))
-      (patches
-       (list (search-patch
-              ;; Patch submitted as Savannah item #41786
-              "source-highlight-regexrange-test.patch")))))
+        "18xdalxg7yzrxc1njzgw7aryq2jdm7zq2yqz41sc7k6il5z6lcq1"))))
     (build-system gnu-build-system)
     ;; The ctags that comes with emacs does not support the --excmd options,
     ;; so can't be used
