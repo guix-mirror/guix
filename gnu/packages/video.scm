@@ -66,6 +66,7 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
@@ -76,6 +77,44 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages zip))
+
+(define-public aalib
+  (package
+    (name "aalib")
+    (version "1.4rc5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/aa-project/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vkh19gb76agvh4h87ysbrgy82hrw88lnsvhynjf4vng629dmpgv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("makeinfo" ,texinfo)))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    ;; This old `configure' script doesn't support
+                    ;; variables passed as arguments.
+                    (let ((out     (assoc-ref outputs "out"))
+                          (ncurses (assoc-ref inputs "ncurses")))
+                      (setenv "CONFIG_SHELL" (which "bash"))
+                      (zero? (system* "./configure"
+                                      (string-append "--prefix=" out)
+                                      (string-append "--with-ncurses="
+                                                     ncurses)))))))))
+    (home-page "http://aa-project.sourceforge.net/aalib/")
+    (synopsis "ASCII-art library")
+    (description
+     "AA-lib is a low level gfx library which does not require graphics device.
+In fact, there is no graphical output possible.  AA-lib replaces those
+old-fashioned output methods with powerful ascii-art renderer.")
+    (license license:lgpl2.0+)))
 
 (define-public liba52
   (package
