@@ -176,6 +176,7 @@ This package provides the core library and elements.")
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")
+        ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
      `(#:configure-flags
@@ -184,10 +185,12 @@ This package provides the core library and elements.")
                             "/share/gtk-doc/html"))
        #:phases
        (alist-cons-before
-        'configure 'patch-test-pb-utils
+        'configure 'patch
         (lambda _
           (substitute* "tests/check/libs/pbutils.c"
-            (("/bin/sh") (which "sh"))))
+            (("/bin/sh") (which "sh")))
+          ;; for g-ir-scanner.
+          (setenv "CC" "gcc"))
         %standard-phases)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
