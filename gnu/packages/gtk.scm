@@ -34,6 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
@@ -433,7 +434,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.14.7")
+   (version "3.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -441,11 +442,12 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0vm40n6nf0w3vv54wqy67jcxddka7hplksi093xim3119yq196gv"))))
+              "1si6ihl1wlvag8qq3166skr9fnm9i33dimbfry1j628qzqc76qff"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
+      ("libepoxy" ,libepoxy)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
       ("libxdamage" ,libxdamage)
@@ -456,25 +458,28 @@ application suites.")
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
+      ("gettext" ,gnu-gettext)
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
     `(#:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key inputs #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           ;; Disable most tests, failing in the chroot with the message:
-           ;; D-Bus library appears to be incorrectly set up; failed to read
-           ;; machine uuid: Failed to open "/etc/machine-id": No such file or
-           ;; directory.
-           ;; See the manual page for dbus-uuidgen to correct this issue.
-           (substitute* "testsuite/Makefile.in"
-             (("SUBDIRS = gdk gtk a11y css reftests")
-              "SUBDIRS = gdk"))
-           (apply configure args)))
+      (alist-cons-before
+       'configure 'pre-configure
+       (lambda _
+         ;; Disable most tests, failing in the chroot with the message:
+         ;; D-Bus library appears to be incorrectly set up; failed to read
+         ;; machine uuid: Failed to open "/etc/machine-id": No such file or
+         ;; directory.
+         ;; See the manual page for dbus-uuidgen to correct this issue.
+         (substitute* "testsuite/Makefile.in"
+           (("SUBDIRS = gdk gtk a11y css reftests")
+            "SUBDIRS = gdk"))
+         (substitute* '("demos/widget-factory/Makefile.in"
+                        "demos/gtk-demo/Makefile.in")
+           (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
+         #t)
        %standard-phases)))))
 
 ;;;
