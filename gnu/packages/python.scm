@@ -3448,3 +3448,32 @@ Python style, together with a fast and comfortable execution environment.")
 library for Python programs.  It is useful to implement low-level X clients.
 It is written entirely in Python.")
     (license gpl2+)))
+
+(define-public python-singledispatch
+  (package
+    (name "python-singledispatch")
+    (version "3.4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/singledispatch/"
+             "singledispatch-" version ".tar.gz"))
+       (sha256
+        (base32
+         "171b7ip0hsq5qm83np40h3phlr36ym18w0lay0a8v08kvy3sy1jv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page
+     "http://docs.python.org/3/library/functools.html#functools.singledispatch")
+    (synopsis "Backport of singledispatch feature from Python 3.4")
+    (description
+     "This library brings functools.singledispatch from Python 3.4 to Python
+2.6-3.3.")
+    (license license:expat)))
+
+(define-public python2-singledispatch
+  (package-with-python2 python-singledispatch))
