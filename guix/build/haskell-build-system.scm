@@ -70,26 +70,28 @@ and parameters ~s~%"
                     #:allow-other-keys)
   "Configure a given Haskell package."
   (let* ((out (assoc-ref outputs "out"))
+         (doc (assoc-ref outputs "doc"))
+         (lib (assoc-ref outputs "lib"))
+         (bin (assoc-ref outputs "bin"))
          (input-dirs (match inputs
                        (((_ . dir) ...)
                         dir)
                        (_ '())))
          (params (append `(,(string-append "--prefix=" out))
+                         `(,(string-append "--libdir=" (or lib out) "/lib"))
+                         `(,(string-append "--bindir=" (or bin out) "/bin"))
                          `(,(string-append
-                             "--docdir=" out "/share/doc/"
-                             (package-name-version out)))
+                             "--docdir=" (or doc out)
+                             "/share/doc/" (package-name-version out)))
+                         '("--libsubdir=$compiler/$pkg-$version")
                          `(,(string-append "--package-db=" %tmp-db-dir))
                          '("--global")
-                         `(,(string-append
-                             "--extra-include-dirs="
-                             (list->search-path-as-string
-                              (search-path-as-list '("include") input-dirs)
-                              ":")))
-                         `(,(string-append
-                             "--extra-lib-dirs="
-                             (list->search-path-as-string
-                              (search-path-as-list '("lib") input-dirs)
-                              ":")))
+                         `(,@(map
+                              (cut string-append "--extra-include-dirs=" <>)
+                              (search-path-as-list '("include") input-dirs)))
+                         `(,@(map
+                              (cut string-append "--extra-lib-dirs=" <>)
+                              (search-path-as-list '("lib") input-dirs)))
                          (if tests?
                              '("--enable-tests")
                              '())
@@ -140,7 +142,7 @@ first match and return the content of the group."
                         dir)
                        (_ '())))
          (conf-dirs (search-path-as-list
-                     `(,(string-append "lib/" system "-"
+                     `(,(string-append "lib/"
                                        (package-name-version haskell)
                                        "/package.conf.d"))
                      input-dirs))
@@ -160,8 +162,8 @@ generate the cache as it would clash in user profiles."
   (let* ((out (assoc-ref outputs "out"))
          (haskell  (assoc-ref inputs "haskell"))
          (lib (string-append out "/lib"))
-         (config-dir (string-append lib "/" system
-                                    "-" (package-name-version haskell)
+         (config-dir (string-append lib "/"
+                                    (package-name-version haskell)
                                     "/package.conf.d"))
          (id-rx (make-regexp "^id: *(.*)$"))
          (lib-rx (make-regexp "lib.*\\.(a|so)"))
@@ -189,21 +191,13 @@ generate the cache as it would clash in user profiles."
 (define* (haddock #:key outputs haddock? haddock-flags #:allow-other-keys)
   "Run the test suite of a given Haskell package."
   (if haddock?
-      (let* ((out (assoc-ref outputs "out"))
-             (doc-src (string-append (getcwd) "/dist/doc"))
-             (doc-dest (string-append out "/share/doc/"
-                                      (package-name-version out))))
-        (if (run-setuphs "haddock" haddock-flags)
-            (begin
-              (copy-recursively doc-src doc-dest)
-              #t)
-            #f))
+      (run-setuphs "haddock" haddock-flags)
       #t))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (add-before configure setup-compiler setup-compiler)
-    (add-after install haddock haddock)
+    (add-before install haddock haddock)
     (add-after install register register)
     (replace install install)
     (replace check check)
