@@ -468,6 +468,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libvpx-fix-ssse3-quantize.patch		\
   gnu/packages/patches/libvpx-vp9-out-of-bounds-access.patch	\
   gnu/packages/patches/linux-libre-libreboot-fix.patch		\
+  gnu/packages/patches/linux-libre-vblank-fix.patch		\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua51-liblua-so.patch                    \
