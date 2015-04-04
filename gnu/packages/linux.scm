@@ -2024,3 +2024,26 @@ the Linux IEEE-1394 subsystem, which provides direct access to the connected
 send to and receive from other nodes without requiring a kernel driver for the
 protocol in question.")
     (license lgpl2.1+)))
+
+(define-public libavc1394
+  (package
+    (name "libavc1394")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libavc1394/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lsv46jdqvdx5hx92v0z2cz3yh6212pz9gk0k3513sbaa04zzcbw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
+    (home-page "http://sourceforge.net/projects/libavc1394/")
+    (synopsis "AV/C protocol library for IEEE 1394")
+    (description
+     "Libavc1394 is a programming interface to the AV/C specification from
+the 1394 Trade Assocation.  AV/C stands for Audio/Video Control.")
+    (license lgpl2.1+)))
