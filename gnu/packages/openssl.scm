@@ -36,7 +36,8 @@
                                 ".tar.gz"))
             (sha256
              (base32
-              "0jijgzf72659pikms2bc5w31h78xrd1h5zp2r01an2h340y3kdhm"))))
+              "0jijgzf72659pikms2bc5w31h78xrd1h5zp2r01an2h340y3kdhm"))
+            (patches (list (search-patch "openssl-runpath.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
