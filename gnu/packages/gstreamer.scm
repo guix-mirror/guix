@@ -158,6 +158,7 @@ This package provides the core library and elements.")
        (base32
         "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
     (propagated-inputs
      `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
     (inputs
@@ -177,7 +178,11 @@ This package provides the core library and elements.")
         ("glib" ,glib "bin")
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     '(#:phases
+     `(#:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))
+       #:phases
        (alist-cons-before
         'configure 'patch-test-pb-utils
         (lambda _
