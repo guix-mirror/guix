@@ -2001,3 +2001,26 @@ also contains the libsysfs library.")
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
     (license gpl2)))
+
+(define-public libraw1394
+  (package
+    (name "libraw1394")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/ieee1394/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0kwnf4ha45c04mhc4yla672aqmvqqihxix1gvblns5cd2pc2cc8b"))))
+    (build-system gnu-build-system)
+    (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
+    (synopsis "Interface library for the Linux IEEE1394 drivers")
+    (description
+     "Libraw1394 is the only supported interface to the kernel side raw1394 of
+the Linux IEEE-1394 subsystem, which provides direct access to the connected
+1394 buses to user space.  Through libraw1394/raw1394, applications can directly
+send to and receive from other nodes without requiring a kernel driver for the
+protocol in question.")
+    (license lgpl2.1+)))
