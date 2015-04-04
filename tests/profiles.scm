@@ -47,17 +47,6 @@
 ;; Globally disable grafts because they can trigger early builds.
 (%graft? #f)
 
-(define-syntax-rule (test-assertm name exp)
-  (test-assert name
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
-(define-syntax-rule (test-equalm name value exp)
-  (test-equal name
-    value
-    (run-with-store %store exp
-                    #:guile-for-build (%guile-for-build))))
-
 ;; Example manifest entries.
 
 (define guile-1.8.8
