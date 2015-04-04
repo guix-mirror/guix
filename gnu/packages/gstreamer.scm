@@ -88,11 +88,13 @@ arrays of data.")
        (base32
         "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
     (build-system gnu-build-system)
+    (arguments '(#:make-flags '("CC=gcc"))) ; for g-ir-scanner.
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
