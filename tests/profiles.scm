@@ -184,6 +184,7 @@
        (guile      (package->derivation %bootstrap-guile))
        (drv        (profile-derivation (manifest (list entry))
                                        #:info-dir? #f
+                                       #:ghc-package-cache? #f
                                        #:ca-certificate-bundle? #f))
        (profile -> (derivation->output-path drv))
        (bindir ->  (string-append profile "/bin"))
@@ -197,6 +198,7 @@
       ((entry ->   (package->manifest-entry packages:glibc "debug"))
        (drv        (profile-derivation (manifest (list entry))
                                        #:info-dir? #f
+                                       #:ghc-package-cache? #f
                                        #:ca-certificate-bundle? #f)))
     (return (derivation-inputs drv))))
 
