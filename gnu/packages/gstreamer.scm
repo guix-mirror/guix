@@ -88,7 +88,13 @@ arrays of data.")
        (base32
         "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
     (build-system gnu-build-system)
-    (arguments '(#:make-flags '("CC=gcc"))) ; for g-ir-scanner.
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:make-flags '("CC=gcc") ; for g-ir-scanner.
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
