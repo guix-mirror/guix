@@ -372,3 +372,31 @@ create an Internet radio station or a privately running jukebox and many
 things in between.")
     (home-page "http://icecast.org/")
     (license license:gpl2)))
+
+(define-public libshout
+  (package
+    (name "libshout")
+    (version "2.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xiph.org/releases/libshout/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vlj4dxfxg06xhvv0z2zjjlrjh5di2m28w7v16zcygsy99mmyg6g"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; shout.pc refers to all these.
+     `(("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("speex"     ,speex)))
+    (home-page "http://www.icecast.org/")
+    (synopsis "Audio streaming library for icecast encoders")
+    (description
+     "Libshout is a library for communicating with and sending data to an
+icecast server.  It handles the socket connection, the timing of the data,
+and prevents bad data from getting to the icecast server.")
+    (license license:gpl2+)))
