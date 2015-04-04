@@ -158,6 +158,8 @@ This package provides the core library and elements.")
        (base32
         "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
        ("orc" ,orc)
@@ -169,8 +171,7 @@ This package provides the core library and elements.")
        ("zlib" ,zlib)
        ("libXext" ,libxext)
        ("libxv" ,libxv)
-       ("alsa-lib" ,alsa-lib)
-       ("gstreamer" ,gstreamer)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")
