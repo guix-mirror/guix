@@ -3602,6 +3602,27 @@ it can be used equally well for processing any other kind of text based
 documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
     (license (package-license perl))))
 
+(define-public perl-template-timer
+  (package
+    (name "perl-template-timer")
+    (version "1.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PETDANCE/"
+                           "Template-Timer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d3pbcx1kz73ncg8s8lx3ifwphz838qy0m40gdar7790cnrlqcdp"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-template-toolkit" ,perl-template-toolkit)))
+    (home-page "http://search.cpan.org/dist/Template-Timer")
+    (synopsis "Profiling for Template Toolkit")
+    (description "Template::Timer provides inline profiling of the template
+processing in Perl code.")
+    (license (list gpl3 artistic2.0))))
+
 (define-public perl-test-base
   (package
     (name "perl-test-base")
