@@ -1300,3 +1300,30 @@ codec library.  It uses ASP features such as b-frames, global and quarter
 pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
 and custom quantization matrices.")
     (license license:gpl2+)))
+
+(define-public livestreamer
+  (package
+    (name "livestreamer")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/chrippa/livestreamer/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append "livestreamer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1dhgk8v8q1h3km4g5jc0cmjsxdaa2d456fvdb2wk7hmxmmwbqm9j"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests rely on external web servers
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-singledispatch" ,python-singledispatch)))
+    (synopsis "Internet video stream viewer")
+    (description "Livestreamer is a command-line utility that extracts streams
+from various services and pipes them into a video playing application.")
+    (home-page "http://livestreamer.io/")
+    (license license:bsd-2)))
