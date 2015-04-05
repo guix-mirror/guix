@@ -737,6 +737,7 @@ we're running in the final root."
     (operating-system-initrd os))
 
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
+                                           #:linux (operating-system-kernel os)
                                            #:mapped-devices mapped-devices)))
     (return #~(string-append #$initrd "/initrd"))))
 

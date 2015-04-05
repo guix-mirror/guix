@@ -149,6 +149,7 @@ made available under the /xchg CIFS share."
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
                          (base-initrd %linux-vm-file-systems
+                                      #:linux linux
                                       #:virtio? #t
                                       #:qemu-networking? #t))))
 

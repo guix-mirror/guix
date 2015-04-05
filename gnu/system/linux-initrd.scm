@@ -143,16 +143,17 @@ initrd code."
 
 (define* (base-initrd file-systems
                       #:key
+                      (linux linux-libre)
                       (mapped-devices '())
                       qemu-networking?
                       virtio?
                       volatile-root?
                       (extra-modules '()))
-  "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
-a list of file-systems to be mounted by the initrd, possibly in addition to
-the root file system specified on the kernel command line via '--root'.
-MAPPED-DEVICES is a list of device mappings to realize before FILE-SYSTEMS are
-mounted.
+  "Return a monadic derivation that builds a generic initrd, with kernel
+modules taken from LINUX.  FILE-SYSTEMS is a list of file-systems to be
+mounted by the initrd, possibly in addition to the root file system specified
+on the kernel command line via '--root'.  MAPPED-DEVICES is a list of device
+mappings to realize before FILE-SYSTEMS are mounted.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
 parameters.  When VIRTIO? is true, load additional modules so the initrd can
@@ -224,7 +225,7 @@ loaded at boot time in the order in which they appear."
              (open source target)))
          mapped-devices))
 
-  (mlet %store-monad ((kodir (flat-linux-module-directory linux-libre
+  (mlet %store-monad ((kodir (flat-linux-module-directory linux
                                                           linux-modules)))
     (expression->initrd
      #~(begin
