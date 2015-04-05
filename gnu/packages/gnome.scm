@@ -1630,7 +1630,7 @@ library.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.14.1")
+    (version "3.16.0")
     (source
      (origin
        (method url-fetch)
@@ -1639,7 +1639,7 @@ library.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0nbgvzlsznn3v83pdcx2d52r4ig1mvaijh633rjddx9rgq2ja7kv"))))
+         "0wfvqyryc1093l4dr75zv9h0jyn28z6wirdq03lm5w24qf9lvjjx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
