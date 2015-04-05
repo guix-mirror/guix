@@ -995,6 +995,26 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; containing gpl2.
     (license license:gpl2)))
 
+(define-public wavpack
+  (package
+    (name "wavpack")
+    (version "4.70.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.wavpack.com/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "191h8hv8qk72hfh1crg429i9yq3cminwqb249sy9zadbn1wy7b9c"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.wavpack.com/")
+    (synopsis "Hybrid lossless audio codec")
+    (description
+     "WavPack is an audio compression format with lossless, lossy and hybrid
+compression modes.  This package contains command-line programs and library to
+encode and decode wavpack files.")
+    (license license:bsd-3)))
+
 (define-public soundtouch
   (package
     (name "soundtouch")
