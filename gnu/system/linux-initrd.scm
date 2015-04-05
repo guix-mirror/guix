@@ -146,7 +146,7 @@ initrd code."
                       (linux linux-libre)
                       (mapped-devices '())
                       qemu-networking?
-                      virtio?
+                      (virtio? #t)
                       volatile-root?
                       (extra-modules '()))
   "Return a monadic derivation that builds a generic initrd, with kernel
@@ -157,7 +157,8 @@ mappings to realize before FILE-SYSTEMS are mounted.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
 parameters.  When VIRTIO? is true, load additional modules so the initrd can
-be used as a QEMU guest with para-virtualized I/O drivers.
+be used as a QEMU guest with the root file system on a para-virtualized block
+device.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost.
