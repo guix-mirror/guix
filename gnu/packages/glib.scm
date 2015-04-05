@@ -189,7 +189,11 @@ shared NFS home directories.")
     ;; by 'glib-compile-schemas'.
     (list (search-path-specification
            (variable "XDG_DATA_DIRS")
-           (files '("share")))))
+           (files '("share")))
+          ;; To load extra gio modules from glib-networking, etc.
+          (search-path-specification
+           (variable "GIO_EXTRA_MODULES")
+           (files '("lib/gio/modules")))))
    (search-paths native-search-paths)
 
    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
