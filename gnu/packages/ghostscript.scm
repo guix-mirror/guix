@@ -151,10 +151,12 @@ printing, and psresize, for adjusting page sizes.")
            (("/bin/sh") (which "bash"))))
       (alist-cons-after
        'build 'build-so
-       (lambda _ (system* "make" "so"))
+       (lambda _
+         (zero? (system* "make" "so")))
       (alist-cons-after
        'install 'install-so
-       (lambda _ (system* "make" "install-so"))
+       (lambda _
+         (zero? (system* "make" "install-so")))
       %standard-phases)))))
    (synopsis "PostScript and PDF interpreter")
    (description
