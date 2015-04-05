@@ -137,7 +137,22 @@ and its related documentation.")
                (setenv "CC" "gcc")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
-               (zero? (apply system* "./configure" flags))))))))
+               (zero? (apply system* "./configure" flags)))))
+         (add-after install fix-root-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'make install' puts things in strange places, so we need to
+             ;; clean it up ourselves.
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/nginx")))
+               ;; This directory is empty, so get rid of it.
+               (rmdir (string-append out "/logs"))
+               ;; Example configuration and HTML files belong in
+               ;; /share.
+               (mkdir-p share)
+               (rename-file (string-append out "/conf")
+                            (string-append share "/conf"))
+               (rename-file (string-append out "/html")
+                            (string-append share "/html"))))))))
     (home-page "http://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
