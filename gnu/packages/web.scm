@@ -1597,6 +1597,30 @@ of the negotiable variants and the value of the various Accept* header
 fields in the request.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
 
+(define-public perl-http-parser
+  (package
+    (name "perl-http-parser")
+    (version "0.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ED/EDECA/"
+                           "HTTP-Parser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0idwq3jk595xil65lmxz128ha7s3r2n5zknisddpgwnqrghs3igq"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-message" ,perl-http-message)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/HTTP-Parser")
+    (synopsis "Parse HTTP/1.1 requests")
+    (description "This is an HTTP request parser.  It takes chunks of text as
+received and returns a 'hint' as to what is required, or returns the
+HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
+supported.")
+    (license (package-license perl))))
+
 (define-public perl-http-request-ascgi
   (package
     (name "perl-http-request-ascgi")
