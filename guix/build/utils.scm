@@ -32,6 +32,7 @@
   #:re-export (alist-cons
                alist-delete)
   #:export (%store-directory
+            store-file-name?
             parallel-job-count
 
             directory-exists?
@@ -80,6 +81,10 @@
   "Return the directory name of the store."
   (or (getenv "NIX_STORE")
       "/gnu/store"))
+
+(define (store-file-name? file)
+  "Return true if FILE is in the store."
+  (string-prefix? (%store-directory) file))
 
 (define parallel-job-count
   ;; Number of processes to be passed next to GNU Make's `-j' argument.

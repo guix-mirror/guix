@@ -18,6 +18,7 @@
 
 (define-module (guix build gremlin)
   #:use-module (guix elf)
+  #:use-module ((guix build utils) #:select (store-file-name?))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -255,14 +256,23 @@ exceeds total size~%"
                       (compose parse-elf get-bytevector-all)))
            (dyninfo (elf-dynamic-info elf)))
       (when dyninfo
-        (let* ((runpath   (elf-dynamic-info-runpath dyninfo))
+        (let* ((runpath   (filter store-file-name?
+                                  (elf-dynamic-info-runpath dyninfo)))
+               (bogus     (remove store-file-name?
+                                  (elf-dynamic-info-runpath dyninfo)))
                (needed    (remove always-found?
                                   (elf-dynamic-info-needed dyninfo)))
                (not-found (remove (cut search-path runpath <>)
                                   needed)))
+          ;; XXX: $ORIGIN is not supported.
+          (unless (null? bogus)
+            (format (current-error-port)
+                    "~a: warning: RUNPATH contains bogus entries: ~s~%"
+                    file bogus))
+
           (for-each (lambda (lib)
                       (format (current-error-port)
-                              "error: '~a' depends on '~a', which cannot \
+                              "~a: error: depends on '~a', which cannot \
 be found in RUNPATH ~s~%"
                               file lib runpath))
                     not-found)
