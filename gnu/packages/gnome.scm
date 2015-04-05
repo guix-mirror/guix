@@ -271,6 +271,7 @@ on the GNOME Desktop with a single simple application.")
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
     (synopsis
