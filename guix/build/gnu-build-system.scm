@@ -538,6 +538,15 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
         (format #t "not compressing documentation~%")
         #t)))
 
+(define* (delete-info-dir-file #:key outputs #:allow-other-keys)
+  (for-each (match-lambda
+          ((output . directory)
+           (let ((info-dir-file (string-append directory "/share/info/dir")))
+             (when (file-exists? info-dir-file)
+               (delete-file info-dir-file)))))
+            outputs)
+  #t)
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
@@ -549,6 +558,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
             patch-shebangs strip
             validate-runpath
             validate-documentation-location
+            delete-info-dir-file
             compress-documentation)))
 
 
