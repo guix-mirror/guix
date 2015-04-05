@@ -1627,6 +1627,47 @@ library.")
     ;; of gnome-python-desktop is given in 'COPYING'.
     (license license:lgpl2.1+)))
 
+(define-public glib-networking
+  (package
+    (name "glib-networking")
+    (version "2.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/glib-networking/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ij33bhvn7y5gagx4sbrw906dsjjjs9dllxn73pzv6x97c6k92lg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; FIXME: ca-certificates.crt is not available in the build environment.
+       '("--with-ca-certificates=no")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-giomoduledir
+                     ;; Install GIO modules into $out/lib/gio/modules.
+                     (lambda _
+                       (substitute* "configure"
+                         (("GIO_MODULE_DIR=.*")
+                          (string-append "GIO_MODULE_DIR=" %output
+                                         "/lib/gio/modules\n"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("p11-kit" ,p11-kit)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Network-related GIO modules")
+    (description
+     "This package contains various network related extensions for the GIO
+library.")
+    (license license:lgpl2.0+)))
+
 (define-public gnome-mines
   (package
     (name "gnome-mines")
