@@ -1,0 +1,17 @@
+This patch adds $(libdir) to the RUNPATH of 'gsc' and 'gsx'.
+
+--- gnu-ghostscript-9.14.0/base/unix-dll.mak	2015-04-05 15:12:45.386957927 +0200
++++ gnu-ghostscript-9.14.0/base/unix-dll.mak	2015-04-05 15:12:49.222982359 +0200
+@@ -91,11 +91,11 @@ $(GS_SO_MAJOR): $(GS_SO_MAJOR_MINOR)
+ # Build the small Ghostscript loaders, with Gtk+ and without
+ $(GSSOC_XE): $(GS_SO) $(PSSRC)$(SOC_LOADER)
+ 	$(GLCC) -g -o $(GSSOC_XE) $(PSSRC)dxmainc.c \
+-	-L$(BINDIR) -l$(GS_SO_BASE)
++	-L$(BINDIR) -l$(GS_SO_BASE) -Wl,-rpath=$(libdir)
+ 
+ $(GSSOX_XE): $(GS_SO) $(PSSRC)$(SOC_LOADER)
+ 	$(GLCC) -g $(SOC_CFLAGS) -o $(GSSOX_XE) $(PSSRC)$(SOC_LOADER) \
+-	-L$(BINDIR) -l$(GS_SO_BASE) $(SOC_LIBS)
++	-L$(BINDIR) -l$(GS_SO_BASE) $(SOC_LIBS) -Wl,-rpath=$(libdir)
+ 
+ # ------------------------- Recursive make targets ------------------------- #

@@ -126,8 +126,10 @@ printing, and psresize, for adjusting page sizes.")
             (method url-fetch)
             (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
                                 version ".tar.xz"))
-            (sha256 (base32
-                     "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))))
+            (sha256
+             (base32
+              "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
+            (patches (list (search-patch "ghostscript-runpath.patch")))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
              ("lcms" ,lcms)
