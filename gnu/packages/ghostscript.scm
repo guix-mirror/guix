@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,22 +143,19 @@ printing, and psresize, for adjusting page sizes.")
         ("tcl" ,tcl)))
    (arguments
     `(#:phases
-      (alist-cons-after
-       'configure 'patch-config-files
-       (lambda _
-         (substitute* "base/all-arch.mak"
-           (("/bin/sh") (which "bash")))
-         (substitute* "base/unixhead.mak"
-           (("/bin/sh") (which "bash"))))
-      (alist-cons-after
-       'build 'build-so
-       (lambda _
-         (zero? (system* "make" "so")))
-      (alist-cons-after
-       'install 'install-so
-       (lambda _
-         (zero? (system* "make" "install-so")))
-      %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-after 'configure 'patch-config-files
+                   (lambda _
+                     (substitute* "base/all-arch.mak"
+                       (("/bin/sh") (which "bash")))
+                     (substitute* "base/unixhead.mak"
+                       (("/bin/sh") (which "bash")))))
+        (add-after 'build 'build-so
+                   (lambda _
+                     (zero? (system* "make" "so"))))
+        (add-after 'install 'install-so
+                   (lambda _
+                     (zero? (system* "make" "install-so")))))))
    (synopsis "PostScript and PDF interpreter")
    (description
     "Ghostscript is an interpreter for the PostScript language and the PDF
