@@ -1139,6 +1139,32 @@ table based report in a variety of formats (CSV, HTML, etc.). ")
 stash data in JSON format.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-view-tt
+  (package
+    (name "perl-catalyst-view-tt")
+    (version "0.42")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-View-TT-" version ".tar.gz"))
+     (sha256
+      (base32
+       "18ciik9fqaqjfasa9wicbjrsl3gjhjc15xzaj3rif57an25cl178"))))
+  (build-system perl-build-system)
+  (propagated-inputs
+   `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+     ("perl-class-accessor" ,perl-class-accessor)
+     ("perl-mro-compat" ,perl-mro-compat)
+     ("perl-path-class" ,perl-path-class)
+     ("perl-template-timer" ,perl-template-timer)
+     ("perl-template-toolkit" ,perl-template-toolkit)))
+  (home-page "http://search.cpan.org/dist/Catalyst-View-TT")
+  (synopsis "Template View Class")
+  (description "This module is a Catalyst view class for the Template
+Toolkit.")
+  (license (package-license perl))))
+
 (define-public perl-catalystx-component-traits
   (package
     (name "perl-catalystx-component-traits")
