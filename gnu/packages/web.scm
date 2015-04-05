@@ -1871,6 +1871,33 @@ is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
     (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
 
+(define-public perl-net-server
+  (package
+    (name "perl-net-server")
+    (version "2.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RH/RHANDOM/"
+                           "Net-Server-" version ".tar.gz"))
+       (sha256
+        (base32
+         "182gfikn7r40kmm3d35m2qc6r8g0y1j8gxbn9ffaawf8xmm0a889"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Net-Server")
+    (synopsis "Extensible Perl server engine")
+    (description "Net::Server is an extensible, generic Perl server engine.
+It attempts to be a generic server as in Net::Daemon and NetServer::Generic.
+It includes with it the ability to run as an inetd
+process (Net::Server::INET), a single connection server (Net::Server or
+Net::Server::Single), a forking server (Net::Server::Fork), a preforking
+server which maintains a constant number of preforked
+children (Net::Server::PreForkSimple), or as a managed preforking server which
+maintains the number of children based on server load (Net::Server::PreFork).
+In all but the inetd type, the server provides the ability to connect to one
+or to multiple server ports.")
+    (license (package-license perl))))
+
 (define-public perl-plack
   (package
     (name "perl-plack")
