@@ -324,6 +324,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services.scm				\
   gnu/services/avahi.scm			\
   gnu/services/base.scm				\
+  gnu/services/colord.scm			\
   gnu/services/dbus.scm				\
   gnu/services/dmd.scm				\
   gnu/services/lirc.scm				\

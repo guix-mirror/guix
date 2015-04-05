@@ -4788,6 +4788,16 @@ Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{lircd}.
 @end deffn
 
+@code{(gnu services colord)} provides a color management service:
+
+@deffn {Monadic Procedure} colord-service [#:colord @var{colord}]
+Return a service that runs @command{colord}, a system service with a D-Bus
+interface to manage the color profiles of input and output devices such as
+screens and scanners.  It is notably used by the GNOME Color Manager graphical
+tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
+site} for more information.
+@end deffn
+
 @node Setuid Programs
 @subsection Setuid Programs
 
