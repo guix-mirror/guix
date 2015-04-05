@@ -30,26 +30,31 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages scanner)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
@@ -1826,3 +1831,69 @@ your system.
 It supports several profiles, multiple tabs and implements several
 keyboard shortcuts.")
     (license license:gpl3+)))
+
+(define-public colord
+  (package
+    (name "colord")
+    (version "1.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/colord/releases/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "01w97rgzk4qi6fp03scq5jyw0ayx11b479p7dkm2r77k84b9agph"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(;; The tests want to run valgrind.  Punt for now.
+       #:tests? #f
+       #:configure-flags (list "--localstatedir=/var"
+                               ;; GUSB not packaged yet.
+                               "--disable-gusb"
+                               ;; No dep on systemd.
+                               "--disable-systemd-login"
+                               ;; Wants to install to global completion dir;
+                               ;; punt.
+                               "--disable-bash-completion"
+                               ;; colord-gtk not packaged yet.
+                               "--disable-session-example"
+                               "--with-daemon-user=colord"
+                               "--enable-sane"
+                               (string-append "--with-udevrulesdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true")))
+                       (substitute* "src/Makefile.in"
+                         (("if test -w \\$\\(DESTDIR\\)\\$\\(prefix\\)/;")
+                          "if test -w $(DESTDIR)$(localstatedir);"))))
+         (add-before build set-cc
+                     (lambda _
+                       ;; Set $CC so that g-ir-scanner works.
+                       (setenv "CC" "gcc")
+                       #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libtool" ,libtool)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("libusb" ,libusb)
+       ("lcms" ,lcms)
+       ("sqlite" ,sqlite)
+       ("polkit" ,polkit)
+       ("sane-backends" ,sane-backends)))
+    (home-page "http://www.freedesktop.org/software/colord/")
+    (synopsis "Color management service")
+    (description "Colord is a system service that makes it easy to manage,
+install and generate color profiles to accurately color manage input and
+output devices.")
+    (license license:gpl2+)))
