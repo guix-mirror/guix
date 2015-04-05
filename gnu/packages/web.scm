@@ -1621,6 +1621,25 @@ HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
 supported.")
     (license (package-license perl))))
 
+(define-public perl-http-parser-xs
+  (package
+    (name "perl-http-parser-xs")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZUHO/"
+                           "HTTP-Parser-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02d84xq1mm53c7jl33qyb7v5w4372vydp74z6qj0vc96wcrnhkkr"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/HTTP-Parser-XS")
+    (synopsis "Fast HTTP request parser")
+    (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
+parser.")
+    (license (package-license perl))))
+
 (define-public perl-http-request-ascgi
   (package
     (name "perl-http-request-ascgi")
