@@ -103,7 +103,7 @@ features to enable users to create their discs easily and quickly.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.10.0")
+    (version "3.16.0")
     (source
      (origin
       (method url-fetch)
@@ -112,7 +112,7 @@ features to enable users to create their discs easily and quickly.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0p5p6wvmy5zvcdnmp5h2biz7rjrcw99chq5kkwcnb68flcmkb1ry"))))
+        "05lvik5cdh51xqd332qingph09zdhiaa1kqy9k2sk1simz4pvf8m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
