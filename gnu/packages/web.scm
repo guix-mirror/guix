@@ -166,6 +166,38 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;     except for two source files which are bsd-4 licensed.
     (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
 
+(define-public starman
+  (package
+    (name "starman")
+    (version "0.4011")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Starman-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1337zhi6v1sg4gd9rs3giybc7g1ysw8ak2da0vy098k4dacxyb57"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-parser-xs" ,perl-http-parser-xs)
+       ("perl-net-server" ,perl-net-server)
+       ("perl-plack" ,perl-plack)
+       ("perl-test-tcp" ,perl-test-tcp)))
+    (home-page "http://search.cpan.org/dist/Starman")
+    (synopsis "PSGI/Plack web server")
+    (description "Starman is a PSGI perl web server that has unique features
+such as high performance, preforking, signal support, superdaemon awareness,
+and UNIX socket support.")
+    (license (package-license perl))))
+
 (define-public jansson
   (package
     (name "jansson")
