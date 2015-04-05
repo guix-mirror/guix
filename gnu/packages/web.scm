@@ -1253,6 +1253,33 @@ MooseX::Traits::Pluggable.")
 application classes.")
     (license (package-license perl))))
 
+(define-public perl-catalystx-script-server-starman
+  (package
+    (name "perl-catalystx-script-server-starman")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AB/ABRAXXA/"
+                           "CatalystX-Script-Server-Starman-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0h02mpkc4cmi3jpvcd7iw7xyzx55bqvvl1qkf967gqkvpklm0qx5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("starman" ,starman)))
+    (home-page "http://search.cpan.org/dist/CatalystX-Script-Server-Starman")
+    (synopsis "Catalyst development server with Starman")
+    (description "This module provides a Catalyst extension to replace the
+development server with Starman.")
+    (license (package-license perl))))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
