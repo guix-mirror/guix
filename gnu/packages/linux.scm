@@ -402,8 +402,14 @@ providing the system administrator with some help in common tasks.")
                   (("build_kill=yes") "build_kill=no")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-use-tty-group"
-                           "--enable-ddate")
+     `(#:configure-flags (list "--disable-use-tty-group"
+                               "--enable-ddate"
+
+                               ;; Install completions where our
+                               ;; bash-completion package expects them.
+                               (string-append "--with-bashcompletiondir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/bash_completion.d"))
        #:phases (alist-cons-before
                  'check 'pre-check
                  (lambda* (#:key inputs outputs #:allow-other-keys)
