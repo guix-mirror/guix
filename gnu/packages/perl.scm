@@ -923,6 +923,30 @@ CPAN::Meta object are present.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-crypt-randpasswd
+  (package
+    (name "perl-crypt-randpasswd")
+    (version "0.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Crypt-RandPasswd-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ca8544371wp4vvqsa19lnhl02hczpkbwkgsgm65ziwwim3r1gdi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Crypt-RandPasswd")
+    (synopsis "Random password generator")
+    (description "Crypt::RandPasswd provides three functions that can be used
+to generate random passwords, constructed from words, letters, or characters.
+This code is a Perl implementation of the Automated Password Generator
+standard, like the program described in \"A Random Word Generator For
+Pronounceable Passwords\". This code is a re-engineering of the program
+contained in Appendix A of FIPS Publication 181, \"Standard for Automated
+Password Generator\".")
+    (license (package-license perl))))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
