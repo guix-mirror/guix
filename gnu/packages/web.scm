@@ -108,38 +108,36 @@ and its related documentation.")
     (arguments
      `(#:tests? #f                      ; no test target
        #:phases
-       (alist-cons-before
-        'configure 'patch-/bin/sh
-        (lambda _
-          (substitute* "auto/feature"
-            (("/bin/sh") (which "bash"))))
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((flags
-                  (list (string-append "--prefix=" (assoc-ref outputs "out"))
-                        "--with-http_ssl_module"
-                        "--with-pcre-jit"
-                        "--with-ipv6"
-                        "--with-debug"
-                        ;; Even when not cross-building, we pass the
-                        ;; --crossbuild option to avoid customizing for the
-                        ;; kernel version on the build machine.
-                        ,(let ((system "Linux")    ; uname -s
-                               (release "2.6.32")  ; uname -r
-                               ;; uname -m
-                               (machine (match (or (%current-target-system)
-                                                   (%current-system))
-                                          ("x86_64-linux"   "x86_64")
-                                          ("i686-linux"     "i686")
-                                          ("mips64el-linux" "mips64"))))
-                           (string-append "--crossbuild="
-                                          system ":" release ":" machine)))))
-             (setenv "CC" "gcc")
-             (format #t "environment variable `CC' set to `gcc'~%")
-             (format #t "configure flags: ~s~%" flags)
-             (zero? (apply system* "./configure" flags))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/sh
+           (lambda _
+             (substitute* "auto/feature"
+               (("/bin/sh") (which "bash")))))
+         (replace configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((flags
+                    (list (string-append "--prefix=" (assoc-ref outputs "out"))
+                          "--with-http_ssl_module"
+                          "--with-pcre-jit"
+                          "--with-ipv6"
+                          "--with-debug"
+                          ;; Even when not cross-building, we pass the
+                          ;; --crossbuild option to avoid customizing for the
+                          ;; kernel version on the build machine.
+                          ,(let ((system "Linux")    ; uname -s
+                                 (release "2.6.32")  ; uname -r
+                                 ;; uname -m
+                                 (machine (match (or (%current-target-system)
+                                                     (%current-system))
+                                            ("x86_64-linux"   "x86_64")
+                                            ("i686-linux"     "i686")
+                                            ("mips64el-linux" "mips64"))))
+                             (string-append "--crossbuild="
+                                            system ":" release ":" machine)))))
+               (setenv "CC" "gcc")
+               (format #t "environment variable `CC' set to `gcc'~%")
+               (format #t "configure flags: ~s~%" flags)
+               (zero? (apply system* "./configure" flags))))))))
     (home-page "http://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
