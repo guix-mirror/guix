@@ -543,6 +543,29 @@ DBIx::Class::Schema by scanning database table definitions and setting up the
 columns, primary keys, unique constraints and relationships.")
     (license (package-license perl))))
 
+(define-public perl-dbd-pg
+  (package
+    (name "perl-dbd-pg")
+    (version "3.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TU/TURNSTEP/"
+                           "DBD-Pg-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z0kf1kjgbi5f6nr63i2fnrx7629d9lvxg1q8sficwb3zdf1ggzx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-dbi" ,perl-dbi)))
+    (propagated-inputs
+     `(("perl-dbi" ,perl-dbi)
+       ("postgresql" ,postgresql)))
+    (home-page "http://search.cpan.org/dist/DBD-Pg")
+    (synopsis "DBI PostgreSQL interface")
+    (description "")
+    (license (package-license perl))))
+
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
