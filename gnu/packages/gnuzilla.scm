@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnuzilla)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -224,7 +225,8 @@ standards.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnuzilla/"
-                          version "/" name "-" version ".tar.bz2"))
+                          (first (string-split version #\-)) "/"
+                          name "-" version ".tar.bz2"))
       (sha256
        (base32
         "1a4l23msg4cpc4yp59q2z6xv63r6advlbnjy65v4djv6yhgnqf1i"))))
