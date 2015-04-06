@@ -1163,6 +1163,32 @@ combinations.  It represents the Gregorian calendar, extended backwards in
 time before its creation (in 1582).")
     (license artistic2.0)))
 
+(define-public perl-datetime-format-builder
+  (package
+    (name "perl-datetime-format-builder")
+    (version "0.81")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "DateTime-Format-Builder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vrkzw7kmxnyy403ykxgbg2kvgs99nggi4n9gi09ixivnn68mmbw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-class-factory-util" ,perl-class-factory-util)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-strptime" ,perl-datetime-format-strptime)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Builder")
+    (synopsis "Create DateTime parser classes and objects.")
+    (description "DateTime::Format::Builder creates DateTime parsers.  Many
+string formats of dates and times are simple and just require a basic regular
+expression to extract the relevant information.  Builder provides a simple way
+to do this without writing reams of structural code.")
+    (license artistic2.0)))
+
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
