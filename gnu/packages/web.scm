@@ -1888,6 +1888,31 @@ media types is defined by the media.types file.  If the ~/.media.types file
 exists it is used instead.")
     (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
 
+(define-public perl-lwp-protocol-https
+  (package
+    (name "perl-lwp-protocol-https")
+    (version "6.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSCHILLI/"
+                           "LWP-Protocol-https-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vxdjqj4bwq56m9h1bqqwkk3c6jr76f2zqzvwa26yjng3p686v5q"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-libwww" ,perl-libwww)
+       ;; Users should instead make sure SSL_ca_path is set properly.
+       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-net-http" ,perl-net-http)))
+    (home-page "http://search.cpan.org/dist/LWP-Protocol-https")
+    (synopsis "HTTPS support for LWP::UserAgent")
+    (description "The LWP::Protocol::https module provides support for using
+https schemed URLs with LWP.")
+    (license (package-license perl))))
+
 (define-public perl-net-http
   (package
     (name "perl-net-http")
