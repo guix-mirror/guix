@@ -670,4 +670,23 @@ locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
     (license (package-license perl))))
 
+(define-public perl-email-messageid
+  (package
+    (name "perl-email-messageid")
+    (version "1.405")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MessageID-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09216naz21x99ff33wdm3j3zq1zhdbxhrsmx8bvavjrw3gjsvrq3"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Email-MessageID")
+    (synopsis "Generate world unique message-ids")
+    (description "Email::MessageID generates recommended message-ids to
+identify a message uniquely.")
+    (license (package-license perl))))
+
 ;;; mail.scm ends here
