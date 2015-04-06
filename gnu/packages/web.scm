@@ -1836,15 +1836,15 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.05")
+    (version "6.13")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/libwww-perl-"
+                   "mirror://cpan/authors/id/E/ET/ETHER/libwww-perl-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "08wgwyz7748pv5cyngxia0xl6nragfnhrp4p9s78xhgfyygpj9bv"))))
+               "1cpqjl59viw50bnbdyn8xzrwzg7g54b2rszw0fifacqrppp17gaz"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
@@ -1864,7 +1864,7 @@ World-Wide Web.  The main focus of the library is to provide classes
 and functions that allow you to write WWW clients.  The library also
 contains modules that are of more general use and even classes that
 help you implement simple HTTP servers.")
-    (home-page "http://search.cpan.org/~gaas/libwww-perl/")))
+    (home-page "http://search.cpan.org/dist/libwww-perl/")))
 
 (define-public perl-lwp-mediatypes
   (package
