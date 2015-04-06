@@ -573,6 +573,24 @@ subclasses and can be overriden.")
 type for perl.")
     (license (package-license perl))))
 
+(define-public perl-class-factory-util
+  (package
+    (name "perl-class-factory-util")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "Class-Factory-Util-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09ifd6v0c94vr20n9yr1dxgcp7hyscqq851szdip7y24bd26nlbc"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-Factory-Util")
+    (synopsis "Utility methods for factory classes")
+    (description "This module exports methods useful for factory classes.")
+    (license (package-license perl))))
+
 (define-public perl-class-inspector
   (package
     (name "perl-class-inspector")
