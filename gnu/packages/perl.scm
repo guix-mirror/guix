@@ -1163,6 +1163,32 @@ combinations.  It represents the Gregorian calendar, extended backwards in
 time before its creation (in 1582).")
     (license artistic2.0)))
 
+(define-public perl-datetime-format-strptime
+  (package
+    (name "perl-datetime-format-strptime")
+    (version "1.56")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "DateTime-Format-Strptime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0a4bszmff16rw6fz1yr4v9001q9vxrdxnxkj9sqaln83b87rvxig"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-locale" ,perl-datetime-locale)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Strptime")
+    (synopsis "Parse and format strp and strf time patterns")
+    (description "This module implements most of `strptime(3)`, the POSIX
+function that is the reverse of `strftime(3)`, for `DateTime`.  While
+`strftime` takes a `DateTime` and a pattern and returns a string, `strptime`
+takes a string and a pattern and returns the `DateTime` object associated.")
+    (license artistic2.0)))
+
 (define-public perl-datetime-locale
   (package
     (name "perl-datetime-locale")
