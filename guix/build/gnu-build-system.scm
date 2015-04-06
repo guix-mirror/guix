@@ -539,6 +539,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
         #t)))
 
 (define* (delete-info-dir-file #:key outputs #:allow-other-keys)
+  "Delete any 'share/info/dir' file from OUTPUTS."
   (for-each (match-lambda
           ((output . directory)
            (let ((info-dir-file (string-append directory "/share/info/dir")))
