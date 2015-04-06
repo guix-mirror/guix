@@ -1956,6 +1956,29 @@ exists it is used instead.")
 https schemed URLs with LWP.")
     (license (package-license perl))))
 
+(define-public perl-lwp-useragent-determined
+  (package
+    (name "perl-lwp-useragent-determined")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AL/ALEXMV/"
+                           "LWP-UserAgent-Determined-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lyvbpjng7yfvyha9rp2y2c6liz5hhplmd2grc8jlsfkih7dbn06"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/LWP-UserAgent-Determined")
+    (synopsis "Virtual browser that retries errors")
+    (description "LWP::UserAgent::Determined works just like LWP::UserAgent,
+except that when you use it to get a web page but run into a
+possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
+and retry a few times.")
+    (license (package-license perl))))
+
 (define-public perl-net-http
   (package
     (name "perl-net-http")
