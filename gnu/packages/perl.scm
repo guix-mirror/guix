@@ -2845,6 +2845,32 @@ prevent name clashes between packages.")
 constraint with coercion to load the class.")
     (license (package-license perl))))
 
+(define-public perl-moox-types-mooselike
+  (package
+    (name "perl-moox-types-mooselike")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MATEU/"
+                           "MooX-Types-MooseLike-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15af2xmpari4vwjwxn1m9yzjfffkr2aiisqqfij31gxcdk15fpk3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moo" ,perl-moo)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "http://search.cpan.org/dist/MooX-Types-MooseLike")
+    (synopsis "Moosish types and type builder")
+    (description "MooX::Types::MooseLike provides a possibility to build your
+own set of Moose-like types.  These custom types can then be used to describe
+fields in Moo-based classes.")
+    (license (package-license perl))))
+
 (define-public perl-mro-compat
   (package
     (name "perl-mro-compat")
