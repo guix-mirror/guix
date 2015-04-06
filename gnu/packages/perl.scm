@@ -2860,6 +2860,32 @@ separated into get and set methods.  The get methods have the same name as the
 accessor, while set methods are prefixed with \"_set_\".")
     (license artistic2.0)))
 
+(define-public perl-moosex-strictconstructor
+  (package
+    (name "perl-moosex-strictconstructor")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "MooseX-StrictConstructor-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ccawja1kabgglrkdw5v82m1pbw189a0mnd33l43rs01d70p6ra8"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page "http://search.cpan.org/dist/MooseX-StrictConstructor")
+    (synopsis "Strict object constructors for Moose")
+    (description "Simply loading this module makes your constructors
+\"strict\". If your constructor is called with an attribute init argument that
+your class does not declare, then it calls Moose->throw_error(). ")
+    (license artistic2.0)))
+
 (define-public perl-moosex-traits-pluggable
   (package
     (name "perl-moosex-traits-pluggable")
