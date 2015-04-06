@@ -670,6 +670,25 @@ locates email addresses in strings and returns a list of Email::Address
 objects found.  Alternatively you may construct objects manually.")
     (license (package-license perl))))
 
+(define-public perl-email-date-format
+  (package
+    (name "perl-email-date-format")
+    (version "1.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Date-Format-" version ".tar.gz"))
+       (sha256
+        (base32
+         "012ivfwpnbl3wr50f9c6f4azhdlxnm31pdn72528g79v61z6372p"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Email-Date-Format")
+    (synopsis "Produce RFC 2822 date strings")
+    (description "Email::Date::Format provides a means for generating an RFC
+2822 compliant datetime string.")
+    (license (package-license perl))))
+
 (define-public perl-email-messageid
   (package
     (name "perl-email-messageid")
