@@ -1189,6 +1189,31 @@ expression to extract the relevant information.  Builder provides a simple way
 to do this without writing reams of structural code.")
     (license artistic2.0)))
 
+(define-public perl-datetime-format-flexible
+  (package
+    (name "perl-datetime-format-flexible")
+    (version "0.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TH/THINC/"
+                           "DateTime-Format-Flexible-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gb9dsn178dpvgbbgwnaf3v2v8zy4xj36i0w5q8qbhvwx32znvj3"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-builder" ,perl-datetime-format-builder)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-test-mocktime" ,perl-test-mocktime)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Flexible")
+    (synopsis "Parse data/time strings")
+    (description "DateTime::Format::Flexible attempts to take any string you
+give it and parse it into a DateTime object.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
