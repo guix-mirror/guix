@@ -366,3 +366,38 @@ decompression of some loosely related file formats used by Microsoft.")
     (description "This module provides a Perl interface to the bzip2
 compression library.")
     (license (package-license perl))))
+
+(define-public perl-compress-raw-zlib
+  (package
+    (name "perl-compress-raw-zlib")
+    (version "2.068")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
+                           "Compress-Raw-Zlib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06q7n87g26nn5gv4z2p31ca32f6zk124hqxc25rfgkjd3qi5798i"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   configure configure-zlib
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (call-with-output-file "config.in"
+                       (lambda (port)
+                         (format port "
+BUILD_ZLIB = False
+INCLUDE = ~a/include
+LIB = ~:*~a/lib
+OLD_ZLIB = False
+GZIP_OS_CODE = AUTO_DETECT"
+                                 (assoc-ref inputs "zlib")))))))))
+    (home-page "http://search.cpan.org/dist/Compress-Raw-Zlib")
+    (synopsis "Low-level interface to zlib compression library")
+    (description "This module provides a Perl interface to the zlib
+compression library.")
+    (license (package-license perl))))
