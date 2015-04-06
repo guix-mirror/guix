@@ -689,4 +689,25 @@ objects found.  Alternatively you may construct objects manually.")
 identify a message uniquely.")
     (license (package-license perl))))
 
+(define-public perl-email-mime-contenttype
+  (package
+    (name "perl-email-mime-contenttype")
+    (version "1.017")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MIME-ContentType-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cl1l97lg690dh7i704hqi7yhxalq1chy7ylld5yc5v38jqa6gcn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Email-MIME-ContentType")
+    (synopsis "Parse MIME Content-Type headers")
+    (description "Email::MIME::ContentType parses a MIME Content-Type
+header.")
+    (license (package-license perl))))
+
 ;;; mail.scm ends here
