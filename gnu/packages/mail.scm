@@ -799,6 +799,38 @@ header.")
     (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
     (license (package-license perl))))
 
+(define-public perl-email-sender
+  (package
+    (name "perl-email-sender")
+    (version "1.300016")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Sender-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18x26fjh399q3s2g8dajb9r10633c46jrnbvycpnpclgnzhjs100"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (propagated-inputs
+     `(("perl-email-abstract" ,perl-email-abstract)
+       ("perl-email-address" ,perl-email-address)
+       ("perl-email-simple" ,perl-email-simple)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-throwable" ,perl-throwable)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Email-Sender")
+    (synopsis "Perl library for sending email")
+    (description "Email::Sender replaces the old and sometimes problematic
+Email::Send library.")
+    (license (package-license perl))))
+
 (define-public perl-email-simple
   (package
     (name "perl-email-simple")
