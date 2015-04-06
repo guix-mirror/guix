@@ -1345,6 +1345,27 @@ inputs, in a manner reminiscent of how PHP does.")
 formats used by the HTTP protocol.")
     (license (package-license perl))))
 
+(define-public perl-digest-md5-file
+  (package
+    (name "perl-digest-md5-file")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DM/DMUEY/"
+                           "Digest-MD5-File-" version ".tar.gz"))
+       (sha256
+        (base32
+         "060jzf45dlwysw5wsm7av1wvpl06xgk415kwwpvv89r6wda3md5d"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/Digest-MD5-File")
+    (synopsis "MD5 sums for files and urls")
+    (description "Digest::MD5::File is a Perl extension for getting MD5 sums
+for files and urls.")
+    (license (package-license perl))))
+
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
