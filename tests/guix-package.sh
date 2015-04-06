@@ -161,6 +161,9 @@ then
     guix package --bootstrap -p "$profile" -i guile-bootstrap -i gcc-bootstrap
     guix package --search-paths -p "$profile" | grep LIBRARY_PATH
 
+    # Roll back so we can delete #3 below.
+    guix package -p "$profile" --switch-generation=2
+
     # Delete the third generation and check that it was actually deleted.
     guix package -p "$profile" --delete-generations=3
     test -z "`guix package -p "$profile" -l 3`"
@@ -209,6 +212,14 @@ guix package --search="" > /dev/null
 # have no effect.
 generation="`readlink_base "$profile"`"
 if guix package -p "$profile" --delete-generations=12m;
+then false; else true; fi
+test "`readlink_base "$profile"`" = "$generation"
+
+# The following command should not delete the current generation, even though
+# it matches the given pattern (see <http://bugs.gnu.org/19978>.)  And since
+# there's nothing else to delete, it should just fail.
+guix package --list-generations -p "$profile"
+if guix package --bootstrap -p "$profile" --delete-generations=1..
 then false; else true; fi
 test "`readlink_base "$profile"`" = "$generation"
 

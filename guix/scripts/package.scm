@@ -254,9 +254,16 @@ denote ranges as interpreted by 'matching-derivations'."
                                  #:duration-relation >)
            =>
            (lambda (numbers)
-             (if (null-list? numbers)
-                 (exit 1)
-                 (delete-generations (%store) profile numbers))))
+             (when (memv current numbers)
+               (warning (_ "not removing generation ~a, which is current~%")
+                        current))
+
+             ;; Make sure we don't inadvertently remove the current
+             ;; generation.
+             (let ((numbers (delv current numbers)))
+               (if (null-list? numbers)
+                   (exit 1)
+                   (delete-generations (%store) profile numbers)))))
           (else
            (leave (_ "invalid syntax: ~a~%") pattern)))))
 
