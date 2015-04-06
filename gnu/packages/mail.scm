@@ -650,6 +650,28 @@ facilities for checking incoming mail.")
 mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
 
+(define-public perl-email-abstract
+  (package
+    (name "perl-email-abstract")
+    (version "3.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Abstract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h42rhvp769wb421cpbbg6v6xjp8iv86mvz70pqgfgf4nsn6jwgw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-email-simple" ,perl-email-simple)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Email-Abstract")
+    (synopsis "Interface to mail representations")
+    (description "Email::Abstract provides module writers with the ability to
+write simple, representation-independent mail handling code.")
+    (license (package-license perl))))
+
 (define-public perl-email-address
   (package
     (name "perl-email-address")
