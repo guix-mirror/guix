@@ -246,7 +246,7 @@ denote ranges as interpreted by 'matching-derivations'."
                                (delv current (profile-generations profile))))
           ;; Do not delete the zeroth generation.
           ((equal? 0 (string->number pattern))
-           (exit 0))
+           #t)
 
           ;; If PATTERN is a duration, match generations that are
           ;; older than the specified duration.
@@ -261,9 +261,9 @@ denote ranges as interpreted by 'matching-derivations'."
              ;; Make sure we don't inadvertently remove the current
              ;; generation.
              (let ((numbers (delv current numbers)))
-               (if (null-list? numbers)
-                   (exit 1)
-                   (delete-generations (%store) profile numbers)))))
+               (when (null-list? numbers)
+                 (leave (_ "no matching generation~%")))
+               (delete-generations (%store) profile numbers))))
           (else
            (leave (_ "invalid syntax: ~a~%") pattern)))))
 
