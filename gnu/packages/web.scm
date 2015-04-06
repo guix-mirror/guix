@@ -1891,16 +1891,19 @@ exists it is used instead.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.06")
+    (version "6.07")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/Net-HTTP-"
+                   "mirror://cpan/authors/id/M/MS/MSCHILLI/Net-HTTP-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "1m1rvniffadq99gsy25298ia3lixwymr6kan64jd3ylyi7nkqkhx"))))
+               "0r034hhci0yqbrkrh1gv6vi5g3i0kpd1k84z62nk02asb8rf0ccz"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-uri" ,perl-uri)))
     (license (package-license perl))
     (synopsis "Perl low-level HTTP connection (client)")
     (description
@@ -1908,7 +1911,7 @@ exists it is used instead.")
 Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
 is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
-    (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
+    (home-page "http://search.cpan.org/dist/Net-HTTP")))
 
 (define-public perl-net-server
   (package
