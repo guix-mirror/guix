@@ -401,3 +401,25 @@ GZIP_OS_CODE = AUTO_DETECT"
     (description "This module provides a Perl interface to the zlib
 compression library.")
     (license (package-license perl))))
+
+(define-public perl-io-compress
+  (package
+    (name "perl-io-compress")
+    (version "2.068")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
+                           "IO-Compress-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dy0apjp7j9dfkzfjspjd3z9gh26srx5vac72g59bkkz1jf8s1gs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.068
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.068
+    (home-page "http://search.cpan.org/dist/IO-Compress")
+    (synopsis "IO Interface to compressed files/buffers")
+    (description "IO-Compress provides a Perl interface to allow reading and
+writing of compressed data created with the zlib and bzip2 libraries.")
+    (license (package-license perl))))
