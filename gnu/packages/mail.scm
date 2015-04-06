@@ -749,4 +749,25 @@ header.")
     (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
     (license (package-license perl))))
 
+(define-public perl-email-simple
+  (package
+    (name "perl-email-simple")
+    (version "2.206")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19dpy3j5na2k9qw1jcpc8ia25038068r9j1bn34f9yyrisz7s522"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-email-date-format" ,perl-email-date-format)))
+    (home-page "http://search.cpan.org/dist/Email-Simple")
+    (synopsis "Parsing of RFC 2822 messages")
+    (description "Email::Simple provides simple parsing of RFC 2822 message
+format and headers.")
+    (license (package-license perl))))
+
 ;;; mail.scm ends here
