@@ -710,4 +710,24 @@ identify a message uniquely.")
 header.")
     (license (package-license perl))))
 
+(define-public perl-email-mime-encodings
+  (package
+    (name "perl-email-mime-encodings")
+    (version "1.315")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MIME-Encodings-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p5b8g9gh35m8fqrpx60g4bp98rvwd02n5b0vm9wh7mk0xah8wac"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Email-MIME-Encodings")
+    (synopsis "Unified interface to MIME encoding and decoding")
+    (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
+    (license (package-license perl))))
+
 ;;; mail.scm ends here
