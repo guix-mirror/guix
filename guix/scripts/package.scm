@@ -232,6 +232,34 @@ DURATION-RELATION with the current time."
          filter-by-duration)
         (else #f)))
 
+(define (delete-matching-generations store profile pattern)
+  "Delete from PROFILE all the generations matching PATTERN.  PATTERN must be
+a string denoting a set of generations: the empty list means \"all generations
+but the current one\", a number designates a generation, and other patterns
+denote ranges as interpreted by 'matching-derivations'."
+  (let ((current (generation-number profile)))
+    (cond ((not (file-exists? profile))            ; XXX: race condition
+           (raise (condition (&profile-not-found-error
+                              (profile profile)))))
+          ((string-null? pattern)
+           (delete-generations (%store) profile
+                               (delv current (profile-generations profile))))
+          ;; Do not delete the zeroth generation.
+          ((equal? 0 (string->number pattern))
+           (exit 0))
+
+          ;; If PATTERN is a duration, match generations that are
+          ;; older than the specified duration.
+          ((matching-generations pattern profile
+                                 #:duration-relation >)
+           =>
+           (lambda (numbers)
+             (if (null-list? numbers)
+                 (exit 1)
+                 (delete-generations (%store) profile numbers))))
+          (else
+           (leave (_ "invalid syntax: ~a~%") pattern)))))
+
 
 ;;;
 ;;; Package specifications.
@@ -751,9 +779,6 @@ more information.~%"))
     (define dry-run? (assoc-ref opts 'dry-run?))
     (define profile  (assoc-ref opts 'profile))
 
-    (define current-generation-number
-      (generation-number profile))
-
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
                 (not dry-run?))
@@ -782,30 +807,7 @@ more information.~%"))
            (for-each
             (match-lambda
              (('delete-generations . pattern)
-              (cond ((not (file-exists? profile)) ; XXX: race condition
-                     (raise (condition (&profile-not-found-error
-                                        (profile profile)))))
-                    ((string-null? pattern)
-                     (delete-generations
-                      (%store) profile
-                      (delete current-generation-number
-                              (profile-generations profile))))
-                    ;; Do not delete the zeroth generation.
-                    ((equal? 0 (string->number pattern))
-                     (exit 0))
-
-                    ;; If PATTERN is a duration, match generations that are
-                    ;; older than the specified duration.
-                    ((matching-generations pattern profile
-                                           #:duration-relation >)
-                     =>
-                     (lambda (numbers)
-                       (if (null-list? numbers)
-                           (exit 1)
-                           (delete-generations (%store) profile numbers))))
-                    (else
-                     (leave (_ "invalid syntax: ~a~%")
-                            pattern)))
+              (delete-matching-generations (%store) profile pattern)
 
               (process-actions
                (alist-delete 'delete-generations opts)))
