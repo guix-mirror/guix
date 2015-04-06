@@ -122,15 +122,18 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.17.4")
+    (version "3.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
-                    "releases/NSS_3_17_4_RTM/src/nss-3.17.4.tar.gz"))
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                      "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "releases/NSS_" version-with-underscores "_RTM/src/"
+                      "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0ycxzybgn4bq0i6j5zjdjl70n3s8a742yixyik4pw8x4h4cav60x"))
+                "0h0xy9kvd2s8r438q4dfn25cgvv5dc1hkm9lb4bgrxpr5bxv13b1"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
