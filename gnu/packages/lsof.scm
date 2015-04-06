@@ -35,7 +35,17 @@
             (uri (list (string-append %ftp-base "lsof_"
                                       version ".tar.bz2")
                        (string-append %ftp-base "OLD/lsof_"
-                                      version ".tar.bz2")))
+                                      version ".tar.bz2")
+
+                       ;; Add mirrors because the FTP server at purdue.edu
+                       ;; bails out when it cannot do a reverse DNS lookup, as
+                       ;; noted at <http://people.freebsd.org/~abe/>.
+                       (string-append
+                        "ftp://ftp.fu-berlin.de/pub/unix/tools/lsof/lsof_"
+                        version ".tar.bz2")
+                       (string-append
+                        "ftp://sunsite.ualberta.ca/pub/Mirror/lsof/lsof_"
+                        version ".tar.bz2")))
             (sha256
              (base32
               "16y9wm26rg81mihnzcbdg8h8vhxmq8kn62ssxb8cqydp4q79nvzy"))))
