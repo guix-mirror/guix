@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python))
 
 (define-public mailutils
@@ -647,5 +649,25 @@ facilities for checking incoming mail.")
      "isync/mbsync is command line tool for two-way synchronization of
 mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
+
+(define-public perl-email-address
+  (package
+    (name "perl-email-address")
+    (version "1.907")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Address-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ai4r149pzjv9dc2vddir8zylj0z1pii93rm4g591lx7avim71hx"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Email-Address")
+    (synopsis "Email address parsing and creation")
+    (description "Email::Address implements a regex-based RFC 2822 parser that
+locates email addresses in strings and returns a list of Email::Address
+objects found.  Alternatively you may construct objects manually.")
+    (license (package-license perl))))
 
 ;;; mail.scm ends here
