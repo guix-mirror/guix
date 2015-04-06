@@ -1783,6 +1783,26 @@ files from a distribution.  It is a companion module to File::ShareDir, which
 allows you to locate these files after installation.")
     (license (package-license perl))))
 
+(define-public perl-file-slurp
+  (package
+    (name "perl-file-slurp")
+    (version "9999.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/U/UR/URI/"
+                           "File-Slurp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hrn4nipwx40d6ji8ssgr5nw986z9iqq8cn0kdpbszh9jplynaff"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Slurp")
+    (synopsis "Reading/Writing/Modifying of complete files")
+    (description "File::Slurp provides subroutines to read or write entire
+files with a simple call.  It also has a subroutine for reading the list of
+filenames in a directory.")
+    (license (package-license perl))))
+
 (define-public perl-file-temp
   (package
     (name "perl-file-temp")
