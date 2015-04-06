@@ -1323,6 +1323,28 @@ parameter parsing, file upload, cookie handling and header generation.")
 inputs, in a manner reminiscent of how PHP does.")
     (license l:bsd-2)))
 
+(define-public perl-datetime-format-http
+  (package
+    (name "perl-datetime-format-http")
+    (version "0.42")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CK/CKRAS/"
+                           "DateTime-Format-HTTP-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h6qqdg1yzqkdxp7hqlp0qa7d1y64nilgimxs79dys2ryjfpcknh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-HTTP")
+    (synopsis "Date conversion routines")
+    (description "This module provides functions that deal with the date
+formats used by the HTTP protocol.")
+    (license (package-license perl))))
+
 (define-public perl-encode-locale
   (package
     (name "perl-encode-locale")
