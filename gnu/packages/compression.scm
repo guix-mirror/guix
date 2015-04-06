@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +25,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages base))
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages perl))
 
 (define-public zlib
   (package
@@ -343,3 +346,23 @@ This package is mostly for compatibility and historical interest.")
      "The purpose of libmspack is to provide both compression and
 decompression of some loosely related file formats used by Microsoft.")
     (license license:lgpl2.1+)))
+
+(define-public perl-compress-raw-bzip2
+  (package
+    (name "perl-compress-raw-bzip2")
+    (version "2.068")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
+                           "Compress-Raw-Bzip2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16hl58xppckldz05zdyid1l5gpaykzwvkq682h3rc3nilbhgjqqg"))))
+    (build-system perl-build-system)
+    ;; TODO: Use our bzip2 package.
+    (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
+    (synopsis "Low-level interface to bzip2 compression library")
+    (description "This module provides a Perl interface to the bzip2
+compression library.")
+    (license (package-license perl))))
