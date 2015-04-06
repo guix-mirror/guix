@@ -2179,6 +2179,26 @@ follows LRU semantics, that is, the last n results, where n is specified as
 the argument to the CACHESIZE parameter, will be cached.")
     (license (package-license perl))))
 
+(define-public perl-mime-types
+  (package
+    (name "perl-mime-types")
+    (version "2.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                           "MIME-Types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s7s2z9xc1nc2l59rk80iaa04r36k0y95231212kz5p3ln7szk1c"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/MIME-Types")
+    (synopsis "Definition of MIME types")
+    (description "This module provides a list of known mime-types, combined
+from various sources.  For instance, it contains all IANA types and the
+knowledge of Apache.")
+    (license (package-license perl))))
+
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
