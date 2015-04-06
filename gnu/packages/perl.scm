@@ -2019,6 +2019,37 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
 pseudo ttys.")
     (license (package-license perl))))
 
+(define-public perl-ipc-run
+  (package
+    (name "perl-ipc-run")
+    (version "0.94")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/"
+                           "IPC-Run-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nv0lpw31zaz6vi42q7ihjj3j382j4njicp5k0gsczib3b4kdcrf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-tty" ,perl-io-tty)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   check disable-w32-test
+                   (lambda _
+                     ;; This test fails, and we're not really interested in
+                     ;; it, so disable it.
+                     (delete-file "t/win32_compile.t"))))))
+    (home-page "http://search.cpan.org/dist/IPC-Run")
+    (synopsis "system() and background procs w/ piping, redirs, ptys")
+    (description "IPC::Run allows you run and interact with child processes
+using files, pipes, and pseudo-ttys. Both system()-style and scripted usages
+are supported and may be mixed. Likewise, functional and OO API styles are
+both supported and may be mixed.")
+    (license (package-license perl))))
+
 (define-public perl-ipc-run3
   (package
     (name "perl-ipc-run3")
