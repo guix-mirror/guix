@@ -1034,6 +1034,35 @@ on one page.  This results in wanting to page through various pages of data.
 The maths behind this is unfortunately fiddly, hence this module.")
     (license (package-license perl))))
 
+(define-public perl-data-stream-bulk
+  (package
+    (name "perl-data-stream-bulk")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+                           "Data-Stream-Bulk-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05q9ygcv7r318j7daxz42rjr5b99j6whjmwjdih0axxrlqr89q06"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Data-Stream-Bulk")
+    (synopsis "N at a time iteration API")
+    (description "This module tries to find middle ground between one at a
+time and all at once processing of data sets.  The purpose of this module is
+to avoid the overhead of implementing an iterative api when this isn't
+necessary, without breaking forward compatibility in case that becomes
+necessary later on.")
+    (license (package-license perl))))
+
 (define-public perl-data-tumbler
   (package
     (name "perl-data-tumbler")
