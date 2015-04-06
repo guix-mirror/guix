@@ -1,0 +1,1516 @@
+# Danish translation guix.
+# Copyright (C) 2015 Free Software Foundation, Inc.
+# This file is distributed under the same license as the guix package.
+# Joe Hansen <joedalton2@yahoo.dk>, 2015.
+#
+# garbage -> affald (spild, bedre forslag?)
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: guix 0.8.1\n"
+"Report-Msgid-Bugs-To: ludo@gnu.org\n"
+"POT-Creation-Date: 2015-01-26 23:51+0100\n"
+"PO-Revision-Date: 2015-04-06 19:30+01:00\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+
+#: gnu/packages.scm:78
+#, scheme-format
+msgid "~a: patch not found"
+msgstr "~a: rettelse blev ikke fundet"
+
+#: gnu/packages.scm:89
+#, scheme-format
+msgid "could not find bootstrap binary '~a' for system '~a'"
+msgstr "kunne ikke finde bootstraps binære »~a« for system »~a«"
+
+#: gnu/packages.scm:141
+#, scheme-format
+msgid "cannot access `~a': ~a~%"
+msgstr "kan ikke tilgå »~a«: ~a~%"
+
+#: gnu/packages.scm:372
+#, scheme-format
+msgid "looking for the latest release of GNU ~a..."
+msgstr "kigger efter den seneste udgivelse af GNU ~a..."
+
+#: gnu/packages.scm:379
+#, scheme-format
+msgid "~a: note: using ~a but ~a is available upstream~%"
+msgstr "~a: bemærk: bruger ~a men ~a er tilgængelig opstrøm~%"
+
+#: gnu/packages.scm:401 guix/scripts/package.scm:306
+#, scheme-format
+msgid "ambiguous package specification `~a'~%"
+msgstr "tvetydig pakkespecifikation »~a«~%"
+
+#: gnu/packages.scm:402 guix/scripts/package.scm:308
+#, scheme-format
+msgid "choosing ~a from ~a~%"
+msgstr "vælger ~a fra ~a~%"
+
+#: gnu/packages.scm:408
+#, scheme-format
+msgid "~A: package not found for version ~a~%"
+msgstr "~A: pakke ikke fundet for version ~a~%"
+
+#: gnu/packages.scm:410
+#, scheme-format
+msgid "~A: unknown package~%"
+msgstr "~A: ukendt pakke~%"
+
+#: gnu/system.scm:716
+msgid "system locale lacks a definition"
+msgstr "systemsprog mangler en definition"
+
+#: guix/scripts/build.scm:65
+#, scheme-format
+msgid "failed to create GC root `~a': ~a~%"
+msgstr "kunne ikke oprette GC-root »~a«: ~a~%"
+
+#: guix/scripts/build.scm:102
+msgid ""
+"\n"
+"  -L, --load-path=DIR    prepend DIR to the package module search path"
+msgstr ""
+"\n"
+"  -L, --load-path=MAPPE  foranstil MAPPE til pakkemodulets søgesti"
+
+#: guix/scripts/build.scm:104
+msgid ""
+"\n"
+"  -K, --keep-failed      keep build tree of failed builds"
+msgstr ""
+"\n"
+"  -K, --keep-failed      bevar byggetræ for mislykkede bygninger"
+
+#: guix/scripts/build.scm:106
+msgid ""
+"\n"
+"  -n, --dry-run          do not build the derivations"
+msgstr ""
+"\n"
+"  -n, --dry-run          byg ikke derivationerne"
+
+#: guix/scripts/build.scm:108
+msgid ""
+"\n"
+"      --fallback         fall back to building when the substituter fails"
+msgstr ""
+"\n"
+"      --fallback         fald tilbage til bygning når erstatningen fejler"
+
+#: guix/scripts/build.scm:110
+msgid ""
+"\n"
+"      --no-substitutes   build instead of resorting to pre-built substitutes"
+msgstr ""
+"\n"
+"      --no-substitutes   byg i stedet for en ny sortering af præbyggede substitutter"
+
+#: guix/scripts/build.scm:112
+msgid ""
+"\n"
+"      --no-build-hook    do not attempt to offload builds via the build hook"
+msgstr ""
+"\n"
+"      --no-build-hook    forsøg ikke at aflaste bygninger via byggekrogen"
+
+#: guix/scripts/build.scm:114
+msgid ""
+"\n"
+"      --max-silent-time=SECONDS\n"
+"                         mark the build as failed after SECONDS of silence"
+msgstr ""
+"\n"
+"      --max-silent-time=SEKUNDER\n"
+"                         marker bygningen som mislykket efter SEKUNDER af stilhed"
+
+#: guix/scripts/build.scm:117
+msgid ""
+"\n"
+"      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
+msgstr ""
+"\n"
+"      --timeout=SEKUNDER marker bygningen som mislykket efter SEKUNDER af aktivitet"
+
+#: guix/scripts/build.scm:119
+msgid ""
+"\n"
+"      --verbosity=LEVEL  use the given verbosity LEVEL"
+msgstr ""
+"\n"
+"      --verbosity=NIVEAU brug det angivne uddybnings-NIVEAU"
+
+#: guix/scripts/build.scm:121
+msgid ""
+"\n"
+"  -c, --cores=N          allow the use of up to N CPU cores for the build"
+msgstr ""
+"\n"
+"  -c, --cores=N          tillad brugen af op til N CPU-kerner til bygningen"
+
+#: guix/scripts/build.scm:123
+msgid ""
+"\n"
+"  -M, --max-jobs=N       allow at most N build jobs"
+msgstr ""
+"\n"
+"  -M, --max-jobs=N       tillad højest N-byggejob"
+
+#: guix/scripts/build.scm:198 guix/scripts/build.scm:205
+#, scheme-format
+msgid "not a number: '~a' option argument: ~a~%"
+msgstr "ikke et nummer: »~a« tilvalgsparameter: ~a~%"
+
+#: guix/scripts/build.scm:224
+msgid ""
+"Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
+"Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
+msgstr ""
+"Brug: guix build [TILVALG]... PAKKE-ELLER-AFLEDNING...\n"
+"Byg den angivne PAKKE-ELLER-AFLEDNING og returner deres uddatastier.\n"
+
+#: guix/scripts/build.scm:226
+msgid ""
+"\n"
+"  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
+msgstr ""
+"\n"
+"  -e, --expression=UDTRYK\n"
+"                         byg pakken eller derivationen UDTRYK evaluerer til"
+
+#: guix/scripts/build.scm:228
+msgid ""
+"\n"
+"  -S, --source           build the packages' source derivations"
+msgstr ""
+"\n"
+"  -S, --source           byg pakkernes kildederivationer"
+
+#: guix/scripts/build.scm:230
+msgid ""
+"\n"
+"  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
+msgstr ""
+"\n"
+"  -s, --system=SYSTEM    forsøger at bygge for SYSTEM--f.eks., »i686-linux«"
+
+#: guix/scripts/build.scm:232
+msgid ""
+"\n"
+"      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
+msgstr ""
+"\n"
+"      --target=TRIPLET   krydsbyg for TRIPLET--f.eks., »armel-linux-gnu«"
+
+#: guix/scripts/build.scm:234
+msgid ""
+"\n"
+"      --with-source=SOURCE\n"
+"                         use SOURCE when building the corresponding package"
+msgstr ""
+"\n"
+"      --with-source=KILDE\n"
+"                         brug KILDE når den tilsvarende pakke bygges"
+
+#: guix/scripts/build.scm:237
+msgid ""
+"\n"
+"      --no-grafts        do not graft packages"
+msgstr ""
+"\n"
+"      --no-grafts        pod ikke pakker"
+
+#: guix/scripts/build.scm:239
+msgid ""
+"\n"
+"  -d, --derivations      return the derivation paths of the given packages"
+msgstr ""
+"\n"
+"  -d, --derivations      returner de afledte stier for de givne pakker"
+
+#: guix/scripts/build.scm:241
+msgid ""
+"\n"
+"  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
+"                         as a garbage collector root"
+msgstr ""
+"\n"
+"  -r, --root=FIL         gør FIL til en symbolsk henvisning for resultatet, og\n"
+"                         registrer den som en affaldsindsamlerroot"
+
+#: guix/scripts/build.scm:244
+msgid ""
+"\n"
+"      --log-file         return the log file names for the given derivations"
+msgstr ""
+"\n"
+"      --log-file         returner logfilnavnen for de givne afledninger"
+
+#: guix/scripts/build.scm:249 guix/scripts/download.scm:53
+#: guix/scripts/package.scm:467 guix/scripts/gc.scm:58
+#: guix/scripts/hash.scm:55 guix/scripts/pull.scm:81
+#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:414
+#: guix/scripts/lint.scm:469
+msgid ""
+"\n"
+"  -h, --help             display this help and exit"
+msgstr ""
+"\n"
+"  -h, --help             vis denne hjælpetekst og afslut"
+
+#: guix/scripts/build.scm:251 guix/scripts/download.scm:55
+#: guix/scripts/package.scm:469 guix/scripts/gc.scm:60
+#: guix/scripts/hash.scm:57 guix/scripts/pull.scm:83
+#: guix/scripts/substitute-binary.scm:568 guix/scripts/system.scm:416
+#: guix/scripts/lint.scm:473
+msgid ""
+"\n"
+"  -V, --version          display version information and exit"
+msgstr ""
+"\n"
+"  -V, --version          vis versioninformation og afslut"
+
+#: guix/scripts/build.scm:383
+#, scheme-format
+msgid "sources do not match any package:~{ ~a~}~%"
+msgstr "kilder matcher ikke nogen pakke:~{ ~a~}~%"
+
+#: guix/scripts/build.scm:417 guix/scripts/download.scm:96
+#: guix/scripts/package.scm:694 guix/scripts/gc.scm:122
+#: guix/scripts/pull.scm:213 guix/scripts/system.scm:499
+#: guix/scripts/lint.scm:521
+#, scheme-format
+msgid "~A: unrecognized option~%"
+msgstr "~A: ikke genkendt tilvalg~%"
+
+#: guix/scripts/build.scm:445
+#, scheme-format
+msgid "no build log for '~a'~%"
+msgstr "ingen byggelog for »~a«~%"
+
+#: guix/scripts/download.scm:44
+msgid ""
+"Usage: guix download [OPTION] URL\n"
+"Download the file at URL, add it to the store, and print its store path\n"
+"and the hash of its contents.\n"
+"\n"
+"Supported formats: 'nix-base32' (default), 'base32', and 'base16'\n"
+"('hex' and 'hexadecimal' can be used as well).\n"
+msgstr ""
+"Brug: guix download [TILVALG] ADRESSE\n"
+"hent filen på ADRESSE, tilføj den til lageret, og udskriv dens lagersti\n"
+"og hashen for dens indhold.\n"
+"\n"
+"Understøttede formater: »nix-base32« (standard), »base32«, og »base16«\n"
+"(»hex« og »hexadecimal« kan også bruges).\n"
+
+#: guix/scripts/download.scm:50 guix/scripts/hash.scm:50
+msgid ""
+"\n"
+"  -f, --format=FMT       write the hash in the given format"
+msgstr ""
+"\n"
+"  -f, --format=FMT       skriv hashen i det givne format"
+
+#: guix/scripts/download.scm:73 guix/scripts/hash.scm:75
+#, scheme-format
+msgid "unsupported hash format: ~a~%"
+msgstr "ikke understøttet hash-format: ~a~%"
+
+#: guix/scripts/download.scm:106
+#, scheme-format
+msgid "~a: failed to parse URI~%"
+msgstr "~a: kunne ikke fortolke URI~%"
+
+#: guix/scripts/download.scm:117
+#, scheme-format
+msgid "~a: download failed~%"
+msgstr "~a: overførsel mislykkede~%"
+
+#: guix/scripts/package.scm:98
+#, scheme-format
+msgid "failed to build the empty profile~%"
+msgstr "kunne ikke bygge den tomme profil~%"
+
+#: guix/scripts/package.scm:114
+#, scheme-format
+msgid "switching from generation ~a to ~a~%"
+msgstr "skifter fra generation ~a til ~a~%"
+
+#: guix/scripts/package.scm:133
+#, scheme-format
+msgid "nothing to do: already at the empty profile~%"
+msgstr "intet at udføre: allerede en tom profil~%"
+
+#: guix/scripts/package.scm:145
+#, scheme-format
+msgid "deleting ~a~%"
+msgstr "sletter ~a~%"
+
+#: guix/scripts/package.scm:296
+#, scheme-format
+msgid "package `~a' lacks output `~a'~%"
+msgstr "pakke »~a« mangler uddata »~a«~%"
+
+#: guix/scripts/package.scm:313
+#, scheme-format
+msgid "~a: package not found~%"
+msgstr "~a: pakken blev ikke fundet~%"
+
+#: guix/scripts/package.scm:406
+#, scheme-format
+msgid "The following environment variable definitions may be needed:~%"
+msgstr "De følgende miljøvariabeldefinitioner kan være krævet:~%"
+
+#: guix/scripts/package.scm:422
+msgid ""
+"Usage: guix package [OPTION]... PACKAGES...\n"
+"Install, remove, or upgrade PACKAGES in a single transaction.\n"
+msgstr ""
+"Brug: guix-pakke [TILVALG]... PAKKER...\n"
+"Installer, fjern eller opgrader PAKKER i en enkel transaktion.\n"
+
+#: guix/scripts/package.scm:424
+msgid ""
+"\n"
+"  -i, --install=PACKAGE  install PACKAGE"
+msgstr ""
+"\n"
+"  -i, --install=PAKKE    installer PAKKE"
+
+#: guix/scripts/package.scm:426
+msgid ""
+"\n"
+"  -e, --install-from-expression=EXP\n"
+"                         install the package EXP evaluates to"
+msgstr ""
+"\n"
+"  -e, --install-from-expression=UDTRYK\n"
+"                         installer pakken UDTRYK evaluerer til"
+
+#: guix/scripts/package.scm:429
+msgid ""
+"\n"
+"  -r, --remove=PACKAGE   remove PACKAGE"
+msgstr ""
+"\n"
+"  -r, --remove=PAKKE     fjern PAKKE"
+
+#: guix/scripts/package.scm:431
+msgid ""
+"\n"
+"  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
+msgstr ""
+"\n"
+"  -u, --upgrade[=REGUDTRYK]\n"
+"                         opgrader alle de installerede pakker der matcher\n"
+"                         REGUDTRYK"
+
+#: guix/scripts/package.scm:433
+msgid ""
+"\n"
+"      --roll-back        roll back to the previous generation"
+msgstr ""
+"\n"
+"      --roll-back        rul tilbage til den forrige generation"
+
+#: guix/scripts/package.scm:435
+msgid ""
+"\n"
+"      --search-paths     display needed environment variable definitions"
+msgstr ""
+"\n"
+"      --search-paths     vis krævede miljøvariabeldefinitioner"
+
+#: guix/scripts/package.scm:437
+msgid ""
+"\n"
+"  -l, --list-generations[=PATTERN]\n"
+"                         list generations matching PATTERN"
+msgstr ""
+"\n"
+"  -l, --list-generations[=MØNSTER]\n"
+"                         vis generationer der matcher MØNSTER"
+
+#: guix/scripts/package.scm:440
+msgid ""
+"\n"
+"  -d, --delete-generations[=PATTERN]\n"
+"                         delete generations matching PATTERN"
+msgstr ""
+"\n"
+"  -d, --delete-generations[=MØNSTER]\n"
+"                         slet generationer der matcher MØNSTER"
+
+#: guix/scripts/package.scm:443
+msgid ""
+"\n"
+"  -S, --switch-generation=PATTERN\n"
+"                         switch to a generation matching PATTERN"
+msgstr ""
+"\n"
+"  -S, --switch-generation=MØNSTER\n"
+"                         skift til et generationsmatchende MØNSTER"
+
+#: guix/scripts/package.scm:446
+msgid ""
+"\n"
+"  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
+msgstr ""
+"\n"
+"  -p, --profile=PROFIL   brug PROFIL i stedet for brugerens standardprofil"
+
+#: guix/scripts/package.scm:449
+msgid ""
+"\n"
+"      --bootstrap        use the bootstrap Guile to build the profile"
+msgstr ""
+"\n"
+"      --bootstrap        brug bootstrap Guile til at bygge profilen"
+
+#: guix/scripts/package.scm:451 guix/scripts/pull.scm:74
+msgid ""
+"\n"
+"      --verbose          produce verbose output"
+msgstr ""
+"\n"
+"      --verbose          lav uddybende uddata"
+
+#: guix/scripts/package.scm:454
+msgid ""
+"\n"
+"  -s, --search=REGEXP    search in synopsis and description using REGEXP"
+msgstr ""
+"\n"
+"  -s, --search=REGUDTRYK søg i synopsis og beskrivelse via REGUDTRYK"
+
+#: guix/scripts/package.scm:456
+msgid ""
+"\n"
+"  -I, --list-installed[=REGEXP]\n"
+"                         list installed packages matching REGEXP"
+msgstr ""
+"\n"
+"  -I, --list-installed[=REGUDTRYK]\n"
+"                         vis installerede pakker der matcher REGUDTRYK"
+
+#: guix/scripts/package.scm:459
+msgid ""
+"\n"
+"  -A, --list-available[=REGEXP]\n"
+"                         list available packages matching REGEXP"
+msgstr ""
+"\n"
+"  -A, --list-available[=REGUDTRYK]\n"
+"                         vis tilgængelige pakker der matcher REGUDTRYK"
+
+#: guix/scripts/package.scm:462
+msgid ""
+"\n"
+"  --show=PACKAGE         show details about PACKAGE"
+msgstr ""
+"\n"
+"  --show=PACKAGE         vis detaljer om PAKKE"
+
+#: guix/scripts/package.scm:698
+#, scheme-format
+msgid "~A: extraneous argument~%"
+msgstr "~A: uvedkommende argument~%"
+
+#: guix/scripts/package.scm:708
+#, scheme-format
+msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
+msgstr "Prøv »info '(guix) Invoking guix package« for yderligere information.~%"
+
+#: guix/scripts/package.scm:730
+#, scheme-format
+msgid "error: while creating directory `~a': ~a~%"
+msgstr "fejl: under oprettelse af mappe »~a«: ~a~%"
+
+#: guix/scripts/package.scm:734
+#, scheme-format
+msgid "Please create the `~a' directory, with you as the owner.~%"
+msgstr "Opret venligst mappen »~a«, med dig som ejer.~%"
+
+#: guix/scripts/package.scm:741
+#, scheme-format
+msgid "error: directory `~a' is not owned by you~%"
+msgstr "fejl: mappen »~a« er ikke ejet af dig~%"
+
+#: guix/scripts/package.scm:744
+#, scheme-format
+msgid "Please change the owner of `~a' to user ~s.~%"
+msgstr "Ændr venligst ejeren af »~a« til brugeren ~s.~%"
+
+#: guix/scripts/package.scm:777
+#, scheme-format
+msgid "cannot switch to generation '~a'~%"
+msgstr "kan ikke skifte til generation »~a«~%"
+
+#: guix/scripts/package.scm:809 guix/scripts/package.scm:910
+#, scheme-format
+msgid "invalid syntax: ~a~%"
+msgstr "ugyldig syntaks: ~a~%"
+
+#: guix/scripts/package.scm:846
+#, scheme-format
+msgid "nothing to be done~%"
+msgstr "intet at udføre~%"
+
+#: guix/scripts/package.scm:861
+#, scheme-format
+msgid "~a package in profile~%"
+msgid_plural "~a packages in profile~%"
+msgstr[0] "~a pakke i profil~%"
+msgstr[1] "~a pakker i profil~%"
+
+#: guix/scripts/package.scm:876
+#, scheme-format
+msgid "Generation ~a\t~a"
+msgstr "Generation ~a\t~a"
+
+#: guix/scripts/package.scm:883
+#, scheme-format
+msgid "~a\t(current)~%"
+msgstr "~a\t(nuværende)~%"
+
+#: guix/scripts/gc.scm:39
+msgid ""
+"Usage: guix gc [OPTION]... PATHS...\n"
+"Invoke the garbage collector.\n"
+msgstr ""
+"Brug: guix gc [TILVALG]... STIER...\n"
+"Start affaldsindsamleren.\n"
+
+#: guix/scripts/gc.scm:41
+msgid ""
+"\n"
+"  -C, --collect-garbage[=MIN]\n"
+"                         collect at least MIN bytes of garbage"
+msgstr ""
+"\n"
+"  -C, --collect-garbage[=MIN]\n"
+"                         saml mindst MIN byte affald"
+
+#: guix/scripts/gc.scm:44
+msgid ""
+"\n"
+"  -d, --delete           attempt to delete PATHS"
+msgstr ""
+"\n"
+"  -d, --delete           forsøg at slette STIER"
+
+#: guix/scripts/gc.scm:46
+msgid ""
+"\n"
+"      --list-dead        list dead paths"
+msgstr ""
+"\n"
+"      --list-dead        vis døde stier"
+
+#: guix/scripts/gc.scm:48
+msgid ""
+"\n"
+"      --list-live        list live paths"
+msgstr ""
+"\n"
+"      --list-live        vis live stier"
+
+#: guix/scripts/gc.scm:51
+msgid ""
+"\n"
+"      --references       list the references of PATHS"
+msgstr ""
+"\n"
+"      --references       vis referencerne for STIER"
+
+#: guix/scripts/gc.scm:53
+msgid ""
+"\n"
+"  -R, --requisites       list the requisites of PATHS"
+msgstr ""
+"\n"
+"  -R, --requisites       vis rekvisitter for STIER"
+
+#: guix/scripts/gc.scm:55
+msgid ""
+"\n"
+"      --referrers        list the referrers of PATHS"
+msgstr ""
+"\n"
+"      --referrers        vis henvisninger for STIER"
+
+#: guix/scripts/gc.scm:84
+#, scheme-format
+msgid "invalid amount of storage: ~a~%"
+msgstr "ugyldig lagermængde: ~a~%"
+
+#: guix/scripts/hash.scm:45
+msgid ""
+"Usage: guix hash [OPTION] FILE\n"
+"Return the cryptographic hash of FILE.\n"
+"\n"
+"Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'\n"
+"and 'hexadecimal' can be used as well).\n"
+msgstr ""
+"Brug: guix hash [TILVALG] FIL\n"
+"Returner den kryptografiske hash for FIL.\n"
+"\n"
+"Understøttede formater: »nix-base32« (standard), »base32« og »base16« (»hex«\n"
+"og »hexadecimal« kan også bruges).\n"
+
+#: guix/scripts/hash.scm:52
+msgid ""
+"\n"
+"  -r, --recursive        compute the hash on FILE recursively"
+msgstr ""
+"\n"
+"  -r, --recursive        beregn hashen på FIL rekursivt"
+
+#: guix/scripts/hash.scm:103
+#, scheme-format
+msgid "unrecognized option: ~a~%"
+msgstr "tilvalg blev ikke genkendt: ~a~%"
+
+#: guix/scripts/hash.scm:134 guix/ui.scm:258
+#, scheme-format
+msgid "~a~%"
+msgstr "~a~%"
+
+#: guix/scripts/hash.scm:137
+#, scheme-format
+msgid "wrong number of arguments~%"
+msgstr "forkert antal argumenter~%"
+
+#: guix/scripts/pull.scm:72
+msgid ""
+"Usage: guix pull [OPTION]...\n"
+"Download and deploy the latest version of Guix.\n"
+msgstr ""
+"Brug: guix pull [TILVALG]...\n"
+"Hent og udrul den seneste version af Guix.\n"
+
+#: guix/scripts/pull.scm:76
+msgid ""
+"\n"
+"      --url=URL          download the Guix tarball from URL"
+msgstr ""
+"\n"
+"      --url=URL          hent Guix-tarball'en fra ADRESSE"
+
+#: guix/scripts/pull.scm:78
+msgid ""
+"\n"
+"      --bootstrap        use the bootstrap Guile to build the new Guix"
+msgstr ""
+"\n"
+"      --bootstrap        brug bootstrap Guile til at bygge den nye Guix"
+
+#: guix/scripts/pull.scm:132
+msgid "tarball did not produce a single source directory"
+msgstr "tarball fremstillede ikke en enkel kildemappe"
+
+#: guix/scripts/pull.scm:150
+#, scheme-format
+msgid "unpacking '~a'...~%"
+msgstr "udpakker »~a«...~%"
+
+#: guix/scripts/pull.scm:159
+msgid "failed to unpack source code"
+msgstr "kunne ikke udpakke kildekode"
+
+#: guix/scripts/pull.scm:200
+#, scheme-format
+msgid "updated ~a successfully deployed under `~a'~%"
+msgstr "opdaterede ~a der med succes blev udrullet undet »~a«~%"
+
+#: guix/scripts/pull.scm:203
+#, scheme-format
+msgid "failed to update Guix, check the build log~%"
+msgstr "kunne ikke opdatere Guix, kontroller byggeloggen~%"
+
+#: guix/scripts/pull.scm:205
+msgid "Guix already up to date\n"
+msgstr "Guix er allerede opdateret\n"
+
+#: guix/scripts/pull.scm:215
+#, scheme-format
+msgid "~A: unexpected argument~%"
+msgstr "~A: uventet argument~%"
+
+#: guix/scripts/pull.scm:224
+msgid "failed to download up-to-date source, exiting\n"
+msgstr "kunne ikke hente opdateret kilde, afslutter\n"
+
+#: guix/scripts/substitute-binary.scm:80
+#, scheme-format
+msgid "authentication and authorization of substitutes disabled!~%"
+msgstr "godkendelse og autorisation af substitutter er deaktiveret!~%"
+
+#: guix/scripts/substitute-binary.scm:163
+#, scheme-format
+msgid "download from '~a' failed: ~a, ~s~%"
+msgstr "hent fra »~a« mislykkedes: ~a, ~s~%"
+
+#: guix/scripts/substitute-binary.scm:178
+#, scheme-format
+msgid "while fetching ~a: server is somewhat slow~%"
+msgstr "under overførsel af ~a: server er noget langsom~%"
+
+#: guix/scripts/substitute-binary.scm:180
+#, scheme-format
+msgid "try `--no-substitutes' if the problem persists~%"
+msgstr "prøv »--no-substitutes« hvis problemet fortsætter~%"
+
+#: guix/scripts/substitute-binary.scm:221
+#, scheme-format
+msgid "updating list of substitutes from '~a'...~%"
+msgstr "opdaterer liste af substitutter fra »~a«...~%"
+
+#: guix/scripts/substitute-binary.scm:253
+#, scheme-format
+msgid "signature version must be a number: ~s~%"
+msgstr "signaturversion skal være et nummer: ~s~%"
+
+#: guix/scripts/substitute-binary.scm:257
+#, scheme-format
+msgid "unsupported signature version: ~a~%"
+msgstr "signaturversion er ikke understøttet: ~a~%"
+
+#: guix/scripts/substitute-binary.scm:265
+#, scheme-format
+msgid "signature is not a valid s-expression: ~s~%"
+msgstr "signatur er ikke et gyldigt s-udtryk: ~s~%"
+
+#: guix/scripts/substitute-binary.scm:269
+#, scheme-format
+msgid "invalid format of the signature field: ~a~%"
+msgstr "ugyldigt format for signaturfeltet: ~a~%"
+
+#: guix/scripts/substitute-binary.scm:304
+#, scheme-format
+msgid "invalid signature for '~a'~%"
+msgstr "ugyldig signatur for »~a«~%"
+
+#: guix/scripts/substitute-binary.scm:306
+#, scheme-format
+msgid "hash mismatch for '~a'~%"
+msgstr "hash mismatch for »~a«~%"
+
+#: guix/scripts/substitute-binary.scm:308
+#, scheme-format
+msgid "'~a' is signed with an unauthorized key~%"
+msgstr "»~a« er underskrevet med en uautoriseret nøgle~%"
+
+#: guix/scripts/substitute-binary.scm:310
+#, scheme-format
+msgid "signature on '~a' is corrupt~%"
+msgstr "signatur på »~a« er ødelagt~%"
+
+#: guix/scripts/substitute-binary.scm:344
+#, scheme-format
+msgid "substitute at '~a' lacks a signature~%"
+msgstr "substitut på »~a« mangler en signatur~%"
+
+#: guix/scripts/substitute-binary.scm:532
+#, scheme-format
+msgid "Downloading, please wait...~%"
+msgstr "Henter, vent venligst ...~%"
+
+#: guix/scripts/substitute-binary.scm:534
+#, scheme-format
+msgid "(Please consider upgrading Guile to get proper progress report.)~%"
+msgstr "(Overvej venligst at opgradere Guile for at få korrekt statusrapport.)~%"
+
+#: guix/scripts/substitute-binary.scm:547
+#, scheme-format
+msgid "host name lookup error: ~a~%"
+msgstr "opslagsfejl for værtsnavn: ~a~%"
+
+#: guix/scripts/substitute-binary.scm:556
+msgid ""
+"Usage: guix substitute-binary [OPTION]...\n"
+"Internal tool to substitute a pre-built binary to a local build.\n"
+msgstr ""
+"Brug: guix substitute-binary [TILVALG]...\n"
+"Internt værktøj til at erstatte en præbygget binær fil med en lokal bygning.\n"
+
+#: guix/scripts/substitute-binary.scm:558
+msgid ""
+"\n"
+"      --query            report on the availability of substitutes for the\n"
+"                         store file names passed on the standard input"
+msgstr ""
+"\n"
+"      --query            rapport om tilgængeligheden for substitutter for\n"
+"                         lagerfilnavnene sendt til standardind"
+
+#: guix/scripts/substitute-binary.scm:561
+msgid ""
+"\n"
+"      --substitute STORE-FILE DESTINATION\n"
+"                         download STORE-FILE and store it as a Nar in file\n"
+"                         DESTINATION"
+msgstr ""
+"\n"
+"      --substitute LAGER-FIL DESTINATION\n"
+"                         hent LAGER-FIL og lagr den som en Nar i filen\n"
+"                         DESTINATION"
+
+#: guix/scripts/substitute-binary.scm:606
+msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
+msgstr "ACL for arkivimporter ser ikke ud til at være initialiseret, substitutter kan være utilgængelige\n"
+
+#: guix/scripts/substitute-binary.scm:640
+#, scheme-format
+msgid "these substitute URLs will not be used:~{ ~a~}~%"
+msgstr "disse substitutadresser vil ikke blive brugt:~{ ~a~}~%"
+
+#: guix/scripts/substitute-binary.scm:666
+#, scheme-format
+msgid "failed to look up host '~a' (~a), substituter disabled~%"
+msgstr "kunne ikke slå vært op »~a« (~a), substitutter deaktiveret~%"
+
+#: guix/scripts/substitute-binary.scm:777
+#, scheme-format
+msgid "~a: unrecognized options~%"
+msgstr "~a: ikke genkendte tilvalg~%"
+
+#: guix/scripts/authenticate.scm:58
+#, scheme-format
+msgid "cannot find public key for secret key '~a'~%"
+msgstr "kan ikke finde offentlig nøgle for hemmelig nøgle »~a«~%"
+
+#: guix/scripts/authenticate.scm:78
+#, scheme-format
+msgid "error: invalid signature: ~a~%"
+msgstr "fejl: ugyldig signatur: ~a~%"
+
+#: guix/scripts/authenticate.scm:80
+#, scheme-format
+msgid "error: unauthorized public key: ~a~%"
+msgstr "fejl: ikke autoriseret offentlig nøgle: ~a~%"
+
+#: guix/scripts/authenticate.scm:82
+#, scheme-format
+msgid "error: corrupt signature data: ~a~%"
+msgstr "fejl: ødelagt signaturdata: ~a~%"
+
+#: guix/scripts/authenticate.scm:126
+msgid ""
+"Usage: guix authenticate OPTION...\n"
+"Sign or verify the signature on the given file.  This tool is meant to\n"
+"be used internally by 'guix-daemon'.\n"
+msgstr ""
+"Brug: guix authenticate TILVALG...\n"
+"Underskriv eller verificer signaturen på den givne fil. Dette værktøj skal\n"
+"bruges internt af »guix-daemon«.\n"
+
+#: guix/scripts/authenticate.scm:132
+msgid "wrong arguments"
+msgstr "forkerte argumenter"
+
+#: guix/scripts/system.scm:75
+#, scheme-format
+msgid "failed to open operating system file '~a': ~a~%"
+msgstr "kunne ikke åbne operativsystemfil »~a«: ~a~%"
+
+#: guix/scripts/system.scm:79
+#, scheme-format
+msgid "~a: error: ~a~%"
+msgstr "~a: fejl: ~a~%"
+
+#: guix/scripts/system.scm:83
+#, scheme-format
+msgid "failed to load operating system file '~a':~%"
+msgstr "kunne ikke indlæse operativsystemfil »~a«:~%"
+
+#: guix/scripts/system.scm:120
+#, scheme-format
+msgid "failed to register '~a' under '~a'~%"
+msgstr "kunne ikke registrere »~a« under »~a«~%"
+
+#: guix/scripts/system.scm:152
+#, scheme-format
+msgid "failed to install GRUB on device '~a'~%"
+msgstr "kunne ikke installere GRUB på enhed »~a«~%"
+
+#: guix/scripts/system.scm:169
+#, scheme-format
+msgid "initializing the current root file system~%"
+msgstr "initialiserer det nuværende root-filsystem~%"
+
+#: guix/scripts/system.scm:223
+#, scheme-format
+msgid "activating system...~%"
+msgstr "aktiverer system ...~%"
+
+#: guix/scripts/system.scm:273
+#, scheme-format
+msgid "unrecognized boot parameters for '~a'~%"
+msgstr "ikke genkendte opstartsparametre for »~a«~%"
+
+#: guix/scripts/system.scm:369
+#, scheme-format
+msgid "initializing operating system under '~a'...~%"
+msgstr "initialiserer operativsystem under »~a«...~%"
+
+#: guix/scripts/system.scm:385
+msgid ""
+"Usage: guix system [OPTION] ACTION FILE\n"
+"Build the operating system declared in FILE according to ACTION.\n"
+msgstr ""
+"Brug: guix system [TILVALG] HANDLING FIL\n"
+"Byg operativsystemet deklæret i FIL jævnfør HANDLING.\n"
+
+#: guix/scripts/system.scm:388
+msgid "The valid values for ACTION are:\n"
+msgstr "De gyldige værdier for HANDLING er:\n"
+
+#: guix/scripts/system.scm:389
+msgid "  - 'reconfigure', switch to a new operating system configuration\n"
+msgstr "  - »reconfigure«, skift til en ny operativsystemkonfiguration\n"
+
+#: guix/scripts/system.scm:391
+msgid "  - 'build', build the operating system without installing anything\n"
+msgstr "  - »build«, byg operativsystemet uden at installere noget\n"
+
+#: guix/scripts/system.scm:393
+msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
+msgstr "  - »vm«, byg et virtuelt maskinaftryk som deler værtens lager\n"
+
+#: guix/scripts/system.scm:395
+msgid "  - 'vm-image', build a freestanding virtual machine image\n"
+msgstr "  - »vm-image«, byg et fritstående virtuelt maskinaftryk\n"
+
+#: guix/scripts/system.scm:397
+msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
+msgstr "  - »disk-image«, byg et diskaftryk, egnet for et USB-drev\n"
+
+#: guix/scripts/system.scm:399
+msgid "  - 'init', initialize a root file system to run GNU.\n"
+msgstr "  - »init«, initialiser et rootfilsystem til at køre GNU.\n"
+
+#: guix/scripts/system.scm:403
+msgid ""
+"\n"
+"      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
+msgstr ""
+"\n"
+"      --image-size=STR   for »vm-image«, lav et aftryk af STR"
+
+#: guix/scripts/system.scm:405
+msgid ""
+"\n"
+"      --no-grub          for 'init', do not install GRUB"
+msgstr ""
+"\n"
+"      --no-grub          for »init«, installer ikke GRUB"
+
+#: guix/scripts/system.scm:407
+msgid ""
+"\n"
+"      --share=SPEC       for 'vm', share host file system according to SPEC"
+msgstr ""
+"\n"
+"      --share=SPEC       for »vm«, del værtsfilsystem jævnfør SPEC"
+
+#: guix/scripts/system.scm:409
+msgid ""
+"\n"
+"      --expose=SPEC      for 'vm', expose host file system according to SPEC"
+msgstr ""
+"\n"
+"      --expose=SPEC      for »vm«, fremvis værtsfilsystem jævnfør SPEC"
+
+#: guix/scripts/system.scm:411
+msgid ""
+"\n"
+"      --full-boot        for 'vm', make a full boot sequence"
+msgstr ""
+"\n"
+"      --full-boot        for »vm«, lav en fuld opstartssekvens"
+
+#: guix/scripts/system.scm:507
+#, scheme-format
+msgid "~a: unknown action~%"
+msgstr "~a: ukendt handling~%"
+
+#: guix/scripts/system.scm:524
+#, scheme-format
+msgid "wrong number of arguments for action '~a'~%"
+msgstr "forkert antal argumenter for handling »~a«~%"
+
+#: guix/scripts/system.scm:544
+#, scheme-format
+msgid "no configuration file specified~%"
+msgstr "ingen konfigurationsfil angivet~%"
+
+#: guix/scripts/lint.scm:82
+#, scheme-format
+msgid "Available checkers:~%"
+msgstr "Tilgængelige kontrolprogrammer:~%"
+
+#: guix/scripts/lint.scm:102
+msgid "description should not be empty"
+msgstr "beskrivelse skal være udfyldt"
+
+#: guix/scripts/lint.scm:109
+msgid "description should start with an upper-case letter or digit"
+msgstr "beskrivelse skal starte med et stort bogstav eller et tal"
+
+# arg, hvad foregår der her
+#: guix/scripts/lint.scm:125
+#, scheme-format
+msgid ""
+"sentences in description should be followed ~\n"
+"by two spaces; possible infraction~p at ~{~a~^, ~}"
+msgstr ""
+"sætninger i beskrivelsen skal efterfølges ~\n"
+"af to mellemrum; mulig infraction~p ved ~{~a~^, ~}"
+
+#: guix/scripts/lint.scm:146
+msgid "pkg-config should probably be a native input"
+msgstr "pkg-config skal sandsynligvis være standarddata"
+
+#: guix/scripts/lint.scm:161
+msgid "synopsis should not be empty"
+msgstr "synopsis skal være udfyldt"
+
+#: guix/scripts/lint.scm:169
+msgid "no period allowed at the end of the synopsis"
+msgstr "ingen periode er tilladt i slutningen af synopsen"
+
+#: guix/scripts/lint.scm:181
+msgid "no article allowed at the beginning of the synopsis"
+msgstr "ingen artikel er tilladt i begyndelsen af synopsen"
+
+#: guix/scripts/lint.scm:188
+msgid "synopsis should be less than 80 characters long"
+msgstr "synopsis skal være mindre end 80 tegn lang"
+
+#: guix/scripts/lint.scm:194
+msgid "synopsis should start with an upper-case letter or digit"
+msgstr "synopsis skal starte med et stort bogstav eller et tal"
+
+#: guix/scripts/lint.scm:201
+msgid "synopsis should not start with the package name"
+msgstr "synopsis skal ikke starte med pakkenavnet"
+
+#: guix/scripts/lint.scm:270
+#, scheme-format
+msgid "URI ~a not reachable: ~a (~s)"
+msgstr "URI ~a kan ikke nås: ~a (~s)"
+
+#: guix/scripts/lint.scm:278
+#, scheme-format
+msgid "URI ~a domain not found: ~a"
+msgstr "URI ~a domæne blev ikke fundet: ~a"
+
+#: guix/scripts/lint.scm:286
+#, scheme-format
+msgid "URI ~a unreachable: ~a"
+msgstr "URI ~a kan ikke nås: ~a"
+
+#: guix/scripts/lint.scm:312
+msgid "invalid value for home page"
+msgstr "ugyldig værdi for hjemmeside"
+
+#: guix/scripts/lint.scm:315
+#, scheme-format
+msgid "invalid home page URL: ~s"
+msgstr "ugyldig hjemmesideadresse: ~s"
+
+#: guix/scripts/lint.scm:336
+msgid "file names of patches should start with the package name"
+msgstr "filnavn for rettelser skal starte med pakkenavnet"
+
+#: guix/scripts/lint.scm:374
+#, scheme-format
+msgid "~a: ~a: proposed synopsis: ~s~%"
+msgstr "~a: ~a: foreslået synopsis: ~s~%"
+
+#: guix/scripts/lint.scm:386
+#, scheme-format
+msgid "~a: ~a: proposed description:~%     \"~a\"~%"
+msgstr "~a: ~a: foreslået beskrivelse:~%     »~a«~%"
+
+#: guix/scripts/lint.scm:415
+msgid "Validate package descriptions"
+msgstr "Valider pakkebeskrivelser"
+
+#: guix/scripts/lint.scm:419
+msgid "Validate synopsis & description of GNU packages"
+msgstr "Valider synopsis og beskrivelse for GNU-pakker"
+
+#: guix/scripts/lint.scm:423
+msgid "Identify inputs that should be native inputs"
+msgstr "Identificer inddata som skal være standarddata"
+
+#: guix/scripts/lint.scm:427
+msgid "Validate file names of patches"
+msgstr "Valider filnavne for rettelser"
+
+#: guix/scripts/lint.scm:431
+msgid "Validate home-page URLs"
+msgstr "Valider hjemmesiders adresser"
+
+#: guix/scripts/lint.scm:435
+msgid "Validate source URLs"
+msgstr "Valider kildeadresser"
+
+#: guix/scripts/lint.scm:439
+msgid "Validate package synopses"
+msgstr "Valider pakkesynopser"
+
+#: guix/scripts/lint.scm:464
+msgid ""
+"Usage: guix lint [OPTION]... [PACKAGE]...\n"
+"Run a set of checkers on the specified package; if none is specified, run the checkers on all packages.\n"
+msgstr ""
+"Brug: guix lint [TILVALG]... [PAKKE]...\n"
+"Kør et sæt af kontroller på den specificerede pakke; hvis ingen er specificeret, så kør kontrollerne på alle pakker.\n"
+
+#: guix/scripts/lint.scm:466
+msgid ""
+"\n"
+"  -c, --checkers=CHECKER1,CHECKER2...\n"
+"                         only run the specificed checkers"
+msgstr ""
+"\n"
+"  -c, --checkers=KONTROL1,KONTROL2...\n"
+"                         kør kun de specificerede kontroller"
+
+#: guix/scripts/lint.scm:471
+msgid ""
+"\n"
+"  -l, --list-checkers    display the list of available lint checkers"
+msgstr ""
+"\n"
+"  -l, --list-checkers    vis listen med tilgængelige lint-kontroller"
+
+#: guix/scripts/lint.scm:491
+#, scheme-format
+msgid "~a: invalid checker~%"
+msgstr "~a: ugyldig kontrol~%"
+
+#: guix/gnu-maintenance.scm:438
+#, scheme-format
+msgid "signature verification failed for `~a'~%"
+msgstr "signaturverifikation mislykkedes for »~a«~%"
+
+#: guix/gnu-maintenance.scm:440
+#, scheme-format
+msgid "(could be because the public key is not in your keyring)~%"
+msgstr "(kunne være fordi den offentlige nøgle ikke er i din nøglering)~%"
+
+#: guix/gnu-maintenance.scm:515
+#, scheme-format
+msgid "~a: could not locate source file"
+msgstr "~a: kunne ikke lokalisere kildefil"
+
+#: guix/gnu-maintenance.scm:520
+#, scheme-format
+msgid "~a: ~a: no `version' field in source; skipping~%"
+msgstr "~a: ~a: intet »versionsfelt« i kilde; udelader~%"
+
+#: guix/ui.scm:137
+#, scheme-format
+msgid "failed to install locale: ~a~%"
+msgstr "kunne ikke installere sprog: ~a~%"
+
+#: guix/ui.scm:156
+msgid ""
+"Copyright (C) 2014 the Guix authors\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+msgstr ""
+"Ophavsret 2014 Guix-forfatterne\n"
+"Licens GPLv3+: GNU GPL version 3 eller senere <http://gnu.org/licenses/gpl.html>\n"
+"Dette er et frit program; du kan frit ændre og videredistribuere programmet.\n"
+"Der er INGEN GARANTI, inden for lovens rammer.\n"
+
+#: guix/ui.scm:164
+#, scheme-format
+msgid ""
+"\n"
+"Report bugs to: ~a."
+msgstr ""
+"\n"
+"Rapporter fejl til: ~a."
+
+#: guix/ui.scm:166
+#, scheme-format
+msgid ""
+"\n"
+"~a home page: <~a>"
+msgstr ""
+"\n"
+"~a hjemmeside: <~a>"
+
+#: guix/ui.scm:168
+msgid ""
+"\n"
+"General help using GNU software: <http://www.gnu.org/gethelp/>"
+msgstr ""
+"\n"
+"Generel hjælp til brugen af GNU-programmer: <http://www.gnu.org/gethelp/>"
+
+#: guix/ui.scm:175
+#, scheme-format
+msgid "~a: invalid number~%"
+msgstr "~a: ugyldigt nummer~%"
+
+#: guix/ui.scm:192
+#, scheme-format
+msgid "invalid number: ~a~%"
+msgstr "ugyldigt nummer: ~a~%"
+
+#: guix/ui.scm:215
+#, scheme-format
+msgid "unknown unit: ~a~%"
+msgstr "ukendt enhed: ~a~%"
+
+#: guix/ui.scm:226
+#, scheme-format
+msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
+msgstr "~a:~a:~a: pakken »~a« har ugyldige inddata: ~s~%"
+
+#: guix/ui.scm:233
+#, scheme-format
+msgid "~a: ~a: build system `~a' does not support cross builds~%"
+msgstr "~a: ~a: byggesystem »~a« understøtter ikke krydsbygninger~%"
+
+#: guix/ui.scm:238
+#, scheme-format
+msgid "profile '~a' does not exist~%"
+msgstr "profilen »~a« findes ikke~%"
+
+#: guix/ui.scm:241
+#, scheme-format
+msgid "generation ~a of profile '~a' does not exist~%"
+msgstr "oprettelse ~a af profilen »~a« findes ikke~%"
+
+#: guix/ui.scm:245
+#, scheme-format
+msgid "failed to connect to `~a': ~a~%"
+msgstr "kunne ikke forbinde til »~a«: ~a~%"
+
+#: guix/ui.scm:250
+#, scheme-format
+msgid "build failed: ~a~%"
+msgstr "bygning mislykkedes: ~a~%"
+
+#: guix/ui.scm:253
+#, scheme-format
+msgid "reference to invalid output '~a' of derivation '~a'~%"
+msgstr "reference til ugyldige uddata »~a« for afledning »~a«~%"
+
+#: guix/ui.scm:264
+#, scheme-format
+msgid "~a: ~a~%"
+msgstr "~a: ~a~%"
+
+#: guix/ui.scm:283
+#, scheme-format
+msgid "failed to read expression ~s: ~s~%"
+msgstr "kunne ikke læse udtryk ~s: ~s~%"
+
+#: guix/ui.scm:289
+#, scheme-format
+msgid "failed to evaluate expression `~a': ~s~%"
+msgstr "kunne ikke evaluere udtryk »~a«: ~s~%"
+
+#: guix/ui.scm:298
+#, scheme-format
+msgid "expression ~s does not evaluate to a package~%"
+msgstr "udtryk ~s evaluerer ikke til en pakke~%"
+
+#: guix/ui.scm:350
+#, scheme-format
+msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Den følgende afledning ville blive bygget:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De følgende afledninger ville blive bygget:~%~{   ~a~%~}~;~]"
+
+#: guix/ui.scm:355
+#, scheme-format
+msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Den følgende fil ville blive hentet:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De følgende filer ville blive hentet:~%~{   ~a~%~}~;~]"
+
+#: guix/ui.scm:361
+#, scheme-format
+msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Den følgende afledning vil blive bygget:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De følgende afledninger vil blive bygget:~%~{   ~a~%~}~;~]"
+
+#: guix/ui.scm:366
+#, scheme-format
+msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
+msgid_plural "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
+msgstr[0] "~:[Den følgende fil vil blive hentet:~%~{   ~a~%~}~;~]"
+msgstr[1] "~:[De følgende filer vil blive hentet:~%~{   ~a~%~}~;~]"
+
+#: guix/ui.scm:418
+#, scheme-format
+msgid "The following package would be removed:~%~{~a~%~}~%"
+msgid_plural "The following packages would be removed:~%~{~a~%~}~%"
+msgstr[0] "Den følgende pakke ville blive fjernet:~%~{~a~%~}~%"
+msgstr[1] "De følgende pakker ville blive fjernet:~%~{~a~%~}~%"
+
+#: guix/ui.scm:423
+#, scheme-format
+msgid "The following package will be removed:~%~{~a~%~}~%"
+msgid_plural "The following packages will be removed:~%~{~a~%~}~%"
+msgstr[0] "Den følgende pakke vil blive fjernet:~%~{~a~%~}~%"
+msgstr[1] "De følgende pakker vil blive fjernet:~%~{~a~%~}~%"
+
+#: guix/ui.scm:436
+#, scheme-format
+msgid "The following package would be upgraded:~%~{~a~%~}~%"
+msgid_plural "The following packages would be upgraded:~%~{~a~%~}~%"
+msgstr[0] "Den følgende pakke ville blive opgraderet:~%~{~a~%~}~%"
+msgstr[1] "De følgende pakker ville blive opgraderet:~%~{~a~%~}~%"
+
+#: guix/ui.scm:441
+#, scheme-format
+msgid "The following package will be upgraded:~%~{~a~%~}~%"
+msgid_plural "The following packages will be upgraded:~%~{~a~%~}~%"
+msgstr[0] "Den følgende pakke vil blive opgraderet:~%~{~a~%~}~%"
+msgstr[1] "De følgende pakker vil blive opgraderet:~%~{~a~%~}~%"
+
+#: guix/ui.scm:452
+#, scheme-format
+msgid "The following package would be installed:~%~{~a~%~}~%"
+msgid_plural "The following packages would be installed:~%~{~a~%~}~%"
+msgstr[0] "Den følgende pakke ville blive installeret:~%~{~a~%~}~%"
+msgstr[1] "De følgende pakker ville blive installeret:~%~{~a~%~}~%"
+
+#: guix/ui.scm:457
+#, scheme-format
+msgid "The following package will be installed:~%~{~a~%~}~%"
+msgid_plural "The following packages will be installed:~%~{~a~%~}~%"
+msgstr[0] "Den følgende pakke vil blive installeret:~%~{~a~%~}~%"
+msgstr[1] "De følgende pakker vil blive installeret:~%~{~a~%~}~%"
+
+#: guix/ui.scm:474
+msgid "<unknown location>"
+msgstr "<ukendt sted>"
+
+#: guix/ui.scm:500
+#, scheme-format
+msgid "failed to create configuration directory `~a': ~a~%"
+msgstr "kunne ikke oprette konfiguratinsmappe »~a«: ~a~%"
+
+#: guix/ui.scm:600 guix/ui.scm:614
+msgid "unknown"
+msgstr "ukendt"
+
+#: guix/ui.scm:723
+#, scheme-format
+msgid "invalid argument: ~a~%"
+msgstr "ugyldigt argument: ~a~%"
+
+#: guix/ui.scm:732
+#, scheme-format
+msgid "Try `guix --help' for more information.~%"
+msgstr "Prøv »guix --help« for yderligere information.~%"
+
+#: guix/ui.scm:762
+msgid ""
+"Usage: guix COMMAND ARGS...\n"
+"Run COMMAND with ARGS.\n"
+msgstr ""
+"Brug: guix KOMMANDO ARG...\n"
+"Kør KOMMANDO med ARG.\n"
+
+#: guix/ui.scm:765
+msgid "COMMAND must be one of the sub-commands listed below:\n"
+msgstr "KOMMANDO skal være en af underkommandoerne vist nedenfor:\n"
+
+#: guix/ui.scm:785
+#, scheme-format
+msgid "guix: ~a: command not found~%"
+msgstr "guix: ~a: kommando blev ikke fundet~%"
+
+#: guix/ui.scm:803
+#, scheme-format
+msgid "guix: missing command name~%"
+msgstr "guix: mangler kommandonavn~%"
+
+#: guix/ui.scm:811
+#, scheme-format
+msgid "guix: unrecognized option '~a'~%"
+msgstr "guix: ikke genkendt tilvalg »~a«~%"
+
+#: guix/http-client.scm:217
+#, scheme-format
+msgid "using Guile ~a, which does not support ~s encoding~%"
+msgstr "bruger Guile ~a, som ikke understøtter ~s-kodning~%"
+
+#: guix/http-client.scm:220
+#, scheme-format
+msgid "download failed; use a newer Guile~%"
+msgstr "overførsel mislykkedes; brug en nyere Guile~%"
+
+#: guix/http-client.scm:232
+#, scheme-format
+msgid "following redirection to `~a'...~%"
+msgstr "følger omdirigering til »~a«...~%"
+
+#: guix/http-client.scm:241
+msgid "download failed"
+msgstr "overførsel mislykkedes"
+
+#: guix/nar.scm:155
+msgid "signature is not a valid s-expression"
+msgstr "signatur er ikke et gyldigt s-udtryk"
+
+#: guix/nar.scm:164
+msgid "invalid signature"
+msgstr "ugyldig signatur"
+
+#: guix/nar.scm:168
+msgid "invalid hash"
+msgstr "ugyldig hash"
+
+#: guix/nar.scm:176
+msgid "unauthorized public key"
+msgstr "uautoriseret offentlig nøgle"
+
+#: guix/nar.scm:181
+msgid "corrupt signature data"
+msgstr "ødelagt signaturdata"
+
+#: guix/nar.scm:201
+msgid "corrupt file set archive"
+msgstr "ødelagt filsætarkiv"
+
+#: guix/nar.scm:211
+#, scheme-format
+msgid "importing file or directory '~a'...~%"
+msgstr "importerer fil eller mappe »~a«...~%"
+
+#: guix/nar.scm:222
+#, scheme-format
+msgid "found valid signature for '~a'~%"
+msgstr "fandt gyldig signatur for »~a«~%"
+
+#: guix/nar.scm:229
+msgid "imported file lacks a signature"
+msgstr "importeret fil mangler en signatur"
+
+#: guix/nar.scm:268
+msgid "invalid inter-file archive mark"
+msgstr "ugyldig arkivmærke for mellemfil"
