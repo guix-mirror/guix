@@ -31,6 +31,8 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
@@ -51,6 +53,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages ncurses))
@@ -1666,6 +1669,69 @@ library.")
     (description
      "This package contains various network related extensions for the GIO
 library.")
+    (license license:lgpl2.0+)))
+
+(define-public libsoup
+  (package
+    (name "libsoup")
+    (version "2.50.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/libsoup/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0yv61y5vfar1rfksa6f53zhfw9wcb39zjix8gqc1ff5gqid3c08y"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:make-flags '("CC=gcc") ; for g-ir-scanner
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html")
+             ;; To find GIO modules from glib-networking.
+             (string-append "GIO_EXTRA_MODULES="
+                            (assoc-ref %build-inputs "glib-networking")
+                            "/lib/gio/modules"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure disable-unconnected-socket-test
+                     ;; This test fails due to missing /etc/nsswitch.conf
+                     ;; in the build environment.
+                     (lambda _
+                       (substitute* "tests/socket-test.c"
+                         ((".*/sockets/unconnected.*") ""))
+                       #t))
+         (add-before check unset-LC_ALL
+                     ;; The 'check-local' target runs 'env LANG=C sort -u',
+                     ;; unset 'LC_ALL' to make 'LANG' working.
+                     (lambda _
+                       (unsetenv "LC_ALL")
+                       #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ;; These are needed for the tests.
+       ;; FIXME: Add PHP once available.
+       ("curl" ,curl)
+       ("httpd" ,httpd)))
+    (propagated-inputs
+     ;; libsoup-2.4.pc refers to all these.
+     `(("glib" ,glib)
+       ("libxml2" ,libxml2)))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("sqlite" ,sqlite)))
+    (home-page "https://live.gnome.org/LibSoup/")
+    (synopsis "GLib-based HTTP Library")
+    (description
+     "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects
+and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
 
 (define-public gnome-mines
