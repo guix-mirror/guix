@@ -708,6 +708,34 @@ objects found.  Alternatively you may construct objects manually.")
 identify a message uniquely.")
     (license (package-license perl))))
 
+(define-public perl-email-mime
+  (package
+    (name "perl-email-mime")
+    (version "1.929")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MIME-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sf7dldg4dvicyw6dl1vx6s1gjq3fcppi0103ikl0vi6v5xjdjdh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-email-address" ,perl-email-address)
+       ("perl-email-messageid" ,perl-email-messageid)
+       ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
+       ("perl-email-mime-encodings" ,perl-email-mime-encodings)
+       ("perl-email-simple" ,perl-email-simple)
+       ("perl-mime-types" ,perl-mime-types)))
+    (home-page "http://search.cpan.org/dist/Email-MIME")
+    (synopsis "MIME message handling")
+    (description "Email::MIME is an extension of the Email::Simple module, to
+handle MIME encoded messages.  It takes a message as a string, splits it up
+into its constituent parts, and allows you access to various parts of the
+message.  Headers are decoded from MIME encoding.")
+    (license (package-license perl))))
+
 (define-public perl-email-mime-contenttype
   (package
     (name "perl-email-mime-contenttype")
