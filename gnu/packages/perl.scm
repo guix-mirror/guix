@@ -4438,6 +4438,31 @@ letters, the pronunciation expressed by the text in some other writing
 system.")
     (license (package-license perl))))
 
+(define-public perl-throwable
+  (package
+    (name "perl-throwable")
+    (version "0.200012")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Throwable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cy8kza9pd9y5m7k5385asf4xqm54vdqnqm0am10z6j2mrxwr527"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)))
+    (propagated-inputs
+     `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)))
+    (home-page "http://search.cpan.org/dist/Throwable")
+    (synopsis "Role for classes that can be thrown")
+    (description "Throwable is a role for classes that are meant to be thrown
+as exceptions to standard program flow.")
+    (license (package-license perl))))
+
 (define-public perl-tie-ixhash
   (package
   (name "perl-tie-ixhash")
