@@ -1376,6 +1376,25 @@ Devel::StackTrace::WithLexicals, you even get to see the lexical variables of
 each stack frame.")
     (license (package-license perl))))
 
+(define-public perl-digest-hmac
+  (package
+    (name "perl-digest-hmac")
+    (version "1.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                           "Digest-HMAC-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0naavabbm1c9zgn325ndy66da4insdw9l3mrxwxdfi7i7xnjrirv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Digest-HMAC")
+    (synopsis "Keyed-Hashing for Message Authentication")
+    (description "The Digest::HMAC module follows the common Digest::
+interface for the RFC 2104 HMAC mechanism.")
+    (license (package-license perl))))
+
 (define-public perl-digest-sha1
   (package
     (name "perl-digest-sha1")
