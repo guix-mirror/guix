@@ -47,6 +47,7 @@
             P_
             report-error
             leave
+            report-load-error
             show-version-and-exit
             show-bug-report-information
             string->number*
@@ -129,6 +130,23 @@ messages."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define (report-load-error file args)
+  "Report the failure to load FILE, a user-provided Scheme file, and exit.
+ARGS is the list of arguments received by the 'throw' handler."
+  (match args
+    (('system-error . _)
+     (let ((err (system-error-errno args)))
+       (leave (_ "failed to load '~a': ~a~%") file (strerror err))))
+    (('syntax-error proc message properties form . rest)
+     (let ((loc (source-properties->location properties)))
+       (format (current-error-port) (_ "~a: error: ~a~%")
+               (location->string loc) message)
+       (exit 1)))
+    ((error args ...)
+     (report-error (_ "failed to load '~a':~%") file)
+     (apply display-error #f (current-error-port) args)
+     (exit 1))))
 
 (define (install-locale)
   "Install the current locale settings."

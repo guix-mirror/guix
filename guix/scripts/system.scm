@@ -69,21 +69,7 @@
          (set-current-module %user-module)
          (primitive-load file))))
     (lambda args
-      (match args
-        (('system-error . _)
-         (let ((err (system-error-errno args)))
-           (leave (_ "failed to open operating system file '~a': ~a~%")
-                  file (strerror err))))
-        (('syntax-error proc message properties form . rest)
-         (let ((loc (source-properties->location properties)))
-           (format (current-error-port) (_ "~a: error: ~a~%")
-                   (location->string loc) message)
-           (exit 1)))
-        ((error args ...)
-         (report-error (_ "failed to load operating system file '~a':~%")
-                       file)
-         (apply display-error #f (current-error-port) args)
-         (exit 1))))))
+      (report-load-error file args))))
 
 
 ;;;
