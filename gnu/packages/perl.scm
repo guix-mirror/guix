@@ -5443,6 +5443,25 @@ else.")
 common serialisation formats such as JSON or CBOR.")
     (license (package-license perl))))
 
+(define-public perl-universal-can
+  (package
+    (name "perl-universal-can")
+    (version "1.20140328")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
+                           "UNIVERSAL-can-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03wr25zznbfn1g8zmmq3g6a6288xr30priwvm75y4vvqfkrajbaj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/UNIVERSAL-can")
+    (synopsis "UNIVERSAL::can() reimplementation")
+    (description "This module attempts to work around people calling
+UNIVERSAL::can() as a function, which it is not.")
+    (license (package-license perl))))
+
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
