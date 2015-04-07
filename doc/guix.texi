@@ -1142,9 +1142,8 @@ When @var{pattern} is specified, delete the matching generations.  When
 specified duration match.  For instance, @code{--delete-generations=1m}
 deletes generations that are more than one month old.
 
-If the current generation matches, it is deleted atomically---i.e., by
-switching to the previous available generation.  Note that the zeroth
-generation is never deleted.
+If the current generation matches, it is @emph{not} deleted.  Also, the
+zeroth generation is never deleted.
 
 Note that deleting generations prevents roll-back to them.
 Consequently, this command must be used with care.
