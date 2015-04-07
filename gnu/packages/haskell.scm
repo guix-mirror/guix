@@ -507,4 +507,34 @@ the paper \"Splittable Pseudorandom Number Generators Using Cryptographic
 Hashing\" by Claessen, Pałka for details and the rationale of the design.")
     (license bsd-3)))
 
+(define-public ghc-quickcheck
+  (package
+    (name "ghc-quickcheck")
+    (version "2.8")
+    (outputs '("out" "doc"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/QuickCheck/QuickCheck-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "04xs6mq22bcnkpi616qrbm7jlivh9csnhmvjgp1ifq52an1wr4rx"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
+       #:configure-flags '("-f base4")))
+    ;; these inputs are necessary to use this package
+    (propagated-inputs
+     `(("ghc-tf-random" ,ghc-tf-random)))
+    (home-page
+     "https://github.com/nick8325/quickcheck")
+    (synopsis
+     "Automatic testing of Haskell programs")
+    (description
+     "QuickCheck is a library for random testing of program properties.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
