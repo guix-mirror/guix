@@ -4634,6 +4634,27 @@ as flexible as possible to the tester.")
 Pod::Simple to do the heavy lifting.")
     (license (package-license perl))))
 
+(define-public perl-test-pod-coverage
+  (package
+    (name "perl-test-pod-coverage")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Test-Pod-Coverage-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1m203mhgfilz7iqc8mxaw4lw02fz391mni3n25sfx7nryylwrja8"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-pod-coverage" ,perl-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Test-Pod-Coverage")
+    (synopsis "Check for pod coverage")
+    (description "This module adds a test to your Perl distribution which
+checks for pod coverage of all appropriate files.")
+    (license artistic2.0)))
+
 (define-public perl-test-requires
   (package
     (name "perl-test-requires")
