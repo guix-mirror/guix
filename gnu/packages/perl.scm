@@ -1285,6 +1285,32 @@ to do this without writing reams of structural code.")
 give it and parse it into a DateTime object.")
     (license (package-license perl))))
 
+(define-public perl-datetime-format-ical
+  (package
+    (name "perl-datetime-format-ical")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
+                           "DateTime-Format-ICal-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cvwk7pigj7czsp81z35h7prxvylkrlk2l0kwvq0v72ykx9zc2cb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-event-ical" ,perl-datetime-event-ical)
+       ("perl-datetime-set" ,perl-datetime-set)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-ICal")
+    (synopsis "Parse and format iCal datetime and duration strings")
+    (description "This module understands the ICal date/time and duration
+formats, as defined in RFC 2445.  It can be used to parse these formats in
+order to create the appropriate objects.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
