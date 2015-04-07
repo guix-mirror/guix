@@ -200,6 +200,28 @@ maintain a prefix to namespace URI map, and provides a number of basic
 checks.")
     (license (package-license perl))))
 
+(define-public perl-xml-sax-base
+  (package
+    (name "perl-xml-sax-base")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRANTM/"
+                           "XML-SAX-Base-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17i161rq1ngjlk0c8vdkrkkc56y1pf51k1g54y28py0micqp0qk6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-SAX-Base")
+    (synopsis "Base class for SAX Drivers and Filters")
+    (description "This module has a very simple task - to be a base class for
+PerlSAX drivers and filters.  It's default behaviour is to pass the input
+directly to the output unchanged.  It can be useful to use this module as a
+base class so you don't have to, for example, implement the characters()
+callback.")
+    (license (package-license perl))))
+
 (define-public perl-xml-simple
   (package
     (name "perl-xml-simple")
