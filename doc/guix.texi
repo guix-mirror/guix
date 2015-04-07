@@ -338,7 +338,8 @@ goes through the daemon.  For instance, command-line tools such as
 daemon (@i{via} remote procedure calls) to instruct it what to do.
 
 The following sections explain how to prepare the build daemon's
-environment.
+environment.  Also @ref{Substitutes}, for information on how to allow
+the daemon to download pre-built binaries.
 
 @menu
 * Build Environment Setup::     Preparing the isolated build environment.
