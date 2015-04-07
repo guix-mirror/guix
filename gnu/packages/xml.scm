@@ -200,6 +200,40 @@ maintain a prefix to namespace URI map, and provides a number of basic
 checks.")
     (license (package-license perl))))
 
+(define-public perl-xml-sax
+  (package
+    (name "perl-xml-sax")
+    (version "0.99")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRANTM/"
+                           "XML-SAX-" version ".tar.gz"))
+       (sha256
+        (base32
+         "115dypb50w1l94y3iwihv5nkixbsv1cxiqkd93y4rk5n6s74pc1j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
+       ("perl-xml-sax-base" ,perl-xml-sax-base)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   install augment-path
+                   ;; The install target tries to load the newly-installed
+                   ;; XML::SAX module, but can't find it, so we need to tell
+                   ;; perl where to look.
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (setenv "PERL5LIB"
+                             (string-append (getenv "PERL5LIB") ":"
+                                            (assoc-ref outputs "out")
+                                            "/lib/perl5/site_perl")))))))
+    (home-page "http://search.cpan.org/dist/XML-SAX")
+    (synopsis "Perl API for XML")
+    (description "XML::SAX consists of several framework classes for using and
+building Perl SAX2 XML parsers, filters, and drivers.")
+    (license (package-license perl))))
+
 (define-public perl-xml-sax-base
   (package
     (name "perl-xml-sax-base")
