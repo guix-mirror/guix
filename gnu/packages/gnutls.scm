@@ -103,7 +103,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.3.12")
+    (version "3.3.14")
     (source (origin
              (method url-fetch)
              (uri
@@ -114,7 +114,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "16r96bzsfqx1rlqrkggmhhx6zbxj1fmc3mwpp0ik73ylqn93xav7"))))
+               "0lpcgkp8bb1b7f9z935f7h9c0srd4fc52404x70hk2ddz8q01yhd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
