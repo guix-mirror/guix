@@ -1514,6 +1514,34 @@ through a DateTime object, and most users will not need to directly use
 DateTime::TimeZone methods.")
     (license (package-license perl))))
 
+(define-public perl-datetimex-easy
+  (package
+    (name "perl-datetimex-easy")
+    (version "0.089")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RO/ROKR/"
+                           "DateTimeX-Easy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ybs9175h4s39x8a23ap129cgqwmy6w7psa86194jq5cww1d5rhp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-most" ,perl-test-most)))
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-flexible" ,perl-datetime-format-flexible)
+       ("perl-datetime-format-ical" ,perl-datetime-format-ical)
+       ("perl-datetime-format-natural" ,perl-datetime-format-natural)
+       ("perl-timedate" ,perl-timedate)))
+    (home-page "http://search.cpan.org/dist/DateTimeX-Easy")
+    (synopsis "Parse date/time strings")
+    (description "DateTimeX::Easy uses a variety of DateTime::Format packages
+to create DateTime objects, with some custom tweaks to smooth out the rough
+edges (mainly concerning timezone detection and selection).")
+    (license (package-license perl))))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
