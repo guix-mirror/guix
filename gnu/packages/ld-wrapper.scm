@@ -82,6 +82,10 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
   ;; Whether to emit debugging output.
   (getenv "GUIX_LD_WRAPPER_DEBUG"))
 
+(define %disable-rpath?
+  ;; Whether to disable automatic '-rpath' addition.
+  (getenv "GUIX_LD_WRAPPER_DISABLE_RPATH"))
+
 (define (readlink* file)
   ;; Call 'readlink' until the result is not a symlink.
   (define %max-symlink-depth 50)
@@ -176,7 +180,8 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
                 ;; want to add '-rpath' for files under %BUILD-DIRECTORY or
                 ;; %TEMPORARY-DIRECTORY because that could leak to installed
                 ;; files.
-                (cond ((store-file-name? file)
+                (cond ((and (not %disable-rpath?)
+                            (store-file-name? file))
                        (cons* "-rpath" (dirname file) args))
                       ((or %allow-impurities?
                            (pure-file-name? file))
