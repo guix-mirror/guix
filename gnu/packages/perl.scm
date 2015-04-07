@@ -3356,6 +3356,40 @@ prevent name clashes between packages.")
 with coercions, designed to work with the DateTime suite of objects.")
     (license (package-license perl))))
 
+(define-public perl-moosex-types-datetime-morecoercions
+  (package
+    (name "perl-moosex-types-datetime-morecoercions")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Types-DateTime-MoreCoercions-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0888ns6fmvpcj5vh86n8mra9anq8jak7gf0b1z5hvww4birki6dn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-simple" ,perl-test-simple)))
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetimex-easy" ,perl-datetimex-easy)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-moosex-types-datetime" ,perl-moosex-types-datetime)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-time-duration-parse" ,perl-time-duration-parse)))
+    (home-page
+     "http://search.cpan.org/dist/MooseX-Types-DateTime-MoreCoercions")
+    (synopsis "Extensions to MooseX::Types::DateTime")
+    (description "This module builds on MooseX::Types::DateTime to add
+additional custom types and coercions.  Since it builds on an existing type,
+all coercions and constraints are inherited.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-types-loadableclass
   (package
     (name "perl-moosex-types-loadableclass")
