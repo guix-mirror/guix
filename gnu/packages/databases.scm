@@ -621,6 +621,26 @@ structures you provide it, so that you don't have to modify your code every
 time your data changes")
     (license (package-license perl))))
 
+(define-public perl-sql-tokenizer
+  (package
+    (name "perl-sql-tokenizer")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IZ/IZUT/"
+                           "SQL-Tokenizer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qa2dfbzdlr5qqdam9yn78z5w3al5r8577x06qan8wv58ay6ka7s"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/SQL-Tokenizer")
+    (synopsis "SQL tokenizer")
+    (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
+claim to be a parser or query verifier.  It just creates sane tokens from a
+valid SQL query.")
+    (license (package-license perl))))
+
 (define-public unixodbc
   (package
    (name "unixodbc")
