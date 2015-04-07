@@ -2148,17 +2148,7 @@ services for numerous locations.")
          "1w29x2izq59125ga5ncmmaklc8kw7x7rdn6swn26bs23mah1r1g3"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; libwacom and xorg-wacom not yet packaged.  Hackily disable by
-         ;; pretending to be s390 (!).
-         (add-before
-          'configure 'disable-wacom
-          (lambda _
-            (substitute* "configure"
-              (("if test \"\\$host_cpu\" = s390 -o \"\\$host_cpu\" = s390x")
-               "if true")))))
-       ;; Network manager not yet packaged.
+     `(;; Network manager not yet packaged.
        #:configure-flags '("--disable-network-manager")
        ;; Color management test can't reach the colord system service.
        #:tests? #f))
@@ -2186,7 +2176,10 @@ services for numerous locations.")
        ("gnome-desktop" ,gnome-desktop)
        ("nss" ,nss)
        ("cups" ,cups)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libwacom" ,libwacom)
+       ("librsvg" ,librsvg)
+       ("xf86-input-wacom" ,xf86-input-wacom)))
     (home-page "http://www.gnome.org")
     (synopsis "GNOME settings daemon")
     (description
