@@ -2764,6 +2764,29 @@ from Moose::Conflicts and moose-outdated.")
 programs for dependencies.")
     (license (package-license perl))))
 
+(define-public perl-module-util
+  (package
+    (name "perl-module-util")
+    (version "1.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MATTLAW/"
+                           "Module-Util-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ip2yg3x517gg8c48crhd52ba864vmyimvm0ibn4ci068mmcpyvc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build))) ; >= 0.40
+    (home-page "http://search.cpan.org/dist/Module-Util")
+    (synopsis "Module name tools and transformations")
+    (description "This module provides a few useful functions for manipulating
+module names.  Its main aim is to centralise some of the functions commonly
+used by modules that manipulate other modules in some way, like converting
+module names to relative paths.")
+    (license (package-license perl))))
+
 (define-public perl-moo
   (package
     (name "perl-moo")
