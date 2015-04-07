@@ -1163,6 +1163,31 @@ combinations.  It represents the Gregorian calendar, extended backwards in
 time before its creation (in 1582).")
     (license artistic2.0)))
 
+(define-public perl-datetime-set
+  (package
+    (name "perl-datetime-set")
+    (version "0.3400")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FG/FGLOCK/"
+                           "DateTime-Set-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b27699zkj68w5ll9chjhs52vmf39f9via6x5r5844as30qh9zxb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-set-infinite" ,perl-set-infinite)))
+    (home-page "http://search.cpan.org/dist/DateTime-Set")
+    (synopsis "DateTime set objects")
+    (description "The DateTime::Set module provides a date/time sets
+implementation.  It allows, for example, the generation of groups of dates,
+like \"every wednesday\", and then find all the dates matching that pattern,
+within a time range.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-format-builder
   (package
     (name "perl-datetime-format-builder")
