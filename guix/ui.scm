@@ -48,6 +48,7 @@
             report-error
             leave
             report-load-error
+            warn-about-load-error
             show-version-and-exit
             show-bug-report-information
             string->number*
@@ -147,6 +148,21 @@ ARGS is the list of arguments received by the 'throw' handler."
      (report-error (_ "failed to load '~a':~%") file)
      (apply display-error #f (current-error-port) args)
      (exit 1))))
+
+(define (warn-about-load-error file args)         ;FIXME: factorize with ↑
+  "Report the failure to load FILE, a user-provided Scheme file, without
+exiting.  ARGS is the list of arguments received by the 'throw' handler."
+  (match args
+    (('system-error . _)
+     (let ((err (system-error-errno args)))
+       (warning (_ "failed to load '~a': ~a~%") file (strerror err))))
+    (('syntax-error proc message properties form . rest)
+     (let ((loc (source-properties->location properties)))
+       (format (current-error-port) (_ "~a: warning: ~a~%")
+               (location->string loc) message)))
+    ((error args ...)
+     (warning (_ "failed to load '~a':~%") file)
+     (apply display-error #f (current-error-port) args))))
 
 (define (install-locale)
   "Install the current locale settings."
