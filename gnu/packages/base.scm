@@ -375,7 +375,7 @@ TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
               ("guile"    ,guile)
               ("bash"     ,bash)
               ("wrapper"  ,(search-path %load-path
-                                        "gnu/packages/ld-wrapper.scm"))))
+                                        "gnu/packages/ld-wrapper.in"))))
     (arguments
      `(#:guile ,guile-for-build
        #:modules ((guix build utils))

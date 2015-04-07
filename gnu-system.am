@@ -162,7 +162,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/kde.scm				\
   gnu/packages/key-mon.scm			\
   gnu/packages/language.scm			\
-  gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
   gnu/packages/libcanberra.scm			\
@@ -565,6 +564,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
   gnu/packages/patches/xmodmap-asprintf.patch 			\
   gnu/packages/patches/zathura-plugindir-environment-variable.patch
+
+MISC_DISTRO_FILES =				\
+  gnu/packages/ld-wrapper.in
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
