@@ -82,27 +82,45 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
   ;; Whether to emit debugging output.
   (getenv "GUIX_LD_WRAPPER_DEBUG"))
 
-(define (pure-file-name? file)
-  ;; Return #t when FILE is the name of a file either within the store
-  ;; (possibly via a symlink) or within the build directory.
+(define (readlink* file)
+  ;; Call 'readlink' until the result is not a symlink.
   (define %max-symlink-depth 50)
 
   (let loop ((file  file)
              (depth 0))
+    (catch 'system-error
+      (lambda ()
+        (if (>= depth %max-symlink-depth)
+            file
+            (loop (readlink file) (+ depth 1))))
+      (lambda args
+        (if (= EINVAL (system-error-errno args))
+            file
+            (apply throw args))))))
+
+(define (dereference-symlinks file)
+  ;; Same as 'readlink*' but return FILE if the symlink target is invalid or
+  ;; FILE does not exist.
+  (catch 'system-error
+    (lambda ()
+      ;; When used from a user environment, FILE may refer to
+      ;; ~/.guix-profile/lib/libfoo.so, which is itself a symlink to the
+      ;; store.  Check whether this is the case.
+      (readlink* file))
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          file
+          (apply throw args)))))
+
+(define (pure-file-name? file)
+  ;; Return #t when FILE is the name of a file either within the store
+  ;; (possibly via a symlink) or within the build directory.
+  (let ((file (dereference-symlinks file)))
     (or (not (string-prefix? "/" file))
         (string-prefix? %store-directory file)
         (string-prefix? %temporary-directory file)
-        (if %build-directory
-            (string-prefix? %build-directory file)
-
-            ;; When used from a user environment, FILE may refer to
-            ;; ~/.guix-profile/lib/libfoo.so, which is itself a symlink to the
-            ;; store.  Check whether this is the case.
-            (let ((s (false-if-exception (lstat file))))
-              (and s
-                   (eq? 'symlink (stat:type s))
-                   (< depth %max-symlink-depth)
-                   (loop (readlink file) (+ 1 depth))))))))
+        (and %build-directory
+             (string-prefix? %build-directory file)))))
 
 (define (shared-library? file)
   ;; Return #t when FILE denotes a shared library.
