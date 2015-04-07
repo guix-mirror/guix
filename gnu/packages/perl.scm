@@ -2389,6 +2389,26 @@ dependencies for CPAN distributions.  These dependencies get bundled into the
 inc directory within a distribution and are used by Makefile.PL or Build.PL.")
     (license asl2.0)))
 
+(define-public perl-io-interactive
+  (package
+    (name "perl-io-interactive")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                           "IO-Interactive-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1303q6rbcf2cag5z08pq3d1y91wls5q51jrpw4kh0l2bv75idh4w"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IO-Interactive")
+    (synopsis "Utilities for interactive I/O")
+    (description "This module provides three utility subroutines that make it
+easier to develop interactive applications: is_interactive(), interactive(),
+and busy()")
+    (license (package-license perl))))
+
 (define-public perl-io-stringy
   (package
     (name "perl-io-stringy")
