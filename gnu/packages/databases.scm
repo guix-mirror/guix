@@ -621,6 +621,32 @@ structures you provide it, so that you don't have to modify your code every
 time your data changes")
     (license (package-license perl))))
 
+(define-public perl-sql-splitstatement
+  (package
+    (name "perl-sql-splitstatement")
+    (version "1.00020")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EM/EMAZEP/"
+                           "SQL-SplitStatement-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bqg45k4c9qkb2ypynlwhpvzsl4ssfagmsalys18s5c79ps30z7p"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-sql-tokenizer" ,perl-sql-tokenizer)))
+    (home-page "http://search.cpan.org/dist/SQL-SplitStatement")
+    (synopsis "Split SQL code into atomic statements")
+    (description "This module tries to split any SQL code, even including
+non-standard extensions, into the atomic statements it is composed of.")
+    (license (package-license perl))))
+
 (define-public perl-sql-tokenizer
   (package
     (name "perl-sql-tokenizer")
