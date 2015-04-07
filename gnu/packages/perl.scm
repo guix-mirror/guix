@@ -4391,6 +4391,31 @@ terminal, to let the user know that something is happening, roughly how much
 stuff has been done, and maybe an estimate at how long remains.")
     (license (package-license perl))))
 
+(define-public perl-term-progressbar-quiet
+  (package
+    (name "perl-term-progressbar-quiet")
+    (version "0.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LB/LBROCARD/"
+                           "Term-ProgressBar-Quiet-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19l4476iinwz19vh360k3rss38m9gmkg633i5v9jkg48yn954rr5"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-interactive" ,perl-io-interactive)
+       ("perl-term-progressbar" ,perl-term-progressbar)
+       ("perl-test-mockobject" ,perl-test-mockobject)))
+    (home-page "http://search.cpan.org/dist/Term-ProgressBar-Quiet")
+    (synopsis "Progress meter if run interactively")
+    (description "Term::ProgressBar is a wonderful module for showing progress
+bars on the terminal.  This module acts very much like that module when it is
+run interactively. However, when it is not run interactively (for example, as
+a cron job) then it does not show the progress bar.")
+    (license (package-license perl))))
+
 (define-public perl-term-readkey
   (package
     (name "perl-term-readkey")
