@@ -1402,6 +1402,38 @@ formats, as defined in RFC 2445.  It can be used to parse these formats in
 order to create the appropriate objects.")
     (license (package-license perl))))
 
+(define-public perl-datetime-format-natural
+  (package
+    (name "perl-datetime-format-natural")
+    (version "1.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SC/SCHUBIGER/"
+                           "DateTime-Format-Natural-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qq3adq1y08d0jlmwk9059s5d39hb26f3zjag099gjjyvs5c8yal"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-util" ,perl-module-util)
+       ("perl-test-mocktime" ,perl-test-mocktime)))
+    (propagated-inputs
+     `(("perl-boolean" ,perl-boolean)
+       ("perl-clone" ,perl-clone)
+       ("perl-date-calc" ,perl-date-calc)
+       ("perl-date-calc-xs" ,perl-date-calc-xs)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-params-validate" ,perl-params-validate)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-Natural")
+    (synopsis "Machine-readable date/time with natural parsing")
+    (description "DateTime::Format::Natural takes a string with a human
+readable date/time and creates a machine readable one by applying natural
+parsing logic.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
