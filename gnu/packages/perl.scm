@@ -1188,6 +1188,30 @@ like \"every wednesday\", and then find all the dates matching that pattern,
 within a time range.")
     (license (package-license perl))))
 
+(define-public perl-datetime-event-recurrence
+  (package
+    (name "perl-datetime-event-recurrence")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FG/FGLOCK/"
+                           "DateTime-Event-Recurrence-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02c6ky3k26r0c8r87rcsd8gbn7rd6j2pylryin8pllnrdh9f0wiq"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-set" ,perl-datetime-set)))
+    (home-page "http://search.cpan.org/dist/DateTime-Event-Recurrence")
+    (synopsis "DateTime::Set extension for basic recurrences")
+    (description "This module provides convenience methods that let you easily
+create DateTime::Set objects for various recurrences, such as \"once a month\"
+or \"every day\".  You can also create more complicated recurrences, such as
+\"every Monday, Wednesday and Thursday at 10:00 AM and 2:00 PM\".")
+    (license (package-license perl))))
+
 (define-public perl-datetime-format-builder
   (package
     (name "perl-datetime-format-builder")
