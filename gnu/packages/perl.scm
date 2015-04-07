@@ -3891,6 +3891,27 @@ Module::Build project, but has been externalized here for general use.")
                               "Probe-Perl-" version))
     (license (package-license perl))))
 
+(define-public perl-readonly
+  (package
+    (name "perl-readonly")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SA/SANKO/"
+                           "Readonly-" version ".tar.gz"))
+       (sha256
+        (base32
+         "165zcf9lpijdpkx82za0g9rx8ckjnhipmcivdkyzshl8jmp1bl4v"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Readonly")
+    (synopsis "Create read-only scalars, arrays, hashes")
+    (description "This module provides a facility for creating non-modifiable
+variables in Perl.  This is useful for configuration files, headers, etc.  It
+can also be useful as a development and debugging tool for catching updates to
+variables that should not be changed.")
+    (license (package-license perl))))
+
 (define-public perl-regexp-common
   (package
     (name "perl-regexp-common")
