@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages docbook)
@@ -1977,6 +1978,49 @@ https schemed URLs with LWP.")
 except that when you use it to get a web page but run into a
 possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
 and retry a few times.")
+    (license (package-license perl))))
+
+(define-public perl-net-amazon-s3
+  (package
+    (name "perl-net-amazon-s3")
+    (version "0.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PF/PFIG/"
+                           "Net-Amazon-S3-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10dcsq4s2kc9cb1vccx17r187c81drirc3s1hbxh3rb8489kg2b2"))
+       (patches (list
+                 (search-patch "perl-net-amazon-s3-moose-warning.patch")))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-data-stream-bulk" ,perl-data-stream-bulk)
+       ("perl-datetime-format-http" ,perl-datetime-format-http)
+       ("perl-digest-hmac" ,perl-digest-hmac)
+       ("perl-digest-md5-file" ,perl-digest-md5-file)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-lwp-useragent-determined" ,perl-lwp-useragent-determined)
+       ("perl-mime-types" ,perl-mime-types)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-strictconstructor" ,perl-moosex-strictconstructor)
+       ("perl-moosex-types-datetime-morecoercions"
+        ,perl-moosex-types-datetime-morecoercions)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-term-encoding" ,perl-term-encoding)
+       ("perl-term-progressbar-simple" ,perl-term-progressbar-simple)
+       ("perl-uri" ,perl-uri)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/Net-Amazon-S3")
+    (synopsis "Perl interface to Amazon S3")
+    (description "This module provides a Perlish interface to Amazon S3.")
     (license (package-license perl))))
 
 (define-public perl-net-http

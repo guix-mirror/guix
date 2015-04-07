@@ -1,0 +1,17 @@
+Patch borrowed from nixpkgs.  Works around warning message produced by the
+current version of Moose:
+
+"Passing a list of values to enum is deprecated. Enum values should be wrapped
+in an arrayref."
+
+--- Net-Amazon-S3-0.60/lib/Net/Amazon/S3/Client/Object.pm	2015-04-15 16:18:47.226410022 -0500
++++ Net-Amazon-S3-0.60/lib/Net/Amazon/S3/Client/Object.pm	2015-04-15 16:19:25.410408425 -0500
+@@ -19,7 +19,7 @@
+     [ qw(private public-read public-read-write authenticated-read) ];
+ 
+ enum 'StorageClass' =>
+-    qw(standard reduced_redundancy);
++    [ qw(standard reduced_redundancy) ];
+ 
+ has 'client' =>
+     ( is => 'ro', isa => 'Net::Amazon::S3::Client', required => 1 );
