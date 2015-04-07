@@ -5129,6 +5129,29 @@ $object->TIEHASH are avoided.")
 rounded or exact terms.")
     (license (package-license perl))))
 
+(define-public perl-time-duration-parse
+  (package
+    (name "perl-time-duration-parse")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                           "Time-Duration-Parse-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yk4cqkldwzkfy9y9ngqrj7p7sbsrsfa26mrm8f70z5n5m8q31x0"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-time-duration" ,perl-time-duration)))
+    (propagated-inputs
+     `(("perl-exporter-lite" ,perl-exporter-lite)))
+    (home-page "http://search.cpan.org/dist/Time-Duration-Parse")
+    (synopsis "Parse time duration strings")
+    (description "Time::Duration::Parse is a module to parse human readable
+duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
+    (license (package-license perl))))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
