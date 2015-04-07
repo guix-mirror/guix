@@ -707,6 +707,26 @@ names, not Class::Name.  For that, this module provides \"load_class
 Class::Load")
     (license artistic2.0)))
 
+(define-public perl-class-methodmaker
+  (package
+    (name "perl-class-methodmaker")
+    (version "2.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SC/SCHWIGON/"
+                           "class-methodmaker/Class-MethodMaker-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0a03i4k3a33qqwhykhz5k437ld5mag2vq52vvsy03gbynb65ivsy"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-MethodMaker")
+    (synopsis "Create generic methods for OO Perl")
+    (description "This module solves the problem of having to continually
+write accessor methods for your objects that perform standard tasks.")
+    (license (package-license perl))))
+
 (define-public perl-class-method-modifiers
   (package
     (name "perl-class-method-modifiers")
