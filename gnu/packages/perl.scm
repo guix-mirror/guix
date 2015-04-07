@@ -1179,6 +1179,53 @@ support for per-object behavior, circular structures, visiting tied
 structures, and all ref types (hashes, arrays, scalars, code, globs).")
     (license (package-license perl))))
 
+(define-public perl-date-calc
+  (package
+    (name "perl-date-calc")
+    (version "6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/ST/STBEY/"
+                           "Date-Calc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1barz0jgdaan3jm7ciphs5n3ahwkl42imprs3y8c1dwpwyr3gqbw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-bit-vector" ,perl-bit-vector)
+       ("perl-carp-clan" ,perl-carp-clan)))
+    (home-page "http://search.cpan.org/dist/Date-Calc")
+    (synopsis "Gregorian calendar date calculations")
+    (description "This package consists of a Perl module for date calculations
+based on the Gregorian calendar, thereby complying with all relevant norms and
+standards: ISO/R 2015-1971, DIN 1355 and, to some extent, ISO 8601 (where
+applicable).")
+    (license (package-license perl))))
+
+(define-public perl-date-calc-xs
+  (package
+    (name "perl-date-calc-xs")
+    (version "6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/ST/STBEY/"
+                           "Date-Calc-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cssi9rmd31cgaafgp4m70jqbm1mgh3aphxsxz1dwdz8h283n6jz"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-bit-vector" ,perl-bit-vector)
+       ("perl-carp-clan" ,perl-carp-clan)
+       ("perl-date-calc" ,perl-date-calc)))
+    (home-page "http://search.cpan.org/dist/Date-Calc-XS")
+    (synopsis "XS wrapper for Date::Calc")
+    (description "Date::Calc::XS is an XS wrapper and C library plug-in for
+Date::Calc.")
+    (license (list (package-license perl) lgpl2.0+))))
+
 (define-public perl-datetime
   (package
     (name "perl-datetime")
