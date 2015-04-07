@@ -33,6 +33,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pdf)
@@ -54,6 +56,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages xml)
@@ -2125,4 +2128,67 @@ service via the system message bus.")
     (description
      "libgweather is a library to access weather information from online
 services for numerous locations.")
+    (license license:gpl2+)))
+
+(define-public gnome-settings-daemon
+  (package
+    (name "gnome-settings-daemon")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1w29x2izq59125ga5ncmmaklc8kw7x7rdn6swn26bs23mah1r1g3"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; libwacom and xorg-wacom not yet packaged.  Hackily disable by
+         ;; pretending to be s390 (!).
+         (add-before
+          'configure 'disable-wacom
+          (lambda _
+            (substitute* "configure"
+              (("if test \"\\$host_cpu\" = s390 -o \"\\$host_cpu\" = s390x")
+               "if true")))))
+       ;; Network manager not yet packaged.
+       #:configure-flags '("--disable-network-manager")
+       ;; Color management test can't reach the colord system service.
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("xsltproc" ,libxslt)
+       ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)))
+    (inputs
+     `(("colord" ,colord)
+       ("eudev" ,eudev)
+       ("upower" ,upower)
+       ("polkit" ,polkit)
+       ("pulseaudio" ,pulseaudio)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxtst" ,libxtst)
+       ("lcms" ,lcms)
+       ("libnotify" ,libnotify)
+       ("geoclue" ,geoclue)
+       ("geocode-glib" ,geocode-glib)
+       ("libgweather" ,libgweather)
+       ("gnome-desktop" ,gnome-desktop)
+       ("nss" ,nss)
+       ("cups" ,cups)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (home-page "http://www.gnome.org")
+    (synopsis "GNOME settings daemon")
+    (description
+     "This package contains the daemon responsible for setting the various
+parameters of a GNOME session and the applications that run under it.  It
+handles settings such keyboard layout, shortcuts, and accessibility, clipboard
+settings, themes, mouse settings, and startup of other daemons.")
     (license license:gpl2+)))
