@@ -5462,6 +5462,27 @@ common serialisation formats such as JSON or CBOR.")
 UNIVERSAL::can() as a function, which it is not.")
     (license (package-license perl))))
 
+(define-public perl-universal-isa
+  (package
+    (name "perl-universal-isa")
+    (version "1.20140927")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "UNIVERSAL-isa-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ryqk58nkzhdq26si7mh49h8wand1wlmyf4m78qgiyn8ib6989bb"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+    (home-page "http://search.cpan.org/dist/UNIVERSAL-isa")
+    (synopsis "UNIVERSAL::isa() reimplementation")
+    (description "This module attempts to recover from people calling
+UNIVERSAL::isa as a function")
+    (license (package-license perl))))
+
 (define-public perl-variable-magic
   (package
     (name "perl-variable-magic")
