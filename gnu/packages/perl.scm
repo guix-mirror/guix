@@ -4365,6 +4365,32 @@ processing in Perl code.")
 the current terminal expects in various ways.")
     (license (package-license perl))))
 
+(define-public perl-term-progressbar
+  (package
+    (name "perl-term-progressbar")
+    (version "2.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+                           "Term-ProgressBar-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15pn42zf793dplpfnmawh7v7xc4qm38s1jhvn1agx4cafcn61q61"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-methodmaker" ,perl-class-methodmaker)
+       ("perl-term-readkey" ,perl-term-readkey)))
+    (home-page "http://search.cpan.org/dist/Term-ProgressBar")
+    (synopsis "Progress meter on a standard terminal")
+    (description "Term::ProgressBar provides a simple progress bar on the
+terminal, to let the user know that something is happening, roughly how much
+stuff has been done, and maybe an estimate at how long remains.")
+    (license (package-license perl))))
+
 (define-public perl-term-readkey
   (package
     (name "perl-term-readkey")
