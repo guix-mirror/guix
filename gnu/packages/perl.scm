@@ -3567,6 +3567,24 @@ of execution is aborted prematurely.  This effectively allows lexically-scoped
 collector.")
     (license (package-license perl))))
 
+(define-public perl-set-infinite
+  (package
+    (name "perl-set-infinite")
+    (version "0.65")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FG/FGLOCK/"
+                           "Set-Infinite-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07vyp0jpndcxkbyjk432nillxxk22wrmm2rs985y8ba96h3qig07"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Set-Infinite")
+    (synopsis "Infinite sets")
+    (description "Set::Infinite is a set theory module for infinite sets.")
+    (license (package-license perl))))
+
 (define-public perl-spiffy
   (package
     (name "perl-spiffy")
