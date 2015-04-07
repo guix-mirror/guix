@@ -3753,6 +3753,27 @@ up inheritance from those modules at the same time.")
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
 
+(define-public perl-pod-coverage
+  (package
+    (name "perl-pod-coverage")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RC/RCLAMP/"
+                           "Pod-Coverage-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01xifj83dv492lxixijmg6va02rf3ydlxly0a9slmx22r6qa1drh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-symdump" ,perl-devel-symdump)))
+    (home-page "http://search.cpan.org/dist/Pod-Coverage")
+    (synopsis "Check for comprehensive documentation of a module")
+    (description "This module provides a mechanism for determining if the pod
+for a given module is comprehensive.")
+    (license (package-license perl))))
+
 (define-public perl-posix-strftime-compiler
   (package
     (name "perl-posix-strftime-compiler")
