@@ -4416,6 +4416,27 @@ run interactively. However, when it is not run interactively (for example, as
 a cron job) then it does not show the progress bar.")
     (license (package-license perl))))
 
+(define-public perl-term-progressbar-simple
+  (package
+    (name "perl-term-progressbar-simple")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EV/EVDB/"
+                           "Term-ProgressBar-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19kr6l2aflwv9yph5xishkpag038qb8wd4mkzb0x1psvgp3b63d2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-term-progressbar-quiet" ,perl-term-progressbar-quiet)))
+    (home-page "http://search.cpan.org/dist/Term-ProgressBar-Simple")
+    (synopsis "Simple progress bars")
+    (description "Term::ProgressBar::Simple tells you how much work has been
+done, how much is left to do, and estimate how long it will take.")
+    (license (package-license perl))))
+
 (define-public perl-term-readkey
   (package
     (name "perl-term-readkey")
