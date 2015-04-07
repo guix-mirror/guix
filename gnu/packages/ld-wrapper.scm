@@ -122,6 +122,10 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
         (and %build-directory
              (string-prefix? %build-directory file)))))
 
+(define (store-file-name? file)
+  ;; Return #t when FILE is a store file, possibly indirectly.
+  (string-prefix? %store-directory (dereference-symlinks file)))
+
 (define (shared-library? file)
   ;; Return #t when FILE denotes a shared library.
   (or (string-suffix? ".so" file)
@@ -168,14 +172,22 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
   ;; Return the `-rpath' argument list for each of LIBRARY-FILES, a list of
   ;; absolute file names.
   (fold-right (lambda (file args)
-                (if (or %allow-impurities?
-                        (pure-file-name? file))
-                    (cons* "-rpath" (dirname file) args)
-                    (begin
-                      (format (current-error-port)
-                              "ld-wrapper: error: attempt to use impure library ~s~%"
-                              file)
-                      (exit 1))))
+                ;; Add '-rpath' if and only if FILE is in the store; we don't
+                ;; want to add '-rpath' for files under %BUILD-DIRECTORY or
+                ;; %TEMPORARY-DIRECTORY because that could leak to installed
+                ;; files.
+                (cond ((store-file-name? file)
+                       (cons* "-rpath" (dirname file) args))
+                      ((or %allow-impurities?
+                           (pure-file-name? file))
+                       args)
+                      (else
+                       (begin
+                         (format (current-error-port)
+                                 "ld-wrapper: error: attempt to use \
+impure library ~s~%"
+                                 file)
+                         (exit 1)))))
               '()
               library-files))
 
