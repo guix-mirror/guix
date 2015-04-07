@@ -1188,6 +1188,28 @@ like \"every wednesday\", and then find all the dates matching that pattern,
 within a time range.")
     (license (package-license perl))))
 
+(define-public perl-datetime-event-ical
+  (package
+    (name "perl-datetime-event-ical")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FG/FGLOCK/"
+                           "DateTime-Event-ICal-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rfrjhczfmasf7aaz8rfd89vhwjj2nkxlnirxxrmy75z10nmrpjk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-event-recurrence" ,perl-datetime-event-recurrence)))
+    (home-page "http://search.cpan.org/dist/DateTime-Event-ICal")
+    (synopsis "DateTime rfc2445 recurrences")
+    (description "This module provides convenience methods that let you easily
+create DateTime::Set objects for RFC 2445 style recurrences.")
+    (license (package-license perl))))
+
 (define-public perl-datetime-event-recurrence
   (package
     (name "perl-datetime-event-recurrence")
