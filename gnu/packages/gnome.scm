@@ -1897,3 +1897,48 @@ keyboard shortcuts.")
 install and generate color profiles to accurately color manage input and
 output devices.")
     (license license:gpl2+)))
+
+(define-public geoclue
+  (package
+    (name "geoclue")
+    (version "2.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/" name
+                           "/releases/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0s0ws2bx5g1cbjamxmm448r4n4crha2fwpzm8zbx6cq6qslygmzi"))
+       (patches (list (search-patch "geoclue-config.patch")))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(;; The tests want to run the system bus.
+       #:tests? #f
+       #:configure-flags (list ;; Disable bits requiring ModemManager.
+                               "--disable-3g-source"
+                               "--disable-cdma-source"
+                               "--disable-modem-gps-source"
+                               "--with-dbus-service-user=geoclue")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("glib" ,glib)
+       ("json-glib" ,json-glib)
+       ("libsoup" ,libsoup)))
+    (home-page "http://freedesktop.org/wiki/Software/GeoClue/")
+    (synopsis "Geolocation service")
+    (description "Geoclue is a D-Bus service that provides location
+information.  The primary goal of the Geoclue project is to make creating
+location-aware applications as simple as possible, while the secondary goal is
+to ensure that no application can access location information without explicit
+permission from user. ")
+    (license license:gpl2+)))
