@@ -1990,3 +1990,41 @@ location-aware applications as simple as possible, while the secondary goal is
 to ensure that no application can access location information without explicit
 permission from user. ")
     (license license:gpl2+)))
+
+(define-public geocode-glib
+  (package
+    (name "geocode-glib")
+    (version "3.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/geocode-glib/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1cbfv0kds6b6k0cl7q47xpj3x1scwcd7m68zl1rf7i4hmhw4hpqj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
+       ;; work for the builder.  Punt.
+       #:tests? #f
+       #:make-flags '("CC=gcc") ; for g-ir-scanner
+       ))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("json-glib" ,json-glib)))
+    (propagated-inputs
+     ;; geocode-glib-1.0.pc refers to GIO.
+     `(("glib" ,glib)))
+    (inputs
+     `(("libsoup" ,libsoup)))
+    (home-page "https://github.com/GNOME/geocode-glib/")
+    (synopsis "Geocoding and reverse-geocoding library")
+    (description
+     "geocode-glib is a convenience library for geocoding (finding longitude,
+and latitude from an address) and reverse geocoding (finding an address from
+coordinates) using the Nominatim service.  geocode-glib caches requests for
+faster results and to avoid unnecessary server load.")
+    (license license:lgpl2.0+)))
