@@ -254,6 +254,31 @@ but don't want to go all out and profile your code.")
                               "Benchmark-Timer-" version))
     (license gpl2)))
 
+(define-public perl-bit-vector
+  (package
+    (name "perl-bit-vector")
+    (version "7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/ST/STBEY/"
+                           "Bit-Vector-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09m96p8c0ipgz42li2ywdgy0vxb57mb5nf59j9gw7yzc3xkslv9w"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-carp-clan" ,perl-carp-clan)))
+    (home-page "http://search.cpan.org/dist/Bit-Vector")
+    (synopsis "Bit vector library")
+    (description "Bit::Vector is an efficient C library which allows you to
+handle bit vectors, sets (of integers), \"big integer arithmetic\" and boolean
+matrices, all of arbitrary sizes.  The package also includes an
+object-oriented Perl module for accessing the C library from Perl, and
+optionally features overloaded operators for maximum ease of use.  The C
+library can nevertheless be used stand-alone, without Perl.")
+    (license (list (package-license perl) lgpl2.0+))))
+
 (define-public perl-boolean
   (package
     (name "perl-boolean")
