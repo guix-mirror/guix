@@ -254,6 +254,25 @@ but don't want to go all out and profile your code.")
                               "Benchmark-Timer-" version))
     (license gpl2)))
 
+(define-public perl-boolean
+  (package
+    (name "perl-boolean")
+    (version "0.45")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IN/INGY/"
+                           "boolean-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18hrgldzwnhs0c0r8hxx6r05qvk9p7gwinjwcybixfs2h0n43ypj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/boolean")
+    (synopsis "Boolean support for Perl")
+    (description "This module provides basic Boolean support, by defining two
+special objects: true and false.")
+    (license (package-license perl))))
+
 (define-public perl-cache-cache
   (package
     (name "perl-cache-cache")
