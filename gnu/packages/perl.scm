@@ -5107,6 +5107,28 @@ object it was given as it's first argument.  This way side effects of calling
 $object->TIEHASH are avoided.")
     (license (package-license perl))))
 
+(define-public perl-time-duration
+  (package
+    (name "perl-time-duration")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AV/AVIF/"
+                           "Time-Duration-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0klg33yzb7pr9ra76s6gj5k7nravqnw2lbh022x1xwlj92f43756"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Time-Duration")
+    (synopsis "English expression of durations")
+    (description "This module provides functions for expressing durations in
+rounded or exact terms.")
+    (license (package-license perl))))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
