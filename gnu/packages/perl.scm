@@ -1719,6 +1719,24 @@ Devel::StackTrace::WithLexicals, you even get to see the lexical variables of
 each stack frame.")
     (license (package-license perl))))
 
+(define-public perl-devel-symdump
+  (package
+    (name "perl-devel-symdump")
+    (version "2.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AN/ANDK/"
+                           "Devel-Symdump-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1phyyxgxsymgzbjd524zlaavvay6vjw34af5zn9153qffqign54v"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Devel-Symdump")
+    (synopsis "Dump symbol names or the symbol table")
+    (description "Devel::Symdump provides access to the perl symbol table.")
+    (license (package-license perl))))
+
 (define-public perl-digest-hmac
   (package
     (name "perl-digest-hmac")
