@@ -4659,6 +4659,34 @@ string comparison functions of Test::More, but which are more suitable when
 you test against long strings.")
     (license (package-license perl))))
 
+(define-public perl-test-mockobject
+  (package
+    (name "perl-test-mockobject")
+    (version "1.20140408")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
+                           "Test-MockObject-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1anpf9l2wdriwaxw6pf76ghxkh4zm25n3wnhfqy1b439xqnhvzg5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-universal-can" ,perl-universal-can)
+       ("perl-universal-isa" ,perl-universal-isa)))
+    (home-page "http://search.cpan.org/dist/Test-MockObject")
+    (synopsis "Emulate troublesome interfaces in Perl")
+    (description "Test::MockObject allows you to create objects that conform
+to particular interfaces with very little code.  You don't have to reimplement
+the behavior, just the input and the output.")
+    (license (package-license perl))))
+
 (define-public perl-test-mocktime
   (package
     (name "perl-test-mocktime")
