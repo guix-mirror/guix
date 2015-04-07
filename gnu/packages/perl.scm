@@ -3307,6 +3307,37 @@ behind the scenes it namespaces all your type declarations, effectively
 prevent name clashes between packages.")
     (license (package-license perl))))
 
+(define-public perl-moosex-types-datetime
+  (package
+    (name "perl-moosex-types-datetime")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "MooseX-Types-DateTime-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03p66rx0qj2p23n2i2rj7c7x41621jzzaxscrpg95mb3mqmravc0"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-moose" ,perl-moose)
+       ("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-simple" ,perl-test-simple)))
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-locale" ,perl-datetime-locale)
+       ("perl-datetime-timezone" ,perl-datetime-timezone)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-types" ,perl-moosex-types)
+       ("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/MooseX-Types-DateTime")
+    (synopsis "DateTime related constraints and coercions for Moose")
+    (description "This module packages several Moose::Util::TypeConstraints
+with coercions, designed to work with the DateTime suite of objects.")
+    (license (package-license perl))))
+
 (define-public perl-moosex-types-loadableclass
   (package
     (name "perl-moosex-types-loadableclass")
