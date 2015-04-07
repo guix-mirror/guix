@@ -5439,7 +5439,9 @@ facility is implemented in the @code{(gnu packages)} module.
 @cindex customization, of packages
 @cindex package module search path
 Users can store package definitions in modules with different
-names---e.g., @code{(my-packages emacs)}.  These package definitions
+names---e.g., @code{(my-packages emacs)}@footnote{Note that the file
+name and module name must match.  @xref{Modules and the File System,,,
+guile, GNU Guile Reference Manual}, for details.}  These package definitions
 will not be visible by default.  Thus, users can invoke commands such as
 @command{guix package} and @command{guix build} have to be used with the
 @code{-e} option so that they know where to find the package, or use the
