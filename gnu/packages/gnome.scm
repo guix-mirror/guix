@@ -31,6 +31,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -2077,4 +2078,51 @@ faster results and to avoid unnecessary server load.")
 listening to device events and querying history and statistics.  Any
 application or service on the system can access the org.freedesktop.UPower
 service via the system message bus.")
+    (license license:gpl2+)))
+
+(define-public libgweather
+  (package
+    (name "libgweather")
+    (version "3.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0x1z6wv7hdw2ivlkifcbd940zyrnvqvc4zh2drgvd2r6jmd7bjza"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
+       ;; work for the builder.  Punt.
+       #:tests? #f
+       #:make-flags '("CC=gcc") ; for g-ir-scanner
+       #:configure-flags
+       `(;; No introspection for now, as it wants to install to
+         ;; gobject-introspection's own directory and I don't know how to easily
+         ;; override this.
+         "--enable-introspection=no"
+         ,(string-append "--with-zoneinfo-dir="
+                            (assoc-ref %build-inputs "tzdata")
+                            "/share/zoneinfo"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; gweather-3.0.pc refers to GTK+, GDK-Pixbuf, GLib/GObject, libxml, and
+     ;; libsoup.
+     `(("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("libxml2" ,libxml2)
+       ("libsoup" ,libsoup)))
+    (inputs
+     `(("tzdata" ,tzdata)
+       ("geocode-glib" ,geocode-glib)))
+    (home-page "https://wiki.gnome.org/action/show/Projects/LibGWeather")
+    (synopsis "Location, time zone, and weather library for GNOME")
+    (description
+     "libgweather is a library to access weather information from online
+services for numerous locations.")
     (license license:gpl2+)))
