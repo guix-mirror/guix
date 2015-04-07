@@ -4306,6 +4306,25 @@ documents: HTML, XML, POD, PostScript, LaTeX, and so on.")
 processing in Perl code.")
     (license (list gpl3 artistic2.0))))
 
+(define-public perl-term-encoding
+  (package
+    (name "perl-term-encoding")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Term-Encoding-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k6g4q7snxggv5fdqnzw29al4mwbwg0hl0skzfnczh508qiyfx7j"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Term-Encoding")
+    (synopsis "Detect encoding of the current terminal")
+    (description "Term::Encoding is a simple module to detect the encoding of
+the current terminal expects in various ways.")
+    (license (package-license perl))))
+
 (define-public perl-test-base
   (package
     (name "perl-test-base")
