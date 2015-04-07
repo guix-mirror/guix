@@ -4365,6 +4365,28 @@ processing in Perl code.")
 the current terminal expects in various ways.")
     (license (package-license perl))))
 
+(define-public perl-term-readkey
+  (package
+    (name "perl-term-readkey")
+    (version "2.32")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JS/JSTOWE/"
+                           "TermReadKey-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1y79w5cj98w0a1nqxjhmaw01p2hfhzfw340m2qxd11p6124hxfaq"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/TermReadKey")
+    (synopsis "Simple terminal control")
+    (description "This module, ReadKey, provides ioctl control for terminals
+so the input modes can be changed (thus allowing reads of a single character
+at a time), and also provides non-blocking reads of stdin, as well as several
+other terminal related features, including retrieval/modification of the
+screen size, and retrieval/modification of the control characters.")
+    (license (package-license perl))))
+
 (define-public perl-test-base
   (package
     (name "perl-test-base")
