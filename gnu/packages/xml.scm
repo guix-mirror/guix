@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,6 +178,27 @@ given at XML::Parser creation time.")
      "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
 module.")
     (home-page "http://search.cpan.org/~kmacleod/libxml-perl/lib/XML/Parser/PerlSAX.pm")))
+
+(define-public perl-xml-namespacesupport
+  (package
+    (name "perl-xml-namespacesupport")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PERIGRIN/"
+                           "XML-NamespaceSupport-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sklgcldl3w6gn706vx1cgz6pm4y5lfgsjxnfqyk20pilgq530bd"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-NamespaceSupport")
+    (synopsis "XML namespace support class")
+    (description "This module offers a simple to process namespaced XML
+names (unames) from within any application that may need them.  It also helps
+maintain a prefix to namespace URI map, and provides a number of basic
+checks.")
+    (license (package-license perl))))
 
 (define-public perl-xml-simple
   (package
