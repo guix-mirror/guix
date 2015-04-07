@@ -179,6 +179,32 @@ given at XML::Parser creation time.")
 module.")
     (home-page "http://search.cpan.org/~kmacleod/libxml-perl/lib/XML/Parser/PerlSAX.pm")))
 
+(define-public perl-xml-libxml
+  (package
+    (name "perl-xml-libxml")
+    (version "2.0118")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                           "XML-LibXML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "170c8dbk4p6jw9is0cria73021yp3hpmhb19p9j0zg2yxwkawr6c"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
+       ("perl-xml-sax" ,perl-xml-sax)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (home-page "http://search.cpan.org/dist/XML-LibXML")
+    (synopsis "Perl interface to libxml2")
+    (description "This module implements a Perl interface to the libxml2
+library which provides interfaces for parsing and manipulating XML files. This
+module allows Perl programmers to make use of the highly capable validating
+XML parser and the high performance DOM implementation.")
+    (license (package-license perl))))
+
 (define-public perl-xml-namespacesupport
   (package
     (name "perl-xml-namespacesupport")
