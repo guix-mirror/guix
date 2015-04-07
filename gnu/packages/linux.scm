@@ -2048,3 +2048,27 @@ protocol in question.")
      "Libavc1394 is a programming interface to the AV/C specification from
 the 1394 Trade Assocation.  AV/C stands for Audio/Video Control.")
     (license lgpl2.1+)))
+
+(define-public libiec61883
+  (package
+    (name "libiec61883")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/ieee1394/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "17ph458zya2l8dr2xwqnzy195qd9swrir31g78qkgb3g4xz2rq6i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libraw1394" ,libraw1394))) ; required by libiec61883.pc
+    (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
+    (synopsis "Isochronous streaming media library for IEEE 1394")
+    (description
+     "The libiec61883 library provides a higher level API for streaming DV,
+MPEG-2 and audio over Linux IEEE 1394.")
+    (license lgpl2.1+)))
