@@ -1734,6 +1734,54 @@ library.")
 and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
 
+(define-public libsecret
+  (package
+    (name "libsecret")
+    (version "0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/libsecret/" version "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1qq29c01xxjyx5sl6y5h22w8r0ff4c73bph3gfx3h7mx5mvalwqc"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:tests? #f ; FIXME: Testing hangs.
+       #:make-flags '("CC=gcc") ; for g-ir-scanner.
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("xsltproc" ,libxslt)))
+       ;; These are needed for the tests.
+       ;; FIXME: Add gjs once available.
+       ;("dbus" ,dbus)
+       ;("python2" ,python-2)
+       ;("python2-dbus" ,python2-dbus)
+       ;("python2-pygobject" ,python2-pygobject)
+       ;("python2-pygobject-2" ,python2-pygobject-2)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by libsecret-1.pc
+    (inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("libgcrypt" ,libgcrypt)
+       ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
+    (home-page "https://wiki.gnome.org/Projects/Libsecret/")
+    (synopsis "GObject bindings for \"Secret Service\" API")
+    (description
+     "Libsecret is a GObject based library for storing and retrieving passwords
+and other secrets.  It communicates with the \"Secret Service\" using DBus.")
+    (license license:lgpl2.1+)))
+
 (define-public gnome-mines
   (package
     (name "gnome-mines")
