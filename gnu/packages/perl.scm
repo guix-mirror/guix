@@ -5171,6 +5171,25 @@ generation of tests in nested combinations of contexts.")
 support.")
     (license (package-license perl))))
 
+(define-public perl-text-aligner
+  (package
+    (name "perl-text-aligner")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                           "Text-Aligner-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0a6zkchc0apvzkch6z18cx6h97xfiv50r7n4xhg90x8dvk75qzcs"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Text-Aligner")
+    (synopsis "Align text")
+    (description "Text::Aligner exports a single function, align(), which is
+used to justify strings to various alignment styles.")
+    (license x11)))
+
 (define-public perl-text-balanced
   (package
     (name "perl-text-balanced")
