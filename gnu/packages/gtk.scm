@@ -343,6 +343,13 @@ in the GNOME project.")
              (base32
               "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
    (build-system gnu-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (replace check
+                 ;; Run test-suite under a dbus session.
+                 (lambda _
+                   (zero? (system* "dbus-launch" "make" "check")))))))
    (inputs `(("dbus" ,dbus)
              ("glib" ,glib)
              ("libxi" ,libxi)
@@ -350,9 +357,6 @@ in the GNOME project.")
    (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:tests? #f)) ; FIXME: dbind/dbtest fails; one should disable tests in
-                    ; a more fine-grained way.
    (synopsis "Assistive Technology Service Provider Interface, core components")
    (description
     "The Assistive Technology Service Provider Interface, core components,
