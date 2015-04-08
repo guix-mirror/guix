@@ -4319,6 +4319,26 @@ clock speed.")
                               "Sys-CPU-" version))
     (license (package-license perl))))
 
+(define-public perl-sys-hostname-long
+  (package
+    (name "perl-sys-hostname-long")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SC/SCOTT/"
+                           "Sys-Hostname-Long-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jv5n8jv48c1p8svjsigyxndv1ygsq8wgwj9c7ypx1vaf3rns679"))))
+    (build-system perl-build-system)
+    (arguments `(#:tests? #f))          ;no `hostname' during build
+    (home-page "http://search.cpan.org/dist/Sys-Hostname-Long")
+    (synopsis "Get full hostname in Perl")
+    (description "Sys::Hostname::Long tries very hard to get the full hostname
+of a system.")
+    (license (package-license perl))))
+
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
