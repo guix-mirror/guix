@@ -333,7 +333,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.10.0")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -341,7 +341,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1ns44yibdgcwzwri7sr075hfs5rh5lgxkh71247a0822az3mahcn"))))
+              "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
    (build-system gnu-build-system)
    (inputs `(("dbus" ,dbus)
              ("glib" ,glib)
