@@ -55,7 +55,8 @@
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages man))
 
 (define-public dmd
   (package
@@ -158,13 +159,18 @@ re-executing them as necessary.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04wrm0v7l4890mmbaawd6wjwdv08bkglgqhpz0q4dkb0l50fl8q4"))))
+               "04wrm0v7l4890mmbaawd6wjwdv08bkglgqhpz0q4dkb0l50fl8q4"))
+             (patches (list (search-patch "inetutils-syslogd.patch")))))
     (build-system gnu-build-system)
     (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))            ; for 'ftp'
+
+    ;; Help2man is needed because of the patch that modifies syslogd.c.
+    (native-inputs `(("help2man" ,help2man)))
+
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description

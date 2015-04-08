@@ -438,6 +438,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
+  gnu/packages/patches/inetutils-syslogd.patch			\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
