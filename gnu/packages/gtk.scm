@@ -62,6 +62,12 @@
              (base32
               "0qp5i91kfk6rhrlam3s8ha0cz88lkyp89vsyn4pb5856c1h9hpq9"))))
    (build-system gnu-build-system)
+   (outputs '("out" "doc"))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))))
    (inputs `(("glib" ,glib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
