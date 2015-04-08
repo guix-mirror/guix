@@ -402,6 +402,7 @@ is part of the GNOME accessibility project.")
              (base32
               "1x14rnjvqslpa1q19fp1qalz5sxds72amsgjk8m7769rwk511jr0"))))
    (build-system gnu-build-system)
+   (outputs '("out" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
@@ -424,7 +425,10 @@ is part of the GNOME accessibility project.")
    (arguments
     `(#:make-flags '("CC=gcc")
       #:configure-flags
-      (list "--with-xinput=yes")
+      (list "--with-xinput=yes"
+            (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))
       #:phases
       (alist-cons-before
        'configure 'disable-tests
