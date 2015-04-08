@@ -388,15 +388,19 @@ is part of the GNOME accessibility project.")
              (base32
               "1y9gfz1iz3wpja7s000f0bmyyvc6im5fcdl6bxwbz0v3qdgc9vvq"))))
    (build-system gnu-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (replace check
+                 ;; Run test-suite under a dbus session.
+                 (lambda _
+                   (zero? (system* "dbus-launch" "make" "check")))))))
    (inputs `(("atk" ,atk)
              ("at-spi2-core" ,at-spi2-core)
              ("dbus" ,dbus)
              ("glib" ,glib)))
    (native-inputs
      `(("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:tests? #f)) ; FIXME: droute/droute-test fails; one should disable
-                    ; tests in a more fine-grained way.
    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
    (description
     "The Assistive Technology Service Provider Interface
