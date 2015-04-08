@@ -395,12 +395,13 @@ is part of the GNOME accessibility project.")
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (zero? (system* "dbus-launch" "make" "check")))))))
-   (inputs `(("atk" ,atk)
-             ("at-spi2-core" ,at-spi2-core)
-             ("dbus" ,dbus)
-             ("glib" ,glib)))
+   (propagated-inputs
+    `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
+   (inputs
+    `(("atk" ,atk)))
    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+    `(("dbus" ,dbus) ; for testing
+      ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
    (description
     "The Assistive Technology Service Provider Interface
