@@ -4238,7 +4238,9 @@ command, from the same-named package.  This relies on the
 @node User Accounts
 @subsection User Accounts
 
-User accounts are specified with the @code{user-account} form:
+User accounts and groups are entirely managed through the
+@code{operating-system} declaration.  They are specified with the
+@code{user-account} and @code{user-group} forms:
 
 @example
 (user-account
@@ -4251,6 +4253,14 @@ User accounts are specified with the @code{user-account} form:
   (comment "Bob's sister")
   (home-directory "/home/alice"))
 @end example
+
+When booting or upon completion of @command{guix system reconfigure},
+the system ensures that only the user accounts and groups specified in
+the @code{operating-system} declaration exist, and with the specified
+properties.  Thus, account or group creations or modifications made by
+directly invoking commands such as @command{useradd} are lost upon
+reconfiguration or reboot.  This ensures that the system remains exactly
+as declared.
 
 @deftp {Data Type} user-account
 Objects of this type represent user accounts.  The following members may
@@ -4291,7 +4301,9 @@ graphical login managers do not list them.
 @item @code{password} (default: @code{#f})
 You would normally leave this field to @code{#f}, initialize user
 passwords as @code{root} with the @command{passwd} command, and then let
-users change it with @command{passwd}.
+users change it with @command{passwd}.  Passwords set with
+@command{passwd} are of course preserved across reboot and
+reconfiguration.
 
 If you @emph{do} want to have a preset password for an account, then
 this field must contain the encrypted password, as a string.

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,6 +39,24 @@
 ;;; 'operating-system' configuration becomes active.
 ;;;
 ;;; Code:
+
+(define (enumerate thunk)
+  "Return the list of values returned by THUNK until it returned #f."
+  (let loop ((entry  (thunk))
+             (result '()))
+    (if (not entry)
+        (reverse result)
+        (loop (thunk) (cons entry result)))))
+
+(define (current-users)
+  "Return the passwd entries for all the currently defined user accounts."
+  (setpw)
+  (enumerate getpwent))
+
+(define (current-groups)
+  "Return the group entries for all the currently defined user groups."
+  (setgr)
+  (enumerate getgrent))
 
 (define* (add-group name #:key gid password system?
                     (log-port (current-error-port)))
@@ -128,6 +146,17 @@ properties.  Return #t on success."
                 ,name)))
     (zero? (apply system* "usermod" args))))
 
+(define* (delete-user name #:key (log-port (current-error-port)))
+  "Remove user account NAME.  Return #t on success.  This may fail if NAME is
+logged in."
+  (format log-port "deleting user '~a'...~%" name)
+  (zero? (system* "userdel" name)))
+
+(define* (delete-group name #:key (log-port (current-error-port)))
+  "Remove group NAME.  Return #t on success."
+  (format log-port "deleting group '~a'...~%" name)
+  (zero? (system* "groupdel" name)))
+
 (define* (ensure-user name group
                       #:key uid comment home shell password system?
                       (supplementary-groups '())
@@ -186,8 +215,22 @@ numeric gid or #f."
                            #:system? system?))))
             groups)
 
-  ;; Finally create the other user accounts.
-  (for-each activate-user users))
+  ;; Create the other user accounts.
+  (for-each activate-user users)
+
+  ;; Finally, delete extra user accounts and groups.
+  (for-each delete-user
+            (lset-difference string=?
+                             (map passwd:name (current-users))
+                             (match users
+                               (((names . _) ...)
+                                names))))
+  (for-each delete-group
+            (lset-difference string=?
+                             (map group:name (current-groups))
+                             (match groups
+                               (((names . _) ...)
+                                names)))))
 
 (define (activate-etc etc)
   "Install ETC, a directory in the store, as the source of static files for
