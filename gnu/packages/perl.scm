@@ -4021,6 +4021,27 @@ collector.")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
 
+(define-public perl-set-scalar
+  (package
+    (name "perl-set-scalar")
+    (version "1.29")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAVIDO/"
+                           "Set-Scalar-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07aiqkyi1p22drpcyrrmv7f8qq6fhrxh007achy2vryxyck1bp53"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Set-Scalar")
+    (synopsis "Set operations for Perl")
+    (description "The first priority of Set::Scalar is to be a convenient
+interface to sets (as in: unordered colletions of Perl scalars.)  While not
+designed to be slow or big, neither has it been designed to be fast or
+compact.")
+    (license (package-license perl))))
+
 (define-public perl-spiffy
   (package
     (name "perl-spiffy")
