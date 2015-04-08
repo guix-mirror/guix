@@ -37,6 +37,14 @@ shebang_too_long ()
 	 -ge 128
 }
 
+if ! guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null \
+	|| shebang_too_long
+then
+    # Skipping.
+    exit 77
+fi
+
+
 profile="t-profile-$$"
 rm -f "$profile"
 
