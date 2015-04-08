@@ -5291,6 +5291,26 @@ you want to do full file globbing use the File::Glob module instead.")
     (description "Text::SimpleTable draws simple ASCII tables.")
     (license artistic2.0)))
 
+(define-public perl-text-table
+  (package
+    (name "perl-text-table")
+    (version "1.130")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                           "Text-Table-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02c8v38k639r23dgxwgvsy4myjjzvgdb238kpiffsiz25ab3xp5j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-text-aligner" ,perl-text-aligner)))
+    (home-page "http://search.cpan.org/dist/Text-Table")
+    (synopsis "Organize Data in Tables")
+    (description "Text::Table renders plaintext tables.")
+    (license x11)))
+
 (define-public perl-text-unidecode
   (package
     (name "perl-text-unidecode")
