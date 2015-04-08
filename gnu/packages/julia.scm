@@ -35,7 +35,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils)
-  #:use-module (gnu packages version-control))
+  #:use-module (gnu packages version-control)
+  #:use-module (ice-9 match))
 
 (define-public julia
   (package
@@ -51,7 +52,7 @@
                 "1hnbc2blzr9bc27m3vsr127fhg0h5imgqlrx00jakf0my0ccw8gr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "test"
+     `(#:test-target "test"
        #:modules ((ice-9 match)
                   (guix build gnu-build-system)
                   (guix build utils))
@@ -105,6 +106,14 @@
        #:make-flags
        (list
         (string-append "prefix=" (assoc-ref %outputs "out"))
+
+        ;; Passing the MARCH flag is necessary to build binary substitutes for
+        ;; the supported architectures.
+        ,(match (or (%current-target-system)
+                    (%current-system))
+           ("x86_64-linux" "MARCH=x86-64")
+           ("i686-linux" "MARCH=pentium4"))
+
         "CONFIG_SHELL=bash"     ;needed to build bundled libraries
         "USE_SYSTEM_LIBUV=0"    ;Julia expects a modified libuv
         "USE_SYSTEM_DSFMT=0"    ;not packaged for Guix and upstream has no
@@ -161,6 +170,9 @@
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
        ("which" ,which)))
+    ;; Julia is not officially released for ARM and MIPS.
+    ;; See https://github.com/JuliaLang/julia/issues/10639
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://julialang.org/")
     (synopsis "High-performance dynamic language for technical computing")
     (description

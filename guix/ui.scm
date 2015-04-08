@@ -902,6 +902,8 @@ found."
        (format (current-error-port)
                (_ "guix: unrecognized option '~a'~%") o)
        (show-guix-usage))
+      (("help" args ...)
+       (show-guix-help))
       ((command args ...)
        (apply run-guix-command
               (string->symbol command)

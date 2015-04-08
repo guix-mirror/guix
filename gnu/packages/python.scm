@@ -1571,9 +1571,9 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python2-certifi
   (package-with-python2 python-certifi))
 
-(define-public python2-requests
+(define-public python-requests
   (package
-    (name "python2-requests")
+    (name "python-requests")
     (version "2.4.0")
     (source (origin
              (method url-fetch)
@@ -1588,14 +1588,16 @@ is used by the Requests library to verify HTTPS requests.")
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-certifi" ,python-certifi)))
-    (arguments `(#:tests? #f ; no tests
-                 #:python ,python-2))
+    (arguments `(#:tests? #f)) ; no tests
     (home-page "http://python-requests.org/")
     (synopsis "Python HTTP library")
     (description
      "Requests is a Python HTTP client library.  It aims to be easier to use
 than Python’s urllib2 library.")
     (license asl2.0)))
+
+(define-public python2-requests
+  (package-with-python2 python-requests))
 
 (define-public python-jsonschema
   (package
@@ -2865,6 +2867,37 @@ etc.  The core of this module is a decorator factory.")
 (define-public python2-decorator
   (package-with-python2 python-decorator))
 
+(define-public python-drmaa
+  (package
+    (name "python-drmaa")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/drmaa/drmaa-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0bzl9f9g34dlhwf09i3fdv7dqqzf2iq0w7d6c2bafx1nlap8qfbh"))))
+    (build-system python-build-system)
+    ;; The test suite requires libdrmaa which is provided by the cluster
+    ;; environment.  At runtime the environment variable DRMAA_LIBRARY_PATH
+    ;; should be set to the path of the libdrmaa library.
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/drmaa")
+    (synopsis "Python bindings for the DRMAA library")
+    (description
+      "A Python package for Distributed Resource Management (DRM) job
+submission and control.  This package is an implementation of the DRMAA 1.0
+Python language binding specification.")
+    (license bsd-3)))
+
+(define-public python2-drmaa
+  (package-with-python2 python-drmaa))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
@@ -3446,3 +3479,32 @@ Python style, together with a fast and comfortable execution environment.")
 library for Python programs.  It is useful to implement low-level X clients.
 It is written entirely in Python.")
     (license gpl2+)))
+
+(define-public python-singledispatch
+  (package
+    (name "python-singledispatch")
+    (version "3.4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/singledispatch/"
+             "singledispatch-" version ".tar.gz"))
+       (sha256
+        (base32
+         "171b7ip0hsq5qm83np40h3phlr36ym18w0lay0a8v08kvy3sy1jv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page
+     "http://docs.python.org/3/library/functools.html#functools.singledispatch")
+    (synopsis "Backport of singledispatch feature from Python 3.4")
+    (description
+     "This library brings functools.singledispatch from Python 3.4 to Python
+2.6-3.3.")
+    (license license:expat)))
+
+(define-public python2-singledispatch
+  (package-with-python2 python-singledispatch))

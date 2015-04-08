@@ -33,6 +33,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages vim)
@@ -359,6 +360,30 @@ multiple sequence alignments.")
     (description
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
+
+(define-public clustal-omega
+  (package
+    (name "clustal-omega")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.clustal.org/omega/clustal-omega-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "02ibkx0m0iwz8nscg998bh41gg251y56cgh86bvyrii5m8kjgwqf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("argtable" ,argtable)))
+    (home-page "http://www.clustal.org/omega/")
+    (synopsis "Multiple sequence aligner for protein and DNA/RNA")
+    (description
+     "Clustal-Omega is a general purpose multiple sequence alignment (MSA)
+program for protein and DNA/RNA.  It produces high quality MSAs and is capable
+of handling data-sets of hundreds of thousands of sequences in reasonable
+time.")
+    (license license:gpl2+)))
 
 (define-public crossmap
   (package

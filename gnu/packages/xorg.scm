@@ -2932,7 +2932,8 @@ graphics cards.")
         (sha256
           (base32
            "1l0w84x39gq4y9j81dny9r6rma1xkqvxpsavpkd8h7h8panbcbmy"))
-        (patches (list (search-patch "xf86-video-sis-update-api.patch")))))
+        (patches (list (search-patch "xf86-video-sis-update-api.patch")
+                       (search-patch "xf86-video-sis-fix-exa-crash.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)

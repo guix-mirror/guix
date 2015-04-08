@@ -31,10 +31,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -232,6 +235,39 @@ sections, two polyphonic sections with nine drawbars each and one monophonic
 bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
+
+(define-public csound
+  (package
+    (name "csound")
+    (version "6.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/csound/csound6/Csound"
+                    version "/Csound" version ".tar.gz"))
+              (sha256
+               (base32
+                "1030w38lxdwjz1irr32m9cl0paqmgr02lab2m7f7j1yihwxj1w0g"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("pulseaudio" ,pulseaudio)
+       ("libsndfile" ,libsndfile)
+       ("liblo" ,liblo)
+       ("ladspa" ,ladspa)
+       ("jack" ,jack-1)
+       ("gettext" ,gnu-gettext)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("zlib" ,zlib)))
+    (home-page "http://csound.github.io/")
+    (synopsis "Sound and music computing system")
+    (description
+     "Csound is a user-programmable and user-extensible sound processing
+language and software synthesizer.")
+    (license license:lgpl2.1+)))
 
 (define-public clalsadrv
   (package
@@ -994,6 +1030,30 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; There is no explicit declaration of a license, but a COPYING file
     ;; containing gpl2.
     (license license:gpl2)))
+
+(define-public wavpack
+  (package
+    (name "wavpack")
+    (version "4.70.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.wavpack.com/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "191h8hv8qk72hfh1crg429i9yq3cminwqb249sy9zadbn1wy7b9c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; wavpack.pc.in lacks path substitution for 'exec_prefix'.
+       (list (string-append "--libdir=" %output "/lib"))))
+    (home-page "http://www.wavpack.com/")
+    (synopsis "Hybrid lossless audio codec")
+    (description
+     "WavPack is an audio compression format with lossless, lossy and hybrid
+compression modes.  This package contains command-line programs and library to
+encode and decode wavpack files.")
+    (license license:bsd-3)))
 
 (define-public soundtouch
   (package

@@ -19,6 +19,7 @@
 (define-module (test-syscalls)
   #:use-module (guix build syscalls)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -45,7 +46,10 @@
       (memv (system-error-errno args) (list EPERM ENOENT)))))
 
 (test-assert "mount-points"
-  (member "/" (mount-points)))
+  ;; Reportedly "/" is not always listed as a mount point, so check a few
+  ;; others (see <http://bugs.gnu.org/20261>.)
+  (any (cute member <> (mount-points))
+       '("/" "/proc" "/sys" "/dev")))
 
 (test-assert "swapon, ENOENT/EPERM"
   (catch 'system-error

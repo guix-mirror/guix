@@ -40,6 +40,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
@@ -107,38 +108,51 @@ and its related documentation.")
     (arguments
      `(#:tests? #f                      ; no test target
        #:phases
-       (alist-cons-before
-        'configure 'patch-/bin/sh
-        (lambda _
-          (substitute* "auto/feature"
-            (("/bin/sh") (which "bash"))))
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((flags
-                  (list (string-append "--prefix=" (assoc-ref outputs "out"))
-                        "--with-http_ssl_module"
-                        "--with-pcre-jit"
-                        "--with-ipv6"
-                        "--with-debug"
-                        ;; Even when not cross-building, we pass the
-                        ;; --crossbuild option to avoid customizing for the
-                        ;; kernel version on the build machine.
-                        ,(let ((system "Linux")    ; uname -s
-                               (release "2.6.32")  ; uname -r
-                               ;; uname -m
-                               (machine (match (or (%current-target-system)
-                                                   (%current-system))
-                                          ("x86_64-linux"   "x86_64")
-                                          ("i686-linux"     "i686")
-                                          ("mips64el-linux" "mips64"))))
-                           (string-append "--crossbuild="
-                                          system ":" release ":" machine)))))
-             (setenv "CC" "gcc")
-             (format #t "environment variable `CC' set to `gcc'~%")
-             (format #t "configure flags: ~s~%" flags)
-             (zero? (apply system* "./configure" flags))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/sh
+           (lambda _
+             (substitute* "auto/feature"
+               (("/bin/sh") (which "bash")))))
+         (replace configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((flags
+                    (list (string-append "--prefix=" (assoc-ref outputs "out"))
+                          "--with-http_ssl_module"
+                          "--with-pcre-jit"
+                          "--with-ipv6"
+                          "--with-debug"
+                          ;; Even when not cross-building, we pass the
+                          ;; --crossbuild option to avoid customizing for the
+                          ;; kernel version on the build machine.
+                          ,(let ((system "Linux")    ; uname -s
+                                 (release "2.6.32")  ; uname -r
+                                 ;; uname -m
+                                 (machine (match (or (%current-target-system)
+                                                     (%current-system))
+                                            ("x86_64-linux"   "x86_64")
+                                            ("i686-linux"     "i686")
+                                            ("mips64el-linux" "mips64"))))
+                             (string-append "--crossbuild="
+                                            system ":" release ":" machine)))))
+               (setenv "CC" "gcc")
+               (format #t "environment variable `CC' set to `gcc'~%")
+               (format #t "configure flags: ~s~%" flags)
+               (zero? (apply system* "./configure" flags)))))
+         (add-after install fix-root-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'make install' puts things in strange places, so we need to
+             ;; clean it up ourselves.
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/nginx")))
+               ;; This directory is empty, so get rid of it.
+               (rmdir (string-append out "/logs"))
+               ;; Example configuration and HTML files belong in
+               ;; /share.
+               (mkdir-p share)
+               (rename-file (string-append out "/conf")
+                            (string-append share "/conf"))
+               (rename-file (string-append out "/html")
+                            (string-append share "/html"))))))))
     (home-page "http://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
@@ -648,6 +662,36 @@ extension for Catalyst; and requirements for a variety of development-related
 modules.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-dispatchtype-regex
+  (package
+    (name "perl-catalyst-dispatchtype-regex")
+    (version "5.90035")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MG/MGRIMES/"
+                           "Catalyst-DispatchType-Regex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06jq1lmpq88rmp9zik5gqczg234xac0hiyc3l698iif7zsgcyb80"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build) ;needs Module::Build >= 0.4004
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-text-simpletable" ,perl-text-simpletable)))
+    (home-page "http://search.cpan.org/dist/Catalyst-DispatchType-Regex")
+    (synopsis "Regex DispatchType for Catalyst")
+    (description "Dispatch type managing path-matching behaviour using
+regexes.  Regex dispatch types have been deprecated and removed from Catalyst
+core.  It is recommend that you use Chained methods or other techniques
+instead.  As part of the refactoring, the dispatch priority of Regex vs Regexp
+vs LocalRegex vs LocalRegexp may have changed.  Priority is now influenced by
+when the dispatch type is first seen in your application.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-model-dbic-schema
   (package
   (name "perl-catalyst-model-dbic-schema")
@@ -693,6 +737,32 @@ modules.")
 Models.")
   (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-accesslog
+  (package
+    (name "perl-catalyst-plugin-accesslog")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARODLAND/"
+                           "Catalyst-Plugin-AccessLog-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hqvckaw91q5yc25a33bp0d4qqxlgkp7rxlvi8n8svxd1406r55s"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (arguments `(#:tests? #f))          ;Unexpected http responses
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-AccessLog")
+    (synopsis "Request logging from within Catalyst")
+    (description "This Catalyst plugin enables you to create \"access logs\"
+from within a Catalyst application instead of requiring a webserver to do it
+for you.  It will work even with Catalyst debug logging turned off.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-authentication
   (package
     (name "perl-catalyst-plugin-authentication")
@@ -725,6 +795,30 @@ Models.")
 Catalyst apps. It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-captcha
+  (package
+    (name "perl-catalyst-plugin-captcha")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DI/DIEGOK/"
+                           "Catalyst-Plugin-Captcha-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0llyj3v5nx9cx46jdbbvxf1lc9s9cxq5ml22xmx3wkb201r5qgaa"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-gd-securityimage" ,perl-gd-securityimage)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Captcha")
+    (synopsis "Captchas for Catalyst")
+    (description "This plugin creates and validates Captcha images for
+Catalyst.")
     (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-configloader
@@ -783,6 +877,90 @@ formats.")
     (synopsis "Catalyst generic session plugin")
     (description "This plugin links the two pieces required for session
 management in web applications together: the state, and the store.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-session-state-cookie
+  (package
+    (name "perl-catalyst-plugin-session-state-cookie")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTROUT/"
+                           "Catalyst-Plugin-Session-State-Cookie-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rvxbfnpf9x2pc2zgpazlcgdlr2dijmxgmcs0m5nazs0w6xikssb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Session-State-Cookie")
+    (synopsis "Maintain session IDs using cookies")
+    (description "In order for Catalyst::Plugin::Session to work, the session
+ID needs to be stored on the client, and the session data needs to be stored
+on the server.  This plugin stores the session ID on the client using the
+cookie mechanism.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-session-store-fastmmap
+  (package
+    (name "perl-catalyst-plugin-session-store-fastmmap")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Session-Store-FastMmap-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0x3j6zv3wr41jlwr6yb2jpmcx019ibyn11y8653ffnwhpzbpzsxs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cache-fastmmap" ,perl-cache-fastmmap)
+       ("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-path-class" ,perl-path-class)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Session-Store-FastMmap")
+    (synopsis "FastMmap session storage backend.")
+    (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
+storage plugin for Catalyst that uses an mmap'ed file to act as a shared
+memory interprocess cache.  It is based on Cache::FastMmap.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-stacktrace
+  (package
+    (name "perl-catalyst-plugin-stacktrace")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-StackTrace-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b2ksz74cpigxqzf63rddar3vfmnbpwpdcbs11v0ml89pb8ar79j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-StackTrace")
+    (synopsis "Stack trace on the Catalyst debug screen")
+    (description "This plugin enhances the standard Catalyst debug screen by
+including a stack trace of your appliation up to the point where the error
+occurred.  Each stack frame is displayed along with the package name, line
+number, file name, and code context surrounding the line number.")
     (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-static-simple
@@ -879,6 +1057,88 @@ run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-traitfor-request-proxybase
+  (package
+    (name "perl-catalyst-traitfor-request-proxybase")
+    (version "0.000005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-TraitFor-Request-ProxyBase-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "02kir63d5cs2ipj3fn1qlmmx3gqi1xqzrxfr4pv5vjhjgsm0zgx7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-catalystx-roleapplicator" ,perl-catalystx-roleapplicator)
+       ("perl-http-message" ,perl-http-message)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-uri" ,perl-uri)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-TraitFor-Request-ProxyBase")
+    (synopsis "Replace request base with value passed by HTTP proxy")
+    (description "This module is a Moose::Role which allows you more
+flexibility in your application's deployment configurations when deployed
+behind a proxy.  Using this module, the request base ($c->req->base) is
+replaced with the contents of the X-Request-Base header.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-view-download
+  (package
+    (name "perl-catalyst-view-download")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAUDEON/"
+                           "Catalyst-View-Download-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qgq6y9iwfbhbkbgpw9czang2ami6z8jk1zlagrzdisy4igqzkvs"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-test-simple" ,perl-test-simple)
+       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)
+       ("perl-text-csv" ,perl-text-csv)
+       ("perl-xml-simple" ,perl-xml-simple)))
+    (home-page "http://search.cpan.org/dist/Catalyst-View-Download")
+    (synopsis "Download data in many formats")
+    (description "The purpose of this module is to provide a method for
+downloading data into many supportable formats.  For example, downloading a
+table based report in a variety of formats (CSV, HTML, etc.). ")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-view-json
+  (package
+    (name "perl-catalyst-view-json")
+    (version "0.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-View-JSON-" version ".tar.gz"))
+       (sha256
+        (base32
+         "184pyghlrkl7p387bnyvswi2d9myvdg4v3lax6xrd59shskvpmkm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-yaml" ,perl-yaml)))
+    (inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-View-JSON")
+    (synopsis "Catalyst JSON view")
+    (description "Catalyst::View::JSON is a Catalyst View handler that returns
+stash data in JSON format.")
+    (license (package-license perl))))
+
 (define-public perl-catalystx-component-traits
   (package
     (name "perl-catalystx-component-traits")
@@ -910,6 +1170,29 @@ Catalyst component base class that reads the optional \"traits\" parameter
 from app and component config and instantiates the component subclass with
 those traits using \"new_with_traits\" in MooseX::Traits from
 MooseX::Traits::Pluggable.")
+    (license (package-license perl))))
+
+(define-public perl-catalystx-roleapplicator
+  (package
+    (name "perl-catalystx-roleapplicator")
+    (version "0.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HD/HDP/"
+                           "CatalystX-RoleApplicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vwaapxn8g5hs2xp63c4dwv9jmapmji4272fakssvgc9frklg3p2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-relatedclassroles" ,perl-moosex-relatedclassroles)))
+    (home-page "http://search.cpan.org/dist/CatalystX-RoleApplicator")
+    (synopsis "Apply roles to Catalyst classes")
+    (description "CatalystX::RoleApplicator applies roles to Catalyst
+application classes.")
     (license (package-license perl))))
 
 (define-public perl-cgi-simple
@@ -1724,6 +2007,41 @@ either mocked HTTP or a locally spawned server.")
     (description "Test::WWW::Mechanize is a subclass of the Perl module
 WWW::Mechanize that incorporates features for web application testing.")
     (license l:artistic2.0)))
+
+(define-public perl-test-www-mechanize-catalyst
+  (package
+    (name "perl-test-www-mechanize-catalyst")
+    (version "0.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Test-WWW-Mechanize-Catalyst-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nhhfrrai3ndziz873vpa1j0vljjnib4wqafd6yyvkf58ad7v0lv"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-plugin-session-state-cookie"
+        ,perl-catalyst-plugin-session-state-cookie)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-utf8" ,perl-test-utf8)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-test-www-mechanize" ,perl-test-www-mechanize)
+       ("perl-www-mechanize" ,perl-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-Catalyst")
+    (synopsis "Test::WWW::Mechanize for Catalyst")
+    (description "The Test::WWW::Mechanize::Catalyst module meshes the
+Test::WWW:Mechanize module and the Catalyst web application framework to allow
+testing of Catalyst applications without needing to start up a web server.")
+    (license (package-license perl))))
 
 (define-public perl-test-www-mechanize-psgi
   (package

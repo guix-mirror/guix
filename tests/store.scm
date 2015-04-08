@@ -606,6 +606,16 @@
          (file (add %store "foo" "Lowered.")))
     (call-with-input-file file get-string-all)))
 
+(test-assert "query-path-info"
+  (let* ((ref (add-text-to-store %store "ref" "foo"))
+         (item (add-text-to-store %store "item" "bar" (list ref)))
+         (info (query-path-info %store item)))
+    (and (equal? (path-info-references info) (list ref))
+         (equal? (path-info-hash info)
+                 (sha256
+                  (string->utf8
+                   (call-with-output-string (cut write-file item <>))))))))
+
 (test-end "store")
 
 

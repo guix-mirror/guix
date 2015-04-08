@@ -33,22 +33,23 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python))
 
-;; We use bootstrap binaries with a fix version which can be used to build
-;; more versions of the GHC compiler.
-(define ghc-bootstrap-7.8.4
+(define ghc-bootstrap-x86_64-7.8.4
   (origin
     (method url-fetch)
-    (uri (string-append "https://www.haskell.org/ghc/dist/"
-                        "7.8.4/ghc-7.8.4-"
-                        (if (string-match "x86_64" (%current-system))
-                            "x86_64"
-                            "i386")
-                        "-unknown-linux-deb7.tar.xz"))
+    (uri
+     "https://www.haskell.org/ghc/dist/7.8.4/ghc-7.8.4-x86_64-unknown-linux-deb7.tar.xz")
     (sha256
      (base32
-      (if (string-match "x86_64" (%current-system))
-          "13azsl53xgj20mi1hj9x0xb32vvcvs6cpmvwx6znxhas7blh0bpn"
-          "0wj5s435j0zgww70bj1d3f6wvnnpzlxwvwcyh2qv4qjq5z8j64kg")))))
+      "13azsl53xgj20mi1hj9x0xb32vvcvs6cpmvwx6znxhas7blh0bpn"))))
+
+(define ghc-bootstrap-i686-7.8.4
+  (origin
+    (method url-fetch)
+    (uri
+     "https://www.haskell.org/ghc/dist/7.8.4/ghc-7.8.4-i386-unknown-linux-deb7.tar.xz")
+    (sha256
+     (base32
+      "0wj5s435j0zgww70bj1d3f6wvnnpzlxwvwcyh2qv4qjq5z8j64kg"))))
 
 ;; 43 tests out of 3965 fail.
 ;;
@@ -99,7 +100,10 @@
        ("ghostscript" ,ghostscript)        ; for tests
        ("patchelf" ,patchelf)
        ;; GHC is built with GHC. Therefore we need bootstrap binaries.
-       ("ghc-binary" ,ghc-bootstrap-7.8.4)))
+       ("ghc-binary"
+        ,(if (string-match "x86_64" (or (%current-target-system) (%current-system)))
+             ghc-bootstrap-x86_64-7.8.4
+             ghc-bootstrap-i686-7.8.4))))
     (arguments
      `(#:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test

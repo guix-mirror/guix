@@ -198,7 +198,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.18.10")
+  (let* ((version "3.19.3")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -271,7 +271,10 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0ckbi94b56klp59wsfcmlkbyrj7hj7kb7ys2jjsrqsk39dd77zg5"))))
+               "13nq0wzkjy7hrhnnvxlwzs1awlqd81vzriqddjn6s9ma3fzj44bn"))
+             (patches
+              (list (search-patch "linux-libre-libreboot-fix.patch")
+                    (search-patch "linux-libre-vblank-fix.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -1373,14 +1376,14 @@ system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))
+                "04mrms12nm5sas0nxs94yrr3hz7gmqhnmfgb9ff34bh1jszxmzcx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2005,3 +2008,73 @@ also contains the libsysfs library.")
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
     (license gpl2)))
+
+(define-public libraw1394
+  (package
+    (name "libraw1394")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/ieee1394/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0kwnf4ha45c04mhc4yla672aqmvqqihxix1gvblns5cd2pc2cc8b"))))
+    (build-system gnu-build-system)
+    (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
+    (synopsis "Interface library for the Linux IEEE1394 drivers")
+    (description
+     "Libraw1394 is the only supported interface to the kernel side raw1394 of
+the Linux IEEE-1394 subsystem, which provides direct access to the connected
+1394 buses to user space.  Through libraw1394/raw1394, applications can directly
+send to and receive from other nodes without requiring a kernel driver for the
+protocol in question.")
+    (license lgpl2.1+)))
+
+(define-public libavc1394
+  (package
+    (name "libavc1394")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libavc1394/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lsv46jdqvdx5hx92v0z2cz3yh6212pz9gk0k3513sbaa04zzcbw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
+    (home-page "http://sourceforge.net/projects/libavc1394/")
+    (synopsis "AV/C protocol library for IEEE 1394")
+    (description
+     "Libavc1394 is a programming interface to the AV/C specification from
+the 1394 Trade Assocation.  AV/C stands for Audio/Video Control.")
+    (license lgpl2.1+)))
+
+(define-public libiec61883
+  (package
+    (name "libiec61883")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/ieee1394/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "17ph458zya2l8dr2xwqnzy195qd9swrir31g78qkgb3g4xz2rq6i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libraw1394" ,libraw1394))) ; required by libiec61883.pc
+    (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
+    (synopsis "Isochronous streaming media library for IEEE 1394")
+    (description
+     "The libiec61883 library provides a higher level API for streaming DV,
+MPEG-2 and audio over Linux IEEE 1394.")
+    (license lgpl2.1+)))

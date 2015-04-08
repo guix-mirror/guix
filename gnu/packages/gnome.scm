@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,8 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
@@ -39,8 +42,10 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -48,6 +53,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages ncurses))
@@ -252,7 +258,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.10.0")
+    (version "3.16.0")
     (source
      (origin
       (method url-fetch)
@@ -261,13 +267,14 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1km8qxwrzvravmg8j680qv64bwnwbdgrmy8bqmhs0dgxn2b1as6a"))))
+        "02dp1hl38k16m9abydfca1n236mdazqdz0p3n92s7haf9mdqsf16"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
     (synopsis
@@ -1398,7 +1405,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.38.2")
+    (version "0.40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1406,7 +1413,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rbxrigff9yszbgdw0gw4c2saz4d1hbbpz21phzxx14w49wvmnmj"))))
+                "0lnq0bgkmsixjwmfacb2ch9qfjqjxa8zkk1hiv3l29kgca0n3nal"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1416,7 +1423,8 @@ libraries written in C.")
        ("glib" ,glib "bin") ; for glib-genmarshal, etc.
        ("xmllint" ,libxml2)))
     (propagated-inputs
-     `(("gtk+" ,gtk+))) ; required by libvte-2.91.pc
+     `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
+       ("gnutls" ,gnutls)))                       ;ditto
     (arguments
      `(#:phases
        (alist-cons-before
@@ -1622,10 +1630,114 @@ library.")
     ;; of gnome-python-desktop is given in 'COPYING'.
     (license license:lgpl2.1+)))
 
+(define-public glib-networking
+  (package
+    (name "glib-networking")
+    (version "2.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/glib-networking/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ij33bhvn7y5gagx4sbrw906dsjjjs9dllxn73pzv6x97c6k92lg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; FIXME: ca-certificates.crt is not available in the build environment.
+       '("--with-ca-certificates=no")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-giomoduledir
+                     ;; Install GIO modules into $out/lib/gio/modules.
+                     (lambda _
+                       (substitute* "configure"
+                         (("GIO_MODULE_DIR=.*")
+                          (string-append "GIO_MODULE_DIR=" %output
+                                         "/lib/gio/modules\n"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("glib" ,glib)
+       ("gnutls" ,gnutls)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("p11-kit" ,p11-kit)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Network-related GIO modules")
+    (description
+     "This package contains various network related extensions for the GIO
+library.")
+    (license license:lgpl2.0+)))
+
+(define-public libsoup
+  (package
+    (name "libsoup")
+    (version "2.50.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/libsoup/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0yv61y5vfar1rfksa6f53zhfw9wcb39zjix8gqc1ff5gqid3c08y"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:make-flags '("CC=gcc") ; for g-ir-scanner
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html")
+             ;; To find GIO modules from glib-networking.
+             (string-append "GIO_EXTRA_MODULES="
+                            (assoc-ref %build-inputs "glib-networking")
+                            "/lib/gio/modules"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure disable-unconnected-socket-test
+                     ;; This test fails due to missing /etc/nsswitch.conf
+                     ;; in the build environment.
+                     (lambda _
+                       (substitute* "tests/socket-test.c"
+                         ((".*/sockets/unconnected.*") ""))
+                       #t))
+         (add-before check unset-LC_ALL
+                     ;; The 'check-local' target runs 'env LANG=C sort -u',
+                     ;; unset 'LC_ALL' to make 'LANG' working.
+                     (lambda _
+                       (unsetenv "LC_ALL")
+                       #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ;; These are needed for the tests.
+       ;; FIXME: Add PHP once available.
+       ("curl" ,curl)
+       ("httpd" ,httpd)))
+    (propagated-inputs
+     ;; libsoup-2.4.pc refers to all these.
+     `(("glib" ,glib)
+       ("libxml2" ,libxml2)))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("sqlite" ,sqlite)))
+    (home-page "https://live.gnome.org/LibSoup/")
+    (synopsis "GLib-based HTTP Library")
+    (description
+     "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects
+and the GLib main loop, to integrate well with GNOME applications.")
+    (license license:lgpl2.0+)))
+
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.14.1")
+    (version "3.16.0")
     (source
      (origin
        (method url-fetch)
@@ -1634,7 +1746,7 @@ library.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0nbgvzlsznn3v83pdcx2d52r4ig1mvaijh633rjddx9rgq2ja7kv"))))
+         "0wfvqyryc1093l4dr75zv9h0jyn28z6wirdq03lm5w24qf9lvjjx"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -1666,3 +1778,51 @@ library.")
      "Mines (previously gnomine) is a puzzle game where you locate mines
 floating in an ocean using only your brain and a little bit of luck.")
     (license license:gpl2+)))
+
+(define-public gnome-terminal
+  (package
+    (name "gnome-terminal")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1s3zwqxs4crlqmh6l7s7n87pbmh2nnjdvhxlkalh58pbl0bk0qrd"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--disable-migration" "--disable-search-provider"
+             "--without-nautilus-extension")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("vte" ,vte)
+       ("gnutls" ,gnutls)
+       ("dconf" ,dconf)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("util-linux" ,util-linux)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/Terminal")
+    (synopsis "Terminal emulator")
+    (description
+     "GNOME Terminal is a terminal emulator application for accessing a
+UNIX shell environment which can be used to run programs available on
+your system.
+
+It supports several profiles, multiple tabs and implements several
+keyboard shortcuts.")
+    (license license:gpl3+)))

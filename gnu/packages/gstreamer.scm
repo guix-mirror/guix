@@ -88,11 +88,19 @@ arrays of data.")
        (base32
         "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:make-flags '("CC=gcc") ; for g-ir-scanner.
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
@@ -150,6 +158,9 @@ This package provides the core library and elements.")
        (base32
         "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
        ("orc" ,orc)
@@ -161,19 +172,25 @@ This package provides the core library and elements.")
        ("zlib" ,zlib)
        ("libXext" ,libxext)
        ("libxv" ,libxv)
-       ("alsa-lib" ,alsa-lib)
-       ("gstreamer" ,gstreamer)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")
+        ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     '(#:phases
+     `(#:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))
+       #:phases
        (alist-cons-before
-        'configure 'patch-test-pb-utils
+        'configure 'patch
         (lambda _
           (substitute* "tests/check/libs/pbutils.c"
-            (("/bin/sh") (which "sh"))))
+            (("/bin/sh") (which "sh")))
+          ;; for g-ir-scanner.
+          (setenv "CC" "gcc"))
         %standard-phases)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis

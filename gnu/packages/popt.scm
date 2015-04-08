@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,34 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses))
+
+(define-public argtable
+  (package
+    (name "argtable")
+    (version "2.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/argtable/argtable"
+                    (string-join (string-split version #\.) "-")
+                    ".tar.gz"))
+             (sha256
+              (base32
+               "1gyxf4bh9jp5gb3l6g5qy90zzcf3vcpk0irgwbv1lc6mrskyhxwg"))))
+    (build-system gnu-build-system)
+    (home-page "http://argtable.sourceforge.net/")
+    (synopsis "Command line option parsing library")
+    (description
+     "Argtable is an ANSI C library for parsing GNU style command line
+options.  It enables a program's command line syntax to be defined in the
+source code as an array of argtable structs.  The command line is then parsed
+according to that specification and the resulting values are returned in those
+same structs where they are accessible to the main program.  Both tagged (-v,
+--verbose, --foo=bar) and untagged arguments are supported, as are multiple
+instances of each argument.  Syntax error handling is automatic and the library
+also provides the means for generating a textual description of the command
+line syntax.")
+    (license lgpl2.0+)))
 
 (define-public popt
   (package

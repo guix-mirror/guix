@@ -26,7 +26,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages ed)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)

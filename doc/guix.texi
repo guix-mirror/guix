@@ -121,6 +121,7 @@ Utilities
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix environment::   Setting up development environments.
+* Invoking guix publish::       Sharing substitutes.
 
 GNU Distribution
 
@@ -337,7 +338,8 @@ goes through the daemon.  For instance, command-line tools such as
 daemon (@i{via} remote procedure calls) to instruct it what to do.
 
 The following sections explain how to prepare the build daemon's
-environment.
+environment.  Also @ref{Substitutes}, for information on how to allow
+the daemon to download pre-built binaries.
 
 @menu
 * Build Environment Setup::     Preparing the isolated build environment.
@@ -381,15 +383,6 @@ Bash syntax and the @code{shadow} commands):
             -c "Guix build user $i" --system          \
             guix-builder$i;
   done
-@end example
-
-The @file{/gnu/store} directory (or whichever was specified with the
-@code{--with-store-dir} option) must have ownership and permissions as
-follows:
-
-@example
-# chgrp guix-builder /gnu/store
-# chmod 1775 /gnu/store
 @end example
 
 @noindent
@@ -1150,9 +1143,8 @@ When @var{pattern} is specified, delete the matching generations.  When
 specified duration match.  For instance, @code{--delete-generations=1m}
 deletes generations that are more than one month old.
 
-If the current generation matches, it is deleted atomically---i.e., by
-switching to the previous available generation.  Note that the zeroth
-generation is never deleted.
+If the current generation matches, it is @emph{not} deleted.  Also, the
+zeroth generation is never deleted.
 
 Note that deleting generations prevents roll-back to them.
 Consequently, this command must be used with care.
@@ -1323,7 +1315,9 @@ guix package}).
 @cindex garbage collector
 Packages that are installed but not used may be @dfn{garbage-collected}.
 The @command{guix gc} command allows users to explicitly run the garbage
-collector to reclaim space from the @file{/gnu/store} directory.
+collector to reclaim space from the @file{/gnu/store} directory.  It is
+the @emph{only} way to remove files from @file{/gnu/store}---removing
+files or directories manually may break it beyond repair!
 
 The garbage collector has a set of known @dfn{roots}: any file under
 @file{/gnu/store} reachable from a root is considered @dfn{live} and
@@ -1962,6 +1956,25 @@ Python package is used to run the script can be specified with the
 @code{#:python} parameter.
 @end defvr
 
+@defvr {Scheme Variable} haskell-build-system
+This variable is exported by @code{(guix build-system haskell)}.  It
+implements the Cabal build procedure used by Haskell packages, which
+involves running @code{runhaskell Setup.hs configure
+--prefix=/gnu/store/@dots{}} and @code{runhaskell Setup.hs build}.
+Instead of installing the package by running @code{runhaskell Setup.hs
+install}, to avoid trying to register libraries in the read-only
+compiler store directory, the build system uses @code{runhaskell
+Setup.hs copy}, followed by @code{runhaskell Setup.hs register}.  In
+addition, the build system generates the package documentation by
+running @code{runhaskell Setup.hs haddock}, unless @code{#:haddock? #f}
+is passed.  Optional Haddock parameters can be passed with the help of
+the @code{#:haddock-flags} parameter.  If the file @code{Setup.hs} is
+not found, the build system looks for @code{Setup.lhs} instead.
+
+Which Haskell compiler is used can be specified with the @code{#:haskell}
+parameter which defaults to @code{ghc}. 
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,
@@ -2515,7 +2528,7 @@ To illustrate the idea, here is an example of a gexp:
   #~(begin
       (mkdir #$output)
       (chdir #$output)
-      (symlink (string-append #$coreutils "/bin/ls") 
+      (symlink (string-append #$coreutils "/bin/ls")
                "list-files")))
 @end example
 
@@ -2765,6 +2778,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix environment::   Setting up development environments.
+* Invoking guix publish::       Sharing substitutes.
 @end menu
 
 @node Invoking guix build
@@ -3427,6 +3441,54 @@ environment.
 It also supports all of the common build options that @command{guix
 build} supports (@pxref{Invoking guix build, common build options}).
 
+@node Invoking guix publish
+@section Invoking @command{guix publish}
+
+The purpose of @command{guix publish} is to enable users to easily share
+their store with others.  When @command{guix publish} runs, it spawns an
+HTTP server which allows anyone with network access to obtain
+substitutes from it.  This means that any machine running Guix can also
+act as if it were a build farm, since the HTTP interface is
+Hydra-compatible.
+
+For security, each substitute is signed, allowing recipients to check
+their authenticity and integrity (@pxref{Substitutes}).  Because
+@command{guix publish} uses the system's signing key, which is only
+readable by the system administrator, it must run as root.
+
+The general syntax is:
+
+@example
+guix publish @var{options}@dots{}
+@end example
+
+Running @command{guix publish} without any additional arguments will
+spawn an HTTP server on port 8080:
+
+@example
+guix publish
+@end example
+
+Once a publishing server has been authorized (@pxref{Invoking guix
+archive}), the daemon may download substitutes from it:
+
+@example
+guix-daemon --substitute-urls=http://example.org:8080
+@end example
+
+The following options are available:
+
+@table @code
+@item --port=@var{port}
+@itemx -p @var{port}
+Listen for HTTP requests on @var{port}.
+
+@item --repl[=@var{port}]
+@itemx -r [@var{port}]
+Spawn a Guile REPL server (@pxref{REPL Servers,,, guile, GNU Guile
+Reference Manual}) on @var{port} (37146 by default).
+@end table
+
 @c *********************************************************************
 @node GNU Distribution
 @chapter GNU Distribution
@@ -3783,8 +3845,7 @@ kernel, initial RAM disk, and boot loader looks like this:
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
   (packages (cons emacs %base-packages))
-  (services (cons (lsh-service #:port 2222 #:root-login? #t
-                               #:initialize? #t)
+  (services (cons (lsh-service #:port 2222 #:root-login? #t)
                   %base-services)))
 @end lisp
 
@@ -4508,8 +4569,9 @@ external name servers do not even need to be queried.
 @end defvr
 
 
-@deffn {Monadic Procedure} syslog-service
-Return a service that runs @code{syslogd} with reasonable default
+@deffn {Monadic Procedure} syslog-service [#:config-file #f]
+Return a service that runs @code{syslogd}.  If configuration file name
+@var{config-file} is not specified, use some reasonable default
 settings.
 @end deffn
 
@@ -4602,7 +4664,7 @@ Furthermore, @code{(gnu services ssh)} provides the following service.
        [#:allow-empty-passwords? #f] [#:root-login? #f] @
        [#:syslog-output? #t] [#:x11-forwarding? #t] @
        [#:tcp/ip-forwarding? #t] [#:password-authentication? #t] @
-       [#:public-key-authentication? #t] [#:initialize? #f]
+       [#:public-key-authentication? #t] [#:initialize? #t]
 Run the @command{lshd} program from @var{lsh} to listen on port @var{port-number}.
 @var{host-key} must designate a file containing the host key, and readable
 only by root.
@@ -5378,7 +5440,9 @@ facility is implemented in the @code{(gnu packages)} module.
 @cindex customization, of packages
 @cindex package module search path
 Users can store package definitions in modules with different
-names---e.g., @code{(my-packages emacs)}.  These package definitions
+names---e.g., @code{(my-packages emacs)}@footnote{Note that the file
+name and module name must match.  @xref{Modules and the File System,,,
+guile, GNU Guile Reference Manual}, for details.}  These package definitions
 will not be visible by default.  Thus, users can invoke commands such as
 @command{guix package} and @command{guix build} have to be used with the
 @code{-e} option so that they know where to find the package, or use the

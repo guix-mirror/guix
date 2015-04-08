@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnuzilla)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -122,15 +123,18 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.17.4")
+    (version "3.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
-                    "releases/NSS_3_17_4_RTM/src/nss-3.17.4.tar.gz"))
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                      "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "releases/NSS_" version-with-underscores "_RTM/src/"
+                      "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0ycxzybgn4bq0i6j5zjdjl70n3s8a742yixyik4pw8x4h4cav60x"))
+                "0h0xy9kvd2s8r438q4dfn25cgvv5dc1hkm9lb4bgrxpr5bxv13b1"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
@@ -214,22 +218,16 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.5.0")
+    (version "31.6.0-gnu1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnuzilla/"
-                          version "/" name "-" version ".tar.bz2"))
+                          (first (string-split version #\-)) "/"
+                          name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1rr4axghaypdkrf60i1qp6dz4cd29ya02fs3vyffvp4x9kgcq2dd"))
-      (patches (map search-patch '("icecat-bug-1127780.patch"
-                                   "icecat-CVE-2015-0817.patch"
-                                   "icecat-bug-1144991.patch"
-                                   "icecat-CVE-2015-0818-pt1.patch"
-                                   "icecat-bug-1145870.patch"
-                                   "icecat-CVE-2015-0818-pt2.patch"
-                                   "icecat-bug-1146339.patch")))))
+        "1a4l23msg4cpc4yp59q2z6xv63r6advlbnjy65v4djv6yhgnqf1i"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

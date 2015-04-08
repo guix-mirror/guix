@@ -526,8 +526,10 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
 
              (respawn? #f)))))
 
-(define (syslog-service)
-  "Return a service that runs @code{syslogd} with reasonable default settings."
+(define* (syslog-service #:key config-file)
+  "Return a service that runs @code{syslogd}.
+If configuration file name @var{config-file} is not specified, use some
+reasonable default settings."
 
   ;; Snippet adapted from the GNU inetutils manual.
   (define contents "
@@ -561,7 +563,7 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
       (start
        #~(make-forkexec-constructor
           (list (string-append #$inetutils "/libexec/syslogd")
-                "--no-detach" "--rcfile" #$syslog.conf)))
+                "--no-detach" "--rcfile" #$(or config-file syslog.conf))))
       (stop #~(make-kill-destructor))))))
 
 (define* (guix-build-accounts count #:key

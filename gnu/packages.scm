@@ -35,7 +35,7 @@
   #:use-module (srfi srfi-39)
   #:export (search-patch
             search-bootstrap-binary
-            %patch-directory
+            %patch-path
             %bootstrap-binaries-path
             %package-module-path
 
