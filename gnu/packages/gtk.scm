@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -405,14 +406,25 @@ is part of the GNOME accessibility project.")
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("pango" ,pango)))
+   (inputs
+    `(("cups" ,cups)
+      ("libxcomposite" ,libxcomposite)
+      ("libxcursor" ,libxcursor)
+      ("libxdamage" ,libxdamage)
+      ("libxi" ,libxi)
+      ("libxinerama" ,libxinerama)
+      ("libxrandr" ,libxrandr)))
    (native-inputs
     `(("perl" ,perl)
+      ("gettext" ,gnu-gettext)
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
     `(#:make-flags '("CC=gcc")
+      #:configure-flags
+      (list "--with-xinput=yes")
       #:phases
       (alist-cons-before
        'configure 'disable-tests
