@@ -349,8 +349,13 @@ in the GNOME project.")
              (base32
               "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
    (build-system gnu-build-system)
+   (outputs '("out" "doc"))
    (arguments
     '(#:make-flags '("CC=gcc") ; for g-ir-scanner
+      #:configure-flags
+      (list (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))
       #:phases
       (modify-phases %standard-phases
         (replace check
