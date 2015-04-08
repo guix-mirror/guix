@@ -135,6 +135,47 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
  (when (module-variable %web-http 'read-chunk-body)
    (module-set! %web-http 'make-chunked-input-port make-chunked-input-port))
 
+ (define (make-delimited-input-port port len keep-alive?)
+   "Return an input port that reads from PORT, and makes sure that
+exactly LEN bytes are available from PORT.  Closing the returned port
+closes PORT, unless KEEP-ALIVE? is true."
+   (define bytes-read 0)
+
+   (define (fail)
+     ((@@ (web response) bad-response)
+      "EOF while reading response body: ~a bytes of ~a"
+      bytes-read len))
+
+   (define (read! bv start count)
+     ;; Read at most LEN bytes in total.  HTTP/1.1 doesn't say what to do
+     ;; when a server provides more than the Content-Length, but it seems
+     ;; wise to just stop reading at LEN.
+     (let ((count (min count (- len bytes-read))))
+       (let loop ((ret (get-bytevector-n! port bv start count)))
+         (cond ((eof-object? ret)
+                (if (= bytes-read len)
+                    0                              ; EOF
+                    (fail)))
+               ((and (zero? ret) (> count 0))
+                ;; Do not return zero since zero means EOF, so try again.
+                (loop (get-bytevector-n! port bv start count)))
+               (else
+                (set! bytes-read (+ bytes-read ret))
+                ret)))))
+
+   (define close
+     (and (not keep-alive?)
+          (lambda ()
+            (close port))))
+
+   (make-custom-binary-input-port "delimited input port" read! #f #f close))
+
+ (unless (guile-version>? "2.0.9")
+   ;; Guile <= 2.0.9 had a bug whereby 'response-body-port' would read more
+   ;; than what 'content-length' says.  See Guile commit 802a25b.
+   (module-set! (resolve-module '(web response))
+                'make-delimited-input-port make-delimited-input-port))
+
  (define (read-response-body* r)
    "Reads the response body from @var{r}, as a bytevector.  Returns
  @code{#f} if there was no response body."
