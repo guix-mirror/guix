@@ -68,7 +68,7 @@
       (list (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
                            "/share/gtk-doc/html"))))
-   (inputs `(("glib" ,glib)))
+   (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
