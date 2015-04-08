@@ -344,7 +344,8 @@ in the GNOME project.")
               "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
    (build-system gnu-build-system)
    (arguments
-    '(#:phases
+    '(#:make-flags '("CC=gcc") ; for g-ir-scanner
+      #:phases
       (modify-phases %standard-phases
         (replace check
                  ;; Run test-suite under a dbus session.
@@ -358,8 +359,9 @@ in the GNOME project.")
     `(("libxi" ,libxi)
       ("libxtst" ,libxtst)))
    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+    `(("gobject-introspection" ,gobject-introspection)
+      ("intltool" ,intltool)
+      ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
    (description
     "The Assistive Technology Service Provider Interface, core components,
