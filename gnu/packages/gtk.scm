@@ -350,10 +350,13 @@ in the GNOME project.")
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (zero? (system* "dbus-launch" "make" "check")))))))
-   (inputs `(("dbus" ,dbus)
-             ("glib" ,glib)
-             ("libxi" ,libxi)
-             ("libxtst" ,libxtst)))
+   (propagated-inputs
+    ;; atspi-2.pc refers to all these.
+    `(("dbus" ,dbus)
+      ("glib" ,glib)))
+   (inputs
+    `(("libxi" ,libxi)
+      ("libxtst" ,libxtst)))
    (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
