@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +24,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages m4))
 
-(define-public nettle
+(define-public nettle-2
   (package
     (name "nettle")
     (version "2.7.1")
@@ -53,10 +53,10 @@ cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
 
-(define-public nettle-3
+(define-public nettle
   ;; This version is not API-compatible with version 2.  In particular GnuTLS
   ;; cannot use it yet.  So keep it separate.
-  (package (inherit nettle)
+  (package (inherit nettle-2)
     (version "3.0")
     (source (origin
               (method url-fetch)

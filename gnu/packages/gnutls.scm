@@ -140,7 +140,7 @@ living in the same process.")
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
-       ("nettle" ,nettle)
+       ("nettle" ,nettle-2)
        ("zlib" ,zlib)))
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
