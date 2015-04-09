@@ -309,7 +309,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))))))
+               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
+             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
@@ -320,7 +321,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))))
+               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
+             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."

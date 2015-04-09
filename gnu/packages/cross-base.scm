@@ -202,8 +202,10 @@ GCC that does not target a libc; otherwise, target that libc."
                          target))
     (source (origin (inherit (package-source gcc-4.8))
               (patches
-               (cons (search-patch "gcc-cross-environment-variables.patch")
-                     (cross-gcc-patches target)))))
+               (append
+                (origin-patches (package-source gcc-4.8))
+                (cons (search-patch "gcc-cross-environment-variables.patch")
+                      (cross-gcc-patches target))))))
 
     ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
     ;; found by default, etc.
