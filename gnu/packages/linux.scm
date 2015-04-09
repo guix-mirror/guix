@@ -2071,3 +2071,45 @@ the 1394 Trade Assocation.  AV/C stands for Audio/Video Control.")
      "The libiec61883 library provides a higher level API for streaming DV,
 MPEG-2 and audio over Linux IEEE 1394.")
     (license lgpl2.1+)))
+
+(define-public mdadm
+  (package
+    (name "mdadm")
+    (version "3.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/raid/mdadm/mdadm-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("udev" ,eudev)))
+    (arguments
+     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "INSTALL=install"
+                            "CHECK_RUN_DIR=0"
+                            ;; TODO: tell it where to find 'sendmail'
+                            ;; (string-append "MAILCMD=" <???> "/sbin/sendmail")
+                            (string-append "BINDIR=" out "/sbin")
+                            (string-append "MANDIR=" out "/share/man")
+                            (string-append "UDEVDIR=" out "/lib/udev")))
+       #:phases (alist-cons-before
+                 'build 'patch-program-paths
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((coreutils (assoc-ref inputs "coreutils")))
+                     (substitute* "udev-md-raid-arrays.rules"
+                       (("/usr/bin/(readlink|basename)" all program)
+                        (string-append coreutils "/bin/" program)))))
+                 (alist-delete 'configure %standard-phases))
+       ;;tests must be done as root
+       #:tests? #f))
+    (home-page "http://neil.brown.name/blog/mdadm")
+    (synopsis "Tool for managing Linux Software RAID arrays")
+    (description
+     "mdadm is a tool for managing Linux Software RAID arrays.  It can create,
+assemble, report on, and monitor arrays.  It can also move spares between raid
+arrays when needed.")
+    (license gpl2+)))
