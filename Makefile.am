@@ -240,6 +240,9 @@ tests/guix-gc.log:							\
 # Public key used to sign substitutes from hydra.gnu.org.
 dist_pkgdata_DATA = hydra.gnu.org.pub
 
+# Bash completion file.
+dist_bashcompletion_DATA = etc/completion/bash/guix
+
 EXTRA_DIST =						\
   HACKING						\
   ROADMAP						\

@@ -34,6 +34,13 @@ AC_ARG_WITH(store-dir,
   [storedir="/gnu/store"])
 AC_SUBST(storedir)
 
+AC_ARG_WITH([bash-completion-dir],
+  AC_HELP_STRING([--with-bash-completion-dir=DIR],
+    [name of the Bash completion directory]),
+  [bashcompletiondir="$withval"],
+  [bashcompletiondir='${sysconfdir}/bash_completion.d'])
+AC_SUBST([bashcompletiondir])
+
 dnl Better be verbose.
 AC_MSG_CHECKING([for the store directory])
 AC_MSG_RESULT([$storedir])

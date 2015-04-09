@@ -1,0 +1,139 @@
+# GNU Guix --- Functional package management for GNU
+# Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+#
+# This file is part of GNU Guix.
+#
+# GNU Guix is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# GNU Guix is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+# Bash completion for Guix commands.
+
+_guix_complete_available_package ()
+{
+    local prefix="$1"
+    local packages="$(${COMP_WORDS[0]} package -A "^$prefix" | cut -f1)"
+    COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
+}
+
+_guix_complete_installed_package ()
+{
+    local prefix="$1"
+    local packages="$(${COMP_WORDS[0]} package -I "^$prefix" | cut -f1)"
+    COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
+}
+
+_guix_complete_option ()
+{
+    local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} --help \
+                            | grep '^  -' \
+                            | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g' )"
+    compopt -o nospace
+    COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[$word_count - 1]}"))
+}
+
+_guix_is_command ()
+{
+    local word
+    local result="false"
+    for word in ${COMP_WORDS[*]}
+    do
+	if [ "$word" = "$1" ]
+	then
+	    result=true
+	    break
+	fi
+    done
+    $result
+}
+
+_guix_is_removing ()
+{
+    local word
+    local result="false"
+    for word in ${COMP_WORDS[*]}
+    do
+	case "$word" in
+	    --remove|--remove=*|-r)
+		result=true
+		break
+		;;
+	esac
+    done
+    $result
+}
+
+_guix_is_dash_L ()
+{
+    [ "${COMP_WORDS[$COMP_CWORD - 1]}" = "-L" ] \
+	|| { case "${COMP_WORDS[$COMP_CWORD]}" in
+		 --load-path=*) true;;
+		 *)             false;;
+	     esac }
+}
+
+_guix_complete_file ()
+{
+    # Let Readline complete file names.
+    compopt -o default
+    COMPREPLY=()
+}
+
+_guix_complete ()
+{
+    local word_count=${#COMP_WORDS[*]}
+    local word_at_point="${COMP_WORDS[$COMP_CWORD]}"
+
+    if [ "$COMP_CWORD" -gt 1 ]
+    then
+	case "$word_at_point" in
+	    -*)
+		_guix_complete_option "$word_at_point"
+		return
+		;;
+	esac
+    fi
+
+    case $COMP_CWORD in
+	1)
+	    local subcommands="$(guix --help | grep '^  ' | cut -c 2-)"
+	    COMPREPLY=($(compgen -W "$subcommands" -- "$word_at_point"))
+	    ;;
+	*)
+	    if _guix_is_command "package"
+	    then
+		if _guix_is_dash_L
+		then
+		    _guix_complete_file
+		elif _guix_is_removing
+		then
+		    _guix_complete_installed_package "$word_at_point"
+		else
+		    _guix_complete_available_package "$word_at_point"
+		fi
+	    elif _guix_is_command "system"
+	    then
+		_guix_complete_file # TODO: complete sub-commands
+	    elif _guix_is_command "hash"
+	    then
+		 _guix_complete_file
+	    elif _guix_is_command "import" # TODO: complete sub-commands
+	    then
+		 _guix_complete_file
+	    else
+		_guix_complete_available_package "$word_at_point"
+	    fi
+	    ;;
+    esac
+}
+
+complete -F _guix_complete guix
