@@ -64,8 +64,8 @@ http://bugs.python.org/issue20868 .
      @unittest.skipUnless(support.is_resource_enabled('network'),
                           'network is not enabled')
      def test_idna(self):
---- Lib/test/test_multiprocessing.py	2014-04-06 23:12:27.575235000 +0200
-+++ Lib/test/test_multiprocessing.py	2014-04-06 23:13:04.827235000 +0200
+--- Lib/test/_test_multiprocessing.py	2014-04-06 23:12:27.575235000 +0200
++++ Lib/test/_test_multiprocessing.py	2014-04-06 23:13:04.827235000 +0200
 @@ -1016,6 +1016,7 @@
          if pid is not None:
              os.kill(pid, signal.SIGINT)
@@ -112,3 +112,52 @@ http://bugs.python.org/issue20868 .
      def test_issue_8959_a(self):
          from ctypes.util import find_library
          libc_path = find_library("c")
+--- Tools/scripts/run_tests.py.orig	2015-04-06 03:52:17.484000000 +0200
++++ Tools/scripts/run_tests.py	2015-04-06 03:52:25.880000000 +0200
+@@ -47,7 +47,7 @@
+     if threading and not any(is_multiprocess_flag(arg) for arg in regrtest_args):
+         args.extend(['-j', '0'])  # Use all CPU cores
+     if not any(is_resource_use_flag(arg) for arg in regrtest_args):
+-        args.extend(['-u', 'all,-largefile,-audio,-gui'])
++        args.extend(['-u', 'all,-largefile,-audio,-gui,-network'])
+     args.extend(regrtest_args)
+     print(' '.join(args))
+     os.execv(sys.executable, args)
+--- Lib/distutils/tests/test_archive_util.py.orig	2015-04-06 04:08:49.288000000 +0200
++++ Lib/distutils/tests/test_archive_util.py	2015-04-06 04:09:34.396000000 +0200
+@@ -282,6 +282,7 @@
+         finally:
+             del ARCHIVE_FORMATS['xxx']
+
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_make_archive_owner_group(self):
+         # testing make_archive with owner and group, with various combinations
+         # this works even if there's not gid/uid support
+@@ -310,6 +311,7 @@
+
+     @unittest.skipUnless(ZLIB_SUPPORT, "Requires zlib")
+     @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_tarfile_root_owner(self):
+         tmpdir, tmpdir2, base_name =  self._create_files()
+         old_dir = os.getcwd()
+--- Lib/distutils/tests/test_sdist.py.orig	2015-04-06 04:10:05.264000000 +0200
++++ Lib/distutils/tests/test_sdist.py	2015-04-06 04:10:21.448000000 +0200
+@@ -435,6 +435,7 @@
+                      "The tar command is not found")
+     @unittest.skipIf(find_executable('gzip') is None,
+                      "The gzip command is not found")
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_make_distribution_owner_group(self):
+         # now building a sdist
+         dist, cmd = self.get_cmd()
+--- Lib/test/test_resource.py.orig	2015-04-06 21:30:24.708000000 +0200
++++ Lib/test/test_resource.py	2015-04-06 23:07:27.220000000 +0200
+@@ -146,6 +146,7 @@
+
+     @unittest.skipUnless(hasattr(resource, 'prlimit'), 'no prlimit')
+     @support.requires_linux_version(2, 6, 36)
++    @unittest.skipIf(True, "Bug: the PermissionError is not raised")
+     def test_prlimit(self):
+         self.assertRaises(TypeError, resource.prlimit)
+         if os.geteuid() != 0:
