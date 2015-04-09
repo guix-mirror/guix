@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages nettle)
+  #:use-module (guix utils)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -57,11 +58,17 @@ themselves.")
   ;; This version is not API-compatible with version 2.  In particular GnuTLS
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.0")
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04yrpjz33vrj6j0zxc153b00f93i8hs41syr1ryp7sr64fyw0lcn"))))))
+                "1ly9kz5fgc8ilykz07crqwgjsfn4p2s6565gj1aq0w4fr179v1gn"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments nettle-2)
+       ((#:configure-flags flags)
+        ;; Build "fat" binaries where the right implementation is chosen at
+        ;; run time based on CPU features (starting from 3.1.)
+        `(cons "--enable-fat" ,flags))))))
