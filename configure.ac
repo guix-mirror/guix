@@ -9,6 +9,9 @@ AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([1.12 gnu silent-rules subdir-objects \
  color-tests parallel-tests -Woverride])
 
+# Enable silent rules by default.
+AM_SILENT_RULES([yes])
+
 AC_CONFIG_SRCDIR([guix.scm])
 AC_CONFIG_MACRO_DIR([m4])
 

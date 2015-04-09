@@ -142,7 +142,10 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "9586011"))
+  ;;
+  ;; Note: use a short commit id; when using the long one, the limit on socket
+  ;; file names is exceeded while running the tests.
+  (let ((commit "0b13161"))
     (package (inherit guix-0.8.1)
       (version (string-append "0.8.1." commit))
       (source (origin
@@ -152,7 +155,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0dcmw8gz2qxknjnh9k8rdwmgysnxnvawdmlg1pyzngakwlsy1c3z"))))
+                  "0h9yyfxs14di858hb9ypjvdjryv8nzll6f9vxkggcy40iyhp65sh"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.1)
          ((#:phases phases)

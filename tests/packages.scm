@@ -597,6 +597,7 @@
                   (manifest (map package->manifest-entry
                                  (list p1 p2)))
                   #:info-dir? #f
+                  #:ghc-package-cache? #f
                   #:ca-certificate-bundle? #f)
                  #:guile-for-build (%guile-for-build))))
     (build-derivations %store (list prof))

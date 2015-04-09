@@ -404,6 +404,55 @@ MANIFEST."
       (gexp->derivation "info-dir" build
                         #:modules '((guix build utils)))))
 
+(define (ghc-package-cache-file manifest)
+  "Return a derivation that builds the GHC 'package.cache' file for all the
+entries of MANIFEST."
+  (define ghc                                 ;lazy reference
+    (module-ref (resolve-interface '(gnu packages haskell)) 'ghc))
+
+  (define build
+    #~(begin 
+        (use-modules (guix build utils)
+                     (srfi srfi-1) (srfi srfi-26)
+                     (ice-9 ftw))
+
+        (define ghc-name-version
+          (let* ((base (basename #+ghc)))
+            (string-drop base
+                         (+ 1 (string-index base #\-)))))
+        
+        (define db-subdir
+          (string-append "lib/" ghc-name-version "/package.conf.d"))
+
+        (define db-dir
+          (string-append #$output "/" db-subdir))
+        
+        (define (conf-files top)
+          (find-files (string-append top "/" db-subdir) "\\.conf$"))
+
+        (define (copy-conf-file conf)
+          (let ((base (basename conf)))
+            (copy-file conf (string-append db-dir "/" base))))
+        
+        (system* (string-append #+ghc "/bin/ghc-pkg") "init" db-dir)
+        (for-each copy-conf-file
+                  (append-map conf-files
+                              '#$(manifest-inputs manifest)))
+        (let ((success
+               (zero?
+                (system* (string-append #+ghc "/bin/ghc-pkg") "recache"
+                         (string-append "--package-db=" db-dir)))))
+          (for-each delete-file (find-files db-dir "\\.conf$"))
+          success)))
+
+  ;; Don't depend on GHC when there's nothing to do.
+  (if (any (cut string-prefix? "ghc" <>)
+           (map manifest-entry-name (manifest-entries manifest)))
+      (gexp->derivation "ghc-package-cache" build
+                        #:modules '((guix build utils))
+                        #:local-build? #t)
+      (gexp->derivation "ghc-package-cache" #~(mkdir #$output))))
+
 (define (ca-certificate-bundle manifest)
   "Return a derivation that builds a single-file bundle containing the CA
 certificates in the /etc/ssl/certs sub-directories of the packages in
@@ -465,20 +514,27 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
 (define* (profile-derivation manifest
                              #:key
                              (info-dir? #t)
+                             (ghc-package-cache? #t)
                              (ca-certificate-bundle? #t))
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes a top-level Info 'dir' file unless
-INFO-DIR? is #f, and a single-file CA certificate bundle unless
-CA-CERTIFICATE-BUNDLE? is #f."
+INFO-DIR? is #f, a GHC 'package.cache' file unless GHC-PACKAGE-CACHE? is #f
+and a single-file CA certificate bundle unless CA-CERTIFICATE-BUNDLE? is #f."
   (mlet %store-monad ((info-dir (if info-dir?
                                     (info-dir-file manifest)
                                     (return #f)))
+                      (ghc-package-cache (if ghc-package-cache?
+                                             (ghc-package-cache-file manifest)
+                                             (return #f)))
                       (ca-cert-bundle (if ca-certificate-bundle?
                                           (ca-certificate-bundle manifest)
                                           (return #f))))
     (define inputs
       (append (if info-dir
                   (list (gexp-input info-dir))
+                  '())
+              (if ghc-package-cache
+                  (list (gexp-input ghc-package-cache))
                   '())
               (if ca-cert-bundle
                   (list (gexp-input ca-cert-bundle))
