@@ -105,7 +105,7 @@ anywhere.")
                "0l9pz2m67vf398q3c2dwn8jwdxsjb20igncf4byhv6yq5dzqlb4g"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
+     `(#:phases (alist-cons-before
                  'configure 'chdir
                  (lambda _
                    (chdir "source3"))
@@ -127,7 +127,7 @@ anywhere.")
                   (guix build utils)
                   (guix build rpath)
                   (srfi srfi-26))
-       #:imported-modules (,%gnu-build-system-modules
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build rpath))
 
        ;; This flag is required to allow for "make test".

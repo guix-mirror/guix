@@ -306,7 +306,7 @@ operations.")
               ("imagemagick" ,imagemagick)
               ("emacs" ,emacs-no-x)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
        #:imported-modules (,@%gnu-build-system-modules
@@ -373,10 +373,10 @@ operations.")
     (inputs `(("wget" ,wget)
               ("emacs" ,emacs-no-x)))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules (,%gnu-build-system-modules
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
        #:tests? #f  ; no check target
        #:phases
@@ -440,10 +440,10 @@ operations.")
                    (string-append "all: " rest " emms-print-metadata\n"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
-       #:imported-modules (,%gnu-build-system-modules
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
 
        #:phases (alist-replace
