@@ -301,7 +301,7 @@ requests."
                        (uri "someurl")
                        (sha256 "somesha")
                        (patches (list "/path/to/y.patch")))))))
-         (check-patches pkg)))
+         (check-patch-file-names pkg)))
      "file names of patches should start with the package name")))
 
 (test-assert "home-page: wrong home-page"

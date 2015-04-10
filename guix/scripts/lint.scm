@@ -45,7 +45,7 @@
   #:export (guix-lint
             check-description-style
             check-inputs-should-be-native
-            check-patches
+            check-patch-file-names
             check-synopsis-style
             check-home-page
             check-source))
@@ -348,7 +348,7 @@ warning for PACKAGE mentionning the FIELD."
                                     (package-home-page package))
                     'home-page)))))
 
-(define (check-patches package)
+(define (check-patch-file-names package)
   ;; Emit a warning if the patches requires by PACKAGE are badly named.
   (let ((patches   (and=> (package-source package) origin-patches))
         (name      (package-name package))
@@ -356,9 +356,9 @@ warning for PACKAGE mentionning the FIELD."
     (when (and patches
                (any (match-lambda
                      ((? string? patch)
-                      (let ((filename (basename patch)))
-                        (not (or (eq? (string-contains filename name) 0)
-                                 (eq? (string-contains filename full-name)
+                      (let ((file (basename patch)))
+                        (not (or (eq? (string-contains file name) 0)
+                                 (eq? (string-contains file full-name)
                                       0)))))
                      (_
                       ;; This must be an <origin> or something like that.
@@ -367,7 +367,7 @@ warning for PACKAGE mentionning the FIELD."
       (emit-warning package
                     (_ "file names of patches should start with \
 the package name")
-                    'patches))))
+                    'patch-file-names))))
 
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."
@@ -455,9 +455,9 @@ descriptions maintained upstream."
      (description "Identify inputs that should be native inputs")
      (check       check-inputs-should-be-native))
    (lint-checker
-     (name        'patch-filenames)
+     (name        'patch-file-names)
      (description "Validate file names of patches")
-     (check       check-patches))
+     (check       check-patch-file-names))
    (lint-checker
      (name        'home-page)
      (description "Validate home-page URLs")
