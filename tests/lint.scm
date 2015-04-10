@@ -304,6 +304,21 @@ requests."
          (check-patch-file-names pkg)))
      "file names of patches should start with the package name")))
 
+(test-assert "patches: not found"
+  (->bool
+   (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (source
+                     (origin
+                       (method url-fetch)
+                       (uri "someurl")
+                       (sha256 "somesha")
+                       (patches
+                        (list (search-patch "this-patch-does-not-exist!"))))))))
+         (check-patch-file-names pkg)))
+     "patch not found")))
+
 (test-assert "home-page: wrong home-page"
   (->bool
    (string-contains
