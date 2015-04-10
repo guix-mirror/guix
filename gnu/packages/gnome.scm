@@ -1345,7 +1345,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0f2b3ypkfvrdsxcvp14ja9wqj382f1p46yrjvhhxkkjgagy6qb41"))))
+         "0kyrbfrgl6g6wm6zpllldz36fclvl8vwmn1snwk18kf7f6ncpsac"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
