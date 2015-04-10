@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,11 @@
     (arguments
      (let ((build-flags
             `("threading=multi" "link=shared"
+
+              ;; Set the RUNPATH to $libdir so that the libs find each other.
+              (string-append "linkflags=-Wl,-rpath="
+                             (assoc-ref outputs "out") "/lib")
+
               ;; Boost's 'context' library is not yet supported on mips64, so
               ;; we disable it.  The 'coroutine' library depends on 'context',
               ;; so we disable that too.
@@ -58,7 +64,8 @@
                                                  (%current-system)))
                     '("--without-context" "--without-coroutine")
                     '()))))
-       `(#:phases
+       `(#:tests? #f
+         #:phases
          (alist-replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
@@ -79,18 +86,14 @@
                               "--with-toolset=gcc"))))
           (alist-replace
            'build
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* "./b2" ,@build-flags)))
 
            (alist-replace
-            'check
-            (lambda _ #t)
-
-            (alist-replace
-             'install
-             (lambda _
-               (zero? (system* "./b2" "install" ,@build-flags)))
-             %standard-phases)))))))
+            'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (zero? (system* "./b2" "install" ,@build-flags)))
+            %standard-phases))))))
 
     (home-page "http://boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
