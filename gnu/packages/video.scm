@@ -819,6 +819,8 @@ projects while introducing many more.")
                  (lambda* (#:key outputs #:allow-other-keys)
                    (setenv "CONFIG_SHELL" (which "bash"))
                    (let ((out (assoc-ref outputs "out")))
+                     (setenv "LDFLAGS"
+                             (string-append "-Wl,-rpath=" out "/lib"))
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
