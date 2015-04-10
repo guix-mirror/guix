@@ -248,7 +248,7 @@ Makefile, simplifying the entire process for the developer.")
                (base32
                 "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
               (patches
-               (list (search-patch "libtool-skip-tests.patch")))))
+               (list (search-patch "libtool-skip-tests2.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
@@ -304,6 +304,9 @@ complexity of working with shared libraries across platforms.")
               (sha256
                (base32
                 "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
+
+              ;; FIXME: We don't need this patch here, we just keep it to
+              ;; avoid a rebuild today.
               (patches
                (list (search-patch "libtool-skip-tests.patch")))))
     (build-system gnu-build-system)
