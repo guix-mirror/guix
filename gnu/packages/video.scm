@@ -97,7 +97,7 @@
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (replace configure
+         (replace 'configure
                   (lambda* (#:key inputs outputs #:allow-other-keys)
                     ;; This old `configure' script doesn't support
                     ;; variables passed as arguments.

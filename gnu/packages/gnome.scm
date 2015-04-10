@@ -1654,7 +1654,7 @@ library.")
        '("--with-ca-certificates=no")
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-giomoduledir
+         (add-before 'configure 'patch-giomoduledir
                      ;; Install GIO modules into $out/lib/gio/modules.
                      (lambda _
                        (substitute* "configure"
@@ -1702,14 +1702,14 @@ library.")
                             "/lib/gio/modules"))
        #:phases
        (modify-phases %standard-phases
-         (add-before configure disable-unconnected-socket-test
+         (add-before 'configure 'disable-unconnected-socket-test
                      ;; This test fails due to missing /etc/nsswitch.conf
                      ;; in the build environment.
                      (lambda _
                        (substitute* "tests/socket-test.c"
                          ((".*/sockets/unconnected.*") ""))
                        #t))
-         (add-before check unset-LC_ALL
+         (add-before 'check 'unset-LC_ALL
                      ;; The 'check-local' target runs 'env LANG=C sort -u',
                      ;; unset 'LC_ALL' to make 'LANG' working.
                      (lambda _
@@ -1852,7 +1852,7 @@ floating in an ocean using only your brain and a little bit of luck.")
              "--without-nautilus-extension")
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/true
+         (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
                          (("/bin/true") (which "true"))))))))
@@ -1913,14 +1913,14 @@ keyboard shortcuts.")
                                               "/lib/udev/rules.d"))
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/true
+         (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
                          (("/bin/true") (which "true")))
                        (substitute* "src/Makefile.in"
                          (("if test -w \\$\\(DESTDIR\\)\\$\\(prefix\\)/;")
                           "if test -w $(DESTDIR)$(localstatedir);"))))
-         (add-before build set-cc
+         (add-before 'build 'set-cc
                      (lambda _
                        ;; Set $CC so that g-ir-scanner works.
                        (setenv "CC" "gcc")
@@ -1971,7 +1971,7 @@ output devices.")
                                "--with-dbus-service-user=geoclue")
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/true
+         (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
                          (("/bin/true") (which "true"))))))))

@@ -359,7 +359,7 @@ in the GNOME project.")
                            "/share/gtk-doc/html"))
       #:phases
       (modify-phases %standard-phases
-        (replace check
+        (replace 'check
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (zero? (system* "dbus-launch" "make" "check")))))))
@@ -397,7 +397,7 @@ is part of the GNOME accessibility project.")
    (arguments
     '(#:phases
       (modify-phases %standard-phases
-        (replace check
+        (replace 'check
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (zero? (system* "dbus-launch" "make" "check")))))))

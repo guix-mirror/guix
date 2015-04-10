@@ -798,7 +798,7 @@ mutable and immutable), with a powerful loop optimisation framework.")
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
        #:phases
        (modify-phases %standard-phases
-         (add-before configure set-sh
+         (add-before 'configure 'set-sh
                      (lambda _ (setenv "CONFIG_SHELL" "sh"))))))
     (home-page "https://github.com/haskell/network")
     (synopsis "Low-level networking interface")
