@@ -511,6 +511,57 @@ supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
     (license license:gpl3)))
 
+(define-public grit
+  (package
+    (name "grit")
+    (version "2.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nboley/grit/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "157in84dj70wimbind3x7sy1whs3h57qfgcnj2s6lrd38fbrb7mj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (alist-cons-after
+        'unpack 'generate-from-cython-sources
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;; Delete these C files to force fresh generation from pyx sources.
+          (delete-file "grit/sparsify_support_fns.c")
+          (delete-file "grit/call_peaks_support_fns.c")
+          (substitute* "setup.py"
+            (("Cython.Setup") "Cython.Build")
+            ;; Add numpy include path to fix compilation
+            (("pyx\", \\]")
+             (string-append "pyx\", ], include_dirs = ['"
+                            (assoc-ref inputs "python-numpy")
+                            "/lib/python2.7/site-packages/numpy/core/include/"
+                            "']"))) #t)
+        %standard-phases)))
+    (inputs
+     `(("python-scipy" ,python2-scipy)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-networkx" ,python2-networkx)))
+    (native-inputs
+     `(("python-cython" ,python2-cython)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://grit-bio.org")
+    (synopsis "Tool for integrative analysis of RNA-seq type assays")
+    (description
+     "GRIT is designed to use RNA-seq, TES, and TSS data to build and quantify
+full length transcript models.  When none of these data sources are available,
+GRIT can be run by providing a candidate set of TES or TSS sites.  In
+addition, GRIT can merge in reference junctions and gene boundaries.  GRIT can
+also be run in quantification mode, where it uses a provided GTF file and just
+estimates transcript expression.")
+    (license license:gpl3+)))
+
 (define-public hisat
   (package
     (name "hisat")
