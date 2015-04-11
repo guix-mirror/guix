@@ -408,6 +408,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
+  gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/eudev-rules-directory.patch		\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -38,7 +38,9 @@
                     version "/elfutils-" version ".tar.bz2"))
               (sha256
                (base32
-                "0w50szymyqvx8g0vkwrvnv17grqxva6x1z9dm9m3i99zg2hr232p"))))
+                "0w50szymyqvx8g0vkwrvnv17grqxva6x1z9dm9m3i99zg2hr232p"))
+              (patches
+               (list (search-patch "elfutils-tests-ptrace.patch")))))
     (build-system gnu-build-system)
 
     ;; Separate programs because that's usually not what elfutils users want,
