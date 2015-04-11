@@ -531,7 +531,10 @@ property manipulation.")
                                    (system* "perl" "Makefile.PL"
                                             (string-append "PREFIX=" out)))
                                   (zero?
-                                   (system* "make" "install")))))))
+                                   (system* "make" "install"
+                                            (string-append "OTHERLDFLAGS="
+                                                           "-Wl,-rpath="
+                                                           out "/lib"))))))))
                   %standard-phases))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
