@@ -48,6 +48,13 @@
     (outputs '("out"                           ; libelf.so, elfutils/*.h, etc.
                "bin"))                         ; ld, nm, objdump, etc.
 
+    (arguments
+     ;; Programs don't have libelf.so in their RUNPATH and libraries don't
+     ;; know where to find each other.
+     `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+
     (native-inputs `(("m4" ,m4)))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://fedorahosted.org/elfutils/")
