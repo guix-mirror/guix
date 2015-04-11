@@ -128,20 +128,43 @@
     ("y")                                         ;c
     ("y")                                         ;d
     ("y"))                                        ;e
-  (let* ((a (dummy-package "a" (supported-systems '("x" "y" "z"))))
-         (b (dummy-package "b" (supported-systems '("x" "y"))
-               (inputs `(("a" ,a)))))
-         (c (dummy-package "c" (supported-systems '("y" "z"))
-               (inputs `(("b" ,b)))))
-         (d (dummy-package "d" (supported-systems '("x" "y" "z"))
-               (inputs `(("b" ,b) ("c" ,c)))))
-         (e (dummy-package "e" (supported-systems '("x" "y" "z"))
-               (inputs `(("d" ,d))))))
+  ;; Use TRIVIAL-BUILD-SYSTEM because it doesn't add implicit inputs and thus
+  ;; doesn't restrict the set of supported systems.
+  (let* ((a (dummy-package "a"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y" "z"))))
+         (b (dummy-package "b"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y"))
+              (inputs `(("a" ,a)))))
+         (c (dummy-package "c"
+              (build-system trivial-build-system)
+              (supported-systems '("y" "z"))
+              (inputs `(("b" ,b)))))
+         (d (dummy-package "d"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y" "z"))
+              (inputs `(("b" ,b) ("c" ,c)))))
+         (e (dummy-package "e"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y" "z"))
+              (inputs `(("d" ,d))))))
     (list (package-transitive-supported-systems a)
           (package-transitive-supported-systems b)
           (package-transitive-supported-systems c)
           (package-transitive-supported-systems d)
           (package-transitive-supported-systems e))))
+
+(test-equal "package-transitive-supported-systems, implicit inputs"
+  %supported-systems
+
+  ;; Here GNU-BUILD-SYSTEM adds implicit inputs that build only on
+  ;; %SUPPORTED-SYSTEMS.  Thus the others must be ignored.
+  (let ((p (dummy-package "foo"
+             (build-system gnu-build-system)
+             (supported-systems
+              `("does-not-exist" "foobar" ,@%supported-systems)))))
+    (package-transitive-supported-systems p)))
 
 (test-skip (if (not %store) 8 0))
 

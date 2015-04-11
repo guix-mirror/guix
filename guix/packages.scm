@@ -579,7 +579,7 @@ supported by its dependencies."
             (_
              systems)))
         (package-supported-systems package)
-        (package-direct-inputs package)))
+        (bag-direct-inputs (package->bag package))))
 
 (define (bag-direct-inputs bag)
   "Same as 'package-direct-inputs', but applied to a bag."
