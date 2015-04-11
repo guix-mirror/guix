@@ -75,6 +75,7 @@
          (display "TIFFLIB = libtiff.so\n" f)
          (display "JPEGLIB = libjpeg.so\n" f)
          (display "ZLIB = libz.so\n" f)
+         (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
          (close-port f)
          ;; drop advertisement for non-free program
          (substitute* "converter/ppm/Makefile" (("hpcdtoppm") ""))
