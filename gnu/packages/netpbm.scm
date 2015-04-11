@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,41 @@
                    (revision 1832)))
             (sha256
               (base32
-                "1mj1pqq18yj0yb6l24zfjls7axhqmiv0pvcaabl5xvc4a0dm543j"))))
+               "1mj1pqq18yj0yb6l24zfjls7axhqmiv0pvcaabl5xvc4a0dm543j"))
+            (file-name (string-append name "-" version "-checkout"))
+            (modules '((guix build utils)))
+            (snippet
+             ;; Remove non-FSDG-compliant code.
+             '(begin
+                (use-modules (guix build utils))
+
+                (define-syntax drop
+                  (syntax-rules (in)
+                    ;; Remove PROGRAM from DIRECTORY/Makefile, and remove
+                    ;; DIRECTORY/PROGRAM and DIRECTORY/PROGRAM.c.
+                    ((_ program ... in directory)
+                     (begin
+                       (substitute* (string-append directory "/Makefile")
+                         ((program) "") ...)
+
+                       (let* ((subdir (string-append directory "/" program))
+                              (dot-c  (string-append subdir ".c")))
+                         (when (file-exists? subdir)
+                           (delete-file-recursively subdir))
+                         (when (file-exists? dot-c)
+                           (delete-file dot-c)))
+
+                       ...))))
+
+                ;; Drop advertisement for non-free program.
+                (drop "hpcdtoppm" in "converter/ppm")
+
+                ;; Drop programs without a license, see
+                ;; <http://packages.debian.org/changelogs/pool/main/n/netpbm-free/netpbm-free_10.0-12.2/libnetpbm10.copyright>.
+                (drop "pbmto4425" "pbmtoln03" "pbmtolps" "pbmtopk" "pktopbm"
+                      in "converter/pbm")
+                (drop "spottopgm" in "converter/pgm")
+                (drop "ppmtopjxl" in "converter/ppm")))))
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)
              ("libjpeg" ,libjpeg)
@@ -76,19 +111,7 @@
          (display "JPEGLIB = libjpeg.so\n" f)
          (display "ZLIB = libz.so\n" f)
          (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
-         (close-port f)
-         ;; drop advertisement for non-free program
-         (substitute* "converter/ppm/Makefile" (("hpcdtoppm") ""))
-         ;; drop programs without license, see
-         ;; http://packages.debian.org/changelogs/pool/main/n/netpbm-free/netpbm-free_10.0-12.2/libnetpbm10.copyright
-         (substitute* "converter/pbm/Makefile"
-           (("pbmto4425") "")
-           (("pbmtoln03") "")
-           (("pbmtolps") "")
-           (("pbmtopk") "")
-           (("pktopbm") ""))
-         (substitute* "converter/pgm/Makefile" (("spottopgm") ""))
-         (substitute* "converter/ppm/Makefile" (("ppmtopjxl") ""))))
+         (close-port f)))
       (alist-cons-before
        'check 'setup-check
        (lambda _
