@@ -103,15 +103,16 @@ in C/C++.")
     (native-inputs
       `(("perl", perl)))
     (arguments
-      `(#:tests? #f ; no check target
-        #:configure-flags
-        `("--enable-64bit")
-        #:phases
-          (alist-cons-before
-           'configure 'chdir
-           (lambda _
-             (chdir "nspr"))
-            %standard-phases)))
+     `(#:tests? #f ; no check target
+       #:configure-flags (list "--enable-64bit"
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
+       #:phases (alist-cons-before
+                 'configure 'chdir
+                 (lambda _
+                   (chdir "nspr"))
+                 %standard-phases)))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
     (synopsis "Netscape API for system level and libc-like functions")
