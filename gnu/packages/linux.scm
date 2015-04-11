@@ -796,7 +796,10 @@ MIDI functionality to the Linux-based operating system.")
               (base32
                "0vkg5lzkn4l3i1sm6v3x96zzvnv9g7mi0qgj6279ld383mzcws24"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no test suite
+    (arguments
+     '(#:tests? #f       ; no test suite
+       #:configure-flags ; add $libdir to the RUNPATH of executables
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "http://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
