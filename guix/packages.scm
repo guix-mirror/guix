@@ -107,6 +107,7 @@
 
             package->bag
             bag->derivation
+            bag-direct-inputs
             bag-transitive-inputs
             bag-transitive-host-inputs
             bag-transitive-build-inputs
@@ -580,11 +581,15 @@ supported by its dependencies."
         (package-supported-systems package)
         (package-direct-inputs package)))
 
+(define (bag-direct-inputs bag)
+  "Same as 'package-direct-inputs', but applied to a bag."
+  (append (bag-build-inputs bag)
+          (bag-host-inputs bag)
+          (bag-target-inputs bag)))
+
 (define (bag-transitive-inputs bag)
   "Same as 'package-transitive-inputs', but applied to a bag."
-  (transitive-inputs (append (bag-build-inputs bag)
-                             (bag-host-inputs bag)
-                             (bag-target-inputs bag))))
+  (transitive-inputs (bag-direct-inputs bag)))
 
 (define (bag-transitive-build-inputs bag)
   "Same as 'package-transitive-native-inputs', but applied to a bag."
