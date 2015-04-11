@@ -982,7 +982,15 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
               (base32
                "07vjhkznm82p8dm4w6j8mmg7h5c70lp5s9bwwfdmgwpbixfydjp1"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases (alist-delete 'configure %standard-phases)
+    (arguments '(#:phases
+                 (modify-phases %standard-phases
+                   (replace 'configure
+                            ;; Add $libdir to the RUNPATH of executables.
+                            (lambda _
+                              (substitute* "Make.Rules"
+                                (("LDFLAGS := #-g")
+                                 (string-append "LDFLAGS := -Wl,-rpath="
+                                                %output "/lib"))))))
                  #:tests? #f                      ; no 'check' target
                  #:make-flags (list "lib=lib"
                                     (string-append "prefix="
