@@ -159,29 +159,17 @@ files.")
              (sha256
               (base32
                "1pv4zrajm46za0f6lv162iqffih57a8ly4pc69f7y0gfyigb8p80"))
-             (patches (list (search-patch "cdparanoia-fpic.patch")))))
+             (patches (list (search-patch "cdparanoia-fpic.patch")))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Make libraries respect LDFLAGS.
+              '(substitute* '("paranoia/Makefile.in" "interface/Makefile.in")
+                 (("-Wl,-soname") "$(LDFLAGS) -Wl,-soname")))))
     (build-system gnu-build-system)
-    (inputs
-     `(("patchelf" ,patchelf)))
     (arguments
      `(#:tests? #f ; there is no check target
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
-       #:phases
-        (alist-cons-after
-         'strip 'add-lib-to-runpath
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib")))
-             ;; Add LIB to the RUNPATH of all the executables.
-             (with-directory-excursion out
-               (for-each (cut augment-rpath <> lib)
-                         (find-files "bin" ".*")))))
-         %standard-phases)))
+       #:configure-flags ; Add $libdir to the RUNPATH of all the executables.
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "http://www.xiph.org/paranoia/")
     (synopsis "Audio CD reading utility")
     (description "Cdparanoia retrieves audio tracks from CDDA capable CDROM
