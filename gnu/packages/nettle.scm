@@ -43,6 +43,7 @@
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))))
+    (outputs '("out" "debug"))
     (native-inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
     (home-page "http://www.lysator.liu.se/~nisse/nettle/")
