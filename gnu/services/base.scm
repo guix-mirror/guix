@@ -499,7 +499,7 @@ the ``message of the day''."
   "Return a service that runs libc's name service cache daemon (nscd) with the
 given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
 @code{#:name-services} is a list of packages that provide name service switch
- (NSS) modules needed by nscd."
+ (NSS) modules needed by nscd.  @xref{Name Service Switch}, for an example."
   (mlet %store-monad ((nscd.conf (nscd.conf-file config)))
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
