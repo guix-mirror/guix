@@ -920,10 +920,12 @@ manpages.")
                       ;; Pretend we have everything...
                       (system "yes | make config")
 
-                      ;; ... except we don't have libdnet, so remove that
-                      ;; definition.
+                      ;; ... except for the things we don't have.
+                      ;; HAVE_AFDECnet requires libdnet, which we don't have.
+                      ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
+                      ;; that have been removed.
                       (substitute* '("config.make" "config.h")
-                        (("^.*HAVE_AFDECnet.*$") ""))))
+                        (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR)[ =]1.*$") ""))))
                   (alist-cons-after
                    'install 'remove-redundant-commands
                    (lambda* (#:key outputs #:allow-other-keys)
