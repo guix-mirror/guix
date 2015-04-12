@@ -131,6 +131,7 @@ living in the same process.")
              ;; fallback, and users have to configure each program
              ;; independently.  This seems suboptimal.
              "--with-default-trust-store-dir=/etc/ssl/certs")))
+    (outputs '("out" "debug"))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
