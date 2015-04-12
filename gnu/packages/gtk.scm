@@ -505,7 +505,12 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:phases
+    `(;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
+      ;; to "doc".
+      #:configure-flags (list (string-append "--with-html-dir="
+                                             (assoc-ref %outputs "doc")
+                                             "/share/gtk-doc/html"))
+      #:phases
       (alist-cons-before
        'configure 'pre-configure
        (lambda _
