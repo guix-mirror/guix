@@ -29,6 +29,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -103,7 +104,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.3.14")
+    (version "3.4.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -114,7 +115,9 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0lpcgkp8bb1b7f9z935f7h9c0srd4fc52404x70hk2ddz8q01yhd"))))
+               "0bj7ydvsyvml59b6040wg7694iz37rwnqnv09bic9ddz652588ml"))
+             (patches
+              (list (search-patch "gnutls-fix-duplicate-manpages.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -130,7 +133,11 @@ living in the same process.")
              ;; store is used, so each program has to provide its own
              ;; fallback, and users have to configure each program
              ;; independently.  This seems suboptimal.
-             "--with-default-trust-store-dir=/etc/ssl/certs")))
+             "--with-default-trust-store-dir=/etc/ssl/certs"
+
+             ;; FIXME: Temporarily disable p11-kit support since it is not
+             ;; working on mips64el.
+             "--without-p11-kit")))
     (outputs '("out" "debug"))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -141,7 +148,8 @@ living in the same process.")
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
-       ("nettle" ,nettle-2)
+       ("libidn" ,libidn)
+       ("nettle" ,nettle)
        ("zlib" ,zlib)))
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
