@@ -2028,3 +2028,53 @@ and latitude from an address) and reverse geocoding (finding an address from
 coordinates) using the Nominatim service.  geocode-glib caches requests for
 faster results and to avoid unnecessary server load.")
     (license license:lgpl2.0+)))
+
+(define-public upower
+  (package
+    (name "upower")
+    (version "0.99.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://upower.freedesktop.org/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vwlh20jmaf01m38kfn8yx2869a3clmkzlycrj99rf4nvwx4bp79"))
+              (patches (list (search-patch "upower-builddir.patch")))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '( ;; The tests want to contact the system bus, which can't be done in the
+       ;; build environment.  The integration test can run, but the last of
+       ;; the up-self-tests doesn't.  Disable tests for now.
+       #:tests? #f
+       #:configure-flags (list "--localstatedir=/var"
+                               (string-append "--with-udevrulesdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true")))))
+         (add-before 'configure 'patch-integration-test
+                     (lambda _
+                       (substitute* "src/linux/integration-test"
+                         (("/usr/bin/python3") (which "python3"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("python" ,python)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("libusb" ,libusb)))
+    (home-page "http://upower.freedesktop.org/")
+    (synopsis "System daemon for managing power devices")
+    (description
+     "UPower is an abstraction for enumerating power devices,
+listening to device events and querying history and statistics.  Any
+application or service on the system can access the org.freedesktop.UPower
+service via the system message bus.")
+    (license license:gpl2+)))
