@@ -51,6 +51,7 @@ MODULES =					\
   guix/build-system/cmake.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
+  guix/build-system/haskell.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/waf.scm			\
