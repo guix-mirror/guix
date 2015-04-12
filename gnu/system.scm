@@ -681,6 +681,9 @@ etc."
                     (activate-firmware
                      (string-append #$firmware "/lib/firmware"))
 
+                    ;; Let users debug their own processes!
+                    (activate-ptrace-attach)
+
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.
                     (for-each primitive-load '#$actions)
