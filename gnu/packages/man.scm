@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -119,7 +119,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "3.69")
+    (version "3.82")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -127,7 +127,7 @@ the traditional flat-text whatis databases.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "18zzmdzjihdnyg4vamk0jp6v6826vrsgal3kqqxvfq9bzyrh8xm2"))))
+                "1c8q618shf469nfp55qrwjv9630fgq5abfk946xya9hw1bfp6wjl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
