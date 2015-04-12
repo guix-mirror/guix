@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts lint)
+  #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module (guix download)
   #:use-module (guix ftp-client)
@@ -32,6 +33,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (web uri)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
                           open-connection-for-uri))
@@ -49,6 +52,7 @@
             check-inputs-should-be-native
             check-patch-file-names
             check-synopsis-style
+            check-derivation
             check-home-page
             check-source))
 
@@ -440,6 +444,25 @@ descriptions maintained upstream."
              (append-map (cut maybe-expand-mirrors <> %mirrors)
                          uris))))))
 
+(define (check-derivation package)
+  "Emit a warning if we fail to compile PACKAGE to a derivation."
+  (catch #t
+    (lambda ()
+      (guard (c ((nix-protocol-error? c)
+                 (emit-warning package
+                               (format #f (_ "failed to create derivation: ~a")
+                                       (nix-protocol-error-message c))))
+                ((message-condition? c)
+                 (emit-warning package
+                               (format #f (_ "failed to create derivation: ~a")
+                                       (condition-message c)))))
+        (with-store store
+          (package-derivation store package))))
+    (lambda args
+      (emit-warning package
+                    (format #f (_ "failed to create derivation: ~s~%")
+                            args)))))
+
 
 
 ;;;
@@ -472,6 +495,10 @@ descriptions maintained upstream."
      (name        'source)
      (description "Validate source URLs")
      (check       check-source))
+   (lint-checker
+     (name        'derivation)
+     (description "Report failure to compile a package to a derivation")
+     (check       check-derivation))
    (lint-checker
      (name        'synopsis)
      (description "Validate package synopses")

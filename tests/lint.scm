@@ -319,6 +319,16 @@ requests."
          (check-patch-file-names pkg)))
      "patch not found")))
 
+(test-assert "derivation: invalid arguments"
+  (->bool
+   (string-contains
+    (with-warnings
+      (let ((pkg (dummy-package "x"
+                   (arguments
+                    '(#:imported-modules (invalid-module))))))
+        (check-derivation pkg)))
+    "failed to create derivation")))
+
 (test-assert "home-page: wrong home-page"
   (->bool
    (string-contains
