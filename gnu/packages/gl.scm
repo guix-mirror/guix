@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -434,7 +434,7 @@ OpenGL graphics API.")
                (base32
                 "1xp8g6b7xlbym2rj4vkbl6xpb7ijq7glpv656mc7k9b01x22ihs2"))))
     (arguments
-     '(#:phases
+     `(#:phases
        (alist-cons-after
         'unpack 'autoreconf
         (lambda _
@@ -449,6 +449,16 @@ OpenGL graphics API.")
              (substitute* (find-files "." "\\.[ch]$")
                (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
+
+             ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
+             ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
+             ;; better to make this a normal patch, but for now we do it here
+             ;; to prevent rebuilding on other platforms.
+             ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                             (%current-system)))
+                   '((substitute* '"test/dlwrap.c"
+                       (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
+                   '())
              #t))
          %standard-phases))))
     (build-system gnu-build-system)
