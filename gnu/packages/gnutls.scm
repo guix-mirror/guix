@@ -66,7 +66,7 @@ specifications.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.22.1")
+    (version "0.23.1")
     (source
      (origin
       (method url-fetch)
@@ -74,7 +74,7 @@ specifications.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0p4sadq2c70jdm7b5a5xw8mk2mqy36krpxr3ihnf783arygk6fpg"))
+        "1i3a1wdpagm0p3y1bwaz5x5rjhcpqbcrnhkcp10p259vkxk72wz5"))
       (modules '((guix build utils))) ; for substitute*
       (snippet
         '(begin
