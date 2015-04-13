@@ -30,13 +30,17 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
 (define-public bedops
@@ -506,6 +510,57 @@ read mapping rates and improves genome and transcriptome assemblies.  It
 supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
     (license license:gpl3)))
+
+(define-public grit
+  (package
+    (name "grit")
+    (version "2.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nboley/grit/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "157in84dj70wimbind3x7sy1whs3h57qfgcnj2s6lrd38fbrb7mj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (alist-cons-after
+        'unpack 'generate-from-cython-sources
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;; Delete these C files to force fresh generation from pyx sources.
+          (delete-file "grit/sparsify_support_fns.c")
+          (delete-file "grit/call_peaks_support_fns.c")
+          (substitute* "setup.py"
+            (("Cython.Setup") "Cython.Build")
+            ;; Add numpy include path to fix compilation
+            (("pyx\", \\]")
+             (string-append "pyx\", ], include_dirs = ['"
+                            (assoc-ref inputs "python-numpy")
+                            "/lib/python2.7/site-packages/numpy/core/include/"
+                            "']"))) #t)
+        %standard-phases)))
+    (inputs
+     `(("python-scipy" ,python2-scipy)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-networkx" ,python2-networkx)))
+    (native-inputs
+     `(("python-cython" ,python2-cython)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://grit-bio.org")
+    (synopsis "Tool for integrative analysis of RNA-seq type assays")
+    (description
+     "GRIT is designed to use RNA-seq, TES, and TSS data to build and quantify
+full length transcript models.  When none of these data sources are available,
+GRIT can be run by providing a candidate set of TES or TSS sites.  In
+addition, GRIT can merge in reference junctions and gene boundaries.  GRIT can
+also be run in quantification mode, where it uses a provided GTF file and just
+estimates transcript expression.")
+    (license license:gpl3+)))
 
 (define-public hisat
   (package
@@ -999,6 +1054,111 @@ detection of canonical junctions, STAR can discover non-canonical splices and
 chimeric (fusion) transcripts, and is also capable of mapping full-length RNA
 sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
+    (license license:gpl3+)))
+
+(define-public shogun
+  (package
+    (name "shogun")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "ftp://shogun-toolbox.org/shogun/releases/"
+             (version-major+minor version)
+             "/sources/shogun-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ;no check target
+       #:phases
+       (alist-cons-after
+        'unpack 'delete-broken-symlinks
+        (lambda _
+          (for-each delete-file '("applications/arts/data"
+                                  "applications/asp/data"
+                                  "applications/easysvm/data"
+                                  "applications/msplicer/data"
+                                  "applications/ocr/data"
+                                  "examples/documented/data"
+                                  "examples/documented/matlab_static"
+                                  "examples/documented/octave_static"
+                                  "examples/undocumented/data"
+                                  "examples/undocumented/matlab_static"
+                                  "examples/undocumented/octave_static"
+                                  "tests/integration/data"
+                                  "tests/integration/matlab_static"
+                                  "tests/integration/octave_static"
+                                  "tests/integration/python_modular/tests"))
+          #t)
+        (alist-cons-after
+         'unpack 'change-R-target-path
+         (lambda* (#:key outputs #:allow-other-keys)
+           (substitute* '("src/interfaces/r_modular/CMakeLists.txt"
+                          "src/interfaces/r_static/CMakeLists.txt"
+                          "examples/undocumented/r_modular/CMakeLists.txt")
+             (("\\$\\{R_COMPONENT_LIB_PATH\\}")
+              (string-append (assoc-ref outputs "out")
+                             "/lib/R/library/")))
+           #t)
+         (alist-cons-after
+          'unpack 'fix-octave-modules
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* '("src/interfaces/octave_modular/CMakeLists.txt"
+                           "src/interfaces/octave_static/CMakeLists.txt")
+              (("^include_directories\\(\\$\\{OCTAVE_INCLUDE_DIRS\\}")
+               "include_directories(${OCTAVE_INCLUDE_DIRS} ${OCTAVE_INCLUDE_DIRS}/octave"))
+
+            ;; change target directory
+            (substitute* "src/interfaces/octave_modular/CMakeLists.txt"
+              (("\\$\\{OCTAVE_OCT_LOCAL_API_FILE_DIR\\}")
+               (string-append (assoc-ref outputs "out")
+                              "/share/octave/packages")))
+            #t)
+          (alist-cons-before
+           'build 'set-HOME
+           ;; $HOME needs to be set at some point during the build phase
+           (lambda _ (setenv "HOME" "/tmp") #t)
+           %standard-phases))))
+       #:configure-flags
+       (list "-DUSE_SVMLIGHT=OFF" ;disable proprietary SVMLIGHT
+             ;;"-DJavaModular=ON" ;requires unpackaged jblas
+             ;;"-DRubyModular=ON" ;requires unpackaged ruby-narray
+             ;;"-DPerlModular=ON" ;"FindPerlLibs" does not exist
+             ;;"-DLuaModular=ON"  ;fails because lua doesn't build pkgconfig file
+             "-DOctaveModular=ON"
+             "-DOctaveStatic=ON"
+             "-DPythonModular=ON"
+             "-DPythonStatic=ON"
+             "-DRModular=ON"
+             "-DRStatic=ON"
+             "-DCmdLineStatic=ON")))
+    (inputs
+     `(("python" ,python)
+       ("numpy" ,python-numpy)
+       ("r" ,r)
+       ("octave" ,octave)
+       ("swig" ,swig)
+       ("hdf5" ,hdf5)
+       ("atlas" ,atlas)
+       ("arpack" ,arpack-ng)
+       ("lapack" ,lapack)
+       ("glpk" ,glpk)
+       ("libxml2" ,libxml2)
+       ("lzo" ,lzo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://shogun-toolbox.org/")
+    (synopsis "Machine learning toolbox")
+    (description
+     "The Shogun Machine learning toolbox provides a wide range of unified and
+efficient Machine Learning (ML) methods.  The toolbox seamlessly allows to
+combine multiple data representations, algorithm classes, and general purpose
+tools.  This enables both rapid prototyping of data pipelines and extensibility
+in terms of new algorithms.")
     (license license:gpl3+)))
 
 (define-public vcftools

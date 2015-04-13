@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gstreamer)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ bsd-2 bsd-3))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ bsd-2 bsd-3 gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -39,6 +39,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages yasm)
   #:use-module (gnu packages xml))
 
 (define-public orc
@@ -246,6 +247,42 @@ for the GStreamer multimedia library.")
 GStreamer multimedia library.  This set contains those plug-ins which the
 developers consider to have good quality code and correct functionality.")
     (license lgpl2.0+)))
+
+(define-public gst-libav
+  (package
+    (name "gst-libav")
+    (version "1.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://gstreamer.freedesktop.org/src/" name "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1g7vg9amh3cc3nmc415h6g2rqxqi4wgwqi08hxfbpwq48ri64p30"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before configure patch-/bin/sh
+                     (lambda _
+                       (substitute* "gst-libs/ext/libav/configure"
+                         (("#! /bin/sh")
+                          (string-append "#! "(which "sh")))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("gst-plugins-base" ,gst-plugins-base)
+       ("orc" ,orc)
+       ("zlib" ,zlib)))
+    (home-page "http://gstreamer.freedesktop.org/")
+    (synopsis "Plugins for the GStreamer multimedia library")
+    (description
+     "This GStreamer plugin supports a large number of audio and video
+compression formats through the use of the libav library.")
+    (license gpl2+)))
 
 (define-public gst-plugins-base-0.10
   (package (inherit gst-plugins-base)

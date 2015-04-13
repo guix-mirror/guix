@@ -4531,7 +4531,8 @@ the ``message of the day''.
 Return a service that runs libc's name service cache daemon (nscd) with
 the given @var{config}---an @code{<nscd-configuration>} object.
 Optionally, @code{#:name-services} is a list of packages that provide
-name service switch (NSS) modules needed by nscd.
+name service switch (NSS) modules needed by nscd.  @xref{Name Service
+Switch}, for an example.
 @end deffn
 
 @defvr {Scheme Variable} %nscd-default-configuration
@@ -4929,9 +4930,12 @@ next method in the list.  The NSS configuration is given in the
 @code{name-service-switch} field of @code{operating-system} declarations
 (@pxref{operating-system Reference, @code{name-service-switch}}).
 
-@c See <http://0pointer.de/lennart/projects/nss-mdns/>.
+@cindex nss-mdns
+@cindex .local, host name lookup
 As an example, the declaration below configures the NSS to use the
-@code{nss-mdns} back-end for host name lookups:
+@uref{http://0pointer.de/lennart/projects/nss-mdns/, @code{nss-mdns}
+back-end}, which supports host name lookups over multicast DNS (mDNS)
+for host names ending in @code{.local}:
 
 @example
 (name-service-switch
@@ -4956,6 +4960,34 @@ As an example, the declaration below configures the NSS to use the
                 (name-service
                   (name "mdns")))))
 @end example
+
+Note that, in this case, in addition to setting the
+@code{name-service-switch} of the @code{operating-system} declaration,
+@code{nscd-service} must be told where to find the @code{nss-mdns}
+shared library (@pxref{Base Services, @code{nscd-service}}).  Since the
+@code{nscd} service is part of @var{%base-services}, you may want to
+customize it by adding this snippet in the operating system
+configuration file:
+
+@example
+(use-modules (guix) (gnu))
+
+(define %my-base-services
+  ;; Replace the default nscd service with one that knows
+  ;; about nss-mdns.
+  (map (lambda (mservice)
+         ;; "Bind" the MSERVICE monadic value to inspect it.
+         (mlet %store-monad ((service mservice))
+           (if (member 'nscd (service-provision service))
+               (nscd-service (nscd-configuration)
+                             #:name-services (list nss-mdns))
+               mservice)))
+       %base-services))
+@end example
+
+@noindent
+@dots{} and then refer to @var{%my-base-services} instead of
+@var{%base-services} in the @code{operating-system} declaration.
 
 The reference for name service switch configuration is given below.  It
 is a direct mapping of the C library's configuration file format, so

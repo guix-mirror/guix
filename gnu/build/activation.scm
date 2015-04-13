@@ -30,6 +30,7 @@
             activate-/bin/sh
             activate-modprobe
             activate-firmware
+            activate-ptrace-attach
             activate-current-system))
 
 ;;; Commentary:
@@ -334,6 +335,18 @@ by itself, without having to resort to a \"user helper\"."
   (call-with-output-file "/sys/module/firmware_class/parameters/path"
     (lambda (port)
       (display directory port))))
+
+(define (activate-ptrace-attach)
+  "Allow users to PTRACE_ATTACH their own processes.
+
+This works around a regression introduced in the default \"security\" policy
+found in Linux 3.4 onward that prevents users from attaching to their own
+processes--see Yama.txt in the Linux source tree for the rationale.  This
+sounds like an unacceptable restriction for little or no security
+improvement."
+  (call-with-output-file "/proc/sys/kernel/yama/ptrace_scope"
+    (lambda (port)
+      (display 0 port))))
 
 
 (define %current-system
