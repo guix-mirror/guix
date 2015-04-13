@@ -264,7 +264,7 @@ developers consider to have good quality code and correct functionality.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/sh
+         (add-before 'configure 'patch-/bin/sh
                      (lambda _
                        (substitute* "gst-libs/ext/libav/configure"
                          (("#! /bin/sh")
