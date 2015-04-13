@@ -871,7 +871,7 @@ generated using the PacBio Iso-Seq protocol.")
         (string-append "mirror://sourceforge/rseqc/"
                        version "/RSeQC-" version ".tar.gz"))
        (sha256
-        (base32 "09rf0x9d6apjja5l01cgprj7vigpw6kiqhy34ibwwlxil0db0ri4"))
+        (base32 "15ly0254yi032qzkdplg00q144qfdsd986gh62829rl5bkxhj330"))
        (modules '((guix build utils)))
        (snippet
         '(begin
