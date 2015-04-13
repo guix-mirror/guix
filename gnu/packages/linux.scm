@@ -198,7 +198,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.19.3")
+  (let* ((version "4.0")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -271,7 +271,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "13nq0wzkjy7hrhnnvxlwzs1awlqd81vzriqddjn6s9ma3fzj44bn"))
+               "12nkzn1n4si2zcp10b645qri83m2y7iwp29vs2rjmy612azdab8f"))
              (patches
               (list (search-patch "linux-libre-libreboot-fix.patch")
                     (search-patch "linux-libre-vblank-fix.patch")))))
