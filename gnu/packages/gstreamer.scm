@@ -35,6 +35,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
@@ -262,19 +263,13 @@ developers consider to have good quality code and correct functionality.")
                 "1g7vg9amh3cc3nmc415h6g2rqxqi4wgwqi08hxfbpwq48ri64p30"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before configure patch-/bin/sh
-                     (lambda _
-                       (substitute* "gst-libs/ext/libav/configure"
-                         (("#! /bin/sh")
-                          (string-append "#! "(which "sh")))))))))
+     '(#:configure-flags '("--with-system-libav")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python)
-       ("yasm" ,yasm)))
+       ("python" ,python)))
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
+       ("ffmpeg" ,ffmpeg)
        ("orc" ,orc)
        ("zlib" ,zlib)))
     (home-page "http://gstreamer.freedesktop.org/")
