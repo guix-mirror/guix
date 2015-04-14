@@ -88,7 +88,9 @@ rich set of boolean query operators.")
                                             (string-append "SHELL="
                                                            (which "sh"))
                                             "CPPFLAGS=-I../src"
-                                            "LDFLAGS=-L../src/.libs"))
+                                            (string-append
+                                             "LDFLAGS=-L../src/.libs "
+                                             "-Wl,-rpath=../src/.libs")))
                             (zero? (system* "make"))
                             (zero? (system* "./libtocctests")))))))))
     (home-page "http://t-o-c-c.com/")
