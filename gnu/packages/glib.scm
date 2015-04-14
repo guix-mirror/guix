@@ -176,7 +176,7 @@ shared NFS home directories.")
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc"))
+                                             "/share/gtk-doc/html"))
 
       ;; In 'gio/tests', 'gdbus-test-codegen-generated.h' is #included in a
       ;; file that gets compiled possibly before it has been fully generated.
