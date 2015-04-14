@@ -39,6 +39,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
@@ -470,6 +471,38 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
+
+(define-public fastx-toolkit
+  (package
+    (name "fastx-toolkit")
+    (version "0.0.14")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/agordon/fastx_toolkit/releases/download/"
+                version "/fastx_toolkit-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "01jqzw386873sr0pjp1wr4rn8fsga2vxs1qfmicvx1pjr72007wy"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libgtextutils" ,libgtextutils)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hannonlab.cshl.edu/fastx_toolkit/")
+    (synopsis "Tools for FASTA/FASTQ file preprocessing")
+    (description
+     "The FASTX-Toolkit is a collection of command line tools for Short-Reads
+FASTA/FASTQ files preprocessing.
+
+Next-Generation sequencing machines usually produce FASTA or FASTQ files,
+containing multiple short-reads sequences.  The main processing of such
+FASTA/FASTQ files is mapping the sequences to reference genomes.  However, it
+is sometimes more productive to preprocess the files before mapping the
+sequences to the genome---manipulating the sequences to produce better mapping
+results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
+    (license license:agpl3+)))
 
 (define-public flexbar
   (package
