@@ -54,6 +54,7 @@
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
              (gnu packages commencement)
+             (gnu packages package-management)
              (gnu system)
              (gnu system vm)
              (gnu system install)
@@ -161,6 +162,30 @@ system.")
                                           (* 800 MiB))))))
       '()))
 
+(define (tarball-jobs store system)
+  "Return Hydra jobs to build the self-contained Guix binary tarball."
+  (define (->alist drv)
+    `((derivation . ,(derivation-file-name drv))
+      (description . "Stand-alone binary Guix tarball")
+      (long-description . "This is a tarball containing binaries of Guix and
+all its dependencies, and ready to be installed on non-GuixSD distributions.")
+      (license . ,gpl3+)
+      (home-page . ,%guix-home-page-url)
+      (maintainers . ("bug-guix@gnu.org"))))
+
+  (define (->job name drv)
+    (let ((name (symbol-append name (string->symbol ".")
+                               (string->symbol system))))
+      `(,name . ,(cut ->alist drv))))
+
+  ;; XXX: Add a job for the stable Guix?
+  (list (->job 'binary-tarball
+               (run-with-store store
+                 (mbegin %store-monad
+                   (set-guile-for-build (default-guile))
+                   (self-contained-tarball))
+                 #:system system))))
+
 (define job-name
   ;; Return the name of a package's job.
   (compose string->symbol package-full-name))
@@ -234,6 +259,7 @@ valid."
                                           (cons job result)
                                           result)))
                                   (append (qemu-jobs store system)
+                                          (tarball-jobs store system)
                                           (cross-jobs system))))
                   ((core)
                    ;; Build core packages only.
