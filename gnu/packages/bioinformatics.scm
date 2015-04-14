@@ -1087,6 +1087,42 @@ any particular back-end implementation, and supports use of multiple back-ends
 simultaneously.")
     (license license:public-domain)))
 
+(define-public ngs-java
+  (package (inherit ngs-sdk)
+    (name "ngs-java")
+    (arguments
+     `(,@(substitute-keyword-arguments
+             `(#:modules ((guix build gnu-build-system)
+                          (guix build utils)
+                          (srfi srfi-1)
+                          (srfi srfi-26))
+                         ,@(package-arguments ngs-sdk))
+           ((#:phases phases)
+            `(alist-cons-after
+              'enter-dir 'fix-java-symlink-installation
+              (lambda _
+                ;; Only replace the version suffix, not the version number in
+                ;; the directory name.  Reported here:
+                ;; https://github.com/ncbi/ngs/pull/4
+                (substitute* "Makefile.java"
+                  (((string-append "\\$\\(subst "
+                                   "(\\$\\(VERSION[^\\)]*\\)),"
+                                   "(\\$\\([^\\)]+\\)),"
+                                   "(\\$\\([^\\)]+\\)|\\$\\@)"
+                                   "\\)")
+                    _ pattern replacement target)
+                   (string-append "$(patsubst "
+                                  "%" pattern ","
+                                  "%" replacement ","
+                                  target ")"))))
+              (alist-replace
+               'enter-dir (lambda _ (chdir "ngs-java") #t)
+               ,phases))))))
+    (inputs
+     `(("jdk" ,icedtea6 "jdk")
+       ("ngs-sdk" ,ngs-sdk)))
+    (synopsis "Java bindings for NGS SDK")))
+
 (define-public seqan
   (package
     (name "seqan")
