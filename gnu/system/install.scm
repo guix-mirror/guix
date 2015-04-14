@@ -22,6 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
+  #:use-module (guix profiles)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages cryptsetup)
@@ -30,7 +31,8 @@
   #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
-  #:export (installation-os))
+  #:export (self-contained-tarball
+            installation-os))
 
 ;;; Commentary:
 ;;;
@@ -39,6 +41,41 @@
 ;;;
 ;;; Code:
 
+
+(define* (self-contained-tarball #:key (guix guix))
+  "Return a self-contained tarball containing a store initialized with the
+closure of GUIX.  The tarball contains /gnu/store, /var/guix, and a profile
+under /root/.guix-profile where GUIX is installed."
+  (mlet %store-monad ((profile (profile-derivation
+                                (manifest
+                                 (list (package->manifest-entry guix))))))
+    (define build
+      #~(begin
+          (use-modules (guix build utils)
+                       (gnu build install))
+
+          (define %root "root")
+
+          (setenv "PATH"
+                  (string-append #$guix "/sbin:" #$tar "/bin:" #$xz "/bin"))
+
+          (populate-single-profile-directory %root
+                                             #:profile #$profile
+                                             #:closure "profile")
+
+          ;; Create the tarball.  Use GNU format so there's no file name
+          ;; length limitation.
+          (with-directory-excursion %root
+            (zero? (system* "tar" "--xz" "--format=gnu"
+                            "-cvf" #$output ".")))))
+
+    (gexp->derivation "guix-tarball.tar.xz" build
+                      #:references-graphs `(("profile" ,profile))
+                      #:modules '((guix build utils)
+                                  (guix build store-copy)
+                                  (gnu build install)))))
+
+
 (define (log-to-info)
   "Return a script that spawns the Info reader on the right section of the
 manual."

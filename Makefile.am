@@ -342,6 +342,13 @@ dist_emacsui_DATA = emacs/guix-main.scm
 nodist_emacsui_DATA = emacs/guix-helper.scm
 include emacs.am
 
+# The self-contained tarball.
+guix-binary.%.tar.xz:
+	-GUIX_PACKAGE_PATH= \
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	  "$(top_srcdir)/build-aux/make-binary-tarball.scm" "$*" "$@"
+
+
 dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
