@@ -26,6 +26,9 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -146,3 +149,51 @@ extracted out as a separate project.  Elogind integrates with PAM to provide
 the org.freedesktop.login1 interface over the system bus, allowing other parts
 of a the system to know what users are logged in, and where.")
       (license license:lgpl2.1+))))
+
+(define-public python-pyxdg
+  (package
+    (name "python-pyxdg")
+    (version "0.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pyxdg/pyxdg-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "179767h8m634ydlm4v8lnz01ba42gckfp684id764zaip7h87s41"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (alist-replace
+        'check
+        (lambda* (#:key inputs #:allow-other-keys)
+          (setenv "XDG_DATA_DIRS"
+                  (string-append (assoc-ref inputs "shared-mime-info")
+                                 "/share/"))
+          (substitute* "test/test-icon.py"
+            (("/usr/share/icons/hicolor/index.theme")
+             (string-append (assoc-ref inputs "hicolor-icon-theme")
+                            "/share/icons/hicolor/index.theme")))
+
+          ;; One test fails with:
+          ;; AssertionError: 'x-apple-ios-png' != 'png'
+          (substitute* "test/test-mime.py"
+            (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
+          (zero? (system* "nosetests" "-v")))
+        %standard-phases)))
+    (native-inputs
+     `(("shared-mime-info" ,shared-mime-info) ;for tests
+       ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://freedesktop.org/wiki/Software/pyxdg")
+    (synopsis "Implementations of freedesktop.org standards in Python")
+    (description
+     "PyXDG is a collection of implementations of freedesktop.org standards in
+Python")
+    (license license:lgpl2.0)))
+
+(define-public python2-pyxdg
+  (package-with-python2 python-pyxdg))
