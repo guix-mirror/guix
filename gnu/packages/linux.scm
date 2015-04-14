@@ -273,8 +273,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
               (base32
                "12nkzn1n4si2zcp10b645qri83m2y7iwp29vs2rjmy612azdab8f"))
              (patches
-              (list (search-patch "linux-libre-libreboot-fix.patch")
-                    (search-patch "linux-libre-vblank-fix.patch")))))
+              (list (search-patch "linux-libre-libreboot-fix.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
