@@ -216,7 +216,9 @@ data types.")
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
-            (files '("lib/python3.3/site-packages")))))))
+            (files (list (string-append "lib/python"
+                                        (version-major+minor version)
+                                        "/site-packages"))))))))
 
 (define-public python-wrapper
   (package (inherit python)
