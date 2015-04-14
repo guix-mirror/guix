@@ -1031,6 +1031,62 @@ variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
 
+(define-public ngs-sdk
+  (package
+    (name "ngs-sdk")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ncbi/ngs/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09fakv9w87lfg9g70kwzmnryqdjj1sz2c7kw01i6drjf787gkjhw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; not supported
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            ;; Only replace the version suffix, not the version number in the
+            ;; directory name; fixed in commit 46d4509fa8 (no release yet).
+            (substitute* "setup/konfigure.perl"
+              (((string-append "\\$\\(subst "
+                               "(\\$\\(VERSION[^\\)]*\\)),"
+                               "(\\$\\([^\\)]+\\)),"
+                               "(\\$\\([^\\)]+\\)|\\$\\@)"
+                               "\\)")
+                _ pattern replacement target)
+               (string-append "$(patsubst "
+                              "%" pattern ","
+                              "%" replacement ","
+                              target ")")))
+
+            ;; The 'configure' script doesn't recognize things like
+            ;; '--enable-fast-install'.
+            (zero? (system* "./configure"
+                            (string-append "--build-prefix=" (getcwd) "/build")
+                            (string-append "--prefix=" out)))))
+        (alist-cons-after
+         'unpack 'enter-dir
+         (lambda _ (chdir "ngs-sdk") #t)
+         %standard-phases))))
+    (native-inputs `(("perl" ,perl)))
+    (home-page "https://github.com/ncbi/ngs")
+    (synopsis "API for accessing Next Generation Sequencing data")
+    (description
+     "NGS is a domain-specific API for accessing reads, alignments and pileups
+produced from Next Generation Sequencing.  The API itself is independent from
+any particular back-end implementation, and supports use of multiple back-ends
+simultaneously.")
+    (license license:public-domain)))
+
 (define-public seqan
   (package
     (name "seqan")
