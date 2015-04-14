@@ -160,6 +160,11 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ;;   made no attempts to make a list of failing JDK tests.  At least
        ;;   222 tests are failing of which at least 132 are AWT tests.
        #:tests? #f
+
+       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
+       ;; gremlin) doesn't support it yet, so skip this phase.
+       #:validate-runpath? #f
+
        #:configure-flags
        (let* ((gcjdir (assoc-ref %build-inputs "gcj"))
               (ecj    (string-append gcjdir "/share/java/ecj.jar"))

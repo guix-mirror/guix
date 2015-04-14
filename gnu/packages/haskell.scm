@@ -111,6 +111,11 @@
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
        #:parallel-tests? #f
+
+       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
+       ;; gremlin) doesn't support it yet, so skip this phase.
+       #:validate-runpath? #f
+
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build rpath)
