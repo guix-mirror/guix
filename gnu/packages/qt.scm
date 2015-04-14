@@ -103,6 +103,7 @@ X11 (yet).")
              (sha256
               (base32
                "0q6qzakq8xihw91xv310qi3vyylq7x2bzdkjgy8sqxii2lgbjzhv"))
+             (patches (list (search-patch "qt5-runpath.patch")))
              (snippet
               '(begin
                  ;; Remove broken symlinks.
