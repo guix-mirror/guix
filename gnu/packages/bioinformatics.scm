@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages file)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -1217,6 +1218,81 @@ simultaneously.")
 warehousing engine that is most often used to store genetic information.
 Databases are stored in a portable image within the file system, and can be
 accessed/downloaded on demand across HTTP.")
+    (license license:public-domain)))
+
+(define-public sra-tools
+  (package
+    (name "sra-tools")
+    (version "2.4.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ncbi/sra-tools/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11nrnvz7a012f4iryf0wiwrid0h111grsfxbxa9j51h3f2xbvgns"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; not supported
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;; The build system expects a directory containing the sources and
+          ;; raw build output of ncbi-vdb, including files that are not
+          ;; installed.  Since we are building against an installed version of
+          ;; ncbi-vdb, the following modifications are needed.
+          (substitute* "setup/konfigure.perl"
+            ;; Make the configure script look for the "ilib" directory of
+            ;; "ncbi-vdb" without first checking for the existence of a
+            ;; matching library in its "lib" directory.
+            (("^            my \\$f = File::Spec->catdir\\(\\$libdir, \\$lib\\);")
+             "my $f = File::Spec->catdir($ilibdir, $ilib);")
+            ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
+            (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
+             "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
+
+          ;; The 'configure' script doesn't recognize things like
+          ;; '--enable-fast-install'.
+          (zero? (system*
+                  "./configure"
+                  (string-append "--build-prefix=" (getcwd) "/build")
+                  (string-append "--prefix=" (assoc-ref outputs "out"))
+                  (string-append "--debug")
+                  (string-append "--with-fuse-prefix="
+                                 (assoc-ref inputs "fuse"))
+                  (string-append "--with-magic-prefix="
+                                 (assoc-ref inputs "libmagic"))
+                  ;; TODO: building with libxml2 fails with linker errors
+                  ;; (string-append "--with-xml2-prefix="
+                  ;;                (assoc-ref inputs "libxml2"))
+                  (string-append "--with-ncbi-vdb-sources="
+                                 (assoc-ref inputs "ncbi-vdb"))
+                  (string-append "--with-ncbi-vdb-build="
+                                 (assoc-ref inputs "ncbi-vdb"))
+                  (string-append "--with-ngs-sdk-prefix="
+                                 (assoc-ref inputs "ngs-sdk"))
+                  (string-append "--with-hdf5-prefix="
+                                 (assoc-ref inputs "hdf5")))))
+        %standard-phases)))
+    (native-inputs `(("perl" ,perl)))
+    (inputs
+     `(("ngs-sdk" ,ngs-sdk)
+       ("ncbi-vdb" ,ncbi-vdb)
+       ("libmagic" ,file)
+       ("fuse" ,fuse)
+       ("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (home-page "http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
+    (synopsis "Tools and libraries for reading and writing sequencing data")
+    (description
+     "The SRA Toolkit from NCBI is a collection of tools and libraries for
+reading of sequencing files from the Sequence Read Archive (SRA) database and
+writing files into the .sra format.")
     (license license:public-domain)))
 
 (define-public seqan
