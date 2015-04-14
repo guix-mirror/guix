@@ -29,6 +29,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages java)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
@@ -1122,6 +1123,101 @@ simultaneously.")
      `(("jdk" ,icedtea6 "jdk")
        ("ngs-sdk" ,ngs-sdk)))
     (synopsis "Java bindings for NGS SDK")))
+
+(define-public ncbi-vdb
+  (package
+    (name "ncbi-vdb")
+    (version "2.4.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ncbi/ncbi-vdb/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cj8nk6if8sqagv20vx36v566fdvhcaadf0x1ycnbgql6chbs6vy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; not supported
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            ;; Only replace the version suffix, not the version number in the
+            ;; directory name; fixed in commit 4dbba5c6a809 (no release yet).
+            (substitute* "setup/konfigure.perl"
+              (((string-append "\\$\\(subst "
+                               "(\\$\\(VERSION[^\\)]*\\)),"
+                               "(\\$\\([^\\)]+\\)),"
+                               "(\\$\\([^\\)]+\\)|\\$\\@)"
+                               "\\)")
+                _ pattern replacement target)
+               (string-append "$(patsubst "
+                              "%" pattern ","
+                              "%" replacement ","
+                              target ")")))
+
+            ;; Override include path for libmagic
+            (substitute* "setup/package.prl"
+              (("name => 'magic', Include => '/usr/include'")
+               (string-append "name=> 'magic', Include => '"
+                              (assoc-ref inputs "libmagic")
+                              "/include" "'")))
+
+            ;; Install kdf5 library (needed by sra-tools)
+            (substitute* "build/Makefile.install"
+              (("LIBRARIES_TO_INSTALL =")
+               "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
+
+            ;; The 'configure' script doesn't recognize things like
+            ;; '--enable-fast-install'.
+            (zero? (system*
+                    "./configure"
+                    (string-append "--build-prefix=" (getcwd) "/build")
+                    (string-append "--prefix=" (assoc-ref outputs "out"))
+                    (string-append "--debug")
+                    (string-append "--with-xml2-prefix="
+                                   (assoc-ref inputs "libxml2"))
+                    (string-append "--with-ngs-sdk-prefix="
+                                   (assoc-ref inputs "ngs-sdk"))
+                    (string-append "--with-ngs-java-prefix="
+                                   (assoc-ref inputs "ngs-java"))
+                    (string-append "--with-hdf5-prefix="
+                                   (assoc-ref inputs "hdf5"))))))
+        (alist-cons-after
+         'install 'install-interfaces
+         (lambda* (#:key system outputs #:allow-other-keys)
+           ;; Install interface libraries
+           (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
+           (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
+                                            (car (string-split system #\-))
+                                            "/rel/ilib")
+                             (string-append (assoc-ref outputs "out")
+                                            "/ilib"))
+           ;; Install interface headers
+           (copy-recursively "interfaces"
+                             (string-append (assoc-ref outputs "out")
+                                            "/include")))
+         %standard-phases))))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("ngs-sdk" ,ngs-sdk)
+       ("ngs-java" ,ngs-java)
+       ("libmagic" ,file)
+       ("hdf5" ,hdf5)))
+    (native-inputs `(("perl" ,perl)))
+    (home-page "https://github.com/ncbi/ncbi-vdb")
+    (synopsis "Database engine for genetic information")
+    (description
+     "The NCBI-VDB library implements a highly compressed columnar data
+warehousing engine that is most often used to store genetic information.
+Databases are stored in a portable image within the file system, and can be
+accessed/downloaded on demand across HTTP.")
+    (license license:public-domain)))
 
 (define-public seqan
   (package
