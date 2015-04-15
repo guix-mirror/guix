@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -235,12 +236,19 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
               ("libjepg" ,libjpeg-8)
               ("libsm" ,libsm)))
+
+    ;; Note: there are 37 MiB of examples and a '-exampledir' configure flags,
+    ;; but we can't make them a separate output because "out" and "examples"
+    ;; would refer to each other.
+    (outputs '("out"                             ;112MiB core + 37MiB examples
+               "doc"))                           ;280MiB of HTML + code
     (arguments
      `(#:phases
          (alist-replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
               (substitute* '("configure")
                 (("/bin/pwd") (which "pwd")))
 
@@ -248,6 +256,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "./configure"
                       "-verbose"
                       "-prefix" out
+                      "-docdir" (string-append doc "/share/doc/qt-" ,version)
+                      "-demosdir"    (string-append out "/share/qt-" ,version
+                                                    "/demos")
+                      "-examplesdir" (string-append out "/share/qt-" ,version
+                                                    "/examples")
                       "-opensource"
                       "-confirm-license"
                       ;; explicitly link with dbus instead of dlopening it
