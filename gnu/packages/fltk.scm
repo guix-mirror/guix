@@ -42,7 +42,9 @@
         ("mesa" ,mesa)))
     (arguments
      `(#:tests? #f                      ;TODO: compile programs in "test" dir
-       #:configure-flags '("--enable-shared")
+       #:configure-flags
+       (list "--enable-shared"
+             (string-append "DSOFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
        (alist-cons-before
         'configure 'patch-makeinclude
