@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,14 +48,14 @@
 (define-public wine
   (package
     (name "wine")
-    (version "1.7.31")
+    (version "1.7.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wine/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "14747ihmyanxvv8mnrafbj3l6807h7zf1gcwidgm1f7s7g5n4viw"))
+                "1dnasmw1rnlz7wk1bn0x1zmy3r78hgrn9y53z4vm8xjkllwyd0hd"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Make.vars.in"
