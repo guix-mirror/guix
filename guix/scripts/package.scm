@@ -855,9 +855,9 @@ more information.~%"))
                (let* ((prof-drv (run-with-store (%store)
                                   (profile-derivation
                                    new
-                                   #:info-dir? (not bootstrap?)
-                                   #:ghc-package-cache? (not bootstrap?)
-                                   #:ca-certificate-bundle? (not bootstrap?))))
+                                   #:hooks (if bootstrap?
+                                               '()
+                                               %default-profile-hooks))))
                       (prof     (derivation->output-path prof-drv)))
                  (show-manifest-transaction (%store) manifest transaction
                                             #:dry-run? dry-run?)

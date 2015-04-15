@@ -78,6 +78,7 @@
 
             profile-manifest
             package->manifest-entry
+            %default-profile-hooks
             profile-derivation
             generation-number
             generation-numbers
@@ -398,15 +399,12 @@ MANIFEST."
                (append-map info-files
                            '#$(manifest-inputs manifest)))))
 
-  ;; Don't depend on Texinfo when there's nothing to do.
-  (if (null? (manifest-entries manifest))
-      (gexp->derivation "info-dir" #~(mkdir #$output))
-      (gexp->derivation "info-dir" build
-                        #:modules '((guix build utils)))))
+  (gexp->derivation "info-dir" build
+                    #:modules '((guix build utils))))
 
 (define (ghc-package-cache-file manifest)
   "Return a derivation that builds the GHC 'package.cache' file for all the
-entries of MANIFEST."
+entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
   (define ghc                                 ;lazy reference
     (module-ref (resolve-interface '(gnu packages haskell)) 'ghc))
 
@@ -446,12 +444,11 @@ entries of MANIFEST."
           success)))
 
   ;; Don't depend on GHC when there's nothing to do.
-  (if (any (cut string-prefix? "ghc" <>)
-           (map manifest-entry-name (manifest-entries manifest)))
-      (gexp->derivation "ghc-package-cache" build
-                        #:modules '((guix build utils))
-                        #:local-build? #t)
-      (gexp->derivation "ghc-package-cache" #~(mkdir #$output))))
+  (and (any (cut string-prefix? "ghc" <>)
+            (map manifest-entry-name (manifest-entries manifest)))
+       (gexp->derivation "ghc-package-cache" build
+                         #:modules '((guix build utils))
+                         #:local-build? #t)))
 
 (define (ca-certificate-bundle manifest)
   "Return a derivation that builds a single-file bundle containing the CA
@@ -503,42 +500,31 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                              (string-append result
                                             "/ca-certificates.crt")))))
 
-  ;; Don't depend on 'glibc-utf8-locales' and its dependencies when there's
-  ;; nothing to do.
-  (if (null? (manifest-entries manifest))
-      (gexp->derivation "ca-certificate-bundle" #~(mkdir #$output))
-      (gexp->derivation "ca-certificate-bundle" build
-                        #:modules '((guix build utils))
-                        #:local-build? #t)))
+  (gexp->derivation "ca-certificate-bundle" build
+                    #:modules '((guix build utils))
+                    #:local-build? #t))
+
+(define %default-profile-hooks
+  ;; This is the list of derivation-returning procedures that are called by
+  ;; default when making a non-empty profile.
+  (list info-dir-file
+        ghc-package-cache-file
+        ca-certificate-bundle))
 
 (define* (profile-derivation manifest
                              #:key
-                             (info-dir? #t)
-                             (ghc-package-cache? #t)
-                             (ca-certificate-bundle? #t))
+                             (hooks %default-profile-hooks))
   "Return a derivation that builds a profile (aka. 'user environment') with
-the given MANIFEST.  The profile includes a top-level Info 'dir' file unless
-INFO-DIR? is #f, a GHC 'package.cache' file unless GHC-PACKAGE-CACHE? is #f
-and a single-file CA certificate bundle unless CA-CERTIFICATE-BUNDLE? is #f."
-  (mlet %store-monad ((info-dir (if info-dir?
-                                    (info-dir-file manifest)
-                                    (return #f)))
-                      (ghc-package-cache (if ghc-package-cache?
-                                             (ghc-package-cache-file manifest)
-                                             (return #f)))
-                      (ca-cert-bundle (if ca-certificate-bundle?
-                                          (ca-certificate-bundle manifest)
-                                          (return #f))))
+the given MANIFEST.  The profile includes additional derivations returned by
+the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
+  (mlet %store-monad ((extras (if (null? (manifest-entries manifest))
+                                  (return '())
+                                  (sequence %store-monad
+                                            (filter-map (lambda (hook)
+                                                          (hook manifest))
+                                                        hooks)))))
     (define inputs
-      (append (if info-dir
-                  (list (gexp-input info-dir))
-                  '())
-              (if ghc-package-cache
-                  (list (gexp-input ghc-package-cache))
-                  '())
-              (if ca-cert-bundle
-                  (list (gexp-input ca-cert-bundle))
-                  '())
+      (append (map gexp-input extras)
               (manifest-inputs manifest)))
 
     (define builder
