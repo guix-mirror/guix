@@ -230,7 +230,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "0b036iqgmbbv37dgwwfihw3mihjbnw3kb5kaisdy0qi8nn8xs54b"))
-             (patches (list (search-patch "qt4-tests.patch")))))
+             (patches (map search-patch
+                           '("qt4-ldflags.patch" "qt4-tests.patch")))))
     (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
               ("libjepg" ,libjpeg-8)
               ("libsm" ,libsm)))
@@ -241,15 +242,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* '("configure")
-                           (("/bin/pwd") (which "pwd")))
-              ;; Explicitly link with icui18n, which is dlopened by
-              ;; QtCore.so. The LDFLAGS are in fact added to other flags
-              ;; determined by the configure phase.
-              ;; According to the nix recipe, this may be necessary for
-              ;; further libraries (cups, gtk-x11-2.0, libgdk-x11-2.0).
-              (setenv "LDFLAGS" "-licui18n")
-              ;; do not pass "--enable-fast-install", which makes the
-              ;; configure process fail
+                (("/bin/pwd") (which "pwd")))
+
               (zero? (system*
                       "./configure"
                       "-verbose"
