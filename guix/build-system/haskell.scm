@@ -25,7 +25,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
-  #:export (haskell-build
+  #:export (%haskell-build-system-modules
+            haskell-build
             haskell-build-system))
 
 ;; Commentary:
@@ -34,6 +35,11 @@
 ;; implemented as an extension of 'gnu-build-system'.
 ;;
 ;; Code:
+
+(define %haskell-build-system-modules
+  ;; Build-side modules imported by default.
+  `((guix build haskell-build-system)
+    ,@%gnu-build-system-modules))
 
 (define (default-haskell)
   "Return the default Haskell package."
@@ -80,9 +86,7 @@
                         (search-paths '())
                         (system (%current-system))
                         (guile #f)
-                        (imported-modules '((guix build haskell-build-system)
-                                            (guix build gnu-build-system)
-                                            (guix build utils)))
+                        (imported-modules %haskell-build-system-modules)
                         (modules '((guix build haskell-build-system)
                                    (guix build utils))))
   "Build SOURCE using HASKELL, and with INPUTS.  This assumes that SOURCE
