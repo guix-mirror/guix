@@ -108,6 +108,9 @@
        ;; pass.
        #:tests? #f
 
+       #:configure-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+
        #:phases
        (alist-cons-after
         'configure 'patch-dlopen-paths
