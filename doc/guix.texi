@@ -236,19 +236,89 @@ manager, which can be done on top of a running GNU/Linux system.  If,
 instead, you want to install the complete GNU operating system,
 @pxref{System Installation}.
 
-The build procedure for Guix is the same as for other GNU software, and
-is not covered here.  Please see the files @file{README} and
-@file{INSTALL} in the Guix source tree for additional details.
-
 @menu
+* Binary Installation::         Getting Guix running in no time!
 * Requirements::                Software needed to build and run Guix.
 * Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 @end menu
 
+@node Binary Installation
+@section Binary Installation
+
+This section describes how to install Guix on an arbitrary system from a
+self-contained tarball providing binaries for Guix and for all its
+dependencies.  This is often quicker than installing from source, which
+is described in the next sections.  The only requirement is to have
+GNU@tie{}tar and Xz.
+
+Installing goes along these lines:
+
+@enumerate
+@item
+Download the binary tarball from
+@code{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz}@footnote{As
+usual, make sure to download the associated @file{.sig} file and to
+verify the authenticity of the tarball against it!}, where @var{system}
+is @code{x86_64-linux} for an @code{x86_64} machine already running the
+kernel Linux, and so on.
+
+@item
+As @code{root}, run:
+
+@example
+# cd /
+# tar xf guix-binary-@value{VERSION}.@var{system}.tar.xz
+@end example
+
+This creates @file{/gnu/store} (@pxref{The Store}), @file{/var/guix},
+and @file{/root/.guix-profile}.  @file{/root/.guix-profile} is a
+ready-to-use profile for @code{root} where Guix is installed.
+
+@item
+Setup the daemon as explained below (@pxref{Setting Up the Daemon}), and
+run it:
+
+@example
+# /root/.guix-profile/bin/guix-daemon --build-users-group=guix-builder
+@end example
+
+@item
+Make the @command{guix} command available to other users on the machine,
+for instance with:
+
+@example
+# mkdir -p /usr/local/bin
+# cd /usr/local/bin
+# ln -s /root/.guix-profile/bin/guix
+@end example
+@end enumerate
+
+And that's it!
+
+There are two things to note.  First, don't unpack the tarball on a
+working Guix system since that would overwrite its own essential files.
+Second, the @code{guix} package must remain available in @code{root}'s
+profile, or it would become subject to garbage collection---in which
+case you would find yourself badly handicapped by the lack of the
+@command{guix} command.
+
+The tarball in question can be (re)produced simply by running the
+following command in the Guix source tree:
+
+@example
+make guix-binary.@var{system}.tar.xz
+@end example
+
+
 @node Requirements
 @section Requirements
+
+This section lists requirements when building Guix from source.  The
+build procedure for Guix is the same as for other GNU software, and is
+not covered here.  Please see the files @file{README} and @file{INSTALL}
+in the Guix source tree for additional details.
 
 GNU Guix depends on the following packages:
 
