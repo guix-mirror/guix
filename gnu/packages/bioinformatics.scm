@@ -46,6 +46,29 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
+(define-public bamtools
+  (package
+    (name "bamtools")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pezmaster31/bamtools/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1brry29bw2xr2l9pqn240rkqwayg85b8qq78zk2zs6nlspk4d018"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ;no "check" target
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://github.com/pezmaster31/bamtools")
+    (synopsis "C++ API and command-line toolkit for working with BAM data")
+    (description
+     "BamTools provides both a C++ API and a command-line toolkit for handling
+BAM files.")
+    (license license:expat)))
+
 (define-public bedops
   (package
     (name "bedops")
