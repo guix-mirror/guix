@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,10 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages jemalloc)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
                           bsd-2 public-domain))
@@ -43,6 +48,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -147,6 +153,76 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
      "MySQL is a fast, reliable, and easy to use relational database
 management system that supports the standardized Structured Query
 Language.")
+    (license gpl2)))
+
+(define-public mariadb
+  (package
+    (name "mariadb")
+    (version "10.0.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://downloads.mariadb.org/f/"
+                                  name "-" version "/source/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04ckq67qgkghh7yzrbzwidk7wn7yjml15gzj2c5p1hs2k7lr9lww"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_CONFIG=mysql_release"
+         "-DDEFAULT_CHARSET=utf8"
+         "-DDEFAULT_COLLATION=utf8_general_ci"
+         "-DMYSQL_DATADIR=/var/lib/mysql"
+         "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+         "-DINSTALL_INFODIR=share/mysql/docs"
+         "-DINSTALL_MANDIR=share/man"
+         "-DINSTALL_PLUGINDIR=lib/mysql/plugin"
+         "-DINSTALL_SCRIPTDIR=bin"
+         "-DINSTALL_INCLUDEDIR=include/mysql"
+         "-DINSTALL_DOCREADMEDIR=share/mysql/docs"
+         "-DINSTALL_SUPPORTFILESDIR=share/mysql/support-files"
+         "-DINSTALL_MYSQLSHAREDIR=share/mysql"
+         "-DINSTALL_DOCDIR=share/mysql/docs"
+         "-DINSTALL_SHAREDIR=share/mysql")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            (setenv "CONFIG_SHELL" (which "sh"))
+            ;; XXX: libstdc++.so lacks RUNPATH for libgcc_s.so.
+            (setenv "LDFLAGS" "-lgcc_s")
+            #t))
+         (add-after
+          'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out     (assoc-ref outputs "out"))
+                   (test    (assoc-ref outputs "test")))
+              (substitute* (string-append out "/bin/mysql_install_db")
+                (("basedir=\"\"")
+                 (string-append "basedir=\"" out "\"")))
+              ;; Remove unneeded files for testing.
+              (with-directory-excursion out
+                (for-each delete-file-recursively
+                          '("data" "mysql-test" "sql-bench"
+                            "share/man/man1/mysql-test-run.pl.1")))))))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("perl" ,perl)))
+    (inputs
+     `(("jemalloc" ,jemalloc)
+       ("libaio" ,libaio)
+       ("libxml2" ,libxml2)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)))
+    (home-page "https://mariadb.org/")
+    (synopsis "SQL database server")
+    (description
+     "MariaDB is a multi-user and multi-threaded SQL database server, designed
+as a drop-in replacement of MySQL.")
     (license gpl2)))
 
 (define-public postgresql
