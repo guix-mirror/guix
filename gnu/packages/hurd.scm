@@ -63,7 +63,7 @@
 (define-public mig
   (package
     (name "mig")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
       (method url-fetch)
@@ -71,7 +71,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1jgzggnbp22sa8z5dilm43zy12vlf1pjxfb3kh13xrfhcay0l97b"))))
+        "13r1pg8icyc0pl082z7k36i440pr1f3nr7ahig3rrc0r7qndqmk9"))))
     (build-system gnu-build-system)
     (inputs `(("gnumach-headers" ,gnumach-headers)))
     (native-inputs
