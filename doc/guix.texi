@@ -3285,7 +3285,7 @@ In addition, @command{guix refresh} can be passed one or more package
 names, as in this example:
 
 @example
-guix refresh -u emacs idutils
+guix refresh -u emacs idutils gcc-4.8.4
 @end example
 
 @noindent

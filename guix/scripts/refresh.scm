@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -207,16 +207,13 @@ update would trigger a complete rebuild."
          (list-dependent? (assoc-ref opts 'list-dependent?))
          (key-download    (assoc-ref opts 'key-download))
          (packages
-          (match (concatenate
-                  (filter-map (match-lambda
-                               (('argument . value)
-                                (let ((p (find-packages-by-name value)))
-                                  (when (null? p)
-                                    (leave (_ "~a: no package by that name~%")
-                                           value))
-                                  p))
+          (match (filter-map (match-lambda
+                               (('argument . spec)
+                                ;; Take either the specified version or the
+                                ;; latest one.
+                                (specification->package spec))
                                (_ #f))
-                              opts))
+                             opts)
                  (()                          ; default to all packages
                   (let ((select? (match (assoc-ref opts 'select)
                                         ('core core-package?)
