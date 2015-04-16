@@ -75,6 +75,7 @@ MODULES =					\
   guix/build/python-build-system.scm		\
   guix/build/ruby-build-system.scm		\
   guix/build/waf-build-system.scm		\
+  guix/build/haskell-build-system.scm		\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
