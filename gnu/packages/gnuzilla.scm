@@ -266,6 +266,13 @@ standards.")
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
 
+
+       ;; XXX: There are RUNPATH issues such as
+       ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,
+       ;; which is not in its RUNPATH, but they appear to be harmless in
+       ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
+       #:validate-runpath? #f
+
        #:configure-flags '(;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
                            "--disable-debug"
