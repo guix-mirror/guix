@@ -28,6 +28,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages file)
   #:use-module (gnu packages java)
@@ -37,6 +38,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
@@ -529,6 +531,51 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
+
+(define-public express
+  (package
+    (name "express")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://bio.math.berkeley.edu/eXpress/downloads/express-"
+                version "/express-" version "-src.tgz"))
+              (sha256
+               (base32
+                "03rczxd0gjp2l1jxcmjfmf5j94j77zqyxa6x063zsc585nj40n0c"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (alist-cons-after
+        'unpack 'use-shared-boost-libs-and-set-bamtools-paths
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "CMakeLists.txt"
+            (("set\\(Boost_USE_STATIC_LIBS ON\\)")
+             "set(Boost_USE_STATIC_LIBS OFF)")
+            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/bamtools/include")
+             (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
+          (substitute* "src/CMakeLists.txt"
+            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
+             (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
+          #t)
+        %standard-phases)))
+    (inputs
+     `(("boost" ,boost)
+       ("bamtools" ,bamtools)
+       ("protobuf" ,protobuf)
+       ("zlib" ,zlib)))
+    (home-page "http://bio.math.berkeley.edu/eXpress")
+    (synopsis "Streaming quantification for high-throughput genomic sequencing")
+    (description
+     "eXpress is a streaming tool for quantifying the abundances of a set of
+target sequences from sampled subsequences.  Example applications include
+transcript-level RNA-Seq quantification, allele-specific/haplotype expression
+analysis (from RNA-Seq), transcription factor binding quantification in
+ChIP-Seq, and analysis of metagenomic data.")
+    (license license:artistic2.0)))
 
 (define-public fastx-toolkit
   (package
