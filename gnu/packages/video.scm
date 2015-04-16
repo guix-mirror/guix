@@ -323,7 +323,8 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build rpath))
        #:phases
-         (alist-replace
+       (modify-phases %standard-phases
+         (replace
           'configure
           ;; configure does not work followed by "SHELL=..." and
           ;; "CONFIG_SHELL=..."; set environment variables instead
@@ -333,48 +334,48 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                 (("#! /bin/sh") (string-append "#!" (which "bash"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-               ;; FIXME: only needed for ffmpeg-2.2.13, but easier to add
-               ;; globally; drop as soon as ffmpeg-2.2.13 is dropped
+              ;; FIXME: only needed for ffmpeg-2.2.13, but easier to add
+              ;; globally; drop as soon as ffmpeg-2.2.13 is dropped
               (setenv "LDFLAGS" "-ldl")
-;; possible additional inputs:
-;;   --enable-avisynth        enable reading of AviSynth script files [no]
-;;   --enable-frei0r          enable frei0r video filtering
-;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
-;;   --enable-libcelt         enable CELT decoding via libcelt [no]
-;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
-;;                            and libraw1394 [no]
-;;   --enable-libfaac         enable AAC encoding via libfaac [no]
-;;   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
-;;   --enable-libflite        enable flite (voice synthesis) support via libflite [no]
-;;   --enable-libgme          enable Game Music Emu via libgme [no]
-;;   --enable-libgsm          enable GSM de/encoding via libgsm [no]
-;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
-;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
-;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
-;;   --enable-libnut          enable NUT (de)muxing via libnut,
-;;                            native (de)muxer exists [no]
-;;   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
-;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
-;;   --enable-libopencv       enable video filtering via libopencv [no]
-;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
-;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
-;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
-;;   --enable-libssh          enable SFTP protocol via libssh [no]
-;;                            (libssh2 does not work)
-;;   --enable-libstagefright-h264  enable H.264 decoding via libstagefright [no]
-;;   --enable-libutvideo      enable Ut Video encoding and decoding via libutvideo [no]
-;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
-;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
-;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
-;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
-;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
-;;   --enable-libx264         enable H.264 encoding via x264 [no]
-;;   --enable-libxavs         enable AVS encoding via xavs [no]
-;;   --enable-libzmq          enable message passing via libzmq [no]
-;;   --enable-libzvbi         enable teletext support via libzvbi [no]
-;;   --enable-opencl          enable OpenCL code
-;;   --enable-x11grab         enable X11 grabbing [no]
+              ;; possible additional inputs:
+              ;;   --enable-avisynth        enable reading of AviSynth script files [no]
+              ;;   --enable-frei0r          enable frei0r video filtering
+              ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
+              ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
+              ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
+              ;;                            and libraw1394 [no]
+              ;;   --enable-libfaac         enable AAC encoding via libfaac [no]
+              ;;   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
+              ;;   --enable-libflite        enable flite (voice synthesis) support via libflite [no]
+              ;;   --enable-libgme          enable Game Music Emu via libgme [no]
+              ;;   --enable-libgsm          enable GSM de/encoding via libgsm [no]
+              ;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
+              ;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
+              ;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
+              ;;   --enable-libnut          enable NUT (de)muxing via libnut,
+              ;;                            native (de)muxer exists [no]
+              ;;   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
+              ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
+              ;;   --enable-libopencv       enable video filtering via libopencv [no]
+              ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
+              ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
+              ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
+              ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
+              ;;   --enable-libssh          enable SFTP protocol via libssh [no]
+              ;;                            (libssh2 does not work)
+              ;;   --enable-libstagefright-h264  enable H.264 decoding via libstagefright [no]
+              ;;   --enable-libutvideo      enable Ut Video encoding and decoding via libutvideo [no]
+              ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
+              ;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
+              ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
+              ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
+              ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
+              ;;   --enable-libx264         enable H.264 encoding via x264 [no]
+              ;;   --enable-libxavs         enable AVS encoding via xavs [no]
+              ;;   --enable-libzmq          enable message passing via libzmq [no]
+              ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
+              ;;   --enable-opencl          enable OpenCL code
+              ;;   --enable-x11grab         enable X11 grabbing [no]
               (zero? (system*
                       "./configure"
                       (string-append "--prefix=" out)
@@ -409,18 +410,17 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                       "--disable-mips32r2"
                       "--disable-mipsdspr1"
                       "--disable-mipsdspr2"
-                      "--disable-mipsfpu"))))
-       (alist-cons-after
-        'strip 'add-lib-to-runpath
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (lib (string-append out "/lib")))
-            ;; Add LIB to the RUNPATH of all the executables and libraries.
-            (with-directory-excursion out
-              (for-each (cut augment-rpath <> lib)
-                        (append (find-files "bin" ".*")
-                                (find-files "lib" "\\.so\\..*\\."))))))
-          %standard-phases))))
+                      "--disable-mipsfpu")))))
+         (add-after
+          'strip 'add-lib-to-runpath
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (lib (string-append out "/lib")))
+              ;; Add LIB to the RUNPATH of all the executables and libraries.
+              (with-directory-excursion out
+                (for-each (cut augment-rpath <> lib)
+                          (append (find-files "bin" ".*")
+                                  (find-files "lib" "\\.so\\..*\\."))))))))))
     (home-page "http://www.ffmpeg.org/")
     (synopsis "Audio and video framework")
     (description "FFmpeg is a complete, cross-platform solution to record,
