@@ -411,6 +411,16 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                       "--disable-mipsdspr1"
                       "--disable-mipsdspr2"
                       "--disable-mipsfpu")))))
+         (add-before
+          'check 'set-ld-library-path
+          (lambda _
+            ;; Allow $(top_builddir)/ffmpeg to find its dependencies when
+            ;; running tests.
+            (let* ((dso  (find-files "." "\\.so$"))
+                   (path (string-join (map dirname dso) ":")))
+              (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
+              (setenv "LD_LIBRARY_PATH" path)
+              #t)))
          (add-after
           'strip 'add-lib-to-runpath
           (lambda* (#:key outputs #:allow-other-keys)
