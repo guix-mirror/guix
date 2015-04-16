@@ -309,7 +309,7 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/archive/v"
@@ -317,7 +317,7 @@ repository and Maildir/IMAP as LOCAL repository.")
               (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "01n1lzq4pfsm5pn932p948d1z55yqc7kkm1ifjxjchb3k8lr66fh"))))
+                "1bxryacmas2llj68m2dv8dr1vwx8f5k2i2azh69jajkpqx7i4wdq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
