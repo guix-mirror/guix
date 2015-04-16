@@ -158,6 +158,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/irssi.scm			\
   gnu/packages/iso-codes.scm			\
   gnu/packages/java.scm				\
+  gnu/packages/jemalloc.scm			\
   gnu/packages/jrnl.scm				\
   gnu/packages/julia.scm			\
   gnu/packages/kde.scm				\
