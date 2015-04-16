@@ -1386,6 +1386,45 @@ sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
 
+(define-public subread
+  (package
+    (name "subread")
+    (version "1.4.6-p2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/subread/subread-"
+                    version "-source.tar.gz"))
+              (sha256
+               (base32
+                "06sv9mpcsdj6p68y15d6gi70lca3lxmzk0dn61hg0kfsa7rxmsr3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("-f" "Makefile.Linux")
+       #:phases
+       (alist-cons-after
+        'unpack 'enter-dir
+        (lambda _ (chdir "src") #t)
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (copy-recursively "../bin" bin)))
+         ;; no "configure" script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://bioinf.wehi.edu.au/subread-package/")
+    (synopsis "Tool kit for processing next-gen sequencing data")
+    (description
+     "The subread package contains the following tools: subread aligner, a
+general-purpose read aligner; subjunc aligner: detecting exon-exon junctions
+and mapping RNA-seq reads; featureCounts: counting mapped reads for genomic
+features; exactSNP: a SNP caller that discovers SNPs by testing signals
+against local background noises.")
+    (license license:gpl3+)))
+
 (define-public shogun
   (package
     (name "shogun")
