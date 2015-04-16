@@ -2132,3 +2132,32 @@ MPEG-2 and audio over Linux IEEE 1394.")
 assemble, report on, and monitor arrays.  It can also move spares between raid
 arrays when needed.")
     (license gpl2+)))
+
+(define-public libaio
+  (package
+    (name "libaio")
+    (version "0.3.110")
+    (source (origin
+              (method url-fetch)
+             (uri (list
+                   (string-append "mirror://debian/pool/main/liba/libaio/"
+                                  name "_" version ".orig.tar.gz")
+                   (string-append "https://fedorahosted.org/releases/l/i/libaio/"
+                                  name "-" version ".tar.gz")))
+             (sha256
+              (base32
+               "0zjzfkwd1kdvq6zpawhzisv7qbq1ffs343i5fs9p498pcf7046g0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc" (string-append "prefix=" %output))
+       #:test-target "partcheck" ; need root for a full 'check'
+       #:phases
+       (alist-delete 'configure %standard-phases))) ; no configure script
+    (home-page "http://lse.sourceforge.net/io/aio.html")
+    (synopsis "Linux-native asynchronous I/O access library")
+    (description
+     "This library enables userspace to use Linux kernel asynchronous I/O
+system calls, important for the performance of databases and other advanced
+applications.")
+    (license lgpl2.1+)))
