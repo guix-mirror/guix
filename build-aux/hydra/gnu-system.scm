@@ -158,7 +158,7 @@ system.")
                        (set-guile-for-build (default-guile))
                        (system-disk-image installation-os
                                           #:disk-image-size
-                                          (* 800 MiB))))))
+                                          (* 850 MiB))))))
       '()))
 
 (define job-name
