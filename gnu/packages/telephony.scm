@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -183,3 +185,25 @@ internet.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/sipwitch")))
 
+(define-public libsrtp
+  (package
+    (name "libsrtp")
+    (version "1.5.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
+                                  version ".tar.gz"))
+             (sha256
+              (base32
+               "1njf62f6sazz2q7qc4j495v1pga385whkmxxyr8hfz1ragiyzqc6"))))
+    (native-inputs
+     `(("procps" ,procps)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "runtest"))
+    (synopsis "Secure RTP (SRTP) Reference Implementation")
+    (description "This package provides an implementation of the Secure
+Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
+and a supporting cryptographic kernel.")
+    (home-page "https://github.com/cisco/libsrtp")
+    (license bsd-3)))
