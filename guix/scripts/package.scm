@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -465,6 +465,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
   (display (_ "
+      --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"))
+  (display (_ "
       --roll-back        roll back to the previous generation"))
   (display (_ "
       --search-paths     display needed environment variable definitions"))
@@ -542,6 +544,13 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                          ;; command, or else "--upgrade gcc"
                                          ;; would upgrade everything.
                                          (delete '(upgrade . #f) result))
+                             arg-handler))))
+         (option '("do-not-upgrade") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (let arg-handler ((arg arg) (result result))
+                     (values (if arg
+                                 (alist-cons 'do-not-upgrade arg result)
+                                 result)
                              arg-handler))))
          (option '("roll-back") #f #f
                  (lambda (opt name arg result arg-handler)
@@ -621,6 +630,13 @@ return the new list of manifest entries."
                  (_ #f))
                 opts))
 
+  (define do-not-upgrade-regexps
+    (filter-map (match-lambda
+                 (('do-not-upgrade . regexp)
+                  (make-regexp regexp))
+                 (_ #f))
+                opts))
+
   (define packages-to-upgrade
     (match upgrade-regexps
       (()
@@ -630,6 +646,8 @@ return the new list of manifest entries."
                     (($ <manifest-entry> name version output path _)
                      (and (any (cut regexp-exec <> name)
                                upgrade-regexps)
+                          (not (any (cut regexp-exec <> name)
+                                    do-not-upgrade-regexps))
                           (upgradeable? name version path)
                           (let ((output (or output "out")))
                             (call-with-values
@@ -837,9 +855,9 @@ more information.~%"))
                (let* ((prof-drv (run-with-store (%store)
                                   (profile-derivation
                                    new
-                                   #:info-dir? (not bootstrap?)
-                                   #:ghc-package-cache? (not bootstrap?)
-                                   #:ca-certificate-bundle? (not bootstrap?))))
+                                   #:hooks (if bootstrap?
+                                               '()
+                                               %default-profile-hooks))))
                       (prof     (derivation->output-path prof-drv)))
                  (show-manifest-transaction (%store) manifest transaction
                                             #:dry-run? dry-run?)

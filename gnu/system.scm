@@ -405,30 +405,47 @@ settings for 'guix.el' to work out-of-the-box."
                           (chdir #$output)
                           (symlink #$file "site-start.el")))))
 
+(define (user-shells os)
+  "Return the list of all the shells used by the accounts of OS.  These may be
+gexps or strings."
+  (mlet %store-monad ((accounts (operating-system-accounts os)))
+    (return (map user-account-shell accounts))))
+
+(define (shells-file shells)
+  "Return a derivation that builds a shell list for use as /etc/shells based
+on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
+  (gexp->derivation "shells"
+                    #~(begin
+                        (use-modules (srfi srfi-1))
+
+                        (define shells
+                          (delete-duplicates (list #$@shells)))
+
+                        (call-with-output-file #$output
+                          (lambda (port)
+                            (display "\
+/bin/sh
+/run/current-system/profile/bin/sh
+/run/current-system/profile/bin/bash\n" port)
+                            (for-each (lambda (shell)
+                                        (display shell port)
+                                        (newline port))
+                                      shells))))))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (issue "Hello!\n")
                         (skeletons '())
                         (pam-services '())
                         (profile "/run/current-system/profile")
-                        hosts-file nss
+                        hosts-file nss (shells '())
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
       ((pam.d      (pam-services->directory pam-services))
        (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
-
-       ;; /etc/shells is used by xterm and other programs.   We don't check
-       ;; whether these shells are installed, should be OK.
-       (shells     (text-file "shells"
-                              "\
-/bin/sh
-/run/current-system/profile/bin/sh
-/run/current-system/profile/bin/bash
-/run/current-system/profile/bin/fish
-/run/current-system/profile/bin/tcsh
-/run/current-system/profile/bin/zsh\n"))
+       (shells     (shells-file shells))
        (emacs      (emacs-site-directory))
        (issue      (text-file "issue" issue))
        (nsswitch   (text-file "nsswitch.conf"
@@ -543,7 +560,8 @@ fi\n"))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os))
        (/etc/hosts  (or (operating-system-hosts-file os)
-                        (default-/etc/hosts (operating-system-host-name os)))))
+                        (default-/etc/hosts (operating-system-host-name os))))
+       (shells      (user-shells os)))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
                   #:issue (operating-system-issue os)
@@ -551,6 +569,7 @@ fi\n"))
                   #:nss (operating-system-name-service-switch os)
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
+                  #:shells shells
                   #:sudoers (operating-system-sudoers os)
                   #:profile profile-drv)))
 

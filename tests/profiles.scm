@@ -183,9 +183,7 @@
       ((entry ->   (package->manifest-entry %bootstrap-guile))
        (guile      (package->derivation %bootstrap-guile))
        (drv        (profile-derivation (manifest (list entry))
-                                       #:info-dir? #f
-                                       #:ghc-package-cache? #f
-                                       #:ca-certificate-bundle? #f))
+                                       #:hooks '()))
        (profile -> (derivation->output-path drv))
        (bindir ->  (string-append profile "/bin"))
        (_          (built-derivations (list drv))))
@@ -197,9 +195,7 @@
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry packages:glibc "debug"))
        (drv        (profile-derivation (manifest (list entry))
-                                       #:info-dir? #f
-                                       #:ghc-package-cache? #f
-                                       #:ca-certificate-bundle? #f)))
+                                       #:hooks '())))
     (return (derivation-inputs drv))))
 
 (test-end "profiles")

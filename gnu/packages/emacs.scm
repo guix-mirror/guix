@@ -64,7 +64,8 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))))
+               "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
+             (patches (list (search-patch "emacs-exec-path.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (alist-cons-before

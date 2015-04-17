@@ -258,6 +258,7 @@ EXTRA_DIST =						\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
   build-aux/list-packages.scm				\
+  build-aux/make-binary-tarball.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
@@ -342,6 +343,13 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 dist_emacsui_DATA = emacs/guix-main.scm
 nodist_emacsui_DATA = emacs/guix-helper.scm
 include emacs.am
+
+# The self-contained tarball.
+guix-binary.%.tar.xz:
+	-GUIX_PACKAGE_PATH= \
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	  "$(top_srcdir)/build-aux/make-binary-tarball.scm" "$*" "$@"
+
 
 dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained

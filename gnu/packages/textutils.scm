@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages python))
 
 (define-public recode
@@ -124,3 +125,33 @@ libenca and several charset conversion libraries and tools.")
 normalization, case-folding, and other operations for data in the UTF-8
 encoding, supporting Unicode version 7.0.")
     (license license:expat)))
+
+(define-public libgtextutils
+  (package
+    (name "libgtextutils")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/agordon/libgtextutils/releases/download/"
+             version "/libgtextutils-" version ".tar.gz"))
+       (sha256
+        (base32 "0jiybkb2z58wa2msvllnphr4js2hvjvh988pavb3mzkgr6ihwbkr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _ (zero? (system* "autoreconf" "-vif")))
+        %standard-phases)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/agordon/libgtextutils")
+    (synopsis "Gordon's text utils library")
+    (description
+     "libgtextutils is a text utilities library used by the fastx toolkit from
+the Hannon Lab.")
+    (license license:agpl3+)))
