@@ -253,6 +253,7 @@ standards.")
        ("mesa" ,mesa)
        ("nspr" ,nspr)
        ("nss" ,nss)
+       ("sqlite" ,sqlite)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
        ("zip" ,zip)
@@ -291,11 +292,7 @@ standards.")
                            "--enable-system-pixman"
                            "--enable-system-cairo"
                            "--enable-system-ffi"
-
-                           ;; Fails with "configure: error: System
-                           ;; SQLite library is not compiled with
-                           ;; SQLITE_ENABLE_UNLOCK_NOTIFY."
-                           ;; "--enable-system-sqlite"
+                           "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
                            ;; the system's libpng doesn't have APNG support".
