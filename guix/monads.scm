@@ -250,11 +250,23 @@ to happen in that order."
                               lst)))
     (return (reverse result))))
 
-(define-inlinable (sequence monad lst)
+(define-syntax-rule (sequence monad lst)
   "Turn the list of monadic values LST into a monadic list of values, by
 evaluating each item of LST in sequence."
+  ;; XXX: Making it a macro is a bit brutal as it leads to a lot of code
+  ;; duplication.  However, it allows >>= and return to be open-coded, which
+  ;; avoids struct-ref's to MONAD and a few closure allocations when using
+  ;; %STATE-MONAD.
   (with-monad monad
-    (mapm monad return lst)))
+    (let seq ((lstx   lst)
+              (result '()))
+      (match lstx
+        (()
+         (return (reverse result)))
+        ((head . tail)
+         (>>= head
+              (lambda (item)
+                (seq tail (cons item result)))))))))
 
 (define (anym monad proc lst)
   "Apply PROC to the list of monadic values LST; return the first value,
