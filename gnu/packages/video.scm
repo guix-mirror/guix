@@ -334,9 +334,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                 (("#! /bin/sh") (string-append "#!" (which "bash"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              ;; FIXME: only needed for ffmpeg-2.2.13, but easier to add
-              ;; globally; drop as soon as ffmpeg-2.2.13 is dropped
-              (setenv "LDFLAGS" "-ldl")
               ;; possible additional inputs:
               ;;   --enable-avisynth        enable reading of AviSynth script files [no]
               ;;   --enable-frei0r          enable frei0r video filtering
@@ -437,18 +434,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
-
-;; We need this older ffmpeg because vlc-2.1.5 doesn't work with ffmpeg-2.4.
-(define-public ffmpeg-2.2
-  (package (inherit ffmpeg)
-    (version "2.2.13")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "1vva8ffwxi3rg44byy09qlbiqrrd1h4rmsl5b1mbmvzvwl1lq1l0"))))))
 
 (define-public vlc
   (package
