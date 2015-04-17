@@ -20,6 +20,7 @@
   #:use-module (gnu services)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages admin)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
@@ -106,6 +107,6 @@ sockets."
                             (comment "Avahi daemon user")
                             (home-directory "/var/empty")
                             (shell
-                             "/run/current-system/profile/sbin/nologin"))))))))
+                             #~(string-append #$shadow "/sbin/nologin")))))))))
 
 ;;; avahi.scm ends here

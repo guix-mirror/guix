@@ -20,6 +20,7 @@
   #:use-module (gnu services)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages admin)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
@@ -99,7 +100,7 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
                             (comment "D-Bus system bus user")
                             (home-directory "/var/run/dbus")
                             (shell
-                             "/run/current-system/profile/sbin/nologin"))))
+                             #~(string-append #$shadow "/sbin/nologin")))))
       (activate #~(begin
                     (use-modules (guix build utils))
 

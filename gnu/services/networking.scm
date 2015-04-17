@@ -227,7 +227,7 @@ restrict -6 ::1\n"))
                             (comment "NTP daemon user")
                             (home-directory "/var/empty")
                             (shell
-                             "/run/current-system/profile/sbin/nologin"))))))))
+                             #~(string-append #$shadow "/sbin/nologin")))))))))
 
 (define* (tor-service #:key (tor tor))
   "Return a service to run the @uref{https://torproject.org,Tor} daemon.
@@ -257,7 +257,7 @@ policy) as the @code{tor} unprivileged user."
                             (comment "Tor daemon user")
                             (home-directory "/var/empty")
                             (shell
-                             "/run/current-system/profile/sbin/nologin"))))
+                             #~(string-append #$shadow "/sbin/nologin")))))
 
       (documentation "Run the Tor anonymous network overlay.")))))
 
