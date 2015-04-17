@@ -884,10 +884,7 @@ designed to be accessed through the MIME functions in GnomeVFS.")
                 "1ajg8jb8k3snxc7rrgczlh8daxkjidmcv3zr9w809sq4p2sn9pk2"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; XXX The 'test-async-cancel' test often fails.
-       #:make-flags '("XFAIL_TESTS=test-async-cancel")
-
-       #:phases
+     `(#:phases
        (alist-cons-before
         'configure 'ignore-deprecations
         (lambda _
@@ -895,7 +892,12 @@ designed to be accessed through the MIME functions in GnomeVFS.")
                          "daemon/Makefile.in")
             (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
           #t)
-        %standard-phases)))
+        (alist-cons-before
+         'configure 'patch-test-async-cancel-to-never-fail
+         (lambda _
+           (substitute* "test/test-async-cancel.c"
+             (("EXIT_FAILURE") "77")))
+         %standard-phases))))
     (inputs `(("glib" ,glib)
               ("libxml2" ,libxml2)
               ("dbus-glib" ,dbus-glib)
