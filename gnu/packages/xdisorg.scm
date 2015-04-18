@@ -560,3 +560,39 @@ is already being used by the gnome-settings-daemon and the GNOME 3.4 Control
 Center Wacom tablet applet.  In the future, the xf86-input-wacom driver may
 use it as well.")
     (license license:x11)))
+
+(define-public xf86-input-wacom
+  (package
+    (name "xf86-input-wacom")
+    (version "0.29.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/linuxwacom/xf86-input-wacom/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "15lbzjkaf690i69qy0n0ibwczbclqq1nx0418c6a567by5v7wl48"))))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg")
+             (string-append "--with-xorg-conf-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/X11/xorg.conf.d"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xorg-server" ,xorg-server)
+       ("libxrandr" ,libxrandr)
+       ("libxinerama" ,libxinerama)
+       ("libxi" ,libxi)
+       ("eudev" ,eudev)))
+    (home-page "http://linuxwacom.sourceforge.net/")
+    (synopsis "Wacom input driver for X")
+    (description
+     "The xf86-input-wacom driver is the wacom-specific X11 input driver for
+the X.Org X Server version 1.7 and later (X11R7.5 or later).")
+    (license license:x11)))
