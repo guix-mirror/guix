@@ -1,0 +1,18 @@
+Explicitly link against libicui18n so that libQtCore.so always finds it.
+
+--- qt-everywhere-opensource-src-4.8.6/src/corelib/corelib.pro	2015-04-15 12:01:41.661862663 +0200
++++ qt-everywhere-opensource-src-4.8.6/src/corelib/corelib.pro	2015-04-15 12:03:57.954586336 +0200
+@@ -19,6 +19,13 @@ include(codecs/codecs.pri)
+ include(statemachine/statemachine.pri)
+ include(xml/xml.pri)
+ 
++# Explicitly link with icui18n, which is dlopened by libQtCore.so.
++# We cannot do this by setting LDFLAGS because that then overrides
++# other LDFLAGS: <https://bugreports.qt.io/browse/QTBUG-5471>.
++# XXX: According to the Nixpkgs recipe, this may be necessary for
++# further libraries (cups, gtk-x11-2.0, libgdk-x11-2.0).
++LIBS_PRIVATE += -licui18n
++
+ !qpa:mac|darwin:LIBS_PRIVATE += -framework ApplicationServices
+ qpa:mac {
+     !ios {

@@ -56,6 +56,12 @@
        #:modules ((ice-9 match)
                   (guix build gnu-build-system)
                   (guix build utils))
+
+
+       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
+       ;; gremlin) doesn't support it yet, so skip this phase.
+       #:validate-runpath? #f
+
        #:phases
        (alist-cons-after
         'unpack 'hardcode-soname-map

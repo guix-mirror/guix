@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -112,7 +112,7 @@ text, lines, polygons, ellipses and Bézier curves.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before
-          configure image-magick-flags
+          'configure 'image-magick-flags
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((im (assoc-ref inputs "imagemagick")))
               (substitute* "Makefile.PL"
@@ -121,7 +121,7 @@ text, lines, polygons, ellipses and Bézier curves.")
                 (("my \\$LIBS_magick = .*")
                  "my $LIBS_magick = `pkg-config --libs ImageMagick`;\n")))))
          (add-before
-          check skip-mpeg-tests
+          'check 'skip-mpeg-tests
           (lambda _
             ;; TODO: MPEG tests fail even though our imagemagick supports
             ;; MPEG.  Has been reported elsewhere,

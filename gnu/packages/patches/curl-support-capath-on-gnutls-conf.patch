@@ -1,0 +1,16 @@
+This patch updates 'configure' as autoreconf would have done after
+applying curl-support-capath-on-gnutls.patch.
+
+--- a/configure       2015-03-22 01:11:23.178743705 +0100
++++ b/configure       2015-02-25 00:05:37.000000000 +0100
+@@ -23952,8 +24432,8 @@
+         ca="$want_ca"
+     capath="no"
+   elif test "x$want_capath" != "xno" -a "x$want_capath" != "xunset"; then
+-        if test "x$OPENSSL_ENABLED" != "x1" -a "x$POLARSSL_ENABLED" != "x1"; then
+-      as_fn_error $? "--with-ca-path only works with openSSL or PolarSSL" "$LINENO" 5
++        if test "x$OPENSSL_ENABLED" != "x1" -a "x$GNUTLS_ENABLED" != "x1" -a "x$POLARSSL_ENABLED" != "x1"; then
++      as_fn_error $? "--with-ca-path only works with OpenSSL, GnuTLS or PolarSSL" "$LINENO" 5
+     fi
+     capath="$want_capath"
+     ca="no"

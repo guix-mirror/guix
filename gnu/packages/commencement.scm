@@ -157,6 +157,8 @@
                    (srfi srfi-1)
                    (srfi srfi-26))
         ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
+            ((#:validate-runpath? _)
+             #t)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -523,6 +525,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                              "/lib")
                               flag))
                         ,flags)))
+           ((#:validate-runpath? _)
+            ;; Things like libasan.so and libstdc++.so NEED ld.so and/or
+            ;; libgcc_s.so but RUNPATH is empty.  This is a false positive, so
+            ;; turn it off.
+            #f)
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
@@ -539,54 +546,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define ld-wrapper-boot3
   ;; A linker wrapper that uses the bootstrap Guile.
-  (package
-    (name "ld-wrapper-boot3")
-    (version "0")
-    (source #f)
-    (build-system trivial-build-system)
-    (inputs `(("binutils" ,binutils-final)
-              ("guile"    ,%bootstrap-guile)
-              ("bash"     ,@(assoc-ref %boot2-inputs "bash"))
-              ("wrapper"  ,(search-path %load-path
-                                        "gnu/packages/ld-wrapper.scm"))))
-    (arguments
-     `(#:guile ,%bootstrap-guile
-       #:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (system base compile))
-
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (ld  (string-append bin "/ld"))
-                          (go  (string-append bin "/ld.go")))
-
-                     (setvbuf (current-output-port) _IOLBF)
-                     (format #t "building ~s/bin/ld wrapper in ~s~%"
-                             (assoc-ref %build-inputs "binutils")
-                             out)
-
-                     (mkdir-p bin)
-                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
-                     (substitute* ld
-                       (("@GUILE@")
-                        (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                       (("@BASH@")
-                        (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash"))
-                       (("@LD@")
-                        (string-append (assoc-ref %build-inputs "binutils")
-                                       "/bin/ld")))
-                     (chmod ld #o555)
-                     (compile-file ld #:output-file go)))))
-    (synopsis "The linker wrapper")
-    (description
-     "The linker wrapper (or `ld-wrapper') wraps the linker to add any
-missing `-rpath' flags, and to detect any misuse of libraries outside of the
-store.")
-    (home-page #f)
-    (license gpl3+)))
+  (make-ld-wrapper "ld-wrapper-boot3"
+                   #:binutils binutils-final
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
 
 (define %boot3-inputs
   ;; 4th stage inputs.
@@ -615,7 +578,7 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
-(define glibc-utf8-locales-final
+(define-public glibc-utf8-locales-final
   ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed
   ;; by the build processes afterwards so their 'scm_to_locale_string' works
   ;; with the full range of Unicode codepoints (remember
@@ -745,6 +708,19 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 ;;; GCC toolchain.
 ;;;
 
+(define (fixed-ld-wrapper)
+  ;; FIXME: In this cycle, a bug was introduced in ld-wrapper: it would
+  ;; incorrectly flag ~/.guix-profile/lib/libfoo.so as "impure", due to a bug
+  ;; in its symlink resolution code.  To work around that while avoiding a
+  ;; full rebuild, use an ld-wrapper with the bug-fix for 'gcc-toolchain'.
+  (let ((orig (car (assoc-ref %final-inputs "ld-wrapper"))))
+    (package
+      (inherit orig)
+      (location (source-properties->location (current-source-location)))
+      (inputs `(("wrapper" ,(search-path %load-path
+                                         "gnu/packages/ld-wrapper2.in"))
+                ,@(package-inputs orig))))))
+
 (define (gcc-toolchain gcc)
   "Return a complete toolchain for GCC."
   (package
@@ -783,7 +759,7 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
     ;; install everything that we need, and (2) to make sure ld-wrapper comes
     ;; before Binutils' ld in the user's profile.
     (inputs `(("gcc" ,gcc)
-              ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
+              ("ld-wrapper" ,(fixed-ld-wrapper))
               ("binutils" ,binutils-final)
               ("libc" ,glibc-final)
               ("libc-debug" ,glibc-final "debug")))))

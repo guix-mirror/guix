@@ -188,7 +188,10 @@ features an integrated Emacs-like editor and a large runtime library.")
                                ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
                                ;; "--customgc=no" ; use our libgc
                                (string-append"--mv=" (which "mv"))
-                               (string-append "--rm=" (which "rm"))))))
+                               (string-append "--rm=" (which "rm"))
+                               (string-append "--ldflags=-Wl,-rpath="
+                                              (assoc-ref outputs "out")
+                                              "/lib/bigloo/" ,version)))))
                  (alist-cons-after
                   'install 'install-emacs-modes
                   (lambda* (#:key outputs #:allow-other-keys)

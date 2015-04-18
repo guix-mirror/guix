@@ -204,11 +204,11 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
        (modify-phases %standard-phases
          ;; Prevent make from trying to regenerate config.h.in.
          (add-after
-          unpack set-config-h-in-file-time
+          'unpack 'set-config-h-in-file-time
           (lambda _
             (set-file-time "config/config.h.in" (stat "configure"))))
          (add-after
-          unpack patch-reg-wrapper
+          'unpack 'patch-reg-wrapper
           (lambda _
             (substitute* "prog/reg_wrapper.sh"
               ((" /bin/sh ")

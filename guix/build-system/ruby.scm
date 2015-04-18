@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,8 +25,14 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
-  #:export (ruby-build
+  #:export (%ruby-build-system-modules
+            ruby-build
             ruby-build-system))
+
+(define %ruby-build-system-modules
+  ;; Build-side modules imported by default.
+  `((guix build ruby-build-system)
+    ,@%gnu-build-system-modules))
 
 (define (default-ruby)
   "Return the default Ruby package."
@@ -72,9 +78,7 @@
                      (search-paths '())
                      (system (%current-system))
                      (guile #f)
-                     (imported-modules '((guix build ruby-build-system)
-                                         (guix build gnu-build-system)
-                                         (guix build utils)))
+                     (imported-modules %ruby-build-system-modules)
                      (modules '((guix build ruby-build-system)
                                 (guix build utils))))
   "Build SOURCE using RUBY and INPUTS."

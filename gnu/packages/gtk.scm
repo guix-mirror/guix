@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
@@ -51,7 +53,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.15.3")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -59,9 +61,15 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "177a9x6lz2im0mfgxv2crv0l740wy7rg5vlnb8wyyf4fmnh0q19f")))) ; 2.15.3
+              "0qp5i91kfk6rhrlam3s8ha0cz88lkyp89vsyn4pb5856c1h9hpq9"))))
    (build-system gnu-build-system)
-   (inputs `(("glib" ,glib)))
+   (outputs '("out" "doc"))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))))
+   (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -77,14 +85,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.12.18")
+   (version "1.14.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1dpmlxmmigpiyv0jchjsn2l1a29655x24g5073hy8p4lmjvz0nfw"))))
+              "1sycbq0agbwmg1bj9lhkgsf0glmblaf2jrdy9g6vxfxivncxj6f9"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -332,7 +340,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.10.0")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -340,18 +348,32 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1ns44yibdgcwzwri7sr075hfs5rh5lgxkh71247a0822az3mahcn"))))
+              "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
    (build-system gnu-build-system)
-   (inputs `(("dbus" ,dbus)
-             ("glib" ,glib)
-             ("libxi" ,libxi)
-             ("libxtst" ,libxtst)))
-   (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+   (outputs '("out" "doc"))
    (arguments
-    `(#:tests? #f)) ; FIXME: dbind/dbtest fails; one should disable tests in
-                    ; a more fine-grained way.
+    '(#:make-flags '("CC=gcc") ; for g-ir-scanner
+      #:configure-flags
+      (list (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'check
+                 ;; Run test-suite under a dbus session.
+                 (lambda _
+                   (zero? (system* "dbus-launch" "make" "check")))))))
+   (propagated-inputs
+    ;; atspi-2.pc refers to all these.
+    `(("dbus" ,dbus)
+      ("glib" ,glib)))
+   (inputs
+    `(("libxi" ,libxi)
+      ("libxtst" ,libxtst)))
+   (native-inputs
+    `(("gobject-introspection" ,gobject-introspection)
+      ("intltool" ,intltool)
+      ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
    (description
     "The Assistive Technology Service Provider Interface, core components,
@@ -362,7 +384,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.10.0")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -370,17 +392,22 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "150sqc21difazqd53llwfdaqnwfy73bic9hia41xpfy9kcpzz9yy"))))
+              "1y9gfz1iz3wpja7s000f0bmyyvc6im5fcdl6bxwbz0v3qdgc9vvq"))))
    (build-system gnu-build-system)
-   (inputs `(("atk" ,atk)
-             ("at-spi2-core" ,at-spi2-core)
-             ("dbus" ,dbus)
-             ("glib" ,glib)))
-   (native-inputs
-     `(("pkg-config" ,pkg-config)))
    (arguments
-    `(#:tests? #f)) ; FIXME: droute/droute-test fails; one should disable
-                    ; tests in a more fine-grained way.
+    '(#:phases
+      (modify-phases %standard-phases
+        (replace 'check
+                 ;; Run test-suite under a dbus session.
+                 (lambda _
+                   (zero? (system* "dbus-launch" "make" "check")))))))
+   (propagated-inputs
+    `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
+   (inputs
+    `(("atk" ,atk)))
+   (native-inputs
+    `(("dbus" ,dbus) ; for testing
+      ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
    (description
     "The Assistive Technology Service Provider Interface
@@ -391,7 +418,7 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
    (name "gtk+")
-   (version "2.24.21")
+   (version "2.24.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -399,20 +426,35 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1qyw73pr9ryqhir2h1kbx3vm70km4dg2fxrgkrdlpv0rvlb94bih"))))
+              "1x14rnjvqslpa1q19fp1qalz5sxds72amsgjk8m7769rwk511jr0"))))
    (build-system gnu-build-system)
+   (outputs '("out" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("pango" ,pango)))
+   (inputs
+    `(("cups" ,cups)
+      ("libxcomposite" ,libxcomposite)
+      ("libxcursor" ,libxcursor)
+      ("libxdamage" ,libxdamage)
+      ("libxi" ,libxi)
+      ("libxinerama" ,libxinerama)
+      ("libxrandr" ,libxrandr)))
    (native-inputs
     `(("perl" ,perl)
+      ("gettext" ,gnu-gettext)
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
     `(#:make-flags '("CC=gcc")
+      #:configure-flags
+      (list "--with-xinput=yes"
+            (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))
       #:phases
       (alist-cons-before
        'configure 'disable-tests
@@ -433,7 +475,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.14.7")
+   (version "3.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -441,11 +483,12 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0vm40n6nf0w3vv54wqy67jcxddka7hplksi093xim3119yq196gv"))))
+              "1si6ihl1wlvag8qq3166skr9fnm9i33dimbfry1j628qzqc76qff"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
+      ("libepoxy" ,libepoxy)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
       ("libxdamage" ,libxdamage)
@@ -456,25 +499,33 @@ application suites.")
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
+      ("gettext" ,gnu-gettext)
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key inputs #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           ;; Disable most tests, failing in the chroot with the message:
-           ;; D-Bus library appears to be incorrectly set up; failed to read
-           ;; machine uuid: Failed to open "/etc/machine-id": No such file or
-           ;; directory.
-           ;; See the manual page for dbus-uuidgen to correct this issue.
-           (substitute* "testsuite/Makefile.in"
-             (("SUBDIRS = gdk gtk a11y css reftests")
-              "SUBDIRS = gdk"))
-           (apply configure args)))
+    `(;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
+      ;; to "doc".
+      #:configure-flags (list (string-append "--with-html-dir="
+                                             (assoc-ref %outputs "doc")
+                                             "/share/gtk-doc/html"))
+      #:phases
+      (alist-cons-before
+       'configure 'pre-configure
+       (lambda _
+         ;; Disable most tests, failing in the chroot with the message:
+         ;; D-Bus library appears to be incorrectly set up; failed to read
+         ;; machine uuid: Failed to open "/etc/machine-id": No such file or
+         ;; directory.
+         ;; See the manual page for dbus-uuidgen to correct this issue.
+         (substitute* "testsuite/Makefile.in"
+           (("SUBDIRS = gdk gtk a11y css reftests")
+            "SUBDIRS = gdk"))
+         (substitute* '("demos/widget-factory/Makefile.in"
+                        "demos/gtk-demo/Makefile.in")
+           (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
+         #t)
        %standard-phases)))))
 
 ;;;

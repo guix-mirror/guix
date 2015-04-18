@@ -151,14 +151,14 @@ standard utility.")
 (define-public patch
   (package
    (name "patch")
-    (version "2.7.4")
+    (version "2.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/patch/patch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "02gikxjvcxysr4l65c8vivgz62xmalp0av5ypzff8vqhrq3vpb0f"))))
+                "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))))
    (build-system gnu-build-system)
    (native-inputs `(("ed", ed)))
    (synopsis "Apply differences to originals, with optional backups")
@@ -358,6 +358,72 @@ included.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 
+(define* (make-ld-wrapper name #:key binutils
+                          (guile (canonical-package guile-2.0))
+                          (bash (canonical-package bash)) target
+                          (guile-for-build guile))
+  "Return a package called NAME that contains a wrapper for the 'ld' program
+of BINUTILS, which adds '-rpath' flags to the actual 'ld' command line.  When
+TARGET is not #f, make a wrapper for the cross-linker for TARGET, called
+'TARGET-ld'.  The wrapper uses GUILE and BASH."
+  (package
+    (name name)
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("binutils" ,binutils)
+              ("guile"    ,guile)
+              ("bash"     ,bash)
+              ("wrapper"  ,(search-path %load-path
+                                        "gnu/packages/ld-wrapper.in"))))
+    (arguments
+     `(#:guile ,guile-for-build
+       #:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (system base compile))
+
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (bin (string-append out "/bin"))
+                          (ld  ,(if target
+                                    `(string-append bin "/" ,target "-ld")
+                                    '(string-append bin "/ld")))
+                          (go  (string-append ld ".go")))
+
+                     (setvbuf (current-output-port) _IOLBF)
+                     (format #t "building ~s/bin/ld wrapper in ~s~%"
+                             (assoc-ref %build-inputs "binutils")
+                             out)
+
+                     (mkdir-p bin)
+                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
+                     (substitute* ld
+                       (("@SELF@")
+                        ld)
+                       (("@GUILE@")
+                        (string-append (assoc-ref %build-inputs "guile")
+                                       "/bin/guile"))
+                       (("@BASH@")
+                        (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
+                       (("@LD@")
+                        (string-append (assoc-ref %build-inputs "binutils")
+                                       ,(if target
+                                            (string-append "/bin/"
+                                                           target "-ld")
+                                            "/bin/ld"))))
+                     (chmod ld #o555)
+                     (compile-file ld #:output-file go)))))
+    (synopsis "The linker wrapper")
+    (description
+     "The linker wrapper (or 'ld-wrapper') wraps the linker to add any
+missing '-rpath' flags, and to detect any misuse of libraries outside of the
+store.")
+    (home-page "http://www.gnu.org/software/guix/")
+    (license gpl3+)))
+
+(export make-ld-wrapper)
+
 (define-public glibc
   (package
    (name "glibc")
@@ -392,6 +458,12 @@ included.")
       ;; In version 2.21, there a race in the 'elf' directory, see
       ;; <http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00709.html>.
       #:parallel-build? #f
+
+      ;; The libraries have an empty RUNPATH, but some, such as the versioned
+      ;; libraries (libdl-2.21.so, etc.) have ld.so marked as NEEDED.  Since
+      ;; these libraries are always going to be found anyway, just skip
+      ;; RUNPATH checks.
+      #:validate-runpath? #f
 
       #:configure-flags
       (list "--enable-add-ons"
@@ -431,7 +503,8 @@ included.")
       #:tests? #f                                 ; XXX
       #:phases (alist-cons-before
                 'configure 'pre-configure
-                (lambda* (#:key inputs outputs #:allow-other-keys)
+                (lambda* (#:key inputs native-inputs outputs
+                          #:allow-other-keys)
                   (let* ((out  (assoc-ref outputs "out"))
                          (bin  (string-append out "/bin")))
                     ;; Use `pwd', not `/bin/pwd'.
@@ -455,8 +528,13 @@ included.")
 
                     ;; Copy a statically-linked Bash in the output, with
                     ;; no references to other store paths.
+                    ;; FIXME: Normally we would look it up only in INPUTS but
+                    ;; cross-base uses it as a native input.
                     (mkdir-p bin)
-                    (copy-file (string-append (assoc-ref inputs "static-bash")
+                    (copy-file (string-append (or (assoc-ref inputs
+                                                             "static-bash")
+                                                  (assoc-ref native-inputs
+                                                             "static-bash"))
                                               "/bin/bash")
                                (string-append bin "/bash"))
                     (remove-store-references (string-append bin "/bash"))
@@ -611,7 +689,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2014j")
+    (version "2015b")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -619,7 +697,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "038fvj6zf51k6z9sbbxbj87ajaf69l3whal2vwshbm4l0qr71n52"))))
+               "0qmdr1yqqn94b5a54axwszfzimyxg27i6xsfmp0sswd3nfjw2sjm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -666,7 +744,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1qpd12imy7q5hb5fhk48mfw65s0xlrkmms0zr2gk0mj88qjn3m3z"))))))
+                            "0xjxlgzva13y8qi3vfbb3nq5pii8ax9wi4yc7vj9134rbciz2s76"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

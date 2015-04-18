@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts lint)
+  #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module (guix download)
   #:use-module (guix ftp-client)
@@ -32,6 +33,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (web uri)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
                           open-connection-for-uri))
@@ -41,12 +44,15 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:export (guix-lint
             check-description-style
             check-inputs-should-be-native
-            check-patches
+            check-patch-file-names
             check-synopsis-style
+            check-derivation
             check-home-page
             check-source))
 
@@ -348,26 +354,30 @@ warning for PACKAGE mentionning the FIELD."
                                     (package-home-page package))
                     'home-page)))))
 
-(define (check-patches package)
-  ;; Emit a warning if the patches requires by PACKAGE are badly named.
-  (let ((patches   (and=> (package-source package) origin-patches))
-        (name      (package-name package))
-        (full-name (package-full-name package)))
-    (when (and patches
-               (any (match-lambda
-                     ((? string? patch)
-                      (let ((filename (basename patch)))
-                        (not (or (eq? (string-contains filename name) 0)
-                                 (eq? (string-contains filename full-name)
-                                      0)))))
-                     (_
-                      ;; This must be an <origin> or something like that.
-                      #f))
-                    patches))
-      (emit-warning package
-                    (_ "file names of patches should start with \
+(define (check-patch-file-names package)
+  "Emit a warning if the patches requires by PACKAGE are badly named or if the
+patch could not be found."
+  (guard (c ((message-condition? c)               ;raised by 'search-patch'
+             (emit-warning package (condition-message c)
+                           'patch-file-names)))
+    (let ((patches   (and=> (package-source package) origin-patches))
+          (name      (package-name package))
+          (full-name (package-full-name package)))
+      (when (and patches
+                 (any (match-lambda
+                        ((? string? patch)
+                         (let ((file (basename patch)))
+                           (not (or (eq? (string-contains file name) 0)
+                                    (eq? (string-contains file full-name)
+                                         0)))))
+                        (_
+                         ;; This must be an <origin> or something like that.
+                         #f))
+                      patches))
+        (emit-warning package
+                      (_ "file names of patches should start with \
 the package name")
-                    'patches))))
+                      'patch-file-names)))))
 
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."
@@ -434,6 +444,25 @@ descriptions maintained upstream."
              (append-map (cut maybe-expand-mirrors <> %mirrors)
                          uris))))))
 
+(define (check-derivation package)
+  "Emit a warning if we fail to compile PACKAGE to a derivation."
+  (catch #t
+    (lambda ()
+      (guard (c ((nix-protocol-error? c)
+                 (emit-warning package
+                               (format #f (_ "failed to create derivation: ~a")
+                                       (nix-protocol-error-message c))))
+                ((message-condition? c)
+                 (emit-warning package
+                               (format #f (_ "failed to create derivation: ~a")
+                                       (condition-message c)))))
+        (with-store store
+          (package-derivation store package))))
+    (lambda args
+      (emit-warning package
+                    (format #f (_ "failed to create derivation: ~s~%")
+                            args)))))
+
 
 
 ;;;
@@ -455,9 +484,9 @@ descriptions maintained upstream."
      (description "Identify inputs that should be native inputs")
      (check       check-inputs-should-be-native))
    (lint-checker
-     (name        'patch-filenames)
-     (description "Validate file names of patches")
-     (check       check-patches))
+     (name        'patch-file-names)
+     (description "Validate file names and availability of patches")
+     (check       check-patch-file-names))
    (lint-checker
      (name        'home-page)
      (description "Validate home-page URLs")
@@ -466,6 +495,10 @@ descriptions maintained upstream."
      (name        'source)
      (description "Validate source URLs")
      (check       check-source))
+   (lint-checker
+     (name        'derivation)
+     (description "Report failure to compile a package to a derivation")
+     (check       check-derivation))
    (lint-checker
      (name        'synopsis)
      (description "Validate package synopses")

@@ -241,12 +241,12 @@ in the store."
 
   (define builder
     #~(begin
-        #$(if need-gnutls?
+        #+(if need-gnutls?
 
               ;; Add GnuTLS to the inputs and to the load path.
               #~(eval-when (load expand eval)
                   (set! %load-path
-                        (cons (string-append #$(gnutls-package)
+                        (cons (string-append #+(gnutls-package)
                                              "/share/guile/site/"
                                              (effective-version))
                               %load-path)))

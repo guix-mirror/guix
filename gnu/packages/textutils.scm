@@ -45,11 +45,13 @@
     (arguments
      '(#:phases
        (alist-cons-before
-        'check 'fix-setup-py
+        'check 'pre-check
         (lambda _
           (substitute* "tests/setup.py"
             (("([[:space:]]*)include_dirs=.*" all space)
-             (string-append all space "library_dirs=['../src/.libs'],\n"))))
+             (string-append all space "library_dirs=['../src/.libs'],\n")))
+          ;; The test extension 'Recode.so' lacks RUNPATH for 'librecode.so'.
+          (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/src/.libs")))
         %standard-phases)))
     (home-page "https://github.com/pinard/Recode")
     (synopsis "Text encoding converter")

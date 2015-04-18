@@ -1,0 +1,15 @@
+This patch makes the build system pass -Wl,-rpath=$out/lib even for
+libraries (it already does so for executables, thanks to 'DO_GNU_APP'
+in 'Makefile.shared'.)
+
+--- openssl-1.0.2a/Makefile.shared	2015-04-05 01:07:35.357602454 +0200
++++ openssl-1.0.2a/Makefile.shared	2015-04-05 01:09:50.474513303 +0200
+@@ -106,7 +106,7 @@ LINK_SO=	\
+     LIBPATH=`for x in $$LIBDEPS; do echo $$x; done | sed -e 's/^ *-L//;t' -e d | uniq`; \
+     LIBPATH=`echo $$LIBPATH | sed -e 's/ /:/g'`; \
+     LD_LIBRARY_PATH=$$LIBPATH:$$LD_LIBRARY_PATH \
+-    $${SHAREDCMD} $${SHAREDFLAGS} \
++    $${SHAREDCMD} $${SHAREDFLAGS} -Wl,-rpath,$(LIBRPATH) \
+ 	-o $$SHLIB$$SHLIB_SOVER$$SHLIB_SUFFIX \
+ 	$$ALLSYMSFLAGS $$SHOBJECTS $$NOALLSYMSFLAGS $$LIBDEPS \
+   ) && $(SYMLINK_SO)

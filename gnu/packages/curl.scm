@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,15 +38,17 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.40.0")
+   (version "7.41.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1a15fdc26b3vwwmchzzpd3l1hfyhx06dn7b6lkikqd7kgwvg5ps7"))
-            (patches (list (search-patch "curl-gss-api-fix.patch")))))
+              "08n7vrhdfzziy3a7n93r7qjhzk8p26q464hxg8w9irdk3v60pi62"))
+            (patches
+             (list (search-patch "curl-support-capath-on-gnutls.patch")
+                   (search-patch "curl-support-capath-on-gnutls-conf.patch")))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
@@ -68,6 +71,10 @@
        (lambda _
          (substitute* "tests/runtests.pl"
            (("/bin/sh") (which "sh")))
+         ;; Test #1135 requires extern-scan.pl, which is not part of the
+         ;; tarball due to a mistake.  It has been fixed upstream.  We can
+         ;; simply disable the test as it is specific to VMS and OS/400.
+         (delete-file "tests/data/test1135")
 
          ;; The top-level "make check" does "make -C tests quiet-test", which
          ;; is too quiet.  Use the "test" target instead, which is more

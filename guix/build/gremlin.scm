@@ -18,14 +18,22 @@
 
 (define-module (guix build gremlin)
   #:use-module (guix elf)
+  #:use-module ((guix build utils) #:select (store-file-name?))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
-  #:export (elf-dynamic-info
+  #:export (elf-error?
+            elf-error-elf
+            invalid-segment-size?
+            invalid-segment-size-segment
+
+            elf-dynamic-info
             elf-dynamic-info?
             elf-dynamic-info-sopath
             elf-dynamic-info-needed
@@ -41,12 +49,31 @@
 ;;;
 ;;; Code:
 
+(define-condition-type &elf-error &error
+  elf-error?
+  (elf elf-error-elf))
+
+(define-condition-type &invalid-segment-size &elf-error
+  invalid-segment-size?
+  (segment invalid-segment-size-segment))
+
+
 (define (dynamic-link-segment elf)
   "Return the 'PT_DYNAMIC' segment of ELF--i.e., the segment that contains
 dynamic linking information."
-  (find (lambda (segment)
-          (= (elf-segment-type segment) PT_DYNAMIC))
-        (elf-segments elf)))
+  (let ((size (bytevector-length (elf-bytes elf))))
+    (find (lambda (segment)
+            (unless (<= (+ (elf-segment-offset segment)
+                           (elf-segment-filesz segment))
+                        size)
+              ;; This happens on separate debug output files created by
+              ;; 'strip --only-keep-debug' (Binutils 2.25.)
+              (raise (condition (&invalid-segment-size
+                                 (elf elf)
+                                 (segment segment)))))
+
+            (= (elf-segment-type segment) PT_DYNAMIC))
+          (elf-segments elf))))
 
 (define (word-reader size byte-order)
   "Return a procedure to read a word of SIZE bytes according to BYTE-ORDER."
@@ -197,6 +224,7 @@ value of DT_NEEDED entries is a string.)"
     "libc.so"
     "libdl.so"
     "libm.so"
+    "libnsl.so"                                   ;NEEDED by nscd
     "libpthread.so"
     "libresolv.so"
     "librt.so"
@@ -214,23 +242,42 @@ value of DT_NEEDED entries is a string.)"
 present in its RUNPATH, or if FILE lacks dynamic-link information.  Return #f
 otherwise.  Libraries whose name matches ALWAYS-FOUND? are considered to be
 always available."
-  (let* ((elf     (call-with-input-file file
-                    (compose parse-elf get-bytevector-all)))
-         (dyninfo (elf-dynamic-info elf)))
-    (when dyninfo
-      (let* ((runpath   (elf-dynamic-info-runpath dyninfo))
-             (needed    (remove always-found?
-                                (elf-dynamic-info-needed dyninfo)))
-             (not-found (remove (cut search-path runpath <>)
-                                needed)))
-        (for-each (lambda (lib)
-                    (format (current-error-port)
-                            "error: '~a' depends on '~a', which cannot \
+  (guard (c ((invalid-segment-size? c)
+             (let ((segment (invalid-segment-size-segment c)))
+               (format (current-error-port)
+                       "~a: error: offset + size of segment ~a (type ~a) \
+exceeds total size~%"
+                       file
+                       (elf-segment-index segment)
+                       (elf-segment-type segment))
+               #f)))
+
+    (let* ((elf     (call-with-input-file file
+                      (compose parse-elf get-bytevector-all)))
+           (dyninfo (elf-dynamic-info elf)))
+      (when dyninfo
+        (let* ((runpath   (filter store-file-name?
+                                  (elf-dynamic-info-runpath dyninfo)))
+               (bogus     (remove store-file-name?
+                                  (elf-dynamic-info-runpath dyninfo)))
+               (needed    (remove always-found?
+                                  (elf-dynamic-info-needed dyninfo)))
+               (not-found (remove (cut search-path runpath <>)
+                                  needed)))
+          ;; XXX: $ORIGIN is not supported.
+          (unless (null? bogus)
+            (format (current-error-port)
+                    "~a: warning: RUNPATH contains bogus entries: ~s~%"
+                    file bogus))
+
+          (for-each (lambda (lib)
+                      (format (current-error-port)
+                              "~a: error: depends on '~a', which cannot \
 be found in RUNPATH ~s~%"
-                            file lib runpath))
-                  not-found)
-        ;; (when (null? not-found)
-        ;;   (format (current-error-port) "~a is OK~%" file))
-        (null? not-found)))))
+                              file lib runpath))
+                    not-found)
+          ;; (when (null? not-found)
+          ;;   (format (current-error-port) "~a is OK~%" file))
+          (null? not-found))))))
 
 ;;; gremlin.scm ends here

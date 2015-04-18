@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,7 +91,7 @@ basis for almost any application.")
        ("gperf" ,gperf)
        ("psmisc" ,psmisc)))                       ; for `killall'
     (inputs
-     `(("nettle" ,nettle)
+     `(("nettle" ,nettle-2)
        ("linux-pam" ,linux-pam)
 
        ;; 'rl.c' uses the 'CPPFunction' type, which is no longer in

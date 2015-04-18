@@ -109,11 +109,11 @@ and its related documentation.")
      `(#:tests? #f                      ; no test target
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/sh
+         (add-before 'configure 'patch-/bin/sh
            (lambda _
              (substitute* "auto/feature"
                (("/bin/sh") (which "bash")))))
-         (replace configure
+         (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((flags
                     (list (string-append "--prefix=" (assoc-ref outputs "out"))
@@ -138,7 +138,7 @@ and its related documentation.")
                (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
                (zero? (apply system* "./configure" flags)))))
-         (add-after install fix-root-dirs
+         (add-after 'install 'fix-root-dirs
            (lambda* (#:key outputs #:allow-other-keys)
              ;; 'make install' puts things in strange places, so we need to
              ;; clean it up ourselves.

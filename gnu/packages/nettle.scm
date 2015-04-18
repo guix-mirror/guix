@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages nettle)
+  #:use-module (guix utils)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -24,7 +25,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages m4))
 
-(define-public nettle
+(define-public nettle-2
   (package
     (name "nettle")
     (version "2.7.1")
@@ -42,6 +43,7 @@
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))))
+    (outputs '("out" "debug"))
     (native-inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
     (home-page "http://www.lysator.liu.se/~nisse/nettle/")
@@ -53,15 +55,21 @@ cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
 
-(define-public nettle-3
+(define-public nettle
   ;; This version is not API-compatible with version 2.  In particular GnuTLS
   ;; cannot use it yet.  So keep it separate.
-  (package (inherit nettle)
-    (version "3.0")
+  (package (inherit nettle-2)
+    (version "3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04yrpjz33vrj6j0zxc153b00f93i8hs41syr1ryp7sr64fyw0lcn"))))))
+                "1ly9kz5fgc8ilykz07crqwgjsfn4p2s6565gj1aq0w4fr179v1gn"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments nettle-2)
+       ((#:configure-flags flags)
+        ;; Build "fat" binaries where the right implementation is chosen at
+        ;; run time based on CPU features (starting from 3.1.)
+        `(cons "--enable-fat" ,flags))))))

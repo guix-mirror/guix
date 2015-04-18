@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.8.12")
+    (version "1.8.16")
     (source (origin
              (method url-fetch)
              (uri
@@ -65,7 +65,7 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "07jhcalg00i2rx5zrgk73rg0vm7lzi5q5z2gscrbl999ipr2h569"))
+               "01rba8mp8kqvmy6ibdmi806kjr3m14swnskqk02gyhykxxl54ybz"))
              (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -119,7 +119,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.42.1")
+   (version "2.44.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -127,7 +127,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "16pqvikrps1fvwwqvk0qi4a13mfg7gw6w5qfhk7bhi8f51jhhgwg"))
+              "1fgmjv3yzxgbks31h42201x2izpw0sd84h8dfw0si3x00sqn5lzj"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
                            (search-patch "glib-tests-prlimit.patch")
@@ -176,7 +176,7 @@ shared NFS home directories.")
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc"))
+                                             "/share/gtk-doc/html"))
 
       ;; In 'gio/tests', 'gdbus-test-codegen-generated.h' is #included in a
       ;; file that gets compiled possibly before it has been fully generated.
@@ -189,7 +189,11 @@ shared NFS home directories.")
     ;; by 'glib-compile-schemas'.
     (list (search-path-specification
            (variable "XDG_DATA_DIRS")
-           (files '("share")))))
+           (files '("share")))
+          ;; To load extra gio modules from glib-networking, etc.
+          (search-path-specification
+           (variable "GIO_EXTRA_MODULES")
+           (files '("lib/gio/modules")))))
    (search-paths native-search-paths)
 
    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")

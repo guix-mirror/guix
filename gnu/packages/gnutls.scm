@@ -29,6 +29,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -38,7 +39,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.2")
+    (version "4.4")
     (source
      (origin
       (method url-fetch)
@@ -46,7 +47,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1fydwh5hlnmprdzmzn4kiqb939br59qv1001k7ah5b626v5l2fv9"))))
+        "0p8c5s1gm3z3nn4s9qc6gs18grbk45mx44byqw2l2qzynjqrsd7q"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
 
@@ -65,7 +66,7 @@ specifications.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.22.1")
+    (version "0.23.1")
     (source
      (origin
       (method url-fetch)
@@ -73,7 +74,7 @@ specifications.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0p4sadq2c70jdm7b5a5xw8mk2mqy36krpxr3ihnf783arygk6fpg"))
+        "1i3a1wdpagm0p3y1bwaz5x5rjhcpqbcrnhkcp10p259vkxk72wz5"))
       (modules '((guix build utils))) ; for substitute*
       (snippet
         '(begin
@@ -103,7 +104,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.3.12")
+    (version "3.4.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -114,7 +115,9 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "16r96bzsfqx1rlqrkggmhhx6zbxj1fmc3mwpp0ik73ylqn93xav7"))))
+               "0bj7ydvsyvml59b6040wg7694iz37rwnqnv09bic9ddz652588ml"))
+             (patches
+              (list (search-patch "gnutls-fix-duplicate-manpages.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -130,7 +133,12 @@ living in the same process.")
              ;; store is used, so each program has to provide its own
              ;; fallback, and users have to configure each program
              ;; independently.  This seems suboptimal.
-             "--with-default-trust-store-dir=/etc/ssl/certs")))
+             "--with-default-trust-store-dir=/etc/ssl/certs"
+
+             ;; FIXME: Temporarily disable p11-kit support since it is not
+             ;; working on mips64el.
+             "--without-p11-kit")))
+    (outputs '("out" "debug"))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
@@ -140,6 +148,7 @@ living in the same process.")
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
+       ("libidn" ,libidn)
        ("nettle" ,nettle)
        ("zlib" ,zlib)))
     (home-page "http://www.gnu.org/software/gnutls/")

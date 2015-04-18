@@ -30,26 +30,35 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages scanner)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
@@ -98,7 +107,7 @@ features to enable users to create their discs easily and quickly.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.10.0")
+    (version "3.16.0")
     (source
      (origin
       (method url-fetch)
@@ -107,7 +116,7 @@ features to enable users to create their discs easily and quickly.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0p5p6wvmy5zvcdnmp5h2biz7rjrcw99chq5kkwcnb68flcmkb1ry"))))
+        "05lvik5cdh51xqd332qingph09zdhiaa1kqy9k2sk1simz4pvf8m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -871,22 +880,24 @@ designed to be accessed through the MIME functions in GnomeVFS.")
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.bz2"))
               (sha256
-               (base32 "1ajg8jb8k3snxc7rrgczlh8daxkjidmcv3zr9w809sq4p2sn9pk2"))))
+               (base32
+                "1ajg8jb8k3snxc7rrgczlh8daxkjidmcv3zr9w809sq4p2sn9pk2"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
-     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
-                         ;; ... which they then completly ignore !!
-                         #:phases
-                         (alist-cons-before
-                          'configure 'ignore-deprecations
-                          (lambda _
-                            (begin
-                              (substitute* "libgnomevfs/Makefile.in"
-                                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
-                              (substitute* "daemon/Makefile.in"
-                                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))))
-                          %standard-phases)))
+     `(#:phases
+       (alist-cons-before
+        'configure 'ignore-deprecations
+        (lambda _
+          (substitute* '("libgnomevfs/Makefile.in"
+                         "daemon/Makefile.in")
+            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+          #t)
+        (alist-cons-before
+         'configure 'patch-test-async-cancel-to-never-fail
+         (lambda _
+           (substitute* "test/test-async-cancel.c"
+             (("EXIT_FAILURE") "77")))
+         %standard-phases))))
     (inputs `(("glib" ,glib)
               ("libxml2" ,libxml2)
               ("dbus-glib" ,dbus-glib)
@@ -900,9 +911,10 @@ designed to be accessed through the MIME functions in GnomeVFS.")
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/gnome-vfs/")
     (synopsis "Access files and folders in GNOME applications")
-    (description  "GnomeVFS is the core library used to access files and
-folders in GNOME applications.  It provides a file system abstraction which
-allows applications to access local and remote files with a single consistent API.")
+    (description
+     "GnomeVFS is the core library used to access files and folders in GNOME
+applications.  It provides a file system abstraction which allows applications
+to access local and remote files with a single consistent API.")
     (license license:lgpl2.0+)))
 
 
@@ -1340,7 +1352,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0f2b3ypkfvrdsxcvp14ja9wqj382f1p46yrjvhhxkkjgagy6qb41"))))
+         "0kyrbfrgl6g6wm6zpllldz36fclvl8vwmn1snwk18kf7f6ncpsac"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
@@ -1649,7 +1661,7 @@ library.")
        '("--with-ca-certificates=no")
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-giomoduledir
+         (add-before 'configure 'patch-giomoduledir
                      ;; Install GIO modules into $out/lib/gio/modules.
                      (lambda _
                        (substitute* "configure"
@@ -1697,14 +1709,14 @@ library.")
                             "/lib/gio/modules"))
        #:phases
        (modify-phases %standard-phases
-         (add-before configure disable-unconnected-socket-test
+         (add-before 'configure 'disable-unconnected-socket-test
                      ;; This test fails due to missing /etc/nsswitch.conf
                      ;; in the build environment.
                      (lambda _
                        (substitute* "tests/socket-test.c"
                          ((".*/sockets/unconnected.*") ""))
                        #t))
-         (add-before check unset-LC_ALL
+         (add-before 'check 'unset-LC_ALL
                      ;; The 'check-local' target runs 'env LANG=C sort -u',
                      ;; unset 'LC_ALL' to make 'LANG' working.
                      (lambda _
@@ -1799,11 +1811,11 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/true
+         (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
                          (("/bin/true") (which "true")))))
-         (add-after install wrap-pixbuf
+         (add-after 'install 'wrap-pixbuf
                     ;; Use librsvg's loaders.cache to support SVG files.
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out    (assoc-ref outputs "out"))
@@ -1847,7 +1859,7 @@ floating in an ocean using only your brain and a little bit of luck.")
              "--without-nautilus-extension")
        #:phases
        (modify-phases %standard-phases
-         (add-before configure patch-/bin/true
+         (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
                          (("/bin/true") (which "true"))))))))
@@ -1874,3 +1886,312 @@ your system.
 It supports several profiles, multiple tabs and implements several
 keyboard shortcuts.")
     (license license:gpl3+)))
+
+(define-public colord
+  (package
+    (name "colord")
+    (version "1.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/colord/releases/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "01w97rgzk4qi6fp03scq5jyw0ayx11b479p7dkm2r77k84b9agph"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(;; The tests want to run valgrind.  Punt for now.
+       #:tests? #f
+       #:configure-flags (list "--localstatedir=/var"
+                               ;; GUSB not packaged yet.
+                               "--disable-gusb"
+                               ;; No dep on systemd.
+                               "--disable-systemd-login"
+                               ;; Wants to install to global completion dir;
+                               ;; punt.
+                               "--disable-bash-completion"
+                               ;; colord-gtk not packaged yet.
+                               "--disable-session-example"
+                               "--with-daemon-user=colord"
+                               "--enable-sane"
+                               (string-append "--with-udevrulesdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true")))
+                       (substitute* "src/Makefile.in"
+                         (("if test -w \\$\\(DESTDIR\\)\\$\\(prefix\\)/;")
+                          "if test -w $(DESTDIR)$(localstatedir);"))))
+         (add-before 'build 'set-cc
+                     (lambda _
+                       ;; Set $CC so that g-ir-scanner works.
+                       (setenv "CC" "gcc")
+                       #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libtool" ,libtool)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("libusb" ,libusb)
+       ("lcms" ,lcms)
+       ("sqlite" ,sqlite)
+       ("polkit" ,polkit)
+       ("sane-backends" ,sane-backends)))
+    (home-page "http://www.freedesktop.org/software/colord/")
+    (synopsis "Color management service")
+    (description "Colord is a system service that makes it easy to manage,
+install and generate color profiles to accurately color manage input and
+output devices.")
+    (license license:gpl2+)))
+
+(define-public geoclue
+  (package
+    (name "geoclue")
+    (version "2.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.freedesktop.org/software/" name
+                           "/releases/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0s0ws2bx5g1cbjamxmm448r4n4crha2fwpzm8zbx6cq6qslygmzi"))
+       (patches (list (search-patch "geoclue-config.patch")))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(;; The tests want to run the system bus.
+       #:tests? #f
+       #:configure-flags (list ;; Disable bits requiring ModemManager.
+                               "--disable-3g-source"
+                               "--disable-cdma-source"
+                               "--disable-modem-gps-source"
+                               "--with-dbus-service-user=geoclue")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("glib" ,glib)
+       ("json-glib" ,json-glib)
+       ("libsoup" ,libsoup)))
+    (home-page "http://freedesktop.org/wiki/Software/GeoClue/")
+    (synopsis "Geolocation service")
+    (description "Geoclue is a D-Bus service that provides location
+information.  The primary goal of the Geoclue project is to make creating
+location-aware applications as simple as possible, while the secondary goal is
+to ensure that no application can access location information without explicit
+permission from user. ")
+    (license license:gpl2+)))
+
+(define-public geocode-glib
+  (package
+    (name "geocode-glib")
+    (version "3.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/geocode-glib/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1cbfv0kds6b6k0cl7q47xpj3x1scwcd7m68zl1rf7i4hmhw4hpqj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
+       ;; work for the builder.  Punt.
+       #:tests? #f
+       #:make-flags '("CC=gcc") ; for g-ir-scanner
+       ))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("json-glib" ,json-glib)))
+    (propagated-inputs
+     ;; geocode-glib-1.0.pc refers to GIO.
+     `(("glib" ,glib)))
+    (inputs
+     `(("libsoup" ,libsoup)))
+    (home-page "https://github.com/GNOME/geocode-glib/")
+    (synopsis "Geocoding and reverse-geocoding library")
+    (description
+     "geocode-glib is a convenience library for geocoding (finding longitude,
+and latitude from an address) and reverse geocoding (finding an address from
+coordinates) using the Nominatim service.  geocode-glib caches requests for
+faster results and to avoid unnecessary server load.")
+    (license license:lgpl2.0+)))
+
+(define-public upower
+  (package
+    (name "upower")
+    (version "0.99.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://upower.freedesktop.org/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vwlh20jmaf01m38kfn8yx2869a3clmkzlycrj99rf4nvwx4bp79"))
+              (patches (list (search-patch "upower-builddir.patch")))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '( ;; The tests want to contact the system bus, which can't be done in the
+       ;; build environment.  The integration test can run, but the last of
+       ;; the up-self-tests doesn't.  Disable tests for now.
+       #:tests? #f
+       #:configure-flags (list "--localstatedir=/var"
+                               (string-append "--with-udevrulesdir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/true
+                     (lambda _
+                       (substitute* "configure"
+                         (("/bin/true") (which "true")))))
+         (add-before 'configure 'patch-integration-test
+                     (lambda _
+                       (substitute* "src/linux/integration-test"
+                         (("/usr/bin/python3") (which "python3"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("python" ,python)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("libusb" ,libusb)))
+    (home-page "http://upower.freedesktop.org/")
+    (synopsis "System daemon for managing power devices")
+    (description
+     "UPower is an abstraction for enumerating power devices,
+listening to device events and querying history and statistics.  Any
+application or service on the system can access the org.freedesktop.UPower
+service via the system message bus.")
+    (license license:gpl2+)))
+
+(define-public libgweather
+  (package
+    (name "libgweather")
+    (version "3.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0x1z6wv7hdw2ivlkifcbd940zyrnvqvc4zh2drgvd2r6jmd7bjza"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
+       ;; work for the builder.  Punt.
+       #:tests? #f
+       #:make-flags '("CC=gcc") ; for g-ir-scanner
+       #:configure-flags
+       `(;; No introspection for now, as it wants to install to
+         ;; gobject-introspection's own directory and I don't know how to easily
+         ;; override this.
+         "--enable-introspection=no"
+         ,(string-append "--with-zoneinfo-dir="
+                            (assoc-ref %build-inputs "tzdata")
+                            "/share/zoneinfo"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; gweather-3.0.pc refers to GTK+, GDK-Pixbuf, GLib/GObject, libxml, and
+     ;; libsoup.
+     `(("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("libxml2" ,libxml2)
+       ("libsoup" ,libsoup)))
+    (inputs
+     `(("tzdata" ,tzdata)
+       ("geocode-glib" ,geocode-glib)))
+    (home-page "https://wiki.gnome.org/action/show/Projects/LibGWeather")
+    (synopsis "Location, time zone, and weather library for GNOME")
+    (description
+     "libgweather is a library to access weather information from online
+services for numerous locations.")
+    (license license:gpl2+)))
+
+(define-public gnome-settings-daemon
+  (package
+    (name "gnome-settings-daemon")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1w29x2izq59125ga5ncmmaklc8kw7x7rdn6swn26bs23mah1r1g3"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; libwacom and xorg-wacom not yet packaged.  Hackily disable by
+         ;; pretending to be s390 (!).
+         (add-before
+          'configure 'disable-wacom
+          (lambda _
+            (substitute* "configure"
+              (("if test \"\\$host_cpu\" = s390 -o \"\\$host_cpu\" = s390x")
+               "if true")))))
+       ;; Network manager not yet packaged.
+       #:configure-flags '("--disable-network-manager")
+       ;; Color management test can't reach the colord system service.
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("xsltproc" ,libxslt)
+       ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)))
+    (inputs
+     `(("colord" ,colord)
+       ("eudev" ,eudev)
+       ("upower" ,upower)
+       ("polkit" ,polkit)
+       ("pulseaudio" ,pulseaudio)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxtst" ,libxtst)
+       ("lcms" ,lcms)
+       ("libnotify" ,libnotify)
+       ("geoclue" ,geoclue)
+       ("geocode-glib" ,geocode-glib)
+       ("libgweather" ,libgweather)
+       ("gnome-desktop" ,gnome-desktop)
+       ("nss" ,nss)
+       ("cups" ,cups)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (home-page "http://www.gnome.org")
+    (synopsis "GNOME settings daemon")
+    (description
+     "This package contains the daemon responsible for setting the various
+parameters of a GNOME session and the applications that run under it.  It
+handles settings such keyboard layout, shortcuts, and accessibility, clipboard
+settings, themes, mouse settings, and startup of other daemons.")
+    (license license:gpl2+)))

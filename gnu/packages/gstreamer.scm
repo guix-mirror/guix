@@ -263,7 +263,14 @@ developers consider to have good quality code and correct functionality.")
                 "1g7vg9amh3cc3nmc415h6g2rqxqi4wgwqi08hxfbpwq48ri64p30"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-system-libav")))
+     '(#:configure-flags '("--with-system-libav")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+                     (lambda _
+                       (substitute* "gst-libs/ext/libav/configure"
+                         (("#! /bin/sh")
+                          (string-append "#! "(which "sh")))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))

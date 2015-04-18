@@ -42,7 +42,7 @@
     (arguments
      `(#:python ,python-2                    ;uses the Python 2 'print' syntax
        #:phases (modify-phases %standard-phases
-                  (add-after install wrap
+                  (add-after 'install 'wrap
                              (lambda* (#:key inputs outputs #:allow-other-keys)
                                (let* ((out  (assoc-ref outputs "out"))
                                       (bin  (string-append out "/bin"))

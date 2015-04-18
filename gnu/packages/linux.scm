@@ -91,7 +91,7 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version "3.3.8")
+  (let* ((version "3.14.37")
          (build-phase
           (lambda (arch)
             `(lambda _
@@ -120,7 +120,7 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
+               "1blxr2bsvfqi9khj4cpspv434bmx252zak2wsbi2mgl60zh77gza"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
@@ -404,8 +404,14 @@ providing the system administrator with some help in common tasks.")
                   (("build_kill=yes") "build_kill=no")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-use-tty-group"
-                           "--enable-ddate")
+     `(#:configure-flags (list "--disable-use-tty-group"
+                               "--enable-ddate"
+
+                               ;; Install completions where our
+                               ;; bash-completion package expects them.
+                               (string-append "--with-bashcompletiondir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/bash_completion.d"))
        #:phases (alist-cons-before
                  'check 'pre-check
                  (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -789,7 +795,10 @@ MIDI functionality to the Linux-based operating system.")
               (base32
                "0vkg5lzkn4l3i1sm6v3x96zzvnv9g7mi0qgj6279ld383mzcws24"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no test suite
+    (arguments
+     '(#:tests? #f       ; no test suite
+       #:configure-flags ; add $libdir to the RUNPATH of executables
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "http://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
@@ -910,10 +919,12 @@ manpages.")
                       ;; Pretend we have everything...
                       (system "yes | make config")
 
-                      ;; ... except we don't have libdnet, so remove that
-                      ;; definition.
+                      ;; ... except for the things we don't have.
+                      ;; HAVE_AFDECnet requires libdnet, which we don't have.
+                      ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
+                      ;; that have been removed.
                       (substitute* '("config.make" "config.h")
-                        (("^.*HAVE_AFDECnet.*$") ""))))
+                        (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR)[ =]1.*$") ""))))
                   (alist-cons-after
                    'install 'remove-redundant-commands
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -975,7 +986,15 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
               (base32
                "07vjhkznm82p8dm4w6j8mmg7h5c70lp5s9bwwfdmgwpbixfydjp1"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases (alist-delete 'configure %standard-phases)
+    (arguments '(#:phases
+                 (modify-phases %standard-phases
+                   (replace 'configure
+                            ;; Add $libdir to the RUNPATH of executables.
+                            (lambda _
+                              (substitute* "Make.Rules"
+                                (("LDFLAGS := #-g")
+                                 (string-append "LDFLAGS := -Wl,-rpath="
+                                                %output "/lib"))))))
                  #:tests? #f                      ; no 'check' target
                  #:make-flags (list "lib=lib"
                                     (string-append "prefix="

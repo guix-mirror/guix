@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -103,15 +103,16 @@ in C/C++.")
     (native-inputs
       `(("perl", perl)))
     (arguments
-      `(#:tests? #f ; no check target
-        #:configure-flags
-        `("--enable-64bit")
-        #:phases
-          (alist-cons-before
-           'configure 'chdir
-           (lambda _
-             (chdir "nspr"))
-            %standard-phases)))
+     `(#:tests? #f ; no check target
+       #:configure-flags (list "--enable-64bit"
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
+       #:phases (alist-cons-before
+                 'configure 'chdir
+                 (lambda _
+                   (chdir "nspr"))
+                 %standard-phases)))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
     (synopsis "Netscape API for system level and libc-like functions")
@@ -157,8 +158,6 @@ in the Mozilla clients.")
                   (ice-9 ftw)
                   (ice-9 match)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils))
        #:phases
        (alist-replace
         'configure
@@ -254,6 +253,7 @@ standards.")
        ("mesa" ,mesa)
        ("nspr" ,nspr)
        ("nss" ,nss)
+       ("sqlite" ,sqlite)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
        ("zip" ,zip)
@@ -266,6 +266,13 @@ standards.")
     (arguments
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
+
+
+       ;; XXX: There are RUNPATH issues such as
+       ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,
+       ;; which is not in its RUNPATH, but they appear to be harmless in
+       ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
+       #:validate-runpath? #f
 
        #:configure-flags '(;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
@@ -285,11 +292,7 @@ standards.")
                            "--enable-system-pixman"
                            "--enable-system-cairo"
                            "--enable-system-ffi"
-
-                           ;; Fails with "configure: error: System
-                           ;; SQLite library is not compiled with
-                           ;; SQLITE_ENABLE_UNLOCK_NOTIFY."
-                           ;; "--enable-system-sqlite"
+                           "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
                            ;; the system's libpng doesn't have APNG support".

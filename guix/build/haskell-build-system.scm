@@ -196,13 +196,13 @@ generate the cache as it would clash in user profiles."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (add-before configure setup-compiler setup-compiler)
-    (add-before install haddock haddock)
-    (add-after install register register)
-    (replace install install)
-    (replace check check)
-    (replace build build)
-    (replace configure configure)))
+    (add-before 'configure 'setup-compiler setup-compiler)
+    (add-before 'install 'haddock haddock)
+    (add-after 'install 'register register)
+    (replace 'install install)
+    (replace 'check check)
+    (replace 'build build)
+    (replace 'configure configure)))
 
 (define* (haskell-build #:key inputs (phases %standard-phases)
                         #:allow-other-keys #:rest args)

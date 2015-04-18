@@ -1,0 +1,33 @@
+Skip the nopic test on ARM and MIPS systems.
+
+--- libtool-2.4.6/tests/demo.at.orig	2015-01-16 13:52:04.000000000 -0500
++++ libtool-2.4.6/tests/demo.at	2015-02-16 10:48:51.435851966 -0500
+@@ -510,7 +510,7 @@
+ AT_SETUP([force non-PIC objects])
+ 
+ AT_CHECK([case $host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+--- libtool-2.4.6/tests/testsuite.orig	2015-02-15 11:15:25.000000000 -0500
++++ libtool-2.4.6/tests/testsuite	2015-02-16 10:50:58.736483216 -0500
+@@ -8741,7 +8741,7 @@
+ 
+ { set +x
+ $as_echo "$at_srcdir/demo.at:535: case \$host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)
+@@ -8766,7 +8766,7 @@
+ "
+ at_fn_check_prepare_notrace 'a `...` command substitution' "demo.at:535"
+ ( $at_check_trace; case $host in
+-hppa*|x86_64*|s390*)
++hppa*|x86_64*|s390*|arm*|mips*)
+   # These hosts cannot use non-PIC shared libs
+   exit 77 ;;
+ *-solaris*|*-sunos*)

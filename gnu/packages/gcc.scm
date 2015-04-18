@@ -85,6 +85,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                        '("CC"  "CXX" "LD" "AR" "NM" "RANLIB" "STRIP")
                        '("gcc" "g++" "ld" "ar" "nm" "ranlib" "strip"))
                   '()))))
+         (libdir
+          (let ((base '(or (assoc-ref outputs "lib")
+                           (assoc-ref outputs "out"))))
+            (lambda ()
+              ;; Return the directory that contains lib/libgcc_s.so et al.
+              (if (%current-target-system)
+                  `(string-append ,base "/" ,(%current-target-system))
+                  base))))
          (configure-flags
           (lambda ()
             ;; This is terrible.  Since we have two levels of quasiquotation,
@@ -181,12 +189,16 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                                    ,(if stripped? "-g0" "-g")))))
 
          #:tests? #f
+
+         ;; libstdc++.so NEEDs libgcc_s.so but somehow it doesn't get
+         ;; $(libdir) in its RUNPATH, so turn it off.
+         #:validate-runpath? #f
+
          #:phases
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((libdir (or (assoc-ref outputs "lib")
-                              (assoc-ref outputs "out")))
+            (let ((libdir ,(libdir))
                   (libc   (assoc-ref inputs "libc")))
               (when libc
                 ;; The following is not performed for `--without-headers'
@@ -297,7 +309,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))))))
+               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
+             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
@@ -308,7 +321,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))))
+               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
+             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."

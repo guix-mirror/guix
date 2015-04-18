@@ -27,7 +27,7 @@
 (define-public fltk
   (package
     (name "fltk")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
       (method url-fetch)
@@ -35,14 +35,16 @@
                           "/fltk-" version "-source.tar.gz"))
       (sha256
        (base32
-        "1974brlk723095vf8z72kazq1cbqr9a51kq6b0xda6zkjkgl8q0p"))))
+        "15qd7lkz5d5ynz70xhxhigpz3wns39v9xcf7ggkl0792syc8sfgq"))))
    (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
         ("mesa" ,mesa)))
     (arguments
      `(#:tests? #f                      ;TODO: compile programs in "test" dir
-       #:configure-flags '("--enable-shared")
+       #:configure-flags
+       (list "--enable-shared"
+             (string-append "DSOFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
        (alist-cons-before
         'configure 'patch-makeinclude

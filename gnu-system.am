@@ -163,7 +163,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/kde.scm				\
   gnu/packages/key-mon.scm			\
   gnu/packages/language.scm			\
-  gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
   gnu/packages/libcanberra.scm			\
@@ -325,11 +324,13 @@ GNU_SYSTEM_MODULES =				\
   gnu/services.scm				\
   gnu/services/avahi.scm			\
   gnu/services/base.scm				\
+  gnu/services/colord.scm			\
   gnu/services/dbus.scm				\
   gnu/services/dmd.scm				\
   gnu/services/lirc.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
+  gnu/services/upower.scm			\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\
@@ -398,8 +399,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \
-  gnu/packages/patches/curl-gss-api-fix.patch			\
   gnu/packages/patches/cursynth-wave-rand.patch			\
+  gnu/packages/patches/curl-support-capath-on-gnutls.patch	\
+  gnu/packages/patches/curl-support-capath-on-gnutls-conf.patch	\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -407,13 +409,17 @@ dist_patch_DATA =						\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
+  gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
   gnu/packages/patches/eudev-rules-directory.patch		\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
+  gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
+  gnu/packages/patches/geoclue-config.patch			\
+  gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
@@ -423,6 +429,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
+  gnu/packages/patches/gnutls-fix-duplicate-manpages.patch	\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
@@ -454,6 +461,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests.patch			\
+  gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/libvpx-fix-armhf-link.patch		\
   gnu/packages/patches/libvpx-fix-ssse3-quantize.patch		\
@@ -485,6 +493,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
   gnu/packages/patches/openexr-missing-samples.patch		\
+  gnu/packages/patches/openssl-runpath.patch			\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/ots-no-include-missing-file.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
@@ -511,7 +520,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/qt4-tests.patch				\
+  gnu/packages/patches/qt5-runpath.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-libm.patch			\
@@ -532,6 +543,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
   gnu/packages/patches/util-linux-tests.patch			\
+  gnu/packages/patches/upower-builddir.patch			\
   gnu/packages/patches/valgrind-glibc-2.21.patch		\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
@@ -561,6 +573,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
   gnu/packages/patches/xmodmap-asprintf.patch 			\
   gnu/packages/patches/zathura-plugindir-environment-variable.patch
+
+MISC_DISTRO_FILES =				\
+  gnu/packages/ld-wrapper.in			\
+  gnu/packages/ld-wrapper2.in
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

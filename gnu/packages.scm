@@ -160,9 +160,15 @@ Optionally, narrow the search to SUB-DIRECTORY."
     (string-length directory))
 
   (filter-map (lambda (file)
-                (let ((file (substring file prefix-len)))
-                  (false-if-exception
-                   (resolve-interface (file-name->module-name file)))))
+                (let* ((file   (substring file prefix-len))
+                       (module (file-name->module-name file)))
+                  (catch #t
+                    (lambda ()
+                      (resolve-interface module))
+                    (lambda args
+                      ;; Report the error, but keep going.
+                      (warn-about-load-error module args)
+                      #f))))
               (scheme-files (if sub-directory
                                 (string-append directory "/" sub-directory)
                                 directory))))

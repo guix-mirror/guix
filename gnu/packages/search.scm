@@ -76,10 +76,10 @@ rich set of boolean query operators.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
-                   configure chdir-source
+                   'configure 'chdir-source
                    (lambda _ (chdir "libtocc/src")))
                   (replace
-                   check
+                   'check
                    (lambda _
                      (with-directory-excursion "../tests"
                        (and (zero? (system* "./configure"
@@ -88,7 +88,9 @@ rich set of boolean query operators.")
                                             (string-append "SHELL="
                                                            (which "sh"))
                                             "CPPFLAGS=-I../src"
-                                            "LDFLAGS=-L../src/.libs"))
+                                            (string-append
+                                             "LDFLAGS=-L../src/.libs "
+                                             "-Wl,-rpath=../src/.libs")))
                             (zero? (system* "make"))
                             (zero? (system* "./libtocctests")))))))))
     (home-page "http://t-o-c-c.com/")
@@ -113,7 +115,7 @@ files and directories.")
      `(#:tests? #f                      ;No tests
        #:phases (modify-phases %standard-phases
                   (add-after
-                   unpack chdir-source
+                   'unpack 'chdir-source
                    (lambda _ (chdir "cli/src"))))))
     (home-page "http://t-o-c-c.com/")
     (synopsis "Command-line interface to libtocc")

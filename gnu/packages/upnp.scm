@@ -48,7 +48,11 @@
         (string-append
          "SH=" (assoc-ref %build-inputs "bash") "/bin/sh")
         (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
-        "CC=gcc")
+        "CC=gcc"
+
+        ;; Allow executables to find libminiupnpc.so.
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib"))
        #:phases
        (alist-delete 'configure %standard-phases)))
     (home-page "http://miniupnp.free.fr/")

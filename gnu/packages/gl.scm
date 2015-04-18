@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,7 +149,7 @@ Polygon meshes, and Extruded polygon meshes")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after unpack autogen
+         (add-after 'unpack 'autogen
           (lambda _
             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://github.com/divVerent/s2tc")
@@ -282,10 +282,10 @@ emulation to complete hardware acceleration for modern GPUs.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete configure)
-         (delete build)
-         (delete check)
-         (replace install
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (copy-recursively "include" (string-append
                                                  (assoc-ref outputs "out")
@@ -318,7 +318,7 @@ emulation to complete hardware acceleration for modern GPUs.")
      '(#:phases
        (modify-phases %standard-phases
          (replace
-          install
+          'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir-p (string-append out "/bin"))
@@ -418,3 +418,60 @@ extension functionality is exposed in a single header file.")
      "Guile-OpenGL is a library for Guile that provides bindings to the
 OpenGL graphics API.")
     (license l:lgpl3+)))
+
+(define-public libepoxy
+  (package
+    (name "libepoxy")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/anholt/libepoxy/archive/v"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xp8g6b7xlbym2rj4vkbl6xpb7ijq7glpv656mc7k9b01x22ihs2"))))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          (zero? (system* "autoreconf" "-vif")))
+        (alist-cons-before
+         'configure 'patch-paths
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((python (assoc-ref inputs "python"))
+                 (mesa (assoc-ref inputs "mesa")))
+             (substitute* "src/gen_dispatch.py"
+               (("/usr/bin/env python") python))
+             (substitute* (find-files "." "\\.[ch]$")
+               (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
+               (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
+
+             ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
+             ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
+             ;; better to make this a normal patch, but for now we do it here
+             ;; to prevent rebuilding on other platforms.
+             ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                             (%current-system)))
+                   '((substitute* '"test/dlwrap.c"
+                       (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
+                   '())
+             #t))
+         %standard-phases))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (home-page "http://github.com/anholt/libepoxy/")
+    (synopsis "A library for handling OpenGL function pointer management")
+    (description
+     "A library for handling OpenGL function pointer management.")
+    (license l:x11)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,7 +25,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
-  #:export (cmake-build
+  #:export (%cmake-build-system-modules
+            cmake-build
             cmake-build-system))
 
 ;; Commentary:
@@ -34,6 +35,11 @@
 ;; extension of `gnu-build-system'.
 ;;
 ;; Code:
+
+(define %cmake-build-system-modules
+  ;; Build-side modules imported by default.
+  `((guix build cmake-build-system)
+    ,@%gnu-build-system-modules))
 
 (define (default-cmake)
   "Return the default CMake package."
@@ -86,9 +92,7 @@
                       (phases '(@ (guix build cmake-build-system)
                                   %standard-phases))
                       (system (%current-system))
-                      (imported-modules '((guix build cmake-build-system)
-                                          (guix build gnu-build-system)
-                                          (guix build utils)))
+                      (imported-modules %cmake-build-system-modules)
                       (modules '((guix build cmake-build-system)
                                  (guix build utils))))
   "Build SOURCE using CMAKE, and with INPUTS. This assumes that SOURCE

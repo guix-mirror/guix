@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,8 +126,10 @@ printing, and psresize, for adjusting page sizes.")
             (method url-fetch)
             (uri (string-append "mirror://gnu/ghostscript/gnu-ghostscript-"
                                 version ".tar.xz"))
-            (sha256 (base32
-                     "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))))
+            (sha256
+             (base32
+              "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
+            (patches (list (search-patch "ghostscript-runpath.patch")))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
              ("lcms" ,lcms)
@@ -142,20 +145,19 @@ printing, and psresize, for adjusting page sizes.")
         ("tcl" ,tcl)))
    (arguments
     `(#:phases
-      (alist-cons-after
-       'configure 'patch-config-files
-       (lambda _
-         (substitute* "base/all-arch.mak"
-           (("/bin/sh") (which "bash")))
-         (substitute* "base/unixhead.mak"
-           (("/bin/sh") (which "bash"))))
-      (alist-cons-after
-       'build 'build-so
-       (lambda _ (system* "make" "so"))
-      (alist-cons-after
-       'install 'install-so
-       (lambda _ (system* "make" "install-so"))
-      %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-after 'configure 'patch-config-files
+                   (lambda _
+                     (substitute* "base/all-arch.mak"
+                       (("/bin/sh") (which "bash")))
+                     (substitute* "base/unixhead.mak"
+                       (("/bin/sh") (which "bash")))))
+        (add-after 'build 'build-so
+                   (lambda _
+                     (zero? (system* "make" "so"))))
+        (add-after 'install 'install-so
+                   (lambda _
+                     (zero? (system* "make" "install-so")))))))
    (synopsis "PostScript and PDF interpreter")
    (description
     "Ghostscript is an interpreter for the PostScript language and the PDF

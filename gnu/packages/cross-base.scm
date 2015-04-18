@@ -130,12 +130,16 @@ may be either a libc package or #f.)"
                                                   ,target))
                          (binutils (string-append
                                     (assoc-ref inputs "binutils-cross")
-                                    "/bin/" ,target "-")))
+                                    "/bin/" ,target "-"))
+                         (wrapper  (string-append
+                                    (assoc-ref inputs "ld-wrapper-cross")
+                                    "/bin/" ,target "-ld")))
                     (for-each (lambda (file)
                                 (symlink (string-append binutils file)
                                          (string-append libexec "/"
                                                         file)))
-                              '("as" "ld" "nm"))
+                              '("as" "nm"))
+                    (symlink wrapper (string-append libexec "/ld"))
                     #t))
                 ,phases)))
          (if libc
@@ -171,6 +175,8 @@ may be either a libc package or #f.)"
                      #t)))
                ,phases)
              phases)))
+      ((#:validate-runpath? _)
+       #t)
       ((#:strip-binaries? _)
        ;; Disable stripping as this can break binaries, with object files of
        ;; libgcc.a showing up as having an unknown architecture.  See
@@ -196,8 +202,10 @@ GCC that does not target a libc; otherwise, target that libc."
                          target))
     (source (origin (inherit (package-source gcc-4.8))
               (patches
-               (cons (search-patch "gcc-cross-environment-variables.patch")
-                     (cross-gcc-patches target)))))
+               (append
+                (origin-patches (package-source gcc-4.8))
+                (cons (search-patch "gcc-cross-environment-variables.patch")
+                      (cross-gcc-patches target))))))
 
     ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
     ;; found by default, etc.
@@ -214,7 +222,11 @@ GCC that does not target a libc; otherwise, target that libc."
        ,@(cross-gcc-arguments target libc)))
 
     (native-inputs
-     `(("binutils-cross" ,xbinutils)
+     `(("ld-wrapper-cross" ,(make-ld-wrapper
+                             (string-append "ld-wrapper-" target)
+                             #:target target
+                             #:binutils xbinutils))
+       ("binutils-cross" ,xbinutils)
 
        ;; Call it differently so that the builder can check whether the "libc"
        ;; input is #f.
@@ -298,8 +310,13 @@ XBINUTILS and the cross tool chain."
     ;; "linux-headers" input to point to the right thing.
     (propagated-inputs `(("linux-headers" ,xlinux-headers)))
 
+    ;; FIXME: 'static-bash' should really be an input, not a native input, but
+    ;; to do that will require building an intermediate cross libc.
+    (inputs '())
+
     (native-inputs `(("cross-gcc" ,xgcc)
                      ("cross-binutils" ,xbinutils)
+                     ,@(package-inputs glibc)     ;FIXME: static-bash
                      ,@(package-native-inputs glibc)))))
 
 

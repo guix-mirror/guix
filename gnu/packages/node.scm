@@ -29,7 +29,6 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
-  #:use-module (guix build gnu-build-system)
   #:use-module (guix build-system gnu))
 
 (define-public node
