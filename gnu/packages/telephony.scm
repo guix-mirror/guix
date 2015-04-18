@@ -78,13 +78,13 @@ support.")
 (define-public ccrtp
   (package
    (name "ccrtp")
-   (version "2.1.1")
+   (version "2.1.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ccrtp/ccrtp-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "1p1pk2m7v75rdrh05rizpqcd5p08g3n541rw0kssyfzd805fb90d"))))
+                     "17ili8l7zqbbkzr1rcy4hlnazkf50mds41wg6n7bfdsx3c7cldgh"))))
    (build-system gnu-build-system)
    (inputs `(("ucommon" ,ucommon)
              ("libgcrypt" ,libgcrypt)))
