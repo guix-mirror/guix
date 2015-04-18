@@ -211,14 +211,18 @@ same package twice."
   (let ((packages (delay
                     (fold-packages (lambda (p r)
                                      (vhash-cons (package-name p) p r))
-                                   vlist-null))))
+                                   vlist-null)))
+        (version>? (lambda (p1 p2)
+                     (version>? (package-version p1) (package-version p2)))))
     (lambda* (name #:optional version)
       "Return the list of packages with the given NAME.  If VERSION is not #f,
-then only return packages whose version is equal to VERSION."
-      (let ((matching (vhash-fold* cons '() name (force packages))))
+then only return packages whose version is prefixed by VERSION, sorted in
+decreasing version order."
+      (let ((matching (sort (vhash-fold* cons '() name (force packages))
+                            version>?)))
         (if version
             (filter (lambda (package)
-                      (string=? (package-version package) version))
+                      (string-prefix? version (package-version package)))
                     matching)
             matching)))))
 
