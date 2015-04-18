@@ -276,8 +276,11 @@ This creates @file{/gnu/store} (@pxref{The Store}), @file{/var/guix},
 and @file{/root/.guix-profile}.  @file{/root/.guix-profile} is a
 ready-to-use profile for @code{root} where Guix is installed.
 
+Do @emph{not} unpack the tarball on a working Guix system since that
+would overwrite its own essential files.
+
 @item
-Setup the daemon as explained below (@pxref{Setting Up the Daemon}), and
+Set up the daemon as explained below (@pxref{Setting Up the Daemon}), and
 run it:
 
 @example
@@ -297,9 +300,7 @@ for instance with:
 
 And that's it!
 
-There are two things to note.  First, don't unpack the tarball on a
-working Guix system since that would overwrite its own essential files.
-Second, the @code{guix} package must remain available in @code{root}'s
+The @code{guix} package must remain available in @code{root}'s
 profile, or it would become subject to garbage collection---in which
 case you would find yourself badly handicapped by the lack of the
 @command{guix} command.
