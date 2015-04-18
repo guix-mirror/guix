@@ -34,7 +34,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p1")
+   (version "4.2.8p2")
    (source (origin
 	    (method url-fetch)
 	    (uri (string-append 
@@ -43,7 +43,7 @@
                   "/ntp-" version ".tar.gz"))
 	    (sha256
 	     (base32
-	      "124xslljdzv778msr18jn5l9d6fhvzpsmmnfczc05l0yiyw790ll"))))
+	      "0ccv9kh5asxpk7bjn73vwrqimbkbfl743bgx0km47bfajl7bqs8d"))))
    (native-inputs `(("which" ,which)
                     ("pkg-config" ,pkg-config)))
    (inputs
