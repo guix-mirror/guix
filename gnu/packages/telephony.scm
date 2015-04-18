@@ -59,13 +59,13 @@ reimplementation.")
 (define-public ucommon
   (package
    (name "ucommon")
-   (version "6.3.0")
+   (version "6.3.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/commoncpp/" name "-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0l3s3vf8x3mhz85v23caf3p1xh0lirhl1xvbragapfcl1y4klmgv"))))
+                     "1marbwbqnllhm9nh22lvyfjy802pgy1wx7j7kkpkasbm9r0sb6mm"))))
    (build-system gnu-build-system)
    (synopsis "Common C++ framework for threaded applications")
    (description "GNU uCommon C++ is meant as a very light-weight C++ library
