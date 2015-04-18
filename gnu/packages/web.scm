@@ -725,6 +725,41 @@ action with the generated name, and failing that it will try to dispatch to a
 regular method.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-authentication-store-dbix-class
+  (package
+    (name "perl-catalyst-authentication-store-dbix-class")
+    (version "0.1506")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "Catalyst-Authentication-Store-DBIx-Class-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0i5ja7690fs9nhxcij6lw51j804sm8s06m5mvk1n8pi8jljrymvw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-plugin-authorization-roles"
+        ,perl-catalyst-plugin-authorization-roles)
+       ("perl-catalyst-plugin-session-state-cookie"
+        ,perl-catalyst-plugin-session-state-cookie)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-catalyst-plugin-authentication"
+        ,perl-catalyst-plugin-authentication)
+       ("perl-dbix-class" ,perl-dbix-class)
+       ("perl-catalyst-model-dbic-schema" ,perl-catalyst-model-dbic-schema)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Authentication-Store-DBIx-Class")
+    (synopsis "Storage class for Catalyst authentication using DBIx::Class")
+    (description "The Catalyst::Authentication::Store::DBIx::Class class
+provides access to authentication information stored in a database via
+DBIx::Class.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-component-instancepercontext
   (package
     (name "perl-catalyst-component-instancepercontext")
