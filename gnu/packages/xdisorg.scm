@@ -6,6 +6,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
@@ -36,6 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -527,3 +531,32 @@ within a single process.")
 pressed and released on its own.  The default behaviour is to generate the
 Escape key when Left Control is pressed and released on its own.")
     (license license:gpl3+)))
+
+(define-public libwacom
+  (package
+    (name "libwacom")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "022d0097dk2glgb6772zpcsqm1w42sbsbr3i72pdhzq6naqawys8"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("eudev" ,eudev)
+       ("libxml2" ,libxml2)))
+    (home-page "http://linuxwacom.sourceforge.net/")
+    (synopsis "Helper library for Wacom tablet settings")
+    (description
+     "Libwacom is a library to help implement Wacom tablet settings.  It
+is intended to be used by client-programs that need model identification.  It
+is already being used by the gnome-settings-daemon and the GNOME 3.4 Control
+Center Wacom tablet applet.  In the future, the xf86-input-wacom driver may
+use it as well.")
+    (license license:x11)))
