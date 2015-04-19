@@ -926,6 +926,35 @@ who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
     (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-authorization-roles
+  (package
+    (name "perl-catalyst-plugin-authorization-roles")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Authorization-Roles-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0l83lkwmq0lngwh8b1rv3r719pn8w1gdbyhjqm74rnd0wbjl8h7f"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-catalyst-plugin-authentication"
+        ,perl-catalyst-plugin-authentication)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-set-object" ,perl-set-object)
+       ("perl-universal-isa" ,perl-universal-isa)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Authorization-Roles")
+    (synopsis "Role-based authorization for Catalyst")
+    (description "Catalyst::Plugin::Authorization::Roles provides role-based
+authorization for Catalyst based on Catalyst::Plugin::Authentication.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-captcha
   (package
     (name "perl-catalyst-plugin-captcha")
