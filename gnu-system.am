@@ -59,6 +59,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cdrom.scm			\
   gnu/packages/certs.scm			\
   gnu/packages/check.scm			\
+  gnu/packages/ci.scm				\
   gnu/packages/cmake.scm			\
   gnu/packages/code.scm				\
   gnu/packages/commencement.scm			\
@@ -454,6 +455,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
+  gnu/packages/patches/hydra-automake-1.15.patch		\
+  gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\

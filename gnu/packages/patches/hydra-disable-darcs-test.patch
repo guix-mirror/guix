@@ -1,0 +1,25 @@
+--- hydra-20150407.4c0e3e4/tests/evaluation-tests.pl	2015-04-15 12:00:19.000000000 -0500
++++ hydra-20150407.4c0e3e4/tests/evaluation-tests.pl	2015-04-17 08:53:04.940301471 -0500
+@@ -7,7 +7,7 @@
+ 
+ my $db = Hydra::Model::DB->new;
+ 
+-use Test::Simple tests => 72;
++use Test::Simple tests => 68;
+ 
+ hydra_setup($db);
+ 
+@@ -103,13 +103,6 @@
+         uri => "$jobsBaseUri/hg-repo",
+         update => getcwd . "/jobs/hg-update.sh"
+     },
+-    {
+-        name => "darcs",
+-        nixexpr => "darcs-input.nix",
+-        type => "darcs",
+-        uri => "$jobsBaseUri/darcs-repo",
+-        update => getcwd . "/jobs/darcs-update.sh"
+-    }
+ );
+ 
+ foreach my $scm ( @scminputs ) {
