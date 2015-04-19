@@ -4095,6 +4095,28 @@ collector.")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
 
+(define-public perl-set-object
+  (package
+    (name "perl-set-object")
+    (version "1.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
+                           "Set-Object-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rqf11274s3h17jgbimmg47k4fmayifajqwaa6lgm0z5qdy4v6hq"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (home-page "http://search.cpan.org/dist/Set-Object")
+    (synopsis "Unordered collections of Perl Objects")
+    (description "Set::Object provides efficient sets, unordered collections
+of Perl objects without duplicates for scalars and references.")
+    (license artistic2.0)))
+
 (define-public perl-set-scalar
   (package
     (name "perl-set-scalar")
