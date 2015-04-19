@@ -97,16 +97,22 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
           target
           (string-append (dirname file) "/" target)))
 
-    (catch 'system-error
-      (lambda ()
-        (if (>= depth %max-symlink-depth)
-            file
-            (loop (absolute (readlink file)) (+ depth 1))))
-      (lambda args
-        (let ((errno (system-error-errno args)))
-          (if (or (= errno EINVAL) (= errno ENOENT))
-              file
-              (apply throw args)))))))
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL) (= errno ENOENT))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
 
 (define (pure-file-name? file)
   ;; Return #t when FILE is the name of a file either within the store
