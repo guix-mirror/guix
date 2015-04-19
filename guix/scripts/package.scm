@@ -730,13 +730,31 @@ doesn't need it."
 
 (define (readlink* file)
   "Call 'readlink' until the result is not a symlink."
-  (catch 'system-error
-    (lambda ()
-      (readlink* (readlink file)))
-    (lambda args
-      (if (= EINVAL (system-error-errno args))
-          file
-          (apply throw args)))))
+  (define %max-symlink-depth 50)
+
+  (let loop ((file  file)
+             (depth 0))
+    (define (absolute target)
+      (if (absolute-file-name? target)
+          target
+          (string-append (dirname file) "/" target)))
+
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
 
 
 ;;;
