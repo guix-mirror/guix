@@ -69,7 +69,8 @@
   #:use-module (gnu packages mail)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages nettle)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (srfi srfi-1))
 
 (define-public brasero
   (package
@@ -1277,6 +1278,33 @@ Hints specification (EWMH).")
      ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
      ;; Note: NOT LGPL
      (list license:gpl2 license:gpl3))))
+
+(define-public goffice-0.8
+  (package (inherit goffice)
+    (version "0.8.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" (package-name goffice) "/"
+                                  (version-major+minor version)  "/"
+                                  (package-name goffice) "-" version ".tar.xz"))
+              (sha256
+               (base32 "05fvzbs5bin05bbsr4dp79aiva3lnq0a3a40zq55i13vnsz70l0n"))))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'fix-pcre-check
+        (lambda _
+          ;; Only glib.h can be included directly.  See
+          ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
+          (substitute* "configure"
+            (("glib/gregex\\.h") "glib.h")) #t)
+        %standard-phases)))
+    (propagated-inputs
+     ;; libgoffice-0.8.pc mentions libgsf-1
+     `(("libgsf" ,libgsf)))
+    (inputs
+     `(("gtk" ,gtk+-2)
+       ,@(alist-delete "gtk" (package-inputs goffice))))))
 
 (define-public gnumeric
   (package
