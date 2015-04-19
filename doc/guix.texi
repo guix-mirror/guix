@@ -1105,7 +1105,7 @@ availability of packages:
 
 @item --search=@var{regexp}
 @itemx -s @var{regexp}
-List the available packages whose synopsis or description matches
+List the available packages whose name, synopsis, or description matches
 @var{regexp}.  Print all the meta-data of matching packages in
 @code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
 GNU recutils manual}).
@@ -1171,7 +1171,7 @@ the store.
 
 @item --list-available[=@var{regexp}]
 @itemx -A [@var{regexp}]
-List packages currently available in the software distribution
+List packages currently available in the distribution for this system
 (@pxref{GNU Distribution}).  When @var{regexp} is specified, list only
 installed packages whose name matches @var{regexp}.
 

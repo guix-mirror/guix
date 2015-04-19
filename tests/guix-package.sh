@@ -212,8 +212,18 @@ cat > "$module_dir/foo.scm"<<EOF
               (patches (list (search-patch "emacs.patch")))))
     (name "emacs-foo-bar-patched")
     (version "42")))
+
+(define-public y
+  (package (inherit emacs)
+    (name "super-non-portable-emacs")
+    (supported-systems '("foobar64-hurd"))))
 EOF
 guix package -i emacs-foo-bar-patched -n
+
+# This one should not show up in searches since it's no supported on the
+# current system.
+test "`guix package -A super-non-portable-emacs`" = ""
+test "`guix package -s super-non-portable-emacs | grep ^systems:`" = "systems: "
 
 unset GUIX_PACKAGE_PATH
 

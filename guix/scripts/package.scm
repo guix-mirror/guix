@@ -960,11 +960,13 @@ more information.~%"))
                 (available (fold-packages
                             (lambda (p r)
                               (let ((n (package-name p)))
-                                (if regexp
-                                    (if (regexp-exec regexp n)
-                                        (cons p r)
-                                        r)
-                                    (cons p r))))
+                                (if (supported-package? p)
+                                    (if regexp
+                                        (if (regexp-exec regexp n)
+                                            (cons p r)
+                                            r)
+                                        (cons p r))
+                                    r)))
                             '())))
            (leave-on-EPIPE
             (for-each (lambda (p)
