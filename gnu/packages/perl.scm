@@ -2563,6 +2563,35 @@ allowing data to be efficiently communicated between processes.")
 versa using either JSON::XS or JSON::PP.")
     (license (package-license perl))))
 
+(define-public perl-json-any
+  (package
+    (name "perl-json-any")
+    (version "1.38")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirros://cpan/authors/id/E/ET/ETHER/"
+                           "JSON-Any-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0mk6shg82i7y852bvj5d0qqma1d9k0jh10k4mg62hbgr800gb2m4"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-requires", perl-test-requires)
+       ("perl-test-warnings", perl-test-warnings)
+       ("perl-test-without-module", perl-test-without-module)))
+    (propagated-inputs
+     `(("perl-namespace-clean" ,perl-namespace-clean)))
+    (home-page "http://search.cpan.org/dist/JSON-Any")
+    (synopsis "Wrapper for Perl JSON classes")
+    (description
+     "This module tries to provide a coherent API to bring together the
+various JSON modules currently on CPAN.  This module will allow you to code to
+any JSON API and have it work regardless of which JSON module is actually
+installed.")
+    (license (package-license perl))))
+
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
