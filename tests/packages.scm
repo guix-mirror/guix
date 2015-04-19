@@ -166,6 +166,14 @@
               `("does-not-exist" "foobar" ,@%supported-systems)))))
     (package-transitive-supported-systems p)))
 
+(test-assert "supported-package?"
+  (let ((p (dummy-package "foo"
+             (build-system gnu-build-system)
+             (supported-systems '("x86_64-linux" "does-not-exist")))))
+    (and (supported-package? p "x86_64-linux")
+         (not (supported-package? p "does-not-exist"))
+         (not (supported-package? p "i686-linux")))))
+
 (test-skip (if (not %store) 8 0))
 
 (test-assert "package-source-derivation, file"

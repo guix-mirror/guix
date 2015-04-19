@@ -95,6 +95,7 @@
             package-grafts
 
             %supported-systems
+            supported-package?
 
             &package-error
             package-error?
@@ -580,6 +581,11 @@ supported by its dependencies."
              systems)))
         (package-supported-systems package)
         (bag-direct-inputs (package->bag package))))
+
+(define* (supported-package? package #:optional (system (%current-system)))
+  "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
+dependencies are known to build on SYSTEM."
+  (member system (package-transitive-supported-systems package)))
 
 (define (bag-direct-inputs bag)
   "Same as 'package-direct-inputs', but applied to a bag."

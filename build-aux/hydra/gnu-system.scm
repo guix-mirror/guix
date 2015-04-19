@@ -204,8 +204,7 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
 valid."
       (cond ((member package base-packages)
              #f)
-            ((member system
-                     (package-transitive-supported-systems package))
+            ((supported-package? package system)
              (package-job store (job-name package) package system))
             (else
              #f)))))
