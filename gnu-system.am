@@ -503,6 +503,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/pavucontrol-sigsegv.patch		\
   gnu/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
+  gnu/packages/patches/perl-module-pluggable-search.patch	\
   gnu/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/perl-tk-x11-discover.patch		\

@@ -44,7 +44,9 @@
              (sha256
               (base32
                "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))
-             (patches (list (search-patch "perl-no-sys-dirs.patch")))))
+             (patches (map search-patch
+                           '("perl-no-sys-dirs.patch"
+                             "perl-module-pluggable-search.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
