@@ -28,7 +28,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages elf)
-  #:use-module ((gnu packages perl) #:select (perl))
+  #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)

@@ -35,7 +35,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages linux) #:select (eudev)) ; FIXME: for pcb
+  #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)

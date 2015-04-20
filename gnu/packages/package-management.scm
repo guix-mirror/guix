@@ -26,7 +26,7 @@
   #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages compression) #:select (bzip2 gzip))
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages graphviz)

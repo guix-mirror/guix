@@ -24,7 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
-  #:use-module ((gnu packages autotools) #:select (libltdl))
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gdbm)
