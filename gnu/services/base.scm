@@ -131,7 +131,9 @@ names such as device-mapping services."
       (requirement `(root-file-system ,@requirements))
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
-                 (let ((device (canonicalize-device-spec #$device '#$title)))
+                 ;; FIXME: Use or factorize with 'mount-file-system'.
+                 (let ((device (canonicalize-device-spec #$device '#$title))
+                       (flags  #$(mount-flags->bit-mask flags)))
                    #$(if create-mount-point?
                          #~(mkdir-p #$target)
                          #~#t)
@@ -145,9 +147,16 @@ names such as device-mapping services."
                                       (getenv "PATH")))
                              (check-file-system device #$type))
                          #~#t)
-                   (mount device #$target #$type
-                          #$(mount-flags->bit-mask flags)
-                          #$options))
+
+                   (mount device #$target #$type flags #$options)
+
+                   ;; For read-only bind mounts, an extra remount is needed,
+                   ;; as per <http://lwn.net/Articles/281157/>, which still
+                   ;; applies to Linux 4.0.
+                   (when (and (= MS_BIND (logand flags MS_BIND))
+                              (= MS_RDONLY (logand flags MS_RDONLY)))
+                     (mount device #$target #$type
+                            (logior MS_BIND MS_REMOUNT MS_RDONLY))))
                  #t))
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so
