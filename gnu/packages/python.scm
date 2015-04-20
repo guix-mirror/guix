@@ -3508,3 +3508,39 @@ It is written entirely in Python.")
 
 (define-public python2-singledispatch
   (package-with-python2 python-singledispatch))
+
+(define-public python-waf
+  (package
+    (name "python-waf")
+    (version "1.8.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://waf.io/"
+                                  "waf-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0b5q307fgn6a5d8yjia2d1l4bk1q3ilvc0w8k4isfrrx2gbcw8wn"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+                  (lambda _
+                    (zero? (begin
+                             (system* "python" "waf-light" "configure")
+                             (system* "python" "waf-light" "build")))))
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "python" "waf" "--version"))))
+         (replace 'install
+                  (lambda _
+                    (copy-file "waf" %output))))))
+    (home-page "https://waf.io/")
+    (synopsis "Python-based build system")
+    (description
+     "Waf is a Python-based framework for configuring, compiling and installing
+applications.")
+    (license bsd-3)))
+
+(define-public python2-waf
+  (package-with-python2 python-waf))
