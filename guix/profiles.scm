@@ -466,7 +466,8 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                      (rnrs io ports)
                      (srfi srfi-1)
                      (srfi srfi-26)
-                     (ice-9 ftw))
+                     (ice-9 ftw)
+                     (ice-9 match))
 
         (define (pem-file? file)
           (string-suffix? ".pem" file))
@@ -492,13 +493,21 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
         (setenv "LOCPATH" (string-append #+glibc-utf8-locales "/lib/locale"))
         (setlocale LC_ALL "en_US.UTF-8")
 
-        (let ((ca-files (append-map ca-files
-                                    '#$(manifest-inputs manifest)))
-              (result   (string-append #$output "/etc/ssl/certs")))
-          (mkdir-p result)
-          (concatenate-files ca-files
-                             (string-append result
-                                            "/ca-certificates.crt")))))
+        (match (append-map ca-files '#$(manifest-inputs manifest))
+          (()
+           ;; Since there are no CA files, just create an empty directory.  Do
+           ;; not create the etc/ssl/certs sub-directory, since that would
+           ;; wrongfully lead to a message about 'SSL_CERT_DIR' needing to be
+           ;; defined.
+           (mkdir #$output)
+           #t)
+          ((ca-files ...)
+           (let ((result (string-append #$output "/etc/ssl/certs")))
+             (mkdir-p result)
+             (concatenate-files ca-files
+                                (string-append result
+                                               "/ca-certificates.crt"))
+             #t)))))
 
   (gexp->derivation "ca-certificate-bundle" build
                     #:modules '((guix build utils))
