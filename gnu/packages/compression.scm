@@ -385,7 +385,7 @@ compression library.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
-                   configure configure-zlib
+                   'configure 'configure-zlib
                    (lambda* (#:key inputs #:allow-other-keys)
                      (call-with-output-file "config.in"
                        (lambda (port)

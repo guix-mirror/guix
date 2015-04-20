@@ -245,7 +245,7 @@ checks.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
-                   install augment-path
+                   'install 'augment-path
                    ;; The install target tries to load the newly-installed
                    ;; XML::SAX module, but can't find it, so we need to tell
                    ;; perl where to look.

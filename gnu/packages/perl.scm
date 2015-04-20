@@ -2486,7 +2486,7 @@ pseudo ttys.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-before
-                   check disable-w32-test
+                   'check 'disable-w32-test
                    (lambda _
                      ;; This test fails, and we're not really interested in
                      ;; it, so disable it.
