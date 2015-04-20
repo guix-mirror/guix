@@ -479,8 +479,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.12.2")                  ;last version that works with
-                                        ;gobject-introspection 1.38
+    (version "3.16.1")
     (source
      (origin
        (method url-fetch)
@@ -489,8 +488,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "08m5yad1hjdax4g39w6lgjk4124mcwpa8fc5iyvb8nygk8s3syky"))))
-    ;; 3.14.0: 0m1d75iwxa6k1xbkn6c6yq5r10pxnf7i5c2a5yvwsnab7ylzz7kp
+         "1hqyma73w0lnjcgx68kawhnq84aq92xlkdqphrlc2ppia38dm5kx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
