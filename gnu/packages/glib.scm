@@ -306,14 +306,14 @@ The intltool collection can be used to do these things:
 (define itstool
   (package
     (name "itstool")
-    (version "1.2.0")
+    (version "2.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.itstool.org/itstool/itstool-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1akq75aflihm3y7js8biy7b5mw2g11vl8yq90gydnwlwp0zxdzj6"))))
+               "0fh34wi52i0qikgvlmrcpf1vx6gc1xqdad4539l4d9hikfsrz45z"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxml2" ,libxml2)
