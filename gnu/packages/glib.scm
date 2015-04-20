@@ -370,14 +370,15 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.3.1")
+    (version "2.4.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/libsigc++/2.3/libsigc++-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/libsigc++/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "14q3sq6d43f6wfcmwhw4v1aal4ba0h5x9v6wkxy2dnqznd95il37"))))
+               "1v0rvkzglzmf67y9nkcppwjwi68j1cy5yhldvcq7xrv8594l612l"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
