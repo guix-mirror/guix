@@ -1,14 +1,11 @@
---- a/giscanner/sourcescanner.py	2013-12-15 23:03:54.002937000 +0100
-+++ b/giscanner/sourcescanner.py	2013-12-15 23:04:50.322937000 +0100
-@@ -277,6 +277,11 @@
-         defines = ['__GI_SCANNER__']
-         undefs = []
-         cpp_args = os.environ.get('CC', 'cc').split()  # support CC="ccache gcc"
-+        if (cpp_args == ['cc'] and
-+            not any(map(lambda x: os.access(os.path.join(x, 'cc'), os.X_OK),
-+                        os.environ.get('PATH').split(':')))):
-+            cpp_args = ['GUIX_GCC_PATH']
-+
-         if 'cl' in cpp_args:
-             # The Microsoft compiler/preprocessor (cl) does not accept
-             # source input from stdin (the '-' flag), so we need
+Use gcc as the default C compiler if CC is not set.
+
+
+--- gobject-introspection-1.44.0.orig/giscanner/__init__.py	2014-08-04 22:37:07.000000000 +0800
++++ gobject-introspection-1.44.0/giscanner/__init__.py	2015-04-20 17:30:26.507697234 +0800
+@@ -22,3 +22,5 @@
+ builddir = os.environ.get('UNINSTALLED_INTROSPECTION_BUILDDIR')
+ if builddir is not None:
+     __path__.append(os.path.join(builddir, 'giscanner'))
++if not 'CC' in os.environ:
++    os.environ['CC'] = 'gcc'

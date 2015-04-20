@@ -207,14 +207,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.42.0")
+    (version "1.44.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://ftp.gnome.org/pub/GNOME/sources/"
+             (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1xwm7wmr9r9wp6xljb3bckx3a4siybavaq39w46ly7gpskxfv8iv"))
+              (base32 "1b972qg2yb51sdavfvb6kc19akwc15c1bwnbg81vadxamql2q33g"))
              (patches (list
                        (search-patch "gobject-introspection-cc.patch")
                        (search-patch
@@ -243,14 +243,7 @@ dynamic loading, and an object system.")
     (arguments
      `(;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
        ;; some tests to fail.
-       #:tests? #f
-       #:phases
-        (alist-cons-before
-         'configure 'patch-paths
-         (lambda _
-           (substitute* "giscanner/sourcescanner.py"
-             (("GUIX_GCC_PATH") (which "gcc"))))
-         %standard-phases)))
+       #:tests? #f))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
     (synopsis "Generate interface introspection data for GObject libraries")
     (description
