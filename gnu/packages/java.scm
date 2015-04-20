@@ -397,7 +397,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (setenv "PATH" (string-append antpath "/bin:"
                                              (getenv "PATH")))))
            (alist-cons-before
-            'check 'fix-tests
+            'check 'fix-test-framework
             (lambda _
               ;; Fix PATH in test environment
               (substitute* "src/jtreg/com/sun/javatest/regtest/Main.java"
@@ -405,109 +405,114 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  (string-append "PATH=" (getenv "PATH"))))
               (substitute* "src/jtreg/com/sun/javatest/util/SysEnv.java"
                 (("/usr/bin/env") (which "env")))
-
-              ;; Hotspot tests
-              (with-directory-excursion "openjdk/hotspot/test/"
-                (substitute* "jprt.config"
-                  (("PATH=\"\\$\\{path4sdk\\}\"")
-                   (string-append "PATH=" (getenv "PATH")))
-                  (("make=/usr/bin/make")
-                   (string-append "make=" (which "make"))))
-                (substitute* '("runtime/6626217/Test6626217.sh"
-                               "runtime/7110720/Test7110720.sh")
-                  (("/bin/rm") (which "rm"))
-                  (("/bin/cp") (which "cp"))
-                  (("/bin/mv") (which "mv"))))
-
-              ;; JDK tests
-              (with-directory-excursion "openjdk/jdk/test/"
-                (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
-                  (("/bin/pwd") (which "pwd")))
-                (substitute* "com/sun/jdi/ShellScaffold.sh"
-                  (("/bin/kill") (which "kill")))
-                (substitute* "start-Xvfb.sh"
-                  ;(("/usr/bin/X11/Xvfb") (which "Xvfb"))
-                  (("/usr/bin/nohup")    (which "nohup")))
-                (substitute* "javax/security/auth/Subject/doAs/Test.sh"
-                  (("/bin/rm") (which "rm")))
-                (substitute* "tools/launcher/MultipleJRE.sh"
-                  (("echo \"#!/bin/sh\"")
-                   (string-append "echo \"#!" (which "rm") "\""))
-                  (("/usr/bin/zip") (which "zip")))
-                (substitute* "com/sun/jdi/OnThrowTest.java"
-                  (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                (substitute* "java/lang/management/OperatingSystemMXBean/GetSystemLoadAverage.java"
-                  (("/usr/bin/uptime") (which "uptime")))
-                (substitute* "java/lang/ProcessBuilder/Basic.java"
-                  (("/usr/bin/env") (which "env"))
-                  (("/bin/false") (which "false"))
-                  (("/bin/true") (which "true"))
-                  (("/bin/cp") (which "cp"))
-                  (("/bin/sh") (which "sh")))
-                (substitute* "java/lang/ProcessBuilder/FeelingLucky.java"
-                  (("/bin/sh") (which "sh")))
-                (substitute* "java/lang/ProcessBuilder/Zombies.java"
-                  (("/usr/bin/perl") (which "perl"))
-                  (("/bin/ps") (which "ps"))
-                  (("/bin/true") (which "true")))
-                (substitute* "java/lang/Runtime/exec/ConcurrentRead.java"
-                  (("/usr/bin/tee") (which "tee")))
-                (substitute* "java/lang/Runtime/exec/ExecWithDir.java"
-                  (("/bin/true") (which "true")))
-                (substitute* "java/lang/Runtime/exec/ExecWithInput.java"
-                  (("/bin/cat") (which "cat")))
-                (substitute* "java/lang/Runtime/exec/ExitValue.java"
-                  (("/bin/sh") (which "sh"))
-                  (("/bin/true") (which "true"))
-                  (("/bin/kill") (which "kill")))
-                (substitute* "java/lang/Runtime/exec/LotsOfDestroys.java"
-                  (("/usr/bin/echo") (which "echo")))
-                (substitute* "java/lang/Runtime/exec/LotsOfOutput.java"
-                  (("/usr/bin/cat") (which "cat")))
-                (substitute* "java/lang/Runtime/exec/SleepyCat.java"
-                  (("/bin/cat") (which "cat"))
-                  (("/bin/sleep") (which "sleep"))
-                  (("/bin/sh") (which "sh")))
-                (substitute* "java/lang/Runtime/exec/StreamsSurviveDestroy.java"
-                  (("/bin/cat") (which "cat")))
-                (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
-                  (("/bin/chmod") (which "chmod")))
-                (substitute* "java/util/zip/ZipFile/Assortment.java"
-                  (("/bin/sh") (which "sh")))))
-            (alist-replace
-             'check
+              #t)
+            (alist-cons-before
+             'check 'fix-hotspot-tests
              (lambda _
-               ;; The "make check-*" targets always return zero, so we need to
-               ;; check for errors in the associated log files to determine
-               ;; whether any tests have failed.
-               (use-modules (ice-9 rdelim))
-               (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
-                      (checker (lambda (port)
-                                 (let loop ()
-                                   (let ((line (read-line port)))
-                                     (cond
-                                      ((eof-object? line) #t)
-                                      ((regexp-exec error-pattern line) #f)
-                                      (else (loop)))))))
-                      (run-test (lambda (test)
-                                  (system* "make" test)
-                                  (call-with-input-file
-                                      (string-append "test/" test ".log")
-                                    checker))))
-                 (or #t ; skip tests
-                     (and (run-test "check-hotspot")
-                          (run-test "check-langtools")
-                          (run-test "check-jdk")))))
-             (alist-replace
-              'install
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
-                      (jre (assoc-ref outputs "out"))
-                      (jdk (assoc-ref outputs "jdk")))
-                  (copy-recursively "openjdk.build/docs" doc)
-                  (copy-recursively "openjdk.build/j2re-image" jre)
-                  (copy-recursively "openjdk.build/j2sdk-image" jdk)))
-              %standard-phases)))))))))
+               (with-directory-excursion "openjdk/hotspot/test/"
+                 (substitute* "jprt.config"
+                   (("PATH=\"\\$\\{path4sdk\\}\"")
+                    (string-append "PATH=" (getenv "PATH")))
+                   (("make=/usr/bin/make")
+                    (string-append "make=" (which "make"))))
+                 (substitute* '("runtime/6626217/Test6626217.sh"
+                                "runtime/7110720/Test7110720.sh")
+                   (("/bin/rm") (which "rm"))
+                   (("/bin/cp") (which "cp"))
+                   (("/bin/mv") (which "mv"))))
+               #t)
+             (alist-cons-before
+              'check 'fix-jdk-tests
+              (lambda _
+                (with-directory-excursion "openjdk/jdk/test/"
+                  (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
+                    (("/bin/pwd") (which "pwd")))
+                  (substitute* "com/sun/jdi/ShellScaffold.sh"
+                    (("/bin/kill") (which "kill")))
+                  (substitute* "start-Xvfb.sh"
+                    ;;(("/usr/bin/X11/Xvfb") (which "Xvfb"))
+                    (("/usr/bin/nohup")    (which "nohup")))
+                  (substitute* "javax/security/auth/Subject/doAs/Test.sh"
+                    (("/bin/rm") (which "rm")))
+                  (substitute* "tools/launcher/MultipleJRE.sh"
+                    (("echo \"#!/bin/sh\"")
+                     (string-append "echo \"#!" (which "rm") "\""))
+                    (("/usr/bin/zip") (which "zip")))
+                  (substitute* "com/sun/jdi/OnThrowTest.java"
+                    (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                  (substitute* "java/lang/management/OperatingSystemMXBean/GetSystemLoadAverage.java"
+                    (("/usr/bin/uptime") (which "uptime")))
+                  (substitute* "java/lang/ProcessBuilder/Basic.java"
+                    (("/usr/bin/env") (which "env"))
+                    (("/bin/false") (which "false"))
+                    (("/bin/true") (which "true"))
+                    (("/bin/cp") (which "cp"))
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/ProcessBuilder/FeelingLucky.java"
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/ProcessBuilder/Zombies.java"
+                    (("/usr/bin/perl") (which "perl"))
+                    (("/bin/ps") (which "ps"))
+                    (("/bin/true") (which "true")))
+                  (substitute* "java/lang/Runtime/exec/ConcurrentRead.java"
+                    (("/usr/bin/tee") (which "tee")))
+                  (substitute* "java/lang/Runtime/exec/ExecWithDir.java"
+                    (("/bin/true") (which "true")))
+                  (substitute* "java/lang/Runtime/exec/ExecWithInput.java"
+                    (("/bin/cat") (which "cat")))
+                  (substitute* "java/lang/Runtime/exec/ExitValue.java"
+                    (("/bin/sh") (which "sh"))
+                    (("/bin/true") (which "true"))
+                    (("/bin/kill") (which "kill")))
+                  (substitute* "java/lang/Runtime/exec/LotsOfDestroys.java"
+                    (("/usr/bin/echo") (which "echo")))
+                  (substitute* "java/lang/Runtime/exec/LotsOfOutput.java"
+                    (("/usr/bin/cat") (which "cat")))
+                  (substitute* "java/lang/Runtime/exec/SleepyCat.java"
+                    (("/bin/cat") (which "cat"))
+                    (("/bin/sleep") (which "sleep"))
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/Runtime/exec/StreamsSurviveDestroy.java"
+                    (("/bin/cat") (which "cat")))
+                  (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
+                    (("/bin/chmod") (which "chmod")))
+                  (substitute* "java/util/zip/ZipFile/Assortment.java"
+                    (("/bin/sh") (which "sh"))))
+                #t)
+              (alist-replace
+               'check
+               (lambda _
+                 ;; The "make check-*" targets always return zero, so we need to
+                 ;; check for errors in the associated log files to determine
+                 ;; whether any tests have failed.
+                 (use-modules (ice-9 rdelim))
+                 (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
+                        (checker (lambda (port)
+                                   (let loop ()
+                                     (let ((line (read-line port)))
+                                       (cond
+                                        ((eof-object? line) #t)
+                                        ((regexp-exec error-pattern line) #f)
+                                        (else (loop)))))))
+                        (run-test (lambda (test)
+                                    (system* "make" test)
+                                    (call-with-input-file
+                                        (string-append "test/" test ".log")
+                                      checker))))
+                   (or #t ; skip tests
+                       (and (run-test "check-hotspot")
+                            (run-test "check-langtools")
+                            (run-test "check-jdk")))))
+               (alist-replace
+                'install
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
+                        (jre (assoc-ref outputs "out"))
+                        (jdk (assoc-ref outputs "jdk")))
+                    (copy-recursively "openjdk.build/docs" doc)
+                    (copy-recursively "openjdk.build/j2re-image" jre)
+                    (copy-recursively "openjdk.build/j2sdk-image" jdk)))
+                %standard-phases)))))))))))
     (native-inputs
      `(("ant-bootstrap"
         ,(origin
