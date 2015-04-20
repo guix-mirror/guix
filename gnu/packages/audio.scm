@@ -128,7 +128,7 @@ attacks, performing pitch detection, tapping the beat and producing MIDI
 streams from live audio.")
     (license license:gpl3+)))
 
-(define-public ardour
+(define-public ardour-3
   (package
     (name "ardour")
     (version "3.5.403")
@@ -140,6 +140,9 @@ streams from live audio.")
                     (url "git://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
+               ;; Ardour expects this file to exist at build time.  It can be
+               ;; created from a git checkout with:
+               ;;   ./waf create_stored_revision
                '(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
@@ -221,6 +224,29 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
 record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
+
+(define-public ardour
+  (package (inherit ardour)
+    (name "ardour")
+    (version "4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.ardour.org/ardour/ardour.git")
+                    (commit version)))
+              (snippet
+               ;; Ardour expects this file to exist at build time.  It can be
+               ;; created from a git checkout with:
+               ;;   ./waf create_stored_revision
+               '(call-with-output-file
+                    "libs/ardour/revision.cc"
+                  (lambda (port)
+                    (format port "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"4.0\" ; }"))))
+              (sha256
+               (base32
+                "0a8bydc24xv0cahdqfaxdmi1f43cyr9psiyshxpbrkdqw2c7a4xi"))
+              (file-name (string-append name "-" version))))))
 
 (define-public azr3
   (package
