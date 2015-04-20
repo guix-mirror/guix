@@ -42,6 +42,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
+  #:replace (symlink)
   #:export (_
             N_
             P_
@@ -204,6 +205,21 @@ Report bugs to: ~a.") %guix-bug-report-address)
   (display (_ "
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
+
+(define symlink
+  (let ((real-symlink (@ (guile) symlink)))
+    (lambda (target link)
+      "This is a 'symlink' replacement that provides proper error reporting."
+      (catch 'system-error
+        (lambda ()
+          (real-symlink target link))
+        (lambda (key proc fmt args errno)
+          ;; Augment the FMT and ARGS with information about LINK (this
+          ;; information is missing as of Guile 2.0.11, making the exception
+          ;; uninformative.)
+          (apply throw key proc "~A: ~S"
+                 (append args (list link))
+                 errno))))))
 
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
