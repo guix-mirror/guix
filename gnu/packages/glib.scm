@@ -343,7 +343,7 @@ translated.")
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.102")
+    (version "0.104")
     (source (origin
              (method url-fetch)
              (uri
@@ -351,7 +351,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "177j5p2vrvpmzk2xrrj6akn73kvpbvnmsjvlmca9l55qbdcfsr39"))))
+               "1xi1v1msz75qs0s4lkyf1psrksdppa3hwkg0mznc6gpw5flg3hdz"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
