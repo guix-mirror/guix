@@ -200,6 +200,8 @@ impure library ~s~%"
          (args (append args (rpath-arguments libs))))
     (when %debug?
       (format (current-error-port)
+              "ld-wrapper: libraries linked: ~s~%" libs)
+      (format (current-error-port)
               "ld-wrapper: invoking `~a' with ~s~%"
               %real-ld args))
     (apply execl %real-ld (basename %real-ld) args)))
