@@ -31,6 +31,7 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
@@ -418,6 +419,42 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                              '("gcc" "libc")))
                                    (current-source-location)))))
 
+(define gettext-boot0
+  ;; A minimal gettext used during bootstrap.
+  (let ((gettext-minimal (package
+                           (inherit gnu-gettext)
+                           (name "gettext-boot0")
+                           (inputs '())           ;zero dependencies
+                           (arguments
+                            (substitute-keyword-arguments
+                                `(#:configure-flags '("--disable-threads")
+                                  #:tests? #f
+                                  ,@(package-arguments gnu-gettext))
+                              ((#:phases phases)
+                               `(modify-phases ,phases
+                                  ;; Build only the tools.
+                                  (add-after 'unpack 'chdir
+                                             (lambda _
+                                               (chdir "gettext-tools")))
+
+                                  ;; Some test programs require pthreads,
+                                  ;; which we don't have.
+                                  (add-before 'configure 'no-test-programs
+                                              (lambda _
+                                                (substitute* "tests/Makefile.in"
+                                                  (("^PROGRAMS =.*$")
+                                                   "PROGRAMS =\n"))
+                                                #t))
+
+                                  ;; Don't try to link against libexpat.
+                                  (delete 'link-expat)
+                                  (delete 'patch-tests))))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs gettext-minimal
+                                   %boot1-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
 (define-public glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
   (package (inherit glibc-final-with-bootstrap-bash)
@@ -426,6 +463,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
               ,@(alist-delete
                  "static-bash"
                  (package-inputs glibc-final-with-bootstrap-bash))))
+
+    ;; This time we need 'msgfmt' to install all the libc.mo files.
+    (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
+                     ("gettext" ,gettext-boot0)))
 
     ;; The final libc only refers to itself, but the 'debug' output contains
     ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great

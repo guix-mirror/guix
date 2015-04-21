@@ -568,9 +568,11 @@ store.")
 
    (inputs `(("static-bash" ,(static-package bash-light))))
 
-   ;; To build the manual, we need Texinfo and Perl.
+   ;; To build the manual, we need Texinfo and Perl.  Gettext is needed to
+   ;; install the message catalogs, with 'msgfmt'.
    (native-inputs `(("texinfo" ,texinfo)
-                    ("perl" ,perl)))
+                    ("perl" ,perl)
+                    ("gettext" ,gnu-gettext)))
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
