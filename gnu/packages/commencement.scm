@@ -421,34 +421,32 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
-  (let ((gettext-minimal (package
-                           (inherit gnu-gettext)
-                           (name "gettext-boot0")
-                           (inputs '())           ;zero dependencies
-                           (arguments
-                            (substitute-keyword-arguments
-                                `(#:configure-flags '("--disable-threads")
-                                  #:tests? #f
-                                  ,@(package-arguments gnu-gettext))
-                              ((#:phases phases)
-                               `(modify-phases ,phases
-                                  ;; Build only the tools.
-                                  (add-after 'unpack 'chdir
-                                             (lambda _
-                                               (chdir "gettext-tools")))
+  (let ((gettext-minimal
+         (package (inherit gnu-gettext)
+           (name "gettext-boot0")
+           (inputs '())                           ;zero dependencies
+           (arguments
+            (substitute-keyword-arguments
+                `(#:tests? #f
+                  ,@(package-arguments gnu-gettext))
+              ((#:phases phases)
+               `(modify-phases ,phases
+                  ;; Build only the tools.
+                  (add-after 'unpack 'chdir
+                             (lambda _
+                               (chdir "gettext-tools")))
 
-                                  ;; Some test programs require pthreads,
-                                  ;; which we don't have.
-                                  (add-before 'configure 'no-test-programs
-                                              (lambda _
-                                                (substitute* "tests/Makefile.in"
-                                                  (("^PROGRAMS =.*$")
-                                                   "PROGRAMS =\n"))
-                                                #t))
+                  ;; Some test programs require pthreads, which we don't have.
+                  (add-before 'configure 'no-test-programs
+                              (lambda _
+                                (substitute* "tests/Makefile.in"
+                                  (("^PROGRAMS =.*$")
+                                   "PROGRAMS =\n"))
+                                #t))
 
-                                  ;; Don't try to link against libexpat.
-                                  (delete 'link-expat)
-                                  (delete 'patch-tests))))))))
+                  ;; Don't try to link against libexpat.
+                  (delete 'link-expat)
+                  (delete 'patch-tests))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs gettext-minimal
                                    %boot1-inputs
