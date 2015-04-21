@@ -578,8 +578,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
-  gnu/packages/ld-wrapper.in			\
-  gnu/packages/ld-wrapper2.in
+  gnu/packages/ld-wrapper.in
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

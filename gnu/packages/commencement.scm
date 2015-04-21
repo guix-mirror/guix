@@ -708,19 +708,6 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 ;;; GCC toolchain.
 ;;;
 
-(define (fixed-ld-wrapper)
-  ;; FIXME: In this cycle, a bug was introduced in ld-wrapper: it would
-  ;; incorrectly flag ~/.guix-profile/lib/libfoo.so as "impure", due to a bug
-  ;; in its symlink resolution code.  To work around that while avoiding a
-  ;; full rebuild, use an ld-wrapper with the bug-fix for 'gcc-toolchain'.
-  (let ((orig (car (assoc-ref %final-inputs "ld-wrapper"))))
-    (package
-      (inherit orig)
-      (location (source-properties->location (current-source-location)))
-      (inputs `(("wrapper" ,(search-path %load-path
-                                         "gnu/packages/ld-wrapper2.in"))
-                ,@(package-inputs orig))))))
-
 (define (gcc-toolchain gcc)
   "Return a complete toolchain for GCC."
   (package
@@ -759,7 +746,7 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
     ;; install everything that we need, and (2) to make sure ld-wrapper comes
     ;; before Binutils' ld in the user's profile.
     (inputs `(("gcc" ,gcc)
-              ("ld-wrapper" ,(fixed-ld-wrapper))
+              ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
               ("binutils" ,binutils-final)
               ("libc" ,glibc-final)
               ("libc-debug" ,glibc-final "debug")))))

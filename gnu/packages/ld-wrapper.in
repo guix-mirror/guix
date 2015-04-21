@@ -92,34 +92,32 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 
   (let loop ((file  file)
              (depth 0))
-    (catch 'system-error
-      (lambda ()
-        (if (>= depth %max-symlink-depth)
-            file
-            (loop (readlink file) (+ depth 1))))
-      (lambda args
-        (if (= EINVAL (system-error-errno args))
-            file
-            (apply throw args))))))
+    (define (absolute target)
+      (if (absolute-file-name? target)
+          target
+          (string-append (dirname file) "/" target)))
 
-(define (dereference-symlinks file)
-  ;; Same as 'readlink*' but return FILE if the symlink target is invalid or
-  ;; FILE does not exist.
-  (catch 'system-error
-    (lambda ()
-      ;; When used from a user environment, FILE may refer to
-      ;; ~/.guix-profile/lib/libfoo.so, which is itself a symlink to the
-      ;; store.  Check whether this is the case.
-      (readlink* file))
-    (lambda args
-      (if (= ENOENT (system-error-errno args))
-          file
-          (apply throw args)))))
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL) (= errno ENOENT))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
 
 (define (pure-file-name? file)
   ;; Return #t when FILE is the name of a file either within the store
   ;; (possibly via a symlink) or within the build directory.
-  (let ((file (dereference-symlinks file)))
+  (let ((file (readlink* file)))
     (or (not (string-prefix? "/" file))
         (string-prefix? %store-directory file)
         (string-prefix? %temporary-directory file)
@@ -128,7 +126,7 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 
 (define (store-file-name? file)
   ;; Return #t when FILE is a store file, possibly indirectly.
-  (string-prefix? %store-directory (dereference-symlinks file)))
+  (string-prefix? %store-directory (readlink* file)))
 
 (define (shared-library? file)
   ;; Return #t when FILE denotes a shared library.
