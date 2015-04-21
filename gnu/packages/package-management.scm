@@ -67,6 +67,9 @@
      `(#:configure-flags (list
                           "--localstatedir=/var"
                           "--sysconfdir=/etc"
+                          (string-append "--with-bash-completion-dir="
+                                         (assoc-ref %outputs "out")
+                                         "/etc/bash_completion.d")
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
