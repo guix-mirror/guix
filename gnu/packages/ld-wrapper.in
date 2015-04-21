@@ -140,34 +140,45 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 (define (library-files-linked args)
   ;; Return the file names of shared libraries explicitly linked against via
   ;; `-l' or with an absolute file name in ARGS.
-  (define path+files
+  (define path+files+args
     (fold (lambda (argument result)
             (match result
-              ((library-path . library-files)
+              ((library-path library-files ("-dynamic-linker" . rest))
+               ;; When passed '-dynamic-linker ld.so', ignore 'ld.so'.
+               ;; See <http://bugs.gnu.org/20102>.
+               (list library-path
+                     library-files
+                     (cons* argument "-dynamic-linker" rest)))
+              ((library-path library-files previous-args)
                (cond ((string-prefix? "-L" argument) ;augment the search path
-                      (cons (append library-path
+                      (list (append library-path
                                     (list (string-drop argument 2)))
-                            library-files))
+                            library-files
+                            (cons argument previous-args)))
                      ((string-prefix? "-l" argument) ;add library
                       (let* ((lib  (string-append "lib"
                                                   (string-drop argument 2)
                                                   ".so"))
                              (full (search-path library-path lib)))
-                        (if full
-                            (cons library-path
-                                  (cons full library-files))
-                            result)))
+                        (list library-path
+                              (if full
+                                  (cons full library-files)
+                                  library-files)
+                              (cons argument previous-args))))
                      ((and (string-prefix? %store-directory argument)
                            (shared-library? argument)) ;add library
-                      (cons library-path
-                            (cons argument library-files)))
+                      (list library-path
+                            (cons argument library-files)
+                            (cons argument previous-args)))
                      (else
-                      result)))))
-          (cons '() '())
+                      (list library-path
+                            library-files
+                            (cons argument previous-args)))))))
+          (list '() '() '())
           args))
 
-  (match path+files
-    ((path . files)
+  (match path+files+args
+    ((path files arguments)
      (reverse files))))
 
 (define (rpath-arguments library-files)
