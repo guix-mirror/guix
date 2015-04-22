@@ -158,8 +158,6 @@
                    (srfi srfi-1)
                    (srfi srfi-26))
         ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
-            ((#:validate-runpath? _)
-             #t)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -540,6 +538,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
        #:allowed-references ("out" "lib" ,glibc-final)
 
+       ;; Things like libasan.so and libstdc++.so NEED ld.so for some
+       ;; reason, but it is not in their RUNPATH.  This is a false
+       ;; positive, so turn it off.
+       #:validate-runpath? #f
+
        ;; Build again GMP & co. within GCC's build process, because it's hard
        ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
@@ -564,11 +567,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                              "/lib")
                               flag))
                         ,flags)))
-           ((#:validate-runpath? _)
-            ;; Things like libasan.so and libstdc++.so NEED ld.so and/or
-            ;; libgcc_s.so but RUNPATH is empty.  This is a false positive, so
-            ;; turn it off.
-            #f)
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 

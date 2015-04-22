@@ -175,8 +175,6 @@ may be either a libc package or #f.)"
                      #t)))
                ,phases)
              phases)))
-      ((#:validate-runpath? _)
-       #t)
       ((#:strip-binaries? _)
        ;; Disable stripping as this can break binaries, with object files of
        ;; libgcc.a showing up as having an unknown architecture.  See

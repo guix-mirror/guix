@@ -190,10 +190,6 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
          #:tests? #f
 
-         ;; libstdc++.so NEEDs libgcc_s.so but somehow it doesn't get
-         ;; $(libdir) in its RUNPATH, so turn it off.
-         #:validate-runpath? #f
-
          #:phases
          (alist-cons-before
           'configure 'pre-configure
