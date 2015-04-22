@@ -252,6 +252,13 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (("static char const sed_cmd_z\\[\\] =.*;")
                  "static char const sed_cmd_z[] = \"sed\";"))
 
+              ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
+              ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
+              ;; and <http://bugs.gnu.org/20358>.
+              (substitute* "libstdc++-v3/src/Makefile.in"
+                (("^OPT_LDFLAGS = ")
+                 "OPT_LDFLAGS = -Wl,-rpath=$(libdir) "))
+
               ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
               ;; circularity between "out" and "lib".  (Note:
               ;; --with-python-dir is useless because it imposes $(prefix) as
