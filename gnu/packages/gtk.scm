@@ -474,7 +474,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.16.0")
+   (version "3.16.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -482,7 +482,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1si6ihl1wlvag8qq3166skr9fnm9i33dimbfry1j628qzqc76qff"))))
+              "1yhwg2l72l3khfkprydcjlpxjrg11ccqfc80sjl56llz3jk66fd0"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
