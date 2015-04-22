@@ -210,6 +210,10 @@ valid."
              #f)))))
 
 
+(define %hydra-supported-systems
+  ;; This is the list of system types for which build slaves are available.
+  '("x86_64-linux" "i686-linux" "mips64el-linux"))
+
 ;;;
 ;;; Hydra entry point.
 ;;;
@@ -269,4 +273,4 @@ valid."
                            (cross-jobs system)))
                   (else
                    (error "unknown subset" subset))))
-              %supported-systems))
+              %hydra-supported-systems))
