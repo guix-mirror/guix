@@ -541,14 +541,6 @@ useful for C++.")
         (base32
          "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-before
-                 'build 'set-cc
-                 (lambda _
-                   ;; Set $CC so that g-ir-scanner works.
-                   (setenv "CC" "gcc")
-                   #t)
-                 %standard-phases)))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("pkg-config" ,pkg-config)

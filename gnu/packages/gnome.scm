@@ -499,13 +499,6 @@ some form of information without getting in the user's way.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
-    (arguments
-     `(#:phases 
-       (alist-cons-before
-        'build 'pre-build
-        (lambda* _
-          (setenv "CC" "gcc"))
-        %standard-phases)))
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
@@ -675,11 +668,7 @@ dealing with different structured file formats.")
                 (string-join (find-files (assoc-ref inputs "gdk-pixbuf") 
                                          "libpixbufloader-.*\\.so") " ")
                 "> " loaders-directory ".cache")))))
-         (alist-cons-before
-          'build 'pre-build
-          (lambda* _
-            (setenv "CC" "gcc"))
-          %standard-phases)))))
+         %standard-phases))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -1395,7 +1384,6 @@ engineering.")
                (base32
                 "0swyym2papln0f62ah05dpvq3vv6fssap26jq2zqp9dkkaqsn1w4"))))
     (build-system gnu-build-system)
-    (arguments '(#:make-flags '("CC=gcc")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
@@ -1437,13 +1425,6 @@ libraries written in C.")
     (propagated-inputs
      `(("gtk+" ,gtk+)                             ;required by vte-2.91.pc
        ("gnutls" ,gnutls)))                       ;ditto
-    (arguments
-     `(#:phases
-       (alist-cons-before
-        'build 'pre-build
-        (lambda* _
-          (setenv "CC" "gcc"))
-        %standard-phases)))
     (home-page "http://www.gnome.org/")
     (synopsis "Virtual Terminal Emulator")
     (description
@@ -1542,14 +1523,6 @@ configuration storage systems.")
                (base32
                 "02k66lpc4cmgygj66n8zcy59bggy7yzm3v4hni9xqplgva9d2yw8"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-before
-                 'build 'set-cc
-                 (lambda _
-                   ;; Set $CC so that g-ir-scanner works.
-                   (setenv "CC" "gcc")
-                   #t)
-                 %standard-phases)))
     (native-inputs
      `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
@@ -1581,13 +1554,7 @@ JSON, such as arrays and objects.")
      '(#:configure-flags
        (list (string-append "--with-xkb-base="
                             (assoc-ref %build-inputs "xkeyboard-config")
-                            "/share/X11/xkb"))
-       #:phases
-       (alist-cons-before
-        'build 'set-cc
-        (lambda _
-          (setenv "CC" "gcc")) ; for g-ir-scanner.
-        %standard-phases)))
+                            "/share/X11/xkb"))))
     (native-inputs
      `(("glib:bin"              ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -1698,8 +1665,7 @@ library.")
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:make-flags '("CC=gcc") ; for g-ir-scanner
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
@@ -1762,7 +1728,6 @@ and the GLib main loop, to integrate well with GNOME applications.")
     (outputs '("out" "doc"))
     (arguments
      `(#:tests? #f ; FIXME: Testing hangs.
-       #:make-flags '("CC=gcc") ; for g-ir-scanner.
        #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
@@ -1926,12 +1891,7 @@ keyboard shortcuts.")
                          (("/bin/true") (which "true")))
                        (substitute* "src/Makefile.in"
                          (("if test -w \\$\\(DESTDIR\\)\\$\\(prefix\\)/;")
-                          "if test -w $(DESTDIR)$(localstatedir);"))))
-         (add-before 'build 'set-cc
-                     (lambda _
-                       ;; Set $CC so that g-ir-scanner works.
-                       (setenv "CC" "gcc")
-                       #t)))))
+                          "if test -w $(DESTDIR)$(localstatedir);")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
@@ -2015,7 +1975,6 @@ permission from user. ")
      `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
        ;; work for the builder.  Punt.
        #:tests? #f
-       #:make-flags '("CC=gcc") ; for g-ir-scanner
        ))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -2103,7 +2062,6 @@ service via the system message bus.")
      `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
        ;; work for the builder.  Punt.
        #:tests? #f
-       #:make-flags '("CC=gcc") ; for g-ir-scanner
        #:configure-flags
        `(;; No introspection for now, as it wants to install to
          ;; gobject-introspection's own directory and I don't know how to easily

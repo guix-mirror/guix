@@ -353,8 +353,7 @@ in the GNOME project.")
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
-    '(#:make-flags '("CC=gcc") ; for g-ir-scanner
-      #:configure-flags
+    '(#:configure-flags
       (list (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
                            "/share/gtk-doc/html"))
@@ -450,8 +449,7 @@ is part of the GNOME accessibility project.")
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
-    `(#:make-flags '("CC=gcc")
-      #:configure-flags
+    `(#:configure-flags
       (list "--with-xinput=yes"
             (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
