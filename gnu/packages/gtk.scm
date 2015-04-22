@@ -705,7 +705,7 @@ extensive documentation, including API reference and a tutorial.")
 (define-public gtkmm-2
   (package (inherit gtkmm)
     (name "gtkmm")
-    (version "2.24.2")
+    (version "2.24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -713,7 +713,7 @@ extensive documentation, including API reference and a tutorial.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0gcm91sc1a05c56kzh74l370ggj0zz8nmmjvjaaxgmhdq8lpl369"))))
+               "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
