@@ -208,7 +208,7 @@ corresponds to the arguments expected by `set-path-environment-variable'."
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
-  '("x86_64-linux" "i686-linux" "mips64el-linux"))
+  '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux"))
 
 ;; A package.
 (define-record-type* <package>
