@@ -1374,7 +1374,7 @@ engineering.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.26.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1382,8 +1382,15 @@ engineering.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0swyym2papln0f62ah05dpvq3vv6fssap26jq2zqp9dkkaqsn1w4"))))
+                "0zwpzhkhfk3piya14m7p2hl2vaabahprphppfm46ci91z39kp7hd"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-cc
+                     (lambda _
+                       (setenv "CC" "gcc")
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
