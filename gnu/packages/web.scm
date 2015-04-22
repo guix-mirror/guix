@@ -132,7 +132,12 @@ and its related documentation.")
                                                      (%current-system))
                                             ("x86_64-linux"   "x86_64")
                                             ("i686-linux"     "i686")
-                                            ("mips64el-linux" "mips64"))))
+                                            ("mips64el-linux" "mips64")
+                                            ;; Prevent errors when querying
+                                            ;; this package on unsupported
+                                            ;; platforms, e.g. when running
+                                            ;; "guix package --search="
+                                            (_                "UNSUPPORTED"))))
                              (string-append "--crossbuild="
                                             system ":" release ":" machine)))))
                (setenv "CC" "gcc")
