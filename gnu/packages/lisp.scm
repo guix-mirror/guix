@@ -343,9 +343,13 @@ statistical profiler, a code coverage tool, and many other extensions.")
             (chdir (string-append
                     "lisp-kernel/"
                     ,(match (or (%current-target-system) (%current-system))
-                       ("i686-linux" "linuxx8632")
+                       ("i686-linux"   "linuxx8632")
                        ("x86_64-linux" "linuxx8664")
-                       ("armhf-linux" "linuxarm"))))
+                       ("armhf-linux"  "linuxarm")
+                       ;; Prevent errors when querying this package
+                       ;; on unsupported platforms, e.g. when running
+                       ;; "guix package --search="
+                       (_              "UNSUPPORTED"))))
             (substitute* '("Makefile")
               (("/bin/rm") "rm"))
             (setenv "CC" "gcc")
@@ -366,9 +370,13 @@ statistical profiler, a code coverage tool, and many other extensions.")
                     (bash (assoc-ref inputs "bash"))
                     (kernel
                      ,(match (or (%current-target-system) (%current-system))
-                        ("i686-linux" "lx86cl")
+                        ("i686-linux"   "lx86cl")
                         ("x86_64-linux" "lx86cl64")
-                        ("armhf-linux" "armcl")))
+                        ("armhf-linux"  "armcl")
+                        ;; Prevent errors when querying this package
+                        ;; on unsupported platforms, e.g. when running
+                        ;; "guix package --search="
+                        (_              "UNSUPPORTED")))
                     (heap (string-append kernel ".image")))
                (mkdir-p libdir)
                (mkdir-p bindir)
