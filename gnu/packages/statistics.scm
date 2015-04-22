@@ -53,7 +53,11 @@
                 "0ypsm11c7n49pgh2ricyhhpfhas3famscdazzdp2zq70rapm1ldw"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/R/lib"))
+       #:phases
        (alist-cons-before
         'check 'set-timezone
         ;; Some tests require the timezone to be set.
