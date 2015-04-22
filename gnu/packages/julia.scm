@@ -118,7 +118,10 @@
         ,(match (or (%current-target-system)
                     (%current-system))
            ("x86_64-linux" "MARCH=x86-64")
-           ("i686-linux" "MARCH=pentium4"))
+           ("i686-linux" "MARCH=pentium4")
+           ;; Prevent errors when querying this package on unsupported
+           ;; platforms, e.g. when running "guix package --search="
+           (_ "MARCH=UNSUPPORTED"))
 
         "CONFIG_SHELL=bash"     ;needed to build bundled libraries
         "USE_SYSTEM_LIBUV=0"    ;Julia expects a modified libuv
