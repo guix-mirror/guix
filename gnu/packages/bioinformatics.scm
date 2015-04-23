@@ -1086,9 +1086,13 @@ distribution, coverage uniformity, strand specificity, etc.")
               ;; them.
               (("(test_usage_subcommand\\(.*\\);)" cmd)
                (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
-        (alist-delete
-         'configure
-         %standard-phases))))
+        (alist-cons-after
+         'install 'install-library
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+             (mkdir-p lib)
+             (copy-file "libbam.a" (string-append lib "/libbam.a"))))
+         (alist-delete 'configure %standard-phases)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
