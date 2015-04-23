@@ -418,7 +418,7 @@ effects, such as displaying warnings or error messages."
        (loop tail (and (pred head) result))))))
 
 (define* (validate-runpath #:key
-                           validate-runpath?
+                           (validate-runpath? #t)
                            (elf-directories '("lib" "lib64" "libexec"
                                               "bin" "sbin"))
                            outputs #:allow-other-keys)
