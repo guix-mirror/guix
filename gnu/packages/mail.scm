@@ -66,7 +66,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ non-copyleft))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ non-copyleft
+                          (expat . license:expat)))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -638,6 +639,49 @@ similar to Smail 3, but its facilities are more general.  There is a great
 deal of flexibility in the way mail can be routed, and there are extensive
 facilities for checking incoming mail.")
     (license gpl2+)))
+
+(define-public dovecot
+  (package
+    (name "dovecot")
+    (version "2.2.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.dovecot.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.gz"))
+       (sha256 (base32
+                "1w6gg4h9mxg3i8faqpmgj19imzyy001b0v8ihch8ma3zl63i5kjn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("zlib" ,zlib)
+       ("bzip2" ,bzip2)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags '("--sysconfdir=/etc"
+                           "--localstatedir=/var")
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'pre-configure
+                   (lambda _
+                     ;; Simple hack to avoid installing in /etc
+                     (substitute* '("doc/Makefile.in"
+                                    "doc/example-config/Makefile.in")
+                       (("pkgsysconfdir = .*")
+                        "pkgsysconfdir = /tmp/etc"))
+                     #t)))))
+    (home-page "http://www.dovecot.org")
+    (synopsis "Secure POP3/IMAP server")
+    (description
+     "Dovecot is a mail server whose major goals are security and reliability.
+It supports mbox/Maildir and its own dbox/mdbox formats.")
+    ;; Most source files are covered by either lgpl2.1 or expat.  The SHA code
+    ;; is covered by a variant of BSD-3, and UnicodeData.txt is covered by the
+    ;; Unicode, Inc. License Agreement for Data Files and Software.
+    (license (list lgpl2.1 license:expat (non-copyleft "file://COPYING")))))
 
 (define-public isync
   (package
