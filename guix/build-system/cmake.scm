@@ -84,6 +84,7 @@
                       (tests? #t)
                       (test-target "test")
                       (parallel-build? #t) (parallel-tests? #f)
+                      (validate-runpath? #t)
                       (patch-shebangs? #t)
                       (strip-binaries? #t)
                       (strip-flags ''("--strip-debug"))
@@ -121,6 +122,7 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:test-target ,test-target
                     #:parallel-build? ,parallel-build?
                     #:parallel-tests? ,parallel-tests?
+                    #:validate-runpath? ,validate-runpath?
                     #:patch-shebangs? ,patch-shebangs?
                     #:strip-binaries? ,strip-binaries?
                     #:strip-flags ,strip-flags

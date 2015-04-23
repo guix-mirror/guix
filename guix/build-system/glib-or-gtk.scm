@@ -127,6 +127,7 @@
                             (test-target "check")
                             (parallel-build? #t)
                             (parallel-tests? #t)
+                            (validate-runpath? #t)
                             (patch-shebangs? #t)
                             (strip-binaries? #t)
                             (strip-flags ''("--strip-debug"))
@@ -175,6 +176,7 @@
                           #:test-target ,test-target
                           #:parallel-build? ,parallel-build?
                           #:parallel-tests? ,parallel-tests?
+                          #:validate-runpath? ,validate-runpath?
                           #:patch-shebangs? ,patch-shebangs?
                           #:strip-binaries? ,strip-binaries?
                           #:strip-flags ,strip-flags
