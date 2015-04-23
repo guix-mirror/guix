@@ -34,6 +34,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages gettext)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
