@@ -324,6 +324,18 @@ Go.  It also includes runtime support libraries for these languages.")
                "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
              (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
+(define-public gcc-5.1
+  (package (inherit gcc-4.7)
+    (version "5.1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/gcc/gcc-"
+                                 version "/gcc-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
+             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
+
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
   (package (inherit gcc)
