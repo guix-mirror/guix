@@ -1068,32 +1068,27 @@ distribution, coverage uniformity, strand specificity, etc.")
        ;; systems.
        #:tests? ,(string=? (or (%current-system) (%current-target-system))
                            "x86_64-linux")
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:make-flags (list "LIBCURSES=-lncurses"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
         'unpack
-        'patch-makefile-curses
-        (lambda _
-          (substitute* "Makefile"
-            (("-lcurses") "-lncurses")))
-        (alist-cons-after
-         'unpack
-         'patch-tests
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((bash (assoc-ref inputs "bash")))
-             (substitute* "test/test.pl"
-               ;; The test script calls out to /bin/bash
-               (("/bin/bash")
-                (string-append bash "/bin/bash"))
-               ;; There are two failing tests upstream relating to the "stats"
-               ;; subcommand in test_usage_subcommand ("did not have Usage"
-               ;; and "usage did not mention samtools stats"), so we disable
-               ;; them.
-               (("(test_usage_subcommand\\(.*\\);)" cmd)
-                (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
-         (alist-delete
-          'configure
-          %standard-phases)))))
+        'patch-tests
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let ((bash (assoc-ref inputs "bash")))
+            (substitute* "test/test.pl"
+              ;; The test script calls out to /bin/bash
+              (("/bin/bash")
+               (string-append bash "/bin/bash"))
+              ;; There are two failing tests upstream relating to the "stats"
+              ;; subcommand in test_usage_subcommand ("did not have Usage"
+              ;; and "usage did not mention samtools stats"), so we disable
+              ;; them.
+              (("(test_usage_subcommand\\(.*\\);)" cmd)
+               (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
+        (alist-delete
+         'configure
+         %standard-phases))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
