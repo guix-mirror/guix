@@ -83,6 +83,8 @@
             package-location
             package-field-location
 
+            package-direct-sources
+            package-transitive-sources
             package-direct-inputs
             package-transitive-inputs
             package-transitive-target-inputs
@@ -539,6 +541,28 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                (append t (cons i result)))))
       ((input rest ...)
        (loop rest (cons input result))))))
+
+(define (package-direct-sources package)
+  "Return all source origins associated with PACKAGE; including origins in
+PACKAGE's inputs."
+  `(,@(or (and=> (package-source package) list) '())
+    ,@(filter-map (match-lambda
+                   ((_ (? origin? orig) _ ...)
+                    orig)
+                   (_ #f))
+                  (package-direct-inputs package))))
+
+(define (package-transitive-sources package)
+  "Return PACKAGE's direct sources, and their direct sources, recursively."
+  (delete-duplicates
+   (concatenate (filter-map (match-lambda
+                             ((_ (? origin? orig) _ ...)
+                              (list orig))
+                             ((_ (? package? p) _ ...)
+                              (package-direct-sources p))
+                             (_ #f))
+                            (bag-transitive-inputs
+                             (package->bag package))))))
 
 (define (package-direct-inputs package)
   "Return all the direct inputs of PACKAGE---i.e, its direct inputs along
