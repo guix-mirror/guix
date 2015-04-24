@@ -702,7 +702,9 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0skvkl6c10ls4s48b2wmf47h9j1y40nlzxnzn8hyaw2j0prmpapa"))))
+                "0skvkl6c10ls4s48b2wmf47h9j1y40nlzxnzn8hyaw2j0prmpapa"))
+              (patches
+               (list (search-patch "wpa-supplicant-CVE-2015-1863.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

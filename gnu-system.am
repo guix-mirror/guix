@@ -555,6 +555,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
+  gnu/packages/patches/wpa-supplicant-CVE-2015-1863.patch	\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-geode-glibc-2.20.patch	\
