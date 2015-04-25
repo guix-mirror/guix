@@ -1408,6 +1408,48 @@ directly to a different computer on your LAN network.  It is an audio daemon
 with a much different focus than most other audio daemons.")
     (license license:gpl3+)))
 
+(define-public zita-convolver
+  (package
+    (name "zita-convolver")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-convolver-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs") #t)
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libzita-convolver.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libzita-convolver.so.3")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("fftwf" ,fftwf)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "Fast, partitioned convolution engine library")
+    (description
+     "Zita convolver is a C++ library providing a real-time convolution
+engine.")
+    (license license:gpl3+)))
+
 (define-public zita-alsa-pcmi
   (package
     (name "zita-alsa-pcmi")
