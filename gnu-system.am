@@ -383,6 +383,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/abiword-pass-no-undefined-to-linker.patch	\
   gnu/packages/patches/abiword-use-proper-png-api.patch		\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
+  gnu/packages/patches/acl-hurd-path-max.patch			\
   gnu/packages/patches/aegis-constness-error.patch         	\
   gnu/packages/patches/aegis-perl-tempdir1.patch           	\
   gnu/packages/patches/aegis-perl-tempdir2.patch           	\

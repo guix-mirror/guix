@@ -26,6 +26,7 @@
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (guix build-system gnu))
 
 (define-public acl
@@ -39,7 +40,8 @@
                           version ".src.tar.gz"))
       (sha256
        (base32
-        "08qd9s3wfhv0ajswsylnfwr5h0d7j9d4rgip855nrh400nxp940p"))))
+        "08qd9s3wfhv0ajswsylnfwr5h0d7j9d4rgip855nrh400nxp940p"))
+      (patches (list (search-patch "acl-hurd-path-max.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f   ; FIXME: Investigate test suite failures
