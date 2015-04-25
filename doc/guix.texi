@@ -4745,6 +4745,11 @@ passed to @command{guix-daemon}.
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
 
+@deffn {Monadic Procedure} console-keymap-service @var{file}
+Return a service to load console keymap from @var{file} using
+@command{loadkeys} command.
+@end deffn
+
 
 @node Networking Services
 @subsubsection Networking Services
