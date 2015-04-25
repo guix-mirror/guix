@@ -314,6 +314,45 @@ language and software synthesizer.")
 ALSA PCM devices.")
     (license license:gpl2+)))
 
+(define-public fluidsynth
+  (package
+    (name "fluidsynth")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/fluidsynth/fluidsynth-"
+                    version "/fluidsynth-" version ".tar.gz"))
+              (sha256
+               (base32
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack
+        'remove-broken-symlinks
+        (lambda _ (delete-file-recursively "m4") #t)
+        %standard-phases)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lash" ,lash)
+       ("readline" ,readline)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.fluidsynth.org/")
+    (synopsis "SoundFont synthesizer")
+    (description
+     "FluidSynth is a real-time software synthesizer based on the SoundFont 2
+specifications.  FluidSynth reads and handles MIDI events from the MIDI input
+device.  It is the software analogue of a MIDI synthesizer. FluidSynth can
+also play midifiles using a Soundfont.")
+    (license license:gpl2+)))
+
 (define-public faad2
   (package
     (name "faad2")
