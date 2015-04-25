@@ -488,6 +488,46 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
     ;; GPLv2+ with exception for compositions using these patches.
     (license license:gpl2+)))
 
+(define-public ir
+  (package
+    (name "ir")
+    (version "1.3.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://factorial.hu/system/files/ir.lv2-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       ;; no configure script
+       (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("lv2" ,lv2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://factorial.hu/plugins/lv2/ir")
+    (synopsis "LV2 convolution reverb")
+    (description
+     "IR is a low-latency, real-time, high performance signal convolver
+especially for creating reverb effects.  It supports impulse responses with 1,
+2 or 4 channels, in any soundfile format supported by libsndfile.")
+    (license license:gpl2+)))
+
 (define-public jack-1
   (package
     (name "jack")
