@@ -353,8 +353,7 @@ in the GNOME project.")
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
-    '(#:make-flags '("CC=gcc") ; for g-ir-scanner
-      #:configure-flags
+    '(#:configure-flags
       (list (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
                            "/share/gtk-doc/html"))
@@ -450,8 +449,7 @@ is part of the GNOME accessibility project.")
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
-    `(#:make-flags '("CC=gcc")
-      #:configure-flags
+    `(#:configure-flags
       (list "--with-xinput=yes"
             (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
@@ -476,7 +474,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.16.0")
+   (version "3.16.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -484,7 +482,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1si6ihl1wlvag8qq3166skr9fnm9i33dimbfry1j628qzqc76qff"))))
+              "1yhwg2l72l3khfkprydcjlpxjrg11ccqfc80sjl56llz3jk66fd0"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -626,7 +624,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.34.0")
+    (version "2.36.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -634,7 +632,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0hcyvv7c5zmivprdam6cp111i6hn2y5jsxzk00m6j9pncbzvp0hf"))))
+               "1w11d05nkxglzg67rfa81vqghm75xhy6j396xmmp5mq8qx96knd8"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -675,7 +673,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.14.0")
+    (version "3.16.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -683,7 +681,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "12z4g2in82nk92nfjs2hmrdcwbav8v3laz1813x2dhkf5jk2ixfr"))))
+               "036xn22jkaf3akpid7w23b8vkqa3xxqz93mwacmyar5vw7slm3cv"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -707,7 +705,7 @@ extensive documentation, including API reference and a tutorial.")
 (define-public gtkmm-2
   (package (inherit gtkmm)
     (name "gtkmm")
-    (version "2.24.2")
+    (version "2.24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -715,7 +713,7 @@ extensive documentation, including API reference and a tutorial.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0gcm91sc1a05c56kzh74l370ggj0zz8nmmjvjaaxgmhdq8lpl369"))))
+               "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
