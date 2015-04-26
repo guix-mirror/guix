@@ -55,6 +55,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages calendar)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -2161,3 +2163,39 @@ arrays when needed.")
 system calls, important for the performance of databases and other advanced
 applications.")
     (license lgpl2.1+)))
+
+(define-public bluez
+  (package
+    (name "bluez")
+    (version "5.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.kernel.org/pub/linux/bluetooth/bluez-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0b1qbnq1xzcdw5rajg9yyg31bf21jnff0n6gnf1snz89bbdllfhy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "--disable-systemd"
+               ;; Install dbus/udev files to the correct location.
+               (string-append "--with-dbusconfdir=" out "/etc")
+               (string-append "--with-udevdir=" out "/lib/udev")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)))
+    (inputs
+     `(("glib" ,glib)
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("libical" ,libical)
+       ("readline" ,readline)))
+    (home-page "http://www.bluez.org/")
+    (synopsis "Linux Bluetooth protocol stack")
+    (description
+     "BlueZ provides support for the core Bluetooth layers and protocols.  It
+is flexible, efficient and uses a modular implementation.")
+    (license gpl2+)))
