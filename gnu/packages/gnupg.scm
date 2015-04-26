@@ -286,7 +286,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
       (method url-fetch)
@@ -294,7 +294,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "1jgwmra6cf0i5x2prj92w77vl7hmj276qmmll3lwysbyn32l1c0d"))))
+        "0v7azxazsfakvhrxzj5ysvcxma0892c89d27c17fkj8mi3nc0f5v"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
@@ -434,7 +434,7 @@ PGP keysigning parties.")
 including tools for signing keys, keyring analysis, and party preparation.
 
  * caff: CA - Fire and Forget signs and mails a key
- 
+
  * pgp-clean: removes all non-self signatures from key
 
  * pgp-fixkey: removes broken packets from keys
