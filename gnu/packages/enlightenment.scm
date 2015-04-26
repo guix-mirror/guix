@@ -156,15 +156,16 @@ full capabilities of EFL.")
 (define-public evas-generic-loaders
   (package
     (name "evas-generic-loaders")
-    (version "1.13.0")
+    (version "1.13.2")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
-                "http://download.enlightenment.org/rel/libs/evas_generic_loaders/evas_generic_loaders-"
-                version ".tar.gz"))
+                "https://download.enlightenment.org/rel/libs/"
+                "evas_generic_loaders/evas_generic_loaders-"
+                version ".tar.xz"))
               (sha256
-               (base32 "16yzjk58bxsd0rlnpzrr8as9fxjjiq01swzhpadsgkmq33abgg63"))))
+               (base32 "1z5vjabs3psvqs3251mpyl1wgbdv1grn30yf682vamdqc5ckfa69"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

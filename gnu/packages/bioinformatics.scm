@@ -28,6 +28,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages file)
   #:use-module (gnu packages java)
@@ -37,6 +38,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages swig)
@@ -45,6 +47,29 @@
   #:use-module (gnu packages vim)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
+
+(define-public bamtools
+  (package
+    (name "bamtools")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pezmaster31/bamtools/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1brry29bw2xr2l9pqn240rkqwayg85b8qq78zk2zs6nlspk4d018"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ;no "check" target
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://github.com/pezmaster31/bamtools")
+    (synopsis "C++ API and command-line toolkit for working with BAM data")
+    (description
+     "BamTools provides both a C++ API and a command-line toolkit for handling
+BAM files.")
+    (license license:expat)))
 
 (define-public bedops
   (package
@@ -506,6 +531,51 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
+
+(define-public express
+  (package
+    (name "express")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://bio.math.berkeley.edu/eXpress/downloads/express-"
+                version "/express-" version "-src.tgz"))
+              (sha256
+               (base32
+                "03rczxd0gjp2l1jxcmjfmf5j94j77zqyxa6x063zsc585nj40n0c"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (alist-cons-after
+        'unpack 'use-shared-boost-libs-and-set-bamtools-paths
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "CMakeLists.txt"
+            (("set\\(Boost_USE_STATIC_LIBS ON\\)")
+             "set(Boost_USE_STATIC_LIBS OFF)")
+            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/bamtools/include")
+             (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
+          (substitute* "src/CMakeLists.txt"
+            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
+             (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
+          #t)
+        %standard-phases)))
+    (inputs
+     `(("boost" ,boost)
+       ("bamtools" ,bamtools)
+       ("protobuf" ,protobuf)
+       ("zlib" ,zlib)))
+    (home-page "http://bio.math.berkeley.edu/eXpress")
+    (synopsis "Streaming quantification for high-throughput genomic sequencing")
+    (description
+     "eXpress is a streaming tool for quantifying the abundances of a set of
+target sequences from sampled subsequences.  Example applications include
+transcript-level RNA-Seq quantification, allele-specific/haplotype expression
+analysis (from RNA-Seq), transcription factor binding quantification in
+ChIP-Seq, and analysis of metagenomic data.")
+    (license license:artistic2.0)))
 
 (define-public fastx-toolkit
   (package
@@ -1384,6 +1454,45 @@ detection of canonical junctions, STAR can discover non-canonical splices and
 chimeric (fusion) transcripts, and is also capable of mapping full-length RNA
 sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
+    (license license:gpl3+)))
+
+(define-public subread
+  (package
+    (name "subread")
+    (version "1.4.6-p2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/subread/subread-"
+                    version "-source.tar.gz"))
+              (sha256
+               (base32
+                "06sv9mpcsdj6p68y15d6gi70lca3lxmzk0dn61hg0kfsa7rxmsr3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("-f" "Makefile.Linux")
+       #:phases
+       (alist-cons-after
+        'unpack 'enter-dir
+        (lambda _ (chdir "src") #t)
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (copy-recursively "../bin" bin)))
+         ;; no "configure" script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://bioinf.wehi.edu.au/subread-package/")
+    (synopsis "Tool kit for processing next-gen sequencing data")
+    (description
+     "The subread package contains the following tools: subread aligner, a
+general-purpose read aligner; subjunc aligner: detecting exon-exon junctions
+and mapping RNA-seq reads; featureCounts: counting mapped reads for genomic
+features; exactSNP: a SNP caller that discovers SNPs by testing signals
+against local background noises.")
     (license license:gpl3+)))
 
 (define-public shogun

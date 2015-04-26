@@ -29,6 +29,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gnome)
@@ -36,6 +37,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
@@ -221,3 +223,54 @@ features a statistics overview so you can monitor your progress across several
 sessions.  Solfege is also designed to be extensible so you can easily write
 your own lessons.")
     (license license:gpl3+)))
+
+(define-public tuxguitar
+  (package
+    (name "tuxguitar")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/tuxguitar/TuxGuitar/TuxGuitar-"
+                    version "/tuxguitar-src-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1yf2gd06fzdhqb8kb8dmdcmr602s9y24f01kyl4940wimgr944"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib")
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "SWT_PATH="
+                                         (assoc-ref %build-inputs "swt")
+                                         "/share/java/swt.jar"))
+       #:tests? #f ;no "check" target
+       #:parallel-build? #f ;not supported
+       #:phases
+       (alist-cons-before
+        'build 'enter-dir-set-path-and-pass-ldflags
+        (lambda* (#:key inputs #:allow-other-keys)
+          (chdir "TuxGuitar")
+          (substitute* "GNUmakefile"
+            (("PROPERTIES\\?=")
+             (string-append "PROPERTIES?= -Dswt.library.path="
+                            (assoc-ref inputs "swt") "/lib"))
+            (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
+          #t)
+        (alist-delete 'configure %standard-phases))))
+    (inputs
+     `(("swt" ,swt)))
+    (native-inputs
+     `(("gcj" ,gcj-4.8)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://tuxguitar.com.ar")
+    (synopsis "Multitrack tablature editor and player")
+    (description
+     "TuxGuitar is a guitar tablature editor with player support through midi.
+It can display scores and multitrack tabs.  TuxGuitar provides various
+additional features, including autoscrolling while playing, note duration
+management, bend/slide/vibrato/hammer-on/pull-off effects, support for
+tuplets, time signature management, tempo management, gp3/gp4/gp5 import and
+export.")
+    (license license:lgpl2.1+)))

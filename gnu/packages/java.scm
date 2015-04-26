@@ -32,6 +32,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gnuzilla) ;nss
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
@@ -46,6 +47,88 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages texinfo))
+
+(define-public swt
+  (package
+    (name "swt")
+    (version "4.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
+                    "eclipse/eclipse/downloads/drops4/R-" version
+                    "-201502041700/swt-" version "-gtk-linux-x86.zip"))
+              (sha256
+               (base32
+                "0lzyqr8k2zm5s8fmnrx5kxpslxfs0i73y26fwfms483x45izzwj8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("-f" "make_linux.mak")
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda _
+          (and (mkdir "swt")
+               (zero? (system* "unzip" (assoc-ref %build-inputs "source") "-d" "swt"))
+               (chdir "swt")
+               (mkdir "src")
+               (zero? (system* "unzip" "src.zip" "-d" "src"))
+               (chdir "src")))
+        (alist-replace
+         'build
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+             (setenv "JAVA_HOME" (assoc-ref inputs "icedtea6"))
+
+             ;; Build shared libraries.  Users of SWT have to set the system
+             ;; property swt.library.path to the "lib" directory of this
+             ;; package output.
+             (mkdir-p lib)
+             (setenv "OUTPUT_DIR" lib)
+             (zero? (system* "bash" "build.sh"))
+
+             ;; build jar
+             (mkdir "build")
+             (for-each (lambda (file)
+                         (format #t "Compiling ~s\n" file)
+                         (system* "javac" "-d" "build" file))
+                       (find-files "." "\\.java"))
+             (zero? (system* "jar" "cvf" "swt.jar" "-C" "build" "."))))
+         (alist-cons-after
+          'install 'install-java-files
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((java (string-append (assoc-ref outputs "out")
+                                       "/share/java")))
+              (mkdir-p java)
+              (copy-file "swt.jar" (string-append java "/swt.jar"))) #t)
+          (alist-delete 'configure %standard-phases))))))
+    (inputs
+     `(("xulrunner" ,icecat)
+       ("gtk" ,gtk+-2)
+       ("libxtst" ,libxtst)
+       ("libxt" ,libxt)
+       ("mesa" ,mesa)
+       ("glu" ,glu)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("icedtea6" ,icedtea6 "jdk")))
+    (home-page "https://www.eclipse.org/swt/")
+    (synopsis "Widget toolkit for Java")
+    (description
+     "SWT is a widget toolkit for Java designed to provide efficient, portable
+access to the user-interface facilities of the operating systems on which it
+is implemented.")
+    ;; SWT code is licensed under EPL1.0
+    ;; Gnome and Gtk+ bindings contain code licensed under LGPLv2.1
+    ;; Cairo bindings contain code under MPL1.1
+    ;; XULRunner 1.9 bindings contain code under MPL2.0
+    (license (list
+              license:epl1.0
+              license:mpl1.1
+              license:mpl2.0
+              license:lgpl2.1+))))
 
 (define-public ant
   (package

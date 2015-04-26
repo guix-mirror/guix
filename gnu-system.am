@@ -422,6 +422,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-runpath.patch		\
+  gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
@@ -515,6 +516,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pulseaudio-longer-test-timeout.patch	\
+  gnu/packages/patches/pycairo-wscript.patch			\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/pyqt-configure.patch			\
@@ -555,6 +557,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
+  gnu/packages/patches/wpa-supplicant-CVE-2015-1863.patch	\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-geode-glibc-2.20.patch	\

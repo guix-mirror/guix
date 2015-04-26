@@ -42,7 +42,7 @@
 (define-public r
   (package
     (name "r")
-    (version "3.1.2")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -50,10 +50,14 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ypsm11c7n49pgh2ricyhhpfhas3famscdazzdp2zq70rapm1ldw"))))
+                "0dagyqgvi8i3nw158qi2zpwm04s4ffzvnmk5niaksvxs30zrbbpm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/R/lib"))
+       #:phases
        (alist-cons-before
         'check 'set-timezone
         ;; Some tests require the timezone to be set.

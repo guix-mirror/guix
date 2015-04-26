@@ -102,3 +102,25 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
+
+(define-public mdds
+  (package
+    (name "mdds")
+    (version "0.12.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://kohei.us/files/mdds/src/mdds_" version ".tar.bz2"))
+             (sha256
+              (base32
+               "10ar7r0gkdl2r7916jlkl5c38cynrh7x9s90a5i8d242r8ixw8ia"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("boost" ,boost))) ; inclusion of header files
+    (home-page "https://code.google.com/p/multidimalgorithm/")
+    (synopsis "Multi-dimensional C++ data structures and indexing algorithms")
+    (description "Mdds (multi-dimensional data structure) provides a
+collection of multi-dimensional data structures and indexing algorithms
+for C++.  It includes flat segment trees, segment trees, rectangle sets,
+point quad trees, multi-type vectors and multi-type matrices.")
+    (license license:expat)))

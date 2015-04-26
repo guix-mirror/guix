@@ -236,6 +236,48 @@ bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
 
+(define-public calf
+  (package
+    (name "calf")
+    (version "0.0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/calf/calf/"
+                    version "/calf-" version ".tar.gz"))
+              (sha256
+               (base32
+                "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fluidsynth" ,fluidsynth)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("cairo" ,cairo)
+       ("lash" ,lash)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("ladspa" ,ladspa)
+       ("fftw" ,fftw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://calf.sourceforge.net/")
+    (synopsis "Audio plug-in pack for LV2 and JACK environments")
+    (description
+     "Calf Studio Gear is an audio plug-in pack for LV2 and JACK environments.
+The suite contains lots of effects (delay, modulation, signal processing,
+filters, equalizers, dynamics, distortion and mastering effects),
+instruments (SF2 player, organ simulator and a monophonic synthesizer) and
+tools (analyzer, mono/stereo tools, crossovers).")
+    ;; calfjackhost is released under GPLv2+
+    ;; The plugins are released under LGPLv2.1+
+    (license (list license:lgpl2.1+ license:gpl2+))))
+
 (define-public csound
   (package
     (name "csound")
@@ -312,6 +354,45 @@ language and software synthesizer.")
     (description
      "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
 ALSA PCM devices.")
+    (license license:gpl2+)))
+
+(define-public fluidsynth
+  (package
+    (name "fluidsynth")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/fluidsynth/fluidsynth-"
+                    version "/fluidsynth-" version ".tar.gz"))
+              (sha256
+               (base32
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack
+        'remove-broken-symlinks
+        (lambda _ (delete-file-recursively "m4") #t)
+        %standard-phases)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lash" ,lash)
+       ("readline" ,readline)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.fluidsynth.org/")
+    (synopsis "SoundFont synthesizer")
+    (description
+     "FluidSynth is a real-time software synthesizer based on the SoundFont 2
+specifications.  FluidSynth reads and handles MIDI events from the MIDI input
+device.  It is the software analogue of a MIDI synthesizer. FluidSynth can
+also play midifiles using a Soundfont.")
     (license license:gpl2+)))
 
 (define-public faad2

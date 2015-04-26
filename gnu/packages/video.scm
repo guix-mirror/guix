@@ -570,13 +570,13 @@ treaming protocols.")
                            '("--enable-runtime-cpudetection"
                              "--target=i686-linux"))
                           ("mips64el-linux"
-                           '("--target=mips3-linux")))
-                      "--disable-armv5te"
-                      "--disable-armv6"
-                      "--disable-armv6t2"
-                      "--disable-armvfp"
+                           '("--target=mips3-linux"))
+                          (_ (list (string-append
+                                    "--target="
+                                    (or (%current-target-system)
+                                        (nix-system->gnu-triplet
+                                         (%current-system)))))))
                       "--disable-neon"
-                      "--disable-thumb"
                       "--disable-iwmmxt"))))
           %standard-phases)))
     (home-page "http://www.mplayerhq.hu/design7/news.html")

@@ -28,6 +28,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -361,27 +362,37 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.18.1")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pdp9l7yv71d3fjb30qyccva8h03hvg88q4a00yi50v2j70kvmgj"))))
+                "1szf6c44g209pcjq5nvfhlp3nzcm3lrcwv4spsxmwy13hiaccvrr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;; FIXME: Test suite hangs and times out.
        #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
+                   (setenv "CC" "gcc")
                    (setenv "CONFIG_SHELL" (which "sh"))
+
+                   ;; XXX Should python-docutils make a symlink
+                   ;; for "rst2man" and other similar programs?
+                   (substitute* '("configure" "doc/prerst2man.py")
+                     ((" rst2man ") " rst2man.py "))
+
                    (let ((out (assoc-ref outputs "out")))
                      (zero? (system* "./configure"
                                      (string-append "--prefix=" out)))))
                  %standard-phases)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("python2-docutils" ,python2-docutils)
+       ("bash-completion" ,bash-completion)))
     (inputs
      `(("emacs" ,emacs)
        ("glib" ,glib)

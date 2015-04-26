@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -793,5 +793,8 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
 
 (define-public gcc-toolchain-4.9
   (gcc-toolchain gcc-4.9))
+
+(define-public gcc-toolchain-5.1
+  (gcc-toolchain gcc-5.1))
 
 ;;; commencement.scm ends here

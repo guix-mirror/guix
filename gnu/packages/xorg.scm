@@ -45,7 +45,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages freedesktop))
 
 
 
@@ -2220,6 +2221,35 @@ devices, thus making direct access unnecessary.")
     (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
+(define-public xf86-input-libinput
+  (package
+    (name "xf86-input-libinput")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/driver/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0fm4vrkw7azipbnwvc2l18g65z77pllsznaajd8q3zpg9ycb0li1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            %output "/include/xorg"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libinput" ,libinput)
+       ("xorg-server" ,xorg-server)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "Xorg input driver")
+    (description
+     "This is an Xorg input driver based on libinput.  It therefore supports
+all input devices that libinput can handle, including most mice, keyboards,
+tablets and touchscreens.")
+    (license license:x11)))
 
 (define-public xf86-input-joystick
   (package
@@ -4271,7 +4301,7 @@ graphics cards.")
 (define-public libxfont
   (package
     (name "libxfont")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
       (origin
         (method url-fetch)
@@ -4281,7 +4311,7 @@ graphics cards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0py2c498lrq6wrj9al6nj57v2ypid9cz0zzhc0hjndgrmp254g1s"))))
+            "1630v3sfvwwlimb2ja10c84ql6v1mw9bdfhvan7pbybkgi99h25p"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("fontsproto" ,fontsproto)

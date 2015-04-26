@@ -30,6 +30,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages compression)
@@ -352,8 +353,7 @@ in the GNOME project.")
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
-    '(#:make-flags '("CC=gcc") ; for g-ir-scanner
-      #:configure-flags
+    '(#:configure-flags
       (list (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
                            "/share/gtk-doc/html"))
@@ -449,8 +449,7 @@ is part of the GNOME accessibility project.")
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
-    `(#:make-flags '("CC=gcc")
-      #:configure-flags
+    `(#:configure-flags
       (list "--with-xinput=yes"
             (string-append "--with-html-dir="
                            (assoc-ref %outputs "doc")
@@ -475,7 +474,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.16.0")
+   (version "3.16.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -483,7 +482,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1si6ihl1wlvag8qq3166skr9fnm9i33dimbfry1j628qzqc76qff"))))
+              "1yhwg2l72l3khfkprydcjlpxjrg11ccqfc80sjl56llz3jk66fd0"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -625,7 +624,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.34.0")
+    (version "2.36.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -633,7 +632,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0hcyvv7c5zmivprdam6cp111i6hn2y5jsxzk00m6j9pncbzvp0hf"))))
+               "1w11d05nkxglzg67rfa81vqghm75xhy6j396xmmp5mq8qx96knd8"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -674,7 +673,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.14.0")
+    (version "3.16.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -682,7 +681,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "12z4g2in82nk92nfjs2hmrdcwbav8v3laz1813x2dhkf5jk2ixfr"))))
+               "036xn22jkaf3akpid7w23b8vkqa3xxqz93mwacmyar5vw7slm3cv"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -706,7 +705,7 @@ extensive documentation, including API reference and a tutorial.")
 (define-public gtkmm-2
   (package (inherit gtkmm)
     (name "gtkmm")
-    (version "2.24.2")
+    (version "2.24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -714,7 +713,7 @@ extensive documentation, including API reference and a tutorial.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0gcm91sc1a05c56kzh74l370ggj0zz8nmmjvjaaxgmhdq8lpl369"))))
+               "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -733,29 +732,23 @@ extensive documentation, including API reference and a tutorial.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))))
-    (build-system python-build-system)
+        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))
+      (patches (list (search-patch "pycairo-wscript.patch")))))
+    (build-system waf-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python-waf" ,python-waf)))
     (propagated-inputs                  ;pycairo.pc references cairo
      `(("cairo" ,cairo)))
     (arguments
      `(#:tests? #f
-       #:phases (alist-cons-before
-                 'build 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (zero? (system* "./waf" "configure"
-                                   (string-append "--prefix="
-                                                  (assoc-ref outputs "out")))))
-                 (alist-replace
-                  'build
-                  (lambda _
-                    (zero? (system* "./waf" "build")))
-                  (alist-replace
-                   'install
-                   (lambda _
-                     (zero? (system* "./waf" "install")))
-                   %standard-phases)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'patch-waf
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; The bundled `waf' doesn't work with python-3.4.x.
+            (copy-file (assoc-ref %build-inputs "python-waf") "./waf"))))))
     (home-page "http://cairographics.org/pycairo/")
     (synopsis "Python bindings for cairo")
     (description
@@ -776,7 +769,11 @@ extensive documentation, including API reference and a tutorial.")
         "0cblk919wh6w0pgb45zf48xwxykfif16qk264yga7h9fdkq3j16k"))))
     (arguments
      `(#:python ,python-2
-       ,@(package-arguments python-pycairo)))
+       ,@(substitute-keyword-arguments (package-arguments python-pycairo)
+           ((#:phases phases)
+            `(alist-delete 'patch-waf ,phases))
+           ((#:native-inputs native-inputs)
+            `(alist-delete "python-waf" ,native-inputs)))))
     ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
     (license (list license:lgpl2.1 license:mpl1.1))))
 

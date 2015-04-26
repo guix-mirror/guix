@@ -94,14 +94,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.6.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "060s77qxhkn02fjkcndsr0xppj2bppjzkj0gn84svrykb4lqqq5m"))))
+                "1mgkkmmwkhmpn68sdvbd73ssv6lpqhh864fsyvc1ij4hk4is3k13"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -132,7 +132,12 @@ and its related documentation.")
                                                      (%current-system))
                                             ("x86_64-linux"   "x86_64")
                                             ("i686-linux"     "i686")
-                                            ("mips64el-linux" "mips64"))))
+                                            ("mips64el-linux" "mips64")
+                                            ;; Prevent errors when querying
+                                            ;; this package on unsupported
+                                            ;; platforms, e.g. when running
+                                            ;; "guix package --search="
+                                            (_                "UNSUPPORTED"))))
                              (string-append "--crossbuild="
                                             system ":" release ":" machine)))))
                (setenv "CC" "gcc")

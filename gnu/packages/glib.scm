@@ -207,14 +207,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.42.0")
+    (version "1.44.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://ftp.gnome.org/pub/GNOME/sources/"
+             (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1xwm7wmr9r9wp6xljb3bckx3a4siybavaq39w46ly7gpskxfv8iv"))
+              (base32 "1b972qg2yb51sdavfvb6kc19akwc15c1bwnbg81vadxamql2q33g"))
              (patches (list
                        (search-patch "gobject-introspection-cc.patch")
                        (search-patch
@@ -243,14 +243,7 @@ dynamic loading, and an object system.")
     (arguments
      `(;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
        ;; some tests to fail.
-       #:tests? #f
-       #:phases
-        (alist-cons-before
-         'configure 'patch-paths
-         (lambda _
-           (substitute* "giscanner/sourcescanner.py"
-             (("GUIX_GCC_PATH") (which "gcc"))))
-         %standard-phases)))
+       #:tests? #f))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
     (synopsis "Generate interface introspection data for GObject libraries")
     (description
@@ -313,14 +306,14 @@ The intltool collection can be used to do these things:
 (define itstool
   (package
     (name "itstool")
-    (version "1.2.0")
+    (version "2.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.itstool.org/itstool/itstool-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1akq75aflihm3y7js8biy7b5mw2g11vl8yq90gydnwlwp0zxdzj6"))))
+               "0fh34wi52i0qikgvlmrcpf1vx6gc1xqdad4539l4d9hikfsrz45z"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libxml2" ,libxml2)
@@ -350,7 +343,7 @@ translated.")
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.102")
+    (version "0.104")
     (source (origin
              (method url-fetch)
              (uri
@@ -358,7 +351,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "177j5p2vrvpmzk2xrrj6akn73kvpbvnmsjvlmca9l55qbdcfsr39"))))
+               "1xi1v1msz75qs0s4lkyf1psrksdppa3hwkg0mznc6gpw5flg3hdz"))))
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
@@ -377,14 +370,15 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.3.1")
+    (version "2.4.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/libsigc++/2.3/libsigc++-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/libsigc++/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "14q3sq6d43f6wfcmwhw4v1aal4ba0h5x9v6wkxy2dnqznd95il37"))))
+               "1v0rvkzglzmf67y9nkcppwjwi68j1cy5yhldvcq7xrv8594l612l"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
@@ -403,7 +397,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.42.0")
+    (version "2.44.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -411,7 +405,7 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "15rk3az8jh3rdwlc3lxjljbnh60drj3ka9574zd39lkqfgcq6l4q"))))
+               "1a1fczy7hcpn24fglyn4i79f4yjc8s50is70q03mb294bm1c02hv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -485,8 +479,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.12.2")                  ;last version that works with
-                                        ;gobject-introspection 1.38
+    (version "3.16.1")
     (source
      (origin
        (method url-fetch)
@@ -495,8 +488,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "08m5yad1hjdax4g39w6lgjk4124mcwpa8fc5iyvb8nygk8s3syky"))))
-    ;; 3.14.0: 0m1d75iwxa6k1xbkn6c6yq5r10pxnf7i5c2a5yvwsnab7ylzz7kp
+         "1hqyma73w0lnjcgx68kawhnq84aq92xlkdqphrlc2ppia38dm5kx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
@@ -549,14 +541,6 @@ useful for C++.")
         (base32
          "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-before
-                 'build 'set-cc
-                 (lambda _
-                   ;; Set $CC so that g-ir-scanner works.
-                   (setenv "CC" "gcc")
-                   #t)
-                 %standard-phases)))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("pkg-config" ,pkg-config)

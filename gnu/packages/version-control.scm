@@ -48,6 +48,7 @@
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -400,6 +401,65 @@ lot easier.")
 linear.  It will test every change between two points in the DAG.  It will
 also walk each side of a merge and test those changes individually.")
       (license (x11-style "file://LICENSE")))))
+
+(define-public gitolite
+  (package
+    (name "gitolite")
+    (version "3.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/sitaramc/gitolite/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              ;; Commit ed807a4 upstream
+              (patches
+               (list (search-patch "gitolite-openssh-6.8-compat.patch")))
+              (sha256
+               (base32
+                "1gsgzi9ayb4rablki3mqr11b0h8db4xg43df660marfpacmkfb01"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build)
+                  (add-before 'install 'patch-scripts
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((perl (string-append (assoc-ref inputs "perl")
+                                                 "/bin/perl")))
+                        ;; This seems to take care of every shell script that
+                        ;; invokes Perl.
+                        (substitute* (find-files "." ".*")
+                          ((" perl -")
+                           (string-append " " perl " -"))))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((output (assoc-ref outputs "out"))
+                             (sharedir (string-append output "/share/gitolite"))
+                             (bindir (string-append output "/bin")))
+                        (mkdir-p sharedir)
+                        (mkdir-p bindir)
+                        (system* "./install" "-to" sharedir)
+                        ;; Create symlinks for executable scripts in /bin.
+                        (for-each (lambda (script)
+                                    (symlink (string-append sharedir "/" script)
+                                             (string-append bindir "/" script)))
+                                  '("gitolite" "gitolite-shell"))
+                        #t))))))
+    (inputs
+     `(("perl" ,perl)))
+    ;; git and openssh are propagated because trying to patch the source via
+    ;; regexp matching is too brittle and prone to false positives.
+    (propagated-inputs
+     `(("git" ,git)
+       ("openssh" ,openssh)))
+    (home-page "http://gitolite.com")
+    (synopsis "Git access control layer")
+    (description
+     "Gitolite is an access control layer on top of Git, providing fine access
+control to Git repositories.")
+    (license gpl2)))
 
 (define-public mercurial
   (package
