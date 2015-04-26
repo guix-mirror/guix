@@ -173,6 +173,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libffcall.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libftdi.scm			\
+  gnu/packages/calendar.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libphidget.scm			\
   gnu/packages/libreoffice.scm			\
