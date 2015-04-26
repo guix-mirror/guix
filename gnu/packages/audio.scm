@@ -236,6 +236,48 @@ bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
 
+(define-public calf
+  (package
+    (name "calf")
+    (version "0.0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/calf/calf/"
+                    version "/calf-" version ".tar.gz"))
+              (sha256
+               (base32
+                "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fluidsynth" ,fluidsynth)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("cairo" ,cairo)
+       ("lash" ,lash)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("ladspa" ,ladspa)
+       ("fftw" ,fftw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://calf.sourceforge.net/")
+    (synopsis "Audio plug-in pack for LV2 and JACK environments")
+    (description
+     "Calf Studio Gear is an audio plug-in pack for LV2 and JACK environments.
+The suite contains lots of effects (delay, modulation, signal processing,
+filters, equalizers, dynamics, distortion and mastering effects),
+instruments (SF2 player, organ simulator and a monophonic synthesizer) and
+tools (analyzer, mono/stereo tools, crossovers).")
+    ;; calfjackhost is released under GPLv2+
+    ;; The plugins are released under LGPLv2.1+
+    (license (list license:lgpl2.1+ license:gpl2+))))
+
 (define-public csound
   (package
     (name "csound")
