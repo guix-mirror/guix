@@ -40,7 +40,8 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages zip))
 
 (define-public glu
   (package
@@ -484,3 +485,45 @@ OpenGL graphics API.")
     (description
      "A library for handling OpenGL function pointer management.")
     (license l:x11)))
+
+(define-public soil
+  (package
+    (name "soil")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              ;; No versioned archive available.
+              (uri "http://www.lonesock.net/files/soil.zip")
+              (sha256
+               (base32
+                "00gpwp9dldzhsdhksjvmbhsd2ialraqbv6v6dpikdmpncj6mnc52"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'init-build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CFLAGS" "-fPIC") ; needed for shared library
+                        ;; Use alternate Makefile
+                        (copy-file "projects/makefile/alternate Makefile.txt"
+                                   "src/Makefile")
+                        (chdir "src")
+                        (substitute* '("Makefile")
+                          (("INCLUDEDIR = /usr/include/SOIL")
+                           (string-append "INCLUDEDIR = " out "/include/SOIL"))
+                          (("LIBDIR = /usr/lib")
+                           (string-append "LIBDIR = " out "/lib"))
+                          ;; Remove these flags from 'install' commands.
+                          (("-o root -g root") ""))))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (home-page "http://www.lonesock.net/soil.html")
+    (synopsis "OpenGL texture loading library")
+    (description
+     "SOIL is a tiny C library used primarily for uploading textures into
+OpenGL.")
+    (license l:public-domain)))
