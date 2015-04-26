@@ -34,7 +34,9 @@
 ;;;
 
 (define %default-options
-  '((include-test-dependencies? . #t)))
+  '((include-test-dependencies? . #t)
+    (read-from-stdin? . #f)
+    ('cabal-environment . '())))
 
 (define (show-help)
   (display (_ "Usage: guix import hackage PACKAGE-NAME
@@ -45,7 +47,12 @@ package will be generated.  If no version suffix is pecified, then the
 generated package definition will correspond to the latest available
 version.\n"))
   (display (_ "
+  -e ALIST, --cabal-environment=ALIST   
+                               specify environment for Cabal evaluation"))
+  (display (_ "
   -h, --help                   display this help and exit"))
+  (display (_ "
+  -s, --stdin                  read from standard input"))
   (display (_ "
   -t, --no-test-dependencies   don't include test only dependencies"))
   (display (_ "
@@ -67,6 +74,16 @@ version.\n"))
                    (alist-cons 'include-test-dependencies? #f
                                (alist-delete 'include-test-dependencies?
                                              result))))
+         (option '(#\s "stdin") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'read-from-stdin? #t
+                               (alist-delete 'read-from-stdin?
+                                             result))))
+         (option '(#\e "cabal-environment") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'cabal-environment (read/eval arg)
+                               (alist-delete 'cabal-environment
+                                             result))))
          %standard-import-options))
 
 
@@ -84,23 +101,42 @@ version.\n"))
                   (alist-cons 'argument arg result))
                 %default-options))
 
+  (define (run-importer package-name opts error-fn)
+    (let ((sexp (hackage->guix-package
+                 package-name
+                 #:include-test-dependencies?
+                 (assoc-ref opts 'include-test-dependencies?)
+                 #:port (if (assoc-ref opts 'read-from-stdin?)
+                            (current-input-port)
+                            #f)
+                 #:cabal-environment
+                 (assoc-ref opts 'cabal-environment))))
+      (unless sexp (error-fn))
+      sexp))
+
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
                              value)
                             (_ #f))
                            (reverse opts))))
-    (match args
-      ((package-name)
-       (let ((sexp (hackage->guix-package
-                    package-name
-                    #:include-test-dependencies?
-                    (assoc-ref opts 'include-test-dependencies?))))
-         (unless sexp
-           (leave (_ "failed to download cabal file for package '~a'~%")
-                  package-name))
-         sexp))
-      (()
-       (leave (_ "too few arguments~%")))
-      ((many ...)
-       (leave (_ "too many arguments~%"))))))
+    (if (assoc-ref opts 'read-from-stdin?)
+        (match args
+          (()
+           (run-importer "stdin" opts
+                         (lambda ()
+                           (leave (_ "failed to import cabal file from '~a'~%"))
+                           package-name)))
+          ((many ...)
+           (leave (_ "too many arguments~%"))))
+        (match args
+          ((package-name)
+           (run-importer package-name opts
+                         (lambda ()
+                           (leave
+                            (_ "failed to download cabal file for package '~a'~%"))
+                           package-name)))
+          (()
+           (leave (_ "too few arguments~%")))
+          ((many ...)
+           (leave (_ "too many arguments~%")))))))

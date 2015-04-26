@@ -93,6 +93,8 @@ MODULES =					\
   guix/import/utils.scm				\
   guix/import/gnu.scm				\
   guix/import/snix.scm				\
+  guix/import/cabal.scm				\
+  guix/import/hackage.scm			\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
@@ -108,6 +110,7 @@ MODULES =					\
   guix/scripts/lint.scm				\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
+  guix/scripts/import/hackage.scm		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
   guix.scm					\
@@ -178,6 +181,7 @@ SCM_TESTS =					\
   tests/build-utils.scm				\
   tests/packages.scm				\
   tests/snix.scm				\
+  tests/hackage.scm				\
   tests/store.scm				\
   tests/monads.scm				\
   tests/gexp.scm				\

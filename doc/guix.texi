@@ -3754,16 +3754,30 @@ dependencies.
 Specific command-line options are:
 
 @table @code
+@item --stdin
+@itemx -s
+Read a Cabal file from the standard input.
 @item --no-test-dependencies
 @itemx -t
-Do not include dependencies only required to run the test suite.
+Do not include dependencies required by the test suites only.
+@item --cabal-environment=@var{alist}
+@itemx -e @var{alist}
+@var{alist} is a Scheme alist defining the environment in which the
+Cabal conditionals are evaluated.  The accepted keys are: @code{os},
+@code{arch}, @code{impl} and a string representing the name of a flag.
+The value associated with a flag has to be either the symbol
+@code{true} or @code{false}.  The value associated with other keys
+has to conform to the Cabal file format definition.  The default value
+associated with the keys @code{os}, @code{arch} and @code{impl} is
+@samp{linux}, @samp{x86_64} and @samp{ghc} respectively.
 @end table
 
 The command below imports meta-data for the latest version of the
-@code{HTTP} Haskell package without including test dependencies:
+@code{HTTP} Haskell package without including test dependencies and
+specifying the value of the flag @samp{network-uri} as @code{false}:
 
 @example
-guix import hackage -t HTTP
+guix import hackage -t -e "'((\"network-uri\" . false))" HTTP
 @end example
 
 A specific package version may optionally be specified by following the
@@ -3772,8 +3786,6 @@ package name by a hyphen and a version number as in the following example:
 @example
 guix import hackage mtl-2.1.3.1
 @end example
-
-Currently only indentation structured Cabal files are supported.
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be

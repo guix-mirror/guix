@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-hackage)
+  #:use-module (guix import cabal)
   #:use-module (guix import hackage)
   #:use-module (guix tests)
   #:use-module (srfi srfi-64)
@@ -35,44 +36,44 @@ executable cabal
     mtl        >= 2.0      && < 3
 ")
 
-;; Use TABs to indent lines and to separate keys from value.
 (define test-cabal-2
-  "name:	foo
-version:	1.0.0
-homepage:	http://test.org
-synopsis:	synopsis
-description:	description
-license:	BSD3
-executable cabal
-	build-depends:	HTTP       >= 4000.2.5 && < 4000.3,
-		mtl        >= 2.0      && < 3
-")
-
-;; Use indentation with comma as found, e.g., in 'haddock-api'.
-(define test-cabal-3
   "name: foo
 version: 1.0.0
 homepage: http://test.org
 synopsis: synopsis
 description: description
 license: BSD3
-executable cabal
-    build-depends:
-        HTTP       >= 4000.2.5 && < 4000.3
-      , mtl        >= 2.0      && < 3
+executable cabal {
+build-depends:
+  HTTP       >= 4000.2.5 && < 4000.3,
+  mtl        >= 2.0      && < 3
+}
 ")
 
-(define test-cond-1
-  "(os(darwin) || !(flag(debug))) && flag(cips)")
+;; A fragment of a real Cabal file with minor modification to check precedence
+;; of 'and' over 'or'.
+(define test-read-cabal-1
+  "name: test-me
+library
+  -- Choose which library versions to use.
+  if flag(base4point8)
+    Build-depends: base >= 4.8 && < 5
+  else
+    if flag(base4)
+      Build-depends: base >= 4 && < 4.8
+    else
+      if flag(base3)
+        Build-depends: base >= 3 && < 4
+      else
+        Build-depends: base < 3
+  if flag(base4point8) || flag(base4) && flag(base3)
+    Build-depends: random
+  Build-depends: containers
 
-(define read-cabal
-  (@@ (guix import hackage) read-cabal))
-
-(define eval-cabal-keywords
-  (@@ (guix import hackage) eval-cabal-keywords))
-
-(define conditional->sexp-like
-  (@@ (guix import hackage) conditional->sexp-like))
+  -- Modules that are always built.
+  Exposed-Modules:
+    Test.QuickCheck.Exception
+")
 
 (test-begin "hackage")
 
@@ -115,18 +116,25 @@ executable cabal
 (test-assert "hackage->guix-package test 2"
   (eval-test-with-cabal test-cabal-2))
 
-(test-assert "hackage->guix-package test 3"
-  (eval-test-with-cabal test-cabal-3))
-
-(test-assert "conditional->sexp-like"
-  (match
-    (eval-cabal-keywords
-     (conditional->sexp-like test-cond-1)
-     '(("debug" . "False")))
-    (('and ('or ('string-match "darwin" ('%current-system)) ('not '#f)) '#t)
+(test-assert "read-cabal test 1"
+  (match (call-with-input-string test-read-cabal-1 read-cabal)
+    ((("name" ("test-me"))
+      ('section 'library
+               (('if ('flag "base4point8")
+                    (("build-depends" ("base >= 4.8 && < 5")))
+                    (('if ('flag "base4")
+                         (("build-depends" ("base >= 4 && < 4.8")))
+                         (('if ('flag "base3")
+                              (("build-depends" ("base >= 3 && < 4")))
+                              (("build-depends" ("base < 3"))))))))
+                ('if ('or ('flag "base4point8")
+                          ('and ('flag "base4") ('flag "base3")))
+                    (("build-depends" ("random")))
+                    ())
+                ("build-depends" ("containers"))
+                ("exposed-modules" ("Test.QuickCheck.Exception")))))
      #t)
-    (x
-     (pk 'fail x #f))))
+    (x (pk 'fail x #f))))
 
 (test-end "hackage")
 
