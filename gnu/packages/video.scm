@@ -299,7 +299,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("openal" ,openal)
-       ("patchelf" ,patchelf)
        ("pulseaudio" ,pulseaudio)
        ("soxr" ,soxr)
        ("speex" ,speex)
@@ -316,12 +315,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("yasm" ,yasm)))
     (arguments
      `(#:test-target "fate"
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
        #:phases
        (modify-phases %standard-phases
          (replace
@@ -376,6 +369,9 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
               (zero? (system*
                       "./configure"
                       (string-append "--prefix=" out)
+                      ;; Add $libdir to the RUNPATH of all the binaries.
+                      (string-append "--extra-ldflags=-Wl,-rpath="
+                                     %output "/lib")
                       "--enable-avresample"
                       "--enable-gpl" ; enable optional gpl licensed parts
                       "--enable-shared"
@@ -417,17 +413,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                    (path (string-join (map dirname dso) ":")))
               (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
               (setenv "LD_LIBRARY_PATH" path)
-              #t)))
-         (add-after
-          'strip 'add-lib-to-runpath
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (lib (string-append out "/lib")))
-              ;; Add LIB to the RUNPATH of all the executables and libraries.
-              (with-directory-excursion out
-                (for-each (cut augment-rpath <> lib)
-                          (append (find-files "bin" ".*")
-                                  (find-files "lib" "\\.so\\..*\\."))))))))))
+              #t))))))
     (home-page "http://www.ffmpeg.org/")
     (synopsis "Audio and video framework")
     (description "FFmpeg is a complete, cross-platform solution to record,
