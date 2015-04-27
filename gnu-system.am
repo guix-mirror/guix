@@ -175,6 +175,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libftdi.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libphidget.scm			\
+  gnu/packages/libreoffice.scm			\
   gnu/packages/libsigsegv.scm			\
   gnu/packages/libunistring.scm			\
   gnu/packages/libusb.scm			\
