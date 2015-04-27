@@ -696,7 +696,7 @@ several areas.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.8.3")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -704,14 +704,14 @@ several areas.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1kw9hr957cxqgm2i94bgqc6sskm6bwhm0akzckilhs460b43h409"))
+                "08nx0g6ji2d90f5w62g327szhkb7id7jzwgf3x069rc5id1x3bx7"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-docutils" ,python-docutils)))
-    ;; Missing features: libguess, LIRC, Wayland, VDPAU, V4L2
+    ;; Missing features: libguess, Wayland, VDPAU, V4L2
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
