@@ -623,15 +623,20 @@ results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
                 "13jaykc3y1x8y5nn9j8ljnb79s5y51kyxz46hdmvvjj6qhyympmf"))))
     (build-system cmake-build-system)
     (arguments
-     `(;; There is no test target, although there is a directory containing
-       ;; test data and scripts (launched by flexbar_validate.sh).
-       #:tests? #f
-       #:configure-flags (list
+     `(#:configure-flags (list
                           (string-append "-DFLEXBAR_BINARY_DIR="
                                          (assoc-ref %outputs "out")
                                          "/bin/"))
        #:phases
-       (alist-delete 'install %standard-phases)))
+       (alist-replace
+        'check
+        (lambda* (#:key outputs #:allow-other-keys)
+          (setenv "PATH" (string-append
+                          (assoc-ref outputs "out") "/bin:"
+                          (getenv "PATH")))
+          (chdir "../flexbar_v2.5_src/test")
+          (zero? (system* "bash" "flexbar_validate.sh")))
+        (alist-delete 'install %standard-phases))))
     (inputs
      `(("tbb" ,tbb)
        ("zlib" ,zlib)))
