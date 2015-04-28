@@ -1,0 +1,15 @@
+Fix compilation error: non-existing header file.
+
+This is an excerpt from the debian patch:
+http://http.debian.net/debian/pool/main/t/tvtime/tvtime_1.0.2-14.diff.gz
+
+--- tvtime-1.0.2.orig/src/videodev2.h
++++ tvtime-1.0.2/src/videodev2.h
+@@ -16,7 +16,6 @@
+ #ifdef __KERNEL__
+ #include <linux/time.h> /* need struct timeval */
+ #endif
+-#include <linux/compiler.h> /* need __user */
+ 
+ /* for kernel versions 2.4.26 and below: */
+ #ifndef __user

@@ -294,6 +294,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
   gnu/packages/tre.scm				\
+  gnu/packages/tv.scm				\
   gnu/packages/unrtf.scm			\
   gnu/packages/upnp.scm				\
   gnu/packages/uucp.scm				\
@@ -547,6 +548,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/texi2html-document-encoding.patch	\
   gnu/packages/patches/texi2html-i18n.patch			\
+  gnu/packages/patches/tvtime-gcc41.patch			\
+  gnu/packages/patches/tvtime-pngoutput.patch			\
+  gnu/packages/patches/tvtime-videodev2.patch			\
+  gnu/packages/patches/tvtime-xmltv.patch			\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
