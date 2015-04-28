@@ -301,6 +301,33 @@ etc. ")
 (define-public python2-babel
   (package-with-python2 python-babel))
 
+(define-public python2-backport-ssl-match-hostname
+  (package
+    (name "python2-backport-ssl-match-hostname")
+    (version "3.4.0.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://pypi.python.org/packages/source/b/"
+            "backports.ssl_match_hostname/backports.ssl_match_hostname-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1bnn47ipvhy49n0m50v27lp4xj6sqdkdw676ypd7pawsn1zhwh87"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://pypi.python.org/pypi/backports.ssl_match_hostname")
+    (synopsis "Backport of ssl.match_hostname() function from Python 3.4")
+    (description
+     "This backport brings the ssl.match_hostname() function to users of
+earlier versions of Python.  The function checks the hostname in the
+certificate returned by the server to which a connection has been established,
+and verifies that it matches the intended target hostname.")
+    (license psfl)))
+
 (define-public python-h5py
   (package
     (name "python-h5py")
