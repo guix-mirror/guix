@@ -1107,6 +1107,34 @@ variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
 
+(define-public samtools-0.1
+  ;; This is the most recent version of the 0.1 line of samtools.  The input
+  ;; and output formats differ greatly from that used and produced by samtools
+  ;; 1.x and is still used in many bioinformatics pipelines.
+  (package (inherit samtools)
+    (version "0.1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments samtools)
+       ((#:tests? tests) #f) ;no "check" target
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((bin (string-append
+                                  (assoc-ref outputs "out") "/bin")))
+                        (mkdir-p bin)
+                        (copy-file "samtools"
+                                   (string-append bin "/samtools")))))
+           (delete 'patch-tests)))))))
+
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
