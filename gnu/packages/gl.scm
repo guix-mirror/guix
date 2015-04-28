@@ -21,11 +21,13 @@
 
 (define-module (gnu packages gl)
   #:use-module (ice-9 match)
+  #:use-module (guix build utils)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
@@ -37,6 +39,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg))
 
 (define-public glu
@@ -159,6 +162,23 @@ Polygon meshes, and Extruded polygon meshes")
 also known as DXTn or DXTC) for Mesa.")
     (license l:expat)))
 
+;;; Mesa needs LibVA headers to build its Gallium-based VA API implementation;
+;;; LibVA itself depends on Mesa.  We use the following to solve the circular
+;;; dependency.
+(define libva-without-mesa
+  ;; Delay to work around circular import problem.
+  (delay
+    (package
+      (inherit libva)
+      (name "libva-without-mesa")
+      (inputs (alist-delete "mesa" (package-inputs libva)))
+      (arguments
+       (strip-keyword-arguments
+        '(#:make-flags)
+        (substitute-keyword-arguments (package-arguments libva)
+          ((#:configure-flags flags)
+           '(list "--disable-glx" "--disable-egl"))))))))
+
 (define-public mesa
   (package
     (name "mesa")
@@ -187,8 +207,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("dri3proto" ,dri3proto)
         ("presentproto" ,presentproto)
         ("expat" ,expat)
+        ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
-        ;; TODO: Add 'libva'
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("makedepend" ,makedepend)
         ("s2tc" ,s2tc)))
