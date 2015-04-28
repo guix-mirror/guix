@@ -49,6 +49,7 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:parallel-tests? #f ; 3 test from RunCMake fails
        #:phases (alist-cons-before
                  'configure 'patch-bin-sh
                  (lambda _
@@ -76,7 +77,9 @@
                     ;; Help cmake's bootstrap process to find system libraries
                     (begin
                       (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-                      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))))
+                      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
+                      ;; Get verbose output from failed tests
+                      (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")))
                   (alist-replace
                    'configure
                    (lambda* (#:key outputs #:allow-other-keys)
