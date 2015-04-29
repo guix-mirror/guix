@@ -2065,6 +2065,45 @@ mining and data analysis.")
             (alist-delete
              "python-scipy" (package-propagated-inputs scikit))))))))
 
+(define-public python-scikit-image
+  (package
+    (name "python-scikit-image")
+    (version "0.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/scikit-image/scikit-image-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0jz416fqvpahqyffw8plmszzfj669w8wvf3y9clnr5lr6a7md3kn"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("python-pillow" ,python-pillow)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://scikit-image.org/")
+    (synopsis "Image processing in Python")
+    (description
+     "scikit-image is a collection of algorithms for image processing.")
+    (license bsd-3)))
+
+(define-public python2-scikit-image
+  (let ((scikit-image (package-with-python2 python-scikit-image)))
+    (package (inherit scikit-image)
+      (native-inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-native-inputs scikit-image)))
+      (propagated-inputs
+       `(("python2-pytz" ,python2-pytz)
+         ,@(package-propagated-inputs scikit-image))))))
+
 (define-public python-cython
   (package
     (name "python-cython")
