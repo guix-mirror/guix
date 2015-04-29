@@ -1158,6 +1158,26 @@ supported.  Optional features include high-quality resampling, bass expansion,
 surround and reverb.")
     (license license:public-domain)))
 
+(define-public libxmp
+  (package
+    (name "libxmp")
+    (version "4.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xmp/libxmp/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h06091hlpgc6ds4pjmfq8sx4snw7av3nhny180q4pwfyasjb6ny"))))
+    (build-system gnu-build-system)
+    (home-page "http://xmp.sourceforge.net/")
+    (synopsis "Module player library")
+    (description
+     "Libxmp is a library that renders module files to PCM data.  It supports
+over 90 mainstream and obscure module formats including Protracker (MOD),
+Scream Tracker 3 (S3M), Fast Tracker II (XM), and Impulse Tracker (IT).")
+    (license license:lgpl2.1+)))
+
 (define-public soundtouch
   (package
     (name "soundtouch")
