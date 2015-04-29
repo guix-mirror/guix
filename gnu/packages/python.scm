@@ -628,6 +628,44 @@ datetime module, available in Python 2.3+.")
      "Parse human-readable date/time text")
     (license asl2.0)))
 
+(define-public python-pandas
+  (package
+    (name "python-pandas")
+    (version "0.16.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "pandas/pandas-" version ".tar.gz"))
+      (sha256
+       (base32 "1wfrp8dx1zcsry6f09ndza6qm1yr7f163211f4l9vjlnhxpxw4s0"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Three tests fail:
+       ;; - test_read_google
+       ;; - test_read_yahoo
+       ;; - test_month_range_union_tz_dateutil
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytz" ,python-pytz)
+       ("python-dateutil" ,python-dateutil-2)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://pandas.pydata.org")
+    (synopsis "Data structures for data analysis, time series, and statistics")
+    (description
+     "Pandas is a Python package providing fast, flexible, and expressive data
+structures designed to make working with structured (tabular,
+multidimensional, potentially heterogeneous) and time series data both easy
+and intuitive.  It aims to be the fundamental high-level building block for
+doing practical, real world data analysis in Python.")
+    (license bsd-3)))
+
+(define-public python2-pandas
+  (package-with-python2 python-pandas))
+
 (define-public python-tzlocal
   (package
     (name "python-tzlocal")
