@@ -1136,6 +1136,28 @@ compression modes.  This package contains command-line programs and library to
 encode and decode wavpack files.")
     (license license:bsd-3)))
 
+(define-public libmodplug
+  (package
+    (name "libmodplug")
+    (version "0.8.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/project/modplug-xmms/"
+                    name "/" version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bfsladg7h6vnii47dd66f5vh1ir7qv12mfb8n36qiwrxq92sikp"))))
+    (build-system gnu-build-system)
+    (home-page "http://modplug-xmms.sourceforge.net/")
+    (synopsis "Mod file playing library")
+    (description
+     "Libmodplug renders mod music files as raw audio data, for playing or
+conversion.  mod, .s3m, .it, .xm, and a number of lesser-known formats are
+supported.  Optional features include high-quality resampling, bass expansion,
+surround and reverb.")
+    (license license:public-domain)))
+
 (define-public soundtouch
   (package
     (name "soundtouch")
