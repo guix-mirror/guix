@@ -217,6 +217,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
+  gnu/packages/networking.scm			\
   gnu/packages/ninja.scm			\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
@@ -273,7 +274,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/slang.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
-  gnu/packages/socat.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/statistics.scm			\
