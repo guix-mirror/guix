@@ -520,7 +520,18 @@ synchronous execution of all clients, and low latency operation.")
     (arguments
      `(#:tests? #f  ; no check target
        #:configure-flags '("--dbus"
-                           "--alsa")))
+                           "--alsa")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-linkflags
+          (lambda _
+            ;; Add $libdir to the RUNPATH of all the binaries.
+            (substitute* "wscript"
+              ((".*CFLAGS.*-Wall.*" m)
+               (string-append m
+                              "    conf.env.append_unique('LINKFLAGS',"
+                              "'-Wl,-rpath=" %output "/lib')\n"))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
