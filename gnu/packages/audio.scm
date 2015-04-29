@@ -1178,6 +1178,31 @@ over 90 mainstream and obscure module formats including Protracker (MOD),
 Scream Tracker 3 (S3M), Fast Tracker II (XM), and Impulse Tracker (IT).")
     (license license:lgpl2.1+)))
 
+(define-public xmp
+  (package
+    (name "xmp")
+    (version "4.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xmp/xmp/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjylvvmq7ha0nhcjg56qfp0xxpsrcsj7y5r914svd5x1ppmzm5n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxmp" ,libxmp)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://xmp.sourceforge.net/")
+    (synopsis "Extended module player")
+    (description
+     "Xmp is a portable module player that plays over 90 mainstream and
+obscure module formats, including Protracker MOD, Fasttracker II XM, Scream
+Tracker 3 S3M and Impulse Tracker IT files.")
+    (license license:gpl2+)))
+
 (define-public soundtouch
   (package
     (name "soundtouch")
