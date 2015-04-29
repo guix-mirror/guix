@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,3 +54,26 @@ line, to logically connect serial lines on different computers, or to
 establish a relatively secure environment (su and chroot) for running client
 or server shell scripts with network connections. ")
     (license license:gpl2)))
+
+(define-public zeromq
+  (package
+    (name "zeromq")
+    (version "4.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.zeromq.org/zeromq-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0arl8fy8d03xd5h0mgda1s5bajwg8iyh1kk4hd1420rpcxgkrj9v"))))
+    (build-system gnu-build-system)
+    (home-page "http://zeromq.org")
+    (synopsis "Library for message-based applications")
+    (description
+     "The 0MQ lightweight messaging kernel is a library which extends the
+standard socket interfaces with features traditionally provided by specialized
+messaging middle-ware products.  0MQ sockets provide an abstraction of
+asynchronous message queues, multiple messaging patterns, message
+filtering (subscriptions), seamless access to multiple transport protocols and
+more.")
+    (license license:lgpl3+)))
