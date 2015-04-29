@@ -3523,6 +3523,41 @@ providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
 
+(define-public python-seaborn
+  (package
+    (name "python-seaborn")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/seaborn/seaborn-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1236abw18ijjglmv60q85ckqrvgf5qyy4zlq7nz5aqfg6q87z3wc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
+    (synopsis "Statistical data visualization")
+    (description
+     "Seaborn is a library for making attractive and informative statistical
+graphics in Python.  It is built on top of matplotlib and tightly integrated
+with the PyData stack, including support for numpy and pandas data structures
+and statistical routines from scipy and statsmodels.")
+    (license bsd-3)))
+
+(define-public python2-seaborn
+  (let ((seaborn (package-with-python2 python-seaborn)))
+    (package (inherit seaborn)
+      (propagated-inputs
+       `(("python2-pytz" ,python2-pytz)
+         ,@(package-propagated-inputs seaborn))))))
+
 (define-public python-sympy
   (package
     (name "python-sympy")
