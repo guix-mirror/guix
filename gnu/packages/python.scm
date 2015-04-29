@@ -3446,6 +3446,32 @@ providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
 
+(define-public python-sympy
+  (package
+    (name "python-sympy")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/sympy/sympy/releases/download/sympy-"
+             version "/sympy-" version ".tar.gz"))
+       (sha256
+        (base32 "19yp0gy4i7p4g6l3b8vaqkj9qj7yqb5kqy0qgbdagpzgkdz958yz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.sympy.org/")
+    (synopsis "Python library for symbolic mathematics")
+    (description
+     "SymPy is a Python library for symbolic mathematics.  It aims to become a
+full-featured computer algebra system (CAS) while keeping the code as simple
+as possible in order to be comprehensible and easily extensible.")
+    (license bsd-3)))
+
+(define-public python2-sympy
+  (package-with-python2 python-sympy))
+
 (define-public python-testlib
   (package
     (name "python-testlib")
