@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:select (mpl2.0))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
@@ -49,4 +50,32 @@
 expressions stored in multiple named targets, or \"cells\".  The cells can
 be referenced from each other, and the library takes care of resolving
 their dependencies automatically upon calculation.")
+    (license mpl2.0)))
+
+(define-public orcus
+  (package
+    (name "orcus")
+    (version "0.7.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://kohei.us/files/" name "/src/lib"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "0hva4qalg3dk6n1118ncr5fy8cqnj2f7fwldw7aa04124rj6p104"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+     (inputs
+      `(("ixion" ,ixion)
+        ("mdds" ,mdds)
+        ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/orcus/orcus")
+    (synopsis "File import filter library for spreadsheet documents")
+    (description "Orcus is a library that provides a collection of standalone
+file processing filters.  It is currently focused on providing filters for
+spreadsheet documents.  The library includes import filters for
+Microsoft Excel 2007 XML, Microsoft Excel 2003 XML, Open Document Spreadsheet,
+Plain Text, Gnumeric XML, Generic XML.  It also includes low-level parsers for
+CSV, CSS and XML.")
     (license mpl2.0)))
