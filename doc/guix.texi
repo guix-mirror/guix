@@ -2187,7 +2187,7 @@ a derivation is the @code{derivation} procedure:
   @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
   [#:recursive? #f] [#:inputs '()] [#:env-vars '()] @
   [#:system (%current-system)] [#:references-graphs #f] @
-  [#:allowed-references #f] [#:local-build? #f]
+  [#:allowed-references #f] [#:leaked-env-vars #f] [#:local-build? #f]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
@@ -2205,6 +2205,13 @@ a simple text format.
 
 When @var{allowed-references} is true, it must be a list of store items
 or outputs that the derivation's output may refer to.
+
+When @var{leaked-env-vars} is true, it must be a list of strings
+denoting environment variables that are allowed to ``leak'' from the
+daemon's environment to the build environment.  This is only applicable
+to fixed-output derivations---i.e., when @var{hash} is true.  The main
+use is to allow variables such as @code{http_proxy} to be passed to
+derivations that download files.
 
 When @var{local-build?} is true, declare that the derivation is not a
 good candidate for offloading and should rather be built locally
@@ -2728,6 +2735,7 @@ information about monads.)
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
        [#:references-graphs #f] [#:allowed-references #f] @
+       [#:leaked-env-vars #f] @
        [#:local-build? #f] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}.  When @var{target}

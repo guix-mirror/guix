@@ -692,7 +692,7 @@ HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
                      (inputs '()) (outputs '("out"))
                      hash hash-algo recursive?
                      references-graphs allowed-references
-                     local-build?)
+                     leaked-env-vars local-build?)
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -706,6 +706,12 @@ the build environment in the corresponding file, in a simple text format.
 
 When ALLOWED-REFERENCES is true, it must be a list of store items or outputs
 that the derivation's output may refer to.
+
+When LEAKED-ENV-VARS is true, it must be a list of strings denoting
+environment variables that are allowed to \"leak\" from the daemon's
+environment to the build environment.  This is only applicable to fixed-output
+derivations--i.e., when HASH is true.  The main use is to allow variables such
+as \"http_proxy\" to be passed to derivations that download files.
 
 When LOCAL-BUILD? is true, declare that the derivation is not a good candidate
 for offloading and should rather be built locally.  This is the case for small
@@ -750,6 +756,10 @@ derivations where the costs of data transfers would outweigh the benefits."
                       ,@(if allowed-references
                             `(("allowedReferences"
                                . ,(string-join allowed-references)))
+                            '())
+                      ,@(if leaked-env-vars
+                            `(("impureEnvVars"
+                               . ,(string-join leaked-env-vars)))
                             '())
                       ,@env-vars)))
       (match references-graphs
