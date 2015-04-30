@@ -277,7 +277,16 @@ ideal (e.g. in LV2 implementations or embedded applications).")
               (base32
                "0rq7vafdv4vsxi6xk9zf5shr59w3kppdhqbj78185rz5gp9kh1dx"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append "-Wl,-rpath="
+                                   (assoc-ref outputs "out") "/lib")))))))
     (inputs
      `(("serd" ,serd)))
     (native-inputs
