@@ -420,6 +420,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
+  gnu/packages/patches/gcc-libvtv-runpath.patch			\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
