@@ -444,7 +444,18 @@ Go.  It also includes runtime support libraries for these languages.")
                   (string-append jvm "/lib/tools.jar")))
                (chmod target #o755)
                #t))
-           ,phases))))))
+           (alist-cons-after
+            'install 'remove-broken-or-conflicting-files
+            (lambda _
+              (let ((out (assoc-ref %outputs "out")))
+                (for-each
+                 delete-file
+                 (append (find-files (string-append out "/lib/jvm/jre/lib")
+                                     "libjawt.so")
+                         (find-files (string-append out "/bin")
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcc.*)"))))
+              #t)
+            ,phases)))))))
 
 (define ecj-bootstrap-4.8
   (origin
