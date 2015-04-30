@@ -243,7 +243,16 @@ and triple stores.")
               (base32
                "1gxbzqsm212wmn8qkdd3lbl6wbv7fwmaf9qh2nxa4yxjbr7mylb4"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append "-Wl,-rpath="
+                                   (assoc-ref outputs "out") "/lib")))))))
     (home-page "http://drobilla.net/software/serd/")
     (synopsis "Library for RDF syntax supporting Turtle and NTriples")
     (description
