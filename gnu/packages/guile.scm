@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,9 @@
   #:use-module (gnu packages base)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (ice-9 match))
 
@@ -357,5 +360,80 @@ http:://json.org specification.  These are the main features:
 - Unicode support for strings.
 - Allows JSON pretty printing.")
     (license lgpl3+)))
+
+(define-public guile-minikanren
+  (package
+    (name "guile-minikanren")
+    (version "20150424.e844d85")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ijp/minikanren.git")
+                    (commit "e844d85512f8c055d3f96143ee506007389a25e3")))
+              (sha256
+               (base32
+                "0r50jlpzi940jlmxyy3ddqqwmj5r12gb4bcv0ssini9v8km13xz6"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules
+       ((guix build utils)
+        (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let* ((out (assoc-ref %outputs "out"))
+                (module-dir (string-append out "/share/guile/site/2.0"))
+                (source (assoc-ref %build-inputs "source"))
+                (doc (string-append out "/share/doc"))
+                (scm-files '("minikanren.scm"
+                             "minikanren/mkextraforms.scm"
+                             "minikanren/mkprelude.scm"
+                             "minikanren/mk.scm"))
+                (guild (string-append (assoc-ref %build-inputs "guile")
+                                      "/bin/guild")))
+           ;; Make installation directories.
+           (mkdir-p (string-append module-dir "/minikanren"))
+           (mkdir-p doc)
+
+           ;; Compile .scm files and install.
+           (chdir source)
+           (setenv "GUILE_AUTO_COMPILE" "0")
+           (for-each (lambda (file)
+                       (let* ((dest-file (string-append module-dir "/"
+                                                        file ".scm"))
+                              (go-file (match (string-split file #\.)
+                                         ((base _)
+                                          (string-append module-dir "/"
+                                                         base ".go")))))
+                         ;; Install source module.
+                         (copy-file file dest-file)
+                         ;; Install compiled module.
+                         (unless (zero? (system* guild "compile"
+                                                 "-L" source
+                                                 "-o" go-file
+                                                 file))
+                           (error (format #f "Failed to compile ~s to ~s!"
+                                          file go-file)))))
+                     scm-files)
+
+           ;; Also copy over the README.
+           (copy-file "README.org" (string-append doc "/README.org"))
+           #t))))
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (home-page "https://github.com/ijp/minikanren")
+    (synopsis "miniKanren declarative logic system, packaged for Guile")
+    (description
+     "MiniKanren is a relational programming extension to the Scheme
+programming Language, written as a smaller version of Kanren suitable for
+pedagogical purposes.  It is featured in the book, The Reasoned Schemer,
+written by Dan Friedman, William Byrd, and Oleg Kiselyov.
+
+This is Ian Price's r6rs packaged version of miniKranen, which deviates
+slightly from miniKanren mainline.
+
+See http://minikanren.org/ for more on miniKanren generally.")
+    (license expat)))
 
 ;;; guile.scm ends here

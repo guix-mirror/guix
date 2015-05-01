@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
@@ -384,25 +384,16 @@ compose, and analyze GIF images.")
 (define-public imlib2
   (package
     (name "imlib2")
-    (version "1.4.6")
+    (version "1.4.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/enlightenment/imlib2-"
-                    version ".tar.gz"))
+                    version ".tar.bz2"))
               (sha256
                (base32
-                "0kjggg4gfn6chi8v1xddd5qwk1fbnl7rvd93qiclv5v11s615k0p"))))
+                "00a7jbwj10x3jcvxa5rplnkvhv35gv9rb400zy636zdd4g737mrm"))))
     (build-system gnu-build-system)
-    (arguments
-     '(;; Will be fixed in the next release:
-       ;; <http://git.enlightenment.org/legacy/imlib2.git/commit/?id=5dde234b2d3caf067ea827858c53adc5d4c56c13>.
-       #:phases (alist-cons-before
-                 'configure 'patch-config
-                 (lambda _
-                   (substitute* "imlib2-config.in"
-                     (("@my_libs@") "")))
-                 %standard-phases)))
     (native-inputs
      `(("pkgconfig" ,pkg-config)))
     (inputs

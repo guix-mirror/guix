@@ -121,6 +121,7 @@ STORE."
     (directory "/bin")
     (directory "/tmp" 0 0 #o1777)                 ; sticky bit
     (directory "/var/tmp" 0 0 #o1777)
+    (directory "/var/lock" 0 0 #o1777)
 
     (directory "/root" 0 0)                       ; an exception
     (directory "/home" 0 0)))

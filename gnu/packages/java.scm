@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -46,7 +47,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module ((srfi srfi-1) #:select (fold alist-delete)))
 
 (define-public swt
   (package
@@ -397,7 +399,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (setenv "PATH" (string-append antpath "/bin:"
                                              (getenv "PATH")))))
            (alist-cons-before
-            'check 'fix-tests
+            'check 'fix-test-framework
             (lambda _
               ;; Fix PATH in test environment
               (substitute* "src/jtreg/com/sun/javatest/regtest/Main.java"
@@ -405,109 +407,114 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  (string-append "PATH=" (getenv "PATH"))))
               (substitute* "src/jtreg/com/sun/javatest/util/SysEnv.java"
                 (("/usr/bin/env") (which "env")))
-
-              ;; Hotspot tests
-              (with-directory-excursion "openjdk/hotspot/test/"
-                (substitute* "jprt.config"
-                  (("PATH=\"\\$\\{path4sdk\\}\"")
-                   (string-append "PATH=" (getenv "PATH")))
-                  (("make=/usr/bin/make")
-                   (string-append "make=" (which "make"))))
-                (substitute* '("runtime/6626217/Test6626217.sh"
-                               "runtime/7110720/Test7110720.sh")
-                  (("/bin/rm") (which "rm"))
-                  (("/bin/cp") (which "cp"))
-                  (("/bin/mv") (which "mv"))))
-
-              ;; JDK tests
-              (with-directory-excursion "openjdk/jdk/test/"
-                (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
-                  (("/bin/pwd") (which "pwd")))
-                (substitute* "com/sun/jdi/ShellScaffold.sh"
-                  (("/bin/kill") (which "kill")))
-                (substitute* "start-Xvfb.sh"
-                  ;(("/usr/bin/X11/Xvfb") (which "Xvfb"))
-                  (("/usr/bin/nohup")    (which "nohup")))
-                (substitute* "javax/security/auth/Subject/doAs/Test.sh"
-                  (("/bin/rm") (which "rm")))
-                (substitute* "tools/launcher/MultipleJRE.sh"
-                  (("echo \"#!/bin/sh\"")
-                   (string-append "echo \"#!" (which "rm") "\""))
-                  (("/usr/bin/zip") (which "zip")))
-                (substitute* "com/sun/jdi/OnThrowTest.java"
-                  (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                (substitute* "java/lang/management/OperatingSystemMXBean/GetSystemLoadAverage.java"
-                  (("/usr/bin/uptime") (which "uptime")))
-                (substitute* "java/lang/ProcessBuilder/Basic.java"
-                  (("/usr/bin/env") (which "env"))
-                  (("/bin/false") (which "false"))
-                  (("/bin/true") (which "true"))
-                  (("/bin/cp") (which "cp"))
-                  (("/bin/sh") (which "sh")))
-                (substitute* "java/lang/ProcessBuilder/FeelingLucky.java"
-                  (("/bin/sh") (which "sh")))
-                (substitute* "java/lang/ProcessBuilder/Zombies.java"
-                  (("/usr/bin/perl") (which "perl"))
-                  (("/bin/ps") (which "ps"))
-                  (("/bin/true") (which "true")))
-                (substitute* "java/lang/Runtime/exec/ConcurrentRead.java"
-                  (("/usr/bin/tee") (which "tee")))
-                (substitute* "java/lang/Runtime/exec/ExecWithDir.java"
-                  (("/bin/true") (which "true")))
-                (substitute* "java/lang/Runtime/exec/ExecWithInput.java"
-                  (("/bin/cat") (which "cat")))
-                (substitute* "java/lang/Runtime/exec/ExitValue.java"
-                  (("/bin/sh") (which "sh"))
-                  (("/bin/true") (which "true"))
-                  (("/bin/kill") (which "kill")))
-                (substitute* "java/lang/Runtime/exec/LotsOfDestroys.java"
-                  (("/usr/bin/echo") (which "echo")))
-                (substitute* "java/lang/Runtime/exec/LotsOfOutput.java"
-                  (("/usr/bin/cat") (which "cat")))
-                (substitute* "java/lang/Runtime/exec/SleepyCat.java"
-                  (("/bin/cat") (which "cat"))
-                  (("/bin/sleep") (which "sleep"))
-                  (("/bin/sh") (which "sh")))
-                (substitute* "java/lang/Runtime/exec/StreamsSurviveDestroy.java"
-                  (("/bin/cat") (which "cat")))
-                (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
-                  (("/bin/chmod") (which "chmod")))
-                (substitute* "java/util/zip/ZipFile/Assortment.java"
-                  (("/bin/sh") (which "sh")))))
-            (alist-replace
-             'check
+              #t)
+            (alist-cons-before
+             'check 'fix-hotspot-tests
              (lambda _
-               ;; The "make check-*" targets always return zero, so we need to
-               ;; check for errors in the associated log files to determine
-               ;; whether any tests have failed.
-               (use-modules (ice-9 rdelim))
-               (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
-                      (checker (lambda (port)
-                                 (let loop ()
-                                   (let ((line (read-line port)))
-                                     (cond
-                                      ((eof-object? line) #t)
-                                      ((regexp-exec error-pattern line) #f)
-                                      (else (loop)))))))
-                      (run-test (lambda (test)
-                                  (system* "make" test)
-                                  (call-with-input-file
-                                      (string-append "test/" test ".log")
-                                    checker))))
-                 (or #t ; skip tests
-                     (and (run-test "check-hotspot")
-                          (run-test "check-langtools")
-                          (run-test "check-jdk")))))
-             (alist-replace
-              'install
-              (lambda* (#:key outputs #:allow-other-keys)
-                (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
-                      (jre (assoc-ref outputs "out"))
-                      (jdk (assoc-ref outputs "jdk")))
-                  (copy-recursively "openjdk.build/docs" doc)
-                  (copy-recursively "openjdk.build/j2re-image" jre)
-                  (copy-recursively "openjdk.build/j2sdk-image" jdk)))
-              %standard-phases)))))))))
+               (with-directory-excursion "openjdk/hotspot/test/"
+                 (substitute* "jprt.config"
+                   (("PATH=\"\\$\\{path4sdk\\}\"")
+                    (string-append "PATH=" (getenv "PATH")))
+                   (("make=/usr/bin/make")
+                    (string-append "make=" (which "make"))))
+                 (substitute* '("runtime/6626217/Test6626217.sh"
+                                "runtime/7110720/Test7110720.sh")
+                   (("/bin/rm") (which "rm"))
+                   (("/bin/cp") (which "cp"))
+                   (("/bin/mv") (which "mv"))))
+               #t)
+             (alist-cons-before
+              'check 'fix-jdk-tests
+              (lambda _
+                (with-directory-excursion "openjdk/jdk/test/"
+                  (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
+                    (("/bin/pwd") (which "pwd")))
+                  (substitute* "com/sun/jdi/ShellScaffold.sh"
+                    (("/bin/kill") (which "kill")))
+                  (substitute* "start-Xvfb.sh"
+                    ;;(("/usr/bin/X11/Xvfb") (which "Xvfb"))
+                    (("/usr/bin/nohup")    (which "nohup")))
+                  (substitute* "javax/security/auth/Subject/doAs/Test.sh"
+                    (("/bin/rm") (which "rm")))
+                  (substitute* "tools/launcher/MultipleJRE.sh"
+                    (("echo \"#!/bin/sh\"")
+                     (string-append "echo \"#!" (which "rm") "\""))
+                    (("/usr/bin/zip") (which "zip")))
+                  (substitute* "com/sun/jdi/OnThrowTest.java"
+                    (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                  (substitute* "java/lang/management/OperatingSystemMXBean/GetSystemLoadAverage.java"
+                    (("/usr/bin/uptime") (which "uptime")))
+                  (substitute* "java/lang/ProcessBuilder/Basic.java"
+                    (("/usr/bin/env") (which "env"))
+                    (("/bin/false") (which "false"))
+                    (("/bin/true") (which "true"))
+                    (("/bin/cp") (which "cp"))
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/ProcessBuilder/FeelingLucky.java"
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/ProcessBuilder/Zombies.java"
+                    (("/usr/bin/perl") (which "perl"))
+                    (("/bin/ps") (which "ps"))
+                    (("/bin/true") (which "true")))
+                  (substitute* "java/lang/Runtime/exec/ConcurrentRead.java"
+                    (("/usr/bin/tee") (which "tee")))
+                  (substitute* "java/lang/Runtime/exec/ExecWithDir.java"
+                    (("/bin/true") (which "true")))
+                  (substitute* "java/lang/Runtime/exec/ExecWithInput.java"
+                    (("/bin/cat") (which "cat")))
+                  (substitute* "java/lang/Runtime/exec/ExitValue.java"
+                    (("/bin/sh") (which "sh"))
+                    (("/bin/true") (which "true"))
+                    (("/bin/kill") (which "kill")))
+                  (substitute* "java/lang/Runtime/exec/LotsOfDestroys.java"
+                    (("/usr/bin/echo") (which "echo")))
+                  (substitute* "java/lang/Runtime/exec/LotsOfOutput.java"
+                    (("/usr/bin/cat") (which "cat")))
+                  (substitute* "java/lang/Runtime/exec/SleepyCat.java"
+                    (("/bin/cat") (which "cat"))
+                    (("/bin/sleep") (which "sleep"))
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/Runtime/exec/StreamsSurviveDestroy.java"
+                    (("/bin/cat") (which "cat")))
+                  (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
+                    (("/bin/chmod") (which "chmod")))
+                  (substitute* "java/util/zip/ZipFile/Assortment.java"
+                    (("/bin/sh") (which "sh"))))
+                #t)
+              (alist-replace
+               'check
+               (lambda _
+                 ;; The "make check-*" targets always return zero, so we need to
+                 ;; check for errors in the associated log files to determine
+                 ;; whether any tests have failed.
+                 (use-modules (ice-9 rdelim))
+                 (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
+                        (checker (lambda (port)
+                                   (let loop ()
+                                     (let ((line (read-line port)))
+                                       (cond
+                                        ((eof-object? line) #t)
+                                        ((regexp-exec error-pattern line) #f)
+                                        (else (loop)))))))
+                        (run-test (lambda (test)
+                                    (system* "make" test)
+                                    (call-with-input-file
+                                        (string-append "test/" test ".log")
+                                      checker))))
+                   (or #t ; skip tests
+                       (and (run-test "check-hotspot")
+                            (run-test "check-langtools")
+                            (run-test "check-jdk")))))
+               (alist-replace
+                'install
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
+                        (jre (assoc-ref outputs "out"))
+                        (jdk (assoc-ref outputs "jdk")))
+                    (copy-recursively "openjdk.build/docs" doc)
+                    (copy-recursively "openjdk.build/j2re-image" jre)
+                    (copy-recursively "openjdk.build/j2sdk-image" jdk)))
+                %standard-phases)))))))))))
     (native-inputs
      `(("ant-bootstrap"
         ,(origin
@@ -567,3 +574,174 @@ build process and its dependencies, whereas Make uses Makefile format.")
     ;; IcedTea is released under the GPL2 + Classpath exception, which is the
     ;; same license as both GNU Classpath and OpenJDK.
     (license license:gpl2+)))
+
+(define-public icedtea7
+  (let* ((version "2.5.5")
+         (drop (lambda (name hash)
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "http://icedtea.classpath.org/download/drops/"
+                         "/icedtea7/" version "/" name ".tar.bz2"))
+                   (sha256 (base32 hash))))))
+    (package (inherit icedtea6)
+      (name "icedtea7")
+      (version version)
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "http://icedtea.wildebeest.org/download/source/icedtea-"
+                      version ".tar.xz"))
+                (sha256
+                 (base32
+                  "1irxk2ndwsfk4c1zbzb5h3rpwv2bc9bhfjvz6p4dws5476vsxrq9"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(substitute* "Makefile.in"
+                    ;; do not leak information about the build host
+                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+      (arguments
+       `(;; There are many test failures.  Some are known to
+         ;; fail upstream, others relate to not having an X
+         ;; server running at test time, yet others are a
+         ;; complete mystery to me.
+
+         ;; hotspot:   passed: 241; failed: 45; error: 2
+         ;; langtools: passed: 1,934; failed: 26
+         ;; jdk:       unknown
+         #:tests? #f
+         ;; Apparently, the C locale is needed for some of the tests.
+         #:locale "C"
+         ,@(substitute-keyword-arguments (package-arguments icedtea6)
+             ((#:configure-flags flags)
+              `(let ((jdk (assoc-ref %build-inputs "icedtea6"))
+                     (ant (assoc-ref %build-inputs "ant")))
+                 `("--disable-bootstrap"
+                   "--without-rhino"
+                   "--enable-nss"
+                   "--enable-system-lcms"
+                   "--disable-downloading"
+                   ,(string-append "--with-ant-home=" ant)
+                   ,(string-append "--with-jdk-home=" jdk))))
+             ((#:phases phases)
+              `(modify-phases ,phases
+                 (replace
+                  'unpack
+                  (lambda* (#:key source inputs #:allow-other-keys)
+                    (let ((target (string-append "icedtea-" ,version))
+                          (unpack (lambda (drop dir)
+                                    (mkdir dir)
+                                    (zero? (system* "tar" "xvjf"
+                                                    (assoc-ref inputs drop)
+                                                    "-C" dir
+                                                    "--strip-components=1")))))
+                      (and (zero? (system* "tar" "xvf" source))
+                           (chdir target)
+                           (unpack "openjdk-drop" "openjdk")
+                           (unpack "corba-drop"   "openjdk/corba")
+                           (unpack "jdk-drop"     "openjdk/jdk")
+                           (unpack "hotspot-drop" "openjdk/hotspot")
+
+                           ;; The build framework checks the tarballs, so we
+                           ;; need to keep them around even though we have
+                           ;; already unpacked some of them for patching.
+                           (begin
+                             (copy-file (assoc-ref inputs "openjdk-drop")
+                                        "openjdk.tar.bz2")
+                             (copy-file (assoc-ref inputs "corba-drop")
+                                        "corba.tar.bz2")
+                             (copy-file (assoc-ref inputs "hotspot-drop")
+                                        "hotspot.tar.bz2")
+                             (copy-file (assoc-ref inputs "jaxp-drop")
+                                        "jaxp.tar.bz2")
+                             (copy-file (assoc-ref inputs "jaxws-drop")
+                                        "jaxws.tar.bz2")
+                             (copy-file (assoc-ref inputs "jdk-drop")
+                                        "jdk.tar.bz2")
+                             (copy-file (assoc-ref inputs "langtools-drop")
+                                        "langtools.tar.bz2")
+                             #t)))))
+                 (replace
+                  'set-additional-paths
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (substitute* "openjdk/jdk/make/common/shared/Sanity.gmk"
+                      (("ALSA_INCLUDE=/usr/include/alsa/version.h")
+                       (string-append "ALSA_INCLUDE="
+                                      (assoc-ref inputs "alsa-lib")
+                                      "/include/alsa/version.h")))
+                    (setenv "CC" "gcc")
+                    (setenv "CPATH"
+                            (string-append (assoc-ref inputs "libxrender")
+                                           "/include/X11/extensions" ":"
+                                           (assoc-ref inputs "libxtst")
+                                           "/include/X11/extensions" ":"
+                                           (assoc-ref inputs "libxinerama")
+                                           "/include/X11/extensions" ":"
+                                           (or (getenv "CPATH") "")))
+                    (setenv "ALT_OBJCOPY" (which "objcopy"))
+                    (setenv "ALT_CUPS_HEADERS_PATH"
+                            (string-append (assoc-ref inputs "cups")
+                                           "/include"))
+                    (setenv "ALT_FREETYPE_HEADERS_PATH"
+                            (string-append (assoc-ref inputs "freetype")
+                                           "/include"))
+                    (setenv "ALT_FREETYPE_LIB_PATH"
+                            (string-append (assoc-ref inputs "freetype")
+                                           "/lib"))))
+                 (add-after
+                  'unpack 'fix-x11-extension-include-path
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (substitute* "openjdk/jdk/make/sun/awt/mawt.gmk"
+                      (((string-append "\\$\\(firstword \\$\\(wildcard "
+                                       "\\$\\(OPENWIN_HOME\\)"
+                                       "/include/X11/extensions\\).*$"))
+                       (string-append (assoc-ref inputs "libxrender")
+                                      "/include/X11/extensions"
+                                      " -I" (assoc-ref inputs "libxtst")
+                                      "/include/X11/extensions"
+                                      " -I" (assoc-ref inputs "libxinerama")
+                                      "/include/X11/extensions"))
+                      (("\\$\\(wildcard /usr/include/X11/extensions\\)\\)") ""))
+                    #t))
+                 (replace
+                  'fix-test-framework
+                  (lambda _
+                    ;; Fix PATH in test environment
+                    (substitute* "test/jtreg/com/sun/javatest/regtest/Main.java"
+                      (("PATH=/bin:/usr/bin")
+                       (string-append "PATH=" (getenv "PATH"))))
+                    (substitute* "test/jtreg/com/sun/javatest/util/SysEnv.java"
+                      (("/usr/bin/env") (which "env")))
+                    (substitute* "openjdk/hotspot/test/test_env.sh"
+                      (("/bin/rm") (which "rm"))
+                      (("/bin/cp") (which "cp"))
+                      (("/bin/mv") (which "mv")))
+                    #t))
+                 (delete 'patch-patches))))))
+      (native-inputs
+       `(("ant" ,ant)
+         ("icedtea6" ,icedtea6 "jdk")
+         ("openjdk-drop"
+          ,(drop "openjdk"
+                 "03gxqn17cxwl1nspnwigacaqd28p02d45f396j5f4kkbzfnbl0ak"))
+         ("corba-drop"
+          ,(drop "corba"
+                 "0ldcckknn2f92jv1144cnn0z3wmvxln28wc00rc6xxblnjcnamzh"))
+         ("jaxp-drop"
+          ,(drop "jaxp"
+                 "0mnjdziffcnyqlyvf8dw1hrl4kiiwmh8ia0ym417wgvnjpaihci9"))
+         ("jaxws-drop"
+          ,(drop "jaxws"
+                 "1gkmypnhygx2mxhca3ngy620k993wi2cc1wysc0np06y1rkx1mkn"))
+         ("jdk-drop"
+          ,(drop "jdk"
+                 "10x43mqjfn43jlckic0nyf7apyyjyr910cdmmvy41kvw8ljhvg61"))
+         ("langtools-drop"
+          ,(drop "langtools"
+                 "0q5nqc14r6vmhxgikw3wgdcc0r9symp830v13isnv8qdjgm6kcki"))
+         ("hotspot-drop"
+          ,(drop "hotspot"
+                 "1yqxfd2jwbm5y41wscyfx8h0fr3h8ny2g2mda5iwd8sikxsaj96p"))
+         ,@(fold alist-delete (package-native-inputs icedtea6)
+                 '("openjdk6-src" "ant-bootstrap" "gcj")))))))

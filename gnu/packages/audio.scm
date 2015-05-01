@@ -1156,6 +1156,73 @@ compression modes.  This package contains command-line programs and library to
 encode and decode wavpack files.")
     (license license:bsd-3)))
 
+(define-public libmodplug
+  (package
+    (name "libmodplug")
+    (version "0.8.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/project/modplug-xmms/"
+                    name "/" version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bfsladg7h6vnii47dd66f5vh1ir7qv12mfb8n36qiwrxq92sikp"))))
+    (build-system gnu-build-system)
+    (home-page "http://modplug-xmms.sourceforge.net/")
+    (synopsis "Mod file playing library")
+    (description
+     "Libmodplug renders mod music files as raw audio data, for playing or
+conversion.  mod, .s3m, .it, .xm, and a number of lesser-known formats are
+supported.  Optional features include high-quality resampling, bass expansion,
+surround and reverb.")
+    (license license:public-domain)))
+
+(define-public libxmp
+  (package
+    (name "libxmp")
+    (version "4.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xmp/libxmp/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h06091hlpgc6ds4pjmfq8sx4snw7av3nhny180q4pwfyasjb6ny"))))
+    (build-system gnu-build-system)
+    (home-page "http://xmp.sourceforge.net/")
+    (synopsis "Module player library")
+    (description
+     "Libxmp is a library that renders module files to PCM data.  It supports
+over 90 mainstream and obscure module formats including Protracker (MOD),
+Scream Tracker 3 (S3M), Fast Tracker II (XM), and Impulse Tracker (IT).")
+    (license license:lgpl2.1+)))
+
+(define-public xmp
+  (package
+    (name "xmp")
+    (version "4.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xmp/xmp/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjylvvmq7ha0nhcjg56qfp0xxpsrcsj7y5r914svd5x1ppmzm5n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxmp" ,libxmp)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://xmp.sourceforge.net/")
+    (synopsis "Extended module player")
+    (description
+     "Xmp is a portable module player that plays over 90 mainstream and
+obscure module formats, including Protracker MOD, Fasttracker II XM, Scream
+Tracker 3 S3M and Impulse Tracker IT files.")
+    (license license:gpl2+)))
+
 (define-public soundtouch
   (package
     (name "soundtouch")

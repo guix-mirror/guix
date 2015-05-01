@@ -9,6 +9,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -65,6 +67,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages tcl)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -822,3 +825,57 @@ interfaces or even in Emacs.  It supports the standard game storage format
 Modem Protocol).")
     (home-page "http://www.gnu.org/software/gnugo/")
     (license license:gpl3+)))
+
+(define-public extremetuxracer
+  (package
+    (name "extremetuxracer")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/project/extremetuxracer/releases/"
+                    version "/etr-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0fl9pwkywqnsmgr6plfj9zb05xrdnl5xb2hcmbjk7ap9l4cjfca4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("libice" ,libice)
+       ("libpng" ,libpng)
+       ("sdl" ,sdl)
+       ("sdl-mixer" ,sdl-mixer)
+       ("sdl-image" ,sdl-image)
+       ("libsm" ,libsm)
+       ("libunwind" ,libunwind)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("libxt" ,libxt)
+       ("tcl" ,tcl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("CXXFLAGS =") "CXXFLAGS = ${CFLAGS}")))))))
+    (synopsis "High speed arctic racing game based on Tux Racer")
+    ;; Snarfed straight from Debian
+    (description "Extreme Tux Racer, or etracer as it is called for short, is
+a simple OpenGL racing game featuring Tux, the Linux mascot.  The goal of the
+game is to slide down a snow- and ice-covered mountain as quickly as possible,
+avoiding the trees and rocks that will slow you down.
+
+Collect herrings and other goodies while sliding down the hill, but avoid fish
+bones.
+
+This game is based on the GPL version of the famous game TuxRacer.")
+    (home-page "http://sourceforge.net/projects/extremetuxracer/")
+    (license license:gpl2+)))

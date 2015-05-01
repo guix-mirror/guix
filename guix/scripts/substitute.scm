@@ -467,6 +467,7 @@ to read the response body.  Return the list of results."
              ;; case we have to try again.  Check whether that is the case.
              (match (assq 'connection (response-headers resp))
                (('connection 'close)
+                (close-port p)
                 (connect requests result))        ;try again
                (_
                 (loop tail                        ;keep going

@@ -282,6 +282,7 @@ names and file names suitable for the #:allowed-references argument to
                            (graft? (%graft?))
                            references-graphs
                            allowed-references
+                           leaked-env-vars
                            local-build?)
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
 derivation) on SYSTEM.  When TARGET is true, it is used as the
@@ -400,6 +401,7 @@ The other arguments are as for 'derivation'."
                       #:hash hash #:hash-algo hash-algo #:recursive? recursive?
                       #:references-graphs (and=> graphs graphs-file-names)
                       #:allowed-references allowed
+                      #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?))))
 
 (define* (gexp-inputs exp #:key native?)

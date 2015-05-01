@@ -271,6 +271,9 @@ in the store."
                                         (guix build utils)
                                         (guix ftp-client))
 
+                            ;; Honor the user's proxy settings.
+                            #:leaked-env-vars '("http_proxy" "https_proxy")
+
                             ;; In general, offloading downloads is not a good idea.
                             ;;#:local-build? #t
                             ;; FIXME: The above would also disable use of

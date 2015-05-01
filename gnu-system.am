@@ -175,6 +175,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libftdi.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libphidget.scm			\
+  gnu/packages/libreoffice.scm			\
   gnu/packages/libsigsegv.scm			\
   gnu/packages/libunistring.scm			\
   gnu/packages/libusb.scm			\
@@ -440,8 +441,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/grep-CVE-2015-1345.patch			\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/grub-freetype.patch			\
-  gnu/packages/patches/gstreamer-0.10-bison3.patch		\
-  gnu/packages/patches/gstreamer-0.10-silly-test.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-arm-fixes.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
