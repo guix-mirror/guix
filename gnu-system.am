@@ -329,13 +329,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/services.scm				\
   gnu/services/avahi.scm			\
   gnu/services/base.scm				\
-  gnu/services/colord.scm			\
-  gnu/services/dbus.scm				\
+  gnu/services/desktop.scm			\
   gnu/services/dmd.scm				\
   gnu/services/lirc.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
-  gnu/services/upower.scm			\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\

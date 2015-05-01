@@ -4641,6 +4641,7 @@ declaration.
 * Base Services::               Essential system services.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Desktop Services::            D-Bus and desktop services.
 * Various Services::            Other services.
 @end menu
 
@@ -4985,26 +4986,28 @@ appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
 @end deffn
 
-@node Various Services
-@subsubsection Various Services
+@node Desktop Services
+@subsubsection Desktop Services
 
-The @code{(gnu services lirc)} module provides the following service.
+The @code{(gnu services desktop)} module provides services that are
+usually useful in the context of a ``desktop'' setup---that is, on a
+machine running a graphical display server, possibly with graphical user
+interfaces, etc.
 
-@deffn {Monadic Procedure} lirc-service [#:lirc lirc] @
-       [#:device #f] [#:driver #f] [#:config-file #f] @
-       [#:extra-options '()]
-Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
-decodes infrared signals from remote controls.
+@deffn {Monadic Procedure} dbus-service @var{services} @
+                         [#:dbus @var{dbus}]
+Return a service that runs the ``system bus'', using @var{dbus}, with
+support for @var{services}.
 
-Optionally, @var{device}, @var{driver} and @var{config-file}
-(configuration file name) may be specified.  See @command{lircd} manual
-for details.
+@uref{http://dbus.freedesktop.org/, D-Bus} is an inter-process communication
+facility.  Its system bus is used to allow system services to communicate
+and be notified of system-wide events.
 
-Finally, @var{extra-options} is a list of additional command-line options
-passed to @command{lircd}.
+@var{services} must be a list of packages that provide an
+@file{etc/dbus-1/system.d} directory containing additional D-Bus configuration
+and policy files.  For example, to allow avahi-daemon to use the system bus,
+@var{services} must be equal to @code{(list avahi)}.
 @end deffn
-
-@code{(gnu services upower)} provides a power-management daemon:
 
 @deffn {Monadic Procedure} upower-service [#:upower @var{upower}] @
                          [#:watts-up-pro? #f] @
@@ -5025,8 +5028,6 @@ levels, with the given configuration settings.  It implements the
 GNOME.
 @end deffn
 
-@code{(gnu services colord)} provides a color management service:
-
 @deffn {Monadic Procedure} colord-service [#:colord @var{colord}]
 Return a service that runs @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
@@ -5034,6 +5035,27 @@ screens and scanners.  It is notably used by the GNOME Color Manager graphical
 tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
 site} for more information.
 @end deffn
+
+
+@node Various Services
+@subsubsection Various Services
+
+The @code{(gnu services lirc)} module provides the following service.
+
+@deffn {Monadic Procedure} lirc-service [#:lirc lirc] @
+       [#:device #f] [#:driver #f] [#:config-file #f] @
+       [#:extra-options '()]
+Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
+decodes infrared signals from remote controls.
+
+Optionally, @var{device}, @var{driver} and @var{config-file}
+(configuration file name) may be specified.  See @command{lircd} manual
+for details.
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{lircd}.
+@end deffn
+
 
 @node Setuid Programs
 @subsection Setuid Programs
