@@ -2354,12 +2354,12 @@ parameter is now implicit, and the monadic value returned by
 @code{derivation->output-path}---is @dfn{bound} using @code{mlet}
 instead of plain @code{let}.
 
-Calling the monadic @code{profile.sh} has no effect.  To get the desired
+Calling the monadic @code{sh-symlink} has no effect.  To get the desired
 effect, one must use @code{run-with-store}:
 
 @example
-(run-with-store (open-connection) (profile.sh))
-@result{} /gnu/store/...-profile.sh
+(run-with-store (open-connection) (sh-symlink))
+@result{} /gnu/store/...-sh-symlink
 @end example
 
 Note that the @code{(guix monad-repl)} module extends Guile's REPL with
