@@ -140,10 +140,9 @@ substitute invalid byte sequences with question marks.  This is a
   ;; not very efficient.  Eventually Guile may provide a lightweight
   ;; permissive UTF-8 decoder.
   (let* ((bv   (read-byte-string p))
-         (port (with-fluids ((%default-port-encoding "UTF-8")
-                             (%default-port-conversion-strategy
-                              'substitute))
-                 (open-bytevector-input-port bv))))
+         (port (open-bytevector-input-port bv)))
+    (set-port-encoding! port "UTF-8")
+    (set-port-conversion-strategy! port 'substitute)
     (get-string-all port)))
 
 (define (write-string-list l p)
