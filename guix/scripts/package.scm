@@ -384,22 +384,6 @@ current settings and report only settings not already effective."
                      %user-profile-directory
                      profile)))
 
-    ;; The search path info is not stored in the manifest.  Thus, we infer the
-    ;; search paths from same-named packages found in the distro.
-
-    (define manifest-entry->package
-      (match-lambda
-       (($ <manifest-entry> name version)
-        ;; Use 'find-best-packages-by-name' and not 'find-packages-by-name';
-        ;; the former traverses the module tree only once and then allows for
-        ;; efficient access via a vhash.
-        (match (find-best-packages-by-name name version)
-          ((p _ ...) p)
-          (_
-           (match (find-best-packages-by-name name #f)
-             ((p _ ...) p)
-             (_ #f)))))))
-
     (define search-path-definition
       (match-lambda
        (($ <search-path-specification> variable files separator
@@ -426,10 +410,8 @@ current settings and report only settings not already effective."
                       variable
                       (string-join path separator)))))))
 
-    (let* ((packages     (filter-map manifest-entry->package entries))
-           (search-paths (delete-duplicates
-                          (append-map package-native-search-paths
-                                      packages))))
+    (let ((search-paths (delete-duplicates
+                         (append-map manifest-entry-search-paths entries))))
       (filter-map search-path-definition search-paths))))
 
 (define (display-search-paths entries profile)

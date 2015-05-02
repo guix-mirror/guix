@@ -26,6 +26,7 @@
   #:use-module (guix derivations)
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages base) #:prefix packages:)
+  #:use-module ((gnu packages guile) #:prefix packages:)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-11)
@@ -198,6 +199,27 @@
                                        #:hooks '())))
     (return (derivation-inputs drv))))
 
+(test-assertm "profile-manifest, search-paths"
+  (mlet* %store-monad
+      ((guile ->   (package
+                     (inherit %bootstrap-guile)
+                     (native-search-paths
+                      (package-native-search-paths packages:guile-2.0))))
+       (entry ->   (package->manifest-entry guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+
+      ;; Read the manifest back and make sure search paths are preserved.
+      (let ((manifest (profile-manifest profile)))
+        (match (manifest-entries manifest)
+          ((result)
+           (return (equal? (manifest-entry-search-paths result)
+                           (manifest-entry-search-paths entry)
+                           (package-native-search-paths
+                            packages:guile-2.0)))))))))
 (test-end "profiles")
 
 

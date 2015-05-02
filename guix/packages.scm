@@ -56,6 +56,7 @@
             search-path-specification
             search-path-specification?
             search-path-specification->sexp
+            sexp->search-path-specification
 
             package
             package?
@@ -202,9 +203,23 @@ representation."
 (define (search-path-specification->sexp spec)
   "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
 corresponds to the arguments expected by `set-path-environment-variable'."
+  ;; Note that this sexp format is used both by build systems and in
+  ;; (guix profiles), so think twice before you change it.
   (match spec
     (($ <search-path-specification> variable files separator type pattern)
      `(,variable ,files ,separator ,type ,pattern))))
+
+(define (sexp->search-path-specification sexp)
+  "Convert SEXP, which is as returned by 'search-path-specification->sexp', to
+a <search-path-specification> object."
+  (match sexp
+    ((variable files separator type pattern)
+     (search-path-specification
+      (variable variable)
+      (files files)
+      (separator separator)
+      (file-type type)
+      (file-pattern pattern)))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
