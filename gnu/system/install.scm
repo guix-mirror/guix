@@ -24,6 +24,7 @@
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (guix profiles)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
@@ -316,6 +317,7 @@ Use Alt-F2 for documentation.
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
                      ;; space; furthermore util-linux's fdisk is already
                      ;; available here, so we keep that.
+                     bash-completion
                      %base-packages))))
 
 ;; Return it here so 'guix system' can consume it directly.
