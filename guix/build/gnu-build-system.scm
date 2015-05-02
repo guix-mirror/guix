@@ -164,7 +164,10 @@ files such as `.in' templates.  Most scripts honor $SHELL and
 $CONFIG_SHELL, but some don't, such as `mkinstalldirs' or Automake's
 `missing' script."
   (for-each patch-shebang
-            (remove file-is-directory? (find-files "." ".*"))))
+            (remove (lambda (file)
+                      (or (not (file-exists? file)) ;dangling symlink
+                          (file-is-directory? file)))
+                    (find-files "."))))
 
 (define (patch-generated-file-shebangs . rest)
   "Patch shebangs in generated files, including `SHELL' variables in
@@ -173,9 +176,10 @@ makefiles."
   ;; `configure'.
   (for-each patch-shebang
             (filter (lambda (file)
-                      (and (executable-file? file)
+                      (and (file-exists? file)
+                           (executable-file? file)
                            (not (file-is-directory? file))))
-                    (find-files "." ".*")))
+                    (find-files ".")))
 
   ;; Patch `SHELL' in generated makefiles.
   (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
@@ -414,7 +418,7 @@ effects, such as displaying warnings or error messages."
        (loop tail (and (pred head) result))))))
 
 (define* (validate-runpath #:key
-                           validate-runpath?
+                           (validate-runpath? #t)
                            (elf-directories '("lib" "lib64" "libexec"
                                               "bin" "sbin"))
                            outputs #:allow-other-keys)

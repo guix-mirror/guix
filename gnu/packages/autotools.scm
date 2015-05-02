@@ -303,12 +303,7 @@ complexity of working with shared libraries across platforms.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
-
-              ;; FIXME: We don't need this patch here, we just keep it to
-              ;; avoid a rebuild today.
-              (patches
-               (list (search-patch "libtool-skip-tests.patch")))))
+                "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-ltdl-install") ;really install it

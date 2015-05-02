@@ -190,10 +190,6 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
          #:tests? #f
 
-         ;; libstdc++.so NEEDs libgcc_s.so but somehow it doesn't get
-         ;; $(libdir) in its RUNPATH, so turn it off.
-         #:validate-runpath? #f
-
          #:phases
          (alist-cons-before
           'configure 'pre-configure
@@ -252,6 +248,13 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (("static char const sed_cmd_z\\[\\] =.*;")
                  "static char const sed_cmd_z[] = \"sed\";"))
 
+              ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
+              ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
+              ;; and <http://bugs.gnu.org/20358>.
+              (substitute* "libstdc++-v3/src/Makefile.in"
+                (("^OPT_LDFLAGS = ")
+                 "OPT_LDFLAGS = -Wl,-rpath=$(libdir) "))
+
               ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
               ;; circularity between "out" and "lib".  (Note:
               ;; --with-python-dir is useless because it imposes $(prefix) as
@@ -304,37 +307,43 @@ Go.  It also includes runtime support libraries for these languages.")
   (package (inherit gcc-4.7)
     (version "4.8.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gcc/gcc-"
-                                 version "/gcc-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
-             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
+
+              ;; ARM 'link' spec issue reported at
+              ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65711> and
+              ;; <https://gcc.gnu.org/ml/gcc-patches/2015-04/msg01387.html>.
+              (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define-public gcc-4.9
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (version "4.9.2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gcc/gcc-"
-                                 version "/gcc-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
-             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
+              (patches (map search-patch
+                            '("gcc-arm-link-spec-fix.patch"
+                              "gcc-libvtv-runpath.patch")))))))
 
 (define-public gcc-5.1
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.9)
     (version "5.1.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gcc/gcc-"
-                                 version "/gcc-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
-             (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
+              (patches (origin-patches (package-source gcc-4.9)))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
@@ -435,7 +444,18 @@ Go.  It also includes runtime support libraries for these languages.")
                   (string-append jvm "/lib/tools.jar")))
                (chmod target #o755)
                #t))
-           ,phases))))))
+           (alist-cons-after
+            'install 'remove-broken-or-conflicting-files
+            (lambda _
+              (let ((out (assoc-ref %outputs "out")))
+                (for-each
+                 delete-file
+                 (append (find-files (string-append out "/lib/jvm/jre/lib")
+                                     "libjawt.so")
+                         (find-files (string-append out "/bin")
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcc.*)"))))
+              #t)
+            ,phases)))))))
 
 (define ecj-bootstrap-4.8
   (origin

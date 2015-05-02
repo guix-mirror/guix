@@ -35,7 +35,7 @@ _guix_complete_installed_package ()
 _guix_complete_option ()
 {
     local options="$(${COMP_WORDS[0]} ${COMP_WORDS[1]} --help \
-                            | grep '^  -' \
+                            | grep '^  \+-' \
                             | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g' )"
     compopt -o nospace
     COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[$word_count - 1]}"))

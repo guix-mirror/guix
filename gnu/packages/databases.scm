@@ -191,8 +191,6 @@ Language.")
           'configure 'pre-configure
           (lambda _
             (setenv "CONFIG_SHELL" (which "sh"))
-            ;; XXX: libstdc++.so lacks RUNPATH for libgcc_s.so.
-            (setenv "LDFLAGS" "-lgcc_s")
             #t))
          (add-after
           'install 'post-install

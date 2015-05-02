@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.1.3")
+    (version "3.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -43,11 +44,12 @@
                    (version-major+minor version)
                    "/cmake-" version ".tar.gz"))
              (sha256
-              (base32 "1l662p9lscbzx9s85y86cynb9fn1rb2alqg4584wqq9gibxd7x25"))
+              (base32 "0y3w83al0vh9ll7fnqm3nx7l8hsl85k8iv9abxb791q36rp4xsdd"))
              (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:parallel-tests? #f ; 3 test from RunCMake fails
        #:phases (alist-cons-before
                  'configure 'patch-bin-sh
                  (lambda _
@@ -66,7 +68,8 @@
                          "Utilities/cmbzip2/Makefile-libbz2_so"
                          "Utilities/Release/release_cmake.cmake"
                          "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
-                         "Tests/CMakeLists.txt")
+                         "Tests/CMakeLists.txt"
+                         "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
                      (("/bin/sh") (which "sh"))))
                  (alist-cons-before
                   'configure 'set-paths
@@ -74,7 +77,9 @@
                     ;; Help cmake's bootstrap process to find system libraries
                     (begin
                       (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-                      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))))
+                      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
+                      ;; Get verbose output from failed tests
+                      (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")))
                   (alist-replace
                    'configure
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -83,6 +88,7 @@
                                "./configure"
                                (string-append "--prefix=" out)
                                "--system-libs"
+                               "--no-system-jsoncpp" ; not packaged yet
                                ;; By default, the man pages and other docs land
                                ;; in PREFIX/man and PREFIX/doc, but we want them
                                ;; in share/{man,doc}.  Note that unlike

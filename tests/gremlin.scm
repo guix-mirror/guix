@@ -21,6 +21,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build gremlin)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match))
@@ -50,6 +51,17 @@
                 (map (lambda (lib)
                        (string-take lib (string-contains lib ".so")))
                      (elf-dynamic-info-needed dyninfo))))))
+
+(test-equal "expand-origin"
+  '("OOO/../lib"
+    "OOO"
+    "../OOO/bar/OOO/baz"
+    "ORIGIN/foo")
+  (map (cut expand-origin <> "OOO")
+       '("$ORIGIN/../lib"
+         "${ORIGIN}"
+         "../${ORIGIN}/bar/$ORIGIN/baz"
+         "ORIGIN/foo")))
 
 (test-end "gremlin")
 

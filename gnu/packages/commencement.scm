@@ -31,6 +31,7 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
@@ -157,8 +158,6 @@
                    (srfi srfi-1)
                    (srfi srfi-26))
         ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
-            ((#:validate-runpath? _)
-             #t)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -418,6 +417,40 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                              '("gcc" "libc")))
                                    (current-source-location)))))
 
+(define gettext-boot0
+  ;; A minimal gettext used during bootstrap.
+  (let ((gettext-minimal
+         (package (inherit gnu-gettext)
+           (name "gettext-boot0")
+           (inputs '())                           ;zero dependencies
+           (arguments
+            (substitute-keyword-arguments
+                `(#:tests? #f
+                  ,@(package-arguments gnu-gettext))
+              ((#:phases phases)
+               `(modify-phases ,phases
+                  ;; Build only the tools.
+                  (add-after 'unpack 'chdir
+                             (lambda _
+                               (chdir "gettext-tools")))
+
+                  ;; Some test programs require pthreads, which we don't have.
+                  (add-before 'configure 'no-test-programs
+                              (lambda _
+                                (substitute* "tests/Makefile.in"
+                                  (("^PROGRAMS =.*$")
+                                   "PROGRAMS =\n"))
+                                #t))
+
+                  ;; Don't try to link against libexpat.
+                  (delete 'link-expat)
+                  (delete 'patch-tests))))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs gettext-minimal
+                                   %boot1-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
 (define-public glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
   (package (inherit glibc-final-with-bootstrap-bash)
@@ -426,6 +459,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
               ,@(alist-delete
                  "static-bash"
                  (package-inputs glibc-final-with-bootstrap-bash))))
+
+    ;; This time we need 'msgfmt' to install all the libc.mo files.
+    (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
+                     ("gettext" ,gettext-boot0)))
 
     ;; The final libc only refers to itself, but the 'debug' output contains
     ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
@@ -501,6 +538,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
        #:allowed-references ("out" "lib" ,glibc-final)
 
+       ;; Things like libasan.so and libstdc++.so NEED ld.so for some
+       ;; reason, but it is not in their RUNPATH.  This is a false
+       ;; positive, so turn it off.
+       #:validate-runpath? #f
+
        ;; Build again GMP & co. within GCC's build process, because it's hard
        ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
@@ -525,11 +567,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                              "/lib")
                               flag))
                         ,flags)))
-           ((#:validate-runpath? _)
-            ;; Things like libasan.so and libstdc++.so NEED ld.so and/or
-            ;; libgcc_s.so but RUNPATH is empty.  This is a false positive, so
-            ;; turn it off.
-            #f)
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
@@ -708,19 +745,6 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 ;;; GCC toolchain.
 ;;;
 
-(define (fixed-ld-wrapper)
-  ;; FIXME: In this cycle, a bug was introduced in ld-wrapper: it would
-  ;; incorrectly flag ~/.guix-profile/lib/libfoo.so as "impure", due to a bug
-  ;; in its symlink resolution code.  To work around that while avoiding a
-  ;; full rebuild, use an ld-wrapper with the bug-fix for 'gcc-toolchain'.
-  (let ((orig (car (assoc-ref %final-inputs "ld-wrapper"))))
-    (package
-      (inherit orig)
-      (location (source-properties->location (current-source-location)))
-      (inputs `(("wrapper" ,(search-path %load-path
-                                         "gnu/packages/ld-wrapper2.in"))
-                ,@(package-inputs orig))))))
-
 (define (gcc-toolchain gcc)
   "Return a complete toolchain for GCC."
   (package
@@ -759,7 +783,7 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
     ;; install everything that we need, and (2) to make sure ld-wrapper comes
     ;; before Binutils' ld in the user's profile.
     (inputs `(("gcc" ,gcc)
-              ("ld-wrapper" ,(fixed-ld-wrapper))
+              ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
               ("binutils" ,binutils-final)
               ("libc" ,glibc-final)
               ("libc-debug" ,glibc-final "debug")))))

@@ -421,6 +421,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
+  gnu/packages/patches/gcc-libvtv-runpath.patch			\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
@@ -503,6 +504,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/pavucontrol-sigsegv.patch		\
   gnu/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
+  gnu/packages/patches/perl-module-pluggable-search.patch	\
   gnu/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
@@ -526,6 +528,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/qt4-tests.patch				\
+  gnu/packages/patches/qt5-conflicting-typedefs.patch		\
   gnu/packages/patches/qt5-runpath.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
@@ -580,8 +583,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
-  gnu/packages/ld-wrapper.in			\
-  gnu/packages/ld-wrapper2.in
+  gnu/packages/ld-wrapper.in
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

@@ -1,0 +1,15 @@
+GCC 4.9 and later have libvtv and, just like libstdc++ (see
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354), it doesn't
+have $libdir in its RUNPATH, but it NEEDs libgcc_s.  This patch
+fixes that.
+
+--- gcc-4.9.2/libvtv/Makefile.in	2014-10-30 09:28:58.000000000 +0100
++++ gcc-4.9.2/libvtv/Makefile.in	2015-04-30 09:51:04.161129705 +0200
+@@ -15,6 +15,7 @@
+ 
+ @SET_MAKE@
+ 
++AM_LDFLAGS = -Wl,-rpath=$(libdir)
+ 
+ VPATH = @srcdir@
+ pkgdatadir = $(datadir)/@PACKAGE@

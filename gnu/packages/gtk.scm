@@ -230,13 +230,21 @@ functions which were removed.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.drobilla.net/ganv-"
-                                  version
-                                  ".tar.bz2"))
+                                  version ".tar.bz2"))
               (sha256
                (base32
                 "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:phases (alist-cons-before
+                 'configure 'set-ldflags
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Allow 'bin/ganv_bench' to find libganv-1.so.
+                   (setenv "LDFLAGS"
+                           (string-append "-Wl,-rpath="
+                                          (assoc-ref outputs "out") "/lib")))
+                 %standard-phases)
+       #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
        ("gtkmm" ,gtkmm-2)))

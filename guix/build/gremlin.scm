@@ -39,6 +39,7 @@
             elf-dynamic-info-needed
             elf-dynamic-info-rpath
             elf-dynamic-info-runpath
+            expand-origin
 
             validate-needed-in-runpath))
 
@@ -236,6 +237,30 @@ value of DT_NEEDED entries is a string.)"
           (string-prefix? libc-lib lib))
         %libc-libraries))
 
+(define (expand-variable str variable value)
+  "Replace occurrences of '$VARIABLE' or '${VARIABLE}' in STR with VALUE."
+  (define variables
+    (list (string-append "$" variable)
+          (string-append "${" variable "}")))
+
+  (let loop ((thing variables)
+             (str   str))
+    (match thing
+      (()
+       str)
+      ((head tail ...)
+       (let ((index (string-contains str head))
+             (len   (string-length head)))
+         (loop (if index variables tail)
+               (if index
+                   (string-replace str value
+                                   index (+ index len))
+                   str)))))))
+
+(define (expand-origin str directory)
+  "Replace occurrences of '$ORIGIN' in STR with DIRECTORY."
+  (expand-variable str "ORIGIN" directory))
+
 (define* (validate-needed-in-runpath file
                                      #:key (always-found? libc-library?))
   "Return #t if all the libraries listed as FILE's 'DT_NEEDED' entries are
@@ -254,17 +279,18 @@ exceeds total size~%"
 
     (let* ((elf     (call-with-input-file file
                       (compose parse-elf get-bytevector-all)))
+           (expand  (cute expand-origin <> (dirname file)))
            (dyninfo (elf-dynamic-info elf)))
       (when dyninfo
-        (let* ((runpath   (filter store-file-name?
-                                  (elf-dynamic-info-runpath dyninfo)))
-               (bogus     (remove store-file-name?
-                                  (elf-dynamic-info-runpath dyninfo)))
+        ;; XXX: In theory we should also expand $PLATFORM and $LIB, but these
+        ;; appear to be really unused.
+        (let* ((expanded  (map expand (elf-dynamic-info-runpath dyninfo)))
+               (runpath   (filter store-file-name? expanded))
+               (bogus     (remove store-file-name? expanded))
                (needed    (remove always-found?
                                   (elf-dynamic-info-needed dyninfo)))
                (not-found (remove (cut search-path runpath <>)
                                   needed)))
-          ;; XXX: $ORIGIN is not supported.
           (unless (null? bogus)
             (format (current-error-port)
                     "~a: warning: RUNPATH contains bogus entries: ~s~%"

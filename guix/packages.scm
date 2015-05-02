@@ -95,6 +95,7 @@
             package-grafts
 
             %supported-systems
+            %hydra-supported-systems
             supported-package?
 
             &package-error
@@ -209,6 +210,11 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
   '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux"))
+
+(define %hydra-supported-systems
+  ;; This is the list of system types for which build slaves are available.
+  (delete "armhf-linux" %supported-systems))
+
 
 ;; A package.
 (define-record-type* <package>

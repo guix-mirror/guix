@@ -86,7 +86,12 @@ for unprivileged applications.")
     (native-inputs
       `(("pkg-config", pkg-config)))
     (arguments
-      `(#:tests? #f)) ; there is a test subdirectory, but no test target
+     `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_RPATH="
+                                              (assoc-ref %outputs "out")
+                                              "/lib:"
+                                              (assoc-ref %outputs "out")
+                                              "/lib64"))
+       #:tests? #f)) ; there is a test subdirectory, but no test target
     (home-page "http://api.kde.org/kdesupport-api/polkit-qt-1-apidocs/")
     (synopsis "Qt frontend to the polkit library")
     (description "Polkit-qt is a library that lets developers use the
