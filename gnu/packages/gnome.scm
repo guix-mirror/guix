@@ -6,6 +6,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,9 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages backup)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages ncurses))
 
 (define-public brasero
@@ -2153,3 +2157,37 @@ parameters of a GNOME session and the applications that run under it.  It
 handles settings such keyboard layout, shortcuts, and accessibility, clipboard
 settings, themes, mouse settings, and startup of other daemons.")
     (license license:gpl2+)))
+
+(define-public totem-pl-parser
+ (package
+   (name "totem-pl-parser")
+   (version "3.10.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/totem-pl-parser/3.10/"
+                                "totem-pl-parser-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0dw1kiwmjwdjrighri0j9nagsnj44dllm0mamnfh4y5nc47mhim7"))))
+   (build-system gnu-build-system)
+   (arguments
+    ;; FIXME: Tests require gvfs.
+    `(#:tests? #f))
+   (native-inputs
+    `(("intltool" ,intltool)
+      ("glib" ,glib "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("glib" ,glib)
+      ("gmime" ,gmime)
+      ("libarchive" ,libarchive)
+      ("libgcrypt" ,libgcrypt)
+      ("nettle" ,nettle)
+      ("libsoup" ,libsoup)
+      ("libxml2" ,libxml2)))
+   (home-page "https://projects.gnome.org/totem")
+   (synopsis "Library to parse and save media playlists for GNOME")
+   (description "Totem-pl-parser is a GObjects-based library to parse and save
+playlists in a variety of formats.")
+   (license license:lgpl2.0+)))
+
