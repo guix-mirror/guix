@@ -693,7 +693,7 @@ commands and their arguments.")
 (define-public wpa-supplicant-light
   (package
     (name "wpa-supplicant-light")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -702,7 +702,7 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0skvkl6c10ls4s48b2wmf47h9j1y40nlzxnzn8hyaw2j0prmpapa"))
+                "08li21q1wjn5chrv289w666il9ah1w419y3dkq2rl4wnq0rci385"))
               (patches
                (list (search-patch "wpa-supplicant-CVE-2015-1863.patch")))))
     (build-system gnu-build-system)
