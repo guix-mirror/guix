@@ -20,10 +20,12 @@
 (define-module (gnu packages libreoffice)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (mpl2.0))
+  #:use-module ((guix licenses) #:select (lgpl2.1+ mpl2.0))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
@@ -79,3 +81,32 @@ Microsoft Excel 2007 XML, Microsoft Excel 2003 XML, Open Document Spreadsheet,
 Plain Text, Gnumeric XML, Generic XML.  It also includes low-level parsers for
 CSV, CSS and XML.")
     (license mpl2.0)))
+
+(define-public librevenge
+  (package
+    (name "librevenge")
+    (version "0.0.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/libwpd/" name "/" name "-"
+                          version ".tar.xz"))
+      (sha256 (base32
+               "03ygxyb0vfjv8raif5q62sl33b54wkr5rzgadb8slijm6k281wpn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("boost" ,boost)
+       ("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     ;; avoid triggering configure errors by simple inclusion of boost headers
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "http://sourceforge.net/p/libwpd/wiki/librevenge/")
+    (synopsis "Document importer for office suites")
+    (description "Librevenge is a base library for writing document import
+filters.  It has interfaces for text documents, vector graphics,
+spreadsheets and presentations.")
+    (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
