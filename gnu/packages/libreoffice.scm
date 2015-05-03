@@ -110,3 +110,28 @@ CSV, CSS and XML.")
 filters.  It has interfaces for text documents, vector graphics,
 spreadsheets and presentations.")
     (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
+
+(define-public libwpd
+  (package
+    (name "libwpd")
+    (version "0.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/libwpd/" name "/" name "-"
+                          version ".tar.xz"))
+      (sha256 (base32
+               "0b6krzr6kxzm89g6bapn805kdayq70hn16n5b5wfs2lwrf0ag2wx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (home-page "http://libwpd.sourceforge.net/")
+    (synopsis "Library for importing WordPerfect documents")
+    (description "Libwpd is a C++ library designed to help process
+WordPerfect documents.  It is most commonly used to import such documents
+into other word processors.")
+    (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
