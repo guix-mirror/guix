@@ -379,10 +379,10 @@ an output path different than CURRENT-PATH."
   (with-error-to-port (%make-void-port "w")
     (lambda () exp)))
 
-(define* (search-path-environment-variables entries profile
-                                            #:optional (getenv getenv))
-  "Return environment variable definitions that may be needed for the use of
-ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
+(define* (evaluate-search-paths search-paths directory
+                                #:optional (getenv (const #f)))
+  "Evaluate SEARCH-PATHS, a list of search-path specifications, for DIRECTORY,
+and return a list of variable/value pairs.  Use GETENV to determine the
 current settings and report only settings not already effective."
   (define search-path-definition
     (match-lambda
@@ -401,18 +401,26 @@ current settings and report only settings not already effective."
               ;; directories (see
               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
               (path   (with-null-error-port
-                       (search-path-as-list files (list profile)
+                       (search-path-as-list files (list directory)
                                             #:type type
                                             #:pattern pattern))))
          (if (every (cut member <> values) path)
-             #f
-             (format #f "export ~a=\"~a\""
-                     variable
-                     (string-join path separator)))))))
+             #f                         ;VARIABLE is already set appropriately
+             (cons variable (string-join path separator)))))))
 
+  (filter-map search-path-definition search-paths))
+
+(define* (search-path-environment-variables entries profile
+                                            #:optional (getenv getenv))
+  "Return environment variable definitions that may be needed for the use of
+ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
+current settings and report only settings not already effective."
   (let ((search-paths (delete-duplicates
                        (append-map manifest-entry-search-paths entries))))
-    (filter-map search-path-definition search-paths)))
+    (filter-map (match-lambda
+                  ((variable . value)
+                   (format #f "export ~a=\"~a\"" variable value)))
+                (evaluate-search-paths search-paths profile getenv))))
 
 (define (display-search-paths entries profile)
   "Display the search path environment variables that may need to be set for
