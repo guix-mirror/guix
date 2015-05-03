@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,12 +90,18 @@ with a flexible variety of user interfaces.")
     (version "1.12.1")
     (source (origin
              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/cppunit/" name "/" 
+              (uri (string-append "mirror://sourceforge/cppunit/" name "/"
                                   name "-"
                                   version ".tar.gz"))
              (sha256
               (base32
                "0jm49v5rmc5qw34vqs56gy8xja1dhci73bmh23cig4kcir6a0a5c"))))
+    ;; Explicitly link with libdl. This is expected to be done by packages
+    ;; relying on cppunit for their tests. However, not all of them do.
+    ;; If we added the linker flag to such packages, we would pollute all
+    ;; binaries, not only those used for testing.
+    (arguments
+     `(#:make-flags '("LDFLAGS=-ldl")))
     (build-system gnu-build-system)
     (home-page "http://sourceforge.net/projects/cppunit/")
     (synopsis "Unit testing framework for C++")
