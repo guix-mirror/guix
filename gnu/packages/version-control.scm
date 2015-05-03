@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -551,14 +551,14 @@ property manipulation.")
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.7.18")
+    (version "1.8.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "06nrqnn3qq1hhskkcdbm0ilk2xv6ay2gyf2c7qvxp6xncb782wzn"))))
+               "0ybmc0yq83jhblp42wdqvn2cryra3sypx8mkxn5b8lq7hilcr68h"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
