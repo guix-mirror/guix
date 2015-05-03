@@ -89,6 +89,15 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
       %current-profile
       profile))
 
+(define (user-friendly-profile profile)
+  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
+indirectly, or PROFILE."
+  (if (and %user-profile-directory
+           (false-if-exception
+            (string=? (readlink %user-profile-directory) profile)))
+      %user-profile-directory
+      profile))
+
 (define (link-to-empty-profile store generation)
   "Link GENERATION, a string, to the empty profile."
   (let* ((drv  (run-with-store store
@@ -375,49 +384,41 @@ an output path different than CURRENT-PATH."
   "Return environment variable definitions that may be needed for the use of
 ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
 current settings and report only settings not already effective."
+  (define search-path-definition
+    (match-lambda
+      (($ <search-path-specification> variable files separator
+                                      type pattern)
+       (let* ((values (or (and=> (getenv variable)
+                                 (cut string-tokenize* <> separator))
+                          '()))
+              ;; Add a trailing slash to force symlinks to be treated as
+              ;; directories when 'find-files' traverses them.
+              (files  (if pattern
+                          (map (cut string-append <> "/") files)
+                          files))
 
-  ;; Prefer ~/.guix-profile to the real profile directory name.
-  (let ((profile (if (and %user-profile-directory
-                          (false-if-exception
-                           (string=? (readlink %user-profile-directory)
-                                     profile)))
-                     %user-profile-directory
-                     profile)))
+              ;; XXX: Silence 'find-files' when it stumbles upon non-existent
+              ;; directories (see
+              ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
+              (path   (with-null-error-port
+                       (search-path-as-list files (list profile)
+                                            #:type type
+                                            #:pattern pattern))))
+         (if (every (cut member <> values) path)
+             #f
+             (format #f "export ~a=\"~a\""
+                     variable
+                     (string-join path separator)))))))
 
-    (define search-path-definition
-      (match-lambda
-       (($ <search-path-specification> variable files separator
-                                       type pattern)
-        (let* ((values (or (and=> (getenv variable)
-                                  (cut string-tokenize* <> separator))
-                           '()))
-               ;; Add a trailing slash to force symlinks to be treated as
-               ;; directories when 'find-files' traverses them.
-               (files  (if pattern
-                           (map (cut string-append <> "/") files)
-                           files))
-
-               ;; XXX: Silence 'find-files' when it stumbles upon non-existent
-               ;; directories (see
-               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
-               (path   (with-null-error-port
-                        (search-path-as-list files (list profile)
-                                             #:type type
-                                             #:pattern pattern))))
-          (if (every (cut member <> values) path)
-              #f
-              (format #f "export ~a=\"~a\""
-                      variable
-                      (string-join path separator)))))))
-
-    (let ((search-paths (delete-duplicates
-                         (append-map manifest-entry-search-paths entries))))
-      (filter-map search-path-definition search-paths))))
+  (let ((search-paths (delete-duplicates
+                       (append-map manifest-entry-search-paths entries))))
+    (filter-map search-path-definition search-paths)))
 
 (define (display-search-paths entries profile)
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let ((settings (search-path-environment-variables entries profile)))
+  (let* ((profile  (user-friendly-profile profile))
+         (settings (search-path-environment-variables entries profile)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
       (format #t "~{   ~a~%~}" settings))))
@@ -999,6 +1000,7 @@ more information.~%"))
         (('search-paths)
          (let* ((manifest (profile-manifest profile))
                 (entries  (manifest-entries manifest))
+                (profile  (user-friendly-profile profile))
                 (settings (search-path-environment-variables entries profile
                                                              (const #f))))
            (format #t "~{~a~%~}" settings)
