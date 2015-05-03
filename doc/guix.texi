@@ -4652,6 +4652,7 @@ declaration.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
+* Database Services::           SQL databases.
 * Various Services::            Other services.
 @end menu
 
@@ -5046,6 +5047,20 @@ tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
 site} for more information.
 @end deffn
 
+@node Database Services
+@subsubsection Database Services
+
+The @code{(gnu services databases)} module provides the following service.
+
+@deffn {Monadic Procedure} postgresql-service [#:postgresql postgresql] @
+       [#:config-file] [#:data-directory ``/var/lib/postgresql/data'']
+Return a service that runs @var{postgresql}, the PostgreSQL database
+server.
+
+The PostgreSQL daemon loads its runtime configuration from
+@var{config-file} and stores the database cluster in
+@var{data-directory}.
+@end deffn
 
 @node Various Services
 @subsubsection Various Services
