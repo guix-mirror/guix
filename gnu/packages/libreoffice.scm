@@ -26,8 +26,11 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages gperf)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml))
 
 (define-public ixion
   (package
@@ -135,3 +138,38 @@ spreadsheets and presentations.")
 WordPerfect documents.  It is most commonly used to import such documents
 into other word processors.")
     (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
+
+
+(define-public libe-book
+  (package
+    (name "libe-book")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/libebook/libe-book-"
+                            version "/libe-book-" version ".tar.xz"))
+        (sha256
+          (base32
+            "1v48pd32r2pfysr3a3igc4ivcf6vvb26jq4pdkcnq75p70alp2bz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)))
+    (inputs `(("boost" ,boost)
+              ("icu4c" ,icu4c)
+              ("librevenge" ,librevenge)
+              ("libxml2" ,libxml2)))
+    (arguments
+     ;; avoid triggering configure errors by simple inclusion of boost headers
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "http://libebook.sourceforge.net")
+    (synopsis "Library for import of reflowable e-book formats")
+    (description "Libe-book is a library and a set of tools for reading and
+converting various reflowable e-book formats.  Currently supported are:
+Broad Band eBook, eReader .pdb, FictionBook v. 2 (including zipped files),
+PalmDoc Ebook, Plucker .pdb, QiOO (mobile format, for java-enabled
+cellphones), TCR (simple compressed text format), TealDoc, zTXT,
+ZVR (simple compressed text format).")
+    (license mpl2.0)))
