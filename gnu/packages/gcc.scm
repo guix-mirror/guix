@@ -343,7 +343,9 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
-              (patches (origin-patches (package-source gcc-4.9)))))))
+              (patches (map search-patch
+                            '("gcc-arm-link-spec-fix.patch"
+                              "gcc-5.0-libvtv-runpath.patch")))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
