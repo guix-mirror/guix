@@ -384,7 +384,7 @@ current settings and report only settings not already effective."
                        (append-map manifest-entry-search-paths entries))))
     (filter-map (match-lambda
                   ((variable . value)
-                   (format #f "export ~a=\"~a\"" variable value)))
+                   (environment-variable-definition variable value)))
                 (evaluate-search-paths search-paths profile getenv))))
 
 (define (display-search-paths entries profile)

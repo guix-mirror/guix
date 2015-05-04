@@ -33,7 +33,8 @@
 
             search-path-specification->sexp
             sexp->search-path-specification
-            evaluate-search-paths))
+            evaluate-search-paths
+            environment-variable-definition))
 
 ;;; Commentary:
 ;;;
@@ -143,5 +144,27 @@ current settings and report only settings not already effective."
              (cons variable (string-join path separator)))))))
 
   (filter-map search-path-definition search-paths))
+
+(define* (environment-variable-definition variable value
+                                          #:key
+                                          (kind 'exact)
+                                          (separator ":"))
+  "Return a the definition of VARIABLE to VALUE in Bash syntax:
+
+KIND can be either 'exact (return the definition of VARIABLE=VALUE),
+'prefix (return the definition where VALUE is added as a prefix to VARIABLE's
+current value), or 'suffix (return the definition where VALUE is added as a
+suffix to VARIABLE's current value.)  In the case of 'prefix and 'suffix,
+SEPARATOR is used as the separator between VARIABLE's current value and its
+prefix/suffix."
+  (match kind
+    ('exact
+     (format #f "export ~a=\"~a\"" variable value))
+    ('prefix
+     (format #f "export ~a=\"~a${~a:+~a}$~a\""
+             variable value variable separator variable))
+    ('suffix
+     (format #f "export ~a=\"$~a${~a:+~a}~a\""
+             variable variable variable separator value))))
 
 ;;; search-paths.scm ends here
