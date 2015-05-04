@@ -62,7 +62,17 @@
                (base32
                 "1brry29bw2xr2l9pqn240rkqwayg85b8qq78zk2zs6nlspk4d018"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ;no "check" target
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append
+                     "-Wl,-rpath="
+                     (assoc-ref outputs "out") "/lib/bamtools")))))))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://github.com/pezmaster31/bamtools")
     (synopsis "C++ API and command-line toolkit for working with BAM data")
