@@ -383,8 +383,12 @@ current settings and report only settings not already effective."
   (let ((search-paths (delete-duplicates
                        (append-map manifest-entry-search-paths entries))))
     (filter-map (match-lambda
-                  ((variable . value)
-                   (environment-variable-definition variable value)))
+                  ((spec . value)
+                   (let ((variable (search-path-specification-variable spec))
+                         (sep      (search-path-specification-separator spec)))
+                     ;; TODO: Offer the choice between exact/prefix/suffix.
+                     (environment-variable-definition variable value
+                                                      #:separator sep))))
                 (evaluate-search-paths search-paths profile getenv))))
 
 (define (display-search-paths entries profile)

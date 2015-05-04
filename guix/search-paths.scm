@@ -117,12 +117,13 @@ like `string-tokenize', but SEPARATOR is a string."
 (define* (evaluate-search-paths search-paths directory
                                 #:optional (getenv (const #f)))
   "Evaluate SEARCH-PATHS, a list of search-path specifications, for DIRECTORY,
-and return a list of variable/value pairs.  Use GETENV to determine the
+and return a list of specification/value pairs.  Use GETENV to determine the
 current settings and report only settings not already effective."
   (define search-path-definition
     (match-lambda
-      (($ <search-path-specification> variable files separator
-                                      type pattern)
+      ((and spec
+            ($ <search-path-specification> variable files separator
+                                           type pattern))
        (let* ((values (or (and=> (getenv variable)
                                  (cut string-tokenize* <> separator))
                           '()))
@@ -141,7 +142,7 @@ current settings and report only settings not already effective."
                                             #:pattern pattern))))
          (if (every (cut member <> values) path)
              #f                         ;VARIABLE is already set appropriately
-             (cons variable (string-join path separator)))))))
+             (cons spec (string-join path separator)))))))
 
   (filter-map search-path-definition search-paths))
 
