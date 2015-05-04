@@ -87,6 +87,7 @@ MODULES =					\
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
+  guix/search-paths.scm				\
   guix/packages.scm				\
   guix/import/utils.scm				\
   guix/import/gnu.scm				\

@@ -26,6 +26,7 @@
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
+  #:use-module (guix search-paths)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -36,7 +37,8 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:re-export (%current-system
-               %current-target-system)
+               %current-target-system
+               search-path-specification)         ;for convenience
   #:export (origin
             origin?
             origin-uri
@@ -51,12 +53,6 @@
             origin-modules
             origin-imported-modules
             base32
-
-            <search-path-specification>
-            search-path-specification
-            search-path-specification?
-            search-path-specification->sexp
-            sexp->search-path-specification
 
             package
             package?
@@ -188,40 +184,6 @@ representation."
          #''bv))
       ((_ str)
        #'(nix-base32-string->bytevector str)))))
-
-;; The specification of a search path.
-(define-record-type* <search-path-specification>
-  search-path-specification make-search-path-specification
-  search-path-specification?
-  (variable     search-path-specification-variable) ;string
-  (files        search-path-specification-files)    ;list of strings
-  (separator    search-path-specification-separator ;string
-                (default ":"))
-  (file-type    search-path-specification-file-type ;symbol
-                (default 'directory))
-  (file-pattern search-path-specification-file-pattern ;#f | string
-                (default #f)))
-
-(define (search-path-specification->sexp spec)
-  "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
-corresponds to the arguments expected by `set-path-environment-variable'."
-  ;; Note that this sexp format is used both by build systems and in
-  ;; (guix profiles), so think twice before you change it.
-  (match spec
-    (($ <search-path-specification> variable files separator type pattern)
-     `(,variable ,files ,separator ,type ,pattern))))
-
-(define (sexp->search-path-specification sexp)
-  "Convert SEXP, which is as returned by 'search-path-specification->sexp', to
-a <search-path-specification> object."
-  (match sexp
-    ((variable files separator type pattern)
-     (search-path-specification
-      (variable variable)
-      (files files)
-      (separator separator)
-      (file-type type)
-      (file-pattern pattern)))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we

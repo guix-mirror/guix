@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)

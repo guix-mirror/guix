@@ -25,6 +25,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
+  #:use-module (guix search-paths)
   #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)

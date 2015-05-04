@@ -20,6 +20,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
