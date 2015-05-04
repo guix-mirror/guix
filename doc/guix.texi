@@ -2346,21 +2346,34 @@ Consider this ``normal'' procedure:
                                   `(symlink ,sh %output))))
 @end example
 
-Using @code{(guix monads)}, it may be rewritten as a monadic function:
+Using @code{(guix monads)} and @code{(guix gexp)}, it may be rewritten
+as a monadic function:
 
-@c FIXME: Find a better example, one that uses 'mlet'.
 @example
 (define (sh-symlink)
   ;; Same, but return a monadic value.
-  (gexp->derivation "sh"
-                    #~(symlink (string-append #$bash "/bin/bash") #$output)))
+  (mlet %store-monad ((drv (package->derivation bash)))
+    (gexp->derivation "sh"
+                      #~(symlink (string-append #$drv "/bin/bash")
+                                 #$output))))
 @end example
 
-There are two things to note in the second version: the @code{store}
-parameter is now implicit, and the monadic value returned by
-@code{package-file}---a wrapper around @code{package-derivation} and
-@code{derivation->output-path}---is @dfn{bound} using @code{mlet}
-instead of plain @code{let}.
+There several things to note in the second version: the @code{store}
+parameter is now implicit and is ``threaded'' in the calls to the
+@code{package->derivation} and @code{gexp->derivation} monadic
+procedures, and the monadic value returned by @code{package->derivation}
+is @dfn{bound} using @code{mlet} instead of plain @code{let}.
+
+As it turns out, the call to @code{package->derivation} can even be
+omitted since it will take place implicitly, as we will see later
+(@pxref{G-Expressions}):
+
+@example
+(define (sh-symlink)
+  (gexp->derivation "sh"
+                    #~(symlink (string-append #$bash "/bin/bash")
+                               #$output)))
+@end example
 
 Calling the monadic @code{sh-symlink} has no effect.  To get the desired
 effect, one must use @code{run-with-store}:
