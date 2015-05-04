@@ -1658,6 +1658,7 @@ in terms of new algorithms.")
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list
+                     "CFLAGS=-O2" ; override "-m64" flag
                      (string-append "PREFIX=" (assoc-ref %outputs "out"))
                      (string-append "MANDIR=" (assoc-ref %outputs "out")
                                     "/share/man/man1"))
