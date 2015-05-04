@@ -84,8 +84,10 @@ disabled!~%"))
 
 (define %narinfo-ttl
   ;; Number of seconds during which cached narinfo lookups are considered
-  ;; valid.
-  (* 24 3600))
+  ;; valid.  This is a reasonable default value (corresponds to the TTL for
+  ;; nginx's .nar cache on hydra.gnu.org) but we'd rather want publishers to
+  ;; state what their TTL is in /nix-cache-info.  (XXX)
+  (* 36 3600))
 
 (define %narinfo-negative-ttl
   ;; Likewise, but for negative lookups---i.e., cached lookup failures.
