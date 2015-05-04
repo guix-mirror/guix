@@ -280,8 +280,8 @@ Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
 
 @item
-Set up the daemon as explained below (@pxref{Setting Up the Daemon}), and
-run it:
+Create the group and user accounts for build users as explained below
+(@pxref{Build Environment Setup}), and run the daemon:
 
 @example
 # /root/.guix-profile/bin/guix-daemon --build-users-group=guix-builder
@@ -296,6 +296,14 @@ for instance with:
 # cd /usr/local/bin
 # ln -s /root/.guix-profile/bin/guix
 @end example
+
+@item
+To use substitutes from @code{hydra.gnu.org} (@pxref{Substitutes}),
+authorize them:
+
+@example
+# guix archive --authorize < /root/.guix-profile/share/guix/hydra.gnu.org.pub
+@end example
 @end enumerate
 
 And that's it!
@@ -305,8 +313,8 @@ profile, or it would become subject to garbage collection---in which
 case you would find yourself badly handicapped by the lack of the
 @command{guix} command.
 
-The tarball in question can be (re)produced simply by running the
-following command in the Guix source tree:
+The tarball in question can be (re)produced and verified simply by
+running the following command in the Guix source tree:
 
 @example
 make guix-binary.@var{system}.tar.xz
