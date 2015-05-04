@@ -28,6 +28,7 @@
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
@@ -139,7 +140,6 @@ WordPerfect documents.  It is most commonly used to import such documents
 into other word processors.")
     (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
 
-
 (define-public libe-book
   (package
     (name "libe-book")
@@ -173,3 +173,29 @@ PalmDoc Ebook, Plucker .pdb, QiOO (mobile format, for java-enabled
 cellphones), TCR (simple compressed text format), TealDoc, zTXT,
 ZVR (simple compressed text format).")
     (license mpl2.0)))
+
+(define-public libwpg
+  (package
+    (name "libwpg")
+    (version "0.3.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/libwpg/" name "/" name "-"
+                          version ".tar.xz"))
+      (sha256 (base32
+               "097jx8a638fwwfrzf6v29r1yhc34rq9526py7wf0ck2z4fcr2w3g"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("librevenge" ,librevenge)
+       ("libwpd" ,libwpd)
+       ("perl" ,perl)
+       ("zlib" ,zlib)))
+    (home-page "http://libwpg.sourceforge.net/")
+    (synopsis "Library and tools for the WordPerfect Graphics format")
+    (description "The libwpg project provides a library and tools for
+working with graphics in the WPG (WordPerfect Graphics) format.")
+    (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
