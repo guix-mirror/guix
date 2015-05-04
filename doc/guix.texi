@@ -454,7 +454,7 @@ Bash syntax and the @code{shadow} commands):
 @c See http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html
 @c for why `-G' is needed.
 @example
-# groupadd guix-builder
+# groupadd --system guix-builder
 # for i in `seq 1 10`;
   do
     useradd -g guix-builder -G guix-builder           \
