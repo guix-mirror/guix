@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -82,10 +82,11 @@
     ("foo" "bar" "baz")
     ("foo" "bar" "")
     ("foo" "bar" "baz"))
-  (list (string-tokenize* "foo" ":")
-        (string-tokenize* "foo;bar;baz" ";")
-        (string-tokenize* "foo!bar!" "!")
-        (string-tokenize* "foo+-+bar+-+baz" "+-+")))
+  (let ((string-tokenize* (@@ (guix search-paths) string-tokenize*)))
+    (list (string-tokenize* "foo" ":")
+          (string-tokenize* "foo;bar;baz" ";")
+          (string-tokenize* "foo!bar!" "!")
+          (string-tokenize* "foo+-+bar+-+baz" "+-+"))))
 
 (test-equal "string-replace-substring"
   '("foo BAR! baz"

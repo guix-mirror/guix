@@ -375,42 +375,6 @@ an output path different than CURRENT-PATH."
 ;;; Search paths.
 ;;;
 
-(define-syntax-rule (with-null-error-port exp)
-  "Evaluate EXP with the error port pointing to the bit bucket."
-  (with-error-to-port (%make-void-port "w")
-    (lambda () exp)))
-
-(define* (evaluate-search-paths search-paths directory
-                                #:optional (getenv (const #f)))
-  "Evaluate SEARCH-PATHS, a list of search-path specifications, for DIRECTORY,
-and return a list of variable/value pairs.  Use GETENV to determine the
-current settings and report only settings not already effective."
-  (define search-path-definition
-    (match-lambda
-      (($ <search-path-specification> variable files separator
-                                      type pattern)
-       (let* ((values (or (and=> (getenv variable)
-                                 (cut string-tokenize* <> separator))
-                          '()))
-              ;; Add a trailing slash to force symlinks to be treated as
-              ;; directories when 'find-files' traverses them.
-              (files  (if pattern
-                          (map (cut string-append <> "/") files)
-                          files))
-
-              ;; XXX: Silence 'find-files' when it stumbles upon non-existent
-              ;; directories (see
-              ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
-              (path   (with-null-error-port
-                       (search-path-as-list files (list directory)
-                                            #:type type
-                                            #:pattern pattern))))
-         (if (every (cut member <> values) path)
-             #f                         ;VARIABLE is already set appropriately
-             (cons variable (string-join path separator)))))))
-
-  (filter-map search-path-definition search-paths))
-
 (define* (search-path-environment-variables entries profile
                                             #:optional (getenv getenv))
   "Return environment variable definitions that may be needed for the use of

@@ -18,6 +18,9 @@
 
 (define-module (guix search-paths)
   #:use-module (guix records)
+  #:use-module (guix build utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (<search-path-specification>
             search-path-specification
@@ -29,7 +32,8 @@
             search-path-specification-file-pattern
 
             search-path-specification->sexp
-            sexp->search-path-specification))
+            sexp->search-path-specification
+            evaluate-search-paths))
 
 ;;; Commentary:
 ;;;
@@ -73,5 +77,71 @@ a <search-path-specification> object."
       (separator separator)
       (file-type type)
       (file-pattern pattern)))))
+
+(define-syntax-rule (with-null-error-port exp)
+  "Evaluate EXP with the error port pointing to the bit bucket."
+  (with-error-to-port (%make-void-port "w")
+    (lambda () exp)))
+
+;; XXX: This procedure used to be in (guix utils) but since we want to be able
+;; to use (guix search-paths) on the build side, we want to avoid the
+;; dependency on (guix utils), and so this procedure is back here for now.
+(define (string-tokenize* string separator)
+  "Return the list of substrings of STRING separated by SEPARATOR.  This is
+like `string-tokenize', but SEPARATOR is a string."
+  (define (index string what)
+    (let loop ((string string)
+               (offset 0))
+      (cond ((string-null? string)
+             #f)
+            ((string-prefix? what string)
+             offset)
+            (else
+             (loop (string-drop string 1) (+ 1 offset))))))
+
+  (define len
+    (string-length separator))
+
+  (let loop ((string string)
+             (result  '()))
+    (cond ((index string separator)
+           =>
+           (lambda (offset)
+             (loop (string-drop string (+ offset len))
+                   (cons (substring string 0 offset)
+                         result))))
+          (else
+           (reverse (cons string result))))))
+
+(define* (evaluate-search-paths search-paths directory
+                                #:optional (getenv (const #f)))
+  "Evaluate SEARCH-PATHS, a list of search-path specifications, for DIRECTORY,
+and return a list of variable/value pairs.  Use GETENV to determine the
+current settings and report only settings not already effective."
+  (define search-path-definition
+    (match-lambda
+      (($ <search-path-specification> variable files separator
+                                      type pattern)
+       (let* ((values (or (and=> (getenv variable)
+                                 (cut string-tokenize* <> separator))
+                          '()))
+              ;; Add a trailing slash to force symlinks to be treated as
+              ;; directories when 'find-files' traverses them.
+              (files  (if pattern
+                          (map (cut string-append <> "/") files)
+                          files))
+
+              ;; XXX: Silence 'find-files' when it stumbles upon non-existent
+              ;; directories (see
+              ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
+              (path   (with-null-error-port
+                       (search-path-as-list files (list directory)
+                                            #:type type
+                                            #:pattern pattern))))
+         (if (every (cut member <> values) path)
+             #f                         ;VARIABLE is already set appropriately
+             (cons variable (string-join path separator)))))))
+
+  (filter-map search-path-definition search-paths))
 
 ;;; search-paths.scm ends here
