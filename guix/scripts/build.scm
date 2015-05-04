@@ -228,7 +228,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
   (display (_ "
-  --sources[=TYPE]       build source derivations; TYPE may optionally be one
+      --sources[=TYPE]   build source derivations; TYPE may optionally be one
                          of \"package\", \"all\" (default), or \"transitive\""))
   (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
