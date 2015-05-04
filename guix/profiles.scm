@@ -278,7 +278,8 @@ procedure is here for backward-compatibility and will eventually vanish."
                                   search-paths))))
            name version output path deps search-paths)))
     (_
-     (error "unsupported manifest format" sexp))))
+     (raise (condition
+             (&message (message "unsupported manifest format")))))))
 
 (define (read-manifest port)
   "Return the packages listed in MANIFEST."
