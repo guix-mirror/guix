@@ -57,9 +57,7 @@ path value is appended."
                         (if (and current (not pure?))
                             (string-append value separator current)
                             value)))))
-              (cons* (search-path-specification
-                      (variable "PATH")
-                      (files '("bin" "sbin")))
+              (cons* $PATH
                      (delete-duplicates
                       (append-map package-native-search-paths inputs))))))
 

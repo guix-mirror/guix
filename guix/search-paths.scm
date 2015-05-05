@@ -31,6 +31,8 @@
             search-path-specification-file-type
             search-path-specification-file-pattern
 
+            $PATH
+
             search-path-specification->sexp
             sexp->search-path-specification
             evaluate-search-paths
@@ -57,6 +59,13 @@
                 (default 'directory))
   (file-pattern search-path-specification-file-pattern ;#f | string
                 (default #f)))
+
+(define $PATH
+  ;; The 'PATH' variable.  This variable is a bit special: it is not attached
+  ;; to any package in particular.
+  (search-path-specification
+   (variable "PATH")
+   (files '("bin" "sbin"))))
 
 (define (search-path-specification->sexp spec)
   "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
