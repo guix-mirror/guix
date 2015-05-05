@@ -113,7 +113,7 @@ CSV, CSS and XML.")
     (description "Librevenge is a base library for writing document import
 filters.  It has interfaces for text documents, vector graphics,
 spreadsheets and presentations.")
-    (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
+    (license (list mpl2.0 lgpl2.1+))))            ;dual licensed
 
 (define-public libwpd
   (package
@@ -138,7 +138,7 @@ spreadsheets and presentations.")
     (description "Libwpd is a C++ library designed to help process
 WordPerfect documents.  It is most commonly used to import such documents
 into other word processors.")
-    (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
+    (license (list mpl2.0 lgpl2.1+))))            ;dual licensed
 
 (define-public libe-book
   (package
@@ -198,4 +198,4 @@ ZVR (simple compressed text format).")
     (synopsis "Library and tools for the WordPerfect Graphics format")
     (description "The libwpg project provides a library and tools for
 working with graphics in the WPG (WordPerfect Graphics) format.")
-    (license '(mpl2.0 lgpl2.1+)))) ; dually licensed
+    (license (list mpl2.0 lgpl2.1+))))            ;dual licensed
