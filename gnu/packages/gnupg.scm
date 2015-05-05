@@ -300,7 +300,7 @@ libskba (working with X.509 certificates and CMS data).")
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
      `(("libgpg-error" ,libgpg-error)))
     (inputs
-     `(("gnupg" ,gnupg)
+     `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
     (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "http://www.gnupg.org/related_software/gpgme/")
