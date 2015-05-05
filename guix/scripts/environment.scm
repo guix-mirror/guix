@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,6 @@
   #:use-module (guix search-paths)
   #:use-module (guix utils)
   #:use-module (guix monads)
-  #:use-module (guix build utils)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (ice-9 format)
@@ -41,25 +41,24 @@
 Use the output paths of DERIVATIONS to build each search path.  When PURE? is
 #t, the existing search path value is ignored.  Otherwise, the existing search
 path value is appended."
-  (let ((paths (append-map (lambda (drv)
-                             (map (match-lambda
-                                   ((_ . output)
-                                    (derivation-output-path output)))
-                                  (derivation-outputs drv)))
-                           derivations)))
+  (let ((directories (append-map (lambda (drv)
+                                   (map (match-lambda
+                                          ((_ . output)
+                                           (derivation-output-path output)))
+                                        (derivation-outputs drv)))
+                                 derivations))
+        (paths       (cons $PATH
+                           (delete-duplicates
+                            (append-map package-native-search-paths
+                                        inputs)))))
     (for-each (match-lambda
-               (($ <search-path-specification>
-                   variable directories separator)
-                (let* ((current (getenv variable))
-                       (path    (search-path-as-list directories paths))
-                       (value   (list->search-path-as-string path separator)))
-                  (proc variable
-                        (if (and current (not pure?))
-                            (string-append value separator current)
-                            value)))))
-              (cons* $PATH
-                     (delete-duplicates
-                      (append-map package-native-search-paths inputs))))))
+                ((($ <search-path-specification> variable _ sep) . value)
+                 (let ((current  (getenv variable)))
+                   (proc variable
+                         (if (and current (not pure?))
+                             (string-append value sep current)
+                             value)))))
+              (evaluate-search-paths paths directories))))
 
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables
