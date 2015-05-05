@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,12 @@
     (arguments
      '(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
-       #:configure-flags '("-DPORT=GTK")))
+       #:configure-flags (list
+                          "-DPORT=GTK"
+                          (string-append ; uses lib64 by default
+                           "-DLIB_INSTALL_DIR="
+                           (assoc-ref %outputs "out") "/lib"))
+       #:make-flags '("lib=lib"))) ; uses lib64 by default
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gnu-gettext)
