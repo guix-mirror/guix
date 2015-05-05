@@ -2572,7 +2572,7 @@ versa using either JSON::XS or JSON::PP.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirros://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "JSON-Any-" version ".tar.gz"))
        (sha256
         (base32
