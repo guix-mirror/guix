@@ -238,7 +238,7 @@ Scheme and C programs and between Scheme and Java programs.")
              (patches (list (search-patch "hop-bigloo-4.0b.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (alist-replace
         'configure
         (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -249,41 +249,27 @@ Scheme and C programs and between Scheme and Java programs.")
         (alist-cons-after
          'strip 'patch-rpath
          (lambda* (#:key outputs #:allow-other-keys)
-           ;; Patch the RPATH of every installed library to point to $out/lib
-           ;; instead of $TMPDIR.  Note that "patchelf --set-rpath" produces
-           ;; invalid binaries when used before stripping.
-           (let ((out    (assoc-ref outputs "out"))
-                 (tmpdir (getcwd)))
-             (every (lambda (lib)
-                      (let* ((in    (open-pipe* OPEN_READ "patchelf"
-                                                "--print-rpath" lib))
-                             (rpath (read-line in)))
-                        (and (zero? (close-pipe in))
-                             (let ((rpath* (regexp-substitute/global
-                                            #f (regexp-quote tmpdir) rpath
-                                            'pre out 'post)))
-                               (or (equal? rpath rpath*)
-                                   (begin
-                                     (format #t "~a: changing RPATH from `~a' to `~a'~%"
-                                             lib rpath rpath*)
-                                     (zero?
-                                      (system* "patchelf" "--set-rpath"
-                                               rpath* lib))))))))
-                    (append (find-files (string-append out "/bin")
-                                        ".*")
-                            (find-files (string-append out "/lib")
-                                        "\\.so$")))))
+           ;; Add $out/lib to the RPATH of every installed library and
+           ;; executable.  Note that "patchelf --set-rpath" produces invalid
+           ;; binaries when used before stripping.
+           (let* ((out (assoc-ref outputs "out"))
+                  (lib (string-append out "/lib")))
+             (with-directory-excursion out
+               (every (cut augment-rpath <> lib)
+                      (append (find-files "bin" ".*")
+                              (find-files "lib" "\\.so$"))))))
          %standard-phases))
        #:tests? #f                                ; no test suite
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (ice-9 popen)
-                  (ice-9 regex)
-                  (ice-9 rdelim)
-                  (srfi srfi-1))))
+                  (guix build rpath)
+                  (srfi srfi-26)
+                  (srfi srfi-1))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build rpath))))
+    (native-inputs `(("patchelf" ,patchelf)))
     (inputs `(("bigloo" ,bigloo)
-              ("which" ,which)
-              ("patchelf" ,patchelf)))
+              ("which" ,which)))
     (home-page "http://hop.inria.fr/")
     (synopsis "Multi-tier programming language for the Web 2.0")
     (description
