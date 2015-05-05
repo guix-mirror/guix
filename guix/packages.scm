@@ -336,8 +336,11 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   (string-append (package-name package) "-" (package-version package)))
 
 (define (%standard-patch-inputs)
-  (let ((ref (lambda (module var)
-               (module-ref (resolve-interface module) var))))
+  (let* ((canonical (module-ref (resolve-interface '(gnu packages base))
+                                'canonical-package))
+         (ref       (lambda (module var)
+                      (canonical
+                       (module-ref (resolve-interface module) var)))))
     `(("tar"   ,(ref '(gnu packages base) 'tar))
       ("xz"    ,(ref '(gnu packages compression) 'xz))
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
@@ -345,8 +348,7 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
       ("unzip" ,(ref '(gnu packages zip) 'unzip))
       ("patch" ,(ref '(gnu packages base) 'patch))
-      ("locales" ,(ref '(gnu packages commencement)
-                       'glibc-utf8-locales-final)))))
+      ("locales" ,(ref '(gnu packages base) 'glibc-utf8-locales)))))
 
 (define (default-guile)
   "Return the default Guile package used to run the build code of
