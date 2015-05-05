@@ -36,11 +36,9 @@
   #:use-module (srfi srfi-98)
   #:export (guix-environment))
 
-(define (for-each-search-path proc inputs derivations pure?)
-  "Apply PROC for each native search path in INPUTS in addition to 'PATH'.
-Use the output paths of DERIVATIONS to build each search path.  When PURE? is
-#t, the existing search path value is ignored.  Otherwise, the existing search
-path value is appended."
+(define (evaluate-input-search-paths inputs derivations)
+  "Evaluate the native search paths of INPUTS, a list of packages, of the
+outputs of DERIVATIONS, and return a list of search-path/value pairs."
   (let ((directories (append-map (lambda (drv)
                                    (map (match-lambda
                                           ((_ . output)
@@ -51,14 +49,7 @@ path value is appended."
                            (delete-duplicates
                             (append-map package-native-search-paths
                                         inputs)))))
-    (for-each (match-lambda
-                ((($ <search-path-specification> variable _ sep) . value)
-                 (let ((current  (getenv variable)))
-                   (proc variable
-                         (if (and current (not pure?))
-                             (string-append value sep current)
-                             value)))))
-              (evaluate-search-paths paths directories))))
+    (evaluate-search-paths paths directories)))
 
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables
@@ -78,15 +69,26 @@ as 'HOME' and 'USER' are left untouched."
 PURE? is #t, unset the variables in the current environment.  Otherwise,
 augment existing enviroment variables with additional search paths."
   (when pure? (purify-environment))
-  (for-each-search-path setenv inputs derivations pure?))
+  (for-each (match-lambda
+              ((($ <search-path-specification> variable _ separator) . value)
+               (let ((current (getenv variable)))
+                 (setenv variable
+                         (if (and current (not pure?))
+                             (string-append value separator current)
+                             value)))))
+            (evaluate-input-search-paths inputs derivations)))
 
 (define (show-search-paths inputs derivations pure?)
   "Display the needed search paths to build an environment that contains the
 packages within INPUTS.  When PURE? is #t, do not augment existing environment
 variables with additional search paths."
-  (for-each-search-path (lambda (variable value)
-                          (format #t "export ~a=\"~a\"~%" variable value))
-                        inputs derivations pure?))
+  (for-each (match-lambda
+              ((search-path . value)
+               (display
+                (search-path-definition search-path value
+                                        #:kind (if pure? 'exact 'prefix)))
+               (newline)))
+            (evaluate-input-search-paths inputs derivations)))
 
 (define (show-help)
   (display (_ "Usage: guix environment [OPTION]... PACKAGE...

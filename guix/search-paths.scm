@@ -36,7 +36,8 @@
             search-path-specification->sexp
             sexp->search-path-specification
             evaluate-search-paths
-            environment-variable-definition))
+            environment-variable-definition
+            search-path-definition))
 
 ;;; Commentary:
 ;;;
@@ -160,7 +161,7 @@ report only settings not already effective."
                                           #:key
                                           (kind 'exact)
                                           (separator ":"))
-  "Return a the definition of VARIABLE to VALUE in Bash syntax:
+  "Return a the definition of VARIABLE to VALUE in Bash syntax.
 
 KIND can be either 'exact (return the definition of VARIABLE=VALUE),
 'prefix (return the definition where VALUE is added as a prefix to VARIABLE's
@@ -177,5 +178,15 @@ prefix/suffix."
     ('suffix
      (format #f "export ~a=\"$~a${~a:+~a}~a\""
              variable variable variable separator value))))
+
+(define* (search-path-definition search-path value
+                                 #:key (kind 'exact))
+  "Similar to 'environment-variable-definition', but applied to a
+<search-path-specification>."
+  (match search-path
+    (($ <search-path-specification> variable _ separator)
+     (environment-variable-definition variable value
+                                      #:kind kind
+                                      #:separator separator))))
 
 ;;; search-paths.scm ends here
