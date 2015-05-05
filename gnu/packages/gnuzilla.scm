@@ -85,7 +85,12 @@
     (synopsis "Mozilla javascript engine")
     (description "SpiderMonkey is Mozilla's JavaScript engine written
 in C/C++.")
-    (license license:mpl2.0))) ; and others for some files
+    (license license:mpl2.0)                      ;and others for some files
+
+    ;; On mips64el, this fails to build with several "control reaches end of
+    ;; non-void function" errors (see
+    ;; <http://hydra.gnu.org/build/407741/nixlog/3/raw>.)
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define-public nspr
   (package
