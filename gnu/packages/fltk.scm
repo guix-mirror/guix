@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 
 (define-module (gnu packages fltk)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (guix packages)
@@ -35,7 +37,8 @@
                           "/fltk-" version "-source.tar.gz"))
       (sha256
        (base32
-        "15qd7lkz5d5ynz70xhxhigpz3wns39v9xcf7ggkl0792syc8sfgq"))))
+        "15qd7lkz5d5ynz70xhxhigpz3wns39v9xcf7ggkl0792syc8sfgq"))
+      (patches (list (search-patch "fltk-shared-lib-defines.patch")))))
    (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
