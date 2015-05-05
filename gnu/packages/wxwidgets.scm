@@ -96,5 +96,8 @@ and many other languages.")
     (arguments
      `(#:configure-flags
        '("--enable-unicode" "--with-regex=sys" "--with-sdl")
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
        ;; No 'check' target.
        #:tests? #f))))
