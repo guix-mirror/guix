@@ -389,7 +389,8 @@ current settings and report only settings not already effective."
                      ;; TODO: Offer the choice between exact/prefix/suffix.
                      (environment-variable-definition variable value
                                                       #:separator sep))))
-                (evaluate-search-paths search-paths profile getenv))))
+                (evaluate-search-paths search-paths (list profile)
+                                       getenv))))
 
 (define (display-search-paths entries profile)
   "Display the search path environment variables that may need to be set for

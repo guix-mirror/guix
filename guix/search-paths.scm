@@ -114,11 +114,12 @@ like `string-tokenize', but SEPARATOR is a string."
           (else
            (reverse (cons string result))))))
 
-(define* (evaluate-search-paths search-paths directory
+(define* (evaluate-search-paths search-paths directories
                                 #:optional (getenv (const #f)))
-  "Evaluate SEARCH-PATHS, a list of search-path specifications, for DIRECTORY,
-and return a list of specification/value pairs.  Use GETENV to determine the
-current settings and report only settings not already effective."
+  "Evaluate SEARCH-PATHS, a list of search-path specifications, for
+DIRECTORIES, a list of directory names, and return a list of
+specification/value pairs.  Use GETENV to determine the current settings and
+report only settings not already effective."
   (define search-path-definition
     (match-lambda
       ((and spec
@@ -137,7 +138,7 @@ current settings and report only settings not already effective."
               ;; directories (see
               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
               (path   (with-null-error-port
-                       (search-path-as-list files (list directory)
+                       (search-path-as-list files directories
                                             #:type type
                                             #:pattern pattern))))
          (if (every (cut member <> values) path)
