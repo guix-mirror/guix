@@ -151,7 +151,29 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'set-rpath-in-LDFLAGS
+          (lambda _
+            (substitute* "wscript"
+              (("linker_flags = \\[\\]")
+               (string-append "linker_flags = [\""
+                              "-Wl,-rpath="
+                              (assoc-ref %outputs "out")
+                              "/lib/ardour3/" ":"
+                              (assoc-ref %outputs "out")
+                              "/lib/ardour3/backends" ":"
+                              (assoc-ref %outputs "out")
+                              "/lib/ardour3/engines" ":"
+                              (assoc-ref %outputs "out")
+                              "/lib/ardour3/panners" ":"
+                              (assoc-ref %outputs "out")
+                              "/lib/ardour3/surfaces" ":"
+                              (assoc-ref %outputs "out")
+                              "/lib/ardour3/vamp" "\"]")))
+            #t)))
+       #:tests? #f ; no check target
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
