@@ -461,13 +461,39 @@ export TZDIR=\"" tzdata "/share/zoneinfo\"
 # Tell 'modprobe' & co. where to look for modules.
 export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
 
-export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
-export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
+# These variables are honored by OpenSSL (libssl) and Git.
+export SSL_CERT_DIR=/etc/ssl/certs
+export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
+export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
+
+# Crucial variables that could be missing the the profiles' 'etc/profile'
+# because they would require combining both profiles.
+# FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
-
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
+
+# Ignore the default value of 'PATH'.
+unset PATH
+
+# Load the system profile's settings.
+GUIX_PROFILE=/run/current-system/profile \\
+source /run/current-system/profile/etc/profile
+
+# Prepend setuid programs.
+export PATH=/run/setuid-programs:$PATH
+
+if [ -d \"$HOME/.guix-profile\" ]
+then
+  # Load the user profile's settings.
+  GUIX_PROFILE=\"$HOME/.guix-profile\" \\
+  source \"$HOME/.guix-profile/etc/profile\"
+else
+  # At least define this one so that basic things just work
+  # when the user installs their first package.
+  export PATH=\"$HOME/.guix-profile/bin:$PATH\"
+fi
 
 # Append the directory of 'site-start.el' to the search path.
 export EMACSLOADPATH=:/etc/emacs
@@ -475,11 +501,6 @@ export EMACSLOADPATH=:/etc/emacs
 # By default, applications that use D-Bus, such as Emacs, abort at startup
 # when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
 export DBUS_FATAL_WARNINGS=0
-
-# These variables are honored by OpenSSL (libssl) and Git.
-export SSL_CERT_DIR=/etc/ssl/certs
-export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
-export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
 
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
