@@ -358,3 +358,32 @@ Aldus/Macromedia/Adobe FreeHand documents.")
     (description "Libmspub is a library that parses the file format of
 Microsoft Publisher documents of all versions.")
     (license mpl2.0)))
+
+(define-public libpagemaker
+  (package
+    (name "libpagemaker")
+    (version "0.0.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "05zgj5ngg9z4b7dnrfs59nm0macm99lzyxv4mg53jcvp0mkgigfd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; avoid triggering a build failure due to warnings
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libpagemaker")
+    (synopsis "Library for parsing the PageMaker format")
+    (description "Libpagemaker is a library that parses the file format of
+Aldus/Adobe PageMaker documents.  Currently it only understands documents
+created by PageMaker version 6.x and 7.")
+    (license mpl2.0)))
