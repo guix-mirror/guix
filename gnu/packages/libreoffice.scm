@@ -199,3 +199,33 @@ ZVR (simple compressed text format).")
     (description "The libwpg project provides a library and tools for
 working with graphics in the WPG (WordPerfect Graphics) format.")
     (license (list mpl2.0 lgpl2.1+))))            ;dual licensed
+
+(define-public libabw
+  (package
+    (name "libabw")
+    (version "0.1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "0zi1zj4fpxgpglbbb5n1kg3dmhqq5rpf46lli89r5daavp19iing"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("gperf" ,gperf)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("librevenge" ,librevenge)
+       ("libxml2" ,libxml2)))
+    (arguments
+     ;; avoid triggering configure errors by simple inclusion of boost headers
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libabw")
+    (synopsis "Library for parsing the AbiWord format")
+    (description "Libabw is a library that parses the file format of
+AbiWord documents.")
+    (license mpl2.0)))
