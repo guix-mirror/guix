@@ -1033,6 +1033,17 @@ Linux-based operating systems.")
      '(#:phases (alist-cons-after
                  'unpack 'bootstrap
                  (lambda _
+                   ;; Fix "field ‘ip6’ has incomplete type" errors.
+                   (substitute* "libbridge/libbridge.h"
+                     (("#include <linux/if_bridge.h>")
+                      "#include <linux/in6.h>\n#include <linux/if_bridge.h>"))
+
+                   ;; Ensure that the entire build fails if one of the
+                   ;; sub-Makefiles fails.
+                   (substitute* "Makefile.in"
+                     (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
+                      "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
+
                    (zero? (system* "autoreconf" "-vf")))
                  %standard-phases)
        #:tests? #f))                              ; no 'check' target
