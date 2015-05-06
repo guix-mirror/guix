@@ -26,6 +26,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
@@ -228,4 +229,34 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
     (synopsis "Library for parsing the AbiWord format")
     (description "Libabw is a library that parses the file format of
 AbiWord documents.")
+    (license mpl2.0)))
+
+(define-public libcdr
+  (package
+    (name "libcdr")
+    (version "0.1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "07yzb1yr5kzv0binzj5swz3zzay2gw3xb0fbkc2zwdssgrkf19nh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("icu4c" ,icu4c)
+       ("lcms" ,lcms)
+       ("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; avoid triggering a build failure due to warnings
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libcdr")
+    (synopsis "Library for parsing the CorelDRAW format")
+    (description "Libcdr is a library that parses the file format of
+CorelDRAW documents of all versions.")
     (license mpl2.0)))
