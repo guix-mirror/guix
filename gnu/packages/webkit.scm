@@ -62,8 +62,7 @@
                           "-DPORT=GTK"
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
-                           (assoc-ref %outputs "out") "/lib"))
-       #:make-flags '("lib=lib"))) ; uses lib64 by default
+                           (assoc-ref %outputs "out") "/lib"))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gnu-gettext)
