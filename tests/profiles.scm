@@ -237,14 +237,16 @@
     (mbegin %store-monad
       (built-derivations (list drv))
       (let* ((pipe (open-input-pipe
-                    (string-append "source "
-                                   profile "/etc/profile; "
-                                   "unset GUIX_PROFILE; set")))
-             (env  (get-string-all pipe)))
+                    (string-append "unset GUIX_PROFILE; "
+                                   ;; 'source' is a Bashism; use '.' (dot).
+                                   ". " profile "/etc/profile; "
+                                   ;; Don't try to parse set(1) output because
+                                   ;; it differs among shells; just use echo.
+                                   "echo $PATH")))
+             (path (get-string-all pipe)))
         (return
          (and (zero? (close-pipe pipe))
-              (string-contains env
-                               (string-append "PATH=" profile "/bin"))))))))
+              (string-contains path (string-append profile "/bin"))))))))
 
 (test-end "profiles")
 
