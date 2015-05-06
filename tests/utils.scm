@@ -21,6 +21,7 @@
   #:use-module ((guix config) #:select (%gzip))
   #:use-module (guix utils)
   #:use-module ((guix store) #:select (%store-prefix store-path-package-name))
+  #:use-module ((guix search-paths) #:select (string-tokenize*))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)
@@ -82,11 +83,10 @@
     ("foo" "bar" "baz")
     ("foo" "bar" "")
     ("foo" "bar" "baz"))
-  (let ((string-tokenize* (@@ (guix search-paths) string-tokenize*)))
-    (list (string-tokenize* "foo" ":")
-          (string-tokenize* "foo;bar;baz" ";")
-          (string-tokenize* "foo!bar!" "!")
-          (string-tokenize* "foo+-+bar+-+baz" "+-+"))))
+  (list (string-tokenize* "foo" ":")
+        (string-tokenize* "foo;bar;baz" ";")
+        (string-tokenize* "foo!bar!" "!")
+        (string-tokenize* "foo+-+bar+-+baz" "+-+")))
 
 (test-equal "string-replace-substring"
   '("foo BAR! baz"

@@ -35,6 +35,7 @@
 
             search-path-specification->sexp
             sexp->search-path-specification
+            string-tokenize*
             evaluate-search-paths
             environment-variable-definition
             search-path-definition))
