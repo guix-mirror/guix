@@ -306,3 +306,29 @@ Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
 library primarily intended for language guessing.")
     (license (non-copyleft "file://LICENSE"
                            "See LICENSE in the distribution."))))
+
+(define-public libfreehand
+  (package
+    (name "libfreehand")
+    (version "0.1.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "01j7mxi4lmf72w1mv2r098p8l0csdd94w2gq0ncp93djn34al6ai"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("gperf" ,gperf)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libfreehand")
+    (synopsis "Library for parsing the FreeHand format")
+    (description "Libfreehand is a library that parses the file format of
+Aldus/Macromedia/Adobe FreeHand documents.")
+    (license mpl2.0)))
