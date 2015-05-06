@@ -29,7 +29,6 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
@@ -235,39 +234,25 @@ Scheme and C programs and between Scheme and Java programs.")
              (sha256
               (base32
                "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))
-             (patches (list (search-patch "hop-bigloo-4.0b.patch")))))
+             (patches (list (search-patch "hop-bigloo-4.0b.patch")
+                            (search-patch "hop-linker-flags.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (alist-replace
         'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
+        (lambda* (#:key outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
             (zero?
              (system* "./configure"
-                      (string-append "--prefix=" out)))))
-        (alist-cons-after
-         'strip 'patch-rpath
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Add $out/lib to the RPATH of every installed library and
-           ;; executable.  Note that "patchelf --set-rpath" produces invalid
-           ;; binaries when used before stripping.
-           (let* ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib")))
-             (with-directory-excursion out
-               (every (cut augment-rpath <> lib)
-                      (append (find-files "bin" ".*")
-                              (find-files "lib" "\\.so$"))))))
-         %standard-phases))
-       #:tests? #f                                ; no test suite
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26)
-                  (srfi srfi-1))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))))
-    (native-inputs `(("patchelf" ,patchelf)))
+                      (string-append "--prefix=" out)
+                      (string-append "--blflags="
+                                     ;; user flags completely override useful
+                                     ;; default flags, so repeat them here.
+                                     "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
+                                     "-ldopt -Wl,-rpath," out "/lib")))))
+        %standard-phases)
+       #:tests? #f))                                ; no test suite
     (inputs `(("bigloo" ,bigloo)
               ("which" ,which)))
     (home-page "http://hop.inria.fr/")
