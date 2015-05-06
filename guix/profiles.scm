@@ -598,20 +598,17 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
 
     (define builder
       #~(begin
-          (use-modules (ice-9 pretty-print)
-                       (guix build union))
+          (use-modules (guix build profiles))
 
           (setvbuf (current-output-port) _IOLBF)
           (setvbuf (current-error-port) _IOLBF)
 
-          (union-build #$output '#$inputs
-                       #:log-port (%make-void-port "w"))
-          (call-with-output-file (string-append #$output "/manifest")
-            (lambda (p)
-              (pretty-print '#$(manifest->gexp manifest) p)))))
+          (build-profile #$output '#$inputs
+                         #:manifest '#$(manifest->gexp manifest))))
 
     (gexp->derivation "profile" builder
-                      #:modules '((guix build union))
+                      #:modules '((guix build union)
+                                  (guix build profiles))
                       #:local-build? #t)))
 
 (define (profile-regexp profile)

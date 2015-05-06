@@ -79,6 +79,7 @@ MODULES =					\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
+  guix/build/profiles.scm			\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
