@@ -18,6 +18,10 @@
 
 (define-module (guix build profiles)
   #:use-module (guix build union)
+  #:use-module (guix build utils)
+  #:use-module (guix search-paths)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:export (build-profile))
 
@@ -28,14 +32,71 @@
 ;;;
 ;;; Code:
 
+(define (abstract-profile profile)
+  "Return a procedure that replaces PROFILE in VALUE with a reference to the
+'GUIX_PROFILE' environment variable.  This allows users to specify what the
+user-friendly name of the profile is, for instance ~/.guix-profile rather than
+/gnu/store/...-profile."
+  (let ((replacement (string-append "${GUIX_PROFILE:-" profile "}")))
+    (match-lambda
+      ((search-path . value)
+       (let* ((separator (search-path-specification-separator search-path))
+              (items     (string-tokenize* value separator))
+              (crop      (cute string-drop <> (string-length profile))))
+         (cons search-path
+               (string-join (map (lambda (str)
+                                   (string-append replacement (crop str)))
+                                 items)
+                            separator)))))))
+
+(define (write-environment-variable-definition port)
+  "Write the given environment variable definition to PORT."
+  (match-lambda
+    ((search-path . value)
+     (display (search-path-definition search-path value #:kind 'prefix)
+              port)
+     (newline port))))
+
 (define* (build-profile output inputs
-                        #:key manifest)
+                        #:key manifest search-paths)
   "Build a user profile from INPUTS in directory OUTPUT.  Write MANIFEST, an
-sexp, to OUTPUT/manifest."
+sexp, to OUTPUT/manifest.  Create OUTPUT/etc/profile with Bash definitions for
+all the variables listed in SEARCH-PATHS."
+  ;; Make the symlinks.
   (union-build output inputs
                #:log-port (%make-void-port "w"))
+
+  ;; Store meta-data.
   (call-with-output-file (string-append output "/manifest")
     (lambda (p)
-      (pretty-print manifest p))))
+      (pretty-print manifest p)))
+
+  ;; Add a ready-to-use Bash profile.
+  (mkdir-p (string-append output "/etc"))
+  (call-with-output-file (string-append output "/etc/profile")
+    (lambda (port)
+      ;; The use of $GUIX_PROFILE described below is not great.  Another
+      ;; option would have been to use "$1" and have users run:
+      ;;
+      ;;   source ~/.guix-profile/etc/profile ~/.guix-profile
+      ;;
+      ;; However, when 'source' is used with no arguments, $1 refers to the
+      ;; first positional parameter of the calling scripts, so we can rely on
+      ;; it.
+      (display "\
+# Source this file to define all the relevant environment variables in Bash
+# for this profile.  You may want to define the 'GUIX_PROFILE' environment
+# variable to point to the \"visible\" name of the profile, like this:
+#
+#  GUIX_PROFILE=/path/to/profile
+#  source /path/to/profile/etc/profile
+#
+# When GUIX_PROFILE is undefined, the various environment variables refer
+# to this specific profile generation.
+\n" port)
+      (let ((variables (evaluate-search-paths (cons $PATH search-paths)
+                                              (list output))))
+        (for-each (write-environment-variable-definition port)
+                  (map (abstract-profile output) variables))))))
 
 ;;; profile.scm ends here

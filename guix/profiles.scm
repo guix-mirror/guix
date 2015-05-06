@@ -598,17 +598,30 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
 
     (define builder
       #~(begin
-          (use-modules (guix build profiles))
+          (use-modules (guix build profiles)
+                       (guix search-paths))
 
           (setvbuf (current-output-port) _IOLBF)
           (setvbuf (current-error-port) _IOLBF)
 
+          (define search-paths
+            ;; Search paths of MANIFEST's packages, converted back to their
+            ;; record form.
+            (map sexp->search-path-specification
+                 '#$(map search-path-specification->sexp
+                         (append-map manifest-entry-search-paths
+                                     (manifest-entries manifest)))))
+
           (build-profile #$output '#$inputs
-                         #:manifest '#$(manifest->gexp manifest))))
+                         #:manifest '#$(manifest->gexp manifest)
+                         #:search-paths search-paths)))
 
     (gexp->derivation "profile" builder
-                      #:modules '((guix build union)
-                                  (guix build profiles))
+                      #:modules '((guix build profiles)
+                                  (guix build union)
+                                  (guix build utils)
+                                  (guix search-paths)
+                                  (guix records))
                       #:local-build? #t)))
 
 (define (profile-regexp profile)

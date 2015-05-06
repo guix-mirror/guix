@@ -950,6 +950,16 @@ created in @file{$HOME/.guix-profile}.  This symlink always points to the
 current generation of the user's default profile.  Thus, users can add
 @file{$HOME/.guix-profile/bin} to their @code{PATH} environment
 variable, and so on.
+@cindex search paths
+If you are not using the Guix System Distribution, consider adding the
+following lines to your @file{~/.bash_profile} (@pxref{Bash Startup
+Files,,, bash, The GNU Bash Reference Manual}) so that newly-spawned
+shells get all the right environment variable definitions:
+
+@example
+GUIX_PROFILE="$HOME/.guix-profile" \
+source "$HOME/.guix-profile/etc/profile"
+@end example
 
 In a multi-user setup, user profiles are stored in a place registered as
 a @dfn{garbage-collector root}, which @file{$HOME/.guix-profile} points

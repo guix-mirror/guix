@@ -29,6 +29,8 @@
   #:use-module ((gnu packages guile) #:prefix packages:)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 popen)
+  #:use-module (rnrs io ports)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64))
 
@@ -220,6 +222,30 @@
                            (manifest-entry-search-paths entry)
                            (package-native-search-paths
                             packages:guile-2.0)))))))))
+
+(test-assertm "etc/profile"
+  ;; Make sure we get an 'etc/profile' file that at least defines $PATH.
+  (mlet* %store-monad
+      ((guile ->   (package
+                     (inherit %bootstrap-guile)
+                     (native-search-paths
+                      (package-native-search-paths packages:guile-2.0))))
+       (entry ->   (package->manifest-entry guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let* ((pipe (open-input-pipe
+                    (string-append "source "
+                                   profile "/etc/profile; "
+                                   "unset GUIX_PROFILE; set")))
+             (env  (get-string-all pipe)))
+        (return
+         (and (zero? (close-pipe pipe))
+              (string-contains env
+                               (string-append "PATH=" profile "/bin"))))))))
+
 (test-end "profiles")
 
 
