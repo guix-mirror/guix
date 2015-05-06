@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +23,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -108,3 +113,30 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
+
+(define-public webkitgtk-2.4
+  ;; Latest release of the stable 2.4 series.
+  (package (inherit webkitgtk)
+    (name "webkitgtk")
+    (version "2.4.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.webkitgtk.org/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08xxqsxpa63nzgbsz63vrdxdxgpysyiy7jdcjb57k1hprdcibwb8"))
+              (patches (list (search-patch "webkitgtk-2.4.8-gmutexlocker.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'set-gcc
+                   (lambda _ (setenv "CC" "gcc") #t)))
+       #:configure-flags '("--enable-webkit2=no"
+                           "--with-gtk=2.0")))
+    (inputs
+     `(("flex" ,flex)
+       ("which" ,which)
+       ,@(package-inputs webkitgtk)))))
