@@ -260,3 +260,30 @@ AbiWord documents.")
     (description "Libcdr is a library that parses the file format of
 CorelDRAW documents of all versions.")
     (license mpl2.0)))
+
+(define-public libetonyek
+  (package
+    (name "libetonyek")
+    (version "0.1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "0gn8v24jb9r9kxppbws6xlc7knpd9mk2n9xjvziccv5f2l7mlslw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
+       ("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("librevenge" ,librevenge)
+       ("libxml2" ,libxml2)))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libetonyek")
+    (synopsis "Library for parsing the Apple Keynote format")
+    (description "Libetonyek is a library that parses the file format of
+Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
+    (license mpl2.0)))
