@@ -332,3 +332,29 @@ library primarily intended for language guessing.")
     (description "Libfreehand is a library that parses the file format of
 Aldus/Macromedia/Adobe FreeHand documents.")
     (license mpl2.0)))
+
+(define-public libmspub
+  (package
+    (name "libmspub")
+    (version "0.1.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "03sn6lxpr49sdq6j8q7fw7yjybyfahhs03z80388mh105pwapfmh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("icu4c" ,icu4c)
+       ("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libmspub")
+    (synopsis "Library for parsing the Microsoft Publisher format")
+    (description "Libmspub is a library that parses the file format of
+Microsoft Publisher documents of all versions.")
+    (license mpl2.0)))
