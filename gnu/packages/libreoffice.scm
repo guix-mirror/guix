@@ -20,7 +20,7 @@
 (define-module (gnu packages libreoffice)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (lgpl2.1+ mpl2.0))
+  #:use-module ((guix licenses) #:select (lgpl2.1+ mpl2.0 non-copyleft))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -287,3 +287,22 @@ CorelDRAW documents of all versions.")
     (description "Libetonyek is a library that parses the file format of
 Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
     (license mpl2.0)))
+
+(define-public libexttextcat
+  (package
+    (name "libexttextcat")
+    (version "3.4.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "14v2hkygnmf1zgahfm1fha47cr67iikrz2ymiqi28d2jydn0hk7j"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.freedesktop.org/wiki/Software/libexttextcat/")
+    (synopsis "Text Categorization library")
+    (description "Libexttextcat is an N-Gram-Based Text Categorization
+library primarily intended for language guessing.")
+    (license (non-copyleft "file://LICENSE"
+                           "See LICENSE in the distribution."))))
