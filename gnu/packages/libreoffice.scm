@@ -387,3 +387,37 @@ Microsoft Publisher documents of all versions.")
 Aldus/Adobe PageMaker documents.  Currently it only understands documents
 created by PageMaker version 6.x and 7.")
     (license mpl2.0)))
+
+(define-public libvisio
+  (package
+    (name "libvisio")
+    ;; FIXME: The newer version 0.1.1 fails its tests.
+    (version "0.1.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "0vvd2wyp4rw6s9xnj1dc9vgdpfvm45gnb5b9hhzif0fdnx4iskqf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("doxygen" ,doxygen)
+       ("gperf" ,gperf)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("icu4c" ,icu4c)
+       ("librevenge" ,librevenge)
+       ("libxml2" ,libxml2)))
+    ;; FIXME: Not needed any more for newer version 0.1.1.
+    (arguments
+     ;; avoid triggering a build failure due to warnings
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libvisio")
+    (synopsis "Library for parsing the Microsoft Visio format")
+    (description "Libvisio is a library that parses the file format of
+Microsoft Visio documents of all versions.")
+    (license mpl2.0)))
