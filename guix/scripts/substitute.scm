@@ -182,7 +182,9 @@ to the caller without emitting an error message."
                  (close-port port))))
            (begin
              (when (or (not port) (port-closed? port))
-               (set! port (open-socket-for-uri uri #:buffered? buffered?)))
+               (set! port (open-socket-for-uri uri))
+               (unless buffered?
+                 (setvbuf port _IONBF)))
              (http-fetch uri #:text? #f #:port port))))))))
 
 (define-record-type <cache>

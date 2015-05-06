@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012, 2015 Free Software Foundation, Inc.
 ;;;
@@ -21,7 +21,7 @@
 (define-module (guix http-client)
   #:use-module (guix utils)
   #:use-module (web uri)
-  #:use-module (web client)
+  #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
@@ -30,14 +30,15 @@
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)
-  #:use-module ((guix build download) #:select (resolve-uri-reference))
+  #:use-module ((guix build download)
+                #:select (open-socket-for-uri resolve-uri-reference))
+  #:re-export (open-socket-for-uri)
   #:export (&http-get-error
             http-get-error?
             http-get-error-uri
             http-get-error-code
             http-get-error-reason
 
-            open-socket-for-uri
             http-fetch))
 
 ;;; Commentary:
@@ -207,26 +208,6 @@ closes PORT, unless KEEP-ALIVE? is true."
 (module-define! (resolve-module '(web client))
                 'shutdown (const #f))
 
-(define* (open-socket-for-uri uri #:key (buffered? #t))
-  "Return an open port for URI.  When BUFFERED? is false, the returned port is
-unbuffered."
-  (define rmem-max
-    ;; The maximum size for a receive buffer on Linux, see socket(7).
-    "/proc/sys/net/core/rmem_max")
-
-  (define buffer-size
-    (if (file-exists? rmem-max)
-        (call-with-input-file rmem-max read)
-        126976))                   ; the default for Linux, per 'rmem_default'
-
-  (let ((s ((@ (web client) open-socket-for-uri) uri)))
-    ;; Work around <http://bugs.gnu.org/15368> by restoring a decent
-    ;; buffer size.
-    (setsockopt s SOL_SOCKET SO_RCVBUF buffer-size)
-    (unless buffered?
-      (setvbuf s _IONBF))
-    s))
-
 (define* (http-fetch uri #:key port (text? #f) (buffered? #t))
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
@@ -235,9 +216,9 @@ unbuffered port, suitable for use in `filtered-port'.
 
 Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri uri))
-    (let ((port (or port
-                    (open-socket-for-uri uri
-                                         #:buffered? buffered?))))
+    (let ((port (or port (open-socket-for-uri uri))))
+      (unless buffered?
+        (setvbuf port _IONBF))
       (let*-values (((resp data)
                      ;; Try hard to use the API du jour to get an input port.
                      ;; On Guile 2.0.5 and before, we can only get a string or

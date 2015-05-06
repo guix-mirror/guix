@@ -19,7 +19,7 @@
 
 (define-module (guix build download)
   #:use-module (web uri)
-  #:use-module (web client)
+  #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
   #:use-module (guix ftp-client)
   #:use-module (guix build utils)
@@ -30,7 +30,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (open-connection-for-uri
+  #:export (open-socket-for-uri
+            open-connection-for-uri
             resolve-uri-reference
             maybe-expand-mirrors
             url-fetch
@@ -194,6 +195,25 @@ host name without trailing dot."
       ;; PORT, so the file descriptor gets closed when RECORD is GC'd.
       (add-weak-reference record port)
       record)))
+
+(define (open-socket-for-uri uri)
+  "Return an open port for URI.  This variant works around
+<http://bugs.gnu.org/15368> which affects Guile's 'open-socket-for-uri' up to
+2.0.11 included."
+  (define rmem-max
+    ;; The maximum size for a receive buffer on Linux, see socket(7).
+    "/proc/sys/net/core/rmem_max")
+
+  (define buffer-size
+    (if (file-exists? rmem-max)
+        (call-with-input-file rmem-max read)
+        126976))                    ;the default for Linux, per 'rmem_default'
+
+  (let ((s ((@ (web client) open-socket-for-uri) uri)))
+    ;; Work around <http://bugs.gnu.org/15368> by restoring a decent
+    ;; buffer size.
+    (setsockopt s SOL_SOCKET SO_RCVBUF buffer-size)
+    s))
 
 (define (open-connection-for-uri uri)
   "Like 'open-socket-for-uri', but also handle HTTPS connections."
