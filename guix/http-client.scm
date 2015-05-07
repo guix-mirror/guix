@@ -175,33 +175,7 @@ closes PORT, unless KEEP-ALIVE? is true."
    ;; Guile <= 2.0.9 had a bug whereby 'response-body-port' would read more
    ;; than what 'content-length' says.  See Guile commit 802a25b.
    (module-set! (resolve-module '(web response))
-                'make-delimited-input-port make-delimited-input-port))
-
- (define (read-response-body* r)
-   "Reads the response body from @var{r}, as a bytevector.  Returns
- @code{#f} if there was no response body."
-   (define bad-response
-     (@@ (web response) bad-response))
-
-   (if (member '(chunked) (response-transfer-encoding r))
-       (let ((chunk-port (make-chunked-input-port (response-port r)
-                                                  #:keep-alive? #t)))
-         (get-bytevector-all chunk-port))
-       (let ((nbytes (response-content-length r)))
-         ;; Backport of Guile commit 84dfde82ae8f6ec247c1c147c1e2ae50b207bad9
-         ;; ("fix response-body-port for responses without content-length").
-         (if nbytes
-             (let ((bv (get-bytevector-n (response-port r) nbytes)))
-               (if (= (bytevector-length bv) nbytes)
-                   bv
-                   (bad-response "EOF while reading response body: ~a bytes of ~a"
-                                 (bytevector-length bv) nbytes)))
-             (get-bytevector-all (response-port r))))))
-
- ;; Install this patch only on Guile 2.0.5.
- (unless (guile-version>? "2.0.5")
-   (module-set! (resolve-module '(web response))
-                'read-response-body read-response-body*)))
+                'make-delimited-input-port make-delimited-input-port)))
 
 ;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
 ;; up to 2.0.7.
@@ -221,39 +195,15 @@ Raise an '&http-get-error' condition if downloading fails."
         (setvbuf port _IONBF))
       (let*-values (((resp data)
                      ;; Try hard to use the API du jour to get an input port.
-                     ;; On Guile 2.0.5 and before, we can only get a string or
-                     ;; bytevector, and not an input port.  Work around that.
                      (if (guile-version>? "2.0.7")
                          (http-get uri #:streaming? #t #:port port) ; 2.0.9+
-                         (if (defined? 'http-get*)
-                             (http-get* uri #:decode-body? text?
-                                        #:port port) ; 2.0.7
-                             (http-get uri #:decode-body? text?
-                                       #:port port)))) ; 2.0.5-
+                         (http-get* uri #:decode-body? text?        ; 2.0.7
+                                    #:port port)))
                     ((code)
                      (response-code resp)))
         (case code
           ((200)
-           (let ((len (response-content-length resp)))
-             (cond ((not data)
-                    (begin
-                      ;; Guile 2.0.5 and earlier did not support chunked
-                      ;; transfer encoding, which is required for instance when
-                      ;; fetching %PACKAGE-LIST-URL (see
-                      ;; <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
-                      ;; Normally the `when-guile<=2.0.5' block above fixes
-                      ;; that, but who knows what could happen.
-                      (warning (_ "using Guile ~a, which does not support ~s encoding~%")
-                               (version)
-                               (response-transfer-encoding resp))
-                      (leave (_ "download failed; use a newer Guile~%")
-                             uri resp)))
-                   ((string? data)                ; `http-get' from 2.0.5-
-                    (values (open-input-string data) len))
-                   ((bytevector? data)            ; likewise
-                    (values (open-bytevector-input-port data) len))
-                   (else                          ; input port
-                    (values data len)))))
+           (values data (response-content-length resp)))
           ((301                                   ; moved permanently
             302)                                  ; found (redirection)
            (let ((uri (resolve-uri-reference (response-location resp) uri)))
