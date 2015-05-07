@@ -49,6 +49,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -574,7 +575,7 @@ property manipulation.")
                      (substitute* "libtool"
                        (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))))
                  (alist-cons-after
-                  'install 'instal-perl-bindings
+                  'install 'install-perl-bindings
                   (lambda* (#:key outputs #:allow-other-keys)
                     ;; Follow the instructions from
                     ;; 'subversion/bindings/swig/INSTALL'.
@@ -603,7 +604,7 @@ property manipulation.")
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
-        ("neon" ,neon-0.29.6)
+        ("serf" ,serf)
         ("perl" ,perl)
         ("python" ,python-2) ; incompatible with Python 3 (print syntax)
         ("sqlite" ,sqlite)
