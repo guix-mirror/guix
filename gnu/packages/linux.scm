@@ -200,7 +200,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.0.1")
+  (let* ((version "4.0.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -273,9 +273,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1d5r26fh7dpdckvxfyn69r72h02yvri92rcmi2r658k56snsxs2k"))
-             (patches
-              (list (search-patch "linux-libre-libreboot-fix.patch")))))
+               "18iyp2hzzb00jy389prp0lmby0i32qlbxjn74r4msmfra9s0w8mp"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
