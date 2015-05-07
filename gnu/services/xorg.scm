@@ -192,7 +192,7 @@ which should be passed to this script as the first argument.  If not, the
 (define %default-slim-theme-name
   ;; This must be the name of the sub-directory in %DEFAULT-SLIM-THEME that
   ;; contains the actual theme files.
-  "0.8")
+  "0.x")
 
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
