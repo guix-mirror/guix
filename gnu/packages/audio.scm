@@ -226,7 +226,7 @@ engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
 
 (define-public ardour
-  (package (inherit ardour)
+  (package (inherit ardour-3)
     (name "ardour")
     (version "4.0")
     (source (origin
