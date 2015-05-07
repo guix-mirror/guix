@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,14 +29,14 @@
 (define-public apr
   (package
     (name "apr")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1b4qw686bwjn19iyb0lg918q23xxd6s2gnyczhjq992d3m1vwjp9"))
+               "0ypn51xblix5ys9xy7da3ngdydip0qqh9rdq8nz54w9aq8lys0vx"))
              (patches
               (list (search-patch "apr-skip-getservbyname-test.patch")))
              (patch-flags '("-p0"))))
