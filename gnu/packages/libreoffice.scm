@@ -451,3 +451,32 @@ Open Document Format (ODF).  It provides generator implementations for all
 document interfaces supported by librevenge:
 text documents, vector drawings, presentations and spreadsheets.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
+(define-public libmwaw
+  (package
+    (name "libmwaw")
+    (version "0.3.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "1sn95flxrh85qjsg1kk700c1ggxaaccr9j1nnw7x4daw8lky25ac"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; avoid triggering configure errors by simple inclusion of boost headers
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "http://sourceforge.net/p/libmwaw/wiki/Home/")
+    (synopsis "Import library for some old Macintosh text documents")
+    (description "Libmwaw contains some import filters for old Macintosh
+text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
+spreadsheet documents.")
+    (license (list mpl2.0 lgpl2.1+)))) ; dual license
