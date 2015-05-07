@@ -484,7 +484,7 @@ source /run/current-system/profile/etc/profile
 # Prepend setuid programs.
 export PATH=/run/setuid-programs:$PATH
 
-if [ -d \"$HOME/.guix-profile\" ]
+if [ -f \"$HOME/.guix-profile/etc/profile\" ]
 then
   # Load the user profile's settings.
   GUIX_PROFILE=\"$HOME/.guix-profile\" \\
