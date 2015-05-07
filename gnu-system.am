@@ -538,6 +538,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
   gnu/packages/patches/sdl-libx11-1.6.patch			\
+  gnu/packages/patches/serf-comment-style-fix.patch		\
+  gnu/packages/patches/serf-deflate-buckets-test-fix.patch	\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\

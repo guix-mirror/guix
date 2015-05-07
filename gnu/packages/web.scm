@@ -559,7 +559,10 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
        (uri (string-append "http://serf.googlecode.com/svn/src_releases/serf-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))))
+        (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
+       (patches (map search-patch '("serf-comment-style-fix.patch"
+                                    "serf-deflate-buckets-test-fix.patch")))
+       (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("scons" ,scons)
@@ -587,13 +590,6 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                       (substitute* "SConstruct"
                         (("^env = Environment\\(")
                          "env = Environment(ENV=os.environ, "))))
-         (add-after 'unpack 'remove-non-c89-comment
-                    (lambda _
-                      ;; The SConstruct file asks to compile with -std=c89,
-                      ;; but there is a non-c89 comment in one of the files.
-                      ;; Remove it.
-                      (substitute* "test/test_buckets.c"
-                        (("^//.*") ""))))
          (replace 'build
                   (lambda* (#:key inputs outputs #:allow-other-keys)
                     (let ((out      (assoc-ref outputs "out"))
