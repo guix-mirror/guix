@@ -480,3 +480,31 @@ text documents, vector drawings, presentations and spreadsheets.")
 text documents (MacWrite, ClarisWorks, ... ) and for some graphics and
 spreadsheet documents.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
+(define-public libwps
+  (package
+    (name "libwps")
+    (version "0.3.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                          name "-" version ".tar.xz"))
+      (sha256 (base32
+               "14wfhw1ahavhx4hrdzc4hdwxjlffrm939kswf2x1250jnmyjlb5v"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; avoid triggering configure errors by simple inclusion of boost headers
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "http://libwps.sourceforge.net/")
+    (synopsis "Import library for Microsoft Works text documents")
+    (description "Libwps is a library for importing files in the Microsoft
+Works word processor file format.")
+    (license (list mpl2.0 lgpl2.1+)))) ; dual license
