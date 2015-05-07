@@ -67,7 +67,7 @@ dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 
-PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.5])
+PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
 if test "x$GUILD" = "x"; then
