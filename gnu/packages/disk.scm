@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,4 +119,31 @@ tables, and it understands a variety of different formats.")
 from one file to another, working to rescue data in case of read errors.  The
 program also includes a tool for manipulating its log files, which are used
 to recover data more efficiently by only reading the necessary blocks.")
+    (license gpl3+)))
+
+(define-public dosfstools
+  (package
+    (name "dosfstools")
+    (version "3.0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/" name "/" name
+                           "/releases/download/v" version "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1a2qs5g2zqbk1gzaaf4v3fw3yny6jgbzddpgcamkp3fjifn8wxl5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")
+       #:tests? #f  ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (home-page "https://github.com/dosfstools/dosfstools")
+    (synopsis "Utilities for making and checking MS-DOS FAT filesystems")
+    (description
+     "The dosfstools package includes the mkfs.fat and fsck.fat utilities,
+which respectively make and check MS-DOS FAT filesystems.")
     (license gpl3+)))
