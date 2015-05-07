@@ -852,11 +852,8 @@ parameter of 'args-fold'."
   (define dot-scm?
     (cut string-suffix? ".scm" <>))
 
-  ;; In Guile 2.0.5 `scandir' would return "." and ".." regardless even though
-  ;; they don't match `dot-scm?'.  Work around it by doing additional
-  ;; filtering.
   (if directory
-      (filter dot-scm? (scandir directory dot-scm?))
+      (scandir directory dot-scm?)
       '()))
 
 (define (commands)

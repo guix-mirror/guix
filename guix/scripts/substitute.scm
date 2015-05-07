@@ -157,15 +157,12 @@ to the caller without emitting an error message."
                       (leave (_ "download from '~a' failed: ~a, ~s~%")
                              (uri->string (http-get-error-uri c))
                              code (http-get-error-reason c))))))
-       ;; On Guile 2.0.5, `http-fetch' fetches the whole thing at once.  So
-       ;; honor TIMEOUT? to disable the timeout when fetching a nar.
-       ;;
        ;; Test this with:
        ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
        ;; and then cancel with:
        ;;   sudo tc qdisc del dev eth0 root
        (let ((port #f))
-         (with-timeout (if (or timeout? (guile-version>? "2.0.5"))
+         (with-timeout (if timeout?
                            %fetch-timeout
                            0)
            (begin
@@ -649,17 +646,9 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
       ;; XXX: We're not in control, so we always return anyway.
       n))
 
-  ;; Since `http-fetch' in Guile 2.0.5 returns all the data once it's done,
-  ;; don't pretend to report any progress in that case.
-  (if (guile-version>? "2.0.5")
-      (make-custom-binary-input-port "progress-port-proc"
-                                     read! #f #f
-                                     (cut close-port port))
-      (begin
-        (format (current-error-port) (_ "Downloading, please wait...~%"))
-        (format (current-error-port)
-                (_ "(Please consider upgrading Guile to get proper progress report.)~%"))
-        port)))
+  (make-custom-binary-input-port "progress-port-proc"
+                                 read! #f #f
+                                 (cut close-port port)))
 
 (define-syntax with-networking
   (syntax-rules ()
