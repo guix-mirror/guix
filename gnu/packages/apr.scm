@@ -18,12 +18,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages apr)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages autotools))
 
 (define-public apr
@@ -59,7 +60,7 @@ an API to which software developers may code and be assured of predictable if
 not identical behaviour regardless of the platform on which their software is
 built, relieving them of the need to code special-case conditions to work
 around or take advantage of platform-specific deficiencies or features.")
-    (license asl2.0)))
+    (license l:asl2.0)))
 
 (define-public apr-util
   (package
@@ -74,19 +75,23 @@ around or take advantage of platform-specific deficiencies or features.")
                "0bn81pfscy9yjvbmyx442svf43s6dhrdfcsnkpxz43fai5qk5kx6"))))
     (build-system gnu-build-system)
     (inputs
-      `(("apr" ,apr)))
+     `(("apr" ,apr)))
+    (propagated-inputs
+     `(("expat" ,expat)))
     (arguments
      '(#:phases
        (alist-replace
         'configure
         (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (apr (assoc-ref inputs "apr")))
+          (let ((out   (assoc-ref outputs "out"))
+                (apr   (assoc-ref inputs  "apr"))
+                (expat (assoc-ref inputs  "expat")))
             (setenv "CONFIG_SHELL" (which "bash"))
             (zero?
              (system* "./configure"
                       (string-append "--prefix=" out)
-                      (string-append "--with-apr=" apr)))))
+                      (string-append "--with-apr=" apr)
+                      (string-append "--with-expat=" expat)))))
         %standard-phases)
 
        ;; There are race conditions during 'make check'.  Typically, the
@@ -98,4 +103,4 @@ around or take advantage of platform-specific deficiencies or features.")
     (synopsis "One of the Apache Portable Runtime Library companions")
     (description
      "APR-util provides a number of helpful abstractions on top of APR.")
-    (license asl2.0)))
+    (license l:asl2.0)))
