@@ -547,7 +547,10 @@ property manipulation.")
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "0ybmc0yq83jhblp42wdqvn2cryra3sypx8mkxn5b8lq7hilcr68h"))))
+               "0ybmc0yq83jhblp42wdqvn2cryra3sypx8mkxn5b8lq7hilcr68h"))
+             (patches
+              (list (search-patch "subversion-sqlite-3.8.9-fix.patch")))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
