@@ -421,3 +421,33 @@ created by PageMaker version 6.x and 7.")
     (description "Libvisio is a library that parses the file format of
 Microsoft Visio documents of all versions.")
     (license mpl2.0)))
+
+(define-public libodfgen
+  (package
+    (name "libodfgen")
+    (version "0.1.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://dev-www.libreoffice.org/src/"
+                          name "-" version ".tar.bz2"))
+      (sha256 (base32
+               "074qsav86ixwi9zm1f77g9vxdf1ihm6n930vxjg8q3lwzd8g7lb6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("librevenge" ,librevenge)
+       ("zlib" ,zlib)))
+    (arguments
+     ;; avoid triggering configure errors by simple inclusion of boost headers
+     `(#:configure-flags '("--disable-werror")))
+    (home-page "http://sourceforge.net/p/libwpd/wiki/libodfgen/")
+    (synopsis "ODF (Open Document Format) library")
+    (description "Libodfgen is a library for generating documents in the
+Open Document Format (ODF).  It provides generator implementations for all
+document interfaces supported by librevenge:
+text documents, vector drawings, presentations and spreadsheets.")
+    (license (list mpl2.0 lgpl2.1+)))) ; dual license
