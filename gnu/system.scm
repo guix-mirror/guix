@@ -479,7 +479,7 @@ unset PATH
 
 # Load the system profile's settings.
 GUIX_PROFILE=/run/current-system/profile \\
-source /run/current-system/profile/etc/profile
+. /run/current-system/profile/etc/profile
 
 # Prepend setuid programs.
 export PATH=/run/setuid-programs:$PATH
@@ -488,7 +488,7 @@ if [ -f \"$HOME/.guix-profile/etc/profile\" ]
 then
   # Load the user profile's settings.
   GUIX_PROFILE=\"$HOME/.guix-profile\" \\
-  source \"$HOME/.guix-profile/etc/profile\"
+  . \"$HOME/.guix-profile/etc/profile\"
 else
   # At least define this one so that basic things just work
   # when the user installs their first package.
@@ -508,7 +508,7 @@ export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 if [ -n \"$BASH_VERSION\" -a -f /etc/bashrc ]
 then
   # Load Bash-specific initialization code.
-  source /etc/bashrc
+  . /etc/bashrc
 fi
 "))
 
