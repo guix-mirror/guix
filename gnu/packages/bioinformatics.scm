@@ -1628,7 +1628,40 @@ against local background noises.")
              "/sources/shogun-" version ".tar.bz2"))
        (sha256
         (base32
-         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))))
+         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))
+       (modules '((guix build utils)
+                  (ice-9 rdelim)))
+       (snippet
+        '(begin
+           ;; Remove non-free sources and files referencing them
+           (for-each delete-file
+                     (find-files "src/shogun/classifier/svm/"
+                                 "SVMLight\\.(cpp|h)"))
+           (for-each delete-file
+                     (find-files "examples/undocumented/libshogun/"
+                                 (string-append
+                                  "(classifier_.*svmlight.*|"
+                                  "evaluation_cross_validation_locked_comparison).cpp")))
+           ;; Remove non-free functions.
+           (define (delete-ifdefs file)
+             (with-atomic-file-replacement file
+               (lambda (in out)
+                 (let loop ((line (read-line in 'concat))
+                            (skipping? #f))
+                   (if (eof-object? line)
+                       #t
+                       (let ((skip-next?
+                              (or (and skipping?
+                                       (not (string-prefix?
+                                             "#endif //USE_SVMLIGHT" line)))
+                                  (string-prefix?
+                                   "#ifdef USE_SVMLIGHT" line))))
+                         (when (or (not skipping?)
+                                   (and skipping? (not skip-next?)))
+                           (display line out))
+                         (loop (read-line in 'concat) skip-next?)))))))
+           (for-each delete-ifdefs (find-files "src/shogun/kernel/"
+                                               "^Kernel\\.(cpp|h)"))))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ;no check target
