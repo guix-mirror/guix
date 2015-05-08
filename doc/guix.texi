@@ -5180,6 +5180,10 @@ for host names ending in @code{.local}:
                   (name "mdns")))))
 @end example
 
+Don't worry: the @code{%mdns-host-lookup-nss} variable (see below)
+contains this configuration, so you won't have to type it if all you
+want is to have @code{.local} host lookup working.
+
 Note that, in this case, in addition to setting the
 @code{name-service-switch} of the @code{operating-system} declaration,
 @code{nscd-service} must be told where to find the @code{nss-mdns}
@@ -5207,6 +5211,21 @@ configuration file:
 @noindent
 @dots{} and then refer to @var{%my-base-services} instead of
 @var{%base-services} in the @code{operating-system} declaration.
+Lastly, this relies on the availability of the Avahi service
+(@pxref{Desktop Services, @code{avahi-service}}).
+
+For convenience, the following variables provide typical NSS
+configurations.
+
+@defvr {Scheme Variable} %default-nss
+This is the default name service switch configuration, a
+@code{name-service-switch} object.
+@end defvr
+
+@defvr {Scheme Variable} %mdns-host-lookup-nss
+This is the name service switch configuration with support for host name
+lookup over multicast DNS (mDNS) for host names ending in @code{.local}.
+@end defvr
 
 The reference for name service switch configuration is given below.  It
 is a direct mapping of the C library's configuration file format, so
@@ -5216,11 +5235,6 @@ Compared to libc's NSS configuration file format, it has the advantage
 not only of adding this warm parenthetic feel that we like, but also
 static checks: you'll know about syntax errors and typos as soon as you
 run @command{guix system}.
-
-@defvr {Scheme Variable} %default-nss
-This is the default name service switch configuration, a
-@code{name-service-switch} object.
-@end defvr
 
 @deftp {Data Type} name-service-switch
 
