@@ -45,6 +45,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
@@ -2219,3 +2220,38 @@ settings, themes, mouse settings, and startup of other daemons.")
 playlists in a variety of formats.")
    (license license:lgpl2.0+)))
 
+(define-public aisleriot
+  (package
+    (name "aisleriot")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "19k483x9dkq8vjbq8f333pk9qil64clpsfg20q8xk9bgmk38aj8h"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--with-platform=gtk-only"
+         "--with-card-theme-formats=svg")))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("guile" ,guile-2.0)
+       ("libcanberra" ,libcanberra)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Aisleriot")
+    (synopsis "Solitaire card games")
+    (description
+     "Aisleriot (also known as Solitaire or sol) is a collection of card games
+which are easy to play with the aid of a mouse.")
+    (license license:gpl3+)))
