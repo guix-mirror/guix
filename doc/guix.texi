@@ -4968,6 +4968,19 @@ Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
 @code{xorg-start-command}.
 
+@cindex X session
+
+SLiM automatically looks for session types described by the @file{.desktop}
+files in @file{/run/current-system/profile/share/xsessions} and allows users
+to choose a session from the log-in screen using @kbd{F1}.  Packages such as
+@var{xfce}, @var{sawfish}, and @var{ratpoison} provide @file{.desktop} files;
+adding them to the system-wide set of packages automatically makes them
+available at the log-in screen.
+
+In addition, @file{~/.xsession} files are honored.  When available,
+@file{~/.xsession} must be an executable that starts a window manager
+and/or other X clients.
+
 When @var{allow-empty-passwords?} is true, allow logins with an empty
 password.  When @var{auto-login?} is true, log in automatically as
 @var{default-user}.
