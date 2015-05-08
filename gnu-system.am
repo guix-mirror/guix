@@ -448,7 +448,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
-  gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
@@ -466,7 +465,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
-  gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/libvpx-fix-armhf-link.patch		\
@@ -524,7 +522,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/pyqt-configure.patch			\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
-  gnu/packages/patches/python-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
@@ -550,7 +547,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/texi2html-document-encoding.patch	\
   gnu/packages/patches/texi2html-i18n.patch			\
-  gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
