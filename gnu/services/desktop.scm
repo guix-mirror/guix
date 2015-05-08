@@ -19,17 +19,25 @@
 
 (define-module (gnu services desktop)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services avahi)
+  #:use-module (gnu services xorg)
+  #:use-module (gnu services networking)
+  #:use-module (gnu services ssh)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages wicd)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:export (dbus-service
             upower-service
-            colord-service))
+            colord-service
+            %desktop-services))
 
 ;;; Commentary:
 ;;;
@@ -266,5 +274,27 @@ site} for more information."
                             (home-directory "/var/empty")
                             (shell
                              #~(string-append #$shadow "/sbin/nologin")))))))))
+
+(define %desktop-services
+  ;; List of services typically useful for a "desktop" use case.
+  (cons* (slim-service)
+
+         (avahi-service)
+         (wicd-service)
+         (upower-service)
+         (colord-service)
+         (dbus-service (list avahi wicd upower colord))
+
+         (ntp-service)
+         (lsh-service)
+
+         (map (lambda (mservice)
+                ;; Provide an nscd ready to use nss-mdns.
+                (mlet %store-monad ((service mservice))
+                  (if (memq 'nscd (service-provision service))
+                      (nscd-service (nscd-configuration)
+                                    #:name-services (list nss-mdns))
+                      mservice)))
+              %base-services)))
 
 ;;; desktop.scm ends here

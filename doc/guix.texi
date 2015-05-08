@@ -5005,6 +5005,29 @@ usually useful in the context of a ``desktop'' setup---that is, on a
 machine running a graphical display server, possibly with graphical user
 interfaces, etc.
 
+To simplify things, the module defines a variable containing the set of
+services that users typically expect on a machine with a graphical
+environment and networking:
+
+@defvr {Scheme Variable} %desktop-services
+This is a list of services that builds upon @var{%base-services} and
+adds or adjust services for a typical ``desktop'' setup.
+
+In particular, it adds a graphical login manager (@pxref{X Window,
+@code{slim-service}}), a network management tool (@pxref{Networking
+Services, @code{wicd-service}}), energy and color management services,
+an NTP client and an SSH server (@pxref{Networking Services}), the Avahi
+daemon, and has the name service switch service configured to be able to
+use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
+@end defvr
+
+The @var{%desktop-services} variable can be used as the @code{services}
+field of an @code{operating-system} declaration (@pxref{operating-system
+Reference, @code{services}}).
+
+The actual service definitions provided by @code{(gnu services desktop)}
+are described below.
+
 @deffn {Monadic Procedure} dbus-service @var{services} @
                          [#:dbus @var{dbus}]
 Return a service that runs the ``system bus'', using @var{dbus}, with
