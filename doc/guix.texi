@@ -4952,6 +4952,30 @@ This mechanism can prevent programs running locally, such as Web
 browsers, from accessing Facebook.
 @end defvr
 
+The @code{(gnu services avahi)} provides the following definition.
+
+@deffn {Monadic Procedure} avahi-service [#:avahi @var{avahi}] @
+          [#:host-name #f] [#:publish? #t] [#:ipv4? #t] @
+          [#:ipv6? #t] [#:wide-area? #f] @
+          [#:domains-to-browse '()]
+Return a service that runs @command{avahi-daemon}, a system-wide
+mDNS/DNS-SD responder that allows for service discovery and
+"zero-configuration" host name lookups (see @uref{http://avahi.org/}).
+
+If @var{host-name} is different from @code{#f}, use that as the host name to
+publish for this machine; otherwise, use the machine's actual host name.
+
+When @var{publish?} is true, publishing of host names and services is allowed;
+in particular, avahi-daemon will publish the machine's host name and IP
+address via mDNS on the local network.
+
+When @var{wide-area?} is true, DNS-SD over unicast DNS is enabled.
+
+Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
+sockets.
+@end deffn
+
+
 @node X Window
 @subsubsection X Window
 
@@ -5248,7 +5272,7 @@ configuration file:
 @dots{} and then refer to @var{%my-base-services} instead of
 @var{%base-services} in the @code{operating-system} declaration.
 Lastly, this relies on the availability of the Avahi service
-(@pxref{Desktop Services, @code{avahi-service}}).
+(@pxref{Networking Services, @code{avahi-service}}).
 
 For convenience, the following variables provide typical NSS
 configurations.
