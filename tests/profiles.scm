@@ -24,6 +24,7 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages base) #:prefix packages:)
   #:use-module ((gnu packages guile) #:prefix packages:)
@@ -247,6 +248,34 @@
         (return
          (and (zero? (close-pipe pipe))
               (string-contains path (string-append profile "/bin"))))))))
+
+(test-assertm "etc/profile when etc/ already exists"
+  ;; Here 'union-build' makes the profile's etc/ a symlink to the package's
+  ;; etc/ directory, which makes it read-only.  Make sure the profile build
+  ;; handles that.
+  (mlet* %store-monad
+      ((thing ->   (dummy-package "dummy"
+                     (build-system trivial-build-system)
+                     (arguments
+                      `(#:guile ,%bootstrap-guile
+                        #:builder
+                        (let ((out (assoc-ref %outputs "out")))
+                          (mkdir out)
+                          (mkdir (string-append out "/etc"))
+                          (call-with-output-file (string-append out "/etc/foo")
+                            (lambda (port)
+                              (display "foo!" port))))))))
+       (entry ->   (package->manifest-entry thing))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (and (file-exists? (string-append profile "/etc/profile"))
+                   (string=? (call-with-input-file
+                                 (string-append profile "/etc/foo")
+                               get-string-all)
+                             "foo!"))))))
 
 (test-end "profiles")
 

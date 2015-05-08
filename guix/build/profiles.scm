@@ -21,6 +21,7 @@
   #:use-module (guix build utils)
   #:use-module (guix search-paths)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:export (build-profile))
@@ -57,21 +58,9 @@ user-friendly name of the profile is, for instance ~/.guix-profile rather than
               port)
      (newline port))))
 
-(define* (build-profile output inputs
-                        #:key manifest search-paths)
-  "Build a user profile from INPUTS in directory OUTPUT.  Write MANIFEST, an
-sexp, to OUTPUT/manifest.  Create OUTPUT/etc/profile with Bash definitions for
-all the variables listed in SEARCH-PATHS."
-  ;; Make the symlinks.
-  (union-build output inputs
-               #:log-port (%make-void-port "w"))
-
-  ;; Store meta-data.
-  (call-with-output-file (string-append output "/manifest")
-    (lambda (p)
-      (pretty-print manifest p)))
-
-  ;; Add a ready-to-use Bash profile.
+(define (build-etc/profile output search-paths)
+  "Build the 'OUTPUT/etc/profile' shell file containing environment variable
+definitions for all the SEARCH-PATHS."
   (mkdir-p (string-append output "/etc"))
   (call-with-output-file (string-append output "/etc/profile")
     (lambda (port)
@@ -98,5 +87,60 @@ all the variables listed in SEARCH-PATHS."
                                               (list output))))
         (for-each (write-environment-variable-definition port)
                   (map (abstract-profile output) variables))))))
+
+(define (ensure-writable-directory directory)
+  "Ensure DIRECTORY exists and is writable.  If DIRECTORY is currently a
+symlink (to a read-only directory in the store), then delete the symlink and
+instead make DIRECTORY a \"real\" directory containing symlinks."
+  (define (unsymlink link)
+    (let* ((target (readlink link))
+           (files  (scandir target
+                            (negate (cut member <> '("." ".."))))))
+      (delete-file link)
+      (mkdir link)
+      (for-each (lambda (file)
+                  (symlink (string-append target "/" file)
+                           (string-append link "/" file)))
+                files)))
+
+  (catch 'system-error
+    (lambda ()
+      (mkdir directory))
+    (lambda args
+      (let ((errno (system-error-errno args)))
+        (if (= errno EEXIST)
+            (let ((stat (lstat directory)))
+              (case (stat:type stat)
+                ((symlink)
+                 ;; "Unsymlink" DIRECTORY so that it is writable.
+                 (unsymlink directory))
+                ((directory)
+                 #t)
+                (else
+                 (error "cannot mkdir because a same-named file exists"
+                        directory))))
+            (apply throw args))))))
+
+(define* (build-profile output inputs
+                        #:key manifest search-paths)
+  "Build a user profile from INPUTS in directory OUTPUT.  Write MANIFEST, an
+sexp, to OUTPUT/manifest.  Create OUTPUT/etc/profile with Bash definitions for
+-all the variables listed in SEARCH-PATHS."
+  ;; Make the symlinks.
+  (union-build output inputs
+               #:log-port (%make-void-port "w"))
+
+  ;; Store meta-data.
+  (call-with-output-file (string-append output "/manifest")
+    (lambda (p)
+      (pretty-print manifest p)))
+
+  ;; Make sure we can write to 'OUTPUT/etc'.  'union-build' above could have
+  ;; made 'etc' a symlink to a read-only sub-directory in the store so we need
+  ;; to work around that.
+  (ensure-writable-directory (string-append output "/etc"))
+
+  ;; Write 'OUTPUT/etc/profile'.
+  (build-etc/profile output search-paths))
 
 ;;; profile.scm ends here
