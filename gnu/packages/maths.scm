@@ -382,6 +382,9 @@ extremely large and complex data collections.")
      `(("lapack" ,lapack)
        ("readline" ,readline)
        ("glpk" ,glpk)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("arpack" ,arpack-ng)
        ("curl" ,curl)
        ("pcre" ,pcre)
        ("fltk" ,fltk)
@@ -390,16 +393,18 @@ extremely large and complex data collections.")
        ("hdf5" ,hdf5)
        ("libxft" ,libxft)
        ("mesa" ,mesa)
+       ("glu" ,glu)
        ("zlib" ,zlib)))
     (native-inputs
      `(("gfortran" ,gfortran-4.8)
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
-       ;; The following inputs are not actually used in the build process.  However, the
-       ;; ./configure gratuitously tests for their existence and assumes that programs not
-       ;; present at build time are also not, and can never be, available at run time!
-       ;; If these inputs are therefore not present, support for them will be built out.
-       ;; However, Octave will still run without them, albeit without the features they
+       ;; The following inputs are not actually used in the build process.
+       ;; However, the ./configure gratuitously tests for their existence and
+       ;; assumes that programs not present at build time are also not, and
+       ;; can never be, available at run time!  If these inputs are therefore
+       ;; not present, support for them will be built out.  However, Octave
+       ;; will still run without them, albeit without the features they
        ;; provide.
        ("less" ,less)
        ("texinfo" ,texinfo)
@@ -411,11 +416,11 @@ extremely large and complex data collections.")
 			    "/bin/sh"))))
     (home-page "http://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
-    (description "GNU Octave is a high-level interpreted language that is specialized
-for numerical computations.  It can be used for both linear and non-linear
-applications and it provides great support for visualizing results.  Work may
-be performed both at the interactive command-line as well as via script
-files.")
+    (description "GNU Octave is a high-level interpreted language that is
+specialized for numerical computations.  It can be used for both linear and
+non-linear applications and it provides great support for visualizing results.
+Work may be performed both at the interactive command-line as well as via
+script files.")
     (license license:gpl3+)))
 
 (define-public gmsh
