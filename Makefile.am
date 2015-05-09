@@ -135,7 +135,7 @@ KCONFIGS =					\
 
 # Templates, examples.
 EXAMPLES =					\
-  gnu/system/os-config.tmpl
+  gnu/system/examples/bare-bones.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
 

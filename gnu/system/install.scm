@@ -175,7 +175,7 @@ configuration template file in the installation system."
   (define local-template
     "/etc/configuration-template.scm")
   (define template
-    (search-path %load-path "gnu/system/os-config.tmpl"))
+    (search-path %load-path "gnu/system/examples/bare-bones.tmpl"))
 
   (mlet %store-monad ((template (interned-file template)))
     (return (service
