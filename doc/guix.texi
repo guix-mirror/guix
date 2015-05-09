@@ -3925,20 +3925,14 @@ that end, the installation system comes with two text editors: GNU nano
 It is better to store that file on the target root file system, say, as
 @file{/mnt/etc/config.scm}.
 
-A minimal operating system configuration, with just the bare minimum and
-only a root account would look like this (on the installation system,
-this example is available as @file{/etc/configuration/bare-bones.scm}):
+@xref{Using the Configuration System}, for examples of operating system
+configurations.  These examples are available under
+@file{/etc/configuration} in the installation image, so you can copy
+them and use them as a starting point for your own configuration.
 
-@example
-@include os-config.texi
-@end example
-
-@noindent
-For more information on @code{operating-system} declarations,
-@pxref{Using the Configuration System}.
-
-Once that is done, the new system must be initialized (remember that the
-target root file system is mounted under @file{/mnt}):
+Once you are done preparing the configuration file, the new system must
+be initialized (remember that the target root file system is mounted
+under @file{/mnt}):
 
 @example
 guix system init /mnt/etc/config.scm /mnt
@@ -4021,29 +4015,7 @@ kernel, initial RAM disk, and boot loader looks like this:
 
 @findex operating-system
 @lisp
-(use-modules (gnu)   ; for 'user-account', '%base-services', etc.
-             (gnu packages emacs)  ; for 'emacs'
-             (gnu services ssh))   ; for 'lsh-service'
-
-(operating-system
-  (host-name "komputilo")
-  (timezone "Europe/Paris")
-  (locale "fr_FR.utf8")
-  (bootloader (grub-configuration
-                (device "/dev/sda")))
-  (file-systems (cons (file-system
-                        (device "/dev/sda1") ; or partition label
-                        (mount-point "/")
-                        (type "ext3"))
-                      %base-file-systems))
-  (users (list (user-account
-                (name "alice")
-                (group "users")
-                (comment "Bob's sister")
-                (home-directory "/home/alice"))))
-  (packages (cons emacs %base-packages))
-  (services (cons (lsh-service #:port 2222 #:root-login? #t)
-                  %base-services)))
+@include os-config-bare-bones.texi
 @end lisp
 
 This example should be self-describing.  Some of the fields defined
@@ -4075,6 +4047,17 @@ right command-line options, possibly with supporting configuration files
 generated as needed (@pxref{Defining Services}).  @xref{operating-system
 Reference}, for details about the available @code{operating-system}
 fields.
+
+The configuration for a typical ``desktop'' usage, with the X11 display
+server, a desktop environment, network management, an SSH server, and
+more, would look like this:
+
+@lisp
+@include os-config-desktop.texi
+@end lisp
+
+@xref{Desktop Services}, for the exact list of services provided by
+@var{%desktop-services}.
 
 Assuming the above snippet is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command

@@ -25,12 +25,16 @@ EXTRA_DIST +=					\
   doc/images/bootstrap-graph.eps		\
   doc/images/bootstrap-graph.pdf
 
-# Bundle this file so that makeinfo finds it in out-of-source-tree builds.
-BUILT_SOURCES        += doc/os-config.texi
-EXTRA_DIST           += doc/os-config.texi
-MAINTAINERCLEANFILES  = doc/os-config.texi
+OS_CONFIG_EXAMPLES_TEXI =			\
+  doc/os-config-bare-bones.texi			\
+  doc/os-config-desktop.texi
 
-doc/os-config.texi: gnu/system/examples/bare-bones.tmpl
+# Bundle this file so that makeinfo finds it in out-of-source-tree builds.
+BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI)
+EXTRA_DIST           += $(OS_CONFIG_EXAMPLES_TEXI)
+MAINTAINERCLEANFILES  = $(OS_CONFIG_EXAMPLES_TEXI)
+
+doc/os-config-%.texi: gnu/system/examples/%.tmpl
 	$(MKDIR_P) "`dirname "$@"`"
 	cp "$<" "$@"
 
