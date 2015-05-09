@@ -369,9 +369,11 @@ found in Linux 3.4 onward that prevents users from attaching to their own
 processes--see Yama.txt in the Linux source tree for the rationale.  This
 sounds like an unacceptable restriction for little or no security
 improvement."
-  (call-with-output-file "/proc/sys/kernel/yama/ptrace_scope"
-    (lambda (port)
-      (display 0 port))))
+  (let ((file "/proc/sys/kernel/yama/ptrace_scope"))
+    (when (file-exists? file)
+      (call-with-output-file file
+        (lambda (port)
+          (display 0 port))))))
 
 
 (define %current-system
