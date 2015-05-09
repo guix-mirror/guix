@@ -3927,7 +3927,7 @@ It is better to store that file on the target root file system, say, as
 
 A minimal operating system configuration, with just the bare minimum and
 only a root account would look like this (on the installation system,
-this example is available as @file{/etc/configuration-template.scm}):
+this example is available as @file{/etc/configuration/bare-bones.scm}):
 
 @example
 @include os-config.texi

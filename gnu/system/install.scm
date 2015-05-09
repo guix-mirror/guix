@@ -32,6 +32,8 @@
   #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-26)
   #:export (self-contained-tarball
             installation-os))
 
@@ -172,12 +174,17 @@ the given target.")
   "Return a dummy service whose purpose is to install an operating system
 configuration template file in the installation system."
 
-  (define local-template
-    "/etc/configuration-template.scm")
-  (define template
-    (search-path %load-path "gnu/system/examples/bare-bones.tmpl"))
+  (define search
+    (cut search-path %load-path <>))
+  (define templates
+    (map (match-lambda
+           ((file '-> target)
+            (list (local-file (search file))
+                  (string-append "/etc/configuration/" target))))
+         '(("gnu/system/examples/bare-bones.tmpl" -> "bare-bones.scm")
+           ("gnu/system/examples/desktop.tmpl" -> "desktop.scm"))))
 
-  (mlet %store-monad ((template (interned-file template)))
+  (with-monad %store-monad
     (return (service
              (requirement '(root-file-system))
              (provision '(os-config-template))
@@ -186,8 +193,16 @@ configuration template file in the installation system."
              (start #~(const #t))
              (stop  #~(const #f))
              (activate
-              #~(unless (file-exists? #$local-template)
-                  (copy-file #$template #$local-template)))))))
+              #~(begin
+                  (use-modules (ice-9 match)
+                               (guix build utils))
+
+                  (mkdir-p "/etc/configuration")
+                  (for-each (match-lambda
+                              ((file target)
+                               (unless (file-exists? target)
+                                 (copy-file file target))))
+                            '#$templates)))))))
 
 (define %nscd-minimal-caches
   ;; Minimal in-memory caching policy for nscd.
