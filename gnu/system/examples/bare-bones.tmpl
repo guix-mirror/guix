@@ -1,12 +1,13 @@
-;; This is an operating system configuration template.
+;; This is an operating system configuration template
+;; for a "bare bones" setup, with no X11 display server.
 
 (use-modules (gnu))
-(use-service-modules xorg networking dbus avahi)
-(use-package-modules xorg avahi)
+(use-service-modules networking ssh)
+(use-package-modules admin)
 
 (operating-system
-  (host-name "antelope")
-  (timezone "Europe/Paris")
+  (host-name "komputilo")
+  (timezone "Europe/Berlin")
   (locale "en_US.UTF-8")
 
   ;; Assuming /dev/sdX is the target hard disk, and "root" is
@@ -36,12 +37,10 @@
                 (home-directory "/home/alice"))))
 
   ;; Globally-installed packages.
-  (packages (cons xterm %base-packages))
+  (packages (cons tcpdump %base-packages))
 
-  ;; Add services to the baseline: the SLiM log-in manager
-  ;; for Xorg sessions, a DHCP client, Avahi, and D-Bus.
-  (services (cons* (slim-service)
-                   (dhcp-client-service)
-                   (avahi-service)
-                   (dbus-service (list avahi))
+  ;; Add services to the baseline: a DHCP client and
+  ;; an SSH server.
+  (services (cons* (dhcp-client-service)
+                   (lsh-service #:port-number 2222)
                    %base-services)))
