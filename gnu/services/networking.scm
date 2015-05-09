@@ -165,6 +165,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
              (provision '(networking))
 
              (start #~(lambda _
+                        (false-if-exception (delete-file #$pid-file))
+
                         ;; When invoked without any arguments, 'dhclient'
                         ;; discovers all non-loopback interfaces *that are
                         ;; up*.  However, the relevant interfaces are
@@ -178,7 +180,19 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                                                "-pf" #$pid-file
                                                ifaces))))
                           (and (zero? (cdr (waitpid pid)))
-                               (call-with-input-file #$pid-file read)))))
+                               (let loop ()
+                                 (catch 'system-error
+                                   (lambda ()
+                                     (call-with-input-file #$pid-file read))
+                                   (lambda args
+                                     ;; 'dhclient' returned before PID-FILE
+                                     ;; was created, so try again.
+                                     (let ((errno (system-error-errno args)))
+                                       (if (= ENOENT errno)
+                                           (begin
+                                             (sleep 1)
+                                             (loop))
+                                           (apply throw args))))))))))
              (stop #~(make-kill-destructor))))))
 
 (define %ntp-servers
