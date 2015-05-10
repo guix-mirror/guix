@@ -334,6 +334,7 @@ GNU Guix depends on the following packages:
 @itemize
 @item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.7 or later;
 @item @url{http://gnupg.org/, GNU libgcrypt};
+@item @url{http://www.gnu.org/software/make/, GNU Make}.
 @end itemize
 
 The following dependencies are optional:
