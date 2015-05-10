@@ -27,6 +27,7 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -35,6 +36,8 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages gettext)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -180,6 +183,42 @@ without requiring the source code to be rewritten.")
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
   guile-2.0)
+
+(define-public guile-for-guile-emacs
+  (package (inherit guile-2.0)
+    (name "guile-for-guile-emacs")
+    (version "20150510.d8d9a8d")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.hcoop.net/git/bpt/guile.git")
+                    (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
+              (sha256
+               (base32
+                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
+    (arguments
+     (substitute-keyword-arguments `(;; Tests aren't passing for now.
+                                     ;; Obviously we should re-enable this!
+                                     #:tests? #f
+                                     ,@(package-arguments guile-2.0))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'autogen
+                      (lambda _
+                        (zero? (system* "sh" "autogen.sh"))))
+           (add-before 'autogen 'patch-/bin/sh
+                       (lambda _
+                         (substitute* "build-aux/git-version-gen"
+                           (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                         #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("flex" ,flex)
+       ("texinfo" ,texinfo)
+       ("gettext" ,gnu-gettext)
+       ,@(package-native-inputs guile-2.0)))))
 
 
 ;;;

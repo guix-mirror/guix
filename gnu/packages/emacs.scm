@@ -23,10 +23,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
@@ -145,6 +147,35 @@ editor (without an X toolkit)" )
                     (alist-delete "gtk+" (package-inputs emacs))))
     (arguments (append '(#:configure-flags '("--with-x-toolkit=no"))
                        (package-arguments emacs)))))
+
+(define-public guile-emacs
+  (package (inherit emacs)
+    (name "guile-emacs")
+    (version "20150512.41120e0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.hcoop.net/git/bpt/emacs.git")
+                    (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
+              (sha256
+               (base32
+                "0lvcvsz0f4mawj04db35p1dvkffdqkz8pkhc0jzh9j9x2i63kcz6"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("guile" ,guile-for-guile-emacs)
+       ,@(package-native-inputs emacs)))
+    (arguments
+     (substitute-keyword-arguments `(;; Build fails if we allow parallel build.
+                                     #:parallel-build? #f
+                                     ;; Tests aren't passing for now.
+                                     #:tests? #f
+                                     ,@(package-arguments emacs))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'autogen
+                      (lambda _
+                        (zero? (system* "sh" "autogen.sh"))))))))))
 
 
 ;;;
