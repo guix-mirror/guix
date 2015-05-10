@@ -95,7 +95,9 @@ caching facility provided by the library.")
 for CD-ROM and CD image file access.  It allows the developer to add CD
 access to an application without having to worry about the OS- and
 device-dependent properties of CD-ROM or the specific details of CD image
-formats.")
+formats.  It includes pycdio, a Python interface to libcdio, and
+libcdio-paranoia, a library providing jitter-free and error-free audio
+extraction from CDs.")
     (license gpl3+)))
 
 (define-public libcdio-paranoia
