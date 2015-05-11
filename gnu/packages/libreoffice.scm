@@ -550,3 +550,28 @@ word compounding or character encoding.")
 patterns, which are pre-processed by a perl script.")
     ;; triple license, including "mpl1.1 or later"
     (license (list mpl1.1 mpl2.0 gpl2+ lgpl2.1+))))
+
+(define-public mythes
+  (package
+    (name "mythes")
+    (version "1.2.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/hunspell/"
+                          name "-" version ".tar.gz"))
+      (sha256 (base32
+               "0prh19wy1c74kmzkkavm9qslk99gz8h8wmjvwzjc6lf8v2az708y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hunspell" ,hunspell)
+       ("perl" ,perl)))
+    (home-page "http://hunspell.sourceforge.net/")
+    (synopsis "Thesaurus")
+    (description "MyThes is a simple thesaurus that uses a structured text
+data file and an index file with binary search to look up words and phrases
+and to return information on pronunciations, meaningss and synonyms.")
+    (license (non-copyleft "file://COPYING"
+                           "See COPYING in the distribution."))))
