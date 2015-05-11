@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system waf)
@@ -128,6 +129,22 @@ attacks, performing pitch detection, tapping the beat and producing MIDI
 streams from live audio.")
     (license license:gpl3+)))
 
+(define (ardour-rpath-phase major-version)
+  `(lambda* (#:key outputs #:allow-other-keys)
+     (let ((libdir (string-append (assoc-ref outputs "out")
+                                  "/lib/ardour" ,major-version)))
+       (substitute* "wscript"
+         (("linker_flags = \\[\\]")
+          (string-append "linker_flags = [\""
+                         "-Wl,-rpath="
+                         libdir ":"
+                         libdir "/backends" ":"
+                         libdir "/engines" ":"
+                         libdir "/panners" ":"
+                         libdir "/surfaces" ":"
+                         libdir "/vamp" "\"]"))))
+     #t))
+
 (define-public ardour-3
   (package
     (name "ardour")
@@ -158,24 +175,7 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
-          (lambda _
-            (substitute* "wscript"
-              (("linker_flags = \\[\\]")
-               (string-append "linker_flags = [\""
-                              "-Wl,-rpath="
-                              (assoc-ref %outputs "out")
-                              "/lib/ardour3/" ":"
-                              (assoc-ref %outputs "out")
-                              "/lib/ardour3/backends" ":"
-                              (assoc-ref %outputs "out")
-                              "/lib/ardour3/engines" ":"
-                              (assoc-ref %outputs "out")
-                              "/lib/ardour3/panners" ":"
-                              (assoc-ref %outputs "out")
-                              "/lib/ardour3/surfaces" ":"
-                              (assoc-ref %outputs "out")
-                              "/lib/ardour3/vamp" "\"]")))
-            #t)))
+          ,(ardour-rpath-phase (version-prefix version 1))))
        #:tests? #f ; no check target
        #:python ,python-2))
     (inputs
@@ -246,7 +246,13 @@ namespace ARDOUR { const char* revision = \"4.0\" ; }"))))
               (sha256
                (base32
                 "0a8bydc24xv0cahdqfaxdmi1f43cyr9psiyshxpbrkdqw2c7a4xi"))
-              (file-name (string-append name "-" version))))))
+              (file-name (string-append name "-" version))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ardour-3)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'set-rpath-in-LDFLAGS
+                    ,(ardour-rpath-phase (version-prefix version 1)))))))))
 
 (define-public azr3
   (package
