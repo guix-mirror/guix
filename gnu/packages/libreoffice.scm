@@ -529,3 +529,24 @@ library and program designed for languages with rich morphology and complex
 word compounding or character encoding.")
     ;; triple license, including "mpl1.1 or later"
     (license (list mpl1.1 gpl2+ lgpl2.1+))))
+
+(define-public hyphen
+  (package
+    (name "hyphen")
+    (version "2.8.8")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/hunspell/"
+                          name "-" version ".tar.gz"))
+      (sha256 (base32
+               "01ap9pr6zzzbp4ky0vy7i1983fwyqy27pl0ld55s30fdxka3ciih"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://hunspell.sourceforge.net/")
+    (synopsis "Hyphenation library")
+    (description "Hyphen is a hyphenation library using TeX hyphenation
+patterns, which are pre-processed by a perl script.")
+    ;; triple license, including "mpl1.1 or later"
+    (license (list mpl1.1 mpl2.0 gpl2+ lgpl2.1+))))
