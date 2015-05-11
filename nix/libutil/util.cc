@@ -852,15 +852,19 @@ void killUser(uid_t uid)
 //////////////////////////////////////////////////////////////////////
 
 
+std::vector<const char *> stringsToCharPtrs(const Strings & ss)
+{
+    std::vector<const char *> res;
+    foreach (Strings::const_iterator, i, ss)
+        res.push_back(i->c_str());
+    res.push_back(0);
+    return res;
+}
+
+
 string runProgram(Path program, bool searchPath, const Strings & args)
 {
     checkInterrupt();
-
-    std::vector<const char *> cargs; /* careful with c_str()! */
-    cargs.push_back(program.c_str());
-    for (Strings::const_iterator i = args.begin(); i != args.end(); ++i)
-        cargs.push_back(i->c_str());
-    cargs.push_back(0);
 
     /* Create a pipe. */
     Pipe pipe;
@@ -879,6 +883,10 @@ string runProgram(Path program, bool searchPath, const Strings & args)
         try {
             if (dup2(pipe.writeSide, STDOUT_FILENO) == -1)
                 throw SysError("dupping stdout");
+
+	    Strings args_(args);
+	    args_.push_front(program);
+	    auto cargs = stringsToCharPtrs(args_);
 
             if (searchPath)
                 execvp(program.c_str(), (char * *) &cargs[0]);

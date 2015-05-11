@@ -401,18 +401,6 @@ static void commonChildInit(Pipe & logPipe)
 }
 
 
-/* Convert a string list to an array of char pointers.  Careful: the
-   string list should outlive the array. */
-const char * * strings2CharPtrs(const Strings & ss)
-{
-    const char * * arr = new const char * [ss.size() + 1];
-    const char * * p = arr;
-    foreach (Strings::const_iterator, i, ss) *p++ = i->c_str();
-    *p = 0;
-    return arr;
-}
-
-
 /* Restore default handling of SIGPIPE, otherwise some programs will
    randomly say "Broken pipe". */
 static void restoreSIGPIPE()
@@ -2135,11 +2123,7 @@ void DerivationGoal::initChild()
         Strings envStrs;
         foreach (Environment::const_iterator, i, env)
             envStrs.push_back(rewriteHashes(i->first + "=" + i->second, rewritesToTmp));
-        const char * * envArr = strings2CharPtrs(envStrs);
-
-        Path program = drv.builder.c_str();
-        std::vector<const char *> args; /* careful with c_str()! */
-        string user; /* must be here for its c_str()! */
+	std::vector<const char *> envArr = stringsToCharPtrs(envStrs);
 
         /* If we are running in `build-users' mode, then switch to the
            user we allocated above.  Make sure that we drop all root
@@ -2165,17 +2149,18 @@ void DerivationGoal::initChild()
         }
 
         /* Fill in the arguments. */
+	Strings args;
         string builderBasename = baseNameOf(drv.builder);
         args.push_back(builderBasename.c_str());
         foreach (Strings::iterator, i, drv.args)
-            args.push_back(rewriteHashes(*i, rewritesToTmp).c_str());
-        args.push_back(0);
+            args.push_back(rewriteHashes(*i, rewritesToTmp));
+	std::vector<const char *> argArr = stringsToCharPtrs(args);
 
         restoreSIGPIPE();
 
         /* Execute the program.  This should not return. */
         inSetup = false;
-        execve(program.c_str(), (char * *) &args[0], (char * *) envArr);
+        execve(drv.builder.c_str(), (char * *) &argArr[0], (char * *) &envArr[0]);
 
         throw SysError(format("executing `%1%'") % drv.builder);
 
@@ -2778,7 +2763,7 @@ void SubstitutionGoal::tryToRun()
     args.push_back("--substitute");
     args.push_back(storePath);
     args.push_back(destPath);
-    const char * * argArr = strings2CharPtrs(args);
+    std::vector<const char *> argArr = stringsToCharPtrs(args);
 
     /* Fork the substitute program. */
     pid = maybeVfork();
@@ -2796,7 +2781,7 @@ void SubstitutionGoal::tryToRun()
             if (dup2(outPipe.writeSide, STDOUT_FILENO) == -1)
                 throw SysError("cannot dup output pipe into stdout");
 
-            execv(sub.c_str(), (char * *) argArr);
+            execv(sub.c_str(), (char * *) &argArr[0]);
 
             throw SysError(format("executing `%1%'") % sub);
 
