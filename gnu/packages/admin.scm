@@ -704,7 +704,14 @@ commands and their arguments.")
                (base32
                 "08li21q1wjn5chrv289w666il9ah1w419y3dkq2rl4wnq0rci385"))
               (patches
-               (list (search-patch "wpa-supplicant-CVE-2015-1863.patch")))))
+               (map search-patch '("wpa-supplicant-CVE-2015-1863.patch"
+                                   "wpa-supplicant-2015-2-fix.patch"
+                                   "wpa-supplicant-2015-3-fix.patch"
+                                   "wpa-supplicant-2015-4-fix-pt1.patch"
+                                   "wpa-supplicant-2015-4-fix-pt2.patch"
+                                   "wpa-supplicant-2015-4-fix-pt3.patch"
+                                   "wpa-supplicant-2015-4-fix-pt4.patch"
+                                   "wpa-supplicant-2015-4-fix-pt5.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
