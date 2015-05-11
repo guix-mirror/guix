@@ -20,7 +20,8 @@
 (define-module (gnu packages libreoffice)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (lgpl2.1+ mpl2.0 non-copyleft))
+  #:use-module ((guix licenses)
+                #:select (gpl2+ lgpl2.1+ mpl1.1 mpl2.0 non-copyleft))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -508,3 +509,23 @@ spreadsheet documents.")
     (description "Libwps is a library for importing files in the Microsoft
 Works word processor file format.")
     (license (list mpl2.0 lgpl2.1+)))) ; dual license
+
+(define-public hunspell
+  (package
+    (name "hunspell")
+    (version "1.3.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/" name "/"
+                          name "-" version ".tar.gz"))
+      (sha256 (base32
+               "0v14ff9s37vkh45diaddndcrj0hmn67arh8xh8k79q9c1vgc1cm7"))))
+    (build-system gnu-build-system)
+    (home-page "http://hunspell.sourceforge.net/")
+    (synopsis "Spell checker")
+    (description "Hunspell is a spell checker and morphological analyzer
+library and program designed for languages with rich morphology and complex
+word compounding or character encoding.")
+    ;; triple license, including "mpl1.1 or later"
+    (license (list mpl1.1 gpl2+ lgpl2.1+))))
