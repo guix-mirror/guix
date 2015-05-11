@@ -3998,6 +3998,7 @@ instance to support new system services.
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
+* X.509 Certificates::          Authenticating HTTPS servers.
 * Name Service Switch::         Configuring libc's name service switch.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * GRUB Configuration::          Configuring the boot loader.
@@ -4058,7 +4059,8 @@ more, would look like this:
 @end lisp
 
 @xref{Desktop Services}, for the exact list of services provided by
-@var{%desktop-services}.
+@var{%desktop-services}.  @xref{X.509 Certificates}, for background
+information about the @code{nss-certs} package that is used here.
 
 Assuming the above snippet is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
@@ -5171,6 +5173,48 @@ Under the hood, the actual setuid programs are created in the
 @file{/run/setuid-programs} directory at system activation time.  The
 files in this directory refer to the ``real'' binaries, which are in the
 store.
+
+@node X.509 Certificates
+@subsection X.509 Certificates
+
+@cindex HTTPS, certificates
+@cindex X.509 certificates
+@cindex TLS
+Web servers available over HTTPS (that is, HTTP over the transport-layer
+security mechanism, TLS) send client programs an @dfn{X.509 certificate}
+that the client can then use to @emph{authenticate} the server.  To do
+that, clients verify that the server's certificate is signed by a
+so-called @dfn{certificate authority} (CA).  But to verify the CA's
+signature, clients must have first acquired the CA's certificate.
+
+Web browsers such as GNU@tie{}IceCat include their own set of CA
+certificates, such that they are able to verify CA signatures
+out-of-the-box.
+
+However, most other programs that can talk HTTPS---@command{wget},
+@command{git}, @command{w3m}, etc.---need to be told where CA
+certificates can be found.
+
+@cindex @code{nss-certs}
+In GuixSD, this is done by adding a package that provides certificates
+to the @code{packages} field of the @code{operating-system} declaration
+(@pxref{operating-system Reference}).  GuixSD includes one such package,
+@code{nss-certs}, which is a set of CA certificates provided as part of
+Mozilla's Network Security Services.
+
+Note that it is @emph{not} part of @var{%base-packages}, so you need to
+explicitly add it.  The @file{/etc/ssl/certs} directory, which is where
+most applications and libraries look for certificates by default, points
+to the certificates installed globally.
+
+Unprivileged users can also install their own certificate package in
+their profile.  A number of environment variables need to be defined so
+that applications and libraries know where to find them.  Namely, the
+OpenSSL library honors the @code{SSL_CERT_DIR} and @code{SSL_CERT_FILE}
+variables.  Some applications add their own environment variables; for
+instance, the Git version control system honors the certificate bundle
+pointed to by the @code{GIT_SSL_CAINFO} environment variable.
+
 
 @node Name Service Switch
 @subsection Name Service Switch

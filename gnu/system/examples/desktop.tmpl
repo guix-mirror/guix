@@ -3,7 +3,7 @@
 
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop)
-(use-package-modules xfce ratpoison wicd avahi xorg)
+(use-package-modules xfce ratpoison wicd avahi xorg certs)
 
 (operating-system
   (host-name "antelope")
@@ -32,6 +32,7 @@
   ;; sessions using either of these at the log-in screen.
   (packages (cons* xfce ratpoison    ;desktop environments
                    xterm wicd avahi  ;useful tools
+                   nss-certs         ;for HTTPS access
                    %base-packages))
 
   ;; Use the "desktop" services, which include the X11
