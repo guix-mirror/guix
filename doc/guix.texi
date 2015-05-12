@@ -213,11 +213,11 @@ Guix has a command-line interface, which allows users to build, install,
 upgrade, and remove packages, as well as a Scheme programming interface.
 
 @cindex Guix System Distribution
-@cindex GSD
+@cindex GuixSD
 Last but not least, Guix is used to build a distribution of the GNU
 system, with many GNU and non-GNU free software packages.  The Guix
-System Distribution, or GNU@tie{}GSD, takes advantage of the core
-properties of Guix at the system level.  With GNU@tie{}GSD, users
+System Distribution, or GNU@tie{}GuixSD, takes advantage of the core
+properties of Guix at the system level.  With GuixSD, users
 @emph{declare} all aspects of the operating system configuration, and
 Guix takes care of instantiating that configuration in a reproducible,
 stateless fashion.  @xref{GNU Distribution}.
@@ -3692,7 +3692,7 @@ Reference Manual}) on @var{port} (37146 by default).
 @chapter GNU Distribution
 
 @cindex Guix System Distribution
-@cindex GSD
+@cindex GuixSD
 Guix comes with a distribution of the GNU system consisting entirely of
 free software@footnote{The term ``free'' here refers to the
 @url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
@@ -3701,7 +3701,7 @@ distribution can be installed on its own (@pxref{System Installation}),
 but it is also possible to install Guix as a package manager on top of
 an installed GNU/Linux system (@pxref{Installation}).  To distinguish
 between the two, we refer to the standalone distribution as the Guix
-System Distribution, or GNU@tie{}GSD.
+System Distribution, or GuixSD.
 
 The distribution provides core GNU packages such as GNU libc, GCC, and
 Binutils, as well as many GNU and non-GNU applications.  The complete
@@ -3738,7 +3738,7 @@ n32 application binary interface (ABI), and Linux-Libre kernel.
 
 @end table
 
-GSD itself is currently only available on @code{i686} and @code{x86_64}.
+GuixSD itself is currently only available on @code{i686} and @code{x86_64}.
 
 @noindent
 For information on porting to other architectures or kernels,
@@ -3778,13 +3778,13 @@ link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
 
 @subsection Limitations
 
-As of version @value{VERSION}, the Guix System Distribution (GSD) is
+As of version @value{VERSION}, the Guix System Distribution (GuixSD) is
 not production-ready.  It may contain bugs and lack important
 features.  Thus, if you are looking for a stable production system that
 respects your freedom as a computer user, a good solution at this point
 is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
 more established GNU/Linux distributions}.  We hope you can soon switch
-to the GSD without fear, of course.  In the meantime, you can
+to the GuixSD without fear, of course.  In the meantime, you can
 also keep using your distribution and try out the package manager on top
 of it (@pxref{Installation}).
 
@@ -3820,7 +3820,7 @@ to report issues (and success stories!), and join us in improving it.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-usb-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
@@ -3842,7 +3842,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d gsd-usb-install-@value{VERSION}.@var{system}.xz
+xz -d guixsd-usb-install-@value{VERSION}.@var{system}.xz
 @end example
 
 @item
@@ -3851,7 +3851,7 @@ its device name.  Assuming that USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=gsd-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
+dd if=guixsd-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
@@ -5573,7 +5573,7 @@ This action does not actually install anything.
 @item init
 Populate the given directory with all the files necessary to run the
 operating system specified in @var{file}.  This is useful for first-time
-installations of GSD.  For instance:
+installations of GuixSD.  For instance:
 
 @example
 guix system init my-os-config.scm /mnt
