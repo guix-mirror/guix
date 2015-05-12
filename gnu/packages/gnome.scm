@@ -371,7 +371,7 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public gnome-icon-theme
   (package
     (name "gnome-icon-theme")
-    (version "3.10.0")
+    (version "3.12.0")
     (source
      (origin
       (method url-fetch)
@@ -380,7 +380,7 @@ update-desktop-database: updates the database containing a cache of MIME types
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1xinbgkkvlhazj887ajcl13i7kdc1wcca02jwxzvjrvchjsp4m66"))))
+        "0fjh9qmmgj34zlgxb09231ld7khys562qxbpsjlaplq2j85p57im"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
