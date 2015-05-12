@@ -3657,7 +3657,8 @@ the @code{hydra.gnu.org} build farm.
 For security, each substitute is signed, allowing recipients to check
 their authenticity and integrity (@pxref{Substitutes}).  Because
 @command{guix publish} uses the system's signing key, which is only
-readable by the system administrator, it must run as root.
+readable by the system administrator, it must be started as root; the
+@code{--user} option makes it drop root privileges early on.
 
 The general syntax is:
 
@@ -3685,6 +3686,11 @@ The following options are available:
 @item --port=@var{port}
 @itemx -p @var{port}
 Listen for HTTP requests on @var{port}.
+
+@item --user=@var{user}
+@itemx -u @var{user}
+Change privileges to @var{user} as soon as possible---i.e., once the
+server socket is open and the signing key has been read.
 
 @item --repl[=@var{port}]
 @itemx -r [@var{port}]

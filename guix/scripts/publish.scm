@@ -51,6 +51,8 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (_ "
   -p, --port=PORT        listen on PORT"))
   (display (_ "
+  -u, --user=USER        change privileges to USER as soon as possible"))
+  (display (_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
   (display (_ "
@@ -68,6 +70,9 @@ Publish ~a over HTTP.\n") %store-directory)
         (option '(#\V "version") #f #f
                 (lambda _
                   (show-version-and-exit "guix publish")))
+        (option '(#\u "user") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'user arg result)))
         (option '(#\p "port") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'port (string->number* arg) result)))
@@ -220,24 +225,62 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
           (_ (not-found request)))
         (not-found request))))
 
-(define (run-publish-server port store)
+(define (run-publish-server socket store)
   (run-server (make-request-handler store)
               'http
-              `(#:addr ,INADDR_ANY
-                #:port ,port)))
+              `(#:socket ,socket)))
+
+(define (open-server-socket addr port)
+  "Return a TCP socket bound to ADDR and PORT."
+  (let ((sock (socket PF_INET SOCK_STREAM 0)))
+    (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
+    (bind sock AF_INET addr port)
+    sock))
+
+(define (gather-user-privileges user)
+  "Switch to the identity of USER, a user name."
+  (catch 'misc-error
+    (lambda ()
+      (let ((user (getpw user)))
+        (setgroups #())
+        (setgid (passwd:gid user))
+        (setuid (passwd:uid user))))
+    (lambda (key proc message args . rest)
+      (leave (_ "user '~a' not found: ~a~%")
+             user (apply format #f message args)))))
+
+
+;;;
+;;; Entry point.
+;;;
 
 (define (guix-publish . args)
   (with-error-handling
-    (let* ((opts (args-fold* args %options
-                             (lambda (opt name arg result)
-                               (leave (_ "~A: unrecognized option~%") name))
-                             (lambda (arg result)
-                               (leave (_ "~A: extraneuous argument~%") arg))
-                             %default-options))
-           (port (assoc-ref opts 'port))
+    (let* ((opts   (args-fold* args %options
+                               (lambda (opt name arg result)
+                                 (leave (_ "~A: unrecognized option~%") name))
+                               (lambda (arg result)
+                                 (leave (_ "~A: extraneuous argument~%") arg))
+                               %default-options))
+           (port   (assoc-ref opts 'port))
+           (user   (assoc-ref opts 'user))
+           (socket (open-server-socket INADDR_ANY port))
            (repl-port (assoc-ref opts 'repl)))
+      ;; Read the key right away so that (1) we fail early on if we can't
+      ;; access them, and (2) we can then drop privileges.
+      (force %private-key)
+      (force %public-key)
+
+      (when user
+        ;; Now that we've read the key material and opened the socket, we can
+        ;; drop privileges.
+        (gather-user-privileges user))
+
+      (when (zero? (getuid))
+        (warning (_ "server running as root; \
+consider using the '--user' option!~%")))
       (format #t (_ "publishing ~a on port ~d~%") %store-directory port)
       (when repl-port
         (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
       (with-store store
-        (run-publish-server (assoc-ref opts 'port) store)))))
+        (run-publish-server socket store)))))
