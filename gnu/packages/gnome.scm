@@ -38,7 +38,6 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -382,12 +381,11 @@ update-desktop-database: updates the database containing a cache of MIME types
        (base32
         "0fjh9qmmgj34zlgxb09231ld7khys562qxbpsjlaplq2j85p57im"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("icon-naming-utils" ,icon-naming-utils)))
     (native-inputs
-       `(("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)))
+     `(("gtk+" ,gtk+) ; for gtk-update-icon-cache
+       ("icon-naming-utils" ,icon-naming-utils)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://art.gnome.org/")
     (synopsis
      "GNOME icon theme")
