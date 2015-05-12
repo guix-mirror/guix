@@ -29,6 +29,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -130,7 +131,8 @@
                        (base32
                         "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))))))
     (propagated-inputs
-     `(("guile-json" ,guile-json)
+     `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
+       ("guile-json" ,guile-json)
        ("geiser" ,geiser)))                       ;for guix.el
 
     (home-page "http://www.gnu.org/software/guix")
