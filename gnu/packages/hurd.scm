@@ -73,7 +73,9 @@
        (base32
         "13r1pg8icyc0pl082z7k36i440pr1f3nr7ahig3rrc0r7qndqmk9"))))
     (build-system gnu-build-system)
-    (inputs `(("gnumach-headers" ,gnumach-headers)))
+    ;; Flex is needed both at build and run time.
+    (inputs `(("gnumach-headers" ,gnumach-headers)
+              ("flex" ,flex)))
     (native-inputs
      `(("flex" ,flex)
        ("bison" ,bison)))
