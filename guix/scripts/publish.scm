@@ -51,6 +51,8 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (_ "
   -p, --port=PORT        listen on PORT"))
   (display (_ "
+      --listen=HOST      listen on the network interface for HOST"))
+  (display (_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
   (display (_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
@@ -61,6 +63,15 @@ Publish ~a over HTTP.\n") %store-directory)
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
+
+(define (getaddrinfo* host)
+  "Like 'getaddrinfo', but properly report errors."
+  (catch 'getaddrinfo-error
+    (lambda ()
+      (getaddrinfo host))
+    (lambda (key error)
+      (leave (_ "lookup of host '~a' failed: ~a~%")
+             host (gai-strerror error)))))
 
 (define %options
   (list (option '(#\h "help") #f #f
@@ -76,6 +87,15 @@ Publish ~a over HTTP.\n") %store-directory)
         (option '(#\p "port") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'port (string->number* arg) result)))
+        (option '("listen") #t #f
+                (lambda (opt name arg result)
+                  (match (getaddrinfo* arg)
+                    ((info _ ...)
+                     (alist-cons 'address (addrinfo:addr info)
+                                 result))
+                    (()
+                     (leave (_ "lookup of host '~a' returned nothing")
+                            name)))))
         (option '(#\r "repl") #f #t
                 (lambda (opt name arg result)
                   ;; If port unspecified, use default Guile REPL port.
@@ -83,7 +103,8 @@ Publish ~a over HTTP.\n") %store-directory)
                     (alist-cons 'repl (or port 37146) result))))))
 
 (define %default-options
-  '((port . 8080)
+  `((port . 8080)
+    (address . ,(make-socket-address AF_INET INADDR_ANY 0))
     (repl . #f)))
 
 (define (lazy-read-file-sexp file)
@@ -230,11 +251,11 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
               'http
               `(#:socket ,socket)))
 
-(define (open-server-socket addr port)
-  "Return a TCP socket bound to ADDR and PORT."
-  (let ((sock (socket PF_INET SOCK_STREAM 0)))
+(define (open-server-socket address)
+  "Return a TCP socket bound to ADDRESS, a socket address."
+  (let ((sock (socket (sockaddr:fam address) SOCK_STREAM 0)))
     (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
-    (bind sock AF_INET addr port)
+    (bind sock address)
     sock))
 
 (define (gather-user-privileges user)
@@ -256,15 +277,19 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 
 (define (guix-publish . args)
   (with-error-handling
-    (let* ((opts   (args-fold* args %options
-                               (lambda (opt name arg result)
-                                 (leave (_ "~A: unrecognized option~%") name))
-                               (lambda (arg result)
-                                 (leave (_ "~A: extraneuous argument~%") arg))
-                               %default-options))
-           (port   (assoc-ref opts 'port))
-           (user   (assoc-ref opts 'user))
-           (socket (open-server-socket INADDR_ANY port))
+    (let* ((opts    (args-fold* args %options
+                                (lambda (opt name arg result)
+                                  (leave (_ "~A: unrecognized option~%") name))
+                                (lambda (arg result)
+                                  (leave (_ "~A: extraneuous argument~%") arg))
+                                %default-options))
+           (user    (assoc-ref opts 'user))
+           (port    (assoc-ref opts 'port))
+           (address (let ((addr (assoc-ref opts 'address)))
+                      (make-socket-address (sockaddr:fam addr)
+                                           (sockaddr:addr addr)
+                                           port)))
+           (socket  (open-server-socket address))
            (repl-port (assoc-ref opts 'repl)))
       ;; Read the key right away so that (1) we fail early on if we can't
       ;; access them, and (2) we can then drop privileges.
@@ -279,7 +304,10 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
       (when (zero? (getuid))
         (warning (_ "server running as root; \
 consider using the '--user' option!~%")))
-      (format #t (_ "publishing ~a on port ~d~%") %store-directory port)
+      (format #t (_ "publishing ~a on ~a, port ~d~%")
+              %store-directory
+              (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
+              (sockaddr:port address))
       (when repl-port
         (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
       (with-store store

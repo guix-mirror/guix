@@ -3687,6 +3687,10 @@ The following options are available:
 @itemx -p @var{port}
 Listen for HTTP requests on @var{port}.
 
+@item --listen=@var{host}
+Listen on the network interface for @var{host}.  The default is to
+accept connections from any interface.
+
 @item --user=@var{user}
 @itemx -u @var{user}
 Change privileges to @var{user} as soon as possible---i.e., once the
