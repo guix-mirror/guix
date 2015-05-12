@@ -258,7 +258,7 @@ Installing goes along these lines:
 @enumerate
 @item
 Download the binary tarball from
-@code{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz}@footnote{As
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz}@footnote{As
 usual, make sure to download the associated @file{.sig} file and to
 verify the authenticity of the tarball against it!}, where @var{system}
 is @code{x86_64-linux} for an @code{x86_64} machine already running the
@@ -695,7 +695,7 @@ remote procedure call (@pxref{The Store}).
 
 @item --substitute-urls=@var{urls}
 Consider @var{urls} the default whitespace-separated list of substitute
-source URLs.  When this option is omitted, @code{http://hydra.gnu.org}
+source URLs.  When this option is omitted, @indicateurl{http://hydra.gnu.org}
 is used.
 
 This means that substitutes may be downloaded from @var{urls}, as long
@@ -3820,7 +3820,7 @@ to report issues (and success stories!), and join us in improving it.
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
-@code{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/gsd-usb-install-@value{VERSION}.@var{system}.xz},
 where @var{system} is one of:
 
 @table @code
