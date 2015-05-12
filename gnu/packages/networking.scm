@@ -24,7 +24,35 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages openssl))
 
-;; XXX: Group with other networking tools like tcpdump in a module?
+(define-public miredo
+  (package
+    (name "miredo")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.remlab.net/files/miredo/miredo-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0j9ilig570snbmj48230hf7ms8kvcwi2wblycqrmhh85lksd49ps"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The checkconf test in src/ requires network access.
+         (add-before
+          'check 'disable-checkconf-test
+          (lambda _
+            (substitute* "src/Makefile"
+              (("^TESTS = .*") "TESTS = \n")))))))
+    (home-page "http://www.remlab.net/miredo/")
+    (synopsis "Teredo IPv6 tunneling software")
+    (description
+     "Miredo is an implementation (client, relay, server) of the Teredo
+specification, which provides IPv6 Internet connectivity to IPv6 enabled hosts
+residing in IPv4-only networks, even when they are behind a NAT device.")
+    (license license:gpl2+)))
+
 (define-public socat
   (package
     (name "socat")
