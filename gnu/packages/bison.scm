@@ -40,7 +40,9 @@
        (base32
         "1qbgf6q1n2z17k8g33444m0q68kf3fbiq65q7jlrzpvvj73jh957"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ;; m4 is not present in PATH when cross-building
+                     ("m4" ,m4)))
     (inputs `(("flex" ,flex)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://www.gnu.org/software/bison/")
