@@ -152,25 +152,20 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "1.9.2")
+    (version "1.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04wrm0v7l4890mmbaawd6wjwdv08bkglgqhpz0q4dkb0l50fl8q4"))
-             (patches (list (search-patch "inetutils-syslogd.patch")))))
+               "06dshajjpyi9sxi7qfki9gnp5r3nxvyvf81r81gx0x2qkqzqcxlj"))))
     (build-system gnu-build-system)
     (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))            ; for 'ftp'
-
-    ;; Help2man is needed because of the patch that modifies syslogd.c.
-    (native-inputs `(("help2man" ,help2man)))
-
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
