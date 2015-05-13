@@ -577,8 +577,21 @@ slabtop, and skill.")
                       (string-append "#!" (which "sh")))))
                  (alist-cons-after
                   'install 'install-libs
-                  (lambda _
-                    (zero? (system* "make" "install-libs")))
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (lib (string-append out "/lib")))
+                      (and (zero? (system* "make" "install-libs"))
+
+                           ;; Make the .a writable so that 'strip' works.
+                           ;; Failing to do that, due to debug symbols, we
+                           ;; retain a reference to the final
+                           ;; linux-libre-headers, which refer to the
+                           ;; bootstrap binaries.
+                           (let ((archives (find-files lib "\\.a$")))
+                             (for-each (lambda (file)
+                                         (chmod file #o666))
+                                       archives)
+                             #t))))
                   %standard-phases))
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
