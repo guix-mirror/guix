@@ -23,13 +23,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile))
 
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.4")
+    (version "5.18.5")
     (source
      (origin
       (method url-fetch)
@@ -38,9 +39,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0pbjzwgvmjvi6nl1bcyhfc9kl93s6321dgmvp5dqdip7i8dgin9w"))))
+        "1flnbnmkbqmbfgammkl8m36wrlk6rhpgnf9pdm6gdfhqalxvggbv"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))   ;for doc generator mdoc
+    (native-inputs `(("perl" ,perl)     ;for doc generator mdoc
+                     ("pkg-config" ,pkg-config)))
     (inputs `(("which" ,which)
               ("guile" ,guile-2.0)))
     (arguments
