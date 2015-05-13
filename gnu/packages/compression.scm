@@ -297,7 +297,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 (define-public sharutils
   (package
     (name "sharutils")
-    (version "4.15")
+    (version "4.15.1")
     (source
      (origin
       (method url-fetch)
@@ -305,7 +305,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "19gqb6qbqmpgh6xlpgpj0ayw2nshllxg9d01qb5z8bnkhfcla8ka"))))
+        "0znl2yfkzmjl854zd4b4yafg41fqx4pgzy142jsp34053z50synb"))))
     (build-system gnu-build-system)
     (inputs
      `(("which" ,which)))
