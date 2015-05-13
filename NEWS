@@ -10,6 +10,160 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.8.2 (since 0.8.1)
+
+** Package management
+
+*** New “binary tarball” installation method is available
+
+See “Binary Installation” in the manual.
+
+*** New ‘guix publish’ command, to publish one’s store
+
+See “Invoking guix publish” in the manual.
+
+*** ‘guix package’ runs “profile creation hooks” as needed
+
+It creates X.509 certificate bundles in the profile’s etc/ssl directory, if
+needed, generates a package database cache for GHC if the profile includes GHC
+(the Haskell compiler), and generates an Info ‘dir’ file (this part was
+already done before.)
+
+*** ‘guix package’ creates an ‘etc/profile’ file in the profile
+
+See “Invoking guix package” in the manual.
+
+*** Commands understand version prefixes, such as ‘gcc-5’ for ‘gcc-5.1.0’
+
+*** ‘guix package --search’ now sorts packages by name and version
+
+*** Substitute information is now fetched using HTTP pipelining
+
+Before that the “substituter” used threads.  Using HTTP pipelining means that
+resource consumption is reduced on both the client and server sides.  As a
+side effect, a progress report is displayed as substitute info is downloaded.
+
+*** ‘guix package’ warns when a $GUIX_PACKAGE_PATH module cannot be loaded
+
+*** New ‘--sources’ option to ‘guix build’
+
+*** New Bash completion file, installed in $sysconfdir/bash_completion.d
+
+*** New ‘guix import hackage’ command
+
+See “Invoking guix import” in the manual.
+
+*** ‘guix lint’ supports FTP for the ‘source’ and ‘home-page’ checkers
+
+*** ‘guix lint’ has a new ‘derivation’ checker
+
+*** ‘guix import cpan’ better handles dependencies and licenses
+
+*** Packages are now build in an environment with a UTF-8 locale
+
+** Distribution
+
+*** C library's name service switch (NSS) is now fully configurable
+
+See “Name Service Switch” in the manual.
+
+*** New services: wicd, lirc, colord, upower, console-keymap
+
+*** Xorg service supports new drivers, such as Nouveau
+
+*** lsh service has new options, initializes its seed by default
+
+*** /etc/ssl symlink is created, for X.509 certificates
+
+See “X.509 Certificates” in the manual.
+
+*** ‘guix system’ reports duplicate service identifiers
+
+*** New /etc/bashrc file that loads Bash completion when available
+
+*** SLiM service uses sessions from /run/current-system/profile/share/xsessions
+
+See “X Window” in the manual.
+
+*** The Linux “YAMA” restricting policy on PTRACE_ATTACH is now disabled
+
+*** /etc/shells now lists all the user accounts’ shells
+
+*** /gnu/store is now remounted read-only, to avoid accidental modification
+
+*** /etc/profile is sources each profile’s ‘etc/profile’ file
+
+*** XXX new packages
+
+*** XXX package updates
+
+** Programming interfaces
+
+*** New (guix build gremlin) to parse and validate ELF dynamic link info
+
+*** (guix build-system gnu) has a new ‘validate-runpath’ phase
+
+This phase reads the dynamic entries of ELF files and reports libraries listed
+as NEEDED that are not found in the RUNPATH.
+
+*** New (gnu services desktop) module and ‘%desktop-services’ variable
+
+*** New (guix cvs-download) module, for CVS checkouts
+
+*** New (guix build-system waf) module, for the Waf build system
+
+*** New (guix build-system haskell) module, to build Haskell packages
+
+*** (guix build-system gnu) now supports zip archives
+
+*** New convenience syntax ‘modify-phases’ added in (guix build utils)
+
+*** The ‘ld’ wrapper more finely determines whether to use ‘-rpath’
+
+*** (guix gexp) exports ‘gexp-input’ to describe input unambiguously
+
+*** The ‘define-gexp-compiler’ form allows (guix gexp) to be extended
+
+*** New ‘local-file’ constructor exported by (guix gexp)
+
+** Noteworthy bug fixes
+
+*** Profiles created with ‘guix package -p’ as indirect GC roots
+
+Before that they were made permanent GC roots–i.e., uncollectable.
+
+*** ‘guix package’ distinguishes downgrades from upgrades
+
+*** Handle HTTP redirects to relative URI references
+    (<http://bugs.gnu.org/19840>)
+
+*** Downloads now honor the ‘http_proxy’ environment variable
+    (<http://bugs.gnu.org/20402>)
+
+*** ‘--no-*’ options are now always correctly handled
+    (<http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00702.html>)
+
+*** SLiM no longer leaks open file descriptors
+
+*** Don't compare <pam-service> objects with 'equal?'
+    (<http://bugs.gnu.org/20037>)
+
+*** x86_64 and i686 bootstrap binaries updated (<http://bugs.gnu.org/19780>)
+
+*** ‘find-files’ no longer follows symlinks (<http://bugs.gnu.org/20081>)
+
+*** libc message catalog (‘libc.mo’) is now installed
+
+*** libstdc++ has appropriate RUNPATH (<http://bugs.gnu.org/20358>)
+
+*** ‘dhcp-client-service’ now correctly tracks dhclient’s PID
+
+** Native language support
+
+*** New translations: da (Danish)
+
+*** Updated translations: eo
+
 * Changes in 0.8.1 (since 0.8)
 
 ** Package management
