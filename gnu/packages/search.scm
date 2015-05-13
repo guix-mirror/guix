@@ -138,12 +138,15 @@ command line tool for interacting with libtocc.")
          "1frdmgrmb509fxbdpsxxw3lvvwv7xm1pavqrqgm4jg698iix6xfw"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/bool")
-    (synopsis "Find files that match a boolean expression")
+    (synopsis "Finding text and HTML files that match boolean expressions")
     (description
-     "GNU Bool is a utility for finding files that match a boolean expression.
-The boolean operators supported are AND, OR, and NOT.  Also supported is the
-NEAR operator for locating two expressions within a short distance from each
-other.")
+     "GNU Bool is a utility to perform text searches on files using Boolean
+expressions.  For example, a search for \"hello AND world\" would return a
+file containing the phrase \"Hello, world!\".  It supports both AND and OR
+statements, as well as the NEAR statement to search for the occurrence of
+words in close proximity to each other.  It handles context gracefully,
+accounting for new lines and paragraph changes.  It also has robust support
+for parsing HTML files.")
     (license gpl3+)))
 
 ;;; search.scm ends here
