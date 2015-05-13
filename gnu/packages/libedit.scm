@@ -42,7 +42,7 @@
     (synopsis "NetBSD Editline library")
     (description
      "This is an autotool- and libtoolized port of the NetBSD Editline
-library (libedit). This Berkeley-style licensed command line editor library
+library (libedit).  This Berkeley-style licensed command line editor library
 provides generic line editing, history, and tokenization functions, similar to
 those found in GNU Readline.")
     (license bsd-3)))
