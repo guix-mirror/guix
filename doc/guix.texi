@@ -3825,7 +3825,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-On the order of 1,200 packages are available, which means that you may
+On the order of 1,900 packages are available, which means that you may
 occasionally find that a useful package is missing.
 @end itemize
 
