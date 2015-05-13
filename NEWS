@@ -67,7 +67,7 @@ See “Invoking guix import” in the manual.
 
 See “Name Service Switch” in the manual.
 
-*** New services: wicd, lirc, colord, upower, console-keymap
+*** New services: wicd, lirc, colord, upower, console-keymap, postgresql
 
 *** Xorg service supports new drivers, such as Nouveau
 
