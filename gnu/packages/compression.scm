@@ -305,7 +305,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "0znl2yfkzmjl854zd4b4yafg41fqx4pgzy142jsp34053z50synb"))))
+        "02p7j270wrbwxcb86lcvxrzl29xmr3n5a2m7if46jnprvcvycb5r"))))
     (build-system gnu-build-system)
     (inputs
      `(("which" ,which)))
