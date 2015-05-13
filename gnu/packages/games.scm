@@ -108,7 +108,7 @@ representation of the playing board.")
 (define-public gnubik
   (package
     (name "gnubik")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
       (method url-fetch)
@@ -116,7 +116,7 @@ representation of the playing board.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0mfpwz341i1qpzi2qgslpc5i7d4fv7i01kv392m11pczqdc7i7m5"))))
+        "0mhpfnxzbns0wfrsjv5vafqr34770rbvkmdzxk0x0aq67hb3zyl5"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
