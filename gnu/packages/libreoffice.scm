@@ -26,10 +26,13 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -201,6 +204,47 @@ ZVR (simple compressed text format).")
     (description "The libwpg project provides a library and tools for
 working with graphics in the WPG (WordPerfect Graphics) format.")
     (license (list mpl2.0 lgpl2.1+))))            ;dual licensed
+
+(define-public libcmis
+  (package
+    (name "libcmis")
+    (version "0.5.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/" name "/" name "-"
+                          version ".tar.gz"))
+      (sha256 (base32
+               "1dprvk4fibylv24l7gr49gfqbkfgmxynvgssvdcycgpf7n8h4zm8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("curl" ,curl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+        (list
+          ;; FIXME: Man pages generation requires docbook-to-man; reenable
+          ;; it once this is available.
+          "--without-man"
+          ;; avoid triggering configure errors by simple inclusion of
+          ;; boost headers
+          "--disable-werror"
+          ;; During configure, the boost headers are found, but linking
+          ;; fails without the following flag.
+          (string-append "--with-boost="
+                         (assoc-ref %build-inputs "boost")))))
+    (home-page "http://sourceforge.net/projects/libcmis/")
+    (synopsis "CMIS client library")
+    (description "LibCMIS is a C++ client library for the CMIS interface.  It
+allows C++ applications to connect to any ECM behaving as a CMIS server such
+as Alfresco or Nuxeo.")
+    (license (list mpl1.1 gpl2+ lgpl2.1+)))) ; triple license
 
 (define-public libabw
   (package
