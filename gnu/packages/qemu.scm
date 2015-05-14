@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,14 +43,15 @@
   ;; This is QEMU without GUI support.
   (package
     (name "qemu-headless")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1703c3scl5n07gmpilg7g2xzyxnr7jczxgx6nn4m8kv9gin9p35n"))))
+               "120m53c3p28qxmfzllicjzr8syjv6v4d9rsyrgkp7gnmcgvvgfmn"))
+             (patches (list (search-patch "qemu-CVE-2015-3456.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
