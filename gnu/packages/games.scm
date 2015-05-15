@@ -879,3 +879,37 @@ bones.
 This game is based on the GPL version of the famous game TuxRacer.")
     (home-page "http://sourceforge.net/projects/extremetuxracer/")
     (license license:gpl2+)))
+
+(define-public gnujump
+  (package
+    (name "gnujump")
+    (version "1.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gnujump/gnujump-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "05syy9mzbyqcfnm0hrswlmhwlwx54f0l6zhcaq8c1c0f8dgzxhqk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'link-libm
+          (lambda _ (setenv "LIBS" "-lm"))))))
+    (inputs
+     `(("glu" ,glu)
+       ("mesa", mesa)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)))
+    (home-page "http://gnujump.es.gnu.org/")
+    (synopsis
+     "Game of jumping to the next floor, trying not to fall")
+    (description
+     "GNUjump is a simple, yet addictive game in which you must jump from
+platform to platform to avoid falling, while the platforms drop at faster rates
+the higher you go.  The game features multiplayer, unlimited FPS, smooth floor
+falling, themeable graphics and sounds, and replays.")
+    (license license:gpl3+)))
