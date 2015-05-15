@@ -242,3 +242,15 @@ export GUIX_BUILD_OPTIONS
 available2="`guix package -A | sort`"
 test "$available2" = "$available"
 guix package -I
+
+unset GUIX_BUILD_OPTIONS
+
+# Applying a manifest file
+cat > "$module_dir/manifest.scm"<<EOF
+(use-package-modules bootstrap)
+
+(packages->manifest (list %bootstrap-guile))
+EOF
+guix package --bootstrap -m "$module_dir/manifest.scm"
+guix package -I | grep guile
+test `guix package -I | wc -l` -eq 1

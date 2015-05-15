@@ -433,6 +433,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
   (display (_ "
+  -m, --manifest=FILE    create a new profile generation with the manifest
+                         from FILE"))
+  (display (_ "
       --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"))
   (display (_ "
       --roll-back        roll back to the previous generation"))
@@ -524,6 +527,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'roll-back? #t result)
                            #f)))
+         (option '(#\m "manifest") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'manifest arg result)
+                           arg-handler)))
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result arg-handler)
                    (values (cons `(query list-generations ,(or arg ""))
@@ -800,6 +807,50 @@ more information.~%"))
     (define dry-run? (assoc-ref opts 'dry-run?))
     (define profile  (assoc-ref opts 'profile))
 
+    (define (build-and-use-profile manifest)
+      (let* ((bootstrap?  (assoc-ref opts 'bootstrap?)))
+
+        (when (equal? profile %current-profile)
+          (ensure-default-profile))
+
+        (let* ((prof-drv (run-with-store (%store)
+                           (profile-derivation
+                            manifest
+                            #:hooks (if bootstrap?
+                                        '()
+                                        %default-profile-hooks))))
+               (prof     (derivation->output-path prof-drv)))
+          (show-what-to-build (%store) (list prof-drv)
+                              #:use-substitutes?
+                              (assoc-ref opts 'substitutes?)
+                              #:dry-run? dry-run?)
+
+          (cond
+           (dry-run? #t)
+           ((and (file-exists? profile)
+                 (and=> (readlink* profile) (cut string=? prof <>)))
+            (format (current-error-port) (_ "nothing to be done~%")))
+           (else
+            (let* ((number (generation-number profile))
+
+                   ;; Always use NUMBER + 1 for the new profile,
+                   ;; possibly overwriting a "previous future
+                   ;; generation".
+                   (name   (generation-file-name profile
+                                                 (+ 1 number))))
+              (and (build-derivations (%store) (list prof-drv))
+                   (let* ((entries (manifest-entries manifest))
+                          (count   (length entries)))
+                     (switch-symlinks name prof)
+                     (switch-symlinks profile name)
+                     (unless (string=? profile %current-profile)
+                       (register-gc-root (%store) name))
+                     (format #t (N_ "~a package in profile~%"
+                                    "~a packages in profile~%"
+                                    count)
+                             count)
+                     (display-search-paths entries profile)))))))))
+
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
                 (not dry-run?))
@@ -834,60 +885,28 @@ more information.~%"))
                (alist-delete 'delete-generations opts)))
              (_ #f))
             opts))
+          ((and (assoc-ref opts 'manifest)
+                (not dry-run?))
+           (let* ((file-name (assoc-ref opts 'manifest))
+                  (user-module (make-user-module '((guix profiles)
+                                                   (gnu))))
+                  (manifest (load* file-name user-module)))
+             (format #t (_ "installing new manifest from ~a with ~d entries.~%")
+                     file-name (length (manifest-entries manifest)))
+             (build-and-use-profile manifest)))
           (else
            (let* ((manifest    (profile-manifest profile))
                   (install     (options->installable opts manifest))
                   (remove      (options->removable opts manifest))
-                  (bootstrap?  (assoc-ref opts 'bootstrap?))
                   (transaction (manifest-transaction (install install)
                                                      (remove remove)))
                   (new         (manifest-perform-transaction
                                 manifest transaction)))
 
-             (when (equal? profile %current-profile)
-               (ensure-default-profile))
-
              (unless (and (null? install) (null? remove))
-               (let* ((prof-drv (run-with-store (%store)
-                                  (profile-derivation
-                                   new
-                                   #:hooks (if bootstrap?
-                                               '()
-                                               %default-profile-hooks))))
-                      (prof     (derivation->output-path prof-drv)))
-                 (show-manifest-transaction (%store) manifest transaction
-                                            #:dry-run? dry-run?)
-                 (show-what-to-build (%store) (list prof-drv)
-                                     #:use-substitutes?
-                                     (assoc-ref opts 'substitutes?)
-                                     #:dry-run? dry-run?)
-
-                 (cond
-                  (dry-run? #t)
-                  ((and (file-exists? profile)
-                        (and=> (readlink* profile) (cut string=? prof <>)))
-                   (format (current-error-port) (_ "nothing to be done~%")))
-                  (else
-                   (let* ((number (generation-number profile))
-
-                          ;; Always use NUMBER + 1 for the new profile,
-                          ;; possibly overwriting a "previous future
-                          ;; generation".
-                          (name   (generation-file-name profile
-                                                        (+ 1 number))))
-                     (and (build-derivations (%store) (list prof-drv))
-                          (let* ((entries (manifest-entries new))
-                                 (count   (length entries)))
-                            (switch-symlinks name prof)
-                            (switch-symlinks profile name)
-                            (unless (string=? profile %current-profile)
-                              (register-gc-root (%store) name))
-                            (format #t (N_ "~a package in profile~%"
-                                           "~a packages in profile~%"
-                                           count)
-                                    count)
-                            (display-search-paths entries
-                                                  profile))))))))))))
+               (show-manifest-transaction (%store) manifest transaction
+                                          #:dry-run? dry-run?)
+               (build-and-use-profile new))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
