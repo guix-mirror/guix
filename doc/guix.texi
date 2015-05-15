@@ -12,7 +12,8 @@
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014 Andreas Enge@*
-Copyright @copyright{} 2013 Nikita Karetnikov
+Copyright @copyright{} 2013 Nikita Karetnikov@*
+Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1814,6 +1815,8 @@ However, any other dependencies need to be specified in the
 unavailable to the build process, possibly leading to a build failure.
 @end itemize
 
+@xref{package Reference}, for a full description of possible fields.
+
 Once a package definition is in place, the
 package may actually be built using the @code{guix build} command-line
 tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
@@ -1857,6 +1860,186 @@ and operating system, such as @code{"mips64el-linux-gnu"}
 (@pxref{Configuration Names, GNU configuration triplets,, configure, GNU
 Configure and Build System}).
 @end deffn
+
+@menu
+* package Reference ::          The package data type.
+* origin Reference::            The origin data type.
+@end menu
+
+
+@node package Reference
+@subsection @code{package} Reference
+
+This section summarizes all the options available in @code{package}
+declarations (@pxref{Defining Packages}).
+
+@deftp {Data Type} package
+This is the data type representing a package recipe.
+
+@table @asis
+@item @code{name}
+The name of the package, as a string.
+
+@item @code{version}
+The version of the package, as a string.
+
+@item @code{source}
+An origin object telling how the source code for the package should be
+acquired (@pxref{origin Reference}).
+
+@item @code{build-system}
+The build system that should be used to build the package (@pxref{Build
+Systems}).
+
+@item @code{arguments} (default: @code{'()})
+The arguments that should be passed to the build system.  This is a
+list, typically containing sequential keyword-value pairs.
+
+@item @code{inputs} (default: @code{'()})
+Package or derivation inputs to the build.  This is a list of lists,
+where each list has the name of the input (a string) as its first
+element, a package or derivation object as its second element, and
+optionally the name of the output of the package or derivation that
+should be used, which defaults to @code{"out"}.
+
+@item @code{propagated-inputs} (default: @code{'()})
+This field is like @code{inputs}, but the specified packages will be
+force-installed alongside the package they belong to.  For example this
+is necessary when a library needs headers of another library to compile,
+or needs another shared library to be linked alongside itself when a
+program wants to link to it.
+
+@item @code{native-inputs} (default: @code{'()})
+This field is like @code{inputs}, but in case of a cross-compilation it
+will be ensured that packages for the architecture of the build machine
+are present, such that executables from them can be used during the
+build.  For example, this is necessary for build tools such as Autoconf,
+Libtool, pkg-config, or Gettext.
+
+@item @code{self-native-input?} (default: @code{#f})
+This is a Boolean field telling whether the package should use itself as
+a native input when cross-compiling.
+
+@item @code{outputs} (default: @code{'("out")})
+The list of output names of the package.  @xref{Packages with Multiple
+Outputs}, for typical uses of additional outputs.
+
+@item @code{native-search-paths} (default: @code{'()})
+@itemx @code{search-paths} (default: @code{'()})
+A list of @code{search-path-specification} objects describing
+search-path environment variables honored by the package.
+
+@item @code{replacement} (default: @code{#f})
+This must either @code{#f} or a package object that will be used as a
+@dfn{replacement} for this package.  @xref{Security Updates, grafts},
+for details.
+
+@item @code{synopsis}
+A one-line description of the package.
+
+@item @code{description}
+A more elaborate description of the package.
+
+@item @code{license}
+The license of the package; a value from @code{(guix licenses)}.
+
+@item @code{home-page}
+The URL to the home-page of the package, as a string.
+
+@item @code{supported-systems} (default: @var{%supported-systems})
+The list of systems supported by the package, as strings of the form
+@code{architecture-kernel}, for example @code{"x86_64-linux"}.
+
+@item @code{maintainers} (default: @code{'()})
+The list of maintainers of the package, as @code{maintainer} objects.
+
+@item @code{location} (default: source location of the @code{package} form)
+The source location of the package.  It's useful to override this when
+inheriting from another package, in which case this field is not
+automatically corrected.
+@end table
+@end deftp
+
+
+@node origin Reference
+@subsection @code{origin} Reference
+
+This section summarizes all the options available in @code{origin}
+declarations (@pxref{Defining Packages}).
+
+@deftp {Data Type} origin
+This is the data type representing a source code origin.
+
+@table @asis
+@item @code{uri}
+An object containing the URI of the source.  The object type depends on
+the @code{method} (see below).  For example, when using the
+@var{url-fetch} method of @code{(guix download)}, the valid @code{uri}
+values are: a URL represented as a string, or a list thereof.
+
+@item @code{method}
+A procedure that will handle the URI.
+
+Examples include:
+
+@table @asis
+@item @var{url-fetch} from @code{(guix download)}
+download a file the HTTP, HTTPS, or FTP URL specified in the
+@code{uri} field;
+
+@item @var{git-fetch} from @code{(guix git-download)}
+clone the Git version control repository, and check out the revision
+specified in the @code{uri} field as a @code{git-reference} object; a
+@code{git-reference} looks like this:
+
+@example
+(git-reference
+  (url "git://git.debian.org/git/pkg-shadow/shadow")
+  (commit "v4.1.5.1"))
+@end example
+@end table
+
+@item @code{sha256}
+A bytevector containing the SHA-256 hash of the source.  Typically the
+@code{base32} form is used here to generate the bytevector from a
+base-32 string.
+
+@item @code{file-name} (default: @code{#f})
+The file name under which the source code should be saved.  When this is
+@code{#f}, a sensible default value will be used in most cases.  In case
+the source is fetched from a URL, the file name from the URL will be
+used.  For version control checkouts, it's recommended to provide the
+file name explicitly because the default is not very descriptive.
+
+@item @code{patches} (default: @code{'()})
+A list of file names containing patches to be applied to the source.
+
+@item @code{snippet} (default: @code{#f})
+A quoted piece of code that will be run in the source directory to make
+any modifications, which is sometimes more convenient than a patch.
+
+@item @code{patch-flags} (default: @code{'("-p1")})
+A list of command-line flags that should be passed to the @code{patch}
+command.
+
+@item @code{patch-inputs} (default: @code{#f})
+Input packages or derivations to the patching process.  When this is
+@code{#f}, the usual set of inputs necessary for patching are provided,
+such as GNU@tie{}Patch.
+
+@item @code{modules} (default: @code{'()})
+A list of Guile modules that should be loaded during the patching
+process and while running the code in the @code{snippet} field.
+
+@item @code{imported-modules} (default: @code{'()})
+The list of Guile modules to import in the patch derivation, for use by
+the @code{snippet}.
+
+@item @code{patch-guile} (default: @code{#f})
+The Guile package that should be used in the patching process.  When
+this is @code{#f}, a sensible default is used.
+@end table
+@end deftp
 
 
 @node Build Systems
