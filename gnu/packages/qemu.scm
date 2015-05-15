@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,6 +34,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
@@ -139,4 +140,5 @@ server and embedded PowerPC, and S390 guests.")
     (synopsis "Machine emulator and virtualizer")
     (inputs `(("sdl" ,sdl)
               ("mesa" ,mesa)
+              ("libusb" ,libusb)                  ;USB pass-through support
               ,@(package-inputs qemu-headless)))))
