@@ -135,9 +135,10 @@ spreadsheets and presentations.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("librevenge" ,librevenge))) ; in Requires field of .pkg
     (inputs
-     `(("librevenge" ,librevenge)
-       ("zlib" ,zlib)))
+     `(("zlib" ,zlib)))
     (home-page "http://libwpd.sourceforge.net/")
     (synopsis "Library for importing WordPerfect documents")
     (description "Libwpd is a C++ library designed to help process
@@ -195,8 +196,7 @@ ZVR (simple compressed text format).")
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("librevenge" ,librevenge)
-       ("libwpd" ,libwpd)
+     `(("libwpd" ,libwpd)
        ("perl" ,perl)
        ("zlib" ,zlib)))
     (home-page "http://libwpg.sourceforge.net/")
