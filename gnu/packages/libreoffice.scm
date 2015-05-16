@@ -400,11 +400,12 @@ Aldus/Macromedia/Adobe FreeHand documents.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("boost" ,boost)
-       ("icu4c" ,icu4c)
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
+     `(("icu4c" ,icu4c)
        ("librevenge" ,librevenge)
        ("zlib" ,zlib)))
+    (inputs
+     `(("boost" ,boost)))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libmspub")
     (synopsis "Library for parsing the Microsoft Publisher format")
     (description "Libmspub is a library that parses the file format of
