@@ -296,12 +296,13 @@ AbiWord documents.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("boost" ,boost)
-       ("icu4c" ,icu4c)
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
+     `(("icu4c" ,icu4c)
        ("lcms" ,lcms)
        ("librevenge" ,librevenge)
        ("zlib" ,zlib)))
+    (inputs
+     `(("boost" ,boost)))
     (arguments
      ;; avoid triggering a build failure due to warnings
      `(#:configure-flags '("--disable-werror")))
