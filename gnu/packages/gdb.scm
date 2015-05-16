@@ -36,14 +36,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.9")
+    (version "7.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "14l3hhsy7fmpn2dk7ivc67gnbjdhkxlq90kxijpzfa35l58mcccv"))))
+               "0h5sfg4ndhb8q4fxbq0hdxfjp35n6ih96f6x8yvb418s84x5976d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; FIXME "make check" fails on single-processor systems.
