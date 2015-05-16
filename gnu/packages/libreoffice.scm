@@ -223,11 +223,12 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
     (native-inputs
      `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs ; in Requires field of .pkg
+     `(("curl" ,curl)
+       ("libxml2" ,libxml2)))
     (inputs
      `(("boost" ,boost)
-       ("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("libxml2" ,libxml2)
        ("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
