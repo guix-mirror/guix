@@ -1345,3 +1345,72 @@ library with poor performance.")
 library for graphics software based on the OpenGL Shading Language (GLSL)
 specifications.")
     (license license:expat)))
+
+(define-public lpsolve
+  (package
+    (name "lpsolve")
+    (version "5.5.2.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/lpsolve/lpsolve/" version
+                          "/lp_solve_" version "_source.tar.gz"))
+      (sha256
+       (base32
+        "176c7f023mb6b8bfmv4rfqnrlw88lsg422ca74zjh19i2h5s69sq"))
+      (modules '((guix build utils)))
+      (snippet
+       '(substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
+          (("^c=cc") "c=gcc")
+          ;; Pretend to be on a 64 bit platform to obtain a common directory
+          ;; name for the build results on all architectures; nothing else
+          ;; seems to depend on it.
+          (("^PLATFORM=.*$") "PLATFORM=ux64\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (with-directory-excursion "lpsolve55"
+               (system* "bash" "ccc"))
+             (with-directory-excursion "lp_solve"
+               (system* "bash" "ccc"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    ;; This is where LibreOffice expects to find the header
+                    ;; files, and where they are installed by Debian.
+                    (include (string-append out "/include/lpsolve")))
+               (mkdir-p lib)
+               (copy-file "lpsolve55/bin/ux64/liblpsolve55.a"
+                          (string-append lib "/liblpsolve55.a"))
+               (copy-file "lpsolve55/bin/ux64/liblpsolve55.so"
+                          (string-append lib "/liblpsolve55.so"))
+               (mkdir-p bin)
+               (copy-file "lp_solve/bin/ux64/lp_solve"
+                          (string-append bin "/lp_solve"))
+               (mkdir-p include)
+               ;; Install a subset of the header files as on Debian
+               ;; (plus lp_bit.h, which matches the regular expression).
+               (for-each
+                 (lambda (name)
+                   (copy-file name (string-append include "/" name)))
+                 (find-files "." "lp_[HMSa-z].*\\.h$"))
+               (with-directory-excursion "shared"
+                 (for-each
+                   (lambda (name)
+                     (copy-file name (string-append include "/" name)))
+                   (find-files "." "\\.h$")))
+               #t))))))
+    (home-page "http://lpsolve.sourceforge.net/")
+    (synopsis "Mixed integer linear programming (MILP) solver")
+    (description
+     "lp_solve is a mixed integer linear programming solver based on the
+revised simplex and the branch-and-bound methods.")
+    (license license:lgpl2.1+)))
