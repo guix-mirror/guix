@@ -492,9 +492,10 @@ Microsoft Visio documents of all versions.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs ; in Requires field of .pkg
+     `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
-       ("librevenge" ,librevenge)
        ("zlib" ,zlib)))
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
