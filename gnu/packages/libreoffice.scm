@@ -376,7 +376,7 @@ library primarily intended for language guessing.")
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (inputs
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
        ("zlib" ,zlib)))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libfreehand")
