@@ -461,11 +461,12 @@ created by PageMaker version 6.x and 7.")
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("boost" ,boost)
-       ("icu4c" ,icu4c)
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
+     `(("icu4c" ,icu4c)
        ("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
+    (inputs
+     `(("boost" ,boost)))
     ;; FIXME: Not needed any more for newer version 0.1.1.
     (arguments
      ;; avoid triggering a build failure due to warnings
