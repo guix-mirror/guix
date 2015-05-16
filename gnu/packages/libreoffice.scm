@@ -197,9 +197,10 @@ ZVR (simple compressed text format).")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libwpd" ,libwpd))) ; in Requires field of .pkg
     (inputs
-     `(("libwpd" ,libwpd)
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("zlib" ,zlib)))
     (home-page "http://libwpg.sourceforge.net/")
     (synopsis "Library and tools for the WordPerfect Graphics format")
