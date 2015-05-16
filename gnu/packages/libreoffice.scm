@@ -427,9 +427,10 @@ Microsoft Publisher documents of all versions.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
+    (native-inputs ; in Requires field of .pkg
+     `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
-       ("librevenge" ,librevenge)
        ("zlib" ,zlib)))
     (arguments
      ;; avoid triggering a build failure due to warnings
