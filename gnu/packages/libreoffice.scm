@@ -329,10 +329,11 @@ CorelDRAW documents of all versions.")
        ("doxygen" ,doxygen)
        ("gperf" ,gperf)
        ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("boost" ,boost)
-       ("librevenge" ,librevenge)
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
+     `(("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
+    (inputs
+     `(("boost" ,boost)))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libetonyek")
     (synopsis "Library for parsing the Apple Keynote format")
     (description "Libetonyek is a library that parses the file format of
