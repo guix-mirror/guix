@@ -267,10 +267,11 @@ as Alfresco or Nuxeo.")
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("boost" ,boost)
-       ("librevenge" ,librevenge)
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
+     `(("librevenge" ,librevenge)
        ("libxml2" ,libxml2)))
+    (inputs
+     `(("boost" ,boost)))
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
      `(#:configure-flags '("--disable-werror")))
