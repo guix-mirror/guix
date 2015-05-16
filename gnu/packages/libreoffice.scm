@@ -163,10 +163,12 @@ into other word processors.")
      `(("cppunit" ,cppunit)
        ("gperf" ,gperf)
        ("pkg-config" ,pkg-config)))
-    (inputs `(("boost" ,boost)
-              ("icu4c" ,icu4c)
-              ("librevenge" ,librevenge)
-              ("libxml2" ,libxml2)))
+    (propagated-inputs ; in Requires or Requires.private field of .pkg
+     `(("icu4c" ,icu4c)
+       ("librevenge" ,librevenge)
+       ("libxml2" ,libxml2)))
+    (inputs
+      `(("boost" ,boost)))
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
      `(#:configure-flags '("--disable-werror")))
