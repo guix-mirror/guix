@@ -427,7 +427,7 @@ Microsoft Publisher documents of all versions.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
-    (native-inputs ; in Requires field of .pkg
+    (propagated-inputs ; in Requires field of .pkg
      `(("librevenge" ,librevenge)))
     (inputs
      `(("boost" ,boost)
