@@ -277,26 +277,31 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public magit
   (package
     (name "magit")
-    (version "1.2.1")
+    (version "1.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://github.com/magit/magit/releases/download/"
                    version "/" name "-" version ".tar.gz"))
              (sha256
-              (base32 "1in48g5l5xdc9cf2apnpgx73mqlz2njrpi1w52dgql4qxv3kg6gr"))))
+              (base32
+               "0bbvz6cma5vj6qxx9v2m60zqkjwgwjrdf9kp04iacybvrcm8vcg7"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
     (inputs `(("git" ,git)
               ("git:gui" ,git "gui")))
+    (propagated-inputs `(("git-modes" ,git-modes)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
-       #:tests? #f  ; no check target
+
+       #:test-target "test"
+       #:tests? #f                          ;'tests/magit-tests.el' is missing
+
        #:phases
        (modify-phases %standard-phases
          (replace
@@ -313,7 +318,16 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                   (git:gui (assoc-ref inputs "git:gui")))
               (emacs-substitute-variables "magit.el"
                 ("magit-git-executable" (string-append git "/bin/git"))
-                ("magit-gitk-executable" (string-append git:gui "/bin/gitk"))))))
+                ("magit-gitk-executable" (string-append git:gui
+                                                        "/bin/gitk"))))))
+         (add-before
+          'build 'augment-load-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Allow git-commit-mode.el & co. to be found.
+            (let ((git-modes (assoc-ref inputs "git-modes")))
+              (setenv "EMACSLOADPATH"
+                      (string-append ":" git-modes "/share/emacs/site-lisp"))
+              #t)))
          (add-after
           'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
