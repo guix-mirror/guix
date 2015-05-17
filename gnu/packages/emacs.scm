@@ -230,6 +230,50 @@ for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
 
+(define-public git-modes
+  (package
+    (name "git-modes")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magit/git-modes/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1biiss75bswx4alk85k3g9p0a3q3sc9i74h4mnrxc2rsk2iwhws0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build emacs-utils)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          ;; Don't put .el files in a 'git-modes'
+                          ;; sub-directory.
+                          (string-append "LISPDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/emacs/site-lisp"))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'install 'emacs-autoloads
+                             (lambda* (#:key outputs #:allow-other-keys)
+                               (let* ((out  (assoc-ref outputs "out"))
+                                      (lisp (string-append
+                                             out "/share/emacs/site-lisp/")))
+                                 (emacs-generate-autoloads ,name lisp)))))))
+    (native-inputs `(("emacs" ,emacs-no-x)))
+    (home-page "https://github.com/magit/git-modes")
+    (synopsis "Emacs major modes for Git configuration files")
+    (description
+     "This package provides Emacs major modes for editing various Git
+configuration files, such as .gitattributes, .gitignore, and .git/config.")
+    (license license:gpl3+)))
+
 (define-public magit
   (package
     (name "magit")
