@@ -269,12 +269,18 @@ As @code{root}, run:
 
 @example
 # cd /
-# tar xf guix-binary-@value{VERSION}.@var{system}.tar.xz
+# tar --skip-old-files -xf \
+      guix-binary-@value{VERSION}.@var{system}.tar.xz
 @end example
 
 This creates @file{/gnu/store} (@pxref{The Store}), @file{/var/guix},
 and @file{/root/.guix-profile}.  @file{/root/.guix-profile} is a
 ready-to-use profile for @code{root} where Guix is installed.
+@c '--skip-old-files' does the right thing with tar 1.28.  The manual
+@c does not clearly document the behavior we describe here, though.
+The @code{--skip-old-files} option allows you to make sure the owner and
+permissions on @file{/var} and @file{/root} are preserved (@pxref{Option
+Summary, @code{--skip-old-files},, tar, GNU tar: an archiver tool}).
 
 Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
