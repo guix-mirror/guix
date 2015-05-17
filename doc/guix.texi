@@ -300,7 +300,7 @@ for instance with:
 @example
 # mkdir -p /usr/local/bin
 # cd /usr/local/bin
-# ln -s /root/.guix-profile/bin/guix
+# ln -s /var/guix/profiles/per-user/root/guix-profile/bin/guix
 @end example
 
 @item
