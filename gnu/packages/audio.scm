@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -208,8 +209,6 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
        ("sratom" ,sratom)
        ("suil" ,suil)
        ("lilv" ,lilv)
-       ("rasqal" ,rasqal)
-       ("raptor2" ,raptor2)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
        ("taglib" ,taglib)
