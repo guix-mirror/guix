@@ -165,20 +165,24 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
              (provision '(networking))
 
              (start #~(lambda _
-                        (false-if-exception (delete-file #$pid-file))
-
                         ;; When invoked without any arguments, 'dhclient'
                         ;; discovers all non-loopback interfaces *that are
                         ;; up*.  However, the relevant interfaces are
                         ;; typically down at this point.  Thus we perform our
                         ;; own interface discovery here.
-                        (let* ((valid? (negate loopback-network-interface?))
-                               (ifaces (filter valid?
-                                               (all-network-interfaces)))
-                               (pid    (fork+exec-command
-                                        (cons* #$dhclient "-nw"
-                                               "-pf" #$pid-file
-                                               ifaces))))
+                        (define valid?
+                          (negate loopback-network-interface?))
+                        (define ifaces
+                          (filter valid? (all-network-interfaces)))
+
+                        ;; XXX: Make sure the interfaces are up so that
+                        ;; 'dhclient' can actually send/receive over them.
+                        (for-each set-network-interface-up ifaces)
+
+                        (false-if-exception (delete-file #$pid-file))
+                        (let ((pid (fork+exec-command
+                                    (cons* #$dhclient "-nw"
+                                           "-pf" #$pid-file ifaces))))
                           (and (zero? (cdr (waitpid pid)))
                                (let loop ()
                                  (catch 'system-error
