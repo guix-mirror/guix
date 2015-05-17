@@ -290,7 +290,7 @@ Create the group and user accounts for build users as explained below
 (@pxref{Build Environment Setup}), and run the daemon:
 
 @example
-# /root/.guix-profile/bin/guix-daemon --build-users-group=guix-builder
+# /root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
 @end example
 
 @item
@@ -461,13 +461,13 @@ Bash syntax and the @code{shadow} commands):
 @c See http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html
 @c for why `-G' is needed.
 @example
-# groupadd --system guix-builder
-# for i in `seq 1 10`;
+# groupadd --system guixbuild
+# for i in `seq -w 1 10`;
   do
-    useradd -g guix-builder -G guix-builder           \
-            -d /var/empty -s `which nologin`          \
-            -c "Guix build user $i" --system          \
-            guix-builder$i;
+    useradd -g guixbuild -G guixbuild           \
+            -d /var/empty -s `which nologin`    \
+            -c "Guix build user $i" --system    \
+            guixbuilder$i;
   done
 @end example
 
@@ -475,13 +475,13 @@ Bash syntax and the @code{shadow} commands):
 The @code{guix-daemon} program may then be run as @code{root} with:
 
 @example
-# guix-daemon --build-users-group=guix-builder
+# guix-daemon --build-users-group=guixbuild
 @end example
 
 @cindex chroot
 @noindent
 This way, the daemon starts build processes in a chroot, under one of
-the @code{guix-builder} users.  On GNU/Linux, by default, the chroot
+the @code{guixbuilder} users.  On GNU/Linux, by default, the chroot
 environment contains nothing but:
 
 @c Keep this list in sync with libstore/build.cc! -----------------------
@@ -643,7 +643,7 @@ garbage collector, querying the availability of a build result, etc.  It
 is normally run as @code{root} like this:
 
 @example
-# guix-daemon --build-users-group=guix-builder
+# guix-daemon --build-users-group=guixbuild
 @end example
 
 @noindent
