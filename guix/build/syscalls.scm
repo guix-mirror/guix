@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +46,7 @@
             network-interface-address
             set-network-interface-flags
             set-network-interface-address
+            set-network-interface-up
             configure-network-interface))
 
 ;;; Commentary:
@@ -549,6 +550,19 @@ the same type as that returned by 'make-socket-address'."
       (lambda ()
         (set-network-interface-address sock name sockaddr)
         (set-network-interface-flags sock name flags))
+      (lambda ()
+        (close-port sock)))))
+
+(define* (set-network-interface-up name
+                                   #:key (family AF_INET))
+  "Turn up the interface NAME."
+  (let ((sock (socket family SOCK_STREAM 0)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (let ((flags (network-interface-flags sock name)))
+          (set-network-interface-flags sock name
+                                       (logior flags IFF_UP))))
       (lambda ()
         (close-port sock)))))
 
