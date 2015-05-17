@@ -286,9 +286,9 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
              (sha256
               (base32 "1in48g5l5xdc9cf2apnpgx73mqlz2njrpi1w52dgql4qxv3kg6gr"))))
     (build-system gnu-build-system)
-    (native-inputs `(("texinfo" ,texinfo)))
-    (inputs `(("emacs" ,emacs-no-x)
-              ("git" ,git)
+    (native-inputs `(("texinfo" ,texinfo)
+                     ("emacs" ,emacs-no-x)))
+    (inputs `(("git" ,git)
               ("git:gui" ,git "gui")))
     (arguments
      `(#:modules ((guix build gnu-build-system)
