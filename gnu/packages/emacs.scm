@@ -298,28 +298,28 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                            (guix build emacs-utils))
        #:tests? #f  ; no check target
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "Makefile"
-              (("/usr/local") out)
-              (("/etc") (string-append out "/etc")))))
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((git (assoc-ref inputs "git"))
-                 (git:gui (assoc-ref inputs "git:gui")))
-             (emacs-substitute-variables "magit.el"
-               ("magit-git-executable" (string-append git "/bin/git"))
-               ("magit-gitk-executable" (string-append git:gui "/bin/gitk")))))
-         (alist-cons-after
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "Makefile"
+                (("/usr/local") out)
+                (("/etc") (string-append out "/etc"))))))
+         (add-before
+          'build 'patch-exec-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((git (assoc-ref inputs "git"))
+                  (git:gui (assoc-ref inputs "git:gui")))
+              (emacs-substitute-variables "magit.el"
+                ("magit-git-executable" (string-append git "/bin/git"))
+                ("magit-gitk-executable" (string-append git:gui "/bin/gitk"))))))
+         (add-after
           'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             (emacs-generate-autoloads
              ,name (string-append (assoc-ref outputs "out")
-                                  "/share/emacs/site-lisp/")))
-          %standard-phases)))))
+                                  "/share/emacs/site-lisp/")))))))
     (home-page "http://magit.github.io/")
     (synopsis "Emacs interface for the Git version control system")
     (description
