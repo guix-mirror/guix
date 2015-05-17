@@ -302,6 +302,11 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
        #:test-target "test"
        #:tests? #f                          ;'tests/magit-tests.el' is missing
 
+       #:make-flags (list
+                     ;; Don't put .el files in a sub-directory.
+                     (string-append "lispdir=" (assoc-ref %outputs "out")
+                                    "/share/emacs/site-lisp"))
+
        #:phases
        (modify-phases %standard-phases
          (replace
