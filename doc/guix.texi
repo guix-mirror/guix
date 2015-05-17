@@ -3896,9 +3896,9 @@ To install the system, you would:
 @enumerate
 
 @item
-Configure the network, by running @command{dhclient eno1} (to get an
-automatically assigned IP address from the wired network interface
-controller@footnote{
+Configure the network, by running @command{ifconfig eno1 up && dhclient
+eno1} (to get an automatically assigned IP address from the wired
+network interface controller@footnote{
 @c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
 The name @code{eno1} is for the first on-board Ethernet controller.  The
 interface name for an Ethernet controller that is in the first slot of
