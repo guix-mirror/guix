@@ -67,9 +67,14 @@ under /root/.guix-profile where GUIX is installed."
                                              #:closure "profile")
 
           ;; Create the tarball.  Use GNU format so there's no file name
-          ;; length limitation.
+          ;; length limitation.  Use the owner and group names given in the
+          ;; manual.
+          ;; XXX: /var and /root should rather be root-owned, but it doesn't
+          ;; make any difference in practice.
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
+                            "--owner=guixbuilder01"
+                            "--group=guixbuild"
                             "-cvf" #$output ".")))))
 
     (gexp->derivation "guix-tarball.tar.xz" build
