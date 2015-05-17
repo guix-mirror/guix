@@ -265,12 +265,6 @@ is @code{x86_64-linux} for an @code{x86_64} machine already running the
 kernel Linux, and so on.
 
 @item
-Create the group and user accounts for build users as explained below
-(@pxref{Build Environment Setup}).  Use the exact same names as given in
-the example so that files extracted from the archive will have the right
-ownership.
-
-@item
 As @code{root}, run:
 
 @example
