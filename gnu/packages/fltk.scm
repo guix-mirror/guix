@@ -18,8 +18,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages fltk)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (lgpl2.0))
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (guix packages)
@@ -40,9 +42,12 @@
         "15qd7lkz5d5ynz70xhxhigpz3wns39v9xcf7ggkl0792syc8sfgq"))
       (patches (list (search-patch "fltk-shared-lib-defines.patch")))))
    (build-system gnu-build-system)
-    (inputs
-      `(("libx11" ,libx11)
-        ("mesa" ,mesa)))
+   (inputs
+    `(("libjpeg" ,libjpeg-8)     ;jpeg_read_header argument error in libjpeg-9
+      ("libpng" ,libpng)
+      ("libx11" ,libx11)
+      ("mesa" ,mesa)
+      ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f                      ;TODO: compile programs in "test" dir
        #:configure-flags
@@ -54,7 +59,22 @@
         (lambda _
           (substitute* "makeinclude.in"
             (("/bin/sh") (which "sh"))))
-        %standard-phases)))
+        (alist-cons-after
+         'install 'patch-config
+         ;; Provide -L flags for image libraries when querying fltk-config to
+         ;; avoid propagating inputs.
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (use-modules (srfi srfi-26))
+           (let* ((conf (string-append (assoc-ref outputs "out")
+                                      "/bin/fltk-config"))
+                  (jpeg (assoc-ref inputs "libjpeg"))
+                  (png  (assoc-ref inputs "libpng"))
+                  (zlib (assoc-ref inputs "zlib")))
+             (substitute* conf
+               (("-ljpeg") (string-append "-L" jpeg "/lib -ljpeg"))
+               (("-lpng") (string-append "-L" png "/lib -lpng"))
+               (("-lz") (string-append "-L" zlib "/lib -lz")))))
+         %standard-phases))))
     (home-page "http://www.fltk.org")
     (synopsis "3D C++ GUI library")
     (description "FLTK is a C++ GUI toolkit providing modern GUI functionality
