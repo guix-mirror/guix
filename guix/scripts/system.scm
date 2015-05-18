@@ -48,28 +48,14 @@
 
 (define %user-module
   ;; Module in which the machine description file is loaded.
-  (let ((module (make-fresh-user-module)))
-    (for-each (lambda (iface)
-                (module-use! module (resolve-interface iface)))
-              '((gnu system)
-                (gnu services)
-                (gnu system shadow)))
-    module))
+  (make-user-module '((gnu system)
+                      (gnu services)
+                      (gnu system shadow))))
 
 (define (read-operating-system file)
   "Read the operating-system declaration from FILE and return it."
-  ;; TODO: Factorize.
-  (catch #t
-    (lambda ()
-      ;; Avoid ABI incompatibility with the <operating-system> record.
-      (set! %fresh-auto-compile #t)
+  (load* file %user-module))
 
-      (save-module-excursion
-       (lambda ()
-         (set-current-module %user-module)
-         (primitive-load file))))
-    (lambda args
-      (report-load-error file args))))
 
 
 ;;;

@@ -48,6 +48,8 @@
             P_
             report-error
             leave
+            make-user-module
+            load*
             report-load-error
             warn-about-load-error
             show-version-and-exit
@@ -132,6 +134,28 @@ messages."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define (make-user-module modules)
+  "Return a new user module with the additional MODULES loaded."
+  ;; Module in which the machine description file is loaded.
+  (let ((module (make-fresh-user-module)))
+    (for-each (lambda (iface)
+                (module-use! module (resolve-interface iface)))
+              modules)
+    module))
+
+(define (load* file user-module)
+  "Load the user provided Scheme source code FILE."
+  (catch #t
+    (lambda ()
+      (set! %fresh-auto-compile #t)
+
+      (save-module-excursion
+       (lambda ()
+         (set-current-module user-module)
+         (primitive-load file))))
+    (lambda args
+      (report-load-error file args))))
 
 (define (report-load-error file args)
   "Report the failure to load FILE, a user-provided Scheme file, and exit.
