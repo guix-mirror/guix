@@ -82,6 +82,7 @@ package management tool written for the GNU system.
 
 Installation
 
+* Binary Installation::         Getting Guix running in no time!
 * Requirements::                Software needed to build and run Guix.
 * Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
@@ -144,6 +145,7 @@ System Configuration
 * Locales::                     Language and cultural convention settings.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
+* X.509 Certificates::          Authenticating HTTPS servers.
 * Name Service Switch::         Configuring libc's name service switch.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * GRUB Configuration::          Configuring the boot loader.
@@ -155,6 +157,8 @@ Services
 * Base Services::               Essential system services.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
+* Desktop Services::            D-Bus and desktop services.
+* Database Services::           SQL databases.
 * Various Services::            Other services.
 
 Packaging Guidelines
