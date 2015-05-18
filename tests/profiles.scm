@@ -277,6 +277,34 @@
                                get-string-all)
                              "foo!"))))))
 
+(test-assertm "etc/profile when etc/ is a symlink"
+  ;; When etc/ is a symlink, the unsymlink code in 0.8.2 would fail
+  ;; gracelessly because 'scandir' would return #f.
+  (mlet* %store-monad
+      ((thing ->   (dummy-package "dummy"
+                     (build-system trivial-build-system)
+                     (arguments
+                      `(#:guile ,%bootstrap-guile
+                        #:builder
+                        (let ((out (assoc-ref %outputs "out")))
+                          (mkdir out)
+                          (mkdir (string-append out "/foo"))
+                          (symlink "foo" (string-append out "/etc"))
+                          (call-with-output-file (string-append out "/etc/bar")
+                            (lambda (port)
+                              (display "foo!" port))))))))
+       (entry ->   (package->manifest-entry thing))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (and (file-exists? (string-append profile "/etc/profile"))
+                   (string=? (call-with-input-file
+                                 (string-append profile "/etc/bar")
+                               get-string-all)
+                             "foo!"))))))
+
 (test-end "profiles")
 
 

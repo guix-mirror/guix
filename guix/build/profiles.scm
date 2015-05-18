@@ -94,7 +94,9 @@ symlink (to a read-only directory in the store), then delete the symlink and
 instead make DIRECTORY a \"real\" directory containing symlinks."
   (define (unsymlink link)
     (let* ((target (readlink link))
-           (files  (scandir target
+           ;; TARGET might itself be a symlink, so append "/" to make sure
+           ;; 'scandir' enters it.
+           (files  (scandir (string-append target "/")
                             (negate (cut member <> '("." ".."))))))
       (delete-file link)
       (mkdir link)
