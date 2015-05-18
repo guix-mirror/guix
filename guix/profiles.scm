@@ -80,6 +80,7 @@
 
             profile-manifest
             package->manifest-entry
+            packages->manifest
             %default-profile-hooks
             profile-derivation
             generation-number
@@ -171,6 +172,18 @@ omitted or #f, use the first output of PACKAGE."
      (item package)
      (dependencies (delete-duplicates deps))
      (search-paths (package-native-search-paths package)))))
+
+(define (packages->manifest packages)
+  "Return a list of manifest entries, one for each item listed in PACKAGES.
+Elements of PACKAGES can be either package objects or package/string tuples
+denoting a specific output of a package."
+  (manifest
+   (map (match-lambda
+         ((package output)
+          (package->manifest-entry package output))
+         (package
+           (package->manifest-entry package)))
+        packages)))
 
 (define (manifest->gexp manifest)
   "Return a representation of MANIFEST as a gexp."
@@ -469,7 +482,7 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
     (module-ref (resolve-interface '(gnu packages haskell)) 'ghc))
 
   (define build
-    #~(begin 
+    #~(begin
         (use-modules (guix build utils)
                      (srfi srfi-1) (srfi srfi-26)
                      (ice-9 ftw))
@@ -478,20 +491,20 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
           (let* ((base (basename #+ghc)))
             (string-drop base
                          (+ 1 (string-index base #\-)))))
-        
+
         (define db-subdir
           (string-append "lib/" ghc-name-version "/package.conf.d"))
 
         (define db-dir
           (string-append #$output "/" db-subdir))
-        
+
         (define (conf-files top)
           (find-files (string-append top "/" db-subdir) "\\.conf$"))
 
         (define (copy-conf-file conf)
           (let ((base (basename conf)))
             (copy-file conf (string-append db-dir "/" base))))
-        
+
         (system* (string-append #+ghc "/bin/ghc-pkg") "init" db-dir)
         (for-each copy-conf-file
                   (append-map conf-files
