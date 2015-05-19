@@ -368,9 +368,10 @@ Unless @code{--disable-daemon} was passed to @command{configure}, the
 following packages are also needed:
 
 @itemize
-@item @url{http://sqlite.org, SQLite 3}
-@item @url{http://www.bzip.org, libbz2}
-@item @url{http://gcc.gnu.org, GCC's g++}
+@item @url{http://sqlite.org, SQLite 3};
+@item @url{http://www.bzip.org, libbz2};
+@item @url{http://gcc.gnu.org, GCC's g++}, with support for the
+C++11 standard.
 @end itemize
 
 When a working installation of @url{http://nixos.org/nix/, the Nix package

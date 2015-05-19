@@ -5,8 +5,11 @@ AC_MSG_RESULT([$guix_build_daemon])
 
 dnl C++ environment.  This macro must be used unconditionnaly.
 AC_PROG_CXX
+AC_LANG([C++])
 
 if test "x$guix_build_daemon" = "xyes"; then
+
+  GUIX_ASSERT_CXX11
 
   AC_PROG_RANLIB
   AC_CONFIG_HEADER([nix/config.h])
