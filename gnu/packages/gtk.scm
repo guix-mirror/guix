@@ -505,7 +505,8 @@ application suites.")
       ("libxdamage" ,libxdamage)
       ("pango" ,pango)))
    (inputs
-    `(("libxml2" ,libxml2)
+    `(("librsvg" ,librsvg)                        ;for gtk-encode-symbolic-svg
+      ("libxml2" ,libxml2)
       ("cups" ,cups)))                            ;for printing support
    (native-inputs
     `(("perl" ,perl)
@@ -537,7 +538,18 @@ application suites.")
                         "demos/gtk-demo/Makefile.in")
            (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
          #t)
-       %standard-phases)))))
+       (alist-cons-after
+        'install 'wrap-gtk-encode-symbolic-svg
+        ;; By using GdkPixbuf, gtk-encode-symbolic-svg needs to know
+        ;; librsvg's loaders.cache to handle SVG files.
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (prog (string-append out "/bin/gtk-encode-symbolic-svg"))
+                 (librsvg (assoc-ref inputs "librsvg"))
+                 (loaders.cache (find-files librsvg "^loaders\\.cache$")))
+            (wrap-program prog
+              `("GDK_PIXBUF_MODULE_FILE" = ,loaders.cache))))
+        %standard-phases))))))
 
 ;;;
 ;;; Guile bindings.
