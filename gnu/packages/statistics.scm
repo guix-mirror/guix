@@ -50,7 +50,8 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dagyqgvi8i3nw158qi2zpwm04s4ffzvnmk5niaksvxs30zrbbpm"))))
+                "0dagyqgvi8i3nw158qi2zpwm04s4ffzvnmk5niaksvxs30zrbbpm"))
+              (patches (list (search-patch "r-fix-15899.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
