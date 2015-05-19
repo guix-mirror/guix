@@ -38,6 +38,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -90,6 +91,7 @@
        ;; ("texlive-core" ,texlive-core)
        ("texinfo" ,texinfo)
        ("m4" ,m4)
+       ("libx11" ,libx11)
 
        ("source"
 
