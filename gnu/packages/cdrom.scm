@@ -124,14 +124,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.3.8")
+    (version "1.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0zhhj9lr9z7hnb2alac54mc28w1l0mbanphhpmy3ylsi8rih84lh"))))
+               "0mhfxn2idkrw1i65a5y4gnb1fig85zpnszb9ax7w4a2v062y1l8b"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
