@@ -90,6 +90,7 @@
             references
             requisites
             referrers
+            optimize-store
             topologically-sorted
             valid-derivers
             query-derivation-outputs
@@ -171,7 +172,8 @@
   (query-substitutable-path-infos 30)
   (query-valid-paths 31)
   (query-substitutable-paths 32)
-  (query-valid-derivers 33))
+  (query-valid-derivers 33)
+  (optimize-store 34))
 
 (define-enumerate-type hash-algo
   ;; hash.hh
@@ -759,6 +761,12 @@ topological order."
 substitutable.  For each substitutable path, a `substitutable?' object is
 returned."
              substitutable-path-list))
+
+(define-operation (optimize-store)
+  "Optimize the store by hard-linking identical files (\"deduplication\".)
+Return #t on success."
+  ;; Note: the daemon in Guix <= 0.8.2 does not implement this RPC.
+  boolean)
 
 (define (run-gc server action to-delete min-freed)
   "Perform the garbage-collector operation ACTION, one of the
