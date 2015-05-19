@@ -82,12 +82,13 @@ public:
     PathSet queryFailedPaths();
 
     void clearFailedPaths(const PathSet & paths);
-    
+
+    void optimiseStore();
+
 private:
     AutoCloseFD fdSocket;
     FdSink to;
     FdSource from;
-    Pid child;
     unsigned int daemonVersion;
     bool initialised;
 

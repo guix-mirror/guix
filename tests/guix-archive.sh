@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -41,7 +41,6 @@ cmp "$archive" "$archive_alt"
 
 # Check the exit value and stderr upon import.
 guix archive --import < "$archive"
-guix archive --import < "$archive" 2>&1 | grep "import.*guile-bootstrap"
 
 if guix archive something-that-does-not-exist
 then false; else true; fi

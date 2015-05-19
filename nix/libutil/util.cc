@@ -1,5 +1,8 @@
 #include "config.h"
 
+#include "util.hh"
+#include "affinity.hh"
+
 #include <iostream>
 #include <cerrno>
 #include <cstdio>
@@ -15,8 +18,6 @@
 #ifdef __APPLE__
 #include <sys/syscall.h>
 #endif
-
-#include "util.hh"
 
 
 extern char * * environ;
@@ -125,7 +126,6 @@ Path canonPath(const Path & path, bool resolveSymlinks)
                 i = temp.begin(); /* restart */
                 end = temp.end();
                 s = "";
-                /* !!! potential for infinite loop */
             }
         }
     }
@@ -202,9 +202,10 @@ bool isLink(const Path & path)
 }
 
 
-Strings readDirectory(const Path & path)
+DirEntries readDirectory(const Path & path)
 {
-    Strings names;
+    DirEntries entries;
+    entries.reserve(64);
 
     AutoCloseDir dir = opendir(path.c_str());
     if (!dir) throw SysError(format("opening directory `%1%'") % path);
@@ -214,11 +215,21 @@ Strings readDirectory(const Path & path)
         checkInterrupt();
         string name = dirent->d_name;
         if (name == "." || name == "..") continue;
-        names.push_back(name);
+        entries.emplace_back(name, dirent->d_ino, dirent->d_type);
     }
     if (errno) throw SysError(format("reading directory `%1%'") % path);
 
-    return names;
+    return entries;
+}
+
+
+unsigned char getFileType(const Path & path)
+{
+    struct stat st = lstat(path);
+    if (S_ISDIR(st.st_mode)) return DT_DIR;
+    if (S_ISLNK(st.st_mode)) return DT_LNK;
+    if (S_ISREG(st.st_mode)) return DT_REG;
+    return DT_UNKNOWN;
 }
 
 
@@ -293,16 +304,14 @@ static void _deletePath(const Path & path, unsigned long long & bytesFreed)
         bytesFreed += st.st_blocks * 512;
 
     if (S_ISDIR(st.st_mode)) {
-        Strings names = readDirectory(path);
-
         /* Make the directory writable. */
         if (!(st.st_mode & S_IWUSR)) {
             if (chmod(path.c_str(), st.st_mode | S_IWUSR) == -1)
                 throw SysError(format("making `%1%' writable") % path);
         }
 
-        for (Strings::iterator i = names.begin(); i != names.end(); ++i)
-            _deletePath(path + "/" + *i, bytesFreed);
+        for (auto & i : readDirectory(path))
+            _deletePath(path + "/" + i.name, bytesFreed);
     }
 
     if (remove(path.c_str()) == -1)
@@ -379,6 +388,9 @@ Paths createDirs(const Path & path)
         st = lstat(path);
         created.push_back(path);
     }
+
+    if (S_ISLNK(st.st_mode) && stat(path.c_str(), &st) == -1)
+        throw SysError(format("statting symlink `%1%'") % path);
 
     if (!S_ISDIR(st.st_mode)) throw Error(format("`%1%' is not a directory") % path);
 
@@ -466,10 +478,18 @@ void warnOnce(bool & haveWarned, const FormatOrString & fs)
 }
 
 
+static void defaultWriteToStderr(const unsigned char * buf, size_t count)
+{
+    writeFull(STDERR_FILENO, buf, count);
+}
+
+
 void writeToStderr(const string & s)
 {
     try {
-        _writeToStderr((const unsigned char *) s.data(), s.size());
+        auto p = _writeToStderr;
+        if (!p) p = defaultWriteToStderr;
+        p((const unsigned char *) s.data(), s.size());
     } catch (SysError & e) {
         /* Ignore failing writes to stderr if we're in an exception
            handler, otherwise throw an exception.  We need to ignore
@@ -478,12 +498,6 @@ void writeToStderr(const string & s)
            been closed unexpectedly. */
         if (!std::uncaught_exception()) throw;
     }
-}
-
-
-static void defaultWriteToStderr(const unsigned char * buf, size_t count)
-{
-    writeFull(STDERR_FILENO, buf, count);
 }
 
 
@@ -707,10 +721,14 @@ void AutoCloseDir::close()
 
 
 Pid::Pid()
+    : pid(-1), separatePG(false), killSignal(SIGKILL)
 {
-    pid = -1;
-    separatePG = false;
-    killSignal = SIGKILL;
+}
+
+
+Pid::Pid(pid_t pid)
+    : pid(pid), separatePG(false), killSignal(SIGKILL)
+{
 }
 
 
@@ -734,11 +752,12 @@ Pid::operator pid_t()
 }
 
 
-void Pid::kill()
+void Pid::kill(bool quiet)
 {
     if (pid == -1 || pid == 0) return;
 
-    printMsg(lvlError, format("killing process %1%") % pid);
+    if (!quiet)
+        printMsg(lvlError, format("killing process %1%") % pid);
 
     /* Send the requested signal to the child.  If it has its own
        process group, send the signal to every process in the child
@@ -801,43 +820,30 @@ void killUser(uid_t uid)
        users to which the current process can send signals.  So we
        fork a process, switch to uid, and send a mass kill. */
 
-    Pid pid;
-    pid = fork();
-    switch (pid) {
+    Pid pid = startProcess([&]() {
 
-    case -1:
-        throw SysError("unable to fork");
+        if (setuid(uid) == -1)
+            throw SysError("setting uid");
 
-    case 0:
-        try { /* child */
-
-            if (setuid(uid) == -1)
-                throw SysError("setting uid");
-
-            while (true) {
+        while (true) {
 #ifdef __APPLE__
-                /* OSX's kill syscall takes a third parameter that, among other
-                   things, determines if kill(-1, signo) affects the calling
-                   process. In the OSX libc, it's set to true, which means
-                   "follow POSIX", which we don't want here
+            /* OSX's kill syscall takes a third parameter that, among
+               other things, determines if kill(-1, signo) affects the
+               calling process. In the OSX libc, it's set to true,
+               which means "follow POSIX", which we don't want here
                  */
-                if (syscall(SYS_kill, -1, SIGKILL, false) == 0) break;
+            if (syscall(SYS_kill, -1, SIGKILL, false) == 0) break;
 #else
-                if (kill(-1, SIGKILL) == 0) break;
+            if (kill(-1, SIGKILL) == 0) break;
 #endif
-                if (errno == ESRCH) break; /* no more processes */
-                if (errno != EINTR)
-                    throw SysError(format("cannot kill processes for uid `%1%'") % uid);
-            }
-
-        } catch (std::exception & e) {
-            writeToStderr((format("killing processes belonging to uid `%1%': %2%\n") % uid % e.what()).str());
-            _exit(1);
+            if (errno == ESRCH) break; /* no more processes */
+            if (errno != EINTR)
+                throw SysError(format("cannot kill processes for uid `%1%'") % uid);
         }
-        _exit(0);
-    }
 
-    /* parent */
+        _exit(0);
+    });
+
     int status = pid.wait(true);
     if (status != 0)
         throw Error(format("cannot kill processes for uid `%1%': %2%") % uid % statusToString(status));
@@ -850,6 +856,32 @@ void killUser(uid_t uid)
 
 
 //////////////////////////////////////////////////////////////////////
+
+
+pid_t startProcess(std::function<void()> fun,
+    bool dieWithParent, const string & errorPrefix, bool runExitHandlers)
+{
+    pid_t pid = fork();
+    if (pid == -1) throw SysError("unable to fork");
+
+    if (pid == 0) {
+        _writeToStderr = 0;
+        try {
+            restoreAffinity();
+            fun();
+        } catch (std::exception & e) {
+            try {
+                std::cerr << errorPrefix << e.what() << "\n";
+            } catch (...) { }
+        } catch (...) { }
+        if (runExitHandlers)
+            exit(1);
+        else
+            _exit(1);
+    }
+
+    return pid;
+}
 
 
 string runProgram(Path program, bool searchPath, const Strings & args)
@@ -867,32 +899,17 @@ string runProgram(Path program, bool searchPath, const Strings & args)
     pipe.create();
 
     /* Fork. */
-    Pid pid;
-    pid = maybeVfork();
+    Pid pid = startProcess([&]() {
+        if (dup2(pipe.writeSide, STDOUT_FILENO) == -1)
+            throw SysError("dupping stdout");
 
-    switch (pid) {
+        if (searchPath)
+            execvp(program.c_str(), (char * *) &cargs[0]);
+        else
+            execv(program.c_str(), (char * *) &cargs[0]);
 
-    case -1:
-        throw SysError("unable to fork");
-
-    case 0: /* child */
-        try {
-            if (dup2(pipe.writeSide, STDOUT_FILENO) == -1)
-                throw SysError("dupping stdout");
-
-            if (searchPath)
-                execvp(program.c_str(), (char * *) &cargs[0]);
-            else
-                execv(program.c_str(), (char * *) &cargs[0]);
-            throw SysError(format("executing `%1%'") % program);
-
-        } catch (std::exception & e) {
-            writeToStderr("error: " + string(e.what()) + "\n");
-        }
-        _exit(1);
-    }
-
-    /* Parent. */
+        throw SysError(format("executing `%1%'") % program);
+    });
 
     pipe.writeSide.close();
 
@@ -901,7 +918,7 @@ string runProgram(Path program, bool searchPath, const Strings & args)
     /* Wait for the child to finish. */
     int status = pid.wait(true);
     if (!statusOk(status))
-        throw Error(format("program `%1%' %2%")
+        throw ExecError(format("program `%1%' %2%")
             % program % statusToString(status));
 
     return result;
@@ -926,13 +943,6 @@ void closeOnExec(int fd)
         fcntl(fd, F_SETFD, prev | FD_CLOEXEC) == -1)
         throw SysError("setting close-on-exec flag");
 }
-
-
-#if HAVE_VFORK
-pid_t (*maybeVfork)() = vfork;
-#else
-pid_t (*maybeVfork)() = fork;
-#endif
 
 
 //////////////////////////////////////////////////////////////////////

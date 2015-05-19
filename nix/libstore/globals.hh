@@ -21,6 +21,12 @@ struct Settings {
 
     void set(const string & name, const string & value);
 
+    string get(const string & name, const string & def);
+
+    Strings get(const string & name, const Strings & def);
+
+    bool get(const string & name, bool def);
+
     void update();
 
     string pack();
@@ -142,10 +148,6 @@ struct Settings {
     /* Whether to build in chroot. */
     bool useChroot;
 
-    /* The directories from the host filesystem to be included in the
-       chroot. */
-    StringSet dirsInChroot;
-
     /* Set of ssh connection strings for the ssh substituter */
     Strings sshSubstituterHosts;
 
@@ -197,14 +199,20 @@ struct Settings {
     /* Whether to show a stack trace if Nix evaluation fails. */
     bool showTrace;
 
+    /* A list of URL prefixes that can return Nix build logs. */
+    Strings logServers;
+
+    /* Whether the importNative primop should be enabled */
+    bool enableImportNative;
+
 private:
     SettingsMap settings, overrides;
 
-    void get(string & res, const string & name);
-    void get(bool & res, const string & name);
-    void get(StringSet & res, const string & name);
-    void get(Strings & res, const string & name);
-    template<class N> void get(N & res, const string & name);
+    void _get(string & res, const string & name);
+    void _get(bool & res, const string & name);
+    void _get(StringSet & res, const string & name);
+    void _get(Strings & res, const string & name);
+    template<class N> void _get(N & res, const string & name);
 };
 
 

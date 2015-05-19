@@ -2,6 +2,7 @@
 
 #include "globals.hh"
 #include "util.hh"
+#include "archive.hh"
 
 #include <map>
 #include <algorithm>
@@ -55,6 +56,7 @@ Settings::Settings()
     envKeepDerivations = false;
     lockCPU = getEnv("NIX_AFFINITY_HACK", "1") == "1";
     showTrace = false;
+    enableImportNative = false;
 }
 
 
@@ -112,35 +114,61 @@ void Settings::set(const string & name, const string & value)
 }
 
 
+string Settings::get(const string & name, const string & def)
+{
+    auto i = settings.find(name);
+    if (i == settings.end()) return def;
+    return i->second;
+}
+
+
+Strings Settings::get(const string & name, const Strings & def)
+{
+    auto i = settings.find(name);
+    if (i == settings.end()) return def;
+    return tokenizeString<Strings>(i->second);
+}
+
+
+bool Settings::get(const string & name, bool def)
+{
+    bool res = def;
+    _get(res, name);
+    return res;
+}
+
+
 void Settings::update()
 {
-    get(tryFallback, "build-fallback");
-    get(maxBuildJobs, "build-max-jobs");
-    get(buildCores, "build-cores");
-    get(thisSystem, "system");
-    get(maxSilentTime, "build-max-silent-time");
-    get(buildTimeout, "build-timeout");
-    get(reservedSize, "gc-reserved-space");
-    get(fsyncMetadata, "fsync-metadata");
-    get(useSQLiteWAL, "use-sqlite-wal");
-    get(syncBeforeRegistering, "sync-before-registering");
-    get(useSubstitutes, "build-use-substitutes");
-    get(buildUsersGroup, "build-users-group");
-    get(useChroot, "build-use-chroot");
-    get(dirsInChroot, "build-chroot-dirs");
-    get(impersonateLinux26, "build-impersonate-linux-26");
-    get(keepLog, "build-keep-log");
-    get(compressLog, "build-compress-log");
-    get(maxLogSize, "build-max-log-size");
-    get(cacheFailure, "build-cache-failure");
-    get(pollInterval, "build-poll-interval");
-    get(checkRootReachability, "gc-check-reachability");
-    get(gcKeepOutputs, "gc-keep-outputs");
-    get(gcKeepDerivations, "gc-keep-derivations");
-    get(autoOptimiseStore, "auto-optimise-store");
-    get(envKeepDerivations, "env-keep-derivations");
-    get(sshSubstituterHosts, "ssh-substituter-hosts");
-    get(useSshSubstituter, "use-ssh-substituter");
+    _get(tryFallback, "build-fallback");
+    _get(maxBuildJobs, "build-max-jobs");
+    _get(buildCores, "build-cores");
+    _get(thisSystem, "system");
+    _get(maxSilentTime, "build-max-silent-time");
+    _get(buildTimeout, "build-timeout");
+    _get(reservedSize, "gc-reserved-space");
+    _get(fsyncMetadata, "fsync-metadata");
+    _get(useSQLiteWAL, "use-sqlite-wal");
+    _get(syncBeforeRegistering, "sync-before-registering");
+    _get(useSubstitutes, "build-use-substitutes");
+    _get(buildUsersGroup, "build-users-group");
+    _get(useChroot, "build-use-chroot");
+    _get(impersonateLinux26, "build-impersonate-linux-26");
+    _get(keepLog, "build-keep-log");
+    _get(compressLog, "build-compress-log");
+    _get(maxLogSize, "build-max-log-size");
+    _get(cacheFailure, "build-cache-failure");
+    _get(pollInterval, "build-poll-interval");
+    _get(checkRootReachability, "gc-check-reachability");
+    _get(gcKeepOutputs, "gc-keep-outputs");
+    _get(gcKeepDerivations, "gc-keep-derivations");
+    _get(autoOptimiseStore, "auto-optimise-store");
+    _get(envKeepDerivations, "env-keep-derivations");
+    _get(sshSubstituterHosts, "ssh-substituter-hosts");
+    _get(useSshSubstituter, "use-ssh-substituter");
+    _get(logServers, "log-servers");
+    _get(enableImportNative, "allow-unsafe-native-code-during-evaluation");
+    _get(useCaseHack, "use-case-hack");
 
     string subs = getEnv("NIX_SUBSTITUTERS", "default");
     if (subs == "default") {
@@ -158,7 +186,7 @@ void Settings::update()
 }
 
 
-void Settings::get(string & res, const string & name)
+void Settings::_get(string & res, const string & name)
 {
     SettingsMap::iterator i = settings.find(name);
     if (i == settings.end()) return;
@@ -166,7 +194,7 @@ void Settings::get(string & res, const string & name)
 }
 
 
-void Settings::get(bool & res, const string & name)
+void Settings::_get(bool & res, const string & name)
 {
     SettingsMap::iterator i = settings.find(name);
     if (i == settings.end()) return;
@@ -177,7 +205,7 @@ void Settings::get(bool & res, const string & name)
 }
 
 
-void Settings::get(StringSet & res, const string & name)
+void Settings::_get(StringSet & res, const string & name)
 {
     SettingsMap::iterator i = settings.find(name);
     if (i == settings.end()) return;
@@ -186,7 +214,7 @@ void Settings::get(StringSet & res, const string & name)
     res.insert(ss.begin(), ss.end());
 }
 
-void Settings::get(Strings & res, const string & name)
+void Settings::_get(Strings & res, const string & name)
 {
     SettingsMap::iterator i = settings.find(name);
     if (i == settings.end()) return;
@@ -194,7 +222,7 @@ void Settings::get(Strings & res, const string & name)
 }
 
 
-template<class N> void Settings::get(N & res, const string & name)
+template<class N> void Settings::_get(N & res, const string & name)
 {
     SettingsMap::iterator i = settings.find(name);
     if (i == settings.end()) return;

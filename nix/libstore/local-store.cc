@@ -358,7 +358,17 @@ LocalStore::~LocalStore()
             i->second.to.close();
             i->second.from.close();
             i->second.error.close();
-            i->second.pid.wait(true);
+            if (i->second.pid != -1)
+                i->second.pid.wait(true);
+        }
+    } catch (...) {
+        ignoreException();
+    }
+
+    try {
+        if (fdTempRoots != -1) {
+            fdTempRoots.close();
+            unlink(fnTempRoots.c_str());
         }
     } catch (...) {
         ignoreException();
@@ -551,9 +561,9 @@ static void canonicalisePathMetaData_(const Path & path, uid_t fromUid, InodesSe
     if (lstat(path.c_str(), &st))
         throw SysError(format("getting attributes of path `%1%'") % path);
 
-    /* Really make sure that the path is of a supported type.  This
-       has already been checked in dumpPath(). */
-    assert(S_ISREG(st.st_mode) || S_ISDIR(st.st_mode) || S_ISLNK(st.st_mode));
+    /* Really make sure that the path is of a supported type. */
+    if (!(S_ISREG(st.st_mode) || S_ISDIR(st.st_mode) || S_ISLNK(st.st_mode)))
+        throw Error(format("file ‘%1%’ has an unsupported type") % path);
 
     /* Fail if the file is not owned by the build user.  This prevents
        us from messing up the ownership/permissions of files
@@ -593,9 +603,9 @@ static void canonicalisePathMetaData_(const Path & path, uid_t fromUid, InodesSe
     }
 
     if (S_ISDIR(st.st_mode)) {
-        Strings names = readDirectory(path);
-        foreach (Strings::iterator, i, names)
-            canonicalisePathMetaData_(path + "/" + *i, fromUid, inodesSeen);
+        DirEntries entries = readDirectory(path);
+        for (auto & i : entries)
+            canonicalisePathMetaData_(path + "/" + i.name, fromUid, inodesSeen);
     }
 }
 
@@ -1083,31 +1093,16 @@ void LocalStore::startSubstituter(const Path & substituter, RunningSubstituter &
 
     setSubstituterEnv();
 
-    run.pid = maybeVfork();
-
-    switch (run.pid) {
-
-    case -1:
-        throw SysError("unable to fork");
-
-    case 0: /* child */
-        try {
-            restoreAffinity();
-            if (dup2(toPipe.readSide, STDIN_FILENO) == -1)
-                throw SysError("dupping stdin");
-            if (dup2(fromPipe.writeSide, STDOUT_FILENO) == -1)
-                throw SysError("dupping stdout");
-            if (dup2(errorPipe.writeSide, STDERR_FILENO) == -1)
-                throw SysError("dupping stderr");
-            execl(substituter.c_str(), substituter.c_str(), "--query", NULL);
-            throw SysError(format("executing `%1%'") % substituter);
-        } catch (std::exception & e) {
-            std::cerr << "error: " << e.what() << std::endl;
-        }
-        _exit(1);
-    }
-
-    /* Parent. */
+    run.pid = startProcess([&]() {
+        if (dup2(toPipe.readSide, STDIN_FILENO) == -1)
+            throw SysError("dupping stdin");
+        if (dup2(fromPipe.writeSide, STDOUT_FILENO) == -1)
+            throw SysError("dupping stdout");
+        if (dup2(errorPipe.writeSide, STDERR_FILENO) == -1)
+            throw SysError("dupping stderr");
+        execl(substituter.c_str(), substituter.c_str(), "--query", NULL);
+        throw SysError(format("executing `%1%'") % substituter);
+    });
 
     run.program = baseNameOf(substituter);
     run.to = toPipe.writeSide.borrow();
@@ -1170,8 +1165,7 @@ string LocalStore::getLineFromSubstituter(RunningSubstituter & run)
             string::size_type p;
             while (((p = err.find('\n')) != string::npos)
 		   || ((p = err.find('\r')) != string::npos)) {
-	        string thing(err, 0, p + 1);
-	        writeToStderr(run.program + ": " + thing);
+                printMsg(lvlError, run.program + ": " + string(err, 0, p));
                 err = string(err, p + 1);
             }
         }
@@ -1503,7 +1497,8 @@ void LocalStore::exportPath(const Path & path, bool sign,
 {
     assertStorePath(path);
 
-    addTempRoot(path);
+    printMsg(lvlInfo, format("exporting path `%1%'") % path);
+
     if (!isValidPath(path))
         throw Error(format("path `%1%' is not valid") % path);
 
@@ -1612,8 +1607,6 @@ Path LocalStore::importPath(bool requireSignature, Source & source)
         throw Error("Nix archive cannot be imported; wrong format");
 
     Path dstPath = readStorePath(hashAndReadSource);
-
-    printMsg(lvlInfo, format("importing path `%1%'") % dstPath);
 
     PathSet references = readStorePaths<PathSet>(hashAndReadSource);
 
@@ -1747,8 +1740,8 @@ bool LocalStore::verifyStore(bool checkContents, bool repair)
     /* Acquire the global GC lock to prevent a garbage collection. */
     AutoCloseFD fdGCLock = openGCLock(ltWrite);
 
-    Paths entries = readDirectory(settings.nixStore);
-    PathSet store(entries.begin(), entries.end());
+    PathSet store;
+    for (auto & i : readDirectory(settings.nixStore)) store.insert(i.name);
 
     /* Check whether all valid paths actually exist. */
     printMsg(lvlInfo, "checking path existence...");
@@ -1898,9 +1891,8 @@ void LocalStore::markContentsGood(const Path & path)
 PathSet LocalStore::queryValidPathsOld()
 {
     PathSet paths;
-    Strings entries = readDirectory(settings.nixDBPath + "/info");
-    foreach (Strings::iterator, i, entries)
-        if (i->at(0) != '.') paths.insert(settings.nixStore + "/" + *i);
+    for (auto & i : readDirectory(settings.nixDBPath + "/info"))
+        if (i.name.at(0) != '.') paths.insert(settings.nixStore + "/" + i.name);
     return paths;
 }
 
@@ -1987,9 +1979,8 @@ static void makeMutable(const Path & path)
     if (!S_ISDIR(st.st_mode) && !S_ISREG(st.st_mode)) return;
 
     if (S_ISDIR(st.st_mode)) {
-        Strings names = readDirectory(path);
-        foreach (Strings::iterator, i, names)
-            makeMutable(path + "/" + *i);
+        for (auto & i : readDirectory(path))
+            makeMutable(path + "/" + i.name);
     }
 
     /* The O_NOFOLLOW is important to prevent us from changing the
