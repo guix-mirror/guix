@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +44,8 @@ Invoke the garbage collector.\n"))
   (display (_ "
   -d, --delete           attempt to delete PATHS"))
   (display (_ "
+      --optimize         optimize the store by deduplicating identical files"))
+  (display (_ "
       --list-dead        list dead paths"))
   (display (_ "
       --list-live        list live paths"))
@@ -87,6 +89,10 @@ Invoke the garbage collector.\n"))
         (option '(#\d "delete") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'delete
+                              (alist-delete 'action result))))
+        (option '("optimize") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'optimize
                               (alist-delete 'action result))))
         (option '("list-dead") #f #f
                 (lambda (opt name arg result)
@@ -169,6 +175,8 @@ Invoke the garbage collector.\n"))
          (list-relatives requisites))
         ((list-referrers)
          (list-relatives referrers))
+        ((optimize)
+         (optimize-store store))
         ((list-dead)
          (for-each (cut simple-format #t "~a~%" <>)
                    (dead-paths store)))

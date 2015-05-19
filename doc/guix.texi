@@ -1472,6 +1472,17 @@ Attempt to delete all the store files and directories specified as
 arguments.  This fails if some of the files are not in the store, or if
 they are still live.
 
+@item --optimize
+@cindex deduplication
+Optimize the store by hard-linking identical files---this is
+@dfn{deduplication}.
+
+The daemon performs deduplication after each successful build or archive
+import, unless it was started with @code{--disable-deduplication}
+(@pxref{Invoking guix-daemon, @code{--disable-deduplication}}).  Thus,
+this option is primarily useful when the daemon was running with
+@code{--disable-deduplication}.
+
 @item --list-dead
 Show the list of dead files and directories still present in the
 store---i.e., files and directories no longer reachable from any root.
