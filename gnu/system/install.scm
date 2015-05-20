@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +72,14 @@ under /root/.guix-profile where GUIX is installed."
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
                             "--owner=root:0" "--group=root:0"
-                            "-cvf" #$output ".")))))
+                            "-cvf" #$output
+                            ;; Avoid adding /, /var, or /root to the tarball,
+                            ;; so that the ownership and permissions of those
+                            ;; directories will not be overwritten when
+                            ;; extracting the archive.
+                            "./root/.guix-profile"
+                            "./var/guix"
+                            "./gnu")))))
 
     (gexp->derivation "guix-tarball.tar.xz" build
                       #:references-graphs `(("profile" ,profile))
