@@ -57,6 +57,7 @@
             string->number*
             size->number
             show-what-to-build
+            show-what-to-build*
             show-manifest-transaction
             call-with-error-handling
             with-error-handling
@@ -452,6 +453,9 @@ available for download."
                       (length download))
                   (null? download) download)))
     (pair? build)))
+
+(define show-what-to-build*
+  (store-lift show-what-to-build))
 
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII

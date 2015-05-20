@@ -192,9 +192,6 @@ packages."
    (append-map transitive-inputs packages)))
 
 ;; TODO: Deduplicate these.
-(define show-what-to-build*
-  (store-lift show-what-to-build))
-
 (define set-build-options-from-command-line*
   (store-lift set-build-options-from-command-line))
 

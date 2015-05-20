@@ -27,9 +27,6 @@
              (gnu system install)
              (ice-9 match))
 
-(define show-what-to-build*
-  (store-lift show-what-to-build))
-
 (define copy-file*
   (lift2 copy-file %store-monad))
 

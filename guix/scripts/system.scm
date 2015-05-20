@@ -67,8 +67,6 @@
   (store-lift references))
 (define topologically-sorted*
   (store-lift topologically-sorted))
-(define show-what-to-build*
-  (store-lift show-what-to-build))
 
 
 (define* (copy-item item target
