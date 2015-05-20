@@ -1165,7 +1165,8 @@ string LocalStore::getLineFromSubstituter(RunningSubstituter & run)
             string::size_type p;
             while (((p = err.find('\n')) != string::npos)
 		   || ((p = err.find('\r')) != string::npos)) {
-                printMsg(lvlError, run.program + ": " + string(err, 0, p));
+	        string thing(err, 0, p + 1);
+		writeToStderr(run.program + ": " + thing);
                 err = string(err, p + 1);
             }
         }
