@@ -109,11 +109,8 @@ or a TCP port number), and return it."
                   (%ftp-login "anonymous" "guix@example.com" s)
                   (%make-ftp-connection s ai))
                 (begin
-                  (format (current-error-port)
-                          "FTP to `~a' failed: ~A: ~A~%"
-                          host code message)
                   (close s)
-                  #f))))
+                  (throw 'ftp-error s "log-in" code message)))))
 
         (lambda args
           ;; Connection failed, so try one of the other addresses.
