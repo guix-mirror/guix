@@ -191,10 +191,6 @@ packages."
   (delete-duplicates
    (append-map transitive-inputs packages)))
 
-;; TODO: Deduplicate these.
-(define set-build-options-from-command-line*
-  (store-lift set-build-options-from-command-line))
-
 (define (build-inputs inputs opts)
   "Build the packages in INPUTS using the build options in OPTS."
   (let ((substitutes? (assoc-ref opts 'substitutes?))

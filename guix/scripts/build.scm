@@ -37,6 +37,7 @@
   #:autoload   (guix download) (download-to-store)
   #:export (%standard-build-options
             set-build-options-from-command-line
+            set-build-options-from-command-line*
             show-build-options-help
 
             guix-build))
@@ -138,6 +139,9 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:timeout (assoc-ref opts 'timeout)
                      #:print-build-trace (assoc-ref opts 'print-build-trace?)
                      #:verbosity (assoc-ref opts 'verbosity)))
+
+(define set-build-options-from-command-line*
+  (store-lift set-build-options-from-command-line))
 
 (define %standard-build-options
   ;; List of standard command-line options for tools that build something.
