@@ -252,7 +252,7 @@ and keep up to date translations of documentation.")
        ("shared-mime-info" ,shared-mime-info)
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
-       
+
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
@@ -661,15 +661,15 @@ dealing with different structured file formats.")
         (alist-cons-after
          'install 'generate-full-cache
          (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((loaders-directory 
+           (let ((loaders-directory
                   (string-append (assoc-ref outputs "out")
                                  "/lib/gdk-pixbuf-2.0/2.10.0/loaders")))
              (zero?
-              (system 
-               (string-append 
-                "gdk-pixbuf-query-loaders " 
+              (system
+               (string-append
+                "gdk-pixbuf-query-loaders "
                 loaders-directory "/libpixbufloader-svg.so "
-                (string-join (find-files (assoc-ref inputs "gdk-pixbuf") 
+                (string-join (find-files (assoc-ref inputs "gdk-pixbuf")
                                          "libpixbufloader-.*\\.so") " ")
                 "> " loaders-directory ".cache")))))
          %standard-phases))))
@@ -720,7 +720,7 @@ library.")
 Definition Language (idl) files, which is a specification for defining
 portable interfaces. libidl was initially written for orbit (the orb from the
 GNOME project, and the primary means of libidl distribution).  However, the
-functionality was designed to be as reusable and portable as possible.") 
+functionality was designed to be as reusable and portable as possible.")
     (license license:lgpl2.0+)))
 
 
@@ -730,7 +730,7 @@ functionality was designed to be as reusable and portable as possible.")
     (version "2.14.19")
     (source (origin
               (method url-fetch)
-              (uri (let ((upstream-name "ORBit2")) 
+              (uri (let ((upstream-name "ORBit2"))
 		     (string-append "mirror://gnome/sources/" upstream-name "/"
                                     (version-major+minor version) "/"
                                     upstream-name "-" version ".tar.bz2")))
@@ -755,11 +755,11 @@ functionality was designed to be as reusable and portable as possible.")
     (home-page "https://projects.gnome.org/orbit2/")
     (synopsis "CORBA 2.4-compliant Object Request Broker")
     (description  "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)
-featuring mature C, C++ and Python bindings.") 
+featuring mature C, C++ and Python bindings.")
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving a version.
     ;; SOME of the code files have licence notices for GPLv2+
     ;; The tarball contains files of the text of GPLv2 and LGPLv2
-    (license license:gpl2+))) 
+    (license license:gpl2+)))
 
 
 (define-public libbonobo
@@ -802,7 +802,7 @@ featuring mature C, C++ and Python bindings.")
     (home-page "https://developer.gnome.org/libbonobo/")
     (synopsis "Framework for creating reusable components for use in GNOME applications")
     (description "Bonobo is a framework for creating reusable components for
-use in GNOME applications, built on top of CORBA.") 
+use in GNOME applications, built on top of CORBA.")
     ;; Licence not explicitly stated.  Source files contain no licence notices.
     ;; Tarball contains text of both GPLv2 and LGPLv2
     ;; GPLv2 covers both conditions
@@ -815,7 +815,7 @@ use in GNOME applications, built on top of CORBA.")
     (version "3.2.6")
     (source (origin
               (method url-fetch)
-	      (uri 
+	      (uri
 	       (let ((upstream-name "GConf"))
 		 (string-append "mirror://gnome/sources/" upstream-name "/"
                                 (version-major+minor version) "/"
@@ -823,11 +823,11 @@ use in GNOME applications, built on top of CORBA.")
               (sha256
                (base32 "0k3q9nh53yhc9qxf1zaicz4sk8p3kzq4ndjdsgpaa2db0ccbj4hr"))))
     (build-system gnu-build-system)
-    (inputs `(("glib" ,glib)
-              ("dbus" ,dbus)
+    (inputs `(("dbus" ,dbus)
               ("dbus-glib" ,dbus-glib)
               ("libxml2" ,libxml2)))
-    (propagated-inputs `(("orbit2" ,orbit2))) ; referred to in the .pc file
+    (propagated-inputs `(("glib" ,glib) ; referred to in the .pc file
+                         ("orbit2" ,orbit2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
@@ -836,7 +836,7 @@ use in GNOME applications, built on top of CORBA.")
     (synopsis "Store application preferences")
     (description "Gconf is a system for storing application preferences.  It
 is intended for user preferences; not arbitrary data storage.")
-    (license license:lgpl2.0+))) 
+    (license license:lgpl2.0+)))
 
 
 (define-public gnome-mime-data
@@ -891,8 +891,7 @@ designed to be accessed through the MIME functions in GnomeVFS.")
            (substitute* "test/test-async-cancel.c"
              (("EXIT_FAILURE") "77")))
          %standard-phases))))
-    (inputs `(("glib" ,glib)
-              ("libxml2" ,libxml2)
+    (inputs `(("libxml2" ,libxml2)
               ("dbus-glib" ,dbus-glib)
               ("dbus" ,dbus)
               ("gconf" ,gconf)
@@ -929,7 +928,7 @@ to access local and remote files with a single consistent API.")
      `(#:phases
        (alist-cons-before
         'configure 'enable-deprecated
-        (lambda _ 
+        (lambda _
           (substitute* "libgnome/Makefile.in"
             (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
         %standard-phases)))
@@ -947,8 +946,7 @@ to access local and remote files with a single consistent API.")
      `(("libcanberra" ,libcanberra)
        ("libbonobo" ,libbonobo)
        ("gconf" ,gconf)
-       ("gnome-vfs" ,gnome-vfs)
-       ("glib" ,glib)))
+       ("gnome-vfs" ,gnome-vfs)))
     (home-page "https://developer.gnome.org/libgnome/")
     (synopsis "Useful routines for building applications")
     (description  "The libgnome library provides a number of useful routines
@@ -975,7 +973,7 @@ files and URIs, and displaying help.")
      `(("pkg-config" ,pkg-config)))
     (home-page "https://people.gnome.org/~mathieu/libart")
     (synopsis "2D drawing library")
-    (description  "Libart is a 2D drawing library intended as a 
+    (description  "Libart is a 2D drawing library intended as a
 high-quality vector-based 2D library with antialiasing and alpha composition.")
     (license license:lgpl2.0+)))
 
@@ -1147,7 +1145,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
               ("glib" ,glib)
               ("gnome-icon-theme" ,gnome-icon-theme)
               ("libgnomecanvas" ,libgnomecanvas)
-              ("libxml2" ,libxml2))) 
+              ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1176,7 +1174,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
         (lambda* (#:key inputs #:allow-other-keys)
           (let ((xorg-server (assoc-ref inputs "xorg-server"))
                 (disp ":1"))
-            
+
             (setenv "HOME" (getcwd))
             (setenv "DISPLAY" disp)
             ;; There must be a running X server and make check doesn't start one.
@@ -1273,7 +1271,7 @@ Hints specification (EWMH).")
     (home-page "https://developer.gnome.org/goffice/")
     (synopsis "Document-centric objects and utilities")
     (description "A GLib/GTK+ set of document-centric objects and utilities.")
-    (license 
+    (license
      ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
      ;; Note: NOT LGPL
      (list license:gpl2 license:gpl3))))
@@ -1321,7 +1319,7 @@ Hints specification (EWMH).")
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
        ;; See https://bugzilla.gnome.org/show_bug.cgi?id=732387
-       #:tests? #f 
+       #:tests? #f
        #:phases
        (alist-cons-before
         'configure 'pre-conf
@@ -1330,9 +1328,9 @@ Hints specification (EWMH).")
           ;; I am informed that this only affects the possibility to embed a
           ;; spreadsheet inside an Abiword document.   So presumably when we
           ;; package Abiword we'll have to refer it to this directory.
-          (substitute* "configure" 
+          (substitute* "configure"
             (("^GOFFICE_PLUGINS_DIR=.*")
-             (string-append "GOFFICE_PLUGINS_DIR=" 
+             (string-append "GOFFICE_PLUGINS_DIR="
                             (assoc-ref outputs "out") "/goffice/plugins"))))
         %standard-phases)))
     (inputs
@@ -1367,7 +1365,7 @@ engineering.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/" 
+       (uri (string-append "mirror://gnome/sources/" name "/"
                            (version-major+minor version) "/" name "-"
                            version ".tar.xz"))
        (sha256
@@ -1392,8 +1390,8 @@ engineering.")
         ;; gdk-pixbuf because the latter does not include support for SVG
         ;; files.
         (lambda* (#:key inputs #:allow-other-keys)
-          (setenv "GDK_PIXBUF_MODULE_FILE" 
-                  (car (find-files (assoc-ref inputs "librsvg") 
+          (setenv "GDK_PIXBUF_MODULE_FILE"
+                  (car (find-files (assoc-ref inputs "librsvg")
                                    "loaders\\.cache"))))
         %standard-phases)))
     (home-page "https://launchpad.net/gnome-themes-standard")
@@ -1502,7 +1500,7 @@ editors, IDEs, etc.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/" 
+                    "mirror://gnome/sources/" name "/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
               (sha256
@@ -1524,7 +1522,7 @@ editors, IDEs, etc.")
                    ; or /etc/machine-id.
        #:configure-flags
        ;; Set the correct RUNPATH in binaries.
-       (list (string-append "LDFLAGS=-Wl,-rpath=" 
+       (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib")
              "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
        #:phases
@@ -1533,12 +1531,12 @@ editors, IDEs, etc.")
         (lambda* (#:key inputs #:allow-other-keys)
           (substitute* "docs/Makefile.in"
             (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-             (string-append (assoc-ref inputs "docbook-xsl") 
+             (string-append (assoc-ref inputs "docbook-xsl")
                             "/xml/xsl/docbook-xsl-"
                             ,(package-version docbook-xsl)
                             "/manpages/docbook.xsl")))
-          (setenv "XML_CATALOG_FILES" 
-                  (string-append (assoc-ref inputs "docbook-xml") 
+          (setenv "XML_CATALOG_FILES"
+                  (string-append (assoc-ref inputs "docbook-xml")
                                  "/xml/dtd/docbook/catalog.xml")))
         %standard-phases)))
     (home-page "https://developer.gnome.org/dconf")
