@@ -86,20 +86,20 @@ providing:
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.2.2")
+    (version "3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "13jmcxxgli82wb2n4hs091159xk8rgh7nb02f478lgpjh6996f5s"))))
+               (base32 "0plx4dryf8i6hz7vghg84z5f6w6rkw1l8ckl4c4wh5zxpd3ddfnf"))
+              (patches (list (search-patch "bitlbee-configure-doc-fix.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
     (inputs `(("glib" ,glib)
               ("libotr" ,libotr)
               ("gnutls" ,gnutls)
-              ("zlib" ,zlib)  ; Needed to satisfy "pkg-config --exists gnutls"
               ("python" ,python-2)
               ("perl" ,perl)))
     (arguments
