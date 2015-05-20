@@ -381,7 +381,9 @@ an output path different than CURRENT-PATH."
 ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
 current settings and report only settings not already effective."
   (let ((search-paths (delete-duplicates
-                       (append-map manifest-entry-search-paths entries))))
+                       (cons $PATH
+                             (append-map manifest-entry-search-paths
+                                         entries)))))
     (filter-map (match-lambda
                   ((spec . value)
                    (let ((variable (search-path-specification-variable spec))
