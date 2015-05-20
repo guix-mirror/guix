@@ -52,8 +52,13 @@ test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
 # No search path env. var. here.
-guix package --search-paths -p "$profile"
-test "`guix package --search-paths -p "$profile" | wc -l`" = 0
+guix package -p "$profile" --search-paths
+guix package -p "$profile" --search-paths | grep '^export PATH='
+test "`guix package -p "$profile" --search-paths | wc -l`" = 1  # $PATH
+( set -e; set -x;						\
+  eval `guix package --search-paths=prefix -p "$PWD/$profile"`;	\
+  test "`type -P guile`" = "$PWD/$profile/bin/guile" ;		\
+  type -P rm )
 
 # Exit with 1 when a generation does not exist.
 if guix package -p "$profile" --delete-generations=42;

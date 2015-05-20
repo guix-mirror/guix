@@ -1098,7 +1098,7 @@ The difference between @code{--roll-back} and
 not make a zeroth generation, so if a specified generation does not
 exist, the current generation will not be changed.
 
-@item --search-paths
+@item --search-paths[=@var{kind}]
 @cindex search paths
 Report environment variable definitions, in Bash syntax, that may be
 needed in order to use the set of installed packages.  These environment
@@ -1112,6 +1112,18 @@ Using the GNU Compiler Collection (GCC)}).  If GCC and, say, the C
 library are installed in the profile, then @code{--search-paths} will
 suggest setting these variables to @code{@var{profile}/include} and
 @code{@var{profile}/lib}, respectively.
+
+The typical use case is to define these environment variables in the
+shell:
+
+@example
+$ eval `guix package --search-paths`
+@end example
+
+@var{kind} may be one of @code{exact}, @code{prefix}, or @code{suffix},
+meaning that the returned environment variable definitions will either
+be exact settings, or prefixes or suffixes of the current value of these
+variables.  When omitted, @var{kind} defaults to @code{exact}.
 
 @item --profile=@var{profile}
 @itemx -p @var{profile}

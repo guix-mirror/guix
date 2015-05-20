@@ -376,10 +376,13 @@ an output path different than CURRENT-PATH."
 ;;;
 
 (define* (search-path-environment-variables entries profile
-                                            #:optional (getenv getenv))
+                                            #:optional (getenv getenv)
+                                            #:key (kind 'exact))
   "Return environment variable definitions that may be needed for the use of
 ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
-current settings and report only settings not already effective."
+current settings and report only settings not already effective.  KIND
+must be one of 'exact, 'prefix, or 'suffix, depending on the kind of search
+path definition to be returned."
   (let ((search-paths (delete-duplicates
                        (cons $PATH
                              (append-map manifest-entry-search-paths
@@ -388,17 +391,19 @@ current settings and report only settings not already effective."
                   ((spec . value)
                    (let ((variable (search-path-specification-variable spec))
                          (sep      (search-path-specification-separator spec)))
-                     ;; TODO: Offer the choice between exact/prefix/suffix.
                      (environment-variable-definition variable value
-                                                      #:separator sep))))
+                                                      #:separator sep
+                                                      #:kind kind))))
                 (evaluate-search-paths search-paths (list profile)
                                        getenv))))
 
-(define (display-search-paths entries profile)
+(define* (display-search-paths entries profile
+                               #:key (kind 'exact))
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
   (let* ((profile  (user-friendly-profile profile))
-         (settings (search-path-environment-variables entries profile)))
+         (settings (search-path-environment-variables entries profile
+                                                      #:kind kind)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
       (format #t "~{   ~a~%~}" settings))))
@@ -533,10 +538,20 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'switch-generation arg result)
                            #f)))
-         (option '("search-paths") #f #f
+         (option '("search-paths") #f #t
                  (lambda (opt name arg result arg-handler)
-                   (values (cons `(query search-paths) result)
-                           #f)))
+                   (let ((kind (match arg
+                                 ((or "exact" "prefix" "suffix")
+                                  (string->symbol arg))
+                                 (#f
+                                  'exact)
+                                 (x
+                                  (leave (_ "~a: unsupported \
+kind of search path~%")
+                                         x)))))
+                     (values (cons `(query search-paths ,kind)
+                                   result)
+                             #f))))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'profile (canonicalize-profile arg)
@@ -977,12 +992,13 @@ more information.~%"))
                       (find-packages-by-name name version)))
            #t))
 
-        (('search-paths)
+        (('search-paths kind)
          (let* ((manifest (profile-manifest profile))
                 (entries  (manifest-entries manifest))
                 (profile  (user-friendly-profile profile))
                 (settings (search-path-environment-variables entries profile
-                                                             (const #f))))
+                                                             (const #f)
+                                                             #:kind kind)))
            (format #t "~{~a~%~}" settings)
            #t))
 
