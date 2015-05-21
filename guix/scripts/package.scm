@@ -440,7 +440,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
       --roll-back        roll back to the previous generation"))
   (display (_ "
-      --search-paths     display needed environment variable definitions"))
+      --search-paths[=KIND]
+                         display needed environment variable definitions"))
   (display (_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
