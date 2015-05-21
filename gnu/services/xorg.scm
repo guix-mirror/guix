@@ -246,7 +246,9 @@ theme to use.  In that case, @var{theme-name} specifies the name of the
 theme."
 
   (define (slim.cfg)
-    (mlet %store-monad ((startx  (or startx (xorg-start-command)))
+    (mlet %store-monad ((startx  (if startx
+                                     (return startx)
+                                     (xorg-start-command)))
                         (xinitrc (xinitrc #:fallback-session
                                           auto-login-session)))
       (text-file* "slim.cfg"  "
