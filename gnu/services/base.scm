@@ -851,10 +851,10 @@ gexp, to open it, and evaluate @var{close} to close it."
              (requirement `(udev ,@requirement))
              (documentation "Enable the given swap device.")
              (start #~(lambda ()
-                        (swapon #$device)
+                        (restart-on-EINTR (swapon #$device))
                         #t))
              (stop #~(lambda _
-                       (swapoff #$device)
+                       (restart-on-EINTR (swapoff #$device))
                        #f))
              (respawn? #f)))))
 

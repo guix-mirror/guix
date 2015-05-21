@@ -218,7 +218,7 @@ constants from <sys/mount.h>."
       (let ((ret (proc (string->pointer device)))
             (err (errno)))
         (unless (zero? ret)
-          (throw 'system-error "swapff" "~S: ~A"
+          (throw 'system-error "swapoff" "~S: ~A"
                  (list device (strerror err))
                  (list err)))))))
 
