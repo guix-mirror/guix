@@ -1013,6 +1013,84 @@ files and writing bioinformatics applications.")
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
 
+(define-public rsem
+  (package
+    (name "rsem")
+    (version "1.2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://deweylab.biostat.wisc.edu/rsem/src/rsem-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "0nzdc0j0hjllhsd5f2xli95dafm3nawskigs140xzvjk67xh0r9q"))
+       (patches (list (search-patch "rsem-makefile.patch")))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; remove bundled copy of boost
+           (delete-file-recursively "boost")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; No "configure" script.
+         ;; Do not build bundled samtools library.
+         (replace 'configure
+                  (lambda _
+                    (substitute* "Makefile"
+                      (("^all : sam/libbam.a") "all : "))
+                    #t))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (string-append (assoc-ref outputs "out")))
+                           (bin (string-append out "/bin/"))
+                           (perl (string-append out "/lib/perl5/site_perl")))
+                      (mkdir-p bin)
+                      (mkdir-p perl)
+                      (for-each (lambda (file)
+                                  (copy-file file
+                                             (string-append bin (basename file))))
+                                (find-files "." "rsem-.*"))
+                      (copy-file "rsem_perl_utils.pm"
+                                 (string-append perl "/rsem_perl_utils.pm")))
+                    #t))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (for-each (lambda (prog)
+                          (wrap-program (string-append out "/bin/" prog)
+                            `("PERL5LIB" ":" prefix
+                              (,(string-append out "/lib/perl5/site_perl")))))
+                        '("rsem-plot-transcript-wiggles"
+                          "rsem-calculate-expression"
+                          "rsem-generate-ngvector"
+                          "rsem-run-ebseq"
+                          "rsem-prepare-reference")))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("ncurses" ,ncurses)
+       ("r" ,r)
+       ("perl" ,perl)
+       ("samtools" ,samtools-0.1)
+       ("zlib" ,zlib)))
+    (home-page "http://deweylab.biostat.wisc.edu/rsem/")
+    (synopsis "Estimate gene expression levels from RNA-Seq data")
+    (description
+     "RSEM is a software package for estimating gene and isoform expression
+levels from RNA-Seq data.  The RSEM package provides a user-friendly
+interface, supports threads for parallel computation of the EM algorithm,
+single-end and paired-end read data, quality scores, variable-length reads and
+RSPD estimation.  In addition, it provides posterior mean and 95% credibility
+interval estimates for expression levels.  For visualization, it can generate
+BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
+    (license license:gpl3+)))
+
 (define-public rseqc
   (package
     (name "rseqc")
