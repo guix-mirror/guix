@@ -5260,7 +5260,7 @@ Usually the X server is started by a login manager.
 @end deffn
 
 @deffn {Monadic Procedure} xorg-configuration-file @
-  [#:drivers '()] [#:resolutions '()]
+  [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
 Return a configuration file for the Xorg server containing search paths for
 all the common drivers.
 
@@ -5271,6 +5271,10 @@ this order---e.g., @code{(\"modesetting\" \"vesa\")}.
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
+
+Last, @var{extra-config} is a list of strings or objects appended to the
+@code{text-file*} argument list.  It is used to pass extra text to be added
+verbatim to the configuration file.
 @end deffn
 
 @node Desktop Services

@@ -49,7 +49,8 @@
 ;;;
 ;;; Code:
 
-(define* (xorg-configuration-file #:key (drivers '()) (resolutions '()))
+(define* (xorg-configuration-file #:key (drivers '()) (resolutions '())
+                                  (extra-config '()))
   "Return a configuration file for the Xorg server containing search paths for
 all the common drivers.
 
@@ -59,7 +60,11 @@ this order---e.g., @code{(\"modesetting\" \"vesa\")}.
 
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}."
+resolutions---e.g., @code{((1024 768) (640 480))}.
+
+Last, @var{extra-config} is a list of strings or objects appended to the
+@code{text-file*} argument list.  It is used to pass extra text to be added
+verbatim to the configuration file."
   (define (device-section driver)
     (string-append "
 Section \"Device\"
@@ -82,7 +87,7 @@ Section \"Screen\"
   EndSubSection
 EndSection"))
 
-  (text-file* "xserver.conf" "
+  (apply text-file* "xserver.conf" "
 Section \"Files\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
@@ -107,10 +112,13 @@ Section \"ServerFlags\"
   Option \"AllowMouseOpenFail\" \"on\"
 EndSection
 "
-  (string-join (map device-section drivers) "\n")
+  (string-join (map device-section drivers) "\n") "\n"
   (string-join (map (cut screen-section <> resolutions)
                     drivers)
-               "\n")))
+               "\n")
+
+  "\n"
+  extra-config))
 
 (define* (xorg-start-command #:key
                              (guile (canonical-package guile-2.0))
