@@ -748,6 +748,43 @@ some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using Glk API.")
    (license (license:fsf-free "file://README"))))
 
+(define-public fizmo
+  (package
+    (name "fizmo")
+    (version "0.7.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://christoph-ender.de/fizmo/source/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w7cgyjrhgkadjrazijzhq7zh0pl5bfc6wl7mdpgh020y4kp46d7"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (let ((libjpeg (assoc-ref %build-inputs "libjpeg"))
+             (ncurses (assoc-ref %build-inputs "ncurses")))
+         (list (string-append "jpeg_CFLAGS=-I" libjpeg "/include")
+               (string-append "jpeg_LIBS=-ljpeg")
+               (string-append "ncursesw_CFLAGS=-I" ncurses "/include")
+               (string-append "ncursesw_LIBS=-lncursesw")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)
+       ("libxml2" ,libxml2)
+       ("ncurses" ,ncurses)
+       ("sdl" ,sdl)))
+    (home-page "https://christoph-ender.de/fizmo/")
+    (synopsis "Z-machine interpreter")
+    (description
+     "Fizmo is a console-based Z-machine interpreter.  It is used to play
+interactive ficiton, also known as textadventures, which were implemented
+either by Infocom or created using the Inform compiler.")
+    (license license:bsd-3)))
+
 (define-public retroarch
   (package
     (name "retroarch")
