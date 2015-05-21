@@ -99,6 +99,12 @@ Section \"Files\"
   ModulePath \"" xf86-video-nouveau "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-nv "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-sis "/lib/xorg/modules/drivers\"
+
+  # Libinput is the new thing and is recommended over evdev/synaptics
+  # by those who know:
+  # <http://who-t.blogspot.fr/2015/01/xf86-input-libinput-compatibility-with.html>.
+  ModulePath \"" xf86-input-libinput "/lib/xorg/modules/input\"
+
   ModulePath \"" xf86-input-evdev "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
