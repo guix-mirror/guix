@@ -26,7 +26,7 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
+                #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
@@ -45,6 +45,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
@@ -3744,3 +3745,37 @@ applications.")
 
 (define-public python2-waf
   (package-with-python2 python-waf))
+
+(define-public python-pyzmq
+  (package
+    (name "python-pyzmq")
+    (version "14.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pyzmq/pyzmq-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1frmbjykvhmdg64g7sn20c9fpamrsfxwci1nhhg8q7jgz5pq0ikp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--zmq=" (assoc-ref %build-inputs "zeromq")))
+       ;; FIXME: You must build pyzmq with 'python setup.py build_ext
+       ;; --inplace' for 'python setup.py test' to work.
+       #:tests? #f))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/zeromq/pyzmq")
+    (synopsis "Python bindings for 0MQ")
+    (description
+     "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
+    (license bsd-4)))
+
+(define-public python2-pyzmq
+  (package-with-python2 python-pyzmq))
