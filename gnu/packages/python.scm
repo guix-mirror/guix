@@ -2170,6 +2170,33 @@ mining and data analysis.")
        `(("python2-pytz" ,python2-pytz)
          ,@(package-propagated-inputs scikit-image))))))
 
+(define-public python-redis
+  (package
+    (name "python-redis")
+    (version "2.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/redis/redis-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4"))))
+    (build-system python-build-system)
+    ;; Tests require a running Redis server
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/andymccurdy/redis-py")
+    (synopsis "Redis Python client")
+    (description
+     "This package provides a Python interface to the Redis key-value store.")
+    (license license:expat)))
+
+(define-public python2-redis
+  (package-with-python2 python-redis))
+
 (define-public python-cython
   (package
     (name "python-cython")
