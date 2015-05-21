@@ -5250,13 +5250,23 @@ The G-Expression denoting the default SLiM theme and its name.
 @end defvr
 
 @deffn {Monadic Procedure} xorg-start-command [#:guile] @
-  [#:drivers '()] [#:resolutions '()] [#:xorg-server @var{xorg-server}]
+  [#:configuration-file #f] [#:xorg-server @var{xorg-server}]
 Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  Usually the X server is started by a login manager.
+from @var{xorg-server}.  @var{configuration-file} is the server configuration
+file or a derivation that builds it; when omitted, the result of
+@code{xorg-configuration-file} is used.
+
+Usually the X server is started by a login manager.
+@end deffn
+
+@deffn {Monadic Procedure} xorg-configuration-file @
+  [#:drivers '()] [#:resolutions '()]
+Return a configuration file for the Xorg server containing search paths for
+all the common drivers.
 
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
-this order---e.g., @code{("modesetting" "vesa")}.
+this order---e.g., @code{(\"modesetting\" \"vesa\")}.
 
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of

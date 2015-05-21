@@ -37,7 +37,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (xorg-start-command
+  #:export (xorg-configuration-file
+            xorg-start-command
             %default-slim-theme
             %default-slim-theme-name
             slim-service))
@@ -48,12 +49,9 @@
 ;;;
 ;;; Code:
 
-(define* (xorg-start-command #:key
-                             (guile (canonical-package guile-2.0))
-                             (xorg-server xorg-server)
-                             (drivers '()) (resolutions '()))
-  "Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  Usually the X server is started by a login manager.
+(define* (xorg-configuration-file #:key (drivers '()) (resolutions '()))
+  "Return a configuration file for the Xorg server containing search paths for
+all the common drivers.
 
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
@@ -62,7 +60,6 @@ this order---e.g., @code{(\"modesetting\" \"vesa\")}.
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}."
-
   (define (device-section driver)
     (string-append "
 Section \"Device\"
@@ -78,15 +75,14 @@ Section \"Screen\"
   SubSection \"Display\"
     Modes "
   (string-join (map (match-lambda
-                     ((x y)
-                      (string-append "\"" (number->string x)
-                                     "x" (number->string y) "\"")))
+                      ((x y)
+                       (string-append "\"" (number->string x)
+                                      "x" (number->string y) "\"")))
                     resolutions)) "
   EndSubSection
 EndSection"))
 
-  (define (xserver.conf)
-    (text-file* "xserver.conf" "
+  (text-file* "xserver.conf" "
 Section \"Files\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
@@ -116,7 +112,19 @@ EndSection
                     drivers)
                "\n")))
 
-  (mlet %store-monad ((config (xserver.conf)))
+(define* (xorg-start-command #:key
+                             (guile (canonical-package guile-2.0))
+                             configuration-file
+                             (xorg-server xorg-server))
+  "Return a derivation that builds a @var{guile} script to start the X server
+from @var{xorg-server}.  @var{configuration-file} is the server configuration
+file or a derivation that builds it; when omitted, the result of
+@code{xorg-configuration-file} is used.
+
+Usually the X server is started by a login manager."
+  (mlet %store-monad ((config (if configuration-file
+                                  (return configuration-file)
+                                  (xorg-configuration-file))))
     (define script
       ;; Write a small wrapper around the X server.
       #~(begin
