@@ -1637,6 +1637,33 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python2-certifi
   (package-with-python2 python-certifi))
 
+(define-public python-click
+  (package
+    (name "python-click")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/click/click-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0294x9g28w6zgswl0rsygkwi0wf6n480gf7fiiw5f9az3xhh77pl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://click.pocoo.org")
+    (synopsis "Command line library for Python")
+    (description
+     "Click is a Python package for creating command line interfaces in a
+composable way with as little code as necessary.  Its name stands for
+\"Command Line Interface Creation Kit\".  It's highly configurable but comes
+with sensible defaults out of the box.")
+    (license bsd-3)))
+
+(define-public python2-click
+  (package-with-python2 python-click))
+
 (define-public python-requests
   (package
     (name "python-requests")
