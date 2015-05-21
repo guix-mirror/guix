@@ -29,6 +29,7 @@
             MS_REMOUNT
             MS_BIND
             MS_MOVE
+            restart-on-EINTR
             mount
             umount
             mount-points
@@ -88,6 +89,19 @@
                                            (sizeof int)))))))))
             (ref bv))))
       (lambda () 0)))
+
+(define (call-with-restart-on-EINTR thunk)
+  (let loop ()
+    (catch 'system-error
+      thunk
+      (lambda args
+        (if (= (system-error-errno args) EINTR)
+            (loop)
+            (apply throw args))))))
+
+(define-syntax-rule (restart-on-EINTR expr)
+  "Evaluate EXPR and restart upon EINTR.  Return the value of EXPR."
+  (call-with-restart-on-EINTR (lambda () expr)))
 
 (define (augment-mtab source target type options)
   "Augment /etc/mtab with information about the given mount point."
