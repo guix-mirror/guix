@@ -2197,6 +2197,35 @@ mining and data analysis.")
 (define-public python2-redis
   (package-with-python2 python-redis))
 
+(define-public python-rq
+  (package
+    (name "python-rq")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/rq/rq-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0b0z5hn8wkfg300hx7816csgv3bcfamlr29fi3yzgqmpqxwj3fix"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-redis" ,python-redis)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://python-rq.org/")
+    (synopsis "Simple job queues for Python")
+    (description
+     "RQ (Redis Queue) is a simple Python library for queueing jobs and
+processing them in the background with workers.  It is backed by Redis and it
+is designed to have a low barrier to entry.")
+    (license bsd-2)))
+
+(define-public python2-rq
+  (package-with-python2 python-rq))
+
 (define-public python-cython
   (package
     (name "python-cython")
