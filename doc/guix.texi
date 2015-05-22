@@ -1806,7 +1806,8 @@ There are a few points worth noting in the above package definition:
 
 @itemize
 @item
-The @code{source} field of the package is an @code{<origin>} object.
+The @code{source} field of the package is an @code{<origin>} object
+(@pxref{origin Reference}, for the complete reference).
 Here, the @code{url-fetch} method from @code{(guix download)} is used,
 meaning that the source is a file to be downloaded over FTP or HTTP.
 
