@@ -6154,11 +6154,15 @@ facility is implemented in the @code{(gnu packages)} module.
 @cindex package module search path
 Users can store package definitions in modules with different
 names---e.g., @code{(my-packages emacs)}@footnote{Note that the file
-name and module name must match.  @xref{Modules and the File System,,,
-guile, GNU Guile Reference Manual}, for details.}  These package definitions
+name and module name must match.  For instance, the @code{(my-packages
+emacs)} module must be stored in a @file{my-packages/emacs.scm} file
+relative to the load path specified with @option{--load-path} or
+@code{GUIX_PACKAGE_PATH}.  @xref{Modules and the File System,,,
+guile, GNU Guile Reference Manual}, for details.}.  These package definitions
 will not be visible by default.  Thus, users can invoke commands such as
 @command{guix package} and @command{guix build} have to be used with the
-@code{-e} option so that they know where to find the package, or use the
+@code{-e} option so that they know where to find the package.  Better
+yet, they can use the
 @code{-L} option of these commands to make those modules visible
 (@pxref{Invoking guix build, @code{--load-path}}), or define the
 @code{GUIX_PACKAGE_PATH} environment variable.  This environment
