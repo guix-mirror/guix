@@ -2283,7 +2283,7 @@ writing C extensions for Python as easy as Python itself.")
     (build-system python-build-system)
     (inputs
      `(("python-nose" ,python-nose)
-       ("atlas" ,atlas)))
+       ("openblas" ,openblas)))
     (native-inputs
      `(("gfortran" ,gfortran-4.8)))
     (arguments
@@ -2291,16 +2291,18 @@ writing C extensions for Python as easy as Python itself.")
        (alist-cons-before
         'build 'set-environment-variables
         (lambda* (#:key inputs #:allow-other-keys)
-          (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas")
-                                 "/lib/libtatlas.so"))
-                 ;; On single core CPUs only the serial library is created.
-                 (atlas-lib
-                  (if (file-exists? atlas-threaded)
-                      atlas-threaded
-                      (string-append (assoc-ref inputs "atlas")
-                                     "/lib/libsatlas.so"))))
-            (setenv "ATLAS" atlas-lib)))
+          (call-with-output-file "site.cfg"
+            (lambda (port)
+              (format port "[openblas]
+libraries = openblas
+library_dirs = ~a/lib
+include_dirs = ~a/include
+" (assoc-ref inputs "openblas") (assoc-ref inputs "openblas"))))
+          ;; Use "gcc" executable, not "cc".
+          (substitute* "numpy/distutils/system_info.py"
+            (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+             "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
+          #t)
         ;; Tests can only be run after the library has been installed and not
         ;; within the source directory.
         (alist-cons-after
