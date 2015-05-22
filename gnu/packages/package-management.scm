@@ -150,7 +150,7 @@ the Nix package manager.")
   ;;
   ;; Note: use a short commit id; when using the long one, the limit on socket
   ;; file names is exceeded while running the tests.
-  (let ((commit "5875eb7"))
+  (let ((commit "c2ee19e"))
     (package (inherit guix-0.8.2)
       (version (string-append "0.8.2." commit))
       (source (origin
@@ -160,7 +160,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0qcq3g0b7fj2xxrdamilwz92502pxdf17j4cj047cxd8652aknjc"))))
+                  "1gwc1gypgscxg2m3n2vd0mw4dmxr7vsisqgh3y0lr05q9z5742sj"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.2)
          ((#:phases phases)
