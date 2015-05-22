@@ -1212,7 +1212,8 @@ processes currently causing I/O.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
+                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))
+              (patches (list (search-patch "fuse-CVE-2015-3202.patch")))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
