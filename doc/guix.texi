@@ -1005,8 +1005,12 @@ distribution modules (@pxref{Package Modules}).
 
 @cindex propagated inputs
 Sometimes packages have @dfn{propagated inputs}: these are dependencies
-that automatically get installed along with the required package.
+that automatically get installed along with the required package
+(@pxref{package-propagated-inputs, @code{propagated-inputs} in
+@code{package} objects}, for information about propagated inputs in
+package definitions).
 
+@anchor{package-cmd-propagated-inputs}
 An example is the GNU MPC library: its C header files refer to those of
 the GNU MPFR library, which in turn refer to those of the GMP library.
 Thus, when installing MPC, the MPFR and GMP libraries also get installed
@@ -1942,19 +1946,27 @@ element, a package or derivation object as its second element, and
 optionally the name of the output of the package or derivation that
 should be used, which defaults to @code{"out"}.
 
-@item @code{propagated-inputs} (default: @code{'()})
+@item @anchor{package-propagated-inputs}@code{propagated-inputs} (default: @code{'()})
+@cindex propagated inputs
 This field is like @code{inputs}, but the specified packages will be
-force-installed alongside the package they belong to.  For example this
-is necessary when a library needs headers of another library to compile,
-or needs another shared library to be linked alongside itself when a
-program wants to link to it.
+force-installed alongside the package they belong to
+(@pxref{package-cmd-propagated-inputs, @command{guix package}}, for
+information on how @command{guix package} deals with propagated inputs.)
+
+For example this is necessary when a library needs headers of another
+library to compile, or needs another shared library to be linked
+alongside itself when a program wants to link to it.
 
 @item @code{native-inputs} (default: @code{'()})
 This field is like @code{inputs}, but in case of a cross-compilation it
 will be ensured that packages for the architecture of the build machine
 are present, such that executables from them can be used during the
-build.  For example, this is necessary for build tools such as Autoconf,
-Libtool, pkg-config, or Gettext.
+build.
+
+This is typically where you would list tools needed at build time but
+not at run time, such as Autoconf, Automake, pkg-config, Gettext, or
+Bison.  @command{guix lint} can report likely mistakes in this area
+(@pxref{Invoking guix lint}).
 
 @item @code{self-native-input?} (default: @code{#f})
 This is a Boolean field telling whether the package should use itself as
