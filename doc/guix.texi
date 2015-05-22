@@ -941,7 +941,7 @@ guix package @var{options}
 
 Primarily, @var{options} specifies the operations to be performed during
 the transaction.  Upon completion, a new profile is created, but
-previous generations of the profile remain available, should the user
+previous @dfn{generations} of the profile remain available, should the user
 want to roll back.
 
 For example, to remove @code{lua} and install @code{guile} and
@@ -950,6 +950,11 @@ For example, to remove @code{lua} and install @code{guile} and
 @example
 guix package -r lua -i guile guile-cairo
 @end example
+
+@command{guix package} also supports a @dfn{declarative approach}
+whereby the user specifies the exact set of packages to be available and
+passes it @i{via} the @option{--manifest} option
+(@pxref{profile-manifest, @option{--manifest}}).
 
 For each user, a symlink to the user's default profile is automatically
 created in @file{$HOME/.guix-profile}.  This symlink always points to the
@@ -1062,21 +1067,32 @@ substring ``emacs'':
 $ guix package --upgrade . --do-not-upgrade emacs
 @end example
 
-@item --manifest=@var{file}
+@item @anchor{profile-manifest}--manifest=@var{file}
 @itemx -m @var{file}
-Create a new @dfn{generation} of the profile from the manifest object
+@cindex profile declaration
+@cindex profile manifest
+Create a new generation of the profile from the manifest object
 returned by the Scheme code in @var{file}.
 
-A manifest file may look like this:
+This allows you to @emph{declare} the profile's contents rather than
+constructing it through a sequence of @code{--install} and similar
+commands.  The advantage is that @var{file} can be put under version
+control, copied to different machines to reproduce the same profile, and
+so on.
 
+@c FIXME: Add reference to (guix profile) documentation when available.
+@var{file} must return a @dfn{manifest} object, which is roughly a list
+of packages:
+
+@findex packages->manifest
 @example
-(use-package-modules guile emacs gcc)
+(use-package-modules guile emacs)
 
 (packages->manifest
- (list guile-2.0
-       emacs
+ (list emacs
+       guile-2.0
        ;; Use a specific package output.
-       (list gcc "debug")))
+       (list guile-2.0 "debug")))
 @end example
 
 @item --roll-back
