@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -308,7 +308,7 @@ It has been modified to remove all non-free binary blobs.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
-
+
 ;;;
 ;;; Pluggable authentication modules (PAM).
 ;;;
@@ -354,7 +354,7 @@ be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
     (license bsd-3)))
 
-
+
 ;;;
 ;;; Miscellaneous.
 ;;;
@@ -1582,7 +1582,7 @@ from the module-init-tools project.")
                                ;; Work around undefined reference to
                                ;; 'mq_getattr' in sc-daemon.c.
                                "LDFLAGS=-lrt")
-       #:phases 
+       #:phases
        (alist-cons-before
         'build 'pre-build
         ;; The program 'g-ir-scanner' (part of the package
@@ -2203,7 +2203,8 @@ applications.")
     (arguments
      '(#:configure-flags
        (let ((out (assoc-ref %outputs "out")))
-         (list "--disable-systemd"
+         (list "--enable-library"
+               "--disable-systemd"
                ;; Install dbus/udev files to the correct location.
                (string-append "--with-dbusconfdir=" out "/etc")
                (string-append "--with-udevdir=" out "/lib/udev")))))
