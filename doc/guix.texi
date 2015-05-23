@@ -114,6 +114,11 @@ Programming Interface
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
 
+Defining Packages
+
+* package Reference::           The package data type.
+* origin Reference::            The origin data type.
+
 Utilities
 
 * Invoking guix build::         Building packages from the command line.
