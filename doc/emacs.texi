@@ -29,7 +29,7 @@ is ready to use, provided Guix is installed system-wide, which is the
 case by default.  So if that is what you're using, you can happily skip
 this section and read about the fun stuff.
 
-If you're not yet a happy user of GSD, a little bit of setup is needed.
+If you're not yet a happy user of GuixSD, a little bit of setup is needed.
 To be able to use ``guix.el'', you need to install the following
 packages:
 
