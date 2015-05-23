@@ -430,7 +430,7 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
    (name "gtk+")
-   (version "2.24.27")
+   (version "2.24.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -438,7 +438,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1x14rnjvqslpa1q19fp1qalz5sxds72amsgjk8m7769rwk511jr0"))))
+              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
