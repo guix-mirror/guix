@@ -7,12 +7,13 @@ diff --git a/libguile/posix.c b/libguile/posix.c
 index 324f21b..cbee94d 100644
 --- a/libguile/posix.c
 +++ b/libguile/posix.c
-@@ -2286,6 +2286,261 @@ scm_init_popen (void)
+@@ -2245,6 +2245,263 @@ scm_init_popen (void)
  }
  #endif
  
 +
 +/* Linux! */
++#ifdef __linux__
 +
 +#include <sys/mount.h>
 +#include "libguile/foreign.h"
@@ -265,7 +266,10 @@ index 324f21b..cbee94d 100644
 +  return scm_from_short (ifr.ifr_flags);
 +}
 +#undef FUNC_NAME
++#endif
 +
  void
  scm_init_posix ()
  {
+-- 
+2.4.1
