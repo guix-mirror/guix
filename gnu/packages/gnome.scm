@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,6 +181,50 @@ The gnome-about program helps find which version of GNOME is installed.")
 Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
     (license license:gpl2+))) ; xslt under lgpl
+
+(define-public gcr
+  (package
+    (name "gcr")
+    (version "3.16.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "0xfhi0w358lvca1jjx24x2gm67mif33dsnmi9cv5i0f83ks8vzpc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;25 of 598 tests fail because /var/lib/dbus/machine-id does
+                   ;not exist
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'check 'pre-check
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "build/tap-driver"
+                       (("/usr/bin/env python") (which "python"))))))))
+    (inputs
+     `(("dbus" ,dbus)
+       ("gnupg" ,gnupg) ;called as a child process during tests
+       ("libgcrypt" ,libgcrypt)))
+    (native-inputs
+     `(("python" ,python-2) ;for tests
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)))
+    ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
+    (propagated-inputs
+     `(("p11-kit" ,p11-kit)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Libraries for displaying certificates and accessing key stores")
+    (description
+     "The GCR package contains libraries used for displaying certificates and
+accessing key stores.  It also provides the viewer for crypto files on the
+GNOME Desktop.")
+    (license license:lgpl2.1+)))
 
 (define-public libgnome-keyring
   (package
