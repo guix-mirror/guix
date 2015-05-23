@@ -257,6 +257,73 @@ GNOME Desktop.")
     ;; Though a couple of files are LGPLv2.1+.
     (license license:lgpl2.0+)))
 
+(define-public gnome-keyring
+  (package
+    (name "gnome-keyring")
+    (version "3.16.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1xg1xha3x3hzlmvdq2zm90hc61pj7pnf9yxxvgq4ynl5af6bp8qm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;48 of 603 tests fail because /var/lib/dbus/machine-id does
+                   ;not exist
+       #:configure-flags
+       (list
+        (string-append "--with-pkcs11-config="
+                       (assoc-ref %outputs "out") "/share/p11-kit/modules/")
+        (string-append "--with-pkcs11-modules="
+                       (assoc-ref %outputs "out") "/share/p11-kit/modules/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "build/tap-driver"
+              (("/usr/bin/env python") (which "python")))))
+         (add-before
+          'configure 'fix-docbook
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "docs/Makefile.am"
+              (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/manpages/docbook.xsl")))
+            (setenv "XML_CATALOG_FILES"
+                    (string-append (assoc-ref inputs "docbook-xml")
+                                   "/xml/dtd/docbook/catalog.xml")))))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("dbus" ,dbus)
+       ("gcr" ,gcr)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("python" ,python-2) ;for tests
+       ("intltool" ,intltool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libxslt" ,libxslt) ;for documentation
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Daemon to store passwords and encryption keys")
+    (description
+     "gnome-keyring is a program that keeps passwords and other secrets for
+users.  It is run as a daemon in the session, similar to ssh-agent, and other
+applications locate it via an environment variable or D-Bus.
+
+The program can manage several keyrings, each with its own master password,
+and there is also a session keyring which is never stored to disk, but
+forgotten when the session ends.")
+    (license license:lgpl2.1+)))
+
 (define-public evince
   (package
     (name "evince")
