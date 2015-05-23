@@ -151,11 +151,15 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("cairo" ,cairo)
       ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
+   (propagated-inputs
+    `(("glib" ,glib))) ; required by harfbuzz-gobject.pc
    (native-inputs
-    `(("pkg-config" ,pkg-config)
+    `(("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)
       ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
    (arguments
-    `(#:configure-flags `("--with-graphite2=yes")))
+    `(#:configure-flags `("--with-graphite2"
+                          "--with-gobject")))
    (synopsis "OpenType text shaping engine")
    (description
     "HarfBuzz is an OpenType text shaping engine.")
