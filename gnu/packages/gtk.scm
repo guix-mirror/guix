@@ -138,14 +138,14 @@ affine transformation (scale, rotation, shear, etc.)")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "0.9.22")
+   (version "0.9.40")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1nkimwadri6v2kzrmz8y0crmy59gw0kg4i4f6cc786bngs0815lq"))))
+              "07rjp05axas96fp23lpf8l2yyfdj9yib4m0qjv592vdyhcsxaw8p"))))
    (build-system gnu-build-system)
    (inputs
     `(("cairo" ,cairo)
@@ -153,7 +153,7 @@ affine transformation (scale, rotation, shear, etc.)")
       ("icu4c" ,icu4c)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
-      ("python" ,python-wrapper)))
+      ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
    (arguments
     `(#:configure-flags `("--with-graphite2=yes")))
    (synopsis "OpenType text shaping engine")
