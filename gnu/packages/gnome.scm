@@ -1510,6 +1510,38 @@ engineering.")
      "The default GNOME 3 themes (Adwaita and some accessibility themes).")
     (license license:lgpl2.1+)))
 
+(define-public seahorse
+  (package
+    (name "seahorse")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/" name "-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0cg1grgpwbfkiny5148n17rzpc8kswyr5yff0kpm8l3lp01my2kp"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gcr" ,gcr)
+       ("gnupg" ,gnupg-1)
+       ("gpgme" ,gpgme)
+       ("libsecret" ,libsecret)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://launchpad.net/gnome-themes-standard")
+    (synopsis "Manage encryption keys and passwords in the GNOME keyring")
+    (description
+     "Seahorse is a GNOME application for managing encryption keys and
+passwords in the GNOME keyring.")
+    (license license:gpl2+)))
+
 (define-public vala
   (package
     (name "vala")
