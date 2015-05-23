@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -493,7 +494,6 @@ MailCore 2.")
     (inputs `(("bogofilter" ,bogofilter)
               ("curl" ,curl)
               ("dbus-glib" ,dbus-glib)
-              ("dbus" ,dbus)
               ("enchant" ,enchant)
               ("expat" ,expat)
               ("ghostscript" ,ghostscript)
