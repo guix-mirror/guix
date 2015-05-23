@@ -51,6 +51,7 @@ MODULES =					\
   guix/build-system/cmake.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
+  guix/build-system/haskell.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/waf.scm			\
@@ -74,16 +75,20 @@ MODULES =					\
   guix/build/python-build-system.scm		\
   guix/build/ruby-build-system.scm		\
   guix/build/waf-build-system.scm		\
+  guix/build/haskell-build-system.scm		\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
+  guix/build/profiles.scm			\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
   guix/build/syscalls.scm			\
+  guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
+  guix/search-paths.scm				\
   guix/packages.scm				\
   guix/import/utils.scm				\
   guix/import/gnu.scm				\
@@ -96,7 +101,7 @@ MODULES =					\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pull.scm				\
-  guix/scripts/substitute-binary.scm		\
+  guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
@@ -104,6 +109,7 @@ MODULES =					\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/environment.scm			\
+  guix/scripts/publish.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -129,7 +135,8 @@ KCONFIGS =					\
 
 # Templates, examples.
 EXAMPLES =					\
-  gnu/system/os-config.tmpl
+  gnu/system/examples/bare-bones.tmpl		\
+  gnu/system/examples/desktop.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
 
@@ -162,7 +169,7 @@ SCM_TESTS =					\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
   tests/sets.scm				\
-  tests/substitute-binary.scm			\
+  tests/substitute.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/ui.scm					\
@@ -178,7 +185,9 @@ SCM_TESTS =					\
   tests/union.scm				\
   tests/profiles.scm				\
   tests/syscalls.scm				\
-  tests/lint.scm
+  tests/gremlin.scm				\
+  tests/lint.scm				\
+  tests/publish.scm
 
 if HAVE_GUILE_JSON
 
@@ -201,6 +210,7 @@ SH_TESTS =					\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
   tests/guix-package.sh				\
+  tests/guix-package-net.sh			\
   tests/guix-system.sh				\
   tests/guix-archive.sh				\
   tests/guix-authenticate.sh			\
@@ -235,6 +245,9 @@ tests/guix-gc.log:							\
 # Public key used to sign substitutes from hydra.gnu.org.
 dist_pkgdata_DATA = hydra.gnu.org.pub
 
+# Bash completion file.
+dist_bashcompletion_DATA = etc/completion/bash/guix
+
 EXTRA_DIST =						\
   HACKING						\
   ROADMAP						\
@@ -248,6 +261,7 @@ EXTRA_DIST =						\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
   build-aux/list-packages.scm				\
+  build-aux/make-binary-tarball.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
@@ -332,6 +346,13 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 dist_emacsui_DATA = emacs/guix-main.scm
 nodist_emacsui_DATA = emacs/guix-helper.scm
 include emacs.am
+
+# The self-contained tarball.
+guix-binary.%.tar.xz:
+	-GUIX_PACKAGE_PATH= \
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	  "$(top_srcdir)/build-aux/make-binary-tarball.scm" "$*" "$@"
+
 
 dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained

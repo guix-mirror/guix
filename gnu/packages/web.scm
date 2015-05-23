@@ -32,6 +32,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages docbook)
@@ -40,10 +41,12 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
@@ -92,14 +95,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.6.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "060s77qxhkn02fjkcndsr0xppj2bppjzkj0gn84svrykb4lqqq5m"))))
+                "1mgkkmmwkhmpn68sdvbd73ssv6lpqhh864fsyvc1ij4hk4is3k13"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -107,38 +110,56 @@ and its related documentation.")
     (arguments
      `(#:tests? #f                      ; no test target
        #:phases
-       (alist-cons-before
-        'configure 'patch-/bin/sh
-        (lambda _
-          (substitute* "auto/feature"
-            (("/bin/sh") (which "bash"))))
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((flags
-                  (list (string-append "--prefix=" (assoc-ref outputs "out"))
-                        "--with-http_ssl_module"
-                        "--with-pcre-jit"
-                        "--with-ipv6"
-                        "--with-debug"
-                        ;; Even when not cross-building, we pass the
-                        ;; --crossbuild option to avoid customizing for the
-                        ;; kernel version on the build machine.
-                        ,(let ((system "Linux")    ; uname -s
-                               (release "2.6.32")  ; uname -r
-                               ;; uname -m
-                               (machine (match (or (%current-target-system)
-                                                   (%current-system))
-                                          ("x86_64-linux"   "x86_64")
-                                          ("i686-linux"     "i686")
-                                          ("mips64el-linux" "mips64"))))
-                           (string-append "--crossbuild="
-                                          system ":" release ":" machine)))))
-             (setenv "CC" "gcc")
-             (format #t "environment variable `CC' set to `gcc'~%")
-             (format #t "configure flags: ~s~%" flags)
-             (zero? (apply system* "./configure" flags))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+           (lambda _
+             (substitute* "auto/feature"
+               (("/bin/sh") (which "bash")))))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((flags
+                    (list (string-append "--prefix=" (assoc-ref outputs "out"))
+                          "--with-http_ssl_module"
+                          "--with-pcre-jit"
+                          "--with-ipv6"
+                          "--with-debug"
+                          ;; Even when not cross-building, we pass the
+                          ;; --crossbuild option to avoid customizing for the
+                          ;; kernel version on the build machine.
+                          ,(let ((system "Linux")    ; uname -s
+                                 (release "2.6.32")  ; uname -r
+                                 ;; uname -m
+                                 (machine (match (or (%current-target-system)
+                                                     (%current-system))
+                                            ("x86_64-linux"   "x86_64")
+                                            ("i686-linux"     "i686")
+                                            ("mips64el-linux" "mips64")
+                                            ;; Prevent errors when querying
+                                            ;; this package on unsupported
+                                            ;; platforms, e.g. when running
+                                            ;; "guix package --search="
+                                            (_                "UNSUPPORTED"))))
+                             (string-append "--crossbuild="
+                                            system ":" release ":" machine)))))
+               (setenv "CC" "gcc")
+               (format #t "environment variable `CC' set to `gcc'~%")
+               (format #t "configure flags: ~s~%" flags)
+               (zero? (apply system* "./configure" flags)))))
+         (add-after 'install 'fix-root-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'make install' puts things in strange places, so we need to
+             ;; clean it up ourselves.
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/nginx")))
+               ;; This directory is empty, so get rid of it.
+               (rmdir (string-append out "/logs"))
+               ;; Example configuration and HTML files belong in
+               ;; /share.
+               (mkdir-p share)
+               (rename-file (string-append out "/conf")
+                            (string-append share "/conf"))
+               (rename-file (string-append out "/html")
+                            (string-append share "/html"))))))))
     (home-page "http://nginx.org")
     (synopsis "HTTP and reverse proxy server")
     (description
@@ -151,6 +172,38 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
     ;;   * The 'nginx-development-kit' module is mostly covered by bsd-3,
     ;;     except for two source files which are bsd-4 licensed.
     (license (list l:bsd-2 l:expat l:bsd-3 l:bsd-4))))
+
+(define-public starman
+  (package
+    (name "starman")
+    (version "0.4011")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Starman-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1337zhi6v1sg4gd9rs3giybc7g1ysw8ak2da0vy098k4dacxyb57"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-parser-xs" ,perl-http-parser-xs)
+       ("perl-net-server" ,perl-net-server)
+       ("perl-plack" ,perl-plack)
+       ("perl-test-tcp" ,perl-test-tcp)))
+    (home-page "http://search.cpan.org/dist/Starman")
+    (synopsis "PSGI/Plack web server")
+    (description "Starman is a PSGI perl web server that has unique features
+such as high performance, preforking, signal support, superdaemon awareness,
+and UNIX socket support.")
+    (license (package-license perl))))
 
 (define-public jansson
   (package
@@ -496,6 +549,75 @@ URLs and extracting their actual media files.")
 from streaming URLs.  It is a command-line wrapper for the libquvi library.")
     (license l:lgpl2.1+)))
 
+(define-public serf
+  (package
+    (name "serf")
+    (version "1.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://serf.googlecode.com/svn/src_releases/serf-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
+       (patches (map search-patch '("serf-comment-style-fix.patch"
+                                    "serf-deflate-buckets-test-fix.patch")))
+       (patch-flags '("-p0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("scons" ,scons)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("apr" ,apr)
+       ("apr-util" ,apr-util)
+       ("openssl" ,openssl)))
+    (inputs
+     `(;; TODO: Fix build with gss.
+       ;;("gss" ,gss)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       ;; TODO: Add scons-build-system and use it here.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scons-propagate-environment
+                    (lambda _
+                      ;; By design, SCons does not, by default, propagate
+                      ;; environment variables to subprocesses.  See:
+                      ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
+                      ;; Here, we modify the SConstruct file to arrange for
+                      ;; environment variables to be propagated.
+                      (substitute* "SConstruct"
+                        (("^env = Environment\\(")
+                         "env = Environment(ENV=os.environ, "))))
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((out      (assoc-ref outputs "out"))
+                          (apr      (assoc-ref inputs "apr"))
+                          (apr-util (assoc-ref inputs "apr-util"))
+                          (openssl  (assoc-ref inputs "openssl"))
+                          ;;(gss      (assoc-ref inputs "gss"))
+                          (zlib     (assoc-ref inputs "zlib")))
+                      (zero? (system* "scons"
+                                      (string-append "APR=" apr)
+                                      (string-append "APU=" apr-util)
+                                      (string-append "OPENSSL=" openssl)
+                                      ;;(string-append "GSSAPI=" gss)
+                                      (string-append "ZLIB=" zlib)
+                                      (string-append "PREFIX=" out))))))
+         (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
+         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+    (home-page "https://code.google.com/p/serf/")
+    (synopsis "High-performance asynchronous HTTP client library")
+    (description
+     "serf is a C-based HTTP client library built upon the Apache Portable
+Runtime (APR) library.  It multiplexes connections, running the read/write
+communication asynchronously.  Memory copies and transformations are kept to a
+minimum to provide high performance operation.")
+    ;; Most of the code is covered by the Apache License, Version 2.0, but the
+    ;; bundled CuTest framework uses a different non-copyleft license.
+    (license (list l:asl2.0 (l:non-copyleft "file://test/CuTest-README.txt")))))
+
 
 (define-public perl-apache-logformat-compiler
   (package
@@ -648,6 +770,36 @@ extension for Catalyst; and requirements for a variety of development-related
 modules.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-dispatchtype-regex
+  (package
+    (name "perl-catalyst-dispatchtype-regex")
+    (version "5.90035")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MG/MGRIMES/"
+                           "Catalyst-DispatchType-Regex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06jq1lmpq88rmp9zik5gqczg234xac0hiyc3l698iif7zsgcyb80"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build) ;needs Module::Build >= 0.4004
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-text-simpletable" ,perl-text-simpletable)))
+    (home-page "http://search.cpan.org/dist/Catalyst-DispatchType-Regex")
+    (synopsis "Regex DispatchType for Catalyst")
+    (description "Dispatch type managing path-matching behaviour using
+regexes.  Regex dispatch types have been deprecated and removed from Catalyst
+core.  It is recommend that you use Chained methods or other techniques
+instead.  As part of the refactoring, the dispatch priority of Regex vs Regexp
+vs LocalRegex vs LocalRegexp may have changed.  Priority is now influenced by
+when the dispatch type is first seen in your application.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-model-dbic-schema
   (package
   (name "perl-catalyst-model-dbic-schema")
@@ -693,6 +845,32 @@ modules.")
 Models.")
   (license (package-license perl))))
 
+(define-public perl-catalyst-plugin-accesslog
+  (package
+    (name "perl-catalyst-plugin-accesslog")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARODLAND/"
+                           "Catalyst-Plugin-AccessLog-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hqvckaw91q5yc25a33bp0d4qqxlgkp7rxlvi8n8svxd1406r55s"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (arguments `(#:tests? #f))          ;Unexpected http responses
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-AccessLog")
+    (synopsis "Request logging from within Catalyst")
+    (description "This Catalyst plugin enables you to create \"access logs\"
+from within a Catalyst application instead of requiring a webserver to do it
+for you.  It will work even with Catalyst debug logging turned off.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-plugin-authentication
   (package
     (name "perl-catalyst-plugin-authentication")
@@ -725,6 +903,30 @@ Models.")
 Catalyst apps. It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-captcha
+  (package
+    (name "perl-catalyst-plugin-captcha")
+    (version "0.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DI/DIEGOK/"
+                           "Catalyst-Plugin-Captcha-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0llyj3v5nx9cx46jdbbvxf1lc9s9cxq5ml22xmx3wkb201r5qgaa"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-gd-securityimage" ,perl-gd-securityimage)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Captcha")
+    (synopsis "Captchas for Catalyst")
+    (description "This plugin creates and validates Captcha images for
+Catalyst.")
     (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-configloader
@@ -783,6 +985,90 @@ formats.")
     (synopsis "Catalyst generic session plugin")
     (description "This plugin links the two pieces required for session
 management in web applications together: the state, and the store.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-session-state-cookie
+  (package
+    (name "perl-catalyst-plugin-session-state-cookie")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSTROUT/"
+                           "Catalyst-Plugin-Session-State-Cookie-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rvxbfnpf9x2pc2zgpazlcgdlr2dijmxgmcs0m5nazs0w6xikssb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Session-State-Cookie")
+    (synopsis "Maintain session IDs using cookies")
+    (description "In order for Catalyst::Plugin::Session to work, the session
+ID needs to be stored on the client, and the session data needs to be stored
+on the server.  This plugin stores the session ID on the client using the
+cookie mechanism.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-session-store-fastmmap
+  (package
+    (name "perl-catalyst-plugin-session-store-fastmmap")
+    (version "0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Session-Store-FastMmap-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0x3j6zv3wr41jlwr6yb2jpmcx019ibyn11y8653ffnwhpzbpzsxs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cache-fastmmap" ,perl-cache-fastmmap)
+       ("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moosex-emulate-class-accessor-fast"
+        ,perl-moosex-emulate-class-accessor-fast)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-path-class" ,perl-path-class)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Session-Store-FastMmap")
+    (synopsis "FastMmap session storage backend.")
+    (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
+storage plugin for Catalyst that uses an mmap'ed file to act as a shared
+memory interprocess cache.  It is based on Cache::FastMmap.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-stacktrace
+  (package
+    (name "perl-catalyst-plugin-stacktrace")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-StackTrace-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1b2ksz74cpigxqzf63rddar3vfmnbpwpdcbs11v0ml89pb8ar79j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-devel-stacktrace" ,perl-devel-stacktrace)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-StackTrace")
+    (synopsis "Stack trace on the Catalyst debug screen")
+    (description "This plugin enhances the standard Catalyst debug screen by
+including a stack trace of your appliation up to the point where the error
+occurred.  Each stack frame is displayed along with the package name, line
+number, file name, and code context surrounding the line number.")
     (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-static-simple
@@ -879,6 +1165,114 @@ run an application on the web, either by doing them itself, or by letting you
 \"plug in\" existing Perl modules that do what you need.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-traitfor-request-proxybase
+  (package
+    (name "perl-catalyst-traitfor-request-proxybase")
+    (version "0.000005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-TraitFor-Request-ProxyBase-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "02kir63d5cs2ipj3fn1qlmmx3gqi1xqzrxfr4pv5vjhjgsm0zgx7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-catalystx-roleapplicator" ,perl-catalystx-roleapplicator)
+       ("perl-http-message" ,perl-http-message)))
+    (propagated-inputs
+     `(("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("perl-uri" ,perl-uri)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-TraitFor-Request-ProxyBase")
+    (synopsis "Replace request base with value passed by HTTP proxy")
+    (description "This module is a Moose::Role which allows you more
+flexibility in your application's deployment configurations when deployed
+behind a proxy.  Using this module, the request base ($c->req->base) is
+replaced with the contents of the X-Request-Base header.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-view-download
+  (package
+    (name "perl-catalyst-view-download")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAUDEON/"
+                           "Catalyst-View-Download-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qgq6y9iwfbhbkbgpw9czang2ami6z8jk1zlagrzdisy4igqzkvs"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-test-simple" ,perl-test-simple)
+       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)
+       ("perl-text-csv" ,perl-text-csv)
+       ("perl-xml-simple" ,perl-xml-simple)))
+    (home-page "http://search.cpan.org/dist/Catalyst-View-Download")
+    (synopsis "Download data in many formats")
+    (description "The purpose of this module is to provide a method for
+downloading data into many supportable formats.  For example, downloading a
+table based report in a variety of formats (CSV, HTML, etc.). ")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-view-json
+  (package
+    (name "perl-catalyst-view-json")
+    (version "0.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-View-JSON-" version ".tar.gz"))
+       (sha256
+        (base32
+         "184pyghlrkl7p387bnyvswi2d9myvdg4v3lax6xrd59shskvpmkm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-yaml" ,perl-yaml)))
+    (inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-json-maybexs" ,perl-json-maybexs)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Catalyst-View-JSON")
+    (synopsis "Catalyst JSON view")
+    (description "Catalyst::View::JSON is a Catalyst View handler that returns
+stash data in JSON format.")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-view-tt
+  (package
+    (name "perl-catalyst-view-tt")
+    (version "0.42")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Catalyst-View-TT-" version ".tar.gz"))
+     (sha256
+      (base32
+       "18ciik9fqaqjfasa9wicbjrsl3gjhjc15xzaj3rif57an25cl178"))))
+  (build-system perl-build-system)
+  (propagated-inputs
+   `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+     ("perl-class-accessor" ,perl-class-accessor)
+     ("perl-mro-compat" ,perl-mro-compat)
+     ("perl-path-class" ,perl-path-class)
+     ("perl-template-timer" ,perl-template-timer)
+     ("perl-template-toolkit" ,perl-template-toolkit)))
+  (home-page "http://search.cpan.org/dist/Catalyst-View-TT")
+  (synopsis "Template View Class")
+  (description "This module is a Catalyst view class for the Template
+Toolkit.")
+  (license (package-license perl))))
+
 (define-public perl-catalystx-component-traits
   (package
     (name "perl-catalystx-component-traits")
@@ -910,6 +1304,56 @@ Catalyst component base class that reads the optional \"traits\" parameter
 from app and component config and instantiates the component subclass with
 those traits using \"new_with_traits\" in MooseX::Traits from
 MooseX::Traits::Pluggable.")
+    (license (package-license perl))))
+
+(define-public perl-catalystx-roleapplicator
+  (package
+    (name "perl-catalystx-roleapplicator")
+    (version "0.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HD/HDP/"
+                           "CatalystX-RoleApplicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vwaapxn8g5hs2xp63c4dwv9jmapmji4272fakssvgc9frklg3p2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-relatedclassroles" ,perl-moosex-relatedclassroles)))
+    (home-page "http://search.cpan.org/dist/CatalystX-RoleApplicator")
+    (synopsis "Apply roles to Catalyst classes")
+    (description "CatalystX::RoleApplicator applies roles to Catalyst
+application classes.")
+    (license (package-license perl))))
+
+(define-public perl-catalystx-script-server-starman
+  (package
+    (name "perl-catalystx-script-server-starman")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AB/ABRAXXA/"
+                           "CatalystX-Script-Server-Starman-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0h02mpkc4cmi3jpvcd7iw7xyzx55bqvvl1qkf967gqkvpklm0qx5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
+       ("starman" ,starman)))
+    (home-page "http://search.cpan.org/dist/CatalystX-Script-Server-Starman")
+    (synopsis "Catalyst development server with Starman")
+    (description "This module provides a Catalyst extension to replace the
+development server with Starman.")
     (license (package-license perl))))
 
 (define-public perl-cgi-simple
@@ -954,6 +1398,49 @@ parameter parsing, file upload, cookie handling and header generation.")
     (description "This is a module for building structured data from CGI
 inputs, in a manner reminiscent of how PHP does.")
     (license l:bsd-2)))
+
+(define-public perl-datetime-format-http
+  (package
+    (name "perl-datetime-format-http")
+    (version "0.42")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CK/CKRAS/"
+                           "DateTime-Format-HTTP-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h6qqdg1yzqkdxp7hqlp0qa7d1y64nilgimxs79dys2ryjfpcknh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-http-date" ,perl-http-date)))
+    (home-page "http://search.cpan.org/dist/DateTime-Format-HTTP")
+    (synopsis "Date conversion routines")
+    (description "This module provides functions that deal with the date
+formats used by the HTTP protocol.")
+    (license (package-license perl))))
+
+(define-public perl-digest-md5-file
+  (package
+    (name "perl-digest-md5-file")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DM/DMUEY/"
+                           "Digest-MD5-File-" version ".tar.gz"))
+       (sha256
+        (base32
+         "060jzf45dlwysw5wsm7av1wvpl06xgk415kwwpvv89r6wda3md5d"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/Digest-MD5-File")
+    (synopsis "MD5 sums for files and urls")
+    (description "Digest::MD5::File is a Perl extension for getting MD5 sums
+for files and urls.")
+    (license (package-license perl))))
 
 (define-public perl-encode-locale
   (package
@@ -1288,6 +1775,49 @@ of the negotiable variants and the value of the various Accept* header
 fields in the request.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
 
+(define-public perl-http-parser
+  (package
+    (name "perl-http-parser")
+    (version "0.06")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ED/EDECA/"
+                           "HTTP-Parser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0idwq3jk595xil65lmxz128ha7s3r2n5zknisddpgwnqrghs3igq"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-http-message" ,perl-http-message)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/HTTP-Parser")
+    (synopsis "Parse HTTP/1.1 requests")
+    (description "This is an HTTP request parser.  It takes chunks of text as
+received and returns a 'hint' as to what is required, or returns the
+HTTP::Request when a complete request has been read.  HTTP/1.1 chunking is
+supported.")
+    (license (package-license perl))))
+
+(define-public perl-http-parser-xs
+  (package
+    (name "perl-http-parser-xs")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZUHO/"
+                           "HTTP-Parser-XS-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02d84xq1mm53c7jl33qyb7v5w4372vydp74z6qj0vc96wcrnhkkr"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/HTTP-Parser-XS")
+    (synopsis "Fast HTTP request parser")
+    (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
+parser.")
+    (license (package-license perl))))
+
 (define-public perl-http-request-ascgi
   (package
     (name "perl-http-request-ascgi")
@@ -1425,15 +1955,15 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.05")
+    (version "6.13")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/libwww-perl-"
+                   "mirror://cpan/authors/id/E/ET/ETHER/libwww-perl-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "08wgwyz7748pv5cyngxia0xl6nragfnhrp4p9s78xhgfyygpj9bv"))))
+               "1cpqjl59viw50bnbdyn8xzrwzg7g54b2rszw0fifacqrppp17gaz"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
@@ -1453,7 +1983,7 @@ World-Wide Web.  The main focus of the library is to provide classes
 and functions that allow you to write WWW clients.  The library also
 contains modules that are of more general use and even classes that
 help you implement simple HTTP servers.")
-    (home-page "http://search.cpan.org/~gaas/libwww-perl/")))
+    (home-page "http://search.cpan.org/dist/libwww-perl/")))
 
 (define-public perl-lwp-mediatypes
   (package
@@ -1477,39 +2007,113 @@ media types is defined by the media.types file.  If the ~/.media.types file
 exists it is used instead.")
     (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
 
-(define-public perl-mime-types
+(define-public perl-lwp-protocol-https
   (package
-    (name "perl-mime-types")
-    (version "2.09")
+    (name "perl-lwp-protocol-https")
+    (version "6.06")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
-                           "MIME-Types-" version ".tar.gz"))
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSCHILLI/"
+                           "LWP-Protocol-https-" version ".tar.gz"))
        (sha256
         (base32
-         "0s7s2z9xc1nc2l59rk80iaa04r36k0y95231212kz5p3ln7szk1c"))))
+         "1vxdjqj4bwq56m9h1bqqwkk3c6jr76f2zqzvwa26yjng3p686v5q"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/MIME-Types")
-    (synopsis "Definition of MIME types")
-    (description "This module provides a list of known mime-types, combined
-from various sources.  For instance, it contains all IANA types and the
-knowledge of Apache.")
+    (propagated-inputs
+     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-libwww" ,perl-libwww)
+       ;; Users should instead make sure SSL_ca_path is set properly.
+       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-net-http" ,perl-net-http)))
+    (home-page "http://search.cpan.org/dist/LWP-Protocol-https")
+    (synopsis "HTTPS support for LWP::UserAgent")
+    (description "The LWP::Protocol::https module provides support for using
+https schemed URLs with LWP.")
+    (license (package-license perl))))
+
+(define-public perl-lwp-useragent-determined
+  (package
+    (name "perl-lwp-useragent-determined")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AL/ALEXMV/"
+                           "LWP-UserAgent-Determined-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lyvbpjng7yfvyha9rp2y2c6liz5hhplmd2grc8jlsfkih7dbn06"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)))
+    (home-page "http://search.cpan.org/dist/LWP-UserAgent-Determined")
+    (synopsis "Virtual browser that retries errors")
+    (description "LWP::UserAgent::Determined works just like LWP::UserAgent,
+except that when you use it to get a web page but run into a
+possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
+and retry a few times.")
+    (license (package-license perl))))
+
+(define-public perl-net-amazon-s3
+  (package
+    (name "perl-net-amazon-s3")
+    (version "0.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PF/PFIG/"
+                           "Net-Amazon-S3-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10dcsq4s2kc9cb1vccx17r187c81drirc3s1hbxh3rb8489kg2b2"))
+       (patches (list
+                 (search-patch "perl-net-amazon-s3-moose-warning.patch")))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-data-stream-bulk" ,perl-data-stream-bulk)
+       ("perl-datetime-format-http" ,perl-datetime-format-http)
+       ("perl-digest-hmac" ,perl-digest-hmac)
+       ("perl-digest-md5-file" ,perl-digest-md5-file)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-lwp-useragent-determined" ,perl-lwp-useragent-determined)
+       ("perl-mime-types" ,perl-mime-types)
+       ("perl-moose" ,perl-moose)
+       ("perl-moosex-strictconstructor" ,perl-moosex-strictconstructor)
+       ("perl-moosex-types-datetime-morecoercions"
+        ,perl-moosex-types-datetime-morecoercions)
+       ("perl-path-class" ,perl-path-class)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-term-encoding" ,perl-term-encoding)
+       ("perl-term-progressbar-simple" ,perl-term-progressbar-simple)
+       ("perl-uri" ,perl-uri)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/Net-Amazon-S3")
+    (synopsis "Perl interface to Amazon S3")
+    (description "This module provides a Perlish interface to Amazon S3.")
     (license (package-license perl))))
 
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.06")
+    (version "6.07")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/Net-HTTP-"
+                   "mirror://cpan/authors/id/M/MS/MSCHILLI/Net-HTTP-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "1m1rvniffadq99gsy25298ia3lixwymr6kan64jd3ylyi7nkqkhx"))))
+               "0r034hhci0yqbrkrh1gv6vi5g3i0kpd1k84z62nk02asb8rf0ccz"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-uri" ,perl-uri)))
     (license (package-license perl))
     (synopsis "Perl low-level HTTP connection (client)")
     (description
@@ -1517,7 +2121,34 @@ knowledge of Apache.")
 Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
 is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
-    (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
+    (home-page "http://search.cpan.org/dist/Net-HTTP")))
+
+(define-public perl-net-server
+  (package
+    (name "perl-net-server")
+    (version "2.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RH/RHANDOM/"
+                           "Net-Server-" version ".tar.gz"))
+       (sha256
+        (base32
+         "182gfikn7r40kmm3d35m2qc6r8g0y1j8gxbn9ffaawf8xmm0a889"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Net-Server")
+    (synopsis "Extensible Perl server engine")
+    (description "Net::Server is an extensible, generic Perl server engine.
+It attempts to be a generic server as in Net::Daemon and NetServer::Generic.
+It includes with it the ability to run as an inetd
+process (Net::Server::INET), a single connection server (Net::Server or
+Net::Server::Single), a forking server (Net::Server::Fork), a preforking
+server which maintains a constant number of preforked
+children (Net::Server::PreForkSimple), or as a managed preforking server which
+maintains the number of children based on server load (Net::Server::PreFork).
+In all but the inetd type, the server provides the ability to connect to one
+or to multiple server ports.")
+    (license (package-license perl))))
 
 (define-public perl-plack
   (package
@@ -1724,6 +2355,41 @@ either mocked HTTP or a locally spawned server.")
     (description "Test::WWW::Mechanize is a subclass of the Perl module
 WWW::Mechanize that incorporates features for web application testing.")
     (license l:artistic2.0)))
+
+(define-public perl-test-www-mechanize-catalyst
+  (package
+    (name "perl-test-www-mechanize-catalyst")
+    (version "0.60")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+                           "Test-WWW-Mechanize-Catalyst-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nhhfrrai3ndziz873vpa1j0vljjnib4wqafd6yyvkf58ad7v0lv"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-plugin-session" ,perl-catalyst-plugin-session)
+       ("perl-catalyst-plugin-session-state-cookie"
+        ,perl-catalyst-plugin-session-state-cookie)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-utf8" ,perl-test-utf8)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-class-load" ,perl-class-load)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-moose" ,perl-moose)
+       ("perl-namespace-clean" ,perl-namespace-clean)
+       ("perl-test-www-mechanize" ,perl-test-www-mechanize)
+       ("perl-www-mechanize" ,perl-www-mechanize)))
+    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-Catalyst")
+    (synopsis "Test::WWW::Mechanize for Catalyst")
+    (description "The Test::WWW::Mechanize::Catalyst module meshes the
+Test::WWW:Mechanize module and the Catalyst web application framework to allow
+testing of Catalyst applications without needing to start up a web server.")
+    (license (package-license perl))))
 
 (define-public perl-test-www-mechanize-psgi
   (package

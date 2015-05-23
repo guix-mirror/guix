@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -64,11 +66,13 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+ non-copyleft))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ non-copyleft
+                          (expat . license:expat)))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python))
 
 (define-public mailutils
@@ -309,7 +313,7 @@ repository and Maildir/IMAP as LOCAL repository.")
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.11")
+    (version "0.9.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/archive/v"
@@ -317,7 +321,7 @@ repository and Maildir/IMAP as LOCAL repository.")
               (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "01n1lzq4pfsm5pn932p948d1z55yqc7kkm1ifjxjchb3k8lr66fh"))))
+                "1bxryacmas2llj68m2dv8dr1vwx8f5k2i2azh69jajkpqx7i4wdq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -359,27 +363,37 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.18.1")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pdp9l7yv71d3fjb30qyccva8h03hvg88q4a00yi50v2j70kvmgj"))))
+                "1szf6c44g209pcjq5nvfhlp3nzcm3lrcwv4spsxmwy13hiaccvrr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;; FIXME: Test suite hangs and times out.
        #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
+                   (setenv "CC" "gcc")
                    (setenv "CONFIG_SHELL" (which "sh"))
+
+                   ;; XXX Should python-docutils make a symlink
+                   ;; for "rst2man" and other similar programs?
+                   (substitute* '("configure" "doc/prerst2man.py")
+                     ((" rst2man ") " rst2man.py "))
+
                    (let ((out (assoc-ref outputs "out")))
                      (zero? (system* "./configure"
                                      (string-append "--prefix=" out)))))
                  %standard-phases)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("python2-docutils" ,python2-docutils)
+       ("bash-completion" ,bash-completion)))
     (inputs
      `(("emacs" ,emacs)
        ("glib" ,glib)
@@ -626,6 +640,49 @@ deal of flexibility in the way mail can be routed, and there are extensive
 facilities for checking incoming mail.")
     (license gpl2+)))
 
+(define-public dovecot
+  (package
+    (name "dovecot")
+    (version "2.2.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.dovecot.org/releases/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.gz"))
+       (sha256 (base32
+                "1w6gg4h9mxg3i8faqpmgj19imzyy001b0v8ihch8ma3zl63i5kjn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("zlib" ,zlib)
+       ("bzip2" ,bzip2)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags '("--sysconfdir=/etc"
+                           "--localstatedir=/var")
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'pre-configure
+                   (lambda _
+                     ;; Simple hack to avoid installing in /etc
+                     (substitute* '("doc/Makefile.in"
+                                    "doc/example-config/Makefile.in")
+                       (("pkgsysconfdir = .*")
+                        "pkgsysconfdir = /tmp/etc"))
+                     #t)))))
+    (home-page "http://www.dovecot.org")
+    (synopsis "Secure POP3/IMAP server")
+    (description
+     "Dovecot is a mail server whose major goals are security and reliability.
+It supports mbox/Maildir and its own dbox/mdbox formats.")
+    ;; Most source files are covered by either lgpl2.1 or expat.  The SHA code
+    ;; is covered by a variant of BSD-3, and UnicodeData.txt is covered by the
+    ;; Unicode, Inc. License Agreement for Data Files and Software.
+    (license (list lgpl2.1 license:expat (non-copyleft "file://COPYING")))))
+
 (define-public isync
   (package
     (name "isync")
@@ -647,5 +704,207 @@ facilities for checking incoming mail.")
      "isync/mbsync is command line tool for two-way synchronization of
 mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
+
+(define-public perl-email-abstract
+  (package
+    (name "perl-email-abstract")
+    (version "3.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Abstract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0h42rhvp769wb421cpbbg6v6xjp8iv86mvz70pqgfgf4nsn6jwgw"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-email-simple" ,perl-email-simple)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Email-Abstract")
+    (synopsis "Interface to mail representations")
+    (description "Email::Abstract provides module writers with the ability to
+write simple, representation-independent mail handling code.")
+    (license (package-license perl))))
+
+(define-public perl-email-address
+  (package
+    (name "perl-email-address")
+    (version "1.907")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Address-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ai4r149pzjv9dc2vddir8zylj0z1pii93rm4g591lx7avim71hx"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Email-Address")
+    (synopsis "Email address parsing and creation")
+    (description "Email::Address implements a regex-based RFC 2822 parser that
+locates email addresses in strings and returns a list of Email::Address
+objects found.  Alternatively you may construct objects manually.")
+    (license (package-license perl))))
+
+(define-public perl-email-date-format
+  (package
+    (name "perl-email-date-format")
+    (version "1.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Date-Format-" version ".tar.gz"))
+       (sha256
+        (base32
+         "012ivfwpnbl3wr50f9c6f4azhdlxnm31pdn72528g79v61z6372p"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Email-Date-Format")
+    (synopsis "Produce RFC 2822 date strings")
+    (description "Email::Date::Format provides a means for generating an RFC
+2822 compliant datetime string.")
+    (license (package-license perl))))
+
+(define-public perl-email-messageid
+  (package
+    (name "perl-email-messageid")
+    (version "1.405")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MessageID-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09216naz21x99ff33wdm3j3zq1zhdbxhrsmx8bvavjrw3gjsvrq3"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Email-MessageID")
+    (synopsis "Generate world unique message-ids")
+    (description "Email::MessageID generates recommended message-ids to
+identify a message uniquely.")
+    (license (package-license perl))))
+
+(define-public perl-email-mime
+  (package
+    (name "perl-email-mime")
+    (version "1.929")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MIME-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sf7dldg4dvicyw6dl1vx6s1gjq3fcppi0103ikl0vi6v5xjdjdh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-email-address" ,perl-email-address)
+       ("perl-email-messageid" ,perl-email-messageid)
+       ("perl-email-mime-contenttype" ,perl-email-mime-contenttype)
+       ("perl-email-mime-encodings" ,perl-email-mime-encodings)
+       ("perl-email-simple" ,perl-email-simple)
+       ("perl-mime-types" ,perl-mime-types)))
+    (home-page "http://search.cpan.org/dist/Email-MIME")
+    (synopsis "MIME message handling")
+    (description "Email::MIME is an extension of the Email::Simple module, to
+handle MIME encoded messages.  It takes a message as a string, splits it up
+into its constituent parts, and allows you access to various parts of the
+message.  Headers are decoded from MIME encoding.")
+    (license (package-license perl))))
+
+(define-public perl-email-mime-contenttype
+  (package
+    (name "perl-email-mime-contenttype")
+    (version "1.017")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MIME-ContentType-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cl1l97lg690dh7i704hqi7yhxalq1chy7ylld5yc5v38jqa6gcn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Email-MIME-ContentType")
+    (synopsis "Parse MIME Content-Type headers")
+    (description "Email::MIME::ContentType parses a MIME Content-Type
+header.")
+    (license (package-license perl))))
+
+(define-public perl-email-mime-encodings
+  (package
+    (name "perl-email-mime-encodings")
+    (version "1.315")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-MIME-Encodings-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p5b8g9gh35m8fqrpx60g4bp98rvwd02n5b0vm9wh7mk0xah8wac"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page "http://search.cpan.org/dist/Email-MIME-Encodings")
+    (synopsis "Unified interface to MIME encoding and decoding")
+    (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
+    (license (package-license perl))))
+
+(define-public perl-email-sender
+  (package
+    (name "perl-email-sender")
+    (version "1.300016")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Sender-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18x26fjh399q3s2g8dajb9r10633c46jrnbvycpnpclgnzhjs100"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (propagated-inputs
+     `(("perl-email-abstract" ,perl-email-abstract)
+       ("perl-email-address" ,perl-email-address)
+       ("perl-email-simple" ,perl-email-simple)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-moo" ,perl-moo)
+       ("perl-moox-types-mooselike" ,perl-moox-types-mooselike)
+       ("perl-sub-exporter" ,perl-sub-exporter)
+       ("perl-throwable" ,perl-throwable)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Email-Sender")
+    (synopsis "Perl library for sending email")
+    (description "Email::Sender replaces the old and sometimes problematic
+Email::Send library.")
+    (license (package-license perl))))
+
+(define-public perl-email-simple
+  (package
+    (name "perl-email-simple")
+    (version "2.206")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
+                           "Email-Simple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19dpy3j5na2k9qw1jcpc8ia25038068r9j1bn34f9yyrisz7s522"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-email-date-format" ,perl-email-date-format)))
+    (home-page "http://search.cpan.org/dist/Email-Simple")
+    (synopsis "Parsing of RFC 2822 messages")
+    (description "Email::Simple provides simple parsing of RFC 2822 message
+format and headers.")
+    (license (package-license perl))))
 
 ;;; mail.scm ends here

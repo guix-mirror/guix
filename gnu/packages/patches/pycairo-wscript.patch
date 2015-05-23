@@ -1,0 +1,31 @@
+Update the wscript to work with waf-1.8.8.  Based on:
+http://cgit.freedesktop.org/pycairo/commit/?id=c57cd129407c904f8c2f752a59d0183df7b01a5e
+
+
+--- pycairo-1.10.0.orig/wscript	2011-04-18 15:42:29.000000000 +0800
++++ pycairo-1.10.0/wscript	2015-04-20 13:01:45.383756898 +0800
+@@ -13,18 +13,18 @@
+ 
+ def options(ctx):
+   print('  %s/options()' %d)
+-  ctx.tool_options('gnu_dirs')
+-  ctx.tool_options('compiler_cc')
+-  ctx.tool_options('python') # options for disabling pyc or pyo compilation
++  ctx.load('gnu_dirs')
++  ctx.load('compiler_c')
++  ctx.load('python') # options for disabling pyc or pyo compilation
+ 
+ 
+ def configure(ctx):
+   print('  %s/configure()' %d)
+ 
+   env = ctx.env
+-  ctx.check_tool('gnu_dirs')
+-  ctx.check_tool('compiler_cc')
+-  ctx.check_tool('python')
++  ctx.load('gnu_dirs')
++  ctx.load('compiler_c')
++  ctx.load('python')
+   ctx.check_python_version((3,1,0))
+   ctx.check_python_headers()
+   ctx.check_cfg(package='cairo', atleast_version=cairo_version_required,

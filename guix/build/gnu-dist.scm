@@ -83,10 +83,10 @@
 (define %dist-phases
   ;; Phases for building a source tarball.
   (modify-phases %standard-phases
-    (delete strip)
-    (replace install install-dist)
-    (replace build build)
-    (add-before configure autoreconf autoreconf)
-    (replace unpack copy-source)))
+    (delete 'strip)
+    (replace 'install install-dist)
+    (replace 'build build)
+    (add-before 'configure 'autoreconf autoreconf)
+    (replace 'unpack copy-source)))
 
 ;;; gnu-dist.scm ends here

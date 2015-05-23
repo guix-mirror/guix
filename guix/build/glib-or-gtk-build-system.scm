@@ -140,7 +140,9 @@ add a dependency of that output on GLib and GTK+."
      ((output . directory)
       (unless (member output glib-or-gtk-wrap-excluded-outputs)
         (let* ((bindir       (string-append directory "/bin"))
-               (bin-list     (find-files bindir ".*"))
+               (libexecdir   (string-append directory "/libexec"))
+               (bin-list     (append (find-files bindir ".*")
+                                     (find-files libexecdir ".*")))
                (datadirs     (data-directories
                               (alist-cons output directory inputs)))
                (gtk-mod-dirs (gtk-module-directories
@@ -240,9 +242,9 @@ needed."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (add-after install glib-or-gtk-compile-schemas compile-glib-schemas)
-    (add-after install glib-or-gtk-icon-cache generate-icon-cache)
-    (add-after install glib-or-gtk-wrap wrap-all-programs)))
+    (add-after 'install 'glib-or-gtk-compile-schemas compile-glib-schemas)
+    (add-after 'install 'glib-or-gtk-icon-cache generate-icon-cache)
+    (add-after 'install 'glib-or-gtk-wrap wrap-all-programs)))
 
 (define* (glib-or-gtk-build #:key inputs (phases %standard-phases)
                             #:allow-other-keys #:rest args)

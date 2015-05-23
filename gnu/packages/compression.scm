@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +25,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages base))
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages perl))
 
 (define-public zlib
   (package
@@ -294,7 +297,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 (define-public sharutils
   (package
     (name "sharutils")
-    (version "4.15")
+    (version "4.15.1")
     (source
      (origin
       (method url-fetch)
@@ -302,7 +305,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "19gqb6qbqmpgh6xlpgpj0ayw2nshllxg9d01qb5z8bnkhfcla8ka"))))
+        "02p7j270wrbwxcb86lcvxrzl29xmr3n5a2m7if46jnprvcvycb5r"))))
     (build-system gnu-build-system)
     (inputs
      `(("which" ,which)))
@@ -343,3 +346,80 @@ This package is mostly for compatibility and historical interest.")
      "The purpose of libmspack is to provide both compression and
 decompression of some loosely related file formats used by Microsoft.")
     (license license:lgpl2.1+)))
+
+(define-public perl-compress-raw-bzip2
+  (package
+    (name "perl-compress-raw-bzip2")
+    (version "2.068")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
+                           "Compress-Raw-Bzip2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16hl58xppckldz05zdyid1l5gpaykzwvkq682h3rc3nilbhgjqqg"))))
+    (build-system perl-build-system)
+    ;; TODO: Use our bzip2 package.
+    (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
+    (synopsis "Low-level interface to bzip2 compression library")
+    (description "This module provides a Perl interface to the bzip2
+compression library.")
+    (license (package-license perl))))
+
+(define-public perl-compress-raw-zlib
+  (package
+    (name "perl-compress-raw-zlib")
+    (version "2.068")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
+                           "Compress-Raw-Zlib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06q7n87g26nn5gv4z2p31ca32f6zk124hqxc25rfgkjd3qi5798i"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'configure-zlib
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (call-with-output-file "config.in"
+                       (lambda (port)
+                         (format port "
+BUILD_ZLIB = False
+INCLUDE = ~a/include
+LIB = ~:*~a/lib
+OLD_ZLIB = False
+GZIP_OS_CODE = AUTO_DETECT"
+                                 (assoc-ref inputs "zlib")))))))))
+    (home-page "http://search.cpan.org/dist/Compress-Raw-Zlib")
+    (synopsis "Low-level interface to zlib compression library")
+    (description "This module provides a Perl interface to the zlib
+compression library.")
+    (license (package-license perl))))
+
+(define-public perl-io-compress
+  (package
+    (name "perl-io-compress")
+    (version "2.068")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
+                           "IO-Compress-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dy0apjp7j9dfkzfjspjd3z9gh26srx5vac72g59bkkz1jf8s1gs"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.068
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.068
+    (home-page "http://search.cpan.org/dist/IO-Compress")
+    (synopsis "IO Interface to compressed files/buffers")
+    (description "IO-Compress provides a Perl interface to allow reading and
+writing of compressed data created with the zlib and bzip2 libraries.")
+    (license (package-license perl))))

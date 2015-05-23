@@ -23,11 +23,13 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
-  #:export (package-with-python2
+  #:export (%python-build-system-modules
+            package-with-python2
             python-build
             python-build-system))
 
@@ -37,6 +39,11 @@
 ;; implemented as an extension of 'gnu-build-system'.
 ;;
 ;; Code:
+
+(define %python-build-system-modules
+  ;; Build-side modules imported by default.
+  `((guix build python-build-system)
+    ,@%gnu-build-system-modules))
 
 (define (default-python)
   "Return the default Python package."
@@ -132,9 +139,7 @@ prepended to the name."
                        (search-paths '())
                        (system (%current-system))
                        (guile #f)
-                       (imported-modules '((guix build python-build-system)
-                                           (guix build gnu-build-system)
-                                           (guix build utils)))
+                       (imported-modules %python-build-system-modules)
                        (modules '((guix build python-build-system)
                                   (guix build utils))))
   "Build SOURCE using PYTHON, and with INPUTS.  This assumes that SOURCE

@@ -1,0 +1,15 @@
+Source: https://sources.debian.net/src/tvtime/1.0.2-14/debian/patches/libpng.diff
+
+From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date: Mon, 14 May 2012 19:01:31 +0900
+Prepares the package for libpng 1.5.  Closes: #650582.
+
+--- tvtime-1.0.2.orig/src/pngoutput.c
++++ tvtime-1.0.2/src/pngoutput.c
+@@ -18,5 +18,6 @@
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <zlib.h>
+ #include <png.h>
+ #include "pngoutput.h" 

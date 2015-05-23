@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,6 +178,109 @@ given at XML::Parser creation time.")
      "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
 module.")
     (home-page "http://search.cpan.org/~kmacleod/libxml-perl/lib/XML/Parser/PerlSAX.pm")))
+
+(define-public perl-xml-libxml
+  (package
+    (name "perl-xml-libxml")
+    (version "2.0118")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
+                           "XML-LibXML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "170c8dbk4p6jw9is0cria73021yp3hpmhb19p9j0zg2yxwkawr6c"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
+       ("perl-xml-sax" ,perl-xml-sax)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (home-page "http://search.cpan.org/dist/XML-LibXML")
+    (synopsis "Perl interface to libxml2")
+    (description "This module implements a Perl interface to the libxml2
+library which provides interfaces for parsing and manipulating XML files. This
+module allows Perl programmers to make use of the highly capable validating
+XML parser and the high performance DOM implementation.")
+    (license (package-license perl))))
+
+(define-public perl-xml-namespacesupport
+  (package
+    (name "perl-xml-namespacesupport")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/P/PE/PERIGRIN/"
+                           "XML-NamespaceSupport-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sklgcldl3w6gn706vx1cgz6pm4y5lfgsjxnfqyk20pilgq530bd"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-NamespaceSupport")
+    (synopsis "XML namespace support class")
+    (description "This module offers a simple to process namespaced XML
+names (unames) from within any application that may need them.  It also helps
+maintain a prefix to namespace URI map, and provides a number of basic
+checks.")
+    (license (package-license perl))))
+
+(define-public perl-xml-sax
+  (package
+    (name "perl-xml-sax")
+    (version "0.99")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRANTM/"
+                           "XML-SAX-" version ".tar.gz"))
+       (sha256
+        (base32
+         "115dypb50w1l94y3iwihv5nkixbsv1cxiqkd93y4rk5n6s74pc1j"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
+       ("perl-xml-sax-base" ,perl-xml-sax-base)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'install 'augment-path
+                   ;; The install target tries to load the newly-installed
+                   ;; XML::SAX module, but can't find it, so we need to tell
+                   ;; perl where to look.
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (setenv "PERL5LIB"
+                             (string-append (getenv "PERL5LIB") ":"
+                                            (assoc-ref outputs "out")
+                                            "/lib/perl5/site_perl")))))))
+    (home-page "http://search.cpan.org/dist/XML-SAX")
+    (synopsis "Perl API for XML")
+    (description "XML::SAX consists of several framework classes for using and
+building Perl SAX2 XML parsers, filters, and drivers.")
+    (license (package-license perl))))
+
+(define-public perl-xml-sax-base
+  (package
+    (name "perl-xml-sax-base")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GR/GRANTM/"
+                           "XML-SAX-Base-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17i161rq1ngjlk0c8vdkrkkc56y1pf51k1g54y28py0micqp0qk6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-SAX-Base")
+    (synopsis "Base class for SAX Drivers and Filters")
+    (description "This module has a very simple task - to be a base class for
+PerlSAX drivers and filters.  It's default behaviour is to pass the input
+directly to the output unchanged.  It can be useful to use this module as a
+base class so you don't have to, for example, implement the characters()
+callback.")
+    (license (package-license perl))))
 
 (define-public perl-xml-simple
   (package

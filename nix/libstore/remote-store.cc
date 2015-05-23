@@ -87,8 +87,7 @@ void RemoteStore::openConnection(bool reserveSpace)
         processStderr();
     }
     catch (Error & e) {
-        throw Error(format("cannot start worker (%1%)")
-            % e.msg());
+        throw Error(format("cannot start daemon worker: %1%") % e.msg());
     }
 
     setOptions();
@@ -133,8 +132,6 @@ RemoteStore::~RemoteStore()
     try {
         to.flush();
         fdSocket.close();
-        if (child != -1)
-            child.wait(true);
     } catch (...) {
         ignoreException();
     }
@@ -402,8 +399,23 @@ Path RemoteStore::addToStore(const Path & _srcPath,
     writeInt((hashAlgo == htSHA256 && recursive) ? 0 : 1, to);
     writeInt(recursive ? 1 : 0, to);
     writeString(printHashType(hashAlgo), to);
-    dumpPath(srcPath, to, filter);
-    processStderr();
+
+    try {
+        to.written = 0;
+        to.warn = true;
+        dumpPath(srcPath, to, filter);
+        to.warn = false;
+        processStderr();
+    } catch (SysError & e) {
+        /* Daemon closed while we were sending the path. Probably OOM
+           or I/O error. */
+        if (e.errNo == EPIPE)
+            try {
+                processStderr();
+            } catch (EndOfFile & e) { }
+        throw;
+    }
+
     return readStorePath(from);
 }
 
@@ -564,6 +576,13 @@ void RemoteStore::clearFailedPaths(const PathSet & paths)
     readInt(from);
 }
 
+void RemoteStore::optimiseStore()
+{
+    openConnection();
+    writeInt(wopOptimiseStore, to);
+    processStderr();
+    readInt(from);
+}
 
 void RemoteStore::processStderr(Sink * sink, Source * source)
 {

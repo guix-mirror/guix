@@ -86,20 +86,20 @@ providing:
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.2.2")
+    (version "3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "13jmcxxgli82wb2n4hs091159xk8rgh7nb02f478lgpjh6996f5s"))))
+               (base32 "0plx4dryf8i6hz7vghg84z5f6w6rkw1l8ckl4c4wh5zxpd3ddfnf"))
+              (patches (list (search-patch "bitlbee-configure-doc-fix.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
     (inputs `(("glib" ,glib)
               ("libotr" ,libotr)
               ("gnutls" ,gnutls)
-              ("zlib" ,zlib)  ; Needed to satisfy "pkg-config --exists gnutls"
               ("python" ,python-2)
               ("perl" ,perl)))
     (arguments
@@ -201,7 +201,22 @@ dictionaries.  HexChat can be extended with multiple addons.")
         'configure 'post-configure
         (lambda _
           (substitute* "src/ngircd/Makefile"
-            (("/bin/sh") (which "sh"))))
+            (("/bin/sh") (which "sh")))
+          ;; The default getpid.sh does a sloppy grep over 'ps -ax' output,
+          ;; which fails arbitrarily.
+          (with-output-to-file "src/testsuite/getpid.sh"
+            (lambda ()
+              (display
+               (string-append
+                "#!" (which "sh") "\n"
+                "ps -C \"$1\" -o pid=\n"))))
+          ;; Our variant of getpid.sh does not work for interpreter names if a
+          ;; shebang script is run directly as "./foo", so patch cases where
+          ;; the test suite relies on this.
+          (substitute* "src/testsuite/start-server.sh"
+            ;; It runs 'getpid.sh sh' to test if it works at all.  Run it on
+            ;; 'make' instead.
+            (("getpid.sh sh") "getpid.sh make")))
         %standard-phases)))
     (home-page "http://ngircd.barton.de/")
     (synopsis "Lightweight Internet Relay Chat server for small networks")

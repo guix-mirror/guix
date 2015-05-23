@@ -25,7 +25,19 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages zip)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages pkg-config))
 
 (define-public bullet
   (package
@@ -85,3 +97,74 @@ clone.")
     ;; As noted in 'COPYING', part of it is under GPLv2+, while the rest is
     ;; under BSD-2.
     (license license:gpl2+)))
+
+(define-public sfml
+  (package
+    (name "sfml")
+    (version "2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://mirror0.sfml-dev.org/files/SFML-"
+                                  version "-sources.zip"))
+              (sha256
+               (base32
+                "1xhkvgyfbhqsjdmfbxvk729kdrzh7kdyagxa3bvpzi6z43mh1frd"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("glew" ,glew)
+       ("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("eudev" ,eudev)
+       ("freetype" ,freetype)
+       ("libjpeg" ,libjpeg)
+       ("libsndfile" ,libsndfile)
+       ("openal" ,openal)))
+    (home-page "http://www.sfml-dev.org")
+    (synopsis "Simple and Fast Multimedia Library")
+    (description
+     "SFML provides a simple interface to the various computer components,
+to ease the development of games and multimedia applications.  It is composed
+of five modules: system, window, graphics, audio and network.")
+    (license license:zlib)))
+
+(define-public sfxr
+  (package
+    (name "sfxr")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.drpetter.se/files/sfxr-sdl-1.2.1.tar.gz"))
+              (sha256
+               (base32
+                "0dfqgid6wzzyyhc0ha94prxax59wx79hqr25r6if6by9cj4vx4ya"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure) ; no configure script
+                  (add-before 'build 'patch-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("\\$\\(DESTDIR\\)/usr") out))
+                        (substitute* "main.cpp"
+                          (("/usr/share")
+                           (string-append out "/share")))
+                        #t))))
+       #:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("gtk+" ,gtk+)))
+    (synopsis "Simple sound effect generator")
+    (description "Sfxr is a tool for quickly generating simple sound effects.
+Originally created for use in video game prototypes, it can generate random
+sounds from presets such as \"explosion\" or \"powerup\".")
+    (home-page "http://www.drpetter.se/project_sfxr.html")
+    (license license:expat)))

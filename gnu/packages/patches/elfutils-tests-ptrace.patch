@@ -1,0 +1,64 @@
+This patch allows us to skip tests that require PTRACE_ATTACH in situations
+where PTRACE_ATTACH is only allowed when CAP_SYS_PTRACE is held (i.e., for
+root, by default.)
+
+Reported at <https://bugzilla.redhat.com/show_bug.cgi?id=1210966>.
+
+--- elfutils-0.161/tests/run-deleted.sh	2015-04-11 16:38:33.028556235 +0200
++++ elfutils-0.161/tests/run-deleted.sh	2015-04-11 16:46:15.012442185 +0200
+@@ -17,6 +17,15 @@
+ 
+ . $srcdir/backtrace-subr.sh
+ 
++# Check whether the Yama policy allows us to use PTRACE_ATTACH.
++if [ -f /proc/sys/kernel/yama/ptrace_scope ]
++then
++    if [ `cat /proc/sys/kernel/yama/ptrace_scope` -ne 0 ]
++    then
++	exit 77
++    fi
++fi
++
+ tempfiles deleted deleted-lib.so
+ cp -p ${abs_builddir}/deleted ${abs_builddir}/deleted-lib.so .
+ 
+--- elfutils-0.161/tests/vdsosyms.c	2015-04-11 16:40:20.633461110 +0200
++++ elfutils-0.161/tests/vdsosyms.c	2015-04-11 16:45:06.611866677 +0200
+@@ -23,6 +23,8 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <sys/types.h>
++#include <sys/stat.h>
++#include <fcntl.h>
+ #include <unistd.h>
+ #include ELFUTILS_HEADER(dwfl)
+ 
+@@ -68,6 +70,7 @@ module_callback (Dwfl_Module *mod, void
+ int
+ main (int argc __attribute__ ((unused)), char **argv __attribute__ ((unused)))
+ {
++  static const char ptrace_scope_file[] = "/proc/sys/kernel/yama/ptrace_scope";
+   static char *debuginfo_path;
+   static const Dwfl_Callbacks proc_callbacks =
+     {
+@@ -76,6 +79,20 @@ main (int argc __attribute__ ((unused)),
+ 
+       .find_elf = dwfl_linux_proc_find_elf,
+     };
++
++  /* Check whether the Yama policy allows us to use PTRACE_ATTACH.  */
++  int ptrace_scope = open (ptrace_scope_file, O_RDONLY);
++  if (ptrace_scope >= 0)
++    {
++      char buf[10];
++      int count = read (ptrace_scope, buf, sizeof buf);
++      assert (count > 0);
++      if (buf[0] != '0')
++	/* We're not allowed, so skip this test.  */
++	return 77;
++      close (ptrace_scope);
++    }
++
+   Dwfl *dwfl = dwfl_begin (&proc_callbacks);
+   if (dwfl == NULL)
+     error (2, 0, "dwfl_begin: %s", dwfl_errmsg (-1));

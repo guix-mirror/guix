@@ -20,6 +20,7 @@
   #:use-module (gnu services)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages admin)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
@@ -62,7 +63,7 @@
                         (domains-to-browse '()))
   "Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
-\"zero-configuration\" host name lookups.
+\"zero-configuration\" host name lookups (see @uref{http://avahi.org/}).
 
 If @var{host-name} is different from @code{#f}, use that as the host name to
 publish for this machine; otherwise, use the machine's actual host name.
@@ -106,6 +107,6 @@ sockets."
                             (comment "Avahi daemon user")
                             (home-directory "/var/empty")
                             (shell
-                             "/run/current-system/profile/sbin/nologin"))))))))
+                             #~(string-append #$shadow "/sbin/nologin")))))))))
 
 ;;; avahi.scm ends here

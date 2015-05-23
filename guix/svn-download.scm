@@ -62,7 +62,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
         (svn-fetch '#$(svn-reference-url ref)
                    '#$(svn-reference-revision ref)
                    #$output
-                   #:svn-command (string-append #$svn "/bin/svn"))))
+                   #:svn-command (string-append #+svn "/bin/svn"))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "svn-checkout") build

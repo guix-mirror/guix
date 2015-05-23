@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -57,13 +59,13 @@ reimplementation.")
 (define-public ucommon
   (package
    (name "ucommon")
-   (version "6.3.0")
+   (version "6.3.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/commoncpp/" name "-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0l3s3vf8x3mhz85v23caf3p1xh0lirhl1xvbragapfcl1y4klmgv"))))
+                     "1marbwbqnllhm9nh22lvyfjy802pgy1wx7j7kkpkasbm9r0sb6mm"))))
    (build-system gnu-build-system)
    (synopsis "Common C++ framework for threaded applications")
    (description "GNU uCommon C++ is meant as a very light-weight C++ library
@@ -76,13 +78,13 @@ support.")
 (define-public ccrtp
   (package
    (name "ccrtp")
-   (version "2.1.1")
+   (version "2.1.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/ccrtp/ccrtp-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "1p1pk2m7v75rdrh05rizpqcd5p08g3n541rw0kssyfzd805fb90d"))))
+                     "17ili8l7zqbbkzr1rcy4hlnazkf50mds41wg6n7bfdsx3c7cldgh"))))
    (build-system gnu-build-system)
    (inputs `(("ucommon" ,ucommon)
              ("libgcrypt" ,libgcrypt)))
@@ -143,13 +145,13 @@ multiplayer games.")
 (define-public sipwitch
   (package
    (name "sipwitch")
-   (version "1.9.6")
+   (version "1.9.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sipwitch/sipwitch-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "04kfzcg12zn47y70gc5w5yi6jwgj1z2xyma2ljzz48lg1236qiqq"))))
+                     "07a069cx35pndl96c9v3vsyjcmrrr97xnv37k74m21q31isc458c"))))
    (build-system gnu-build-system)
    ;; The configure.ac uses pkg-config but in a kludgy way which breaks when 
    ;; cross-compiling.  Among other issues there the program name "pkg-config"
@@ -183,3 +185,25 @@ internet.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/sipwitch")))
 
+(define-public libsrtp
+  (package
+    (name "libsrtp")
+    (version "1.5.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
+                                  version ".tar.gz"))
+             (sha256
+              (base32
+               "1njf62f6sazz2q7qc4j495v1pga385whkmxxyr8hfz1ragiyzqc6"))))
+    (native-inputs
+     `(("procps" ,procps)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "runtest"))
+    (synopsis "Secure RTP (SRTP) Reference Implementation")
+    (description "This package provides an implementation of the Secure
+Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
+and a supporting cryptographic kernel.")
+    (home-page "https://github.com/cisco/libsrtp")
+    (license bsd-3)))

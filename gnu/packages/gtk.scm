@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,11 +30,13 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
+  #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
@@ -51,7 +54,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.15.3")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -59,9 +62,15 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "177a9x6lz2im0mfgxv2crv0l740wy7rg5vlnb8wyyf4fmnh0q19f")))) ; 2.15.3
+              "0qp5i91kfk6rhrlam3s8ha0cz88lkyp89vsyn4pb5856c1h9hpq9"))))
    (build-system gnu-build-system)
-   (inputs `(("glib" ,glib)))
+   (outputs '("out" "doc"))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))))
+   (propagated-inputs `(("glib" ,glib))) ; required by atk.pc
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -77,14 +86,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.12.18")
+   (version "1.14.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1dpmlxmmigpiyv0jchjsn2l1a29655x24g5073hy8p4lmjvz0nfw"))))
+              "1sycbq0agbwmg1bj9lhkgsf0glmblaf2jrdy9g6vxfxivncxj6f9"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -221,13 +230,21 @@ functions which were removed.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.drobilla.net/ganv-"
-                                  version
-                                  ".tar.bz2"))
+                                  version ".tar.bz2"))
               (sha256
                (base32
                 "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:phases (alist-cons-before
+                 'configure 'set-ldflags
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Allow 'bin/ganv_bench' to find libganv-1.so.
+                   (setenv "LDFLAGS"
+                           (string-append "-Wl,-rpath="
+                                          (assoc-ref outputs "out") "/lib")))
+                 %standard-phases)
+       #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
        ("gtkmm" ,gtkmm-2)))
@@ -332,7 +349,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.10.0")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -340,18 +357,31 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1ns44yibdgcwzwri7sr075hfs5rh5lgxkh71247a0822az3mahcn"))))
+              "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
    (build-system gnu-build-system)
-   (inputs `(("dbus" ,dbus)
-             ("glib" ,glib)
-             ("libxi" ,libxi)
-             ("libxtst" ,libxtst)))
-   (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+   (outputs '("out" "doc"))
    (arguments
-    `(#:tests? #f)) ; FIXME: dbind/dbtest fails; one should disable tests in
-                    ; a more fine-grained way.
+    '(#:configure-flags
+      (list (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'check
+                 ;; Run test-suite under a dbus session.
+                 (lambda _
+                   (zero? (system* "dbus-launch" "make" "check")))))))
+   (propagated-inputs
+    ;; atspi-2.pc refers to all these.
+    `(("dbus" ,dbus)
+      ("glib" ,glib)))
+   (inputs
+    `(("libxi" ,libxi)
+      ("libxtst" ,libxtst)))
+   (native-inputs
+    `(("gobject-introspection" ,gobject-introspection)
+      ("intltool" ,intltool)
+      ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
    (description
     "The Assistive Technology Service Provider Interface, core components,
@@ -362,7 +392,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.10.0")
+   (version "2.16.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -370,17 +400,22 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "150sqc21difazqd53llwfdaqnwfy73bic9hia41xpfy9kcpzz9yy"))))
+              "1y9gfz1iz3wpja7s000f0bmyyvc6im5fcdl6bxwbz0v3qdgc9vvq"))))
    (build-system gnu-build-system)
-   (inputs `(("atk" ,atk)
-             ("at-spi2-core" ,at-spi2-core)
-             ("dbus" ,dbus)
-             ("glib" ,glib)))
-   (native-inputs
-     `(("pkg-config" ,pkg-config)))
    (arguments
-    `(#:tests? #f)) ; FIXME: droute/droute-test fails; one should disable
-                    ; tests in a more fine-grained way.
+    '(#:phases
+      (modify-phases %standard-phases
+        (replace 'check
+                 ;; Run test-suite under a dbus session.
+                 (lambda _
+                   (zero? (system* "dbus-launch" "make" "check")))))))
+   (propagated-inputs
+    `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
+   (inputs
+    `(("atk" ,atk)))
+   (native-inputs
+    `(("dbus" ,dbus) ; for testing
+      ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
    (description
     "The Assistive Technology Service Provider Interface
@@ -391,7 +426,7 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
    (name "gtk+")
-   (version "2.24.21")
+   (version "2.24.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -399,20 +434,34 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1qyw73pr9ryqhir2h1kbx3vm70km4dg2fxrgkrdlpv0rvlb94bih"))))
+              "1x14rnjvqslpa1q19fp1qalz5sxds72amsgjk8m7769rwk511jr0"))))
    (build-system gnu-build-system)
+   (outputs '("out" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("pango" ,pango)))
+   (inputs
+    `(("cups" ,cups)
+      ("libxcomposite" ,libxcomposite)
+      ("libxcursor" ,libxcursor)
+      ("libxdamage" ,libxdamage)
+      ("libxi" ,libxi)
+      ("libxinerama" ,libxinerama)
+      ("libxrandr" ,libxrandr)))
    (native-inputs
     `(("perl" ,perl)
+      ("gettext" ,gnu-gettext)
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
-    `(#:make-flags '("CC=gcc")
+    `(#:configure-flags
+      (list "--with-xinput=yes"
+            (string-append "--with-html-dir="
+                           (assoc-ref %outputs "doc")
+                           "/share/gtk-doc/html"))
       #:phases
       (alist-cons-before
        'configure 'disable-tests
@@ -433,7 +482,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.14.7")
+   (version "3.16.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -441,11 +490,12 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0vm40n6nf0w3vv54wqy67jcxddka7hplksi093xim3119yq196gv"))))
+              "1yhwg2l72l3khfkprydcjlpxjrg11ccqfc80sjl56llz3jk66fd0"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
+      ("libepoxy" ,libepoxy)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
       ("libxdamage" ,libxdamage)
@@ -456,25 +506,33 @@ application suites.")
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
+      ("gettext" ,gnu-gettext)
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key inputs #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           ;; Disable most tests, failing in the chroot with the message:
-           ;; D-Bus library appears to be incorrectly set up; failed to read
-           ;; machine uuid: Failed to open "/etc/machine-id": No such file or
-           ;; directory.
-           ;; See the manual page for dbus-uuidgen to correct this issue.
-           (substitute* "testsuite/Makefile.in"
-             (("SUBDIRS = gdk gtk a11y css reftests")
-              "SUBDIRS = gdk"))
-           (apply configure args)))
+    `(;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
+      ;; to "doc".
+      #:configure-flags (list (string-append "--with-html-dir="
+                                             (assoc-ref %outputs "doc")
+                                             "/share/gtk-doc/html"))
+      #:phases
+      (alist-cons-before
+       'configure 'pre-configure
+       (lambda _
+         ;; Disable most tests, failing in the chroot with the message:
+         ;; D-Bus library appears to be incorrectly set up; failed to read
+         ;; machine uuid: Failed to open "/etc/machine-id": No such file or
+         ;; directory.
+         ;; See the manual page for dbus-uuidgen to correct this issue.
+         (substitute* "testsuite/Makefile.in"
+           (("SUBDIRS = gdk gtk a11y css reftests")
+            "SUBDIRS = gdk"))
+         (substitute* '("demos/widget-factory/Makefile.in"
+                        "demos/gtk-demo/Makefile.in")
+           (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
+         #t)
        %standard-phases)))))
 
 ;;;
@@ -574,7 +632,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.34.0")
+    (version "2.36.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -582,7 +640,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0hcyvv7c5zmivprdam6cp111i6hn2y5jsxzk00m6j9pncbzvp0hf"))))
+               "1w11d05nkxglzg67rfa81vqghm75xhy6j396xmmp5mq8qx96knd8"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -623,7 +681,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.14.0")
+    (version "3.16.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -631,7 +689,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "12z4g2in82nk92nfjs2hmrdcwbav8v3laz1813x2dhkf5jk2ixfr"))))
+               "036xn22jkaf3akpid7w23b8vkqa3xxqz93mwacmyar5vw7slm3cv"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -655,7 +713,7 @@ extensive documentation, including API reference and a tutorial.")
 (define-public gtkmm-2
   (package (inherit gtkmm)
     (name "gtkmm")
-    (version "2.24.2")
+    (version "2.24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -663,7 +721,7 @@ extensive documentation, including API reference and a tutorial.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0gcm91sc1a05c56kzh74l370ggj0zz8nmmjvjaaxgmhdq8lpl369"))))
+               "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -682,29 +740,23 @@ extensive documentation, including API reference and a tutorial.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))))
-    (build-system python-build-system)
+        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))
+      (patches (list (search-patch "pycairo-wscript.patch")))))
+    (build-system waf-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python-waf" ,python-waf)))
     (propagated-inputs                  ;pycairo.pc references cairo
      `(("cairo" ,cairo)))
     (arguments
      `(#:tests? #f
-       #:phases (alist-cons-before
-                 'build 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (zero? (system* "./waf" "configure"
-                                   (string-append "--prefix="
-                                                  (assoc-ref outputs "out")))))
-                 (alist-replace
-                  'build
-                  (lambda _
-                    (zero? (system* "./waf" "build")))
-                  (alist-replace
-                   'install
-                   (lambda _
-                     (zero? (system* "./waf" "install")))
-                   %standard-phases)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'patch-waf
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; The bundled `waf' doesn't work with python-3.4.x.
+            (copy-file (assoc-ref %build-inputs "python-waf") "./waf"))))))
     (home-page "http://cairographics.org/pycairo/")
     (synopsis "Python bindings for cairo")
     (description
@@ -725,7 +777,11 @@ extensive documentation, including API reference and a tutorial.")
         "0cblk919wh6w0pgb45zf48xwxykfif16qk264yga7h9fdkq3j16k"))))
     (arguments
      `(#:python ,python-2
-       ,@(package-arguments python-pycairo)))
+       ,@(substitute-keyword-arguments (package-arguments python-pycairo)
+           ((#:phases phases)
+            `(alist-delete 'patch-waf ,phases))
+           ((#:native-inputs native-inputs)
+            `(alist-delete "python-waf" ,native-inputs)))))
     ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
     (license (list license:lgpl2.1 license:mpl1.1))))
 
@@ -788,7 +844,7 @@ write GNOME applications.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -796,7 +852,7 @@ write GNOME applications.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1phfmqp8y17zcy9yi6pm2f80x8ldbk60iswpm4bmjz5217jwqzxh"))))
+                "0pnfdsg435b5vc4x8l9pgm77aj7ram1q0bzrp9g4a3bh1r64xq1f"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)))
     (inputs `(("gtk+" ,gtk+)

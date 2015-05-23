@@ -23,6 +23,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages linux)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -128,6 +129,26 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
              (let ((out (assoc-ref outputs "out")))
                (with-directory-excursion (string-append out "/bin")
                  (symlink "bash" "sh")))))
+         (install-headers-phase
+          '(lambda* (#:key outputs #:allow-other-keys)
+             ;; Install Bash headers so that packages that provide extensions
+             ;; can use them.  We install them in include/bash; that's what
+             ;; Debian does and what Bash extensions like recutils or
+             ;; guile-bash expect.
+             (let ((include (string-append (assoc-ref outputs "include")
+                                            "/include/bash"))
+                   (headers "^\\./(builtins/|lib/glob/|lib/tilde/|)[^/]+\\.h$"))
+               (mkdir-p include)
+               (for-each (lambda (file)
+                           (when ((@ (ice-9 regex) string-match) headers file)
+                             (let ((directory (string-append include "/"
+                                                             (dirname file))))
+                               (mkdir-p directory)
+                               (copy-file file
+                                          (string-append directory "/"
+                                                         (basename file))))))
+                         (find-files "." "\\.h$"))
+               #t)))
          (version "4.3"))
     (package
      (name "bash")
@@ -148,6 +169,9 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
      (version (string-append version "."
                              (number->string (length %patch-series-4.3))))
      (build-system gnu-build-system)
+
+     (outputs '("out"
+                "include"))                       ;headers used by extensions
      (native-inputs `(("bison" ,bison)))          ;to rebuild the parser
      (inputs `(("readline" ,readline)
                ("ncurses" ,ncurses)))             ;TODO: add texinfo
@@ -169,9 +193,10 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
         ;; for now.
         #:tests? #f
 
-        #:phases (alist-cons-after 'install 'post-install
-                                   ,post-install-phase
-                                   %standard-phases)))
+        #:phases (modify-phases %standard-phases
+                   (add-after 'install 'post-install ,post-install-phase)
+                   (add-after 'install 'install-headers
+                              ,install-headers-phase))))
      (synopsis "The GNU Bourne-Again SHell")
      (description
       "Bash is the shell, or command-line interpreter, of the GNU system.  It
@@ -223,6 +248,29 @@ without modification.")
               (patches
                (list (search-patch "bash-completion-directories.patch")))))
     (build-system gnu-build-system)
+    (native-inputs `(("util-linux" ,util-linux)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'install 'remove-redundant-completions
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   ;; Util-linux comes with a bunch of completion files for
+                   ;; its own commands which are more sophisticated and
+                   ;; up-to-date than those of bash-completion.  Remove those
+                   ;; from bash-completion.
+                   (let* ((out         (assoc-ref outputs "out"))
+                          (util-linux  (assoc-ref inputs "util-linux"))
+                          (completions (string-append out
+                                                      "/share/bash-completion"
+                                                      "/completions"))
+                          (already     (find-files (string-append util-linux
+                                                                  "/etc/bash_completion.d"))))
+                     (with-directory-excursion completions
+                       (for-each (lambda (file)
+                                   (when (file-exists? file)
+                                     (delete-file file)))
+                                 (map basename already)))
+                     #t))
+                 %standard-phases)))
     (synopsis "Bash completions for common commands")
     (description
      "This package provides extensions that allow Bash to provide adapted

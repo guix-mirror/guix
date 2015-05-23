@@ -29,20 +29,19 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
-  #:use-module (guix build gnu-build-system)
   #:use-module (guix build-system gnu))
 
 (define-public node
   (package
     (name "node")
-    (version "0.12.0")
+    (version "0.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0cifd2qhpyrbxx71a4hsagzk24qas8m5zvwcyhx69cz9yhxf404p"))))
+                "0bbp58p3iwsp35c37brkkh6bmjjhwsw2nlr8srz3wqryx6nphzmc"))))
     (native-inputs `(("python" ,python-2)
                      ("perl" ,perl)
                      ("gcc" ,gcc-4.9)

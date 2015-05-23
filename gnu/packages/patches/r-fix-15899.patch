@@ -1,0 +1,17 @@
+Without the "extern" keyword external applications linking against R (such as
+Shogun, for example) might not be linkable.
+
+See https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=15899 for details
+about this bug.
+
+--- a/src/include/Rinterface.h	(revision 66251)
++++ b/src/include/Rinterface.h	(working copy)
+@@ -84,7 +84,7 @@
+ void fpu_setup(Rboolean);
+ 
+ /* in unix/system.c */
+-int R_running_as_main_program; 
++extern int R_running_as_main_program; 
+ 
+ #ifdef CSTACK_DEFNS
+ /* duplicating Defn.h */

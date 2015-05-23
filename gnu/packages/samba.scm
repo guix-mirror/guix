@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -105,7 +105,7 @@ anywhere.")
                "0l9pz2m67vf398q3c2dwn8jwdxsjb20igncf4byhv6yq5dzqlb4g"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
+     `(#:phases (alist-cons-before
                  'configure 'chdir
                  (lambda _
                    (chdir "source3"))
@@ -127,8 +127,7 @@ anywhere.")
                   (guix build utils)
                   (guix build rpath)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build rpath))
 
        ;; This flag is required to allow for "make test".

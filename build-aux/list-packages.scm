@@ -167,7 +167,11 @@ decreasing, is 1."
           ,system))
 
     `(div "status: "
-          ,(list-join (map url (package-transitive-supported-systems package))
+          ,(list-join (map url
+                           (lset-intersection
+                            string=?
+                            %hydra-supported-systems
+                            (package-transitive-supported-systems package)))
                       " ")))
 
   (define (package-logo name)

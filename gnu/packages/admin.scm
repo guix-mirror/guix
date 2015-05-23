@@ -55,7 +55,8 @@
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages man))
 
 (define-public dmd
   (package
@@ -151,14 +152,14 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "1.9.2")
+    (version "1.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04wrm0v7l4890mmbaawd6wjwdv08bkglgqhpz0q4dkb0l50fl8q4"))))
+               "06dshajjpyi9sxi7qfki9gnp5r3nxvyvf81r81gx0x2qkqzqcxlj"))))
     (build-system gnu-build-system)
     (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
@@ -687,7 +688,7 @@ commands and their arguments.")
 (define-public wpa-supplicant-light
   (package
     (name "wpa-supplicant-light")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -696,7 +697,16 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0skvkl6c10ls4s48b2wmf47h9j1y40nlzxnzn8hyaw2j0prmpapa"))))
+                "08li21q1wjn5chrv289w666il9ah1w419y3dkq2rl4wnq0rci385"))
+              (patches
+               (map search-patch '("wpa-supplicant-CVE-2015-1863.patch"
+                                   "wpa-supplicant-2015-2-fix.patch"
+                                   "wpa-supplicant-2015-3-fix.patch"
+                                   "wpa-supplicant-2015-4-fix-pt1.patch"
+                                   "wpa-supplicant-2015-4-fix-pt2.patch"
+                                   "wpa-supplicant-2015-4-fix-pt3.patch"
+                                   "wpa-supplicant-2015-4-fix-pt4.patch"
+                                   "wpa-supplicant-2015-4-fix-pt5.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -783,7 +793,15 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
               (close-port port))
             #t)
-          ,phases))))))
+          (alist-cons-after
+           'install-man-pages 'install-dbus-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/etc/dbus-1/system.d")))
+               (mkdir-p dir)
+               (copy-file "dbus/dbus-wpa_supplicant.conf"
+                          (string-append dir "/wpa_supplicant.conf"))))
+           ,phases)))))))
 
 (define-public wakelan
   (package
@@ -856,7 +874,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20140724")
+    (version "20150410")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -864,7 +882,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "01vdgrh7dsxrrvg5yd8sxm63cw8210pnsi5qg9g15ac53gn243ac"))))
+                "0q1fjwkyw9x6gsva6fd0zbn7ly4fx0ha4853f416np9kf2irillw"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))

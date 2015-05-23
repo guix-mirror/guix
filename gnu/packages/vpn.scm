@@ -28,6 +28,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -125,3 +126,33 @@ supported by the ASA5500 Series, by IOS 12.4(9)T or later on Cisco SR500,
 and probably others.")
    (license license:lgpl2.1)
    (home-page "http://www.infradead.org/openconnect/")))
+
+(define-public openvpn
+  (package
+    (name "openvpn")
+    (version "2.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://swupdate.openvpn.org/community/releases/openvpn-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "1v8h2nshxnvn2zyr08vzkfby1kc7ma6bi0s6hix389cj9krjxbmd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-iproute2=yes")))
+    (native-inputs
+     `(("iproute2" ,iproute)))
+    (inputs
+     `(("lzo" ,lzo)
+       ("openssl" ,openssl)
+       ("linux-pam" ,linux-pam)))
+    (home-page "https://openvpn.net/")
+    (synopsis "Virtual private network daemon")
+    (description "OpenVPN implements virtual private network (VPN) techniques
+for creating secure point-to-point or site-to-site connections in routed or
+bridged configurations and remote access facilities.  It uses a custom
+security protocol that utilizes SSL/TLS for key exchange.  It is capable of
+traversing network address translators (NATs) and firewalls. ")
+    (license license:gpl2)))

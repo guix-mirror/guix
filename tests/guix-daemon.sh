@@ -17,7 +17,7 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Test the daemon and its interaction with 'guix substitute-binary'.
+# Test the daemon and its interaction with 'guix substitute'.
 #
 
 set -e
@@ -51,7 +51,7 @@ Deriver: $drv
 EOF
 
 # Remove the cached narinfo.
-rm -f "$XDG_CACHE_HOME/guix/substitute-binary/$hash_part"
+rm -f "$XDG_CACHE_HOME/guix/substitute/$hash_part"
 
 # Make sure we see the substitute.
 guile -c '

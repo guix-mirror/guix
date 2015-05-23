@@ -48,42 +48,14 @@
 
 (define %user-module
   ;; Module in which the machine description file is loaded.
-  (let ((module (make-fresh-user-module)))
-    (for-each (lambda (iface)
-                (module-use! module (resolve-interface iface)))
-              '((gnu system)
-                (gnu services)
-                (gnu system shadow)))
-    module))
+  (make-user-module '((gnu system)
+                      (gnu services)
+                      (gnu system shadow))))
 
 (define (read-operating-system file)
   "Read the operating-system declaration from FILE and return it."
-  ;; TODO: Factorize.
-  (catch #t
-    (lambda ()
-      ;; Avoid ABI incompatibility with the <operating-system> record.
-      (set! %fresh-auto-compile #t)
+  (load* file %user-module))
 
-      (save-module-excursion
-       (lambda ()
-         (set-current-module %user-module)
-         (primitive-load file))))
-    (lambda args
-      (match args
-        (('system-error . _)
-         (let ((err (system-error-errno args)))
-           (leave (_ "failed to open operating system file '~a': ~a~%")
-                  file (strerror err))))
-        (('syntax-error proc message properties form . rest)
-         (let ((loc (source-properties->location properties)))
-           (format (current-error-port) (_ "~a: error: ~a~%")
-                   (location->string loc) message)
-           (exit 1)))
-        ((error args ...)
-         (report-error (_ "failed to load operating system file '~a':~%")
-                       file)
-         (apply display-error #f (current-error-port) args)
-         (exit 1))))))
 
 
 ;;;
@@ -95,8 +67,6 @@
   (store-lift references))
 (define topologically-sorted*
   (store-lift topologically-sorted))
-(define show-what-to-build*
-  (store-lift show-what-to-build))
 
 
 (define* (copy-item item target

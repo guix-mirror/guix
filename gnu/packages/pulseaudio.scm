@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
-  #:use-module ((gnu packages autotools) #:select (libltdl))
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
   #:use-module (gnu packages gdbm)
@@ -128,7 +128,9 @@ rates. ")
               '(substitute* "src/daemon/default.pa.in"
                  (("load-module module-console-kit" all)
                   (string-append "#" all "\n"))))
-             (patches (list (search-patch "pulseaudio-fix-mult-test.patch")))))
+             (patches
+              (list (search-patch "pulseaudio-fix-mult-test.patch")
+                    (search-patch "pulseaudio-longer-test-timeout.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"

@@ -97,6 +97,18 @@
                               %store (package-source coreutils))))
                  (gexp->sexp* exp)))))
 
+(test-assert "one local file"
+  (let* ((file  (search-path %load-path "guix.scm"))
+         (local (local-file file))
+         (exp   (gexp (display (ungexp local))))
+         (intd  (add-to-store %store (basename file) #t
+                              "sha256" file)))
+    (and (gexp? exp)
+         (match (gexp-inputs exp)
+           (((x "out"))
+            (eq? x local)))
+         (equal? `(display ,intd) (gexp->sexp* exp)))))
+
 (test-assert "same input twice"
   (let ((exp (gexp (begin
                      (display (ungexp coreutils))
@@ -159,6 +171,12 @@
                 (gexp-inputs exp))
          (equal? `(list ,guile ,cu ,libc ,bu)
                  (gexp->sexp* exp target)))))
+
+(test-equal "ungexp + ungexp-native, nested"
+  (list `((,%bootstrap-guile "out")) '<> `((,coreutils "out")))
+  (let* ((exp (gexp (list (ungexp-native (gexp (ungexp coreutils)))
+                          (ungexp %bootstrap-guile)))))
+    (list (gexp-inputs exp) '<> (gexp-native-inputs exp))))
 
 (test-assert "input list"
   (let ((exp   (gexp (display
@@ -330,6 +348,20 @@
     (mlet %store-monad ((drv mdrv))
       (return (string=? system (derivation-system drv))))))
 
+(test-assertm "gexp->derivation, local-file"
+  (mlet* %store-monad ((file ->  (search-path %load-path "guix.scm"))
+                       (intd     (interned-file file))
+                       (local -> (local-file file))
+                       (exp ->   (gexp (begin
+                                         (stat (ungexp local))
+                                         (symlink (ungexp local)
+                                                  (ungexp output)))))
+                       (drv      (gexp->derivation "local-file" exp)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (string=? (readlink (derivation->output-path drv))
+                        intd)))))
+
 (test-assertm "gexp->derivation, cross-compilation"
   (mlet* %store-monad ((target -> "mips64el-linux")
                        (exp    -> (gexp (list (ungexp coreutils)
@@ -495,6 +527,23 @@
                                                           "guile"))
                                              #:allowed-references
                                              (list "out" %bootstrap-guile))))
+    (built-derivations (list drv))))
+
+(test-assertm "gexp->derivation #:allowed-references, specific output"
+  (mlet* %store-monad ((in  (gexp->derivation "thing"
+                                              #~(begin
+                                                  (mkdir #$output:ok)
+                                                  (mkdir #$output:not-ok))))
+                       (drv (gexp->derivation "allowed-refs"
+                                              #~(begin
+                                                  (pk #$in:not-ok)
+                                                  (mkdir #$output)
+                                                  (chdir #$output)
+                                                  (symlink #$output "self")
+                                                  (symlink #$in:ok "ok"))
+                                              #:allowed-references
+                                              (list "out"
+                                                    (gexp-input in "ok")))))
     (built-derivations (list drv))))
 
 (test-assert "gexp->derivation #:allowed-references, disallowed"

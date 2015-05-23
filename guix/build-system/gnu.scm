@@ -20,11 +20,13 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (gnu-build
+  #:export (%gnu-build-system-modules
+            gnu-build
             gnu-build-system
             standard-packages
             package-with-explicit-inputs
@@ -41,8 +43,15 @@
 ;;
 ;; Code:
 
-(define %default-modules
+(define %gnu-build-system-modules
   ;; Build-side modules imported and used by default.
+  '((guix build gnu-build-system)
+    (guix build utils)
+    (guix build gremlin)
+    (guix elf)))
+
+(define %default-modules
+  ;; Modules in scope in the build-side environment.
   '((guix build gnu-build-system)
     (guix build utils)))
 
@@ -182,7 +191,7 @@ runs `make distcheck' and whose result is one or more source tarballs."
        (let* ((args (default-keyword-arguments (package-arguments p)
                       `(#:phases #f
                         #:modules ,%default-modules
-                        #:imported-modules ,%default-modules))))
+                        #:imported-modules ,%gnu-build-system-modules))))
          (substitute-keyword-arguments args
            ((#:modules modules)
             `((guix build gnu-dist)
@@ -196,9 +205,10 @@ runs `make distcheck' and whose result is one or more source tarballs."
        ;; Add autotools & co. as inputs.
        (let ((ref (lambda (module var)
                     (module-ref (resolve-interface module) var))))
-         `(("autoconf" ,(ref '(gnu packages autotools) 'autoconf))
+         `(,@(package-native-inputs p)
+           ("autoconf" ,(ref '(gnu packages autotools) 'autoconf))
            ("automake" ,(ref '(gnu packages autotools) 'automake))
-           ("libtool"  ,(ref '(gnu packages autotools) 'libtool) "bin")
+           ("libtool"  ,(ref '(gnu packages autotools) 'libtool))
            ("gettext"  ,(ref '(gnu packages gettext) 'gnu-gettext))
            ("texinfo"  ,(ref '(gnu packages texinfo) 'texinfo))))))))
 
@@ -277,10 +287,11 @@ standard packages used as implicit inputs of the GNU build system."
                     (strip-flags ''("--strip-debug"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
+                    (validate-runpath? #t)
                     (phases '%standard-phases)
                     (locale "en_US.UTF-8")
                     (system (%current-system))
-                    (imported-modules %default-modules)
+                    (imported-modules %gnu-build-system-modules)
                     (modules %default-modules)
                     (substitutable? #t)
                     allowed-references)
@@ -339,6 +350,7 @@ are allowed to refer to."
                   #:parallel-tests? ,parallel-tests?
                   #:patch-shebangs? ,patch-shebangs?
                   #:strip-binaries? ,strip-binaries?
+                  #:validate-runpath? ,validate-runpath?
                   #:strip-flags ,strip-flags
                   #:strip-directories ,strip-directories)))
 
@@ -411,13 +423,12 @@ is one of `host' or `target'."
                           (strip-flags ''("--strip-debug"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
+                          (validate-runpath? #t)
                           (phases '%standard-phases)
                           (locale "en_US.UTF-8")
                           (system (%current-system))
-                          (imported-modules '((guix build gnu-build-system)
-                                              (guix build utils)))
-                          (modules '((guix build gnu-build-system)
-                                     (guix build utils)))
+                          (imported-modules %gnu-build-system-modules)
+                          (modules %default-modules)
                           (substitutable? #t)
                           allowed-references)
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
@@ -486,6 +497,7 @@ platform."
                     #:parallel-tests? ,parallel-tests?
                     #:patch-shebangs? ,patch-shebangs?
                     #:strip-binaries? ,strip-binaries?
+                    #:validate-runpath? ,validate-runpath?
                     #:strip-flags ,strip-flags
                     #:strip-directories ,strip-directories))))
 

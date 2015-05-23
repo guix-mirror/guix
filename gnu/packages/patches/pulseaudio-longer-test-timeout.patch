@@ -1,0 +1,13 @@
+Increase the timeout on 'cpu-mix-test' to accommodate slower machines.
+
+--- pulseaudio-6.0/src/tests/cpu-mix-test.c.ORIG	2015-02-12 09:10:35.000000000 -0500
++++ pulseaudio-6.0/src/tests/cpu-mix-test.c	2015-03-31 13:45:05.316878322 -0400
+@@ -212,7 +212,7 @@
+ #if defined (__arm__) && defined (__linux__) && defined (HAVE_NEON)
+     tcase_add_test(tc, mix_neon_test);
+ #endif
+-    tcase_set_timeout(tc, 120);
++    tcase_set_timeout(tc, 240);
+     suite_add_tcase(s, tc);
+ 
+     sr = srunner_create(s);

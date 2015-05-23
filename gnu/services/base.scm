@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
             swap-service
             user-processes-service
             host-name-service
+            console-keymap-service
             console-font-service
             udev-service
             mingetty-service
@@ -131,7 +133,9 @@ names such as device-mapping services."
       (requirement `(root-file-system ,@requirements))
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
-                 (let ((device (canonicalize-device-spec #$device '#$title)))
+                 ;; FIXME: Use or factorize with 'mount-file-system'.
+                 (let ((device (canonicalize-device-spec #$device '#$title))
+                       (flags  #$(mount-flags->bit-mask flags)))
                    #$(if create-mount-point?
                          #~(mkdir-p #$target)
                          #~#t)
@@ -145,9 +149,16 @@ names such as device-mapping services."
                                       (getenv "PATH")))
                              (check-file-system device #$type))
                          #~#t)
-                   (mount device #$target #$type
-                          #$(mount-flags->bit-mask flags)
-                          #$options))
+
+                   (mount device #$target #$type flags #$options)
+
+                   ;; For read-only bind mounts, an extra remount is needed,
+                   ;; as per <http://lwn.net/Articles/281157/>, which still
+                   ;; applies to Linux 4.0.
+                   (when (and (= MS_BIND (logand flags MS_BIND))
+                              (= MS_RDONLY (logand flags MS_RDONLY)))
+                     (mount device #$target #$type
+                            (logior MS_BIND MS_REMOUNT MS_RDONLY))))
                  #t))
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so
@@ -303,6 +314,19 @@ stopped before 'kill' is called."
                   "unicode_start"))
           (else
            (zero? (cdr (waitpid pid))))))))
+
+(define (console-keymap-service file)
+  "Return a service to load console keymap from @var{file}."
+  (with-monad %store-monad
+    (return
+     (service
+      (documentation
+       (string-append "Load console keymap (loadkeys)."))
+      (provision '(console-keymap))
+      (start #~(lambda _
+                 (zero? (system* (string-append #$kbd "/bin/loadkeys")
+                                 #$file))))
+      (respawn? #f)))))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
   "Return a service that sets up Unicode support in @var{tty} and loads
@@ -499,7 +523,7 @@ the ``message of the day''."
   "Return a service that runs libc's name service cache daemon (nscd) with the
 given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
 @code{#:name-services} is a list of packages that provide name service switch
- (NSS) modules needed by nscd."
+ (NSS) modules needed by nscd.  @xref{Name Service Switch}, for an example."
   (mlet %store-monad ((nscd.conf (nscd.conf-file config)))
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
@@ -526,8 +550,10 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
 
              (respawn? #f)))))
 
-(define (syslog-service)
-  "Return a service that runs @code{syslogd} with reasonable default settings."
+(define* (syslog-service #:key config-file)
+  "Return a service that runs @code{syslogd}.
+If configuration file name @var{config-file} is not specified, use some
+reasonable default settings."
 
   ;; Snippet adapted from the GNU inetutils manual.
   (define contents "
@@ -561,7 +587,7 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
       (start
        #~(make-forkexec-constructor
           (list (string-append #$inetutils "/libexec/syslogd")
-                "--no-detach" "--rcfile" #$syslog.conf)))
+                "--no-detach" "--rcfile" #$(or config-file syslog.conf))))
       (stop #~(make-kill-destructor))))))
 
 (define* (guix-build-accounts count #:key
@@ -640,6 +666,7 @@ passed to @command{guix-daemon}."
 
   (with-monad %store-monad
     (return (service
+             (documentation "Run the Guix daemon.")
              (provision '(guix-daemon))
              (requirement '(user-processes))
              (start
@@ -824,10 +851,10 @@ gexp, to open it, and evaluate @var{close} to close it."
              (requirement `(udev ,@requirement))
              (documentation "Enable the given swap device.")
              (start #~(lambda ()
-                        (swapon #$device)
+                        (restart-on-EINTR (swapon #$device))
                         #t))
              (stop #~(lambda _
-                       (swapoff #$device)
+                       (restart-on-EINTR (swapoff #$device))
                        #f))
              (respawn? #f)))))
 

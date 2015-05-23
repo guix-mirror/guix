@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (gnu system file-systems)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix store)
   #:export (<file-system>
             file-system
             file-system?
@@ -37,6 +38,7 @@
             %shared-memory-file-system
             %pseudo-terminal-file-system
             %devtmpfs-file-system
+            %immutable-store
 
             %base-file-systems
 
@@ -139,12 +141,24 @@ file system."
     (options "size=50%")                         ;TODO: make size configurable
     (create-mount-point? #t)))
 
+(define %immutable-store
+  ;; Read-only store to avoid users or daemons accidentally modifying it.
+  ;; 'guix-daemon' has provisions to remount it read-write in its own name
+  ;; space.
+  (file-system
+    (device (%store-prefix))
+    (mount-point (%store-prefix))
+    (type "none")
+    (check? #f)
+    (flags '(read-only bind-mount))))
+
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
   (list %devtmpfs-file-system
         %pseudo-terminal-file-system
-        %shared-memory-file-system))
+        %shared-memory-file-system
+        %immutable-store))
 
 
 

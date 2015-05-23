@@ -35,7 +35,7 @@
   #:use-module (srfi srfi-39)
   #:export (search-patch
             search-bootstrap-binary
-            %patch-directory
+            %patch-path
             %bootstrap-binaries-path
             %package-module-path
 
@@ -160,9 +160,15 @@ Optionally, narrow the search to SUB-DIRECTORY."
     (string-length directory))
 
   (filter-map (lambda (file)
-                (let ((file (substring file prefix-len)))
-                  (false-if-exception
-                   (resolve-interface (file-name->module-name file)))))
+                (let* ((file   (substring file prefix-len))
+                       (module (file-name->module-name file)))
+                  (catch #t
+                    (lambda ()
+                      (resolve-interface module))
+                    (lambda args
+                      ;; Report the error, but keep going.
+                      (warn-about-load-error module args)
+                      #f))))
               (scheme-files (if sub-directory
                                 (string-append directory "/" sub-directory)
                                 directory))))
@@ -205,14 +211,18 @@ same package twice."
   (let ((packages (delay
                     (fold-packages (lambda (p r)
                                      (vhash-cons (package-name p) p r))
-                                   vlist-null))))
+                                   vlist-null)))
+        (version>? (lambda (p1 p2)
+                     (version>? (package-version p1) (package-version p2)))))
     (lambda* (name #:optional version)
       "Return the list of packages with the given NAME.  If VERSION is not #f,
-then only return packages whose version is equal to VERSION."
-      (let ((matching (vhash-fold* cons '() name (force packages))))
+then only return packages whose version is prefixed by VERSION, sorted in
+decreasing version order."
+      (let ((matching (sort (vhash-fold* cons '() name (force packages))
+                            version>?)))
         (if version
             (filter (lambda (package)
-                      (string=? (package-version package) version))
+                      (string-prefix? version (package-version package)))
                     matching)
             matching)))))
 

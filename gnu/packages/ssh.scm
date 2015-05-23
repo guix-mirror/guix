@@ -72,7 +72,6 @@
                ;; fields of 'gcry_thread_cbs' that are now private:
                ;; src/threads.c:72:26: error: 'struct gcry_thread_cbs' has no member named 'mutex_init'
               ("libgcrypt", libgcrypt-1.5)))
-    (native-inputs `(("patchelf" ,patchelf)))
     (synopsis "SSH client library")
     (description
      "libssh is a C library implementing the SSHv2 and SSHv1 protocol for
@@ -123,7 +122,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "6.7p1")
+   (version "6.8p1")
    (source (origin
             (method url-fetch)
             (uri (let ((tail (string-append name "-" version ".tar.gz")))
@@ -132,7 +131,7 @@ a server that supports the SSH-2 protocol.")
                          (string-append "ftp://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
             (sha256 (base32
-                     "01smf9pvn2sk5qs80gkmc9acj07ckawi1b3xxyysp3c5mr73ky5j"))))
+                     "03hnrqvjq6ghg1mp3gkarfxh6g3x1n1vjrzpbc5lh9717vklrxiz"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
@@ -150,9 +149,10 @@ a server that supports the SSH-2 protocol.")
        (alist-cons-before
         'check 'patch-tests
         (lambda _
-          ;; remove tests that require the user sshd
+          ;; remove 't-exec' regress target which requires user 'sshd'
           (substitute* "regress/Makefile"
-            (("t10 t-exec") "t10")))
+            (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
+             (string-append pre post))))
        (alist-replace
         'install
         (lambda* (#:key (make-flags '()) #:allow-other-keys)

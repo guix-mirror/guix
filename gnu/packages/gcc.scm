@@ -28,7 +28,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages elf)
-  #:use-module ((gnu packages perl) #:select (perl))
+  #:use-module (gnu packages perl)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -85,6 +85,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                        '("CC"  "CXX" "LD" "AR" "NM" "RANLIB" "STRIP")
                        '("gcc" "g++" "ld" "ar" "nm" "ranlib" "strip"))
                   '()))))
+         (libdir
+          (let ((base '(or (assoc-ref outputs "lib")
+                           (assoc-ref outputs "out"))))
+            (lambda ()
+              ;; Return the directory that contains lib/libgcc_s.so et al.
+              (if (%current-target-system)
+                  `(string-append ,base "/" ,(%current-target-system))
+                  base))))
          (configure-flags
           (lambda ()
             ;; This is terrible.  Since we have two levels of quasiquotation,
@@ -181,12 +189,12 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                                    ,(if stripped? "-g0" "-g")))))
 
          #:tests? #f
+
          #:phases
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((libdir (or (assoc-ref outputs "lib")
-                              (assoc-ref outputs "out")))
+            (let ((libdir ,(libdir))
                   (libc   (assoc-ref inputs "libc")))
               (when libc
                 ;; The following is not performed for `--without-headers'
@@ -240,6 +248,13 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (("static char const sed_cmd_z\\[\\] =.*;")
                  "static char const sed_cmd_z[] = \"sed\";"))
 
+              ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
+              ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
+              ;; and <http://bugs.gnu.org/20358>.
+              (substitute* "libstdc++-v3/src/Makefile.in"
+                (("^OPT_LDFLAGS = ")
+                 "OPT_LDFLAGS = -Wl,-rpath=$(libdir) "))
+
               ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
               ;; circularity between "out" and "lib".  (Note:
               ;; --with-python-dir is useless because it imposes $(prefix) as
@@ -292,23 +307,45 @@ Go.  It also includes runtime support libraries for these languages.")
   (package (inherit gcc-4.7)
     (version "4.8.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gcc/gcc-"
-                                 version "/gcc-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
+
+              ;; ARM 'link' spec issue reported at
+              ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65711> and
+              ;; <https://gcc.gnu.org/ml/gcc-patches/2015-04/msg01387.html>.
+              (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define-public gcc-4.9
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (version "4.9.2")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gcc/gcc-"
-                                 version "/gcc-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
+              (patches (map search-patch
+                            '("gcc-arm-link-spec-fix.patch"
+                              "gcc-libvtv-runpath.patch")))))))
+
+(define-public gcc-5.1
+  (package (inherit gcc-4.9)
+    (version "5.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
+              (patches (map search-patch
+                            '("gcc-arm-link-spec-fix.patch"
+                              "gcc-5.0-libvtv-runpath.patch")))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
@@ -378,38 +415,57 @@ Go.  It also includes runtime support libraries for these languages.")
              "--enable-languages=java"
              ,@(remove (cut string-match "--enable-languages.*" <>)
                        ,flags))))
-        ((#:phases phases)
-         `(alist-cons-after
-           'install 'install-javac-and-javap-wrappers
-           (lambda _
-             (let* ((javac  (assoc-ref %build-inputs "javac.in"))
-                    (ecj    (assoc-ref %build-inputs "ecj-bootstrap"))
-                    (gcj    (assoc-ref %outputs "out"))
-                    (gcjbin (string-append gcj "/bin/"))
-                    (jvm    (string-append gcj "/lib/jvm/"))
-                    (target (string-append jvm "/bin/javac")))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after
+            'unpack 'add-lib-output-to-rpath
+            (lambda _
+              (substitute* "libjava/Makefile.in"
+                (("libgcj_bc_dummy_LINK = .* -shared" line)
+                 (string-append line " -Wl,-rpath=$(libdir)"))
+                (("libgcj(_bc)?_la_LDFLAGS =" ldflags _)
+                 (string-append ldflags " -Wl,-rpath=$(libdir)")))))
+           (add-after
+            'install 'install-javac-and-javap-wrappers
+            (lambda _
+              (let* ((javac  (assoc-ref %build-inputs "javac.in"))
+                     (ecj    (assoc-ref %build-inputs "ecj-bootstrap"))
+                     (gcj    (assoc-ref %outputs "out"))
+                     (gcjbin (string-append gcj "/bin/"))
+                     (jvm    (string-append gcj "/lib/jvm/"))
+                     (target (string-append jvm "/bin/javac")))
 
-               (symlink (string-append gcjbin "jcf-dump")
-                        (string-append jvm "/bin/javap"))
+                (symlink (string-append gcjbin "jcf-dump")
+                         (string-append jvm "/bin/javap"))
 
-               (copy-file ecj (string-append gcj "/share/java/ecj.jar"))
+                (copy-file ecj (string-append gcj "/share/java/ecj.jar"))
 
-               ;; Create javac wrapper from the template javac.in by
-               ;; replacing the @VARIABLES@ with paths.
-               (copy-file javac target)
-               (patch-shebang target)
-               (substitute* target
-                 (("@JAVA@")
-                  (string-append jvm "/bin/java"))
-                 (("@ECJ_JAR@")
-                  (string-append gcj "/share/java/ecj.jar"))
-                 (("@RT_JAR@")
-                  (string-append jvm "/jre/lib/rt.jar"))
-                 (("@TOOLS_JAR@")
-                  (string-append jvm "/lib/tools.jar")))
-               (chmod target #o755)
-               #t))
-           ,phases))))))
+                ;; Create javac wrapper from the template javac.in by
+                ;; replacing the @VARIABLES@ with paths.
+                (copy-file javac target)
+                (patch-shebang target)
+                (substitute* target
+                  (("@JAVA@")
+                   (string-append jvm "/bin/java"))
+                  (("@ECJ_JAR@")
+                   (string-append gcj "/share/java/ecj.jar"))
+                  (("@RT_JAR@")
+                   (string-append jvm "/jre/lib/rt.jar"))
+                  (("@TOOLS_JAR@")
+                   (string-append jvm "/lib/tools.jar")))
+                (chmod target #o755)
+                #t)))
+           (add-after
+            'install 'remove-broken-or-conflicting-files
+            (lambda _
+              (let ((out (assoc-ref %outputs "out")))
+                (for-each
+                 delete-file
+                 (append (find-files (string-append out "/lib/jvm/jre/lib")
+                                     "libjawt.so")
+                         (find-files (string-append out "/bin")
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcc.*)"))))
+              #t))))))))
 
 (define ecj-bootstrap-4.8
   (origin

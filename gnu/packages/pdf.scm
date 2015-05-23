@@ -50,13 +50,13 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.28.1")
+   (version "0.32.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256 (base32
-                     "01pxjdbhvpxf00ncf8d9wxc8gkcqcxz59lwrpa151ah988inxkrc"))))
+                     "162vfbvbz0frvqyk00ldsbl49h4bj8i8wn0ngfl30xg1lldy6qs9"))))
    (build-system gnu-build-system)
    ;; FIXME: more dependencies could  be added
    ;;  cairo output:       no (requires cairo >= 1.10.0)
@@ -282,7 +282,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -290,7 +290,7 @@ by using the poppler rendering engine.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1qk5s7cyqp4l673yhma5igk9g24p5jyqyy81fdk7q7xjqlym19px"))
+                "1rywx09qn6ap5hb1z31wxby4lzdrqdbldm51pjk1ifflr37xwirk"))
               (patches
                (list
                 (search-patch "zathura-plugindir-environment-variable.patch")))))

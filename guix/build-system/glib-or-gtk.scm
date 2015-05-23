@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;;
@@ -22,11 +22,13 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
-  #:export (glib-or-gtk-build
+  #:export (%glib-or-gtk-build-system-modules
+            glib-or-gtk-build
             glib-or-gtk-build-system))
 
 ;; Commentary:
@@ -67,11 +69,10 @@
   '((guix build glib-or-gtk-build-system)
     (guix build utils)))
 
-(define %default-imported-modules
+(define %glib-or-gtk-build-system-modules
   ;; Build-side modules imported and used by default.
-  '((guix build gnu-build-system)
-    (guix build glib-or-gtk-build-system)
-    (guix build utils)))
+  `((guix build glib-or-gtk-build-system)
+    ,@%gnu-build-system-modules))
 
 (define (default-glib)
   "Return the default glib package from which we use
@@ -127,6 +128,7 @@
                             (test-target "check")
                             (parallel-build? #t)
                             (parallel-tests? #t)
+                            (validate-runpath? #t)
                             (patch-shebangs? #t)
                             (strip-binaries? #t)
                             (strip-flags ''("--strip-debug"))
@@ -136,7 +138,7 @@
                                         %standard-phases))
                             (glib-or-gtk-wrap-excluded-outputs ''())
                             (system (%current-system))
-                            (imported-modules %default-imported-modules)
+                            (imported-modules %glib-or-gtk-build-system-modules)
                             (modules %default-modules)
                             allowed-references)
   "Build SOURCE with INPUTS.  See GNU-BUILD for more details."
@@ -175,6 +177,7 @@
                           #:test-target ,test-target
                           #:parallel-build? ,parallel-build?
                           #:parallel-tests? ,parallel-tests?
+                          #:validate-runpath? ,validate-runpath?
                           #:patch-shebangs? ,patch-shebangs?
                           #:strip-binaries? ,strip-binaries?
                           #:strip-flags ,strip-flags

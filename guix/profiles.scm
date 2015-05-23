@@ -22,8 +22,9 @@
 (define-module (guix profiles)
   #:use-module (guix utils)
   #:use-module (guix records)
-  #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (guix store)
@@ -59,6 +60,7 @@
             manifest-entry-output
             manifest-entry-item
             manifest-entry-dependencies
+            manifest-entry-search-paths
 
             manifest-pattern
             manifest-pattern?
@@ -78,6 +80,8 @@
 
             profile-manifest
             package->manifest-entry
+            packages->manifest
+            %default-profile-hooks
             profile-derivation
             generation-number
             generation-numbers
@@ -132,6 +136,8 @@
                 (default "out"))
   (item         manifest-entry-item)              ; package | store path
   (dependencies manifest-entry-dependencies       ; (store path | package)*
+                (default '()))
+  (search-paths manifest-entry-search-paths       ; search-path-specification*
                 (default '())))
 
 (define-record-type* <manifest-pattern> manifest-pattern
@@ -164,25 +170,72 @@ omitted or #f, use the first output of PACKAGE."
      (version (package-version package))
      (output (or output (car (package-outputs package))))
      (item package)
-     (dependencies (delete-duplicates deps)))))
+     (dependencies (delete-duplicates deps))
+     (search-paths (package-native-search-paths package)))))
+
+(define (packages->manifest packages)
+  "Return a list of manifest entries, one for each item listed in PACKAGES.
+Elements of PACKAGES can be either package objects or package/string tuples
+denoting a specific output of a package."
+  (manifest
+   (map (match-lambda
+         ((package output)
+          (package->manifest-entry package output))
+         (package
+           (package->manifest-entry package)))
+        packages)))
 
 (define (manifest->gexp manifest)
   "Return a representation of MANIFEST as a gexp."
   (define (entry->gexp entry)
     (match entry
-      (($ <manifest-entry> name version output (? string? path) (deps ...))
-       #~(#$name #$version #$output #$path #$deps))
-      (($ <manifest-entry> name version output (? package? package) (deps ...))
+      (($ <manifest-entry> name version output (? string? path)
+                           (deps ...) (search-paths ...))
+       #~(#$name #$version #$output #$path
+                 (propagated-inputs #$deps)
+                 (search-paths #$(map search-path-specification->sexp
+                                      search-paths))))
+      (($ <manifest-entry> name version output (? package? package)
+                           (deps ...) (search-paths ...))
        #~(#$name #$version #$output
-                 (ungexp package (or output "out")) #$deps))))
+                 (ungexp package (or output "out"))
+                 (propagated-inputs #$deps)
+                 (search-paths #$(map search-path-specification->sexp
+                                      search-paths))))))
 
   (match manifest
     (($ <manifest> (entries ...))
-     #~(manifest (version 1)
+     #~(manifest (version 2)
                  (packages #$(map entry->gexp entries))))))
+
+(define (find-package name version)
+  "Return a package from the distro matching NAME and possibly VERSION.  This
+procedure is here for backward-compatibility and will eventually vanish."
+  (define find-best-packages-by-name              ;break abstractions
+    (module-ref (resolve-interface '(gnu packages))
+                'find-best-packages-by-name))
+
+   ;; Use 'find-best-packages-by-name' and not 'find-packages-by-name'; the
+   ;; former traverses the module tree only once and then allows for efficient
+   ;; access via a vhash.
+   (match (find-best-packages-by-name name version)
+     ((p _ ...) p)
+     (_
+      (match (find-best-packages-by-name name #f)
+        ((p _ ...) p)
+        (_ #f)))))
 
 (define (sexp->manifest sexp)
   "Parse SEXP as a manifest."
+  (define (infer-search-paths name version)
+    ;; Infer the search path specifications for NAME-VERSION by looking up a
+    ;; same-named package in the distro.  Useful for the old manifest formats
+    ;; that did not store search path info.
+    (let ((package (find-package name version)))
+      (if package
+          (package-native-search-paths package)
+          '())))
+
   (match sexp
     (('manifest ('version 0)
                 ('packages ((name version output path) ...)))
@@ -192,7 +245,8 @@ omitted or #f, use the first output of PACKAGE."
               (name name)
               (version version)
               (output output)
-              (item path)))
+              (item path)
+              (search-paths (infer-search-paths name version))))
            name version output path)))
 
     ;; Version 1 adds a list of propagated inputs to the
@@ -214,11 +268,31 @@ omitted or #f, use the first output of PACKAGE."
                  (version version)
                  (output output)
                  (item path)
-                 (dependencies deps))))
+                 (dependencies deps)
+                 (search-paths (infer-search-paths name version)))))
            name version output path deps)))
 
+    ;; Version 2 adds search paths and is slightly more verbose.
+    (('manifest ('version 2 minor-version ...)
+                ('packages ((name version output path
+                                  ('propagated-inputs deps)
+                                  ('search-paths search-paths)
+                                  extra-stuff ...)
+                            ...)))
+     (manifest
+      (map (lambda (name version output path deps search-paths)
+             (manifest-entry
+               (name name)
+               (version version)
+               (output output)
+               (item path)
+               (dependencies deps)
+               (search-paths (map sexp->search-path-specification
+                                  search-paths))))
+           name version output path deps search-paths)))
     (_
-     (error "unsupported manifest format" manifest))))
+     (raise (condition
+             (&message (message "unsupported manifest format")))))))
 
 (define (read-manifest port)
   "Return the packages listed in MANIFEST."
@@ -398,11 +472,56 @@ MANIFEST."
                (append-map info-files
                            '#$(manifest-inputs manifest)))))
 
-  ;; Don't depend on Texinfo when there's nothing to do.
-  (if (null? (manifest-entries manifest))
-      (gexp->derivation "info-dir" #~(mkdir #$output))
-      (gexp->derivation "info-dir" build
-                        #:modules '((guix build utils)))))
+  (gexp->derivation "info-dir" build
+                    #:modules '((guix build utils))))
+
+(define (ghc-package-cache-file manifest)
+  "Return a derivation that builds the GHC 'package.cache' file for all the
+entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
+  (define ghc                                 ;lazy reference
+    (module-ref (resolve-interface '(gnu packages haskell)) 'ghc))
+
+  (define build
+    #~(begin
+        (use-modules (guix build utils)
+                     (srfi srfi-1) (srfi srfi-26)
+                     (ice-9 ftw))
+
+        (define ghc-name-version
+          (let* ((base (basename #+ghc)))
+            (string-drop base
+                         (+ 1 (string-index base #\-)))))
+
+        (define db-subdir
+          (string-append "lib/" ghc-name-version "/package.conf.d"))
+
+        (define db-dir
+          (string-append #$output "/" db-subdir))
+
+        (define (conf-files top)
+          (find-files (string-append top "/" db-subdir) "\\.conf$"))
+
+        (define (copy-conf-file conf)
+          (let ((base (basename conf)))
+            (copy-file conf (string-append db-dir "/" base))))
+
+        (system* (string-append #+ghc "/bin/ghc-pkg") "init" db-dir)
+        (for-each copy-conf-file
+                  (append-map conf-files
+                              '#$(manifest-inputs manifest)))
+        (let ((success
+               (zero?
+                (system* (string-append #+ghc "/bin/ghc-pkg") "recache"
+                         (string-append "--package-db=" db-dir)))))
+          (for-each delete-file (find-files db-dir "\\.conf$"))
+          success)))
+
+  ;; Don't depend on GHC when there's nothing to do.
+  (and (any (cut string-prefix? "ghc" <>)
+            (map manifest-entry-name (manifest-entries manifest)))
+       (gexp->derivation "ghc-package-cache" build
+                         #:modules '((guix build utils))
+                         #:local-build? #t)))
 
 (define (ca-certificate-bundle manifest)
   "Return a derivation that builds a single-file bundle containing the CA
@@ -420,7 +539,8 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                      (rnrs io ports)
                      (srfi srfi-1)
                      (srfi srfi-26)
-                     (ice-9 ftw))
+                     (ice-9 ftw)
+                     (ice-9 match))
 
         (define (pem-file? file)
           (string-suffix? ".pem" file))
@@ -446,61 +566,75 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
         (setenv "LOCPATH" (string-append #+glibc-utf8-locales "/lib/locale"))
         (setlocale LC_ALL "en_US.UTF-8")
 
-        (let ((ca-files (append-map ca-files
-                                    '#$(manifest-inputs manifest)))
-              (result   (string-append #$output "/etc/ssl/certs")))
-          (mkdir-p result)
-          (concatenate-files ca-files
-                             (string-append result
-                                            "/ca-certificates.crt")))))
+        (match (append-map ca-files '#$(manifest-inputs manifest))
+          (()
+           ;; Since there are no CA files, just create an empty directory.  Do
+           ;; not create the etc/ssl/certs sub-directory, since that would
+           ;; wrongfully lead to a message about 'SSL_CERT_DIR' needing to be
+           ;; defined.
+           (mkdir #$output)
+           #t)
+          ((ca-files ...)
+           (let ((result (string-append #$output "/etc/ssl/certs")))
+             (mkdir-p result)
+             (concatenate-files ca-files
+                                (string-append result
+                                               "/ca-certificates.crt"))
+             #t)))))
 
-  ;; Don't depend on 'glibc-utf8-locales' and its dependencies when there's
-  ;; nothing to do.
-  (if (null? (manifest-entries manifest))
-      (gexp->derivation "ca-certificate-bundle" #~(mkdir #$output))
-      (gexp->derivation "ca-certificate-bundle" build
-                        #:modules '((guix build utils))
-                        #:local-build? #t)))
+  (gexp->derivation "ca-certificate-bundle" build
+                    #:modules '((guix build utils))
+                    #:local-build? #t))
+
+(define %default-profile-hooks
+  ;; This is the list of derivation-returning procedures that are called by
+  ;; default when making a non-empty profile.
+  (list info-dir-file
+        ghc-package-cache-file
+        ca-certificate-bundle))
 
 (define* (profile-derivation manifest
                              #:key
-                             (info-dir? #t)
-                             (ca-certificate-bundle? #t))
+                             (hooks %default-profile-hooks))
   "Return a derivation that builds a profile (aka. 'user environment') with
-the given MANIFEST.  The profile includes a top-level Info 'dir' file unless
-INFO-DIR? is #f, and a single-file CA certificate bundle unless
-CA-CERTIFICATE-BUNDLE? is #f."
-  (mlet %store-monad ((info-dir (if info-dir?
-                                    (info-dir-file manifest)
-                                    (return #f)))
-                      (ca-cert-bundle (if ca-certificate-bundle?
-                                          (ca-certificate-bundle manifest)
-                                          (return #f))))
+the given MANIFEST.  The profile includes additional derivations returned by
+the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
+  (mlet %store-monad ((extras (if (null? (manifest-entries manifest))
+                                  (return '())
+                                  (sequence %store-monad
+                                            (filter-map (lambda (hook)
+                                                          (hook manifest))
+                                                        hooks)))))
     (define inputs
-      (append (if info-dir
-                  (list (gexp-input info-dir))
-                  '())
-              (if ca-cert-bundle
-                  (list (gexp-input ca-cert-bundle))
-                  '())
+      (append (map gexp-input extras)
               (manifest-inputs manifest)))
 
     (define builder
       #~(begin
-          (use-modules (ice-9 pretty-print)
-                       (guix build union))
+          (use-modules (guix build profiles)
+                       (guix search-paths))
 
           (setvbuf (current-output-port) _IOLBF)
           (setvbuf (current-error-port) _IOLBF)
 
-          (union-build #$output '#$inputs
-                       #:log-port (%make-void-port "w"))
-          (call-with-output-file (string-append #$output "/manifest")
-            (lambda (p)
-              (pretty-print '#$(manifest->gexp manifest) p)))))
+          (define search-paths
+            ;; Search paths of MANIFEST's packages, converted back to their
+            ;; record form.
+            (map sexp->search-path-specification
+                 '#$(map search-path-specification->sexp
+                         (append-map manifest-entry-search-paths
+                                     (manifest-entries manifest)))))
+
+          (build-profile #$output '#$inputs
+                         #:manifest '#$(manifest->gexp manifest)
+                         #:search-paths search-paths)))
 
     (gexp->derivation "profile" builder
-                      #:modules '((guix build union))
+                      #:modules '((guix build profiles)
+                                  (guix build union)
+                                  (guix build utils)
+                                  (guix search-paths)
+                                  (guix records))
                       #:local-build? #t)))
 
 (define (profile-regexp profile)

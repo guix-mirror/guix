@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -48,6 +48,8 @@
   #:use-module (gnu packages nano)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -401,6 +403,65 @@ linear.  It will test every change between two points in the DAG.  It will
 also walk each side of a merge and test those changes individually.")
       (license (x11-style "file://LICENSE")))))
 
+(define-public gitolite
+  (package
+    (name "gitolite")
+    (version "3.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/sitaramc/gitolite/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              ;; Commit ed807a4 upstream
+              (patches
+               (list (search-patch "gitolite-openssh-6.8-compat.patch")))
+              (sha256
+               (base32
+                "1gsgzi9ayb4rablki3mqr11b0h8db4xg43df660marfpacmkfb01"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build)
+                  (add-before 'install 'patch-scripts
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((perl (string-append (assoc-ref inputs "perl")
+                                                 "/bin/perl")))
+                        ;; This seems to take care of every shell script that
+                        ;; invokes Perl.
+                        (substitute* (find-files "." ".*")
+                          ((" perl -")
+                           (string-append " " perl " -"))))))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((output (assoc-ref outputs "out"))
+                             (sharedir (string-append output "/share/gitolite"))
+                             (bindir (string-append output "/bin")))
+                        (mkdir-p sharedir)
+                        (mkdir-p bindir)
+                        (system* "./install" "-to" sharedir)
+                        ;; Create symlinks for executable scripts in /bin.
+                        (for-each (lambda (script)
+                                    (symlink (string-append sharedir "/" script)
+                                             (string-append bindir "/" script)))
+                                  '("gitolite" "gitolite-shell"))
+                        #t))))))
+    (inputs
+     `(("perl" ,perl)))
+    ;; git and openssh are propagated because trying to patch the source via
+    ;; regexp matching is too brittle and prone to false positives.
+    (propagated-inputs
+     `(("git" ,git)
+       ("openssh" ,openssh)))
+    (home-page "http://gitolite.com")
+    (synopsis "Git access control layer")
+    (description
+     "Gitolite is an access control layer on top of Git, providing fine access
+control to Git repositories.")
+    (license gpl2)))
+
 (define-public mercurial
   (package
     (name "mercurial")
@@ -476,29 +537,20 @@ WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
 property manipulation.")
     (license gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
-(define-public neon-0.29.6
-  (package (inherit neon)
-    (name "neon")
-    (version "0.29.6")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://www.webdav.org/neon/neon-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0hzbjqdx1z8zw0vmbknf159wjsxbcq8ii0wgwkqhxj3dimr0nr4w"))))))
-
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.7.18")
+    (version "1.8.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "06nrqnn3qq1hhskkcdbm0ilk2xv6ay2gyf2c7qvxp6xncb782wzn"))))
+               "0ybmc0yq83jhblp42wdqvn2cryra3sypx8mkxn5b8lq7hilcr68h"))
+             (patches
+              (list (search-patch "subversion-sqlite-3.8.9-fix.patch")))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -514,7 +566,7 @@ property manipulation.")
                      (substitute* "libtool"
                        (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))))
                  (alist-cons-after
-                  'install 'instal-perl-bindings
+                  'install 'install-perl-bindings
                   (lambda* (#:key outputs #:allow-other-keys)
                     ;; Follow the instructions from
                     ;; 'subversion/bindings/swig/INSTALL'.
@@ -531,7 +583,10 @@ property manipulation.")
                                    (system* "perl" "Makefile.PL"
                                             (string-append "PREFIX=" out)))
                                   (zero?
-                                   (system* "make" "install")))))))
+                                   (system* "make" "install"
+                                            (string-append "OTHERLDFLAGS="
+                                                           "-Wl,-rpath="
+                                                           out "/lib"))))))))
                   %standard-phases))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
@@ -540,7 +595,7 @@ property manipulation.")
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
-        ("neon" ,neon-0.29.6)
+        ("serf" ,serf)
         ("perl" ,perl)
         ("python" ,python-2) ; incompatible with Python 3 (print syntax)
         ("sqlite" ,sqlite)

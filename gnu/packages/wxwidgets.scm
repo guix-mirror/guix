@@ -62,6 +62,9 @@
     (arguments
      '(#:configure-flags
        '("--with-regex=sys" "--with-libmspack" "--with-sdl")
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "https://www.wxwidgets.org/")
@@ -93,5 +96,8 @@ and many other languages.")
     (arguments
      `(#:configure-flags
        '("--enable-unicode" "--with-regex=sys" "--with-sdl")
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
        ;; No 'check' target.
        #:tests? #f))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +55,7 @@
 (define MS_NOSUID 2)
 (define MS_NODEV  4)
 (define MS_NOEXEC 8)
+(define MS_REMOUNT 32)
 (define MS_BIND 4096)
 (define MS_MOVE 8192)
 
@@ -280,13 +281,21 @@ run a file system check."
   (match spec
     ((source title mount-point type (flags ...) options check?)
      (let ((source      (canonicalize-device-spec source title))
-           (mount-point (string-append root "/" mount-point)))
+           (mount-point (string-append root "/" mount-point))
+           (flags       (mount-flags->bit-mask flags)))
        (when check?
          (check-file-system source type))
        (mkdir-p mount-point)
-       (mount source mount-point type (mount-flags->bit-mask flags)
+       (mount source mount-point type flags
               (if options
                   (string->pointer options)
-                  %null-pointer))))))
+                  %null-pointer))
+
+       ;; For read-only bind mounts, an extra remount is needed, as per
+       ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
+       (when (and (= MS_BIND (logand flags MS_BIND))
+                  (= MS_RDONLY (logand flags MS_RDONLY)))
+         (mount source mount-point type (logior MS_BIND MS_REMOUNT MS_RDONLY)
+                %null-pointer))))))
 
 ;;; file-systems.scm ends here

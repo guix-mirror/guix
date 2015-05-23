@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,6 +30,7 @@
             activate-/bin/sh
             activate-modprobe
             activate-firmware
+            activate-ptrace-attach
             activate-current-system))
 
 ;;; Commentary:
@@ -39,6 +40,24 @@
 ;;; 'operating-system' configuration becomes active.
 ;;;
 ;;; Code:
+
+(define (enumerate thunk)
+  "Return the list of values returned by THUNK until it returned #f."
+  (let loop ((entry  (thunk))
+             (result '()))
+    (if (not entry)
+        (reverse result)
+        (loop (thunk) (cons entry result)))))
+
+(define (current-users)
+  "Return the passwd entries for all the currently defined user accounts."
+  (setpw)
+  (enumerate getpwent))
+
+(define (current-groups)
+  "Return the group entries for all the currently defined user groups."
+  (setgr)
+  (enumerate getgrent))
 
 (define* (add-group name #:key gid password system?
                     (log-port (current-error-port)))
@@ -59,6 +78,11 @@
 (define (dot-or-dot-dot? file)
   (member file '("." "..")))
 
+(define (make-file-writable file)
+  "Make FILE writable for its owner.."
+  (let ((stat (lstat file)))                      ;XXX: symlinks
+    (chmod file (logior #o600 (stat:perms stat)))))
+
 (define* (copy-account-skeletons home
                                  #:optional (directory %skeleton-directory))
   "Copy the account skeletons from DIRECTORY to HOME."
@@ -66,8 +90,21 @@
                         string<?)))
     (mkdir-p home)
     (for-each (lambda (file)
-                (copy-file (string-append directory "/" file)
-                           (string-append home "/" file)))
+                (let ((target (string-append home "/" file)))
+                  (copy-file (string-append directory "/" file) target)
+                  (make-file-writable target)))
+              files)))
+
+(define* (make-skeletons-writable home
+                                  #:optional (directory %skeleton-directory))
+  "Make sure that the files that have been copied from DIRECTORY to HOME are
+owner-writable in HOME."
+  (let ((files (scandir directory (negate dot-or-dot-dot?)
+                        string<?)))
+    (for-each (lambda (file)
+                (let ((target (string-append home "/" file)))
+                  (when (file-exists? target)
+                    (make-file-writable target))))
               files)))
 
 (define* (add-user name group
@@ -109,7 +146,14 @@ properties.  Return #t on success."
                     ,@(if password `("-p" ,password) '())
                     ,@(if system? '("--system") '())
                     ,name)))
-        (zero? (apply system* "useradd" args)))))
+        (and (zero? (apply system* "useradd" args))
+             (begin
+               ;; Since /etc/skel is a link to a directory in the store where
+               ;; all files have the writable bit cleared, and since 'useradd'
+               ;; preserves permissions when it copies them, explicitly make
+               ;; them writable.
+               (make-skeletons-writable home)
+               #t)))))
 
 (define* (modify-user name group
                       #:key uid comment home shell password system?
@@ -127,6 +171,17 @@ properties.  Return #t on success."
                 ,@(if shell `("-s" ,shell) '())
                 ,name)))
     (zero? (apply system* "usermod" args))))
+
+(define* (delete-user name #:key (log-port (current-error-port)))
+  "Remove user account NAME.  Return #t on success.  This may fail if NAME is
+logged in."
+  (format log-port "deleting user '~a'...~%" name)
+  (zero? (system* "userdel" name)))
+
+(define* (delete-group name #:key (log-port (current-error-port)))
+  "Remove group NAME.  Return #t on success."
+  (format log-port "deleting group '~a'...~%" name)
+  (zero? (system* "groupdel" name)))
 
 (define* (ensure-user name group
                       #:key uid comment home shell password system?
@@ -186,8 +241,22 @@ numeric gid or #f."
                            #:system? system?))))
             groups)
 
-  ;; Finally create the other user accounts.
-  (for-each activate-user users))
+  ;; Create the other user accounts.
+  (for-each activate-user users)
+
+  ;; Finally, delete extra user accounts and groups.
+  (for-each delete-user
+            (lset-difference string=?
+                             (map passwd:name (current-users))
+                             (match users
+                               (((names . _) ...)
+                                names))))
+  (for-each delete-group
+            (lset-difference string=?
+                             (map group:name (current-groups))
+                             (match groups
+                               (((names . _) ...)
+                                names)))))
 
 (define (activate-etc etc)
   "Install ETC, a directory in the store, as the source of static files for
@@ -291,6 +360,20 @@ by itself, without having to resort to a \"user helper\"."
   (call-with-output-file "/sys/module/firmware_class/parameters/path"
     (lambda (port)
       (display directory port))))
+
+(define (activate-ptrace-attach)
+  "Allow users to PTRACE_ATTACH their own processes.
+
+This works around a regression introduced in the default \"security\" policy
+found in Linux 3.4 onward that prevents users from attaching to their own
+processes--see Yama.txt in the Linux source tree for the rationale.  This
+sounds like an unacceptable restriction for little or no security
+improvement."
+  (let ((file "/proc/sys/kernel/yama/ptrace_scope"))
+    (when (file-exists? file)
+      (call-with-output-file file
+        (lambda (port)
+          (display 0 port))))))
 
 
 (define %current-system

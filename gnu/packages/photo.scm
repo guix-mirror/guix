@@ -28,7 +28,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
-  #:use-module ((gnu packages base) #:select (tzdata)))
+  #:use-module (gnu packages base))
 
 (define-public libexif
   (package

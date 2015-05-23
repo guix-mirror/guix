@@ -33,7 +33,7 @@
     (let* ((native (append-map (lambda (system)
                                  (map (cut package-derivation store <> system)
                                       (list %bootstrap-tarballs emacs)))
-                               %supported-systems))
+                               %hydra-supported-systems))
            (cross  (map (cut package-cross-derivation store
                              %bootstrap-tarballs <>)
                         '("mips64el-linux-gnuabi64")))

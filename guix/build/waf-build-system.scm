@@ -70,10 +70,10 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (replace configure configure)
-    (replace build build)
-    (replace check check)
-    (replace install install)))
+    (replace 'configure configure)
+    (replace 'build build)
+    (replace 'check check)
+    (replace 'install install)))
 
 (define* (waf-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)

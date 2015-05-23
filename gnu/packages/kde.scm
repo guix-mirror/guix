@@ -224,6 +224,6 @@ calculation of sha1 for every file crawled
     (arguments
      `(#:tests? #f)) ; no test target
     (home-page "http://www.kde.org/")
-    (synopsis "oxygen icon theme for the KDE desktop")
+    (synopsis "Oxygen icon theme for the KDE desktop")
     (description "KDE desktop environment")
     (license lgpl3+)))

@@ -221,9 +221,10 @@ Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3.")
     (native-inputs
      `(("perl" ,perl) ; needed for installation
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("rasqal" ,rasqal))) ; in Requires.private field of .pc
     (inputs
-     `(("bdb" ,bdb)
-       ("rasqal" ,rasqal)))
+     `(("bdb" ,bdb)))
     (home-page "http://librdf.org/")
     (synopsis "RDF library")
     (description "The Redland RDF Library (librdf) provides the RDF API
@@ -243,7 +244,16 @@ and triple stores.")
               (base32
                "1gxbzqsm212wmn8qkdd3lbl6wbv7fwmaf9qh2nxa4yxjbr7mylb4"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append "-Wl,-rpath="
+                                   (assoc-ref outputs "out") "/lib")))))))
     (home-page "http://drobilla.net/software/serd/")
     (synopsis "Library for RDF syntax supporting Turtle and NTriples")
     (description
@@ -268,7 +278,16 @@ ideal (e.g. in LV2 implementations or embedded applications).")
               (base32
                "0rq7vafdv4vsxi6xk9zf5shr59w3kppdhqbj78185rz5gp9kh1dx"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append "-Wl,-rpath="
+                                   (assoc-ref outputs "out") "/lib")))))))
     (inputs
      `(("serd" ,serd)))
     (native-inputs
@@ -299,7 +318,6 @@ ideal (e.g. in LV2 implementations or embedded applications).")
     (inputs
      `(("clucene" ,clucene)
        ("qt" ,qt-4)
-       ("rasqal" ,rasqal)
        ("redland" ,redland)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")

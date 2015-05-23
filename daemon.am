@@ -25,8 +25,8 @@ CLEANFILES += $(BUILT_SOURCES)
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
-# Use '-std=c++0x' for 'std::shared_ptr'.
-AM_CXXFLAGS = -Wall -std=c++0x
+# Use '-std=c++11' for 'std::shared_ptr', 'auto', lambdas, and more.
+AM_CXXFLAGS = -Wall -std=c++11
 
 libformat_a_SOURCES =				\
   nix/boost/format/free_funcs.cc		\
@@ -112,7 +112,8 @@ libstore_a_CPPFLAGS =				\
   -DNIX_CONF_DIR=\"$(sysconfdir)/guix\"		\
   -DNIX_LIBEXEC_DIR=\"$(libexecdir)\"		\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
-  -DOPENSSL_PATH="\"guix-authenticate\""
+  -DOPENSSL_PATH="\"guix-authenticate\""	\
+  -DDEFAULT_CHROOT_DIRS="\"\""
 
 libstore_a_CXXFLAGS = $(AM_CXXFLAGS)		\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
@@ -165,7 +166,7 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 
 nodist_pkglibexec_SCRIPTS =			\
   nix/scripts/list-runtime-roots		\
-  nix/scripts/substitute-binary
+  nix/scripts/substitute
 
 if BUILD_DAEMON_OFFLOAD
 

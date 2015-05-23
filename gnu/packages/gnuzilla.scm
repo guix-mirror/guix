@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnuzilla)
+  #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -102,15 +103,16 @@ in C/C++.")
     (native-inputs
       `(("perl", perl)))
     (arguments
-      `(#:tests? #f ; no check target
-        #:configure-flags
-        `("--enable-64bit")
-        #:phases
-          (alist-cons-before
-           'configure 'chdir
-           (lambda _
-             (chdir "nspr"))
-            %standard-phases)))
+     `(#:tests? #f ; no check target
+       #:configure-flags (list "--enable-64bit"
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
+       #:phases (alist-cons-before
+                 'configure 'chdir
+                 (lambda _
+                   (chdir "nspr"))
+                 %standard-phases)))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSPR")
     (synopsis "Netscape API for system level and libc-like functions")
@@ -122,15 +124,18 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.17.4")
+    (version "3.18")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
-                    "releases/NSS_3_17_4_RTM/src/nss-3.17.4.tar.gz"))
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                      "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "releases/NSS_" version-with-underscores "_RTM/src/"
+                      "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0ycxzybgn4bq0i6j5zjdjl70n3s8a742yixyik4pw8x4h4cav60x"))
+                "0h0xy9kvd2s8r438q4dfn25cgvv5dc1hkm9lb4bgrxpr5bxv13b1"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
@@ -153,8 +158,6 @@ in the Mozilla clients.")
                   (ice-9 ftw)
                   (ice-9 match)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils))
        #:phases
        (alist-replace
         'configure
@@ -216,15 +219,27 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.5.0")
+    (version "31.6.0-gnu1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnuzilla/"
-                          version "/" name "-" version ".tar.bz2"))
+                          (first (string-split version #\-)) "/"
+                          name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1rr4axghaypdkrf60i1qp6dz4cd29ya02fs3vyffvp4x9kgcq2dd"))))
+        "1a4l23msg4cpc4yp59q2z6xv63r6advlbnjy65v4djv6yhgnqf1i"))
+      (patches (map search-patch '("icecat-CVE-2015-0797.patch"
+                                   "icecat-CVE-2015-2708-pt1.patch"
+                                   "icecat-CVE-2015-2708-pt2.patch"
+                                   "icecat-CVE-2015-2708-pt3.patch"
+                                   "icecat-CVE-2015-2708-pt4.patch"
+                                   "icecat-CVE-2015-2710-pt1.patch"
+                                   "icecat-CVE-2015-2710-pt2.patch"
+                                   "icecat-CVE-2015-2710-pt3.patch"
+                                   "icecat-CVE-2015-2713-pt1.patch"
+                                   "icecat-CVE-2015-2713-pt2.patch"
+                                   "icecat-CVE-2015-2716.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -249,6 +264,7 @@ standards.")
        ("mesa" ,mesa)
        ("nspr" ,nspr)
        ("nss" ,nss)
+       ("sqlite" ,sqlite)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
        ("zip" ,zip)
@@ -261,6 +277,13 @@ standards.")
     (arguments
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
+
+
+       ;; XXX: There are RUNPATH issues such as
+       ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,
+       ;; which is not in its RUNPATH, but they appear to be harmless in
+       ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
+       #:validate-runpath? #f
 
        #:configure-flags '(;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
@@ -280,11 +303,7 @@ standards.")
                            "--enable-system-pixman"
                            "--enable-system-cairo"
                            "--enable-system-ffi"
-
-                           ;; Fails with "configure: error: System
-                           ;; SQLite library is not compiled with
-                           ;; SQLITE_ENABLE_UNLOCK_NOTIFY."
-                           ;; "--enable-system-sqlite"
+                           "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
                            ;; the system's libpng doesn't have APNG support".

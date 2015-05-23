@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -179,9 +179,18 @@ network to check in GNU's database."
        (define (mirror-type url)
          (let ((uri (string->uri url)))
            (and (eq? (uri-scheme uri) 'mirror)
-                (if (member (uri-host uri) '("gnu" "gnupg" "gcc"))
-                    'gnu
-                    'non-gnu))))
+                (cond
+                 ((member (uri-host uri)
+                          '("gnu" "gnupg" "gcc" "gnome"))
+                  ;; Definitely GNU.
+                  'gnu)
+                 ((equal? (uri-host uri) "cran")
+                  ;; Possibly GNU: mirror://cran could be either GNU R itself
+                  ;; or a non-GNU package.
+                  #f)
+                 (else
+                  ;; Definitely non-GNU.
+                  'non-gnu)))))
 
        (let ((url  (and=> (package-source package) origin-uri))
              (name (package-name package)))

@@ -72,10 +72,10 @@
   ;; Everything is as with the GNU Build System except for the `configure',
   ;; `build', `check', and `install' phases.
   (modify-phases gnu:%standard-phases
-    (replace install install)
-    (replace check check)
-    (replace build build)
-    (replace configure configure)))
+    (replace 'install install)
+    (replace 'check check)
+    (replace 'build build)
+    (replace 'configure configure)))
 
 (define* (perl-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)

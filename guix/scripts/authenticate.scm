@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,12 +81,6 @@ to stdout upon success."
                    (canonical-sexp->string subject)))
         (leave (_ "error: corrupt signature data: ~a~%")
                (canonical-sexp->string signature)))))
-
-(define %default-port-conversion-strategy
-  ;; This fluid is in Guile > 2.0.5.
-  (if (defined? '%default-port-conversion-strategy)
-      (@ (guile) %default-port-conversion-strategy)
-      (make-fluid #f)))
 
 
 ;;;

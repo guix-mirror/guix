@@ -34,14 +34,14 @@
 (define-public openldap
   (package
    (name "openldap")
-   (version "2.4.33")
+   (version "2.4.40")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "ftp://sunsite.cnlab-switch.ch/mirror/OpenLDAP/openldap-release/openldap-"
                    version ".tgz"))
             (sha256 (base32
-                     "0k51mhrs7pkwph2j38w09x7xl1ii69mcdi7b2mfrm9hp1yifrsc1"))))
+                     "1nyslrgwxwilgv5sixc37svls5rbvhsv9drb7hlrjr2vqaji29ni"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb)
              ("openssl" ,openssl)

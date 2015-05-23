@@ -190,14 +190,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.2")
+    (version "2.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "14k7c5spai3yppz6izf1ggbnffskl54ln87v1wgy9pwism1mlks0"))))
+                "1c3c89b7ziknz6h1dnwmfjhgyy28g982rcncrhmhylb8v3npw4k4"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)
@@ -286,7 +286,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
       (method url-fetch)
@@ -294,13 +294,13 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "1jgwmra6cf0i5x2prj92w77vl7hmj276qmmll3lwysbyn32l1c0d"))))
+        "0v7azxazsfakvhrxzj5ysvcxma0892c89d27c17fkj8mi3nc0f5v"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
      `(("libgpg-error" ,libgpg-error)))
     (inputs
-     `(("gnupg" ,gnupg)
+     `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
     (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "http://www.gnupg.org/related_software/gpgme/")
@@ -434,7 +434,7 @@ PGP keysigning parties.")
 including tools for signing keys, keyring analysis, and party preparation.
 
  * caff: CA - Fire and Forget signs and mails a key
- 
+
  * pgp-clean: removes all non-self signatures from key
 
  * pgp-fixkey: removes broken packets from keys

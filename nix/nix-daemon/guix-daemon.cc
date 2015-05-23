@@ -154,8 +154,18 @@ parse_opt (int key, char *arg, struct argp_state *state)
       settings.useChroot = false;
       break;
     case GUIX_OPT_CHROOT_DIR:
-      settings.dirsInChroot.insert (arg);
-      break;
+      {
+	std::string chroot_dirs;
+
+	chroot_dirs = settings.get ("build-extra-chroot-dirs",
+				    (std::string) "");
+	if (chroot_dirs == "")
+	  chroot_dirs = arg;
+	else
+	  chroot_dirs = chroot_dirs + " " + arg;
+	settings.set("build-extra-chroot-dirs", chroot_dirs);
+	break;
+      }
     case GUIX_OPT_DISABLE_LOG_COMPRESSION:
       settings.compressLog = false;
       break;
@@ -310,7 +320,7 @@ main (int argc, char *argv[])
 	  if (subs == "default")
 	    {
 	      string subst =
-		settings.nixLibexecDir + "/guix/substitute-binary";
+		settings.nixLibexecDir + "/guix/substitute";
 	      setenv ("NIX_SUBSTITUTERS", subst.c_str (), 1);
 	    }
 	}
@@ -328,11 +338,12 @@ main (int argc, char *argv[])
 
       if (settings.useChroot)
 	{
-	  foreach (PathSet::iterator, i, settings.dirsInChroot)
-	    {
-	      printMsg (lvlDebug,
-			format ("directory `%1%' added to the chroot") % *i);
-	    }
+	  std::string chroot_dirs;
+
+	  chroot_dirs = settings.get ("build-extra-chroot-dirs",
+				      (std::string) "");
+	  printMsg (lvlDebug,
+		    format ("extra chroot directories: '%1%'") % chroot_dirs);
 	}
 
       printMsg (lvlDebug,

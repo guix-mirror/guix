@@ -96,7 +96,7 @@ stamp-h[0-9]
 /doc/guix.tp
 /doc/guix.vr
 /doc/guix.vrs
-/nix/scripts/substitute-binary
+/nix/scripts/substitute
 /doc/images/bootstrap-graph.png
 /doc/images/bootstrap-graph.eps
 /guix-register
@@ -112,3 +112,5 @@ GTAGS
 /emacs/guix-helper.scm
 /emacs/guix-init.el
 /emacs/guix-profiles.el
+/doc/os-config-bare-bones.texi
+/doc/os-config-desktop.texi

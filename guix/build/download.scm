@@ -19,7 +19,7 @@
 
 (define-module (guix build download)
   #:use-module (web uri)
-  #:use-module (web client)
+  #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
   #:use-module (guix ftp-client)
   #:use-module (guix build utils)
@@ -30,7 +30,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (open-connection-for-uri
+  #:export (open-socket-for-uri
+            open-connection-for-uri
             resolve-uri-reference
             maybe-expand-mirrors
             url-fetch
@@ -195,47 +196,54 @@ host name without trailing dot."
       (add-weak-reference record port)
       record)))
 
+(define (open-socket-for-uri uri)
+  "Return an open port for URI.  This variant works around
+<http://bugs.gnu.org/15368> which affects Guile's 'open-socket-for-uri' up to
+2.0.11 included."
+  (define rmem-max
+    ;; The maximum size for a receive buffer on Linux, see socket(7).
+    "/proc/sys/net/core/rmem_max")
+
+  (define buffer-size
+    (if (file-exists? rmem-max)
+        (call-with-input-file rmem-max read)
+        126976))                    ;the default for Linux, per 'rmem_default'
+
+  (let ((s ((@ (web client) open-socket-for-uri) uri)))
+    ;; Work around <http://bugs.gnu.org/15368> by restoring a decent
+    ;; buffer size.
+    (setsockopt s SOL_SOCKET SO_RCVBUF buffer-size)
+    s))
+
 (define (open-connection-for-uri uri)
-  "Return an open input/output port for a connection to URI.
+  "Like 'open-socket-for-uri', but also handle HTTPS connections."
+  (define https?
+    (eq? 'https (uri-scheme uri)))
 
-This is the same as Guile's `open-socket-for-uri', except that we always
-use a numeric port argument, to avoid the need to go through libc's NSS,
-which is not available during bootstrap."
-  (define addresses
-    (let ((port (or (uri-port uri)
-                    (case (uri-scheme uri)
-                      ((http) 80)           ; /etc/services, not for me!
-                      ((https) 443)
-                      (else
-                       (error "unsupported URI scheme" uri))))))
-      (delete-duplicates (getaddrinfo (uri-host uri)
-                                      (number->string port)
-                                      AI_NUMERICSERV)
-                         (lambda (ai1 ai2)
-                           (equal? (addrinfo:addr ai1)
-                                   (addrinfo:addr ai2))))))
+  (let-syntax ((with-https-proxy
+                (syntax-rules ()
+                  ((_ exp)
+                   ;; For HTTPS URIs, honor 'https_proxy', not 'http_proxy'.
+                   ;; FIXME: Proxying is not supported for https.
+                   (let ((thunk (lambda () exp)))
+                     (if (and https?
+                              (module-variable
+                               (resolve-interface '(web client))
+                               'current-http-proxy))
+                         (parameterize ((current-http-proxy #f))
+                           (when (getenv "https_proxy")
+                             (format (current-error-port)
+                                     "warning: 'https_proxy' is ignored~%"))
+                           (thunk))
+                         (thunk)))))))
+    (with-https-proxy
+     (let ((s (open-socket-for-uri uri)))
+       ;; Buffer input and output on this port.
+       (setvbuf s _IOFBF %http-receive-buffer-size)
 
-  (let loop ((addresses addresses))
-    (let* ((ai (car addresses))
-           (s  (with-fluids ((%default-port-encoding #f))
-                 ;; Restrict ourselves to TCP.
-                 (socket (addrinfo:fam ai) SOCK_STREAM IPPROTO_IP))))
-      (catch 'system-error
-        (lambda ()
-          (connect s (addrinfo:addr ai))
-
-          ;; Buffer input and output on this port.
-          (setvbuf s _IOFBF %http-receive-buffer-size)
-
-          (if (eq? 'https (uri-scheme uri))
-              (tls-wrap s (uri-host uri))
-              s))
-        (lambda args
-          ;; Connection failed, so try one of the other addresses.
-          (close s)
-          (if (null? (cdr addresses))
-              (apply throw args)
-              (loop (cdr addresses))))))))
+       (if https?
+           (tls-wrap s (uri-host uri))
+           s)))))
 
 ;; XXX: This is an awful hack to make sure the (set-port-encoding! p
 ;; "ISO-8859-1") call in `read-response' passes, even during bootstrap

@@ -128,20 +128,81 @@
     ("y")                                         ;c
     ("y")                                         ;d
     ("y"))                                        ;e
-  (let* ((a (dummy-package "a" (supported-systems '("x" "y" "z"))))
-         (b (dummy-package "b" (supported-systems '("x" "y"))
-               (inputs `(("a" ,a)))))
-         (c (dummy-package "c" (supported-systems '("y" "z"))
-               (inputs `(("b" ,b)))))
-         (d (dummy-package "d" (supported-systems '("x" "y" "z"))
-               (inputs `(("b" ,b) ("c" ,c)))))
-         (e (dummy-package "e" (supported-systems '("x" "y" "z"))
-               (inputs `(("d" ,d))))))
+  ;; Use TRIVIAL-BUILD-SYSTEM because it doesn't add implicit inputs and thus
+  ;; doesn't restrict the set of supported systems.
+  (let* ((a (dummy-package "a"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y" "z"))))
+         (b (dummy-package "b"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y"))
+              (inputs `(("a" ,a)))))
+         (c (dummy-package "c"
+              (build-system trivial-build-system)
+              (supported-systems '("y" "z"))
+              (inputs `(("b" ,b)))))
+         (d (dummy-package "d"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y" "z"))
+              (inputs `(("b" ,b) ("c" ,c)))))
+         (e (dummy-package "e"
+              (build-system trivial-build-system)
+              (supported-systems '("x" "y" "z"))
+              (inputs `(("d" ,d))))))
     (list (package-transitive-supported-systems a)
           (package-transitive-supported-systems b)
           (package-transitive-supported-systems c)
           (package-transitive-supported-systems d)
           (package-transitive-supported-systems e))))
+
+(let* ((o (dummy-origin))
+       (u (dummy-origin))
+       (i (dummy-origin))
+       (a (dummy-package "a"))
+       (b (dummy-package "b"
+            (inputs `(("a" ,a) ("i" ,i)))))
+       (c (package (inherit b) (source o)))
+       (d (dummy-package "d"
+            (build-system trivial-build-system)
+            (source u) (inputs `(("c" ,c))))))
+  (test-assert "package-direct-sources, no source"
+    (null? (package-direct-sources a)))
+  (test-equal "package-direct-sources, #f source"
+    (list i)
+    (package-direct-sources b))
+  (test-equal "package-direct-sources, not input source"
+    (list u)
+    (package-direct-sources d))
+  (test-assert "package-direct-sources"
+    (let ((s (package-direct-sources c)))
+      (and (= (length (pk 's-sources s)) 2)
+           (member o s)
+           (member i s))))
+  (test-assert "package-transitive-sources"
+    (let ((s (package-transitive-sources d)))
+      (and (= (length (pk 'd-sources s)) 3)
+           (member o s)
+           (member i s)
+           (member u s)))))
+
+(test-equal "package-transitive-supported-systems, implicit inputs"
+  %supported-systems
+
+  ;; Here GNU-BUILD-SYSTEM adds implicit inputs that build only on
+  ;; %SUPPORTED-SYSTEMS.  Thus the others must be ignored.
+  (let ((p (dummy-package "foo"
+             (build-system gnu-build-system)
+             (supported-systems
+              `("does-not-exist" "foobar" ,@%supported-systems)))))
+    (package-transitive-supported-systems p)))
+
+(test-assert "supported-package?"
+  (let ((p (dummy-package "foo"
+             (build-system gnu-build-system)
+             (supported-systems '("x86_64-linux" "does-not-exist")))))
+    (and (supported-package? p "x86_64-linux")
+         (not (supported-package? p "does-not-exist"))
+         (not (supported-package? p "i686-linux")))))
 
 (test-skip (if (not %store) 8 0))
 
@@ -179,7 +240,11 @@
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"
-  (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
+  (let* ((file   (search-bootstrap-binary (match (%current-system)
+                                            ("armhf-linux"
+                                             "guile-2.0.11.tar.xz")
+                                            (_
+                                             "guile-2.0.9.tar.xz"))
                                           (%current-system)))
          (sha256 (call-with-input-file file port-sha256))
          (fetch  (lambda* (url hash-algo hash
@@ -205,10 +270,7 @@
                                 (chmod "." #o777)
                                 (symlink "guile" "guile-rocks")
                                 (copy-recursively "../share/guile/2.0/scripts"
-                                                  "scripts")
-
-                                ;; These variables must exist.
-                                (pk %build-inputs %outputs))))))
+                                                  "scripts"))))))
          (package (package (inherit (dummy-package "with-snippet"))
                     (source source)
                     (build-system trivial-build-system)
@@ -599,8 +661,7 @@
                  (profile-derivation
                   (manifest (map package->manifest-entry
                                  (list p1 p2)))
-                  #:info-dir? #f
-                  #:ca-certificate-bundle? #f)
+                  #:hooks '())
                  #:guile-for-build (%guile-for-build))))
     (build-derivations %store (list prof))
     (string-match (format #f "^export XML_CATALOG_FILES=\"~a/xml/+bar/baz/catalog\\.xml\"\n"

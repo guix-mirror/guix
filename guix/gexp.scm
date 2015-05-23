@@ -31,6 +31,8 @@
 
             gexp-input
             gexp-input?
+            local-file
+            local-file?
 
             gexp->derivation
             gexp->file
@@ -127,6 +129,43 @@ cross-compiling.)"
                        body ...)))
     (register-compiler! name)))
 
+(define-gexp-compiler (derivation-compiler (drv derivation?) system target)
+  ;; Derivations are the lowest-level representation, so this is the identity
+  ;; compiler.
+  (with-monad %store-monad
+    (return drv)))
+
+
+;;;
+;;; Local files.
+;;;
+
+(define-record-type <local-file>
+  (%local-file file name recursive?)
+  local-file?
+  (file       local-file-file)                    ;string
+  (name       local-file-name)                    ;string
+  (recursive? local-file-recursive?))             ;Boolean
+
+(define* (local-file file #:optional (name (basename file))
+                     #:key (recursive? #t))
+  "Return an object representing local file FILE to add to the store; this
+object can be used in a gexp.  FILE will be added to the store under NAME--by
+default the base name of FILE.
+
+When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
+designates a flat file and RECURSIVE? is true, its contents are added, and its
+permission bits are kept.
+
+This is the declarative counterpart of the 'interned-file' monadic procedure."
+  (%local-file file name recursive?))
+
+(define-gexp-compiler (local-file-compiler (file local-file?) system target)
+  ;; "Compile" FILE by adding it to the store.
+  (match file
+    (($ <local-file> file name recursive?)
+     (interned-file file name #:recursive? recursive?))))
+
 
 ;;;
 ;;; Inputs & outputs.
@@ -139,6 +178,15 @@ cross-compiling.)"
   (thing     gexp-input-thing)       ;<package> | <origin> | <derivation> | ...
   (output    gexp-input-output)      ;string
   (native?   gexp-input-native?))    ;Boolean
+
+(define (write-gexp-input input port)
+  (match input
+    (($ <gexp-input> thing output #f)
+     (format port "#<gexp-input ~s:~a>" thing output))
+    (($ <gexp-input> thing output #t)
+     (format port "#<gexp-input native ~s:~a>" thing output))))
+
+(set-record-type-printer! <gexp-input> write-gexp-input)
 
 (define* (gexp-input thing                        ;convenience procedure
                      #:optional (output "out")
@@ -154,6 +202,13 @@ whether this should be considered a \"native\" input or not."
   gexp-output?
   (name gexp-output-name))
 
+(define (write-gexp-output output port)
+  (match output
+    (($ <gexp-output> name)
+     (format port "#<gexp-output ~a>" name))))
+
+(set-record-type-printer! <gexp-output> write-gexp-output)
+
 (define raw-derivation
   (store-lift derivation))
 
@@ -165,14 +220,12 @@ the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
-                    ((and ((? derivation?) sub-drv ...) input)
-                     (return input))
-                    ((and ((? struct? thing) sub-drv ...) input)
-                     (mlet* %store-monad ((lower -> (lookup-compiler thing))
-                                          (drv (lower thing system target)))
-                       (return `(,drv ,@sub-drv))))
-                    (input
-                     (return input)))
+                     (((? struct? thing) sub-drv ...)
+                      (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                                           (drv (lower thing system target)))
+                        (return `(,drv ,@sub-drv))))
+                     (input
+                      (return input)))
                    inputs))))
 
 (define* (lower-reference-graphs graphs #:key system target)
@@ -197,6 +250,11 @@ names and file names suitable for the #:allowed-references argument to
       (match-lambda
        ((? string? output)
         (return output))
+       (($ <gexp-input> thing output native?)
+        (mlet* %store-monad ((lower -> (lookup-compiler thing))
+                             (drv      (lower thing system
+                                              (if native? #f target))))
+          (return (derivation->output-path drv output))))
        (thing
         (mlet* %store-monad ((lower -> (lookup-compiler thing))
                              (drv      (lower thing system target)))
@@ -224,6 +282,7 @@ names and file names suitable for the #:allowed-references argument to
                            (graft? (%graft?))
                            references-graphs
                            allowed-references
+                           leaked-env-vars
                            local-build?)
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
 derivation) on SYSTEM.  When TARGET is true, it is used as the
@@ -262,6 +321,7 @@ The other arguments are as for 'derivation'."
   (define (graphs-file-names graphs)
     ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
     (map (match-lambda
+          ;; TODO: Remove 'derivation?' special cases.
            ((file-name (? derivation? drv))
             (cons file-name (derivation->output-path drv)))
            ((file-name (? derivation? drv) sub-drv)
@@ -341,17 +401,26 @@ The other arguments are as for 'derivation'."
                       #:hash hash #:hash-algo hash-algo #:recursive? recursive?
                       #:references-graphs (and=> graphs graphs-file-names)
                       #:allowed-references allowed
+                      #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?))))
 
-(define* (gexp-inputs exp #:optional (references gexp-references))
-  "Return the input list for EXP, using REFERENCES to get its list of
-references."
+(define* (gexp-inputs exp #:key native?)
+  "Return the input list for EXP.  When NATIVE? is true, return only native
+references; otherwise, return only non-native references."
   (define (add-reference-inputs ref result)
     (match ref
-      (($ <gexp-input> (? derivation? drv) output)
-       (cons `(,drv ,output) result))
-      (($ <gexp-input> (? gexp? exp))
-       (append (gexp-inputs exp references) result))
+      (($ <gexp-input> (? gexp? exp) _ #t)
+       (if native?
+           (append (gexp-inputs exp)
+                   (gexp-inputs exp #:native? #t)
+                   result)
+           result))
+      (($ <gexp-input> (? gexp? exp) _ #f)
+       (if native?
+           (append (gexp-inputs exp #:native? #t)
+                   result)
+           (append (gexp-inputs exp)
+                   result)))
       (($ <gexp-input> (? string? str))
        (if (direct-store-path? str)
            (cons `(,str) result)
@@ -361,13 +430,13 @@ references."
            ;; THING is a derivation, or a package, or an origin, etc.
            (cons `(,thing ,output) result)
            result))
-      (($ <gexp-input> (lst ...) output native?)
+      (($ <gexp-input> (lst ...) output n?)
        (fold-right add-reference-inputs result
                    ;; XXX: For now, automatically convert LST to a list of
                    ;; gexp-inputs.
                    (map (match-lambda
                          ((? gexp-input? x) x)
-                         (x (%gexp-input x "out" native?)))
+                         (x (%gexp-input x "out" (or n? native?))))
                         lst)))
       (_
        ;; Ignore references to other kinds of objects.
@@ -375,10 +444,12 @@ references."
 
   (fold-right add-reference-inputs
               '()
-              (references exp)))
+              (if native?
+                  (gexp-native-references exp)
+                  (gexp-references exp))))
 
 (define gexp-native-inputs
-  (cut gexp-inputs <> gexp-native-references))
+  (cut gexp-inputs <> #:native? #t))
 
 (define (gexp-outputs exp)
   "Return the outputs referred to by EXP as a list of strings."
@@ -411,8 +482,6 @@ and in the current monad setting (system type, etc.)"
   (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
       (match ref
-        (($ <gexp-input> (? derivation? drv) output)
-         (return (derivation->output-path drv output)))
         (($ <gexp-output> output)
          ;; Output file names are not known in advance but the daemon defines
          ;; an environment variable for each of them at build time, so use
@@ -435,8 +504,13 @@ and in the current monad setting (system type, etc.)"
         (($ <gexp-input> (? struct? thing) output n?)
          (let ((lower  (lookup-compiler thing))
                (target (if (or n? native?) #f target)))
-           (mlet %store-monad ((drv (lower thing system target)))
-             (return (derivation->output-path drv output)))))
+           (mlet %store-monad ((obj (lower thing system target)))
+             ;; OBJ must be either a derivation or a store file name.
+             (return (match obj
+                       ((? derivation? drv)
+                        (derivation->output-path drv output))
+                       ((? string? file)
+                        file))))))
         (($ <gexp-input> x)
          (return x))
         (x
@@ -468,13 +542,20 @@ and in the current monad setting (system type, etc.)"
       ;; Return all the 'ungexp' present in EXP.
       (let loop ((exp    exp)
                  (result '()))
-        (syntax-case exp (ungexp ungexp-splicing)
+        (syntax-case exp (ungexp
+                          ungexp-splicing
+                          ungexp-native
+                          ungexp-native-splicing)
           ((ungexp _)
            (cons exp result))
           ((ungexp _ _)
            (cons exp result))
           ((ungexp-splicing _ ...)
            (cons exp result))
+          ((ungexp-native _ ...)
+           result)
+          ((ungexp-native-splicing _ ...)
+           result)
           ((exp0 exp ...)
            (let ((result (loop #'exp0 result)))
              (fold loop result #'(exp ...))))
@@ -485,13 +566,20 @@ and in the current monad setting (system type, etc.)"
       ;; Return all the 'ungexp-native' forms present in EXP.
       (let loop ((exp    exp)
                  (result '()))
-        (syntax-case exp (ungexp-native ungexp-native-splicing)
+        (syntax-case exp (ungexp
+                          ungexp-splicing
+                          ungexp-native
+                          ungexp-native-splicing)
           ((ungexp-native _)
            (cons exp result))
           ((ungexp-native _ _)
            (cons exp result))
           ((ungexp-native-splicing _ ...)
            (cons exp result))
+          ((ungexp _ ...)
+           result)
+          ((ungexp-splicing _ ...)
+           result)
           ((exp0 exp ...)
            (let ((result (loop #'exp0 result)))
              (fold loop result #'(exp ...))))
@@ -777,8 +865,9 @@ its search path."
 
 (define* (text-file* name #:rest text)
   "Return as a monadic value a derivation that builds a text file containing
-all of TEXT.  TEXT may list, in addition to strings, packages, derivations,
-and store file names; the resulting store file holds references to all these."
+all of TEXT.  TEXT may list, in addition to strings, objects of any type that
+can be used in a gexp: packages, derivations, local file objects, etc.  The
+resulting store file holds references to all these."
   (define builder
     (gexp (call-with-output-file (ungexp output "out")
             (lambda (port)

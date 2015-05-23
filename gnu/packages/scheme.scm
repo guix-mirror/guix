@@ -29,7 +29,6 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
@@ -39,6 +38,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages xorg)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -91,6 +91,7 @@
        ;; ("texlive-core" ,texlive-core)
        ("texinfo" ,texinfo)
        ("m4" ,m4)
+       ("libx11" ,libx11)
 
        ("source"
 
@@ -188,7 +189,10 @@ features an integrated Emacs-like editor and a large runtime library.")
                                ;; <http://article.gmane.org/gmane.lisp.scheme.bigloo/6126>.
                                ;; "--customgc=no" ; use our libgc
                                (string-append"--mv=" (which "mv"))
-                               (string-append "--rm=" (which "rm"))))))
+                               (string-append "--rm=" (which "rm"))
+                               (string-append "--ldflags=-Wl,-rpath="
+                                              (assoc-ref outputs "out")
+                                              "/lib/bigloo/" ,version)))))
                  (alist-cons-after
                   'install 'install-emacs-modes
                   (lambda* (#:key outputs #:allow-other-keys)
@@ -199,7 +203,7 @@ features an integrated Emacs-like editor and a large runtime library.")
                                       (string-append "EMACSDIR=" dir)))))
                   %standard-phases))))
     (inputs
-     `(("emacs" ,emacs-no-x)
+     `(("emacs" ,emacs)                      ;UDE needs the X version of Emacs
 
        ;; Optional APIs for which Bigloo has bindings.
        ("avahi" ,avahi)
@@ -232,55 +236,27 @@ Scheme and C programs and between Scheme and Java programs.")
              (sha256
               (base32
                "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))
-             (patches (list (search-patch "hop-bigloo-4.0b.patch")))))
+             (patches (list (search-patch "hop-bigloo-4.0b.patch")
+                            (search-patch "hop-linker-flags.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (alist-replace
         'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
+        (lambda* (#:key outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
             (zero?
              (system* "./configure"
-                      (string-append "--prefix=" out)))))
-        (alist-cons-after
-         'strip 'patch-rpath
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Patch the RPATH of every installed library to point to $out/lib
-           ;; instead of $TMPDIR.  Note that "patchelf --set-rpath" produces
-           ;; invalid binaries when used before stripping.
-           (let ((out    (assoc-ref outputs "out"))
-                 (tmpdir (getcwd)))
-             (every (lambda (lib)
-                      (let* ((in    (open-pipe* OPEN_READ "patchelf"
-                                                "--print-rpath" lib))
-                             (rpath (read-line in)))
-                        (and (zero? (close-pipe in))
-                             (let ((rpath* (regexp-substitute/global
-                                            #f (regexp-quote tmpdir) rpath
-                                            'pre out 'post)))
-                               (or (equal? rpath rpath*)
-                                   (begin
-                                     (format #t "~a: changing RPATH from `~a' to `~a'~%"
-                                             lib rpath rpath*)
-                                     (zero?
-                                      (system* "patchelf" "--set-rpath"
-                                               rpath* lib))))))))
-                    (append (find-files (string-append out "/bin")
-                                        ".*")
-                            (find-files (string-append out "/lib")
-                                        "\\.so$")))))
-         %standard-phases))
-       #:tests? #f                                ; no test suite
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 popen)
-                  (ice-9 regex)
-                  (ice-9 rdelim)
-                  (srfi srfi-1))))
+                      (string-append "--prefix=" out)
+                      (string-append "--blflags="
+                                     ;; user flags completely override useful
+                                     ;; default flags, so repeat them here.
+                                     "-copt \\$(CPICFLAGS) -L\\$(BUILDLIBDIR) "
+                                     "-ldopt -Wl,-rpath," out "/lib")))))
+        %standard-phases)
+       #:tests? #f))                                ; no test suite
     (inputs `(("bigloo" ,bigloo)
-              ("which" ,which)
-              ("patchelf" ,patchelf)))
+              ("which" ,which)))
     (home-page "http://hop.inria.fr/")
     (synopsis "Multi-tier programming language for the Web 2.0")
     (description

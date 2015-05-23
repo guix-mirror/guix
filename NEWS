@@ -10,6 +10,378 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.8.2 (since 0.8.1)
+
+** Package management
+
+*** New “binary tarball” installation method is available
+
+See “Binary Installation” in the manual.
+
+*** New ‘guix publish’ command, to publish one’s store
+
+See “Invoking guix publish” in the manual.
+
+*** ‘guix package’ runs “profile creation hooks” as needed
+
+It creates X.509 certificate bundles in the profile’s etc/ssl directory, if
+needed, generates a package database cache for GHC if the profile includes GHC
+(the Haskell compiler), and generates an Info ‘dir’ file (this part was
+already done before.)
+
+*** ‘guix package’ creates an ‘etc/profile’ file in the profile
+
+See “Invoking guix package” in the manual.
+
+*** Commands understand version prefixes, such as ‘gcc-5’ for ‘gcc-5.1.0’
+
+*** ‘guix package --search’ now sorts packages by name and version
+
+*** Substitute information is now fetched using HTTP pipelining
+
+Before that the “substituter” used threads.  Using HTTP pipelining means that
+resource consumption is reduced on both the client and server sides.  As a
+side effect, a progress report is displayed as substitute info is downloaded.
+
+*** ‘guix package’ warns when a $GUIX_PACKAGE_PATH module cannot be loaded
+
+*** New ‘--sources’ option to ‘guix build’
+
+*** New Bash completion file, installed in $sysconfdir/bash_completion.d
+
+*** New ‘guix import hackage’ command
+
+See “Invoking guix import” in the manual.
+
+*** ‘guix lint’ supports FTP for the ‘source’ and ‘home-page’ checkers
+
+*** ‘guix lint’ has a new ‘derivation’ checker
+
+*** ‘guix import cpan’ better handles dependencies and licenses
+
+*** Packages are now build in an environment with a UTF-8 locale
+
+** Distribution
+
+*** C library's name service switch (NSS) is now fully configurable
+
+See “Name Service Switch” in the manual.
+
+*** New services: wicd, lirc, colord, upower, console-keymap, postgresql
+
+*** Xorg service supports new drivers, such as Nouveau
+
+*** lsh service has new options, initializes its seed by default
+
+*** /etc/ssl symlink is created, for X.509 certificates
+
+See “X.509 Certificates” in the manual.
+
+*** ‘guix system’ reports duplicate service identifiers
+
+*** New /etc/bashrc file that loads Bash completion when available
+
+*** SLiM service uses sessions from /run/current-system/profile/share/xsessions
+
+See “X Window” in the manual.
+
+*** The Linux “YAMA” restricting policy on PTRACE_ATTACH is now disabled
+
+*** /etc/shells now lists all the user accounts’ shells
+
+*** /gnu/store is now remounted read-only, to avoid accidental modification
+
+*** /etc/profile is sources each profile’s ‘etc/profile’ file
+
+*** 718 new packages
+
+aalib, aarddict, acpid, agg, aisleriot, alsa-modular-synth, ant, ardour,
+ardour, argtable, arpack-ng, aspell-dict-ru, aubio, audacity, avidemux,
+avidemux, azr3, bamtools, bash-completion, bedops, bind-utils, bluez, bool,
+brdf-explorer, bwa, calf, calibre, catch, ccl, chibi-scheme, chmlib,
+clalsadrv, clipper, clisp, clustal-omega, colord, colordiff, cpufrequtils,
+crossmap, csound, ctl, cunit, cutadapt, desktop-file-utils, djvulibre,
+dnsmasq, dosfstools, double-conversion, dovecot, ecl, efl, elementary,
+elogind, emacs-no-x, emotion-generic-players, enca, enlightenment,
+evas-generic-loaders, exim, express, extremetuxracer, faad2, fastx-toolkit,
+fcitx, fdupes, flexbar, fluidsynth, font-adobe-source-han-sans,
+font-wqy-zenhei, freepats, gambit-c, ganv, geda-gaf, geoclue, geocode-glib,
+ghc, ghc-case-insensitive, ghc-containers, ghc-fgl, ghc-hashable, ghc-http,
+ghc-hunit, ghc-mtl, ghc-network, ghc-network-uri, ghc-parallel, ghc-parsec,
+ghc-paths, ghc-primitive, ghc-quickcheck, ghc-random, ghc-split, ghc-stm,
+ghc-syb, ghc-text, ghc-tf-random, ghc-unordered-containers, ghc-vector,
+ghc-zlib, girara, gitolite, glib-networking, glibc-locales,
+glibc-utf8-locales, glibc-utf8-locales, glm, gnome-mines,
+gnome-settings-daemon, gnome-terminal, gnucash, gnugo, grit, gst-libav,
+guile-minikanren, guile-reader, hdparm, hisat, htseq, htsjdk, hunspell,
+hyphen, i2c-tools, ibus, icecast, icedtea6, icedtea7, ilmbase, ir, isync,
+ixion, jack2, jalv, jansson, jemalloc, julia, key-mon, ladspa, lash,
+leptonica, liba52, libabw, libaio, libass, libavc1394, libbluray, libbs2b,
+libcaca, libcap-ng, libcdio-paranoia, libcdr, libdca, libdv, libdvdcss,
+libe-book, libedit, libepoxy, libetonyek, libexttextcat, libffcall,
+libfreehand, libgnomecanvasmm, libgtextutils, libgweather, libical,
+libiec61883, libinput, liblo, libmodplug, libmspack, libmspub, libmtp,
+libmwaw, libodfgen, libpagemaker, libqtxdg, libquvi, libquvi-scripts,
+libraw1394, librecad, librep, librevenge, libsbsms, libsecret, libshout,
+libsoup, libsrtp, libtocc, libungif, libva, libvisio, libwacom, libwebp,
+libwpd, libwpg, libwps, libxklavier, libxmp, libyaml, lilv, lilypond, lirc,
+livestreamer, ltrace, lv2, lv2-mda-epiano, lv2-mda-piano, lvtk, macs, mariadb,
+markdown, mdadm, mdds, mesa-headers, mesa-utils, miredo, miso, moreutils,
+mpd-mpc, mpdscribble, mplayer2, mpv, muparser, mythes, ncbi-vdb, ngircd,
+ngs-java, ngs-sdk, npth, nss-certs, openblas, openexr, openlibm, openntpd,
+openspecfun, openvpn, orc, orcus, p11-kit, patchage, pbtranscript-tofu, pcb,
+perl-algorithm-c3, perl-algorithm-diff, perl-aliased,
+perl-apache-logformat-compiler, perl-appconfig, perl-b-hooks-endofscope,
+perl-base, perl-bit-vector, perl-boolean, perl-cache-cache,
+perl-cache-fastmmap, perl-capture-tiny, perl-carp-assert,
+perl-carp-assert-more, perl-carp-clan, perl-catalyst-action-renderview,
+perl-catalyst-action-rest, perl-catalyst-component-instancepercontext,
+perl-catalyst-devel, perl-catalyst-dispatchtype-regex,
+perl-catalyst-model-dbic-schema, perl-catalyst-plugin-accesslog,
+perl-catalyst-plugin-authentication, perl-catalyst-plugin-captcha,
+perl-catalyst-plugin-configloader, perl-catalyst-plugin-session,
+perl-catalyst-plugin-session-state-cookie,
+perl-catalyst-plugin-session-store-fastmmap, perl-catalyst-plugin-stacktrace,
+perl-catalyst-plugin-static-simple, perl-catalyst-runtime,
+perl-catalyst-traitfor-request-proxybase, perl-catalyst-view-download,
+perl-catalyst-view-json, perl-catalyst-view-tt,
+perl-catalystx-component-traits, perl-catalystx-roleapplicator,
+perl-catalystx-script-server-starman, perl-cgi-simple, perl-cgi-struct,
+perl-class-accessor, perl-class-accessor-chained, perl-class-accessor-grouped,
+perl-class-c3, perl-class-c3-adopt-next, perl-class-c3-componentised,
+perl-class-data-inheritable, perl-class-date, perl-class-factory-util,
+perl-class-inspector, perl-class-load, perl-class-load-xs,
+perl-class-method-modifiers, perl-class-methodmaker, perl-class-singleton,
+perl-class-tiny, perl-class-unload, perl-class-xsaccessor, perl-common-sense,
+perl-compress-raw-bzip2, perl-compress-raw-zlib, perl-config-any,
+perl-config-autoconf, perl-config-general, perl-context-preserve,
+perl-cpan-meta, perl-cpan-meta-check, perl-cpan-meta-requirements,
+perl-cpan-meta-yaml, perl-cpanel-json-xs, perl-crypt-randpasswd,
+perl-data-dump, perl-data-dumper-concise, perl-data-optlist, perl-data-page,
+perl-data-stream-bulk, perl-data-tumbler, perl-data-visitor, perl-date-calc,
+perl-date-calc-xs, perl-datetime, perl-datetime-event-ical,
+perl-datetime-event-recurrence, perl-datetime-format-builder,
+perl-datetime-format-flexible, perl-datetime-format-http,
+perl-datetime-format-ical, perl-datetime-format-natural,
+perl-datetime-format-strptime, perl-datetime-locale, perl-datetime-set,
+perl-datetime-timezone, perl-datetimex-easy, perl-dbd-pg, perl-dbix-class,
+perl-dbix-class-cursor-cached, perl-dbix-class-introspectablem2m,
+perl-dbix-class-schema-loader, perl-devel-caller, perl-devel-checkbin,
+perl-devel-globaldestruction, perl-devel-lexalias, perl-devel-overloadinfo,
+perl-devel-partialdump, perl-devel-stacktrace, perl-devel-stacktrace-ashtml,
+perl-devel-symdump, perl-digest-hmac, perl-digest-md5-file,
+perl-dist-checkconflicts, perl-email-abstract, perl-email-address,
+perl-email-date-format, perl-email-messageid, perl-email-mime,
+perl-email-mime-contenttype, perl-email-mime-encodings, perl-email-sender,
+perl-email-simple, perl-error, perl-eval-closure, perl-exception-class,
+perl-exporter-tiny, perl-extutils-config, perl-extutils-helpers,
+perl-extutils-installpaths, perl-file-changenotify, perl-file-copy-recursive,
+perl-file-find-rule, perl-file-find-rule-perl, perl-file-homedir,
+perl-file-remove, perl-file-sharedir, perl-file-sharedir-install,
+perl-file-slurp, perl-file-temp, perl-gd, perl-gd-securityimage,
+perl-getopt-long-descriptive, perl-hash-merge, perl-hash-multivalue,
+perl-html-form, perl-html-lint, perl-html-tree, perl-http-body,
+perl-http-cookiejar, perl-http-parser, perl-http-parser-xs,
+perl-http-request-ascgi, perl-http-server-simple, perl-http-tiny,
+perl-image-magick, perl-import-into, perl-inc-latest, perl-io-compress,
+perl-io-interactive, perl-io-socket-ip, perl-io-stringy, perl-ipc-run,
+perl-ipc-sharelite, perl-json, perl-json-any, perl-json-maybexs, perl-json-xs,
+perl-lingua-en-findnumber, perl-lingua-en-inflect,
+perl-lingua-en-inflect-number, perl-lingua-en-inflect-phrase,
+perl-lingua-en-number-isordinal, perl-lingua-en-tagger,
+perl-lingua-en-words2nums, perl-lingua-pt-stemmer, perl-lingua-stem,
+perl-lingua-stem-fr, perl-lingua-stem-it, perl-lingua-stem-ru,
+perl-lingua-stem-snowball-da, perl-list-allutils, perl-list-moreutils,
+perl-lwp-protocol-https, perl-lwp-useragent-determined,
+perl-memoize-expirelru, perl-mime-types, perl-module-build,
+perl-module-build-tiny, perl-module-find, perl-module-implementation,
+perl-module-install, perl-module-runtime, perl-module-runtime-conflicts,
+perl-module-scandeps, perl-module-util, perl-moo, perl-moose,
+perl-moosex-emulate-class-accessor-fast, perl-moosex-getopt,
+perl-moosex-markasmethods, perl-moosex-methodattributes, perl-moosex-nonmoose,
+perl-moosex-params-validate, perl-moosex-relatedclassroles,
+perl-moosex-role-parameterized, perl-moosex-role-withoverloading,
+perl-moosex-semiaffordanceaccessor, perl-moosex-strictconstructor,
+perl-moosex-traits-pluggable, perl-moosex-types, perl-moosex-types-datetime,
+perl-moosex-types-datetime-morecoercions, perl-moosex-types-loadableclass,
+perl-moox-types-mooselike, perl-mro-compat, perl-namespace-autoclean,
+perl-namespace-clean, perl-net-amazon-s3, perl-net-server,
+perl-number-compare, perl-object-signature, perl-package-anon,
+perl-package-deprecationmanager, perl-package-stash, perl-package-stash-xs,
+perl-padwalker, perl-par-dist, perl-params-util, perl-params-validate,
+perl-parent, perl-parse-cpan-meta, perl-path-class, perl-plack,
+perl-plack-middleware-fixmissingbodyinredirect,
+perl-plack-middleware-methodoverride,
+perl-plack-middleware-removeredundantbody, perl-plack-middleware-reverseproxy,
+perl-plack-test-externalserver, perl-pod-coverage,
+perl-posix-strftime-compiler, perl-readonly, perl-role-tiny, perl-safe-isa,
+perl-scalar-list-utils, perl-scope-guard, perl-set-infinite, perl-set-scalar,
+perl-snowball-norwegian, perl-snowball-swedish, perl-spiffy,
+perl-sql-abstract, perl-sql-splitstatement, perl-sql-tokenizer,
+perl-stream-buffered, perl-strictures, perl-string-camelcase,
+perl-string-rewriteprefix, perl-string-toidentifier-en, perl-sub-exporter,
+perl-sub-exporter-progressive, perl-sub-identify, perl-sub-install,
+perl-sub-name, perl-sub-uplevel, perl-svg, perl-sys-hostname-long,
+perl-task-weaken, perl-template-timer, perl-template-toolkit,
+perl-term-encoding, perl-term-progressbar, perl-term-progressbar-quiet,
+perl-term-progressbar-simple, perl-term-readkey, perl-test-base,
+perl-test-cleannamespaces, perl-test-differences, perl-test-directory,
+perl-test-exception, perl-test-fatal, perl-test-harness, perl-test-leaktrace,
+perl-test-longstring, perl-test-mockobject, perl-test-mocktime,
+perl-test-most, perl-test-output, perl-test-pod, perl-test-pod-coverage,
+perl-test-requires, perl-test-sharedfork, perl-test-tcp, perl-test-trap,
+perl-test-utf8, perl-test-warn, perl-test-warnings, perl-test-without-module,
+perl-test-writevariants, perl-test-www-mechanize,
+perl-test-www-mechanize-catalyst, perl-test-www-mechanize-psgi,
+perl-test-yaml, perl-text-aligner, perl-text-balanced, perl-text-csv,
+perl-text-diff, perl-text-german, perl-text-glob, perl-text-simpletable,
+perl-text-table, perl-text-unidecode, perl-throwable, perl-tie-ixhash,
+perl-tie-toobject, perl-time-duration, perl-time-duration-parse,
+perl-time-local, perl-time-mock, perl-timedate, perl-tree-simple,
+perl-tree-simple-visitorfactory, perl-try-tiny, perl-types-serialiser,
+perl-universal-can, perl-universal-isa, perl-uri-find, perl-uri-ws,
+perl-variable-magic, perl-www-mechanize, perl-xml-libxml,
+perl-xml-namespacesupport, perl-xml-sax, perl-xml-sax-base, perl-yaml,
+perl-yaml-tiny, ploticus, polipo, portaudio, pumpa, python-apsw,
+python-biopython, python-cssselect, python-dbus, python-decorator,
+python-drmaa, python-h5py, python-lxml, python-netifaces, python-networkx,
+python-pyxdg, python-pyyaml, python-requests, python-scikit-learn,
+python-singledispatch, python-sphinx-rtd-theme, python-sympy, python-testlib,
+python-tornado, python-urwid, python-waf, python2-apsw,
+python2-backport-ssl-match-hostname, python2-biopython, python2-bx-python,
+python2-cssselect, python2-cssutils, python2-dbus, python2-decorator,
+python2-drmaa, python2-h5py, python2-lxml, python2-netifaces,
+python2-networkx, python2-pbcore, python2-pil, python2-pybedtools,
+python2-pycairo, python2-pyxdg, python2-pyyaml, python2-rdflib, python2-rsvg,
+python2-scikit-learn, python2-singledispatch, python2-six,
+python2-sphinx-rtd-theme, python2-sympy, python2-testlib, python2-tornado,
+python2-urwid, python2-waf, python2-xlib, quvi, r, rdesktop, recode, rep-gtk,
+rseqc, rsound, rubberband, ruby-hoe, rxvt-unicode, s2tc, sawfish, sbcl, seqan,
+serd, serf, sfml, shogun, sloccount, smartmontools, snakemake, soil, solfege,
+sord, soundtouch, soxr, sra-tools, sratom, srt2vtt, star, starman, stow,
+subread, suil, suitesparse, swt, sysfsutils, sysfsutils, taskwarrior, tbb,
+terminology, tesseract-ocr, texlive-bin, texlive-texmf, the-silver-searcher,
+tidy, tig, timidity++, tocc, totem-pl-parser, tree, tuxguitar, tvtime,
+twolame, txt2man, unqlite, upower, utf8proc, vamp, vapoursynth, vcftools,
+vigra, wavpack, webkitgtk, webkitgtk, weex, wicd, wpa-supplicant-light,
+wxwidgets, wxwidgets, xbindkeys, xcape, xdg-utils, xf86-input-libinput,
+xf86-input-wacom, xf86-video-nouveau, xfce, xmp, xosd, xournal, xvid, zathura,
+zathura-cb, zathura-djvu, zathura-pdf-poppler, zathura-ps, zeromq,
+zita-alsa-pcmi, zita-convolver
+
+*** 189 package updates
+
+acpica-20150410, apl-1.5, apr-1.5.2, arb-2.3.0, at-spi2-atk-2.16.0,
+at-spi2-core-2.16.0, atk-2.16.0, autogen-5.18.5, bison-3.0.4, boost-1.57.0,
+cairo-1.14.2, ccrtp-2.1.2, check-0.9.14, clang-3.6.0, cmake-3.2.2,
+complexity-1.2, cups-filters-1.0.68, curl-7.42.1, dbus-1.8.16,
+dbus-glib-0.104, dejagnu-1.5.3, docbook-xml-4.4, docbook-xml-4.5,
+e2fsck-static-1.42.12, e2fsprogs-1.42.12, ed-1.11, eigen-3.2.4,
+elfutils-0.161, emacs-24.5, emacs-no-x-toolkit-24.5, exo-0.10.3, ffmpeg-2.6.2,
+fish-2.1.2, flac-1.3.1, flint-2.4.5, fltk-1.3.3, freetype-2.5.5, garcon-0.4.0,
+gcc-5.1.0, gcc-toolchain-5.1.0, gdb-7.9, geiser-0.7, glib-2.44.0, glibc-2.21,
+glibc-2.21, glibc-stripped-tarball-2.21, glibmm-2.44.0, global-6.4,
+gnome-desktop-3.16.0, gnome-icon-theme-3.12.0, gnome-themes-standard-3.16.0,
+gnu-pw-mgr-1.3, gnubik-2.4.2, gnumach-headers-1.5, gnunet-0.10.1,
+gnupg-1.4.19, gnupg-2.0.27, gnupg-2.1.4, gnutls-3.4.0,
+gobject-introspection-1.44.0, gpgme-1.5.4, gsettings-desktop-schemas-3.16.0,
+gst-plugins-base-1.4.5, gst-plugins-good-1.4.5, gstreamer-1.4.5, gtk+-3.16.2,
+gtkmm-2.24.4, gtkmm-3.16.0, guile-ssh-0.7.2, guix-0.8.1, guix-0.8.1.fc34dee,
+help2man-1.46.6, httpd-2.4.12, hurd-headers-0.6, icecat-31.6.0-gnu1,
+icu4c-55.1, imagemagick-6.9.0-4, imlib2-1.4.7, inetutils-1.9.3, inkscape-0.91,
+isc-dhcp-4.3.1, itstool-2.0.2, kbd-2.0.2, libgcrypt-1.6.3, libgpg-error-1.18,
+libidn-1.30, libltdl-2.4.6, libmicrohttpd-0.9.40, libmikmod-3.3.7,
+libotr-4.1.0, libsigc++-2.4.1, libtasn1-4.5, libtool-2.4.6,
+libunistring-0.9.5, libuv-1.4.2, libvorbis-1.3.5, libxfce4ui-4.12.0,
+libxfce4util-4.12.1, libxfont-1.5.1, lightning-2.1.0, linux-libre-4.0.2,
+linux-libre-headers-3.14.37, llvm-3.6.0, lua-5.2.3, man-pages-3.82,
+mesa-10.5.4, mig-1.5, minetest-0.4.12, moe-1.7, mpc-1.0.3, mpd-0.19.9,
+mu-0.9.12, nano-2.4.1, ncmpcpp-0.6.2, nettle-3.1, nginx-1.8.0, node-0.12.2,
+notmuch-0.19, nspr-4.10.8, nss-3.18, ntp-4.2.8p2, ocrad-0.25, octave-3.8.2,
+openconnect-7.05, openjpeg-2.0.1, openjpeg-2.1.0, openldap-2.4.40,
+openssh-6.8p1, openssl-1.0.2a, pangomm-2.36.0, parallel-20150422,
+pari-gp-2.7.3, patch-2.7.5, perf-4.0.2, perl-libwww-6.13, perl-net-http-6.07,
+perl-net-ssleay-1.68, perl-test-simple-1.001014, perl-uri-1.67,
+pinentry-0.9.0, pius-2.0.11, podofo-0.9.3, poppler-0.32.0, postgresql-9.3.6,
+pulseaudio-6.0, python-3.4.3, python-pillow-2.7.0, python-pygobject-3.16.1,
+python-setuptools-12.1, python-wrapper-3.4.3, python2-dateutil-2.2,
+python2-pillow-2.7.0, python2-pygobject-3.16.1, python2-setuptools-12.1,
+qt-5.4.1, ruby-2.2.2, samba-3.6.25, scons-2.3.4, sdl2-2.0.3, sharutils-4.15.1,
+sipwitch-1.9.7, slock-1.2, source-highlight-3.1.8, sqlite-3.8.9,
+subversion-1.8.13, texinfo-5.2, thunar-1.6.6, thunar-volman-0.8.1,
+tor-0.2.5.12, tumbler-0.1.31, tzdata-2015c, ucommon-6.3.1, vala-0.28.0,
+valgrind-3.10.1, vlc-2.2.0, vte-0.40.0, wget-1.16.3, wine-1.7.40,
+wpa-supplicant-2.4, xboard-4.8.0, xfce4-appfinder-4.12.0, xfce4-panel-4.12.0,
+xfce4-session-4.12.0, xfce4-settings-4.12.0, xfconf-4.12.0, xfdesktop-4.12.0,
+xfwm4-4.12.0, xorg-server-1.16.4, xterm-317
+
+** Programming interfaces
+
+*** New (guix build gremlin) to parse and validate ELF dynamic link info
+
+*** (guix build-system gnu) has a new ‘validate-runpath’ phase
+
+This phase reads the dynamic entries of ELF files and reports libraries listed
+as NEEDED that are not found in the RUNPATH.
+
+*** New (gnu services desktop) module and ‘%desktop-services’ variable
+
+*** New (guix cvs-download) module, for CVS checkouts
+
+*** New (guix build-system waf) module, for the Waf build system
+
+*** New (guix build-system haskell) module, to build Haskell packages
+
+*** (guix build-system gnu) now supports zip archives
+
+*** New convenience syntax ‘modify-phases’ added in (guix build utils)
+
+*** The ‘ld’ wrapper more finely determines whether to use ‘-rpath’
+
+*** (guix gexp) exports ‘gexp-input’ to describe input unambiguously
+
+*** The ‘define-gexp-compiler’ form allows (guix gexp) to be extended
+
+*** New ‘local-file’ constructor exported by (guix gexp)
+
+** Noteworthy bug fixes
+
+*** Profiles created with ‘guix package -p’ as indirect GC roots
+
+Before that they were made permanent GC roots–i.e., uncollectable.
+
+*** ‘guix package’ distinguishes downgrades from upgrades
+
+*** Handle HTTP redirects to relative URI references
+    (<http://bugs.gnu.org/19840>)
+
+*** Downloads now honor the ‘http_proxy’ environment variable
+    (<http://bugs.gnu.org/20402>)
+
+*** ‘--no-*’ options are now always correctly handled
+    (<http://lists.gnu.org/archive/html/guix-devel/2015-02/msg00702.html>)
+
+*** SLiM no longer leaks open file descriptors
+
+*** Don't compare <pam-service> objects with 'equal?'
+    (<http://bugs.gnu.org/20037>)
+
+*** x86_64 and i686 bootstrap binaries updated (<http://bugs.gnu.org/19780>)
+
+*** ‘find-files’ no longer follows symlinks (<http://bugs.gnu.org/20081>)
+
+*** libc message catalog (‘libc.mo’) is now installed
+
+*** libstdc++ has appropriate RUNPATH (<http://bugs.gnu.org/20358>)
+
+*** ‘dhcp-client-service’ now correctly tracks dhclient’s PID
+
+** Native language support
+
+*** New translations: da (Danish)
+
+*** Updated translations: eo
+
 * Changes in 0.8.1 (since 0.8)
 
 ** Package management

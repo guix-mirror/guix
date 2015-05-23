@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,6 +104,8 @@ X11 (yet).")
              (sha256
               (base32
                "0q6qzakq8xihw91xv310qi3vyylq7x2bzdkjgy8sqxii2lgbjzhv"))
+             (patches (list (search-patch "qt5-conflicting-typedefs.patch")
+                            (search-patch "qt5-runpath.patch")))
              (snippet
               '(begin
                  ;; Remove broken symlinks.
@@ -229,30 +232,36 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "0b036iqgmbbv37dgwwfihw3mihjbnw3kb5kaisdy0qi8nn8xs54b"))
-             (patches (list (search-patch "qt4-tests.patch")))))
+             (patches (map search-patch
+                           '("qt4-ldflags.patch" "qt4-tests.patch")))))
     (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
               ("libjepg" ,libjpeg-8)
               ("libsm" ,libsm)))
+
+    ;; Note: there are 37 MiB of examples and a '-exampledir' configure flags,
+    ;; but we can't make them a separate output because "out" and "examples"
+    ;; would refer to each other.
+    (outputs '("out"                             ;112MiB core + 37MiB examples
+               "doc"))                           ;280MiB of HTML + code
     (arguments
      `(#:phases
          (alist-replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
               (substitute* '("configure")
-                           (("/bin/pwd") (which "pwd")))
-              ;; Explicitly link with icui18n, which is dlopened by
-              ;; QtCore.so. The LDFLAGS are in fact added to other flags
-              ;; determined by the configure phase.
-              ;; According to the nix recipe, this may be necessary for
-              ;; further libraries (cups, gtk-x11-2.0, libgdk-x11-2.0).
-              (setenv "LDFLAGS" "-licui18n")
-              ;; do not pass "--enable-fast-install", which makes the
-              ;; configure process fail
+                (("/bin/pwd") (which "pwd")))
+
               (zero? (system*
                       "./configure"
                       "-verbose"
                       "-prefix" out
+                      "-docdir" (string-append doc "/share/doc/qt-" ,version)
+                      "-demosdir"    (string-append out "/share/qt-" ,version
+                                                    "/demos")
+                      "-examplesdir" (string-append out "/share/qt-" ,version
+                                                    "/examples")
                       "-opensource"
                       "-confirm-license"
                       ;; explicitly link with dbus instead of dlopening it

@@ -318,6 +318,37 @@ applications menu, workspace switcher and more.")
     ;; to read the battery state via ACPI or APM are covered by lgpl2.0+.
     (license (list gpl2+ lgpl2.0+))))
 
+(define-public xfce4-clipman-plugin
+  (package
+    (name "xfce4-clipman-plugin")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "19a8gwcqc0r5qqi8w28dc8arqip34m8yxdb87lgps9g5qfcky113"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("exo" ,exo)
+       ("libxfce4ui" ,libxfce4ui)
+       ("libxtst" ,libxtst)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "http://goodies.xfce.org/projects/panel-plugins/xfce4-clipman-plugin")
+    (synopsis "Clipboard manager for Xfce")
+    (description
+     "Clipman is a clipboard manager for Xfce.  It keeps the clipboard contents
+around while it is usually lost when you close an application.  It is able to
+handle text and images, and has a feature to execute actions on specific text by
+matching them against regular expressions.")
+    (license (list gpl2+))))
+
 (define-public xfce4-appfinder
   (package
     (name "xfce4-appfinder")
@@ -397,8 +428,11 @@ allows you to shutdown the computer from Xfce.")
        ("libnotify" ,libnotify)
        ("libxcursor", libxcursor)
        ("libxi" ,libxi)
+       ("libxklavier" ,libxklavier)
        ("libxrandr" ,libxrandr)
-       ("libxfce4ui" ,libxfce4ui)))
+       ("libxfce4ui" ,libxfce4ui)
+       ("upower" ,upower)
+       ("xf86-input-libinput" ,xf86-input-libinput)))
     (home-page "http://www.xfce.org/")
     (synopsis "Xfce settings manager")
     (description
@@ -569,9 +603,6 @@ on your desktop.")
                   (guix build glib-or-gtk-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build glib-or-gtk-build-system)
-                           (guix build utils))
        #:phases
        (alist-replace
         'install
@@ -601,6 +632,7 @@ on your desktop.")
        ("tumlber"              ,tumbler)
        ("xfce4-appfinder"      ,xfce4-appfinder)
        ("xfce4-battery-plugin" ,xfce4-battery-plugin)
+       ("xfce4-clipman-plugin" ,xfce4-clipman-plugin)
        ("xfce4-panel"          ,xfce4-panel)
        ("xfce4-session"        ,xfce4-session)
        ("xfce4-settings"       ,xfce4-settings)

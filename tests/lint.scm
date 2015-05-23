@@ -18,8 +18,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-
-(define-module (test-packages)
+(define-module (test-lint)
   #:use-module (guix tests)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -302,8 +301,33 @@ requests."
                        (uri "someurl")
                        (sha256 "somesha")
                        (patches (list "/path/to/y.patch")))))))
-         (check-patches pkg)))
+         (check-patch-file-names pkg)))
      "file names of patches should start with the package name")))
+
+(test-assert "patches: not found"
+  (->bool
+   (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (source
+                     (origin
+                       (method url-fetch)
+                       (uri "someurl")
+                       (sha256 "somesha")
+                       (patches
+                        (list (search-patch "this-patch-does-not-exist!"))))))))
+         (check-patch-file-names pkg)))
+     "patch not found")))
+
+(test-assert "derivation: invalid arguments"
+  (->bool
+   (string-contains
+    (with-warnings
+      (let ((pkg (dummy-package "x"
+                   (arguments
+                    '(#:imported-modules (invalid-module))))))
+        (check-derivation pkg)))
+    "failed to create derivation")))
 
 (test-assert "home-page: wrong home-page"
   (->bool

@@ -28,14 +28,6 @@ readlink_base ()
     basename `readlink "$1"`
 }
 
-# Return true if a typical shebang in the store would not exceed Linux's
-# default static limit.
-shebang_not_too_long ()
-{
-    test `echo $NIX_STORE_DIR/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bootstrap-binaries-0/bin/bash | wc -c` \
-	 -lt 128
-}
-
 module_dir="t-guix-package-$$"
 profile="t-profile-$$"
 rm -f "$profile"
@@ -60,118 +52,20 @@ test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
 # No search path env. var. here.
-guix package --search-paths -p "$profile"
-test "`guix package --search-paths -p "$profile" | wc -l`" = 0
+guix package -p "$profile" --search-paths
+guix package -p "$profile" --search-paths | grep '^export PATH='
+test "`guix package -p "$profile" --search-paths | wc -l`" = 1  # $PATH
+( set -e; set -x;						\
+  eval `guix package --search-paths=prefix -p "$PWD/$profile"`;	\
+  test "`type -P guile`" = "$PWD/$profile/bin/guile" ;		\
+  type -P rm )
 
-# Check whether we have network access and an acceptable shebang length.
-if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null \
-	 && shebang_not_too_long
-then
-    boot_make="(@@ (gnu packages commencement) gnu-make-boot0)"
-    boot_make_drv="`guix build -e "$boot_make" | grep -v -e -debug`"
-    guix package --bootstrap -p "$profile" -i "$boot_make_drv"
-    test -L "$profile-2-link"
-    test -f "$profile/bin/make" && test -f "$profile/bin/guile"
+# Exit with 1 when a generation does not exist.
+if guix package -p "$profile" --delete-generations=42;
+then false; else true; fi
 
-
-    # Check whether `--list-installed' works.
-    # XXX: Change the tests when `--install' properly extracts the package
-    # name and version string.
-    installed="`guix package -p "$profile" --list-installed | cut -f1 | xargs echo | sort`"
-    case "x$installed" in
-        "guile-bootstrap make-boot0")
-            true;;
-        "make-boot0 guile-bootstrap")
-            true;;
-        "*")
-            false;;
-    esac
-
-    test "`guix package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
-
-    # List generations.
-    test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
-        = "  guile-bootstrap"
-
-    # Exit with 1 when a generation does not exist.
-    if guix package -p "$profile" --list-generations=42;
-    then false; else true; fi
-    if guix package -p "$profile" --switch-generation=99;
-    then false; else true; fi
-
-    # Remove a package.
-    guix package --bootstrap -p "$profile" -r "guile-bootstrap"
-    test -L "$profile-3-link"
-    test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
-
-    # Roll back.
-    guix package --roll-back -p "$profile"
-    test "`readlink_base "$profile"`" = "$profile-2-link"
-    test -x "$profile/bin/guile" && test -x "$profile/bin/make"
-    guix package --roll-back -p "$profile"
-    test "`readlink_base "$profile"`" = "$profile-1-link"
-    test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
-
-    # Switch to the rolled generation and switch back.
-    guix package -p "$profile" --switch-generation=2
-    test "`readlink_base "$profile"`" = "$profile-2-link"
-    guix package -p "$profile" --switch-generation=-1
-    test "`readlink_base "$profile"`" = "$profile-1-link"
-
-    # Move to the empty profile.
-    for i in `seq 1 3`
-    do
-        guix package --bootstrap --roll-back -p "$profile"
-        ! test -f "$profile/bin"
-        ! test -f "$profile/lib"
-        test "`readlink_base "$profile"`" = "$profile-0-link"
-    done
-
-    # Test that '--list-generations' does not output the zeroth generation.
-    test -z "`guix package -p "$profile" -l 0`"
-
-    # Reinstall after roll-back to the empty profile.
-    guix package --bootstrap -p "$profile" -e "$boot_make"
-    test "`readlink_base "$profile"`" = "$profile-1-link"
-    test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
-
-    # Check that the first generation is the current one.
-    test "`guix package -p "$profile" -l 1 | cut -f3 | head -n1`" = "(current)"
-
-    # Roll-back to generation 0, and install---all at once.
-    guix package --bootstrap -p "$profile" --roll-back -i guile-bootstrap
-    test "`readlink_base "$profile"`" = "$profile-1-link"
-    test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
-
-    # Install Make.
-    guix package --bootstrap -p "$profile" -e "$boot_make"
-    test "`readlink_base "$profile"`" = "$profile-2-link"
-    test -x "$profile/bin/guile" && test -x "$profile/bin/make"
-    grep "`guix build -e "$boot_make"`" "$profile/manifest"
-
-    # Make a "hole" in the list of generations, and make sure we can
-    # roll back and switch "over" it.
-    rm "$profile-1-link"
-    guix package --bootstrap -p "$profile" --roll-back
-    test "`readlink_base "$profile"`" = "$profile-0-link"
-    guix package -p "$profile" --switch-generation=+1
-    test "`readlink_base "$profile"`" = "$profile-2-link"
-
-    # Make sure LIBRARY_PATH gets listed by `--search-paths'.
-    guix package --bootstrap -p "$profile" -i guile-bootstrap -i gcc-bootstrap
-    guix package --search-paths -p "$profile" | grep LIBRARY_PATH
-
-    # Delete the third generation and check that it was actually deleted.
-    guix package -p "$profile" --delete-generations=3
-    test -z "`guix package -p "$profile" -l 3`"
-
-    # Exit with 1 when a generation does not exist.
-    if guix package -p "$profile" --delete-generations=42;
-    then false; else true; fi
-
-    # Exit with 0 when trying to delete the zeroth generation.
-    guix package -p "$profile" --delete-generations=0
-fi
+# Exit with 0 when trying to delete the zeroth generation.
+guix package -p "$profile" --delete-generations=0
 
 # Make sure multiple arguments to -i works.
 guix package --bootstrap -i guile gcc -p "$profile" -n
@@ -212,6 +106,14 @@ if guix package -p "$profile" --delete-generations=12m;
 then false; else true; fi
 test "`readlink_base "$profile"`" = "$generation"
 
+# The following command should not delete the current generation, even though
+# it matches the given pattern (see <http://bugs.gnu.org/19978>.)  And since
+# there's nothing else to delete, it should just fail.
+guix package --list-generations -p "$profile"
+if guix package --bootstrap -p "$profile" --delete-generations=1..
+then false; else true; fi
+test "`readlink_base "$profile"`" = "$generation"
+
 # Make sure $profile is a GC root at this point.
 real_profile="`readlink -f "$profile"`"
 if guix gc -d "$real_profile"
@@ -241,18 +143,6 @@ HOME="`cd $HOME; pwd -P`"
 guix package --bootstrap -i guile-bootstrap
 test -L "$HOME/.guix-profile"
 test -f "$HOME/.guix-profile/bin/guile"
-
-if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
-then
-    guix package --bootstrap -e "$boot_make"
-    test -f "$HOME/.guix-profile/bin/make"
-    first_environment="`cd $HOME/.guix-profile ; pwd`"
-
-    guix package --bootstrap --roll-back
-    test -f "$HOME/.guix-profile/bin/guile"
-    ! test -f "$HOME/.guix-profile/bin/make"
-    test "`cd $HOME/.guix-profile ; pwd`" = "$first_environment"
-fi
 
 # Move to the empty profile.
 default_profile="`readlink "$HOME/.guix-profile"`"
@@ -327,8 +217,18 @@ cat > "$module_dir/foo.scm"<<EOF
               (patches (list (search-patch "emacs.patch")))))
     (name "emacs-foo-bar-patched")
     (version "42")))
+
+(define-public y
+  (package (inherit emacs)
+    (name "super-non-portable-emacs")
+    (supported-systems '("foobar64-hurd"))))
 EOF
 guix package -i emacs-foo-bar-patched -n
+
+# This one should not show up in searches since it's no supported on the
+# current system.
+test "`guix package -A super-non-portable-emacs`" = ""
+test "`guix package -s super-non-portable-emacs | grep ^systems:`" = "systems: "
 
 unset GUIX_PACKAGE_PATH
 
@@ -342,3 +242,15 @@ export GUIX_BUILD_OPTIONS
 available2="`guix package -A | sort`"
 test "$available2" = "$available"
 guix package -I
+
+unset GUIX_BUILD_OPTIONS
+
+# Applying a manifest file
+cat > "$module_dir/manifest.scm"<<EOF
+(use-package-modules bootstrap)
+
+(packages->manifest (list %bootstrap-guile))
+EOF
+guix package --bootstrap -m "$module_dir/manifest.scm"
+guix package -I | grep guile
+test `guix package -I | wc -l` -eq 1

@@ -85,8 +85,6 @@
                   (rnrs io ports)
                   (srfi srfi-26)
                   (ice-9 regex))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils))
        #:phases
          (alist-cons-after
            'unpack 'install

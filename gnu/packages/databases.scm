@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,13 +37,18 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages jemalloc)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          public-domain))
+                          bsd-2 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -149,17 +155,85 @@ management system that supports the standardized Structured Query
 Language.")
     (license gpl2)))
 
+(define-public mariadb
+  (package
+    (name "mariadb")
+    (version "10.0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://downloads.mariadb.org/f/"
+                                  name "-" version "/source/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xcs391cm0vnl9bvx1470v8z4d77zqv16n6iaqi12jm0ma8fwvv8"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_CONFIG=mysql_release"
+         "-DDEFAULT_CHARSET=utf8"
+         "-DDEFAULT_COLLATION=utf8_general_ci"
+         "-DMYSQL_DATADIR=/var/lib/mysql"
+         "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+         "-DINSTALL_INFODIR=share/mysql/docs"
+         "-DINSTALL_MANDIR=share/man"
+         "-DINSTALL_PLUGINDIR=lib/mysql/plugin"
+         "-DINSTALL_SCRIPTDIR=bin"
+         "-DINSTALL_INCLUDEDIR=include/mysql"
+         "-DINSTALL_DOCREADMEDIR=share/mysql/docs"
+         "-DINSTALL_SUPPORTFILESDIR=share/mysql/support-files"
+         "-DINSTALL_MYSQLSHAREDIR=share/mysql"
+         "-DINSTALL_DOCDIR=share/mysql/docs"
+         "-DINSTALL_SHAREDIR=share/mysql")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            (setenv "CONFIG_SHELL" (which "sh"))
+            #t))
+         (add-after
+          'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out     (assoc-ref outputs "out"))
+                   (test    (assoc-ref outputs "test")))
+              (substitute* (string-append out "/bin/mysql_install_db")
+                (("basedir=\"\"")
+                 (string-append "basedir=\"" out "\"")))
+              ;; Remove unneeded files for testing.
+              (with-directory-excursion out
+                (for-each delete-file-recursively
+                          '("data" "mysql-test" "sql-bench"
+                            "share/man/man1/mysql-test-run.pl.1")))))))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("perl" ,perl)))
+    (inputs
+     `(("jemalloc" ,jemalloc)
+       ("libaio" ,libaio)
+       ("libxml2" ,libxml2)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)))
+    (home-page "https://mariadb.org/")
+    (synopsis "SQL database server")
+    (description
+     "MariaDB is a multi-user and multi-threaded SQL database server, designed
+as a drop-in replacement of MySQL.")
+    (license gpl2)))
+
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.3.5")
+    (version "9.3.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.postgresql.org/pub/source/v"
-                                  version "/postgresql-" version ".tar.gz"))
+                                  version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "08kga00izykgvnx7hn995wc4zjqslspapaa8z63045p1ya14mr4g"))))
+                "0ggz0i91znv053zx9qas7pjf93s5by3dk84z1jxbjkg8yyrnlx4b"))))
     (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline)
@@ -215,7 +289,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.8.3")
+   (version "3.8.9")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -235,12 +309,15 @@ types are supported, as is encryption.")
                     "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
-              "04dl53iv5q0srv4jcgjfzsrdzkq6dg1sgmlmpw9lrd4xrmj6jmvl"))))
+              "18k90bbfvvgc5204nm1hzw0vsj9ygzv7zbq3z6zrya6j5hwvdsvn"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
-   ;; Add -DSQLITE_SECURE_DELETE.  GNU Icecat will refuse to use the system
-   ;; SQLite unless this option is enabled.
-   (arguments `(#:configure-flags '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE")))
+   (arguments
+    `(#:configure-flags
+      ;; Add -DSQLITE_SECURE_DELETE and -DSQLITE_ENABLE_UNLOCK_NOTIFY to
+      ;; CFLAGS.  GNU Icecat will refuse to use the system SQLite unless these
+      ;; options are enabled.
+      '("CFLAGS=-O2 -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_UNLOCK_NOTIFY")))
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
@@ -464,6 +541,29 @@ DBIx::Class::Schema by scanning database table definitions and setting up the
 columns, primary keys, unique constraints and relationships.")
     (license (package-license perl))))
 
+(define-public perl-dbd-pg
+  (package
+    (name "perl-dbd-pg")
+    (version "3.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/T/TU/TURNSTEP/"
+                           "DBD-Pg-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0z0kf1kjgbi5f6nr63i2fnrx7629d9lvxg1q8sficwb3zdf1ggzx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-dbi" ,perl-dbi)))
+    (propagated-inputs
+     `(("perl-dbi" ,perl-dbi)
+       ("postgresql" ,postgresql)))
+    (home-page "http://search.cpan.org/dist/DBD-Pg")
+    (synopsis "DBI PostgreSQL interface")
+    (description "")
+    (license (package-license perl))))
+
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
@@ -519,6 +619,52 @@ structures you provide it, so that you don't have to modify your code every
 time your data changes")
     (license (package-license perl))))
 
+(define-public perl-sql-splitstatement
+  (package
+    (name "perl-sql-splitstatement")
+    (version "1.00020")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/EM/EMAZEP/"
+                           "SQL-SplitStatement-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bqg45k4c9qkb2ypynlwhpvzsl4ssfagmsalys18s5c79ps30z7p"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-class-accessor" ,perl-class-accessor)
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-sql-tokenizer" ,perl-sql-tokenizer)))
+    (home-page "http://search.cpan.org/dist/SQL-SplitStatement")
+    (synopsis "Split SQL code into atomic statements")
+    (description "This module tries to split any SQL code, even including
+non-standard extensions, into the atomic statements it is composed of.")
+    (license (package-license perl))))
+
+(define-public perl-sql-tokenizer
+  (package
+    (name "perl-sql-tokenizer")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IZ/IZUT/"
+                           "SQL-Tokenizer-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qa2dfbzdlr5qqdam9yn78z5w3al5r8577x06qan8wv58ay6ka7s"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/SQL-Tokenizer")
+    (synopsis "SQL tokenizer")
+    (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
+claim to be a parser or query verifier.  It just creates sane tokens from a
+valid SQL query.")
+    (license (package-license perl))))
+
 (define-public unixodbc
   (package
    (name "unixodbc")
@@ -538,3 +684,29 @@ Driver.")
    (license lgpl2.1+) 
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
+
+(define-public unqlite
+  (package
+    (name "unqlite")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              ;; Contains bug fixes against the official release, and has an
+              ;; autotooled build system.
+              (uri (string-append "https://github.com/aidin36/tocc/releases/"
+                                  "download/v1.0.0/"
+                                  "unqlite-unofficial-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1sbpvhg15gadq0mpcy16q7k3rkg4b4dicpnn5xifpkpn02sqik3s"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f))          ;No check target
+    (home-page "http://www.unqlite.org")
+    (synopsis "In-memory key/value and document store")
+    (description
+     "UnQLite is an in-process software library which implements a
+self-contained, serverless, zero-configuration, transactional NoSQL
+database engine.  UnQLite is a document store database similar to
+MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
+similar to BerkelyDB, LevelDB, etc.")
+    (license bsd-2)))

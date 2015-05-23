@@ -24,10 +24,14 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages base) #:prefix packages:)
+  #:use-module ((gnu packages guile) #:prefix packages:)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 popen)
+  #:use-module (rnrs io ports)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64))
 
@@ -183,8 +187,7 @@
       ((entry ->   (package->manifest-entry %bootstrap-guile))
        (guile      (package->derivation %bootstrap-guile))
        (drv        (profile-derivation (manifest (list entry))
-                                       #:info-dir? #f
-                                       #:ca-certificate-bundle? #f))
+                                       #:hooks '()))
        (profile -> (derivation->output-path drv))
        (bindir ->  (string-append profile "/bin"))
        (_          (built-derivations (list drv))))
@@ -196,9 +199,111 @@
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry packages:glibc "debug"))
        (drv        (profile-derivation (manifest (list entry))
-                                       #:info-dir? #f
-                                       #:ca-certificate-bundle? #f)))
+                                       #:hooks '())))
     (return (derivation-inputs drv))))
+
+(test-assertm "profile-manifest, search-paths"
+  (mlet* %store-monad
+      ((guile ->   (package
+                     (inherit %bootstrap-guile)
+                     (native-search-paths
+                      (package-native-search-paths packages:guile-2.0))))
+       (entry ->   (package->manifest-entry guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+
+      ;; Read the manifest back and make sure search paths are preserved.
+      (let ((manifest (profile-manifest profile)))
+        (match (manifest-entries manifest)
+          ((result)
+           (return (equal? (manifest-entry-search-paths result)
+                           (manifest-entry-search-paths entry)
+                           (package-native-search-paths
+                            packages:guile-2.0)))))))))
+
+(test-assertm "etc/profile"
+  ;; Make sure we get an 'etc/profile' file that at least defines $PATH.
+  (mlet* %store-monad
+      ((guile ->   (package
+                     (inherit %bootstrap-guile)
+                     (native-search-paths
+                      (package-native-search-paths packages:guile-2.0))))
+       (entry ->   (package->manifest-entry guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (let* ((pipe (open-input-pipe
+                    (string-append "unset GUIX_PROFILE; "
+                                   ;; 'source' is a Bashism; use '.' (dot).
+                                   ". " profile "/etc/profile; "
+                                   ;; Don't try to parse set(1) output because
+                                   ;; it differs among shells; just use echo.
+                                   "echo $PATH")))
+             (path (get-string-all pipe)))
+        (return
+         (and (zero? (close-pipe pipe))
+              (string-contains path (string-append profile "/bin"))))))))
+
+(test-assertm "etc/profile when etc/ already exists"
+  ;; Here 'union-build' makes the profile's etc/ a symlink to the package's
+  ;; etc/ directory, which makes it read-only.  Make sure the profile build
+  ;; handles that.
+  (mlet* %store-monad
+      ((thing ->   (dummy-package "dummy"
+                     (build-system trivial-build-system)
+                     (arguments
+                      `(#:guile ,%bootstrap-guile
+                        #:builder
+                        (let ((out (assoc-ref %outputs "out")))
+                          (mkdir out)
+                          (mkdir (string-append out "/etc"))
+                          (call-with-output-file (string-append out "/etc/foo")
+                            (lambda (port)
+                              (display "foo!" port))))))))
+       (entry ->   (package->manifest-entry thing))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (and (file-exists? (string-append profile "/etc/profile"))
+                   (string=? (call-with-input-file
+                                 (string-append profile "/etc/foo")
+                               get-string-all)
+                             "foo!"))))))
+
+(test-assertm "etc/profile when etc/ is a symlink"
+  ;; When etc/ is a symlink, the unsymlink code in 0.8.2 would fail
+  ;; gracelessly because 'scandir' would return #f.
+  (mlet* %store-monad
+      ((thing ->   (dummy-package "dummy"
+                     (build-system trivial-build-system)
+                     (arguments
+                      `(#:guile ,%bootstrap-guile
+                        #:builder
+                        (let ((out (assoc-ref %outputs "out")))
+                          (mkdir out)
+                          (mkdir (string-append out "/foo"))
+                          (symlink "foo" (string-append out "/etc"))
+                          (call-with-output-file (string-append out "/etc/bar")
+                            (lambda (port)
+                              (display "foo!" port))))))))
+       (entry ->   (package->manifest-entry thing))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:hooks '()))
+       (profile -> (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (and (file-exists? (string-append profile "/etc/profile"))
+                   (string=? (call-with-input-file
+                                 (string-append profile "/etc/bar")
+                               get-string-all)
+                             "foo!"))))))
 
 (test-end "profiles")
 

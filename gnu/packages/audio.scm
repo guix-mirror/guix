@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system waf)
@@ -31,10 +33,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -125,7 +130,23 @@ attacks, performing pitch detection, tapping the beat and producing MIDI
 streams from live audio.")
     (license license:gpl3+)))
 
-(define-public ardour
+(define (ardour-rpath-phase major-version)
+  `(lambda* (#:key outputs #:allow-other-keys)
+     (let ((libdir (string-append (assoc-ref outputs "out")
+                                  "/lib/ardour" ,major-version)))
+       (substitute* "wscript"
+         (("linker_flags = \\[\\]")
+          (string-append "linker_flags = [\""
+                         "-Wl,-rpath="
+                         libdir ":"
+                         libdir "/backends" ":"
+                         libdir "/engines" ":"
+                         libdir "/panners" ":"
+                         libdir "/surfaces" ":"
+                         libdir "/vamp" "\"]"))))
+     #t))
+
+(define-public ardour-3
   (package
     (name "ardour")
     (version "3.5.403")
@@ -137,6 +158,9 @@ streams from live audio.")
                     (url "git://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
+               ;; Ardour expects this file to exist at build time.  It can be
+               ;; created from a git checkout with:
+               ;;   ./waf create_stored_revision
                '(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
@@ -148,7 +172,12 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'set-rpath-in-LDFLAGS
+          ,(ardour-rpath-phase (version-prefix version 1))))
+       #:tests? #f ; no check target
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -180,8 +209,6 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
        ("sratom" ,sratom)
        ("suil" ,suil)
        ("lilv" ,lilv)
-       ("rasqal" ,rasqal)
-       ("raptor2" ,raptor2)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
        ("taglib" ,taglib)
@@ -196,6 +223,35 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
 record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
+
+(define-public ardour
+  (package (inherit ardour-3)
+    (name "ardour")
+    (version "4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.ardour.org/ardour/ardour.git")
+                    (commit version)))
+              (snippet
+               ;; Ardour expects this file to exist at build time.  It can be
+               ;; created from a git checkout with:
+               ;;   ./waf create_stored_revision
+               '(call-with-output-file
+                    "libs/ardour/revision.cc"
+                  (lambda (port)
+                    (format port "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"4.0\" ; }"))))
+              (sha256
+               (base32
+                "0a8bydc24xv0cahdqfaxdmi1f43cyr9psiyshxpbrkdqw2c7a4xi"))
+              (file-name (string-append name "-" version))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ardour-3)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'set-rpath-in-LDFLAGS
+                    ,(ardour-rpath-phase (version-prefix version 1)))))))))
 
 (define-public azr3
   (package
@@ -232,6 +288,81 @@ sections, two polyphonic sections with nine drawbars each and one monophonic
 bass section with five drawbars.  A standalone JACK application and LV2
 plugins are provided.")
     (license license:gpl2)))
+
+(define-public calf
+  (package
+    (name "calf")
+    (version "0.0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/calf/calf/"
+                    version "/calf-" version ".tar.gz"))
+              (sha256
+               (base32
+                "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fluidsynth" ,fluidsynth)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gtk" ,gtk+-2)
+       ("cairo" ,cairo)
+       ("lash" ,lash)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("ladspa" ,ladspa)
+       ("fftw" ,fftw)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://calf.sourceforge.net/")
+    (synopsis "Audio plug-in pack for LV2 and JACK environments")
+    (description
+     "Calf Studio Gear is an audio plug-in pack for LV2 and JACK environments.
+The suite contains lots of effects (delay, modulation, signal processing,
+filters, equalizers, dynamics, distortion and mastering effects),
+instruments (SF2 player, organ simulator and a monophonic synthesizer) and
+tools (analyzer, mono/stereo tools, crossovers).")
+    ;; calfjackhost is released under GPLv2+
+    ;; The plugins are released under LGPLv2.1+
+    (license (list license:lgpl2.1+ license:gpl2+))))
+
+(define-public csound
+  (package
+    (name "csound")
+    (version "6.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/csound/csound6/Csound"
+                    version "/Csound" version ".tar.gz"))
+              (sha256
+               (base32
+                "1030w38lxdwjz1irr32m9cl0paqmgr02lab2m7f7j1yihwxj1w0g"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("pulseaudio" ,pulseaudio)
+       ("libsndfile" ,libsndfile)
+       ("liblo" ,liblo)
+       ("ladspa" ,ladspa)
+       ("jack" ,jack-1)
+       ("gettext" ,gnu-gettext)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("zlib" ,zlib)))
+    (home-page "http://csound.github.io/")
+    (synopsis "Sound and music computing system")
+    (description
+     "Csound is a user-programmable and user-extensible sound processing
+language and software synthesizer.")
+    (license license:lgpl2.1+)))
 
 (define-public clalsadrv
   (package
@@ -276,6 +407,45 @@ plugins are provided.")
     (description
      "clalsadrv is a C++ wrapper around the ALSA API simplifying access to
 ALSA PCM devices.")
+    (license license:gpl2+)))
+
+(define-public fluidsynth
+  (package
+    (name "fluidsynth")
+    (version "1.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/fluidsynth/fluidsynth-"
+                    version "/fluidsynth-" version ".tar.gz"))
+              (sha256
+               (base32
+                "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack
+        'remove-broken-symlinks
+        (lambda _ (delete-file-recursively "m4") #t)
+        %standard-phases)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("lash" ,lash)
+       ("readline" ,readline)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.fluidsynth.org/")
+    (synopsis "SoundFont synthesizer")
+    (description
+     "FluidSynth is a real-time software synthesizer based on the SoundFont 2
+specifications.  FluidSynth reads and handles MIDI events from the MIDI input
+device.  It is the software analogue of a MIDI synthesizer. FluidSynth can
+also play midifiles using a Soundfont.")
     (license license:gpl2+)))
 
 (define-public faad2
@@ -349,6 +519,46 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
     ;; GPLv2+ with exception for compositions using these patches.
     (license license:gpl2+)))
 
+(define-public ir
+  (package
+    (name "ir")
+    (version "1.3.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://factorial.hu/system/files/ir.lv2-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       ;; no configure script
+       (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("lv2" ,lv2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://factorial.hu/plugins/lv2/ir")
+    (synopsis "LV2 convolution reverb")
+    (description
+     "IR is a low-latency, real-time, high performance signal convolver
+especially for creating reverb effects.  It supports impulse responses with 1,
+2 or 4 channels, in any soundfile format supported by libsndfile.")
+    (license license:gpl2+)))
+
 (define-public jack-1
   (package
     (name "jack")
@@ -403,7 +613,18 @@ synchronous execution of all clients, and low latency operation.")
     (arguments
      `(#:tests? #f  ; no check target
        #:configure-flags '("--dbus"
-                           "--alsa")))
+                           "--alsa")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-linkflags
+          (lambda _
+            ;; Add $libdir to the RUNPATH of all the binaries.
+            (substitute* "wscript"
+              ((".*CFLAGS.*-Wall.*" m)
+               (string-append m
+                              "    conf.env.append_unique('LINKFLAGS',"
+                              "'-Wl,-rpath=" %output "/lib')\n"))))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
@@ -585,7 +806,16 @@ implementation of the Open Sound Control (OSC) protocol.")
               (base32
                "0aj2plkx56iar8vzjbq2l7hi7sp0ml99m0h44rgwai2x4vqkk2j2"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append "-Wl,-rpath="
+                                   (assoc-ref outputs "out") "/lib")))))))
     ;; required by lilv-0.pc
     (propagated-inputs
      `(("serd" ,serd)
@@ -995,6 +1225,97 @@ stretching and pitch scaling of audio.  This package contains the library.")
     ;; containing gpl2.
     (license license:gpl2)))
 
+(define-public wavpack
+  (package
+    (name "wavpack")
+    (version "4.70.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.wavpack.com/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "191h8hv8qk72hfh1crg429i9yq3cminwqb249sy9zadbn1wy7b9c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; wavpack.pc.in lacks path substitution for 'exec_prefix'.
+       (list (string-append "--libdir=" %output "/lib"))))
+    (home-page "http://www.wavpack.com/")
+    (synopsis "Hybrid lossless audio codec")
+    (description
+     "WavPack is an audio compression format with lossless, lossy and hybrid
+compression modes.  This package contains command-line programs and library to
+encode and decode wavpack files.")
+    (license license:bsd-3)))
+
+(define-public libmodplug
+  (package
+    (name "libmodplug")
+    (version "0.8.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/project/modplug-xmms/"
+                    name "/" version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bfsladg7h6vnii47dd66f5vh1ir7qv12mfb8n36qiwrxq92sikp"))))
+    (build-system gnu-build-system)
+    (home-page "http://modplug-xmms.sourceforge.net/")
+    (synopsis "Mod file playing library")
+    (description
+     "Libmodplug renders mod music files as raw audio data, for playing or
+conversion.  mod, .s3m, .it, .xm, and a number of lesser-known formats are
+supported.  Optional features include high-quality resampling, bass expansion,
+surround and reverb.")
+    (license license:public-domain)))
+
+(define-public libxmp
+  (package
+    (name "libxmp")
+    (version "4.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xmp/libxmp/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h06091hlpgc6ds4pjmfq8sx4snw7av3nhny180q4pwfyasjb6ny"))))
+    (build-system gnu-build-system)
+    (home-page "http://xmp.sourceforge.net/")
+    (synopsis "Module player library")
+    (description
+     "Libxmp is a library that renders module files to PCM data.  It supports
+over 90 mainstream and obscure module formats including Protracker (MOD),
+Scream Tracker 3 (S3M), Fast Tracker II (XM), and Impulse Tracker (IT).")
+    (license license:lgpl2.1+)))
+
+(define-public xmp
+  (package
+    (name "xmp")
+    (version "4.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xmp/xmp/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gjylvvmq7ha0nhcjg56qfp0xxpsrcsj7y5r914svd5x1ppmzm5n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxmp" ,libxmp)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://xmp.sourceforge.net/")
+    (synopsis "Extended module player")
+    (description
+     "Xmp is a portable module player that plays over 90 mainstream and
+obscure module formats, including Protracker MOD, Fasttracker II XM, Scream
+Tracker 3 S3M and Impulse Tracker IT files.")
+    (license license:gpl2+)))
+
 (define-public soundtouch
   (package
     (name "soundtouch")
@@ -1088,15 +1409,28 @@ portions of LAME.")
              (string-map (lambda (c) (if (char=? c #\.) #\_ c)) version)
              ".tgz"))
        (sha256
-        (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))))
+        (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))
+       (patches (list (search-patch "portaudio-audacity-compat.patch")))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add ASIHPI.
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-2)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (arguments '(#:tests? #f))          ;no 'check' target
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       ;; Autoreconf is necessary because the audacity-compat patch modifies
+       ;; .in files.
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          (zero? (system* "autoreconf" "-vif")))
+        %standard-phases)
+       #:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
     (description
@@ -1143,6 +1477,48 @@ interface.")
      "RSound allows you to send audio from an application and transfer it
 directly to a different computer on your LAN network.  It is an audio daemon
 with a much different focus than most other audio daemons.")
+    (license license:gpl3+)))
+
+(define-public zita-convolver
+  (package
+    (name "zita-convolver")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-convolver-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs") #t)
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libzita-convolver.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libzita-convolver.so.3")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("fftwf" ,fftwf)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "Fast, partitioned convolution engine library")
+    (description
+     "Zita convolver is a C++ library providing a real-time convolution
+engine.")
     (license license:gpl3+)))
 
 (define-public zita-alsa-pcmi

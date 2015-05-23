@@ -26,6 +26,8 @@
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
+  #:use-module (guix search-paths)
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
@@ -35,7 +37,8 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:re-export (%current-system
-               %current-target-system)
+               %current-target-system
+               search-path-specification)         ;for convenience
   #:export (origin
             origin?
             origin-uri
@@ -50,11 +53,6 @@
             origin-modules
             origin-imported-modules
             base32
-
-            <search-path-specification>
-            search-path-specification
-            search-path-specification?
-            search-path-specification->sexp
 
             package
             package?
@@ -81,6 +79,8 @@
             package-location
             package-field-location
 
+            package-direct-sources
+            package-transitive-sources
             package-direct-inputs
             package-transitive-inputs
             package-transitive-target-inputs
@@ -94,6 +94,8 @@
             package-grafts
 
             %supported-systems
+            %hydra-supported-systems
+            supported-package?
 
             &package-error
             package-error?
@@ -106,6 +108,7 @@
 
             package->bag
             bag->derivation
+            bag-direct-inputs
             bag-transitive-inputs
             bag-transitive-host-inputs
             bag-transitive-build-inputs
@@ -182,30 +185,15 @@ representation."
       ((_ str)
        #'(nix-base32-string->bytevector str)))))
 
-;; The specification of a search path.
-(define-record-type* <search-path-specification>
-  search-path-specification make-search-path-specification
-  search-path-specification?
-  (variable     search-path-specification-variable) ;string
-  (files        search-path-specification-files)    ;list of strings
-  (separator    search-path-specification-separator ;string
-                (default ":"))
-  (file-type    search-path-specification-file-type ;symbol
-                (default 'directory))
-  (file-pattern search-path-specification-file-pattern ;#f | string
-                (default #f)))
-
-(define (search-path-specification->sexp spec)
-  "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
-corresponds to the arguments expected by `set-path-environment-variable'."
-  (match spec
-    (($ <search-path-specification> variable files separator type pattern)
-     `(,variable ,files ,separator ,type ,pattern))))
-
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
-  '("x86_64-linux" "i686-linux" "mips64el-linux"))
+  '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux"))
+
+(define %hydra-supported-systems
+  ;; This is the list of system types for which build slaves are available.
+  (delete "armhf-linux" %supported-systems))
+
 
 ;; A package.
 (define-record-type* <package>
@@ -334,8 +322,10 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
       ("gzip"  ,(ref '(gnu packages compression) 'gzip))
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
+      ("unzip" ,(ref '(gnu packages zip) 'unzip))
       ("patch" ,(ref '(gnu packages base) 'patch))
-      ("locales" ,(ref '(gnu packages base) 'glibc-utf8-locales)))))
+      ("locales" ,(ref '(gnu packages commencement)
+                       'glibc-utf8-locales-final)))))
 
 (define (default-guile)
   "Return the default Guile package used to run the build code of
@@ -349,10 +339,9 @@ the build code of derivation."
   (package->derivation (default-guile) system
                        #:graft? #f))
 
-;; TODO: Rewrite using %STORE-MONAD and gexps.
-(define* (patch-and-repack store source patches
+(define* (patch-and-repack source patches
                            #:key
-                           (inputs '())
+                           inputs
                            (snippet #f)
                            (flags '("-p1"))
                            (modules '())
@@ -370,10 +359,20 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
         (derivation->output-path source)
         source))
 
+  (define lookup-input
+    ;; The default value of the 'patch-inputs' field, and thus INPUTS is #f,
+    ;; so deal with that.
+    (let ((inputs (or inputs (%standard-patch-inputs))))
+      (lambda (name)
+        (match (assoc-ref inputs name)
+          ((package) package)
+          (#f        #f)))))
+
   (define decompression-type
     (cond ((string-suffix? "gz" source-file-name)  "gzip")
           ((string-suffix? "bz2" source-file-name) "bzip2")
           ((string-suffix? "lz" source-file-name)  "lzip")
+          ((string-suffix? "zip" source-file-name) "unzip")
           (else "xz")))
 
   (define original-file-name
@@ -398,115 +397,95 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                          ".xz"
                          ".tar.xz"))))
 
-  (define patch-inputs
-    (map (lambda (number patch)
-           (list (string-append "patch" (number->string number))
-                 (match patch
-                   ((? string?)
-                    (add-to-store store (basename patch) #t
-                                  "sha256" patch))
-                   ((? origin?)
-                    (package-source-derivation store patch system)))))
-         (iota (length patches))
+  (define instantiate-patch
+    (match-lambda
+      ((? string? patch)
+       (interned-file patch #:recursive? #t))
+      ((? origin? patch)
+       (origin->derivation patch system))))
 
-         patches))
+  (mlet %store-monad ((tar ->     (lookup-input "tar"))
+                      (xz ->      (lookup-input "xz"))
+                      (patch ->   (lookup-input "patch"))
+                      (locales -> (lookup-input "locales"))
+                      (decomp ->  (lookup-input decompression-type))
+                      (patches    (sequence %store-monad
+                                            (map instantiate-patch patches))))
+    (define build
+      #~(begin
+          (use-modules (ice-9 ftw)
+                       (srfi srfi-1)
+                       (guix build utils))
 
-  (define builder
-    `(begin
-       (use-modules (ice-9 ftw)
-                    (srfi srfi-1)
-                    (guix build utils))
+          (define (apply-patch patch)
+            (format (current-error-port) "applying '~a'...~%" patch)
 
-       ;; Encoding/decoding errors shouldn't be silent.
-       (fluid-set! %default-port-conversion-strategy 'error)
+            ;; Use '--force' so that patches that do not apply perfectly are
+            ;; rejected.
+            (zero? (system* (string-append #+patch "/bin/patch")
+                            "--force" #+@flags "--input" patch)))
 
-       (let ((locales (assoc-ref %build-inputs "locales"))
-             (out     (assoc-ref %outputs "out"))
-             (xz      (assoc-ref %build-inputs "xz"))
-             (decomp  (assoc-ref %build-inputs ,decompression-type))
-             (source  (assoc-ref %build-inputs "source"))
-             (tar     (string-append (assoc-ref %build-inputs "tar")
-                                     "/bin/tar"))
-             (patch   (string-append (assoc-ref %build-inputs "patch")
-                                     "/bin/patch")))
-         (define (apply-patch input)
-           (let ((patch* (assoc-ref %build-inputs input)))
-             (format (current-error-port) "applying '~a'...~%" patch*)
+          (define (first-file directory)
+            ;; Return the name of the first file in DIRECTORY.
+            (car (scandir directory
+                          (lambda (name)
+                            (not (member name '("." "..")))))))
 
-             ;; Use '--force' so that patches that do not apply perfectly are
-             ;; rejected.
-             (zero? (system* patch "--force" ,@flags "--input" patch*))))
+          ;; Encoding/decoding errors shouldn't be silent.
+          (fluid-set! %default-port-conversion-strategy 'error)
 
-         (define (first-file directory)
-           ;; Return the name of the first file in DIRECTORY.
-           (car (scandir directory
-                         (lambda (name)
-                           (not (member name '("." "..")))))))
+          (when #+locales
+            ;; First of all, install a UTF-8 locale so that UTF-8 file names
+            ;; are correctly interpreted.  During bootstrap, LOCALES is #f.
+            (setenv "LOCPATH" (string-append #+locales "/lib/locale"))
+            (setlocale LC_ALL "en_US.UTF-8"))
 
-         (when locales
-           ;; First of all, install a UTF-8 locale so that UTF-8 file names
-           ;; are correctly interpreted.  During bootstrap, LOCALES is #f.
-           (setenv "LOCPATH" (string-append locales "/lib/locale"))
-           (setlocale LC_ALL "en_US.UTF-8"))
+          (setenv "PATH" (string-append #+xz "/bin" ":"
+                                        #+decomp "/bin"))
 
-         (setenv "PATH" (string-append xz "/bin" ":"
-                                       decomp "/bin"))
+          ;; SOURCE may be either a directory or a tarball.
+          (and (if (file-is-directory? #+source)
+                   (let* ((store     (or (getenv "NIX_STORE") "/gnu/store"))
+                          (len       (+ 1 (string-length store)))
+                          (base      (string-drop #+source len))
+                          (dash      (string-index base #\-))
+                          (directory (string-drop base (+ 1 dash))))
+                     (mkdir directory)
+                     (copy-recursively #+source directory)
+                     #t)
+                   #+(if (string=? decompression-type "unzip")
+                         #~(zero? (system* "unzip" #+source))
+                         #~(zero? (system* (string-append #+tar "/bin/tar")
+                                           "xvf" #+source))))
+               (let ((directory (first-file ".")))
+                 (format (current-error-port)
+                         "source is under '~a'~%" directory)
+                 (chdir directory)
 
-         ;; SOURCE may be either a directory or a tarball.
-         (and (if (file-is-directory? source)
-                  (let* ((store     (or (getenv "NIX_STORE") "/gnu/store"))
-                         (len       (+ 1 (string-length store)))
-                         (base      (string-drop source len))
-                         (dash      (string-index base #\-))
-                         (directory (string-drop base (+ 1 dash))))
-                    (mkdir directory)
-                    (copy-recursively source directory)
-                    #t)
-                  (zero? (system* tar "xvf" source)))
-              (let ((directory (first-file ".")))
-                (format (current-error-port)
-                        "source is under '~a'~%" directory)
-                (chdir directory)
+                 (and (every apply-patch '#+patches)
+                      #+@(if snippet
+                             #~((let ((module (make-fresh-user-module)))
+                                  (module-use-interfaces! module
+                                                          (map resolve-interface
+                                                               '#+modules))
+                                  ((@ (system base compile) compile)
+                                   '#+snippet
+                                   #:to 'value
+                                   #:opts %auto-compilation-options
+                                   #:env module)))
+                             #~())
 
-                (and (every apply-patch ',(map car patch-inputs))
+                      (begin (chdir "..") #t)
+                      (zero? (system* (string-append #+tar "/bin/tar")
+                                      "cvfa" #$output directory)))))))
 
-                     ,@(if snippet
-                           `((let ((module (make-fresh-user-module)))
-                               (module-use-interfaces! module
-                                                       (map resolve-interface
-                                                            ',modules))
-                               (module-define! module '%build-inputs
-                                               %build-inputs)
-                               (module-define! module '%outputs %outputs)
-                               ((@ (system base compile) compile)
-                                ',snippet
-                                #:to 'value
-                                #:opts %auto-compilation-options
-                                #:env module)))
-                           '())
-
-                     (begin (chdir "..") #t)
-                     (zero? (system* tar "cvfa" out directory))))))))
-
-
-  (let ((name    (tarxz-name original-file-name))
-        (inputs  (filter-map (match-lambda
-                              ((name (? package? p))
-                               (and (member name (cons decompression-type
-                                                       '("tar" "xz" "patch")))
-                                    (list name
-                                          (package-derivation store p system
-                                                              #:graft? #f)))))
-                             (or inputs (%standard-patch-inputs))))
-        (modules (delete-duplicates (cons '(guix build utils) modules))))
-
-    (build-expression->derivation store name builder
-                                 #:inputs `(("source" ,source)
-                                            ,@inputs
-                                            ,@patch-inputs)
-                                 #:system system
-                                 #:modules modules
-                                 #:guile-for-build guile-for-build)))
+    (let ((name    (tarxz-name original-file-name))
+          (modules (delete-duplicates (cons '(guix build utils) modules))))
+      (gexp->derivation name build
+                        #:graft? #f
+                        #:system system
+                        #:modules modules
+                        #:guile-for-build guile-for-build))))
 
 (define (transitive-inputs inputs)
   (let loop ((inputs  inputs)
@@ -524,6 +503,28 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                (append t (cons i result)))))
       ((input rest ...)
        (loop rest (cons input result))))))
+
+(define (package-direct-sources package)
+  "Return all source origins associated with PACKAGE; including origins in
+PACKAGE's inputs."
+  `(,@(or (and=> (package-source package) list) '())
+    ,@(filter-map (match-lambda
+                   ((_ (? origin? orig) _ ...)
+                    orig)
+                   (_ #f))
+                  (package-direct-inputs package))))
+
+(define (package-transitive-sources package)
+  "Return PACKAGE's direct sources, and their direct sources, recursively."
+  (delete-duplicates
+   (concatenate (filter-map (match-lambda
+                             ((_ (? origin? orig) _ ...)
+                              (list orig))
+                             ((_ (? package? p) _ ...)
+                              (package-direct-sources p))
+                             (_ #f))
+                            (bag-transitive-inputs
+                             (package->bag package))))))
 
 (define (package-direct-inputs package)
   "Return all the direct inputs of PACKAGE---i.e, its direct inputs along
@@ -586,13 +587,22 @@ supported by its dependencies."
             (_
              systems)))
         (package-supported-systems package)
-        (package-direct-inputs package)))
+        (bag-direct-inputs (package->bag package))))
+
+(define* (supported-package? package #:optional (system (%current-system)))
+  "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
+dependencies are known to build on SYSTEM."
+  (member system (package-transitive-supported-systems package)))
+
+(define (bag-direct-inputs bag)
+  "Same as 'package-direct-inputs', but applied to a bag."
+  (append (bag-build-inputs bag)
+          (bag-host-inputs bag)
+          (bag-target-inputs bag)))
 
 (define (bag-transitive-inputs bag)
   "Same as 'package-transitive-inputs', but applied to a bag."
-  (transitive-inputs (append (bag-build-inputs bag)
-                             (bag-host-inputs bag)
-                             (bag-target-inputs bag))))
+  (transitive-inputs (bag-direct-inputs bag)))
 
 (define (bag-transitive-build-inputs bag)
   "Same as 'package-transitive-native-inputs', but applied to a bag."
@@ -954,9 +964,6 @@ cross-compilation target triplet."
       (package->cross-derivation package target system)
       (package->derivation package system)))
 
-(define patch-and-repack*
-  (store-lift patch-and-repack))
-
 (define* (origin->derivation source
                              #:optional (system (%current-system)))
   "When SOURCE is an <origin> object, return its derivation for SYSTEM.  When
@@ -976,14 +983,14 @@ outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
                                                           (default-guile))
                                                       system
                                                       #:graft? #f)))
-       (patch-and-repack* source patches
-                          #:inputs inputs
-                          #:snippet snippet
-                          #:flags flags
-                          #:system system
-                          #:modules modules
-                          #:imported-modules modules
-                          #:guile-for-build guile)))
+       (patch-and-repack source patches
+                         #:inputs inputs
+                         #:snippet snippet
+                         #:flags flags
+                         #:system system
+                         #:modules modules
+                         #:imported-modules modules
+                         #:guile-for-build guile)))
     ((and (? string?) (? direct-store-path?) file)
      (with-monad %store-monad
        (return file)))

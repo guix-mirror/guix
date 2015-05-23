@@ -218,3 +218,42 @@ AC_DEFUN([GUIX_CHECK_FILE_NAME_LIMITS], [
     AC_MSG_ERROR([store directory '$storedir' would lead to overly long hash-bang lines])
   fi
 ])
+
+dnl GUIX_CHECK_CXX11
+dnl
+dnl Check whether the C++ compiler can compile a typical C++11 program.
+AC_DEFUN([GUIX_CHECK_CXX11], [
+  AC_REQUIRE([AC_PROG_CXX])
+  AC_CACHE_CHECK([whether $CXX supports C++11],
+    [ac_cv_guix_cxx11_support],
+    [save_CXXFLAGS="$CXXFLAGS"
+     CXXFLAGS="-std=c++11 $CXXFLAGS"
+     AC_COMPILE_IFELSE([
+      AC_LANG_SOURCE([
+	#include <functional>
+
+	std::function<int(int)>
+	return_plus_lambda (int x)
+	{
+	  auto result = [[&]](int y) {
+	    return x + y;
+	  };
+
+	  return result;
+	}
+      ])],
+      [ac_cv_guix_cxx11_support=yes],
+      [ac_cv_guix_cxx11_support=no])
+    CXXFLAGS="$save_CXXFLAGS"
+  ])
+])
+
+dnl GUIX_ASSERT_CXX11
+dnl
+dnl Error out if the C++ compiler cannot compile C++11 code.
+AC_DEFUN([GUIX_ASSERT_CXX11], [
+  GUIX_CHECK_CXX11
+  if test "x$ac_cv_guix_cxx11_support" != "xyes"; then
+    AC_MSG_ERROR([C++ compiler '$CXX' does not support the C++11 standard])
+  fi
+])

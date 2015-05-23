@@ -19,22 +19,67 @@
 (define-module (gnu packages bioinformatics)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
+
+(define-public bamtools
+  (package
+    (name "bamtools")
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pezmaster31/bamtools/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1brry29bw2xr2l9pqn240rkqwayg85b8qq78zk2zs6nlspk4d018"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append
+                     "-Wl,-rpath="
+                     (assoc-ref outputs "out") "/lib/bamtools")))))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://github.com/pezmaster31/bamtools")
+    (synopsis "C++ API and command-line toolkit for working with BAM data")
+    (description
+     "BamTools provides both a C++ API and a command-line toolkit for handling
+BAM files.")
+    (license license:expat)))
 
 (define-public bedops
   (package
@@ -177,6 +222,39 @@ pybedtools extends BEDTools by offering feature-level manipulations from with
 Python.")
     (license license:gpl2+)))
 
+(define-public python-biopython
+  (package
+    (name "python-biopython")
+    (version "1.65")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://biopython.org/DIST/biopython-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "13m8s9jkrw40zvdp1rl709n6lmgdh4f52aann7gzr6sfp0fwhg26"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://biopython.org/")
+    (synopsis "Tools for biological computation in Python")
+    (description
+     "Biopython is a set of tools for biological computation including parsers
+for bioinformatics files into Python data structures; interfaces to common
+bioinformatics programs; a standard sequence class and tools for performing
+common operations on them; code to perform data classification; code for
+dealing with alignments; code making it easy to split up parallelizable tasks
+into separate processes; and more.")
+    (license (license:non-copyleft "http://www.biopython.org/DIST/LICENSE"))))
+
+(define-public python2-biopython
+  (package (inherit (package-with-python2 python-biopython))
+    (inputs
+     `(("python2-numpy" ,python2-numpy)))))
+
 (define-public bowtie
   (package
     (name "bowtie")
@@ -285,6 +363,41 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
 70-100bp Illumina reads.")
     (license license:gpl3+)))
 
+(define-public python2-bx-python
+  (package
+    (name "python2-bx-python")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/b/bx-python/bx-python-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0ld49idhc5zjdvbhvjq1a2qmpjj7h5v58rqr25dzmfq7g34b50xh"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "setup.py"
+                  ;; remove dependency on outdated "distribute" module
+                  (("^from distribute_setup import use_setuptools") "")
+                  (("^use_setuptools\\(\\)") "")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;tests fail because test data are not included
+       #:python ,python-2))
+    (inputs
+     `(("python-numpy" ,python2-numpy)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://bitbucket.org/james_taylor/bx-python/")
+    (synopsis "Tools for manipulating biological data")
+    (description
+     "bx-python provides tools for manipulating biological data, particularly
+multiple sequence alignments.")
+    (license license:expat)))
+
 (define-public clipper
   (package
     (name "clipper")
@@ -322,6 +435,30 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
     (description
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
+
+(define-public clustal-omega
+  (package
+    (name "clustal-omega")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.clustal.org/omega/clustal-omega-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "02ibkx0m0iwz8nscg998bh41gg251y56cgh86bvyrii5m8kjgwqf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("argtable" ,argtable)))
+    (home-page "http://www.clustal.org/omega/")
+    (synopsis "Multiple sequence aligner for protein and DNA/RNA")
+    (description
+     "Clustal-Omega is a general purpose multiple sequence alignment (MSA)
+program for protein and DNA/RNA.  It produces high quality MSAs and is capable
+of handling data-sets of hundreds of thousands of sequences in reasonable
+time.")
+    (license license:gpl2+)))
 
 (define-public crossmap
   (package
@@ -365,6 +502,123 @@ files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
 
+(define-public cutadapt
+  (package
+    (name "cutadapt")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/marcelm/cutadapt/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "161bp87y6gd6r5bmvjpn2b1k942i3fizfpa139f0jn6jv1wcp5h5"))))
+    (build-system python-build-system)
+    (arguments
+     ;; tests must be run after install
+     `(#:phases (alist-cons-after
+                 'install 'check
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (setenv "PYTHONPATH"
+                           (string-append
+                            (getenv "PYTHONPATH")
+                            ":" (assoc-ref outputs "out")
+                            "/lib/python"
+                            (string-take (string-take-right
+                                          (assoc-ref inputs "python") 5) 3)
+                            "/site-packages"))
+                   (zero? (system* "nosetests" "-P" "tests")))
+                 (alist-delete 'check %standard-phases))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://code.google.com/p/cutadapt/")
+    (synopsis "Remove adapter sequences from nucleotide sequencing reads")
+    (description
+     "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
+other types of unwanted sequence from high-throughput sequencing reads.")
+    (license license:expat)))
+
+(define-public express
+  (package
+    (name "express")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://bio.math.berkeley.edu/eXpress/downloads/express-"
+                version "/express-" version "-src.tgz"))
+              (sha256
+               (base32
+                "03rczxd0gjp2l1jxcmjfmf5j94j77zqyxa6x063zsc585nj40n0c"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (alist-cons-after
+        'unpack 'use-shared-boost-libs-and-set-bamtools-paths
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "CMakeLists.txt"
+            (("set\\(Boost_USE_STATIC_LIBS ON\\)")
+             "set(Boost_USE_STATIC_LIBS OFF)")
+            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/bamtools/include")
+             (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
+          (substitute* "src/CMakeLists.txt"
+            (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
+             (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
+          #t)
+        %standard-phases)))
+    (inputs
+     `(("boost" ,boost)
+       ("bamtools" ,bamtools)
+       ("protobuf" ,protobuf)
+       ("zlib" ,zlib)))
+    (home-page "http://bio.math.berkeley.edu/eXpress")
+    (synopsis "Streaming quantification for high-throughput genomic sequencing")
+    (description
+     "eXpress is a streaming tool for quantifying the abundances of a set of
+target sequences from sampled subsequences.  Example applications include
+transcript-level RNA-Seq quantification, allele-specific/haplotype expression
+analysis (from RNA-Seq), transcription factor binding quantification in
+ChIP-Seq, and analysis of metagenomic data.")
+    (license license:artistic2.0)))
+
+(define-public fastx-toolkit
+  (package
+    (name "fastx-toolkit")
+    (version "0.0.14")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/agordon/fastx_toolkit/releases/download/"
+                version "/fastx_toolkit-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "01jqzw386873sr0pjp1wr4rn8fsga2vxs1qfmicvx1pjr72007wy"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libgtextutils" ,libgtextutils)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hannonlab.cshl.edu/fastx_toolkit/")
+    (synopsis "Tools for FASTA/FASTQ file preprocessing")
+    (description
+     "The FASTX-Toolkit is a collection of command line tools for Short-Reads
+FASTA/FASTQ files preprocessing.
+
+Next-Generation sequencing machines usually produce FASTA or FASTQ files,
+containing multiple short-reads sequences.  The main processing of such
+FASTA/FASTQ files is mapping the sequences to reference genomes.  However, it
+is sometimes more productive to preprocess the files before mapping the
+sequences to the genome---manipulating the sequences to produce better mapping
+results.  The FASTX-Toolkit tools perform some of these preprocessing tasks.")
+    (license license:agpl3+)))
+
 (define-public flexbar
   (package
     (name "flexbar")
@@ -379,15 +633,20 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
                 "13jaykc3y1x8y5nn9j8ljnb79s5y51kyxz46hdmvvjj6qhyympmf"))))
     (build-system cmake-build-system)
     (arguments
-     `(;; There is no test target, although there is a directory containing
-       ;; test data and scripts (launched by flexbar_validate.sh).
-       #:tests? #f
-       #:configure-flags (list
+     `(#:configure-flags (list
                           (string-append "-DFLEXBAR_BINARY_DIR="
                                          (assoc-ref %outputs "out")
                                          "/bin/"))
        #:phases
-       (alist-delete 'install %standard-phases)))
+       (alist-replace
+        'check
+        (lambda* (#:key outputs #:allow-other-keys)
+          (setenv "PATH" (string-append
+                          (assoc-ref outputs "out") "/bin:"
+                          (getenv "PATH")))
+          (chdir "../flexbar_v2.5_src/test")
+          (zero? (system* "bash" "flexbar_validate.sh")))
+        (alist-delete 'install %standard-phases))))
     (inputs
      `(("tbb" ,tbb)
        ("zlib" ,zlib)))
@@ -404,6 +663,57 @@ read mapping rates and improves genome and transcriptome assemblies.  It
 supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
     (license license:gpl3)))
+
+(define-public grit
+  (package
+    (name "grit")
+    (version "2.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nboley/grit/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "157in84dj70wimbind3x7sy1whs3h57qfgcnj2s6lrd38fbrb7mj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (alist-cons-after
+        'unpack 'generate-from-cython-sources
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;; Delete these C files to force fresh generation from pyx sources.
+          (delete-file "grit/sparsify_support_fns.c")
+          (delete-file "grit/call_peaks_support_fns.c")
+          (substitute* "setup.py"
+            (("Cython.Setup") "Cython.Build")
+            ;; Add numpy include path to fix compilation
+            (("pyx\", \\]")
+             (string-append "pyx\", ], include_dirs = ['"
+                            (assoc-ref inputs "python-numpy")
+                            "/lib/python2.7/site-packages/numpy/core/include/"
+                            "']"))) #t)
+        %standard-phases)))
+    (inputs
+     `(("python-scipy" ,python2-scipy)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-networkx" ,python2-networkx)))
+    (native-inputs
+     `(("python-cython" ,python2-cython)
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "http://grit-bio.org")
+    (synopsis "Tool for integrative analysis of RNA-seq type assays")
+    (description
+     "GRIT is designed to use RNA-seq, TES, and TSS data to build and quantify
+full length transcript models.  When none of these data sources are available,
+GRIT can be run by providing a candidate set of TES or TSS sites.  In
+addition, GRIT can merge in reference junctions and gene boundaries.  GRIT can
+also be run in quantification mode, where it uses a provided GTF file and just
+estimates transcript expression.")
+    (license license:gpl3+)))
 
 (define-public hisat
   (package
@@ -615,6 +925,172 @@ RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
     (license license:gpl2)))
 
+(define-public python2-pbcore
+  (package
+    (name "python2-pbcore")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/PacificBiosciences/pbcore/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z46rwjac93jm87cbj2zgjg6qvsgs65140wkbbxsvxps7ai4pm09"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
+    (inputs
+     `(("python-cython" ,python2-cython)
+       ("python-numpy" ,python2-numpy)
+       ("python-pysam" ,python2-pysam)
+       ("python-h5py" ,python2-h5py)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://pacificbiosciences.github.io/pbcore/")
+    (synopsis "Library for reading and writing PacBio data files")
+    (description
+     "The pbcore package provides Python APIs for interacting with PacBio data
+files and writing bioinformatics applications.")
+    (license license:bsd-3)))
+
+(define-public pbtranscript-tofu
+  (let ((commit "c7bbd5472"))
+    (package
+      (name "pbtranscript-tofu")
+      (version (string-append "0.4.1." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/PacificBiosciences/cDNA_primer.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "148xkzi689c49g6fdhckp6mnmj2qhjdf1j4wifm6ja7ij95d7fxx"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:python ,python-2
+         ;; With standard flags, the install phase attempts to create a zip'd
+         ;; egg file, and fails with an error: 'ZIP does not support timestamps
+         ;; before 1980'
+         #:configure-flags '("--single-version-externally-managed"
+                             "--record=pbtranscript-tofu.txt")
+         #:phases
+         (alist-cons-after
+          'unpack 'enter-directory-and-clean-up
+          (lambda _
+            (chdir "pbtranscript-tofu/pbtranscript/")
+            ;; Delete clutter
+            (delete-file-recursively "dist/")
+            (delete-file-recursively "build/")
+            (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
+            (delete-file-recursively "pbtools.pbtranscript.egg-info")
+            (delete-file "Cython-0.20.1.tar.gz")
+            (delete-file "setuptools_cython-0.2.1-py2.7.egg")
+            (delete-file "setuptools_cython-0.2.1.tar.gz")
+            (delete-file "setup.cfg")
+            (for-each delete-file
+                      (find-files "." "\\.so$"))
+            ;; files should be writable for install phase
+            (for-each (lambda (f) (chmod f #o755))
+                      (find-files "." "\\.py$")))
+          %standard-phases)))
+      (inputs
+       `(("python-cython" ,python2-cython)
+         ("python-numpy" ,python2-numpy)
+         ("python-bx-python" ,python2-bx-python)
+         ("python-networkx" ,python2-networkx)
+         ("python-scipy" ,python2-scipy)
+         ("python-pbcore" ,python2-pbcore)))
+      (native-inputs
+       `(("python-nose" ,python2-nose)
+         ("python-setuptools" ,python2-setuptools)))
+      (home-page "https://github.com/PacificBiosciences/cDNA_primer")
+      (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
+      (description
+       "pbtranscript-tofu contains scripts to analyze transcriptome data
+generated using the PacBio Iso-Seq protocol.")
+      (license license:bsd-3))))
+
+(define-public rsem
+  (package
+    (name "rsem")
+    (version "1.2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://deweylab.biostat.wisc.edu/rsem/src/rsem-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "0nzdc0j0hjllhsd5f2xli95dafm3nawskigs140xzvjk67xh0r9q"))
+       (patches (list (search-patch "rsem-makefile.patch")))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; remove bundled copy of boost
+           (delete-file-recursively "boost")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; No "configure" script.
+         ;; Do not build bundled samtools library.
+         (replace 'configure
+                  (lambda _
+                    (substitute* "Makefile"
+                      (("^all : sam/libbam.a") "all : "))
+                    #t))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (string-append (assoc-ref outputs "out")))
+                           (bin (string-append out "/bin/"))
+                           (perl (string-append out "/lib/perl5/site_perl")))
+                      (mkdir-p bin)
+                      (mkdir-p perl)
+                      (for-each (lambda (file)
+                                  (copy-file file
+                                             (string-append bin (basename file))))
+                                (find-files "." "rsem-.*"))
+                      (copy-file "rsem_perl_utils.pm"
+                                 (string-append perl "/rsem_perl_utils.pm")))
+                    #t))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (for-each (lambda (prog)
+                          (wrap-program (string-append out "/bin/" prog)
+                            `("PERL5LIB" ":" prefix
+                              (,(string-append out "/lib/perl5/site_perl")))))
+                        '("rsem-plot-transcript-wiggles"
+                          "rsem-calculate-expression"
+                          "rsem-generate-ngvector"
+                          "rsem-run-ebseq"
+                          "rsem-prepare-reference")))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("ncurses" ,ncurses)
+       ("r" ,r)
+       ("perl" ,perl)
+       ("samtools" ,samtools-0.1)
+       ("zlib" ,zlib)))
+    (home-page "http://deweylab.biostat.wisc.edu/rsem/")
+    (synopsis "Estimate gene expression levels from RNA-Seq data")
+    (description
+     "RSEM is a software package for estimating gene and isoform expression
+levels from RNA-Seq data.  The RSEM package provides a user-friendly
+interface, supports threads for parallel computation of the EM algorithm,
+single-end and paired-end read data, quality scores, variable-length reads and
+RSPD estimation.  In addition, it provides posterior mean and 95% credibility
+interval estimates for expression levels.  For visualization, it can generate
+BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
+    (license license:gpl3+)))
+
 (define-public rseqc
   (package
     (name "rseqc")
@@ -626,7 +1102,7 @@ that a read originated from a particular isoform.")
         (string-append "mirror://sourceforge/rseqc/"
                        version "/RSeQC-" version ".tar.gz"))
        (sha256
-        (base32 "09rf0x9d6apjja5l01cgprj7vigpw6kiqhy34ibwwlxil0db0ri4"))
+        (base32 "15ly0254yi032qzkdplg00q144qfdsd986gh62829rl5bkxhj330"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -680,32 +1156,31 @@ distribution, coverage uniformity, strand specificity, etc.")
        ;; systems.
        #:tests? ,(string=? (or (%current-system) (%current-target-system))
                            "x86_64-linux")
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:make-flags (list "LIBCURSES=-lncurses"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
         'unpack
-        'patch-makefile-curses
-        (lambda _
-          (substitute* "Makefile"
-            (("-lcurses") "-lncurses")))
+        'patch-tests
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let ((bash (assoc-ref inputs "bash")))
+            (substitute* "test/test.pl"
+              ;; The test script calls out to /bin/bash
+              (("/bin/bash")
+               (string-append bash "/bin/bash"))
+              ;; There are two failing tests upstream relating to the "stats"
+              ;; subcommand in test_usage_subcommand ("did not have Usage"
+              ;; and "usage did not mention samtools stats"), so we disable
+              ;; them.
+              (("(test_usage_subcommand\\(.*\\);)" cmd)
+               (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
         (alist-cons-after
-         'unpack
-         'patch-tests
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((bash (assoc-ref inputs "bash")))
-             (substitute* "test/test.pl"
-               ;; The test script calls out to /bin/bash
-               (("/bin/bash")
-                (string-append bash "/bin/bash"))
-               ;; There are two failing tests upstream relating to the "stats"
-               ;; subcommand in test_usage_subcommand ("did not have Usage"
-               ;; and "usage did not mention samtools stats"), so we disable
-               ;; them.
-               (("(test_usage_subcommand\\(.*\\);)" cmd)
-                (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
-         (alist-delete
-          'configure
-          %standard-phases)))))
+         'install 'install-library
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+             (mkdir-p lib)
+             (copy-file "libbam.a" (string-append lib "/libbam.a"))))
+         (alist-delete 'configure %standard-phases)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
@@ -719,6 +1194,296 @@ sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
 variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
+
+(define-public samtools-0.1
+  ;; This is the most recent version of the 0.1 line of samtools.  The input
+  ;; and output formats differ greatly from that used and produced by samtools
+  ;; 1.x and is still used in many bioinformatics pipelines.
+  (package (inherit samtools)
+    (version "0.1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments samtools)
+       ((#:tests? tests) #f) ;no "check" target
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((bin (string-append
+                                  (assoc-ref outputs "out") "/bin")))
+                        (mkdir-p bin)
+                        (copy-file "samtools"
+                                   (string-append bin "/samtools")))))
+           (delete 'patch-tests)))))))
+
+(define-public ngs-sdk
+  (package
+    (name "ngs-sdk")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ncbi/ngs/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09fakv9w87lfg9g70kwzmnryqdjj1sz2c7kw01i6drjf787gkjhw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; not supported
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            ;; Only replace the version suffix, not the version number in the
+            ;; directory name; fixed in commit 46d4509fa8 (no release yet).
+            (substitute* "setup/konfigure.perl"
+              (((string-append "\\$\\(subst "
+                               "(\\$\\(VERSION[^\\)]*\\)),"
+                               "(\\$\\([^\\)]+\\)),"
+                               "(\\$\\([^\\)]+\\)|\\$\\@)"
+                               "\\)")
+                _ pattern replacement target)
+               (string-append "$(patsubst "
+                              "%" pattern ","
+                              "%" replacement ","
+                              target ")")))
+
+            ;; The 'configure' script doesn't recognize things like
+            ;; '--enable-fast-install'.
+            (zero? (system* "./configure"
+                            (string-append "--build-prefix=" (getcwd) "/build")
+                            (string-append "--prefix=" out)))))
+        (alist-cons-after
+         'unpack 'enter-dir
+         (lambda _ (chdir "ngs-sdk") #t)
+         %standard-phases))))
+    (native-inputs `(("perl" ,perl)))
+    (home-page "https://github.com/ncbi/ngs")
+    (synopsis "API for accessing Next Generation Sequencing data")
+    (description
+     "NGS is a domain-specific API for accessing reads, alignments and pileups
+produced from Next Generation Sequencing.  The API itself is independent from
+any particular back-end implementation, and supports use of multiple back-ends
+simultaneously.")
+    (license license:public-domain)))
+
+(define-public ngs-java
+  (package (inherit ngs-sdk)
+    (name "ngs-java")
+    (arguments
+     `(,@(substitute-keyword-arguments
+             `(#:modules ((guix build gnu-build-system)
+                          (guix build utils)
+                          (srfi srfi-1)
+                          (srfi srfi-26))
+                         ,@(package-arguments ngs-sdk))
+           ((#:phases phases)
+            `(alist-cons-after
+              'enter-dir 'fix-java-symlink-installation
+              (lambda _
+                ;; Only replace the version suffix, not the version number in
+                ;; the directory name.  Reported here:
+                ;; https://github.com/ncbi/ngs/pull/4
+                (substitute* "Makefile.java"
+                  (((string-append "\\$\\(subst "
+                                   "(\\$\\(VERSION[^\\)]*\\)),"
+                                   "(\\$\\([^\\)]+\\)),"
+                                   "(\\$\\([^\\)]+\\)|\\$\\@)"
+                                   "\\)")
+                    _ pattern replacement target)
+                   (string-append "$(patsubst "
+                                  "%" pattern ","
+                                  "%" replacement ","
+                                  target ")"))))
+              (alist-replace
+               'enter-dir (lambda _ (chdir "ngs-java") #t)
+               ,phases))))))
+    (inputs
+     `(("jdk" ,icedtea6 "jdk")
+       ("ngs-sdk" ,ngs-sdk)))
+    (synopsis "Java bindings for NGS SDK")))
+
+(define-public ncbi-vdb
+  (package
+    (name "ncbi-vdb")
+    (version "2.4.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ncbi/ncbi-vdb/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cj8nk6if8sqagv20vx36v566fdvhcaadf0x1ycnbgql6chbs6vy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; not supported
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            ;; Only replace the version suffix, not the version number in the
+            ;; directory name; fixed in commit 4dbba5c6a809 (no release yet).
+            (substitute* "setup/konfigure.perl"
+              (((string-append "\\$\\(subst "
+                               "(\\$\\(VERSION[^\\)]*\\)),"
+                               "(\\$\\([^\\)]+\\)),"
+                               "(\\$\\([^\\)]+\\)|\\$\\@)"
+                               "\\)")
+                _ pattern replacement target)
+               (string-append "$(patsubst "
+                              "%" pattern ","
+                              "%" replacement ","
+                              target ")")))
+
+            ;; Override include path for libmagic
+            (substitute* "setup/package.prl"
+              (("name => 'magic', Include => '/usr/include'")
+               (string-append "name=> 'magic', Include => '"
+                              (assoc-ref inputs "libmagic")
+                              "/include" "'")))
+
+            ;; Install kdf5 library (needed by sra-tools)
+            (substitute* "build/Makefile.install"
+              (("LIBRARIES_TO_INSTALL =")
+               "LIBRARIES_TO_INSTALL = kdf5.$(VERSION_LIBX) kdf5.$(VERSION_SHLX)"))
+
+            ;; The 'configure' script doesn't recognize things like
+            ;; '--enable-fast-install'.
+            (zero? (system*
+                    "./configure"
+                    (string-append "--build-prefix=" (getcwd) "/build")
+                    (string-append "--prefix=" (assoc-ref outputs "out"))
+                    (string-append "--debug")
+                    (string-append "--with-xml2-prefix="
+                                   (assoc-ref inputs "libxml2"))
+                    (string-append "--with-ngs-sdk-prefix="
+                                   (assoc-ref inputs "ngs-sdk"))
+                    (string-append "--with-ngs-java-prefix="
+                                   (assoc-ref inputs "ngs-java"))
+                    (string-append "--with-hdf5-prefix="
+                                   (assoc-ref inputs "hdf5"))))))
+        (alist-cons-after
+         'install 'install-interfaces
+         (lambda* (#:key system outputs #:allow-other-keys)
+           ;; Install interface libraries
+           (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
+           (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
+                                            (car (string-split system #\-))
+                                            "/rel/ilib")
+                             (string-append (assoc-ref outputs "out")
+                                            "/ilib"))
+           ;; Install interface headers
+           (copy-recursively "interfaces"
+                             (string-append (assoc-ref outputs "out")
+                                            "/include")))
+         %standard-phases))))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("ngs-sdk" ,ngs-sdk)
+       ("ngs-java" ,ngs-java)
+       ("libmagic" ,file)
+       ("hdf5" ,hdf5)))
+    (native-inputs `(("perl" ,perl)))
+    (home-page "https://github.com/ncbi/ncbi-vdb")
+    (synopsis "Database engine for genetic information")
+    (description
+     "The NCBI-VDB library implements a highly compressed columnar data
+warehousing engine that is most often used to store genetic information.
+Databases are stored in a portable image within the file system, and can be
+accessed/downloaded on demand across HTTP.")
+    (license license:public-domain)))
+
+(define-public sra-tools
+  (package
+    (name "sra-tools")
+    (version "2.4.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/ncbi/sra-tools/archive/"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11nrnvz7a012f4iryf0wiwrid0h111grsfxbxa9j51h3f2xbvgns"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; not supported
+       #:tests? #f ; no "check" target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;; The build system expects a directory containing the sources and
+          ;; raw build output of ncbi-vdb, including files that are not
+          ;; installed.  Since we are building against an installed version of
+          ;; ncbi-vdb, the following modifications are needed.
+          (substitute* "setup/konfigure.perl"
+            ;; Make the configure script look for the "ilib" directory of
+            ;; "ncbi-vdb" without first checking for the existence of a
+            ;; matching library in its "lib" directory.
+            (("^            my \\$f = File::Spec->catdir\\(\\$libdir, \\$lib\\);")
+             "my $f = File::Spec->catdir($ilibdir, $ilib);")
+            ;; Look for interface libraries in ncbi-vdb's "ilib" directory.
+            (("my \\$ilibdir = File::Spec->catdir\\(\\$builddir, 'ilib'\\);")
+             "my $ilibdir = File::Spec->catdir($dir, 'ilib');"))
+
+          ;; The 'configure' script doesn't recognize things like
+          ;; '--enable-fast-install'.
+          (zero? (system*
+                  "./configure"
+                  (string-append "--build-prefix=" (getcwd) "/build")
+                  (string-append "--prefix=" (assoc-ref outputs "out"))
+                  (string-append "--debug")
+                  (string-append "--with-fuse-prefix="
+                                 (assoc-ref inputs "fuse"))
+                  (string-append "--with-magic-prefix="
+                                 (assoc-ref inputs "libmagic"))
+                  ;; TODO: building with libxml2 fails with linker errors
+                  ;; (string-append "--with-xml2-prefix="
+                  ;;                (assoc-ref inputs "libxml2"))
+                  (string-append "--with-ncbi-vdb-sources="
+                                 (assoc-ref inputs "ncbi-vdb"))
+                  (string-append "--with-ncbi-vdb-build="
+                                 (assoc-ref inputs "ncbi-vdb"))
+                  (string-append "--with-ngs-sdk-prefix="
+                                 (assoc-ref inputs "ngs-sdk"))
+                  (string-append "--with-hdf5-prefix="
+                                 (assoc-ref inputs "hdf5")))))
+        %standard-phases)))
+    (native-inputs `(("perl" ,perl)))
+    (inputs
+     `(("ngs-sdk" ,ngs-sdk)
+       ("ncbi-vdb" ,ncbi-vdb)
+       ("libmagic" ,file)
+       ("fuse" ,fuse)
+       ("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (home-page "http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
+    (synopsis "Tools and libraries for reading and writing sequencing data")
+    (description
+     "The SRA Toolkit from NCBI is a collection of tools and libraries for
+reading of sequencing files from the Sequence Read Archive (SRA) database and
+writing files into the .sra format.")
+    (license license:public-domain)))
 
 (define-public seqan
   (package
@@ -810,3 +1575,188 @@ chimeric (fusion) transcripts, and is also capable of mapping full-length RNA
 sequences.")
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
+
+(define-public subread
+  (package
+    (name "subread")
+    (version "1.4.6-p2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/subread/subread-"
+                    version "-source.tar.gz"))
+              (sha256
+               (base32
+                "06sv9mpcsdj6p68y15d6gi70lca3lxmzk0dn61hg0kfsa7rxmsr3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("-f" "Makefile.Linux")
+       #:phases
+       (alist-cons-after
+        'unpack 'enter-dir
+        (lambda _ (chdir "src") #t)
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+             (mkdir-p bin)
+             (copy-recursively "../bin" bin)))
+         ;; no "configure" script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://bioinf.wehi.edu.au/subread-package/")
+    (synopsis "Tool kit for processing next-gen sequencing data")
+    (description
+     "The subread package contains the following tools: subread aligner, a
+general-purpose read aligner; subjunc aligner: detecting exon-exon junctions
+and mapping RNA-seq reads; featureCounts: counting mapped reads for genomic
+features; exactSNP: a SNP caller that discovers SNPs by testing signals
+against local background noises.")
+    (license license:gpl3+)))
+
+(define-public shogun
+  (package
+    (name "shogun")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "ftp://shogun-toolbox.org/shogun/releases/"
+             (version-major+minor version)
+             "/sources/shogun-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ;no check target
+       #:phases
+       (alist-cons-after
+        'unpack 'delete-broken-symlinks
+        (lambda _
+          (for-each delete-file '("applications/arts/data"
+                                  "applications/asp/data"
+                                  "applications/easysvm/data"
+                                  "applications/msplicer/data"
+                                  "applications/ocr/data"
+                                  "examples/documented/data"
+                                  "examples/documented/matlab_static"
+                                  "examples/documented/octave_static"
+                                  "examples/undocumented/data"
+                                  "examples/undocumented/matlab_static"
+                                  "examples/undocumented/octave_static"
+                                  "tests/integration/data"
+                                  "tests/integration/matlab_static"
+                                  "tests/integration/octave_static"
+                                  "tests/integration/python_modular/tests"))
+          #t)
+        (alist-cons-after
+         'unpack 'change-R-target-path
+         (lambda* (#:key outputs #:allow-other-keys)
+           (substitute* '("src/interfaces/r_modular/CMakeLists.txt"
+                          "src/interfaces/r_static/CMakeLists.txt"
+                          "examples/undocumented/r_modular/CMakeLists.txt")
+             (("\\$\\{R_COMPONENT_LIB_PATH\\}")
+              (string-append (assoc-ref outputs "out")
+                             "/lib/R/library/")))
+           #t)
+         (alist-cons-after
+          'unpack 'fix-octave-modules
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* '("src/interfaces/octave_modular/CMakeLists.txt"
+                           "src/interfaces/octave_static/CMakeLists.txt")
+              (("^include_directories\\(\\$\\{OCTAVE_INCLUDE_DIRS\\}")
+               "include_directories(${OCTAVE_INCLUDE_DIRS} ${OCTAVE_INCLUDE_DIRS}/octave"))
+
+            ;; change target directory
+            (substitute* "src/interfaces/octave_modular/CMakeLists.txt"
+              (("\\$\\{OCTAVE_OCT_LOCAL_API_FILE_DIR\\}")
+               (string-append (assoc-ref outputs "out")
+                              "/share/octave/packages")))
+            #t)
+          (alist-cons-before
+           'build 'set-HOME
+           ;; $HOME needs to be set at some point during the build phase
+           (lambda _ (setenv "HOME" "/tmp") #t)
+           %standard-phases))))
+       #:configure-flags
+       (list "-DUSE_SVMLIGHT=OFF" ;disable proprietary SVMLIGHT
+             ;;"-DJavaModular=ON" ;requires unpackaged jblas
+             ;;"-DRubyModular=ON" ;requires unpackaged ruby-narray
+             ;;"-DPerlModular=ON" ;"FindPerlLibs" does not exist
+             ;;"-DLuaModular=ON"  ;fails because lua doesn't build pkgconfig file
+             "-DOctaveModular=ON"
+             "-DOctaveStatic=ON"
+             "-DPythonModular=ON"
+             "-DPythonStatic=ON"
+             "-DRModular=ON"
+             "-DRStatic=ON"
+             "-DCmdLineStatic=ON")))
+    (inputs
+     `(("python" ,python)
+       ("numpy" ,python-numpy)
+       ("r" ,r)
+       ("octave" ,octave)
+       ("swig" ,swig)
+       ("hdf5" ,hdf5)
+       ("atlas" ,atlas)
+       ("arpack" ,arpack-ng)
+       ("lapack" ,lapack)
+       ("glpk" ,glpk)
+       ("libxml2" ,libxml2)
+       ("lzo" ,lzo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://shogun-toolbox.org/")
+    (synopsis "Machine learning toolbox")
+    (description
+     "The Shogun Machine learning toolbox provides a wide range of unified and
+efficient Machine Learning (ML) methods.  The toolbox seamlessly allows to
+combine multiple data representations, algorithm classes, and general purpose
+tools.  This enables both rapid prototyping of data pipelines and extensibility
+in terms of new algorithms.")
+    (license license:gpl3+)))
+
+(define-public vcftools
+  (package
+    (name "vcftools")
+    (version "0.1.12b")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/vcftools/vcftools_"
+                     version ".tar.gz"))
+              (sha256
+               (base32
+                "148al9h7f8g8my2qdnpax51kdd2yjrivlx6frvakf4lz5r8j88wx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list
+                     "CFLAGS=-O2" ; override "-m64" flag
+                     (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                     (string-append "MANDIR=" (assoc-ref %outputs "out")
+                                    "/share/man/man1"))
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-manpage-install
+        (lambda _
+          (substitute* "Makefile"
+            (("cp \\$\\{PREFIX\\}/cpp/vcftools.1") "cp ./cpp/vcftools.1")))
+        (alist-delete 'configure %standard-phases))))
+    (inputs
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
+    (home-page "http://vcftools.sourceforge.net/")
+    (synopsis "Tools for working with VCF files")
+    (description
+     "VCFtools is a program package designed for working with VCF files, such
+as those generated by the 1000 Genomes Project.  The aim of VCFtools is to
+provide easily accessible methods for working with complex genetic variation
+data in the form of VCF files.")
+    ;; The license is declared as LGPLv3 in the README and
+    ;; at http://vcftools.sourceforge.net/license.html
+    (license license:lgpl3)))

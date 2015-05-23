@@ -72,11 +72,11 @@ directory."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (delete configure)
-    (add-after unpack gitify gitify)
-    (replace build build)
-    (replace install install)
-    (replace check check)))
+    (delete 'configure)
+    (add-after 'unpack 'gitify gitify)
+    (replace 'build build)
+    (replace 'install install)
+    (replace 'check check)))
 
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)

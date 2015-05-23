@@ -26,14 +26,13 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
+                #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages gcc)
@@ -46,6 +45,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
@@ -134,7 +134,8 @@
               (sqlite (assoc-ref %build-inputs "sqlite"))
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
-              (zlib (assoc-ref %build-inputs "zlib")))
+              (zlib (assoc-ref %build-inputs "zlib"))
+              (out (assoc-ref %outputs "out")))
          (list "--enable-shared"                  ; allow embedding
                "--with-system-ffi"                ; build ctypes
                (string-append "CPPFLAGS="
@@ -151,43 +152,27 @@
                 "-L" sqlite "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
-                "-L" zlib "/lib")))
-
-        #:modules ((guix build gnu-build-system)
-                   (guix build utils)
-                   (guix build rpath)
-                   (srfi srfi-26))
-        #:imported-modules ((guix build gnu-build-system)
-                            (guix build utils)
-                            (guix build rpath))
+                "-L" zlib "/lib "
+                "-Wl,-rpath=" out "/lib")))
 
         #:phases
-        (alist-cons-after
-         'strip 'add-lib-to-runpath
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (lib (string-append out "/lib")))
-             ;; Add LIB to the RUNPATH of all the executables.
-             (with-directory-excursion out
-               (for-each (cut augment-rpath <> lib)
-                         (find-files "bin" ".*")))))
+        (alist-cons-before
+         'configure 'patch-lib-shells
+         (lambda _
+           ;; Filter for existing files, since some may not exist in all
+           ;; versions of python that are built with this recipe.
+           (substitute* (filter file-exists?
+                                '("Lib/subprocess.py"
+                                  "Lib/popen2.py"
+                                  "Lib/distutils/tests/test_spawn.py"
+                                  "Lib/test/test_subprocess.py"))
+             (("/bin/sh") (which "sh"))))
          (alist-cons-before
-          'configure 'patch-lib-shells
+          'check 'pre-check
           (lambda _
-            ;; Filter for existing files, since some may not exist in all
-            ;; versions of python that are built with this recipe.
-            (substitute* (filter file-exists?
-                                 '("Lib/subprocess.py"
-                                   "Lib/popen2.py"
-                                   "Lib/distutils/tests/test_spawn.py"
-                                   "Lib/test/test_subprocess.py"))
-              (("/bin/sh") (which "sh"))))
-          (alist-cons-before
-           'check 'pre-check
-           (lambda _
-             ;; 'Lib/test/test_site.py' needs a valid $HOME
-             (setenv "HOME" (getcwd)))
-           %standard-phases)))))
+            ;; 'Lib/test/test_site.py' needs a valid $HOME
+            (setenv "HOME" (getcwd)))
+          %standard-phases))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
@@ -195,8 +180,7 @@
        ("sqlite" ,sqlite)                         ; for sqlite extension
        ("openssl" ,openssl)
        ("readline" ,readline)
-       ("zlib" ,zlib)
-       ("patchelf" ,patchelf)))                   ; for (guix build rpath)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (native-search-paths
@@ -218,30 +202,24 @@ data types.")
 
 (define-public python
   (package (inherit python-2)
-    (version "3.3.5")
+    (version "3.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
-              (patches (list (search-patch "python-fix-tests.patch")
-                             (search-patch "python-sqlite-3.8.4-test-fix.patch")
-                             (search-patch "python-libffi-mips-n32-fix.patch")))
+              (patches (list (search-patch "python-fix-tests.patch")))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1rdncc7g8g6f3lfdg33rli1yffbiq8z283xy4f5ksl1l8i49psdb"))))
-    (arguments
-     (let ((args `(#:modules ((guix build gnu-build-system)
-                              (guix build utils)
-                             (srfi srfi-1)
-                              (srfi srfi-26))
-                   ,@(package-arguments python-2))))
-       (substitute-keyword-arguments args
-         ((#:tests? _) #t))))
+                "1f4nm4z08sy0kqwisvv95l02crv6dyysdmx44p1mz3bn6csrdcxm"))))
+    (arguments (substitute-keyword-arguments (package-arguments python-2)
+                 ((#:tests? _) #t)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
-            (files '("lib/python3.3/site-packages")))))))
+            (files (list (string-append "lib/python"
+                                        (version-major+minor version)
+                                        "/site-packages"))))))))
 
 (define-public python-wrapper
   (package (inherit python)
@@ -323,6 +301,72 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
+(define-public python2-backport-ssl-match-hostname
+  (package
+    (name "python2-backport-ssl-match-hostname")
+    (version "3.4.0.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://pypi.python.org/packages/source/b/"
+            "backports.ssl_match_hostname/backports.ssl_match_hostname-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1bnn47ipvhy49n0m50v27lp4xj6sqdkdw676ypd7pawsn1zhwh87"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2))
+    (inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://pypi.python.org/pypi/backports.ssl_match_hostname")
+    (synopsis "Backport of ssl.match_hostname() function from Python 3.4")
+    (description
+     "This backport brings the ssl.match_hostname() function to users of
+earlier versions of Python.  The function checks the hostname in the
+certificate returned by the server to which a connection has been established,
+and verifies that it matches the intended target hostname.")
+    (license psfl)))
+
+(define-public python-h5py
+  (package
+    (name "python-h5py")
+    (version "2.4.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/h/h5py/h5py-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0q4f9l8grf6pwp64xbv8bmyxx416s7h4522nnxac056ap3savbps"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("python-numpy" ,python-numpy)
+       ("hdf5" ,hdf5)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no test target
+    (home-page "http://www.h5py.org/")
+    (synopsis "Read and write HDF5 files from Python")
+    (description
+     "The h5py package provides both a high- and low-level interface to the
+HDF5 library from Python.  The low-level interface is intended to be a
+complete wrapping of the HDF5 API, while the high-level component supports
+access to HDF5 files, datasets and groups using established Python and NumPy
+concepts.")
+    (license bsd-3)))
+
+(define-public python2-h5py
+  (let ((h5py (package-with-python2 python-h5py)))
+    (package (inherit h5py)
+      (inputs
+       `(("python2-numpy" ,python2-numpy)
+         ,@(alist-delete
+            "python-numpy"
+            (package-inputs h5py)))))))
 
 (define-public python-lockfile
   (package
@@ -584,6 +628,44 @@ datetime module, available in Python 2.3+.")
     (description
      "Parse human-readable date/time text")
     (license asl2.0)))
+
+(define-public python-pandas
+  (package
+    (name "python-pandas")
+    (version "0.16.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "pandas/pandas-" version ".tar.gz"))
+      (sha256
+       (base32 "1wfrp8dx1zcsry6f09ndza6qm1yr7f163211f4l9vjlnhxpxw4s0"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Three tests fail:
+       ;; - test_read_google
+       ;; - test_read_yahoo
+       ;; - test_month_range_union_tz_dateutil
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytz" ,python-pytz)
+       ("python-dateutil" ,python-dateutil-2)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://pandas.pydata.org")
+    (synopsis "Data structures for data analysis, time series, and statistics")
+    (description
+     "Pandas is a Python package providing fast, flexible, and expressive data
+structures designed to make working with structured (tabular,
+multidimensional, potentially heterogeneous) and time series data both easy
+and intuitive.  It aims to be the fundamental high-level building block for
+doing practical, real world data analysis in Python.")
+    (license bsd-3)))
+
+(define-public python2-pandas
+  (package-with-python2 python-pandas))
 
 (define-public python-tzlocal
   (package
@@ -980,14 +1062,14 @@ syntax.")
 (define-public scons
   (package
     (name "scons")
-    (version "2.1.0")
+    (version "2.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/scons/scons-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "07cjn4afb2cljjrd3cr7xf062qq58z8q96f58z6yplhdyqafsfa1"))))
+               "0hdlci43wjz8maryj83mz04ir6rwcdrrzpd7cpzvdlzycqhdfmsb"))))
     (build-system python-build-system)
     (arguments
      ;; With Python 3.x, fails to build with a syntax error.
@@ -1555,9 +1637,36 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python2-certifi
   (package-with-python2 python-certifi))
 
-(define-public python2-requests
+(define-public python-click
   (package
-    (name "python2-requests")
+    (name "python-click")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/click/click-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0294x9g28w6zgswl0rsygkwi0wf6n480gf7fiiw5f9az3xhh77pl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://click.pocoo.org")
+    (synopsis "Command line library for Python")
+    (description
+     "Click is a Python package for creating command line interfaces in a
+composable way with as little code as necessary.  Its name stands for
+\"Command Line Interface Creation Kit\".  It's highly configurable but comes
+with sensible defaults out of the box.")
+    (license bsd-3)))
+
+(define-public python2-click
+  (package-with-python2 python-click))
+
+(define-public python-requests
+  (package
+    (name "python-requests")
     (version "2.4.0")
     (source (origin
              (method url-fetch)
@@ -1572,14 +1681,16 @@ is used by the Requests library to verify HTTPS requests.")
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-certifi" ,python-certifi)))
-    (arguments `(#:tests? #f ; no tests
-                 #:python ,python-2))
+    (arguments `(#:tests? #f)) ; no tests
     (home-page "http://python-requests.org/")
     (synopsis "Python HTTP library")
     (description
      "Requests is a Python HTTP client library.  It aims to be easier to use
 than Python’s urllib2 library.")
     (license asl2.0)))
+
+(define-public python2-requests
+  (package-with-python2 python-requests))
 
 (define-public python-jsonschema
   (package
@@ -2019,6 +2130,101 @@ mining and data analysis.")
             "python-numpy"
             (alist-delete
              "python-scipy" (package-propagated-inputs scikit))))))))
+
+(define-public python-scikit-image
+  (package
+    (name "python-scikit-image")
+    (version "0.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/scikit-image/scikit-image-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0jz416fqvpahqyffw8plmszzfj669w8wvf3y9clnr5lr6a7md3kn"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("python-pillow" ,python-pillow)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://scikit-image.org/")
+    (synopsis "Image processing in Python")
+    (description
+     "scikit-image is a collection of algorithms for image processing.")
+    (license bsd-3)))
+
+(define-public python2-scikit-image
+  (let ((scikit-image (package-with-python2 python-scikit-image)))
+    (package (inherit scikit-image)
+      (native-inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-native-inputs scikit-image)))
+      (propagated-inputs
+       `(("python2-pytz" ,python2-pytz)
+         ,@(package-propagated-inputs scikit-image))))))
+
+(define-public python-redis
+  (package
+    (name "python-redis")
+    (version "2.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/redis/redis-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4"))))
+    (build-system python-build-system)
+    ;; Tests require a running Redis server
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/andymccurdy/redis-py")
+    (synopsis "Redis Python client")
+    (description
+     "This package provides a Python interface to the Redis key-value store.")
+    (license license:expat)))
+
+(define-public python2-redis
+  (package-with-python2 python-redis))
+
+(define-public python-rq
+  (package
+    (name "python-rq")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/rq/rq-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0b0z5hn8wkfg300hx7816csgv3bcfamlr29fi3yzgqmpqxwj3fix"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-redis" ,python-redis)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://python-rq.org/")
+    (synopsis "Simple job queues for Python")
+    (description
+     "RQ (Redis Queue) is a simple Python library for queueing jobs and
+processing them in the background with workers.  It is backed by Redis and it
+is designed to have a low barrier to entry.")
+    (license bsd-2)))
+
+(define-public python2-rq
+  (package-with-python2 python-rq))
 
 (define-public python-cython
   (package
@@ -2821,6 +3027,65 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python2-cairocffi
   (package-with-python2 python-cairocffi))
 
+(define-public python-decorator
+  (package
+    (name "python-decorator")
+    (version "3.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/decorator/decorator-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0i2bnlkh0p9gs76hb28mafandcrig2fmv56w9ai6mshxwqn0083k"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; no test target
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/decorator/")
+    (synopsis "Python module to simplify usage of decorators")
+    (description
+      "The aim of the decorator module is to simplify the usage of decorators
+for the average programmer, and to popularize decorators usage giving examples
+of useful decorators, such as memoize, tracing, redirecting_stdout, locked,
+etc.  The core of this module is a decorator factory.")
+    (license license:expat)))
+
+(define-public python2-decorator
+  (package-with-python2 python-decorator))
+
+(define-public python-drmaa
+  (package
+    (name "python-drmaa")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/drmaa/drmaa-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0bzl9f9g34dlhwf09i3fdv7dqqzf2iq0w7d6c2bafx1nlap8qfbh"))))
+    (build-system python-build-system)
+    ;; The test suite requires libdrmaa which is provided by the cluster
+    ;; environment.  At runtime the environment variable DRMAA_LIBRARY_PATH
+    ;; should be set to the path of the libdrmaa library.
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/drmaa")
+    (synopsis "Python bindings for the DRMAA library")
+    (description
+      "A Python package for Distributed Resource Management (DRM) job
+submission and control.  This package is an implementation of the DRMAA 1.0
+Python language binding specification.")
+    (license bsd-3)))
+
+(define-public python2-drmaa
+  (package-with-python2 python-drmaa))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
@@ -3291,6 +3556,35 @@ interfaces in an easy and portable manner.")
 (define-public python2-netifaces
   (package-with-python2 python-netifaces))
 
+(define-public python-networkx
+  (package
+    (name "python-networkx")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/n/networkx/networkx-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0n8wy0yq1kmdq4wh68mlhwhkndvwzx48lg41a1z0sxxms0wfp033"))))
+    (build-system python-build-system)
+    ;; python-decorator is needed at runtime
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose" ,python-nose)))
+    (home-page "http://networkx.github.io/")
+    (synopsis "Python module for creating and manipulating graphs and networks")
+    (description
+      "NetworkX is a Python package for the creation, manipulation, and study
+of the structure, dynamics, and functions of complex networks.")
+    (license bsd-3)))
+
+(define-public python2-networkx
+  (package-with-python2 python-networkx))
+
 (define-public snakemake
   (package
     (name "snakemake")
@@ -3312,6 +3606,67 @@ interfaces in an easy and portable manner.")
 providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
+
+(define-public python-seaborn
+  (package
+    (name "python-seaborn")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/seaborn/seaborn-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1236abw18ijjglmv60q85ckqrvgf5qyy4zlq7nz5aqfg6q87z3wc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
+    (synopsis "Statistical data visualization")
+    (description
+     "Seaborn is a library for making attractive and informative statistical
+graphics in Python.  It is built on top of matplotlib and tightly integrated
+with the PyData stack, including support for numpy and pandas data structures
+and statistical routines from scipy and statsmodels.")
+    (license bsd-3)))
+
+(define-public python2-seaborn
+  (let ((seaborn (package-with-python2 python-seaborn)))
+    (package (inherit seaborn)
+      (propagated-inputs
+       `(("python2-pytz" ,python2-pytz)
+         ,@(package-propagated-inputs seaborn))))))
+
+(define-public python-sympy
+  (package
+    (name "python-sympy")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/sympy/sympy/releases/download/sympy-"
+             version "/sympy-" version ".tar.gz"))
+       (sha256
+        (base32 "19yp0gy4i7p4g6l3b8vaqkj9qj7yqb5kqy0qgbdagpzgkdz958yz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.sympy.org/")
+    (synopsis "Python library for symbolic mathematics")
+    (description
+     "SymPy is a Python library for symbolic mathematics.  It aims to become a
+full-featured computer algebra system (CAS) while keeping the code as simple
+as possible in order to be comprehensible and easily extensible.")
+    (license bsd-3)))
+
+(define-public python2-sympy
+  (package-with-python2 python-sympy))
 
 (define-public python-testlib
   (package
@@ -3373,3 +3728,137 @@ Python style, together with a fast and comfortable execution environment.")
 library for Python programs.  It is useful to implement low-level X clients.
 It is written entirely in Python.")
     (license gpl2+)))
+
+(define-public python-singledispatch
+  (package
+    (name "python-singledispatch")
+    (version "3.4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/singledispatch/"
+             "singledispatch-" version ".tar.gz"))
+       (sha256
+        (base32
+         "171b7ip0hsq5qm83np40h3phlr36ym18w0lay0a8v08kvy3sy1jv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page
+     "http://docs.python.org/3/library/functools.html#functools.singledispatch")
+    (synopsis "Backport of singledispatch feature from Python 3.4")
+    (description
+     "This library brings functools.singledispatch from Python 3.4 to Python
+2.6-3.3.")
+    (license license:expat)))
+
+(define-public python2-singledispatch
+  (package-with-python2 python-singledispatch))
+
+(define-public python-tornado
+  (package
+    (name "python-tornado")
+    (version "4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/tornado/"
+             "tornado-" version ".tar.gz"))
+       (sha256
+        (base32 "0a12f00h277zbifibnj46wf14801f573irvf6hwkgja5vspd7awr"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-certifi" ,python-certifi)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/tornado/4.1")
+    (synopsis "Python web framework and asynchronous networking library")
+    (description
+     "Tornado is a Python web framework and asynchronous networking library,
+originally developed at FriendFeed.  By using non-blocking network I/O,
+Tornado can scale to tens of thousands of open connections, making it ideal
+for long polling, WebSockets, and other applications that require a long-lived
+connection to each user.")
+    (license asl2.0)))
+
+(define-public python2-tornado
+  (let ((tornado (package-with-python2 python-tornado)))
+    (package (inherit tornado)
+      (inputs
+       `(("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
+         ,@(package-inputs tornado))))))
+
+(define-public python-waf
+  (package
+    (name "python-waf")
+    (version "1.8.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://waf.io/"
+                                  "waf-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0b5q307fgn6a5d8yjia2d1l4bk1q3ilvc0w8k4isfrrx2gbcw8wn"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+                  (lambda _
+                    (zero? (begin
+                             (system* "python" "waf-light" "configure")
+                             (system* "python" "waf-light" "build")))))
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "python" "waf" "--version"))))
+         (replace 'install
+                  (lambda _
+                    (copy-file "waf" %output))))))
+    (home-page "https://waf.io/")
+    (synopsis "Python-based build system")
+    (description
+     "Waf is a Python-based framework for configuring, compiling and installing
+applications.")
+    (license bsd-3)))
+
+(define-public python2-waf
+  (package-with-python2 python-waf))
+
+(define-public python-pyzmq
+  (package
+    (name "python-pyzmq")
+    (version "14.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pyzmq/pyzmq-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1frmbjykvhmdg64g7sn20c9fpamrsfxwci1nhhg8q7jgz5pq0ikp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--zmq=" (assoc-ref %build-inputs "zeromq")))
+       ;; FIXME: You must build pyzmq with 'python setup.py build_ext
+       ;; --inplace' for 'python setup.py test' to work.
+       #:tests? #f))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/zeromq/pyzmq")
+    (synopsis "Python bindings for 0MQ")
+    (description
+     "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
+    (license bsd-4)))
+
+(define-public python2-pyzmq
+  (package-with-python2 python-pyzmq))

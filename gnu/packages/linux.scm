@@ -55,6 +55,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages calendar)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -91,7 +93,7 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version "3.3.8")
+  (let* ((version "3.14.37")
          (build-phase
           (lambda (arch)
             `(lambda _
@@ -120,7 +122,7 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
+               "1blxr2bsvfqi9khj4cpspv434bmx252zak2wsbi2mgl60zh77gza"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
@@ -198,7 +200,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.18.9")
+  (let* ((version "4.0.4")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -271,7 +273,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0n3p9ci8w71hd168df7xlccafxzb3agr8rk3xmvnj7dnbfiddqv6"))))
+               "1czjhyczzaz1dvhy9lrlxlk6gf45wcw3rnpcmh697dxgf37clmzp"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -402,8 +404,14 @@ providing the system administrator with some help in common tasks.")
                   (("build_kill=yes") "build_kill=no")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-use-tty-group"
-                           "--enable-ddate")
+     `(#:configure-flags (list "--disable-use-tty-group"
+                               "--enable-ddate"
+
+                               ;; Install completions where our
+                               ;; bash-completion package expects them.
+                               (string-append "--with-bashcompletiondir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/bash_completion.d"))
        #:phases (alist-cons-before
                  'check 'pre-check
                  (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -569,8 +577,21 @@ slabtop, and skill.")
                       (string-append "#!" (which "sh")))))
                  (alist-cons-after
                   'install 'install-libs
-                  (lambda _
-                    (zero? (system* "make" "install-libs")))
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (lib (string-append out "/lib")))
+                      (and (zero? (system* "make" "install-libs"))
+
+                           ;; Make the .a writable so that 'strip' works.
+                           ;; Failing to do that, due to debug symbols, we
+                           ;; retain a reference to the final
+                           ;; linux-libre-headers, which refer to the
+                           ;; bootstrap binaries.
+                           (let ((archives (find-files lib "\\.a$")))
+                             (for-each (lambda (file)
+                                         (chmod file #o666))
+                                       archives)
+                             #t))))
                   %standard-phases))
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
@@ -787,7 +808,10 @@ MIDI functionality to the Linux-based operating system.")
               (base32
                "0vkg5lzkn4l3i1sm6v3x96zzvnv9g7mi0qgj6279ld383mzcws24"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no test suite
+    (arguments
+     '(#:tests? #f       ; no test suite
+       #:configure-flags ; add $libdir to the RUNPATH of executables
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
     (home-page "http://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
@@ -908,10 +932,12 @@ manpages.")
                       ;; Pretend we have everything...
                       (system "yes | make config")
 
-                      ;; ... except we don't have libdnet, so remove that
-                      ;; definition.
+                      ;; ... except for the things we don't have.
+                      ;; HAVE_AFDECnet requires libdnet, which we don't have.
+                      ;; HAVE_HWSTRIP and HAVE_HWTR require kernel headers
+                      ;; that have been removed.
                       (substitute* '("config.make" "config.h")
-                        (("^.*HAVE_AFDECnet.*$") ""))))
+                        (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR)[ =]1.*$") ""))))
                   (alist-cons-after
                    'install 'remove-redundant-commands
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -973,7 +999,15 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
               (base32
                "07vjhkznm82p8dm4w6j8mmg7h5c70lp5s9bwwfdmgwpbixfydjp1"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases (alist-delete 'configure %standard-phases)
+    (arguments '(#:phases
+                 (modify-phases %standard-phases
+                   (replace 'configure
+                            ;; Add $libdir to the RUNPATH of executables.
+                            (lambda _
+                              (substitute* "Make.Rules"
+                                (("LDFLAGS := #-g")
+                                 (string-append "LDFLAGS := -Wl,-rpath="
+                                                %output "/lib"))))))
                  #:tests? #f                      ; no 'check' target
                  #:make-flags (list "lib=lib"
                                     (string-append "prefix="
@@ -1010,6 +1044,17 @@ Linux-based operating systems.")
      '(#:phases (alist-cons-after
                  'unpack 'bootstrap
                  (lambda _
+                   ;; Fix "field ‘ip6’ has incomplete type" errors.
+                   (substitute* "libbridge/libbridge.h"
+                     (("#include <linux/if_bridge.h>")
+                      "#include <linux/in6.h>\n#include <linux/if_bridge.h>"))
+
+                   ;; Ensure that the entire build fails if one of the
+                   ;; sub-Makefiles fails.
+                   (substitute* "Makefile.in"
+                     (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
+                      "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
+
                    (zero? (system* "autoreconf" "-vf")))
                  %standard-phases)
        #:tests? #f))                              ; no 'check' target
@@ -1167,7 +1212,8 @@ processes currently causing I/O.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
+                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))
+              (patches (list (search-patch "fuse-CVE-2015-3202.patch")))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
@@ -1367,14 +1413,14 @@ system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))
+                "04mrms12nm5sas0nxs94yrr3hz7gmqhnmfgb9ff34bh1jszxmzcx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1999,3 +2045,180 @@ also contains the libsysfs library.")
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
     (license gpl2)))
+
+(define-public libraw1394
+  (package
+    (name "libraw1394")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/ieee1394/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0kwnf4ha45c04mhc4yla672aqmvqqihxix1gvblns5cd2pc2cc8b"))))
+    (build-system gnu-build-system)
+    (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
+    (synopsis "Interface library for the Linux IEEE1394 drivers")
+    (description
+     "Libraw1394 is the only supported interface to the kernel side raw1394 of
+the Linux IEEE-1394 subsystem, which provides direct access to the connected
+1394 buses to user space.  Through libraw1394/raw1394, applications can directly
+send to and receive from other nodes without requiring a kernel driver for the
+protocol in question.")
+    (license lgpl2.1+)))
+
+(define-public libavc1394
+  (package
+    (name "libavc1394")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libavc1394/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lsv46jdqvdx5hx92v0z2cz3yh6212pz9gk0k3513sbaa04zzcbw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libraw1394" ,libraw1394))) ; required by libavc1394.pc
+    (home-page "http://sourceforge.net/projects/libavc1394/")
+    (synopsis "AV/C protocol library for IEEE 1394")
+    (description
+     "Libavc1394 is a programming interface to the AV/C specification from
+the 1394 Trade Assocation.  AV/C stands for Audio/Video Control.")
+    (license lgpl2.1+)))
+
+(define-public libiec61883
+  (package
+    (name "libiec61883")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/ieee1394/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "17ph458zya2l8dr2xwqnzy195qd9swrir31g78qkgb3g4xz2rq6i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libraw1394" ,libraw1394))) ; required by libiec61883.pc
+    (home-page "https://ieee1394.wiki.kernel.org/index.php/Main_Page")
+    (synopsis "Isochronous streaming media library for IEEE 1394")
+    (description
+     "The libiec61883 library provides a higher level API for streaming DV,
+MPEG-2 and audio over Linux IEEE 1394.")
+    (license lgpl2.1+)))
+
+(define-public mdadm
+  (package
+    (name "mdadm")
+    (version "3.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/raid/mdadm/mdadm-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("udev" ,eudev)))
+    (arguments
+     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "INSTALL=install"
+                            "CHECK_RUN_DIR=0"
+                            ;; TODO: tell it where to find 'sendmail'
+                            ;; (string-append "MAILCMD=" <???> "/sbin/sendmail")
+                            (string-append "BINDIR=" out "/sbin")
+                            (string-append "MANDIR=" out "/share/man")
+                            (string-append "UDEVDIR=" out "/lib/udev")))
+       #:phases (alist-cons-before
+                 'build 'patch-program-paths
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((coreutils (assoc-ref inputs "coreutils")))
+                     (substitute* "udev-md-raid-arrays.rules"
+                       (("/usr/bin/(readlink|basename)" all program)
+                        (string-append coreutils "/bin/" program)))))
+                 (alist-delete 'configure %standard-phases))
+       ;;tests must be done as root
+       #:tests? #f))
+    (home-page "http://neil.brown.name/blog/mdadm")
+    (synopsis "Tool for managing Linux Software RAID arrays")
+    (description
+     "mdadm is a tool for managing Linux Software RAID arrays.  It can create,
+assemble, report on, and monitor arrays.  It can also move spares between raid
+arrays when needed.")
+    (license gpl2+)))
+
+(define-public libaio
+  (package
+    (name "libaio")
+    (version "0.3.110")
+    (source (origin
+              (method url-fetch)
+             (uri (list
+                   (string-append "mirror://debian/pool/main/liba/libaio/"
+                                  name "_" version ".orig.tar.gz")
+                   (string-append "https://fedorahosted.org/releases/l/i/libaio/"
+                                  name "-" version ".tar.gz")))
+             (sha256
+              (base32
+               "0zjzfkwd1kdvq6zpawhzisv7qbq1ffs343i5fs9p498pcf7046g0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc" (string-append "prefix=" %output))
+       #:test-target "partcheck" ; need root for a full 'check'
+       #:phases
+       (alist-delete 'configure %standard-phases))) ; no configure script
+    (home-page "http://lse.sourceforge.net/io/aio.html")
+    (synopsis "Linux-native asynchronous I/O access library")
+    (description
+     "This library enables userspace to use Linux kernel asynchronous I/O
+system calls, important for the performance of databases and other advanced
+applications.")
+    (license lgpl2.1+)))
+
+(define-public bluez
+  (package
+    (name "bluez")
+    (version "5.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.kernel.org/pub/linux/bluetooth/bluez-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0b1qbnq1xzcdw5rajg9yyg31bf21jnff0n6gnf1snz89bbdllfhy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "--disable-systemd"
+               ;; Install dbus/udev files to the correct location.
+               (string-append "--with-dbusconfdir=" out "/etc")
+               (string-append "--with-udevdir=" out "/lib/udev")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)))
+    (inputs
+     `(("glib" ,glib)
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("libical" ,libical)
+       ("readline" ,readline)))
+    (home-page "http://www.bluez.org/")
+    (synopsis "Linux Bluetooth protocol stack")
+    (description
+     "BlueZ provides support for the core Bluetooth layers and protocols.  It
+is flexible, efficient and uses a modular implementation.")
+    (license gpl2+)))

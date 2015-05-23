@@ -21,13 +21,15 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module ((guix build-system python)
                 #:select (default-python default-python2))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
-  #:export (waf-build
+  #:export (%waf-build-system-modules
+            waf-build
             waf-build-system))
 
 ;; Commentary:
@@ -37,6 +39,11 @@
 ;; 'gnu-build-system'.
 ;;
 ;; Code:
+
+(define %waf-build-system-modules
+  ;; Build-side modules imported by default.
+  `((guix build waf-build-system)
+    ,@%gnu-build-system-modules))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
@@ -75,9 +82,7 @@
                        (search-paths '())
                        (system (%current-system))
                        (guile #f)
-                       (imported-modules '((guix build waf-build-system)
-                                           (guix build gnu-build-system)
-                                           (guix build utils)))
+                       (imported-modules %waf-build-system-modules)
                        (modules '((guix build waf-build-system)
                                   (guix build utils))))
   "Build SOURCE with INPUTS.  This assumes that SOURCE provides a 'waf' file

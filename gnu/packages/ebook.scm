@@ -25,7 +25,6 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages ebook)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -60,7 +59,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.21.0")
+    (version "2.28.0")
     (source
       (origin
         (method url-fetch)
@@ -69,7 +68,7 @@
                             version ".tar.xz"))
         (sha256
           (base32
-           "1adig2jxwbmsxcs36jaybhc8zdb8mnkc23kabw0c72izrsg4c5gb"))
+           "15sb74v0nlj45fhlnw1afll35l90cxw78s15fb2nx3fih7ahv3cf"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
@@ -77,7 +76,8 @@
           '(begin
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")))
-        (patches (list (search-patch "calibre-drop-unrar.patch")))))
+        (patches (list (search-patch "calibre-drop-unrar.patch")
+                       (search-patch "calibre-no-updates-dialog.patch")))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

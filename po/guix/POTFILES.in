@@ -8,11 +8,13 @@ guix/scripts/download.scm
 guix/scripts/package.scm
 guix/scripts/gc.scm
 guix/scripts/hash.scm
+guix/scripts/import.scm
 guix/scripts/pull.scm
-guix/scripts/substitute-binary.scm
+guix/scripts/substitute.scm
 guix/scripts/authenticate.scm
 guix/scripts/system.scm
 guix/scripts/lint.scm
+guix/scripts/publish.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
 guix/http-client.scm

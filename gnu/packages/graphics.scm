@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -180,14 +181,14 @@ output.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (replace configure
+                  (replace 'configure
                            (lambda* (#:key outputs #:allow-other-keys)
                              (let ((out (assoc-ref outputs "out")))
                                (chdir "trunk")
                                (zero? (system* "qmake"
                                                (string-append
                                                 "prefix=" out))))))
-                  (add-after install wrap-program
+                  (add-after 'install 'wrap-program
                              (lambda* (#:key outputs #:allow-other-keys)
                                (let* ((out (assoc-ref outputs "out"))
                                       (bin (string-append out "/bin"))

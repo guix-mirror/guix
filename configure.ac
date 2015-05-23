@@ -7,7 +7,10 @@ AC_INIT([GNU Guix], [0.8.2], [bug-guix@gnu.org], [guix],
 AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([1.12 gnu silent-rules subdir-objects \
- color-tests parallel-tests -Woverride])
+ color-tests parallel-tests -Woverride -Wno-portability])
+
+# Enable silent rules by default.
+AM_SILENT_RULES([yes])
 
 AC_CONFIG_SRCDIR([guix.scm])
 AC_CONFIG_MACRO_DIR([m4])
@@ -30,6 +33,13 @@ AC_ARG_WITH(store-dir,
   [storedir="$withval"],
   [storedir="/gnu/store"])
 AC_SUBST(storedir)
+
+AC_ARG_WITH([bash-completion-dir],
+  AC_HELP_STRING([--with-bash-completion-dir=DIR],
+    [name of the Bash completion directory]),
+  [bashcompletiondir="$withval"],
+  [bashcompletiondir='${sysconfdir}/bash_completion.d'])
+AC_SUBST([bashcompletiondir])
 
 dnl Better be verbose.
 AC_MSG_CHECKING([for the store directory])
@@ -57,7 +67,7 @@ dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 
-PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.5])
+PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
 if test "x$GUILD" = "x"; then

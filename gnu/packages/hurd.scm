@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,7 @@
 (define-public gnumach-headers
   (package
     (name "gnumach-headers")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0r371wsm7imx356p0xsls5hifb1gf9y90rm1phr0qkahbmfk9hlv"))))
+        "0wsf57q4h6xl2jn28d423qx7zplmhpnf9ssm4f1c0sf8513xm81j"))))
     (build-system gnu-build-system)
     (arguments
     `(#:phases (alist-replace
@@ -63,7 +63,7 @@
 (define-public mig
   (package
     (name "mig")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
       (method url-fetch)
@@ -71,7 +71,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1jgzggnbp22sa8z5dilm43zy12vlf1pjxfb3kh13xrfhcay0l97b"))))
+        "13r1pg8icyc0pl082z7k36i440pr1f3nr7ahig3rrc0r7qndqmk9"))))
     (build-system gnu-build-system)
     (inputs `(("gnumach-headers" ,gnumach-headers)))
     (native-inputs
@@ -92,14 +92,14 @@ communication.")
 (define-public hurd-headers
   (package
     (name "hurd-headers")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/hurd/hurd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lvkz3r0ngb4bsn2hzdc9vjpyrfa3ls36jivrvy1n7f7f55zan7q"))))
+                "059lbspbpcjpcq5jf98f47jw9sm0ngs3x6phxax53m3rwca1fk7y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Autoconf shouldn't be necessary but there seems to be a bug in the

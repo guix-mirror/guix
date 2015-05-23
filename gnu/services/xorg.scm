@@ -37,7 +37,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (xorg-start-command
+  #:export (xorg-configuration-file
+            xorg-start-command
             %default-slim-theme
             %default-slim-theme-name
             slim-service))
@@ -48,12 +49,10 @@
 ;;;
 ;;; Code:
 
-(define* (xorg-start-command #:key
-                             (guile (canonical-package guile-2.0))
-                             (xorg-server xorg-server)
-                             (drivers '()) (resolutions '()))
-  "Return a derivation that builds a @var{guile} script to start the X server
-from @var{xorg-server}.  Usually the X server is started by a login manager.
+(define* (xorg-configuration-file #:key (drivers '()) (resolutions '())
+                                  (extra-config '()))
+  "Return a configuration file for the Xorg server containing search paths for
+all the common drivers.
 
 @var{drivers} must be either the empty list, in which case Xorg chooses a
 graphics driver automatically, or a list of driver names that will be tried in
@@ -61,8 +60,11 @@ this order---e.g., @code{(\"modesetting\" \"vesa\")}.
 
 Likewise, when @var{resolutions} is the empty list, Xorg chooses an
 appropriate screen resolution; otherwise, it must be a list of
-resolutions---e.g., @code{((1024 768) (640 480))}."
+resolutions---e.g., @code{((1024 768) (640 480))}.
 
+Last, @var{extra-config} is a list of strings or objects appended to the
+@code{text-file*} argument list.  It is used to pass extra text to be added
+verbatim to the configuration file."
   (define (device-section driver)
     (string-append "
 Section \"Device\"
@@ -78,15 +80,14 @@ Section \"Screen\"
   SubSection \"Display\"
     Modes "
   (string-join (map (match-lambda
-                     ((x y)
-                      (string-append "\"" (number->string x)
-                                     "x" (number->string y) "\"")))
+                      ((x y)
+                       (string-append "\"" (number->string x)
+                                      "x" (number->string y) "\"")))
                     resolutions)) "
   EndSubSection
 EndSection"))
 
-  (define (xserver.conf)
-    (text-file* "xserver.conf" "
+  (apply text-file* "xserver.conf" "
 Section \"Files\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
@@ -98,6 +99,12 @@ Section \"Files\"
   ModulePath \"" xf86-video-nouveau "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-nv "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-sis "/lib/xorg/modules/drivers\"
+
+  # Libinput is the new thing and is recommended over evdev/synaptics
+  # by those who know:
+  # <http://who-t.blogspot.fr/2015/01/xf86-input-libinput-compatibility-with.html>.
+  ModulePath \"" xf86-input-libinput "/lib/xorg/modules/input\"
+
   ModulePath \"" xf86-input-evdev "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
@@ -111,12 +118,27 @@ Section \"ServerFlags\"
   Option \"AllowMouseOpenFail\" \"on\"
 EndSection
 "
-  (string-join (map device-section drivers) "\n")
+  (string-join (map device-section drivers) "\n") "\n"
   (string-join (map (cut screen-section <> resolutions)
                     drivers)
-               "\n")))
+               "\n")
 
-  (mlet %store-monad ((config (xserver.conf)))
+  "\n"
+  extra-config))
+
+(define* (xorg-start-command #:key
+                             (guile (canonical-package guile-2.0))
+                             configuration-file
+                             (xorg-server xorg-server))
+  "Return a derivation that builds a @var{guile} script to start the X server
+from @var{xorg-server}.  @var{configuration-file} is the server configuration
+file or a derivation that builds it; when omitted, the result of
+@code{xorg-configuration-file} is used.
+
+Usually the X server is started by a login manager."
+  (mlet %store-monad ((config (if configuration-file
+                                  (return configuration-file)
+                                  (xorg-configuration-file))))
     (define script
       ;; Write a small wrapper around the X server.
       #~(begin
@@ -192,7 +214,7 @@ which should be passed to this script as the first argument.  If not, the
 (define %default-slim-theme-name
   ;; This must be the name of the sub-directory in %DEFAULT-SLIM-THEME that
   ;; contains the actual theme files.
-  "0.8")
+  "0.x")
 
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
@@ -207,6 +229,19 @@ which should be passed to this script as the first argument.  If not, the
 turn starts the X display server with @var{startx}, a command as returned by
 @code{xorg-start-command}.
 
+@cindex X session
+
+SLiM automatically looks for session types described by the @file{.desktop}
+files in @file{/run/current-system/profile/share/xsessions} and allows users
+to choose a session from the log-in screen using @kbd{F1}.  Packages such as
+@var{xfce}, @var{sawfish}, and @var{ratpoison} provide @file{.desktop} files;
+adding them to the system-wide set of packages automatically makes them
+available at the log-in screen.
+
+In addition, @file{~/.xsession} files are honored.  When available,
+@file{~/.xsession} must be an executable that starts a window manager
+and/or other X clients.
+
 When @var{allow-empty-passwords?} is true, allow logins with an empty
 password.  When @var{auto-login?} is true, log in automatically as
 @var{default-user} with @var{auto-login-session}.
@@ -217,7 +252,9 @@ theme to use.  In that case, @var{theme-name} specifies the name of the
 theme."
 
   (define (slim.cfg)
-    (mlet %store-monad ((startx  (or startx (xorg-start-command)))
+    (mlet %store-monad ((startx  (if startx
+                                     (return startx)
+                                     (xorg-start-command)))
                         (xinitrc (xinitrc #:fallback-session
                                           auto-login-session)))
       (text-file* "slim.cfg"  "

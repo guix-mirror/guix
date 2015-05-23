@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -404,30 +405,47 @@ settings for 'guix.el' to work out-of-the-box."
                           (chdir #$output)
                           (symlink #$file "site-start.el")))))
 
+(define (user-shells os)
+  "Return the list of all the shells used by the accounts of OS.  These may be
+gexps or strings."
+  (mlet %store-monad ((accounts (operating-system-accounts os)))
+    (return (map user-account-shell accounts))))
+
+(define (shells-file shells)
+  "Return a derivation that builds a shell list for use as /etc/shells based
+on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
+  (gexp->derivation "shells"
+                    #~(begin
+                        (use-modules (srfi srfi-1))
+
+                        (define shells
+                          (delete-duplicates (list #$@shells)))
+
+                        (call-with-output-file #$output
+                          (lambda (port)
+                            (display "\
+/bin/sh
+/run/current-system/profile/bin/sh
+/run/current-system/profile/bin/bash\n" port)
+                            (for-each (lambda (shell)
+                                        (display shell port)
+                                        (newline port))
+                                      shells))))))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (issue "Hello!\n")
                         (skeletons '())
                         (pam-services '())
                         (profile "/run/current-system/profile")
-                        hosts-file nss
+                        hosts-file nss (shells '())
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
       ((pam.d      (pam-services->directory pam-services))
        (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
-
-       ;; /etc/shells is used by xterm and other programs.   We don't check
-       ;; whether these shells are installed, should be OK.
-       (shells     (text-file "shells"
-                              "\
-/bin/sh
-/run/current-system/profile/bin/sh
-/run/current-system/profile/bin/bash
-/run/current-system/profile/bin/fish
-/run/current-system/profile/bin/tcsh
-/run/current-system/profile/bin/zsh\n"))
+       (shells     (shells-file shells))
        (emacs      (emacs-site-directory))
        (issue      (text-file "issue" issue))
        (nsswitch   (text-file "nsswitch.conf"
@@ -443,13 +461,39 @@ export TZDIR=\"" tzdata "/share/zoneinfo\"
 # Tell 'modprobe' & co. where to look for modules.
 export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
 
-export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
-export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
+# These variables are honored by OpenSSL (libssl) and Git.
+export SSL_CERT_DIR=/etc/ssl/certs
+export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
+export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
+
+# Crucial variables that could be missing the the profiles' 'etc/profile'
+# because they would require combining both profiles.
+# FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
-
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
+
+# Ignore the default value of 'PATH'.
+unset PATH
+
+# Load the system profile's settings.
+GUIX_PROFILE=/run/current-system/profile \\
+. /run/current-system/profile/etc/profile
+
+# Prepend setuid programs.
+export PATH=/run/setuid-programs:$PATH
+
+if [ -f \"$HOME/.guix-profile/etc/profile\" ]
+then
+  # Load the user profile's settings.
+  GUIX_PROFILE=\"$HOME/.guix-profile\" \\
+  . \"$HOME/.guix-profile/etc/profile\"
+else
+  # At least define this one so that basic things just work
+  # when the user installs their first package.
+  export PATH=\"$HOME/.guix-profile/bin:$PATH\"
+fi
 
 # Append the directory of 'site-start.el' to the search path.
 export EMACSLOADPATH=:/etc/emacs
@@ -458,18 +502,13 @@ export EMACSLOADPATH=:/etc/emacs
 # when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
 export DBUS_FATAL_WARNINGS=0
 
-# These variables are honored by OpenSSL (libssl) and Git.
-export SSL_CERT_DIR=/etc/ssl/certs
-export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
-export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
-
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 
 if [ -n \"$BASH_VERSION\" -a -f /etc/bashrc ]
 then
   # Load Bash-specific initialization code.
-  source /etc/bashrc
+  . /etc/bashrc
 fi
 "))
 
@@ -542,7 +581,8 @@ fi\n"))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os))
        (/etc/hosts  (or (operating-system-hosts-file os)
-                        (default-/etc/hosts (operating-system-host-name os)))))
+                        (default-/etc/hosts (operating-system-host-name os))))
+       (shells      (user-shells os)))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
                   #:issue (operating-system-issue os)
@@ -550,6 +590,7 @@ fi\n"))
                   #:nss (operating-system-name-service-switch os)
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
+                  #:shells shells
                   #:sudoers (operating-system-sudoers os)
                   #:profile profile-drv)))
 
@@ -680,6 +721,9 @@ etc."
                     (activate-firmware
                      (string-append #$firmware "/lib/firmware"))
 
+                    ;; Let users debug their own processes!
+                    (activate-ptrace-attach)
+
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.
                     (for-each primitive-load '#$actions)
@@ -695,6 +739,20 @@ we're running in the final root."
                        (dmd-conf (dmd-configuration-file services)))
     (gexp->file "boot"
                 #~(begin
+                    (use-modules (guix build utils))
+
+                    ;; Clean out /tmp and /var/run.
+                    ;;
+                    ;; XXX This needs to happen before service activations, so
+                    ;; it has to be here, but this also implicitly assumes
+                    ;; that /tmp and /var/run are on the root partition.
+                    (false-if-exception (delete-file-recursively "/tmp"))
+                    (false-if-exception (delete-file-recursively "/var/run"))
+                    (false-if-exception (mkdir "/tmp"))
+                    (false-if-exception (chmod "/tmp" #o1777))
+                    (false-if-exception (mkdir "/var/run"))
+                    (false-if-exception (chmod "/var/run" #o755))
+
                     ;; Activate the system.
                     ;; TODO: Use 'load-compiled'.
                     (primitive-load #$activate)
@@ -737,6 +795,7 @@ we're running in the final root."
     (operating-system-initrd os))
 
   (mlet %store-monad ((initrd (make-initrd boot-file-systems
+                                           #:linux (operating-system-kernel os)
                                            #:mapped-devices mapped-devices)))
     (return #~(string-append #$initrd "/initrd"))))
 

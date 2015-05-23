@@ -42,16 +42,22 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
+  #:replace (symlink)
   #:export (_
             N_
             P_
             report-error
             leave
+            make-user-module
+            load*
+            report-load-error
+            warn-about-load-error
             show-version-and-exit
             show-bug-report-information
             string->number*
             size->number
             show-what-to-build
+            show-what-to-build*
             show-manifest-transaction
             call-with-error-handling
             with-error-handling
@@ -130,6 +136,60 @@ messages."
     (report-error args ...)
     (exit 1)))
 
+(define (make-user-module modules)
+  "Return a new user module with the additional MODULES loaded."
+  ;; Module in which the machine description file is loaded.
+  (let ((module (make-fresh-user-module)))
+    (for-each (lambda (iface)
+                (module-use! module (resolve-interface iface)))
+              modules)
+    module))
+
+(define (load* file user-module)
+  "Load the user provided Scheme source code FILE."
+  (catch #t
+    (lambda ()
+      (set! %fresh-auto-compile #t)
+
+      (save-module-excursion
+       (lambda ()
+         (set-current-module user-module)
+         (primitive-load file))))
+    (lambda args
+      (report-load-error file args))))
+
+(define (report-load-error file args)
+  "Report the failure to load FILE, a user-provided Scheme file, and exit.
+ARGS is the list of arguments received by the 'throw' handler."
+  (match args
+    (('system-error . _)
+     (let ((err (system-error-errno args)))
+       (leave (_ "failed to load '~a': ~a~%") file (strerror err))))
+    (('syntax-error proc message properties form . rest)
+     (let ((loc (source-properties->location properties)))
+       (format (current-error-port) (_ "~a: error: ~a~%")
+               (location->string loc) message)
+       (exit 1)))
+    ((error args ...)
+     (report-error (_ "failed to load '~a':~%") file)
+     (apply display-error #f (current-error-port) args)
+     (exit 1))))
+
+(define (warn-about-load-error file args)         ;FIXME: factorize with ↑
+  "Report the failure to load FILE, a user-provided Scheme file, without
+exiting.  ARGS is the list of arguments received by the 'throw' handler."
+  (match args
+    (('system-error . _)
+     (let ((err (system-error-errno args)))
+       (warning (_ "failed to load '~a': ~a~%") file (strerror err))))
+    (('syntax-error proc message properties form . rest)
+     (let ((loc (source-properties->location properties)))
+       (format (current-error-port) (_ "~a: warning: ~a~%")
+               (location->string loc) message)))
+    ((error args ...)
+     (warning (_ "failed to load '~a':~%") file)
+     (apply display-error #f (current-error-port) args))))
+
 (define (install-locale)
   "Install the current locale settings."
   (catch 'system-error
@@ -170,6 +230,21 @@ Report bugs to: ~a.") %guix-bug-report-address)
   (display (_ "
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
+
+(define symlink
+  (let ((real-symlink (@ (guile) symlink)))
+    (lambda (target link)
+      "This is a 'symlink' replacement that provides proper error reporting."
+      (catch 'system-error
+        (lambda ()
+          (real-symlink target link))
+        (lambda (key proc fmt args errno)
+          ;; Augment the FMT and ARGS with information about LINK (this
+          ;; information is missing as of Guile 2.0.11, making the exception
+          ;; uninformative.)
+          (apply throw key proc "~A: ~S"
+                 (append args (list link))
+                 errno))))))
 
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
@@ -378,6 +453,9 @@ available for download."
                       (length download))
                   (null? download) download)))
     (pair? build)))
+
+(define show-what-to-build*
+  (store-lift show-what-to-build))
 
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
@@ -619,6 +697,8 @@ WIDTH columns."
   ;; Note: Don't i18n field names so that people can post-process it.
   (format port "name: ~a~%" (package-name p))
   (format port "version: ~a~%" (package-version p))
+  (format port "systems: ~a~%"
+          (string-join (package-transitive-supported-systems p)))
   (format port "dependencies: ~a~%"
           (match (package-direct-inputs p)
             (((labels inputs . _) ...)
@@ -800,11 +880,8 @@ parameter of 'args-fold'."
   (define dot-scm?
     (cut string-suffix? ".scm" <>))
 
-  ;; In Guile 2.0.5 `scandir' would return "." and ".." regardless even though
-  ;; they don't match `dot-scm?'.  Work around it by doing additional
-  ;; filtering.
   (if directory
-      (filter dot-scm? (scandir directory dot-scm?))
+      (scandir directory dot-scm?)
       '()))
 
 (define (commands)
@@ -815,7 +892,7 @@ parameter of 'args-fold'."
 
 (define (show-guix-help)
   (define (internal? command)
-    (member command '("substitute-binary" "authenticate" "offload")))
+    (member command '("substitute" "authenticate" "offload")))
 
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))
@@ -868,6 +945,8 @@ found."
        (format (current-error-port)
                (_ "guix: unrecognized option '~a'~%") o)
        (show-guix-usage))
+      (("help" args ...)
+       (show-guix-help))
       ((command args ...)
        (apply run-guix-command
               (string->symbol command)

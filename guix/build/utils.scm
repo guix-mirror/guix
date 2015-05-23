@@ -32,6 +32,7 @@
   #:re-export (alist-cons
                alist-delete)
   #:export (%store-directory
+            store-file-name?
             parallel-job-count
 
             directory-exists?
@@ -44,6 +45,7 @@
             mkdir-p
             copy-recursively
             delete-file-recursively
+            file-name-predicate
             find-files
 
             search-path-as-list
@@ -79,6 +81,10 @@
   "Return the directory name of the store."
   (or (getenv "NIX_STORE")
       "/gnu/store"))
+
+(define (store-file-name? file)
+  "Return true if FILE is in the store."
+  (string-prefix? (%store-directory) file))
 
 (define parallel-job-count
   ;; Number of processes to be passed next to GNU Make's `-j' argument.
@@ -263,33 +269,46 @@ errors."
                       ;; Don't follow symlinks.
                       lstat)))
 
-(define (find-files dir regexp)
-  "Return the lexicographically sorted list of files under DIR whose basename
-matches REGEXP."
-  (define file-rx
-    (if (regexp? regexp)
-        regexp
-        (make-regexp regexp)))
+(define (file-name-predicate regexp)
+  "Return a predicate that returns true when passed a file name whose base
+name matches REGEXP."
+  (let ((file-rx (if (regexp? regexp)
+                     regexp
+                     (make-regexp regexp))))
+    (lambda (file stat)
+      (regexp-exec file-rx (basename file)))))
 
-  ;; Sort the result to get deterministic results.
-  (sort (file-system-fold (const #t)
-                          (lambda (file stat result)   ; leaf
-                            (if (regexp-exec file-rx (basename file))
-                                (cons file result)
-                                result))
-                          (lambda (dir stat result)    ; down
-                            result)
-                          (lambda (dir stat result)    ; up
-                            result)
-                          (lambda (file stat result)   ; skip
-                            result)
-                          (lambda (file stat errno result)
-                            (format (current-error-port) "find-files: ~a: ~a~%"
-                                    file (strerror errno))
-                            result)
-                          '()
-                          dir)
-        string<?))
+(define* (find-files dir #:optional (pred (const #t))
+                     #:key (stat lstat))
+  "Return the lexicographically sorted list of files under DIR for which PRED
+returns true.  PRED is passed two arguments: the absolute file name, and its
+stat buffer; the default predicate always returns true.  PRED can also be a
+regular expression, in which case it is equivalent to (file-name-predicate
+PRED).  STAT is used to obtain file information; using 'lstat' means that
+symlinks are not followed."
+  (let ((pred (if (procedure? pred)
+                  pred
+                  (file-name-predicate pred))))
+    ;; Sort the result to get deterministic results.
+    (sort (file-system-fold (const #t)
+                            (lambda (file stat result) ; leaf
+                              (if (pred file stat)
+                                  (cons file result)
+                                  result))
+                            (lambda (dir stat result) ; down
+                              result)
+                            (lambda (dir stat result) ; up
+                              result)
+                            (lambda (file stat result) ; skip
+                              result)
+                            (lambda (file stat errno result)
+                              (format (current-error-port) "find-files: ~a: ~a~%"
+                                      file (strerror errno))
+                              result)
+                            '()
+                            dir
+                            stat)
+          string<?)))
 
 
 ;;;
@@ -446,13 +465,13 @@ an expression evaluating to a procedure."
 (define-syntax %modify-phases
   (syntax-rules (delete replace add-before add-after)
     ((_ phases (delete old-phase-name))
-     (alist-delete 'old-phase-name phases))
+     (alist-delete old-phase-name phases))
     ((_ phases (replace old-phase-name new-phase))
-     (alist-replace 'old-phase-name new-phase phases))
+     (alist-replace old-phase-name new-phase phases))
     ((_ phases (add-before old-phase-name new-phase-name new-phase))
-     (alist-cons-before 'old-phase-name 'new-phase-name new-phase phases))
+     (alist-cons-before old-phase-name new-phase-name new-phase phases))
     ((_ phases (add-after old-phase-name new-phase-name new-phase))
-     (alist-cons-after 'old-phase-name 'new-phase-name new-phase phases))))
+     (alist-cons-after old-phase-name new-phase-name new-phase phases))))
 
 
 ;;;

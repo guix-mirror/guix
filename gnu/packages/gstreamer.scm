@@ -20,25 +20,30 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gstreamer)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ bsd-2 bsd-3))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ bsd-2 bsd-3 gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages yasm)
   #:use-module (gnu packages xml))
 
 (define-public orc
@@ -88,11 +93,19 @@ arrays of data.")
        (base32
         "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:make-flags '("CC=gcc") ; for g-ir-scanner.
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
@@ -111,32 +124,6 @@ simple plugin with a clean, generic interface.
 This package provides the core library and elements.")
     (license lgpl2.0+)))
 
-(define-public gstreamer-0.10
-  (package (inherit gstreamer)
-    (version "0.10.36")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
-                          version ".tar.xz"))
-      (sha256
-       (base32
-        "1nkid1n2l3rrlmq5qrf5yy06grrkwjh3yxl5g0w58w0pih8allci"))
-      (patches
-        (list (search-patch "gstreamer-0.10-bison3.patch")
-              (search-patch "gstreamer-0.10-silly-test.patch")))))
-    (propagated-inputs
-     `(("libxml2" ,libxml2)))
-    (inputs `(("glib" ,glib)))
-    (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")
-       ("python" ,python-2)))))
-
-
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
@@ -150,6 +137,9 @@ This package provides the core library and elements.")
        (base32
         "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (propagated-inputs
+     `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
        ("orc" ,orc)
@@ -161,20 +151,30 @@ This package provides the core library and elements.")
        ("zlib" ,zlib)
        ("libXext" ,libxext)
        ("libxv" ,libxv)
-       ("alsa-lib" ,alsa-lib)
-       ("gstreamer" ,gstreamer)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")
+        ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     '(#:phases
+     `(#:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))
+       #:phases
        (alist-cons-before
-        'configure 'patch-test-pb-utils
+        'configure 'patch
         (lambda _
           (substitute* "tests/check/libs/pbutils.c"
-            (("/bin/sh") (which "sh"))))
+            (("/bin/sh") (which "sh")))
+          ;; for g-ir-scanner.
+          (setenv "CC" "gcc"))
         %standard-phases)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GST_PLUGIN_SYSTEM_PATH")
+            (files '("lib/gstreamer-1.0")))))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
@@ -198,30 +198,30 @@ for the GStreamer multimedia library.")
         "0hg6qzdpib9nwn3hdxv0d4rvivi1c4bmxsq2a9hqmamwyzrvbcbr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
+     `(("aalib" ,aalib)
        ("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
        ("flac" ,flac)
-       ("speex" ,speex)
-       ("libogg" ,libogg) ;; should be a propagated input of the above
-       ("libx11" ,libx11)
-       ("zlib" ,zlib)
-       ("libpng" ,libpng)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("jack" ,jack-2)
+       ("libavc1394" ,libavc1394)
+       ("libcaca" ,libcaca)
+       ("libdv" ,libdv)
+       ("libiec61883" ,libiec61883)
        ("libjpeg" ,libjpeg)
-       ("libXext" ,libxext)
-       ("libxv" ,libxv)
+       ("libpng" ,libpng)
+       ("libshout" ,libshout)
+       ("libsoup" ,libsoup)
+       ("libvpx" ,libvpx)
+       ("orc" ,orc)
        ("pulseaudio" ,pulseaudio)
-       ("gstreamer" ,gstreamer)))
+       ("speex" ,speex)
+       ("taglib" ,taglib)
+       ("wavpack" ,wavpack)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")
-        ("gst-plugins-base" ,gst-plugins-base)
-        ("python-wrapper" ,python-wrapper)))
-   (arguments
-    `(#:configure-flags (list "--disable-osx_audio" 
-                              "--disable-osx_video"
-                              "--disable-directsound"
-                              "--disable-waveform")))
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
@@ -230,22 +230,39 @@ GStreamer multimedia library.  This set contains those plug-ins which the
 developers consider to have good quality code and correct functionality.")
     (license lgpl2.0+)))
 
-(define-public gst-plugins-base-0.10
-  (package (inherit gst-plugins-base)
-    (version "0.10.36")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append 
-            "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-"
-            version ".tar.xz"))
-      (sha256
-       (base32
-        "0jp6hjlra98cnkal4n6bdmr577q8mcyp3c08s3a02c4hjhw5rr0z"))))
-    (inputs
-     `(("glib" ,glib)
-       ("gstreamer" ,gstreamer-0.10)))
+(define-public gst-libav
+  (package
+    (name "gst-libav")
+    (version "1.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://gstreamer.freedesktop.org/src/" name "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1g7vg9amh3cc3nmc415h6g2rqxqi4wgwqi08hxfbpwq48ri64p30"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-system-libav")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+                     (lambda _
+                       (substitute* "gst-libs/ext/libav/configure"
+                         (("#! /bin/sh")
+                          (string-append "#! "(which "sh")))))))))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")
-        ("python" ,python-2)))))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("gst-plugins-base" ,gst-plugins-base)
+       ("ffmpeg" ,ffmpeg)
+       ("orc" ,orc)
+       ("zlib" ,zlib)))
+    (home-page "http://gstreamer.freedesktop.org/")
+    (synopsis "Plugins for the GStreamer multimedia library")
+    (description
+     "This GStreamer plugin supports a large number of audio and video
+compression formats through the use of the libav library.")
+    (license gpl2+)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -36,8 +36,10 @@
     (version "4.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://lftp.yar.ru/ftp/lftp-"
-                                  version ".tar.xz"))
+              (uri (list (string-append "http://lftp.yar.ru/ftp/lftp-"
+                                        version ".tar.xz")
+                         (string-append "http://lftp.yar.ru/ftp/old/lftp-"
+                                        version ".tar.xz")))
               (sha256
                (base32
                 "1grmp8zg7cjgjinz66mrh53whigkqzl90nlxj05hapnhk3ns3vni"))

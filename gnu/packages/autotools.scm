@@ -248,7 +248,7 @@ Makefile, simplifying the entire process for the developer.")
                (base32
                 "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
               (patches
-               (list (search-patch "libtool-skip-tests.patch")))))
+               (list (search-patch "libtool-skip-tests2.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
@@ -303,9 +303,7 @@ complexity of working with shared libraries across platforms.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
-              (patches
-               (list (search-patch "libtool-skip-tests.patch")))))
+                "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-ltdl-install") ;really install it

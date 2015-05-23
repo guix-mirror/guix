@@ -144,7 +144,7 @@ different programming languages.")
 (define-public source-highlight
   (package
     (name "source-highlight")
-    (version "3.1.7")
+    (version "3.1.8")
     (source
      (origin
       (method url-fetch)
@@ -152,11 +152,7 @@ different programming languages.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1s49ld8cnpzhhwq0r7s0sfm3cg3nhhm0wla27lwraifrrl3y1cp1"))
-      (patches
-       (list (search-patch
-              ;; Patch submitted as Savannah item #41786
-              "source-highlight-regexrange-test.patch")))))
+        "18xdalxg7yzrxc1njzgw7aryq2jdm7zq2yqz41sc7k6il5z6lcq1"))))
     (build-system gnu-build-system)
     ;; The ctags that comes with emacs does not support the --excmd options,
     ;; so can't be used

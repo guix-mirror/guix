@@ -23,16 +23,24 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages linux) ; for alsa-utils
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -40,6 +48,8 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip))
 
 (define-public lilypond
@@ -102,3 +112,165 @@ music.  Music is input in a text file containing control sequences which are
 interpreted by LilyPond to produce the final document.  It is extendable with
 Guile.")
     (license license:gpl3+)))
+
+(define-public solfege
+  (package
+    (name "solfege")
+    (version "3.22.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnu/solfege/solfege-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "1w25rxdbj907nsx285k9nm480pvy12w3yknfh4n1dfv17cwy072i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; xmllint attempts to download DTD
+       #:test-target "test"
+       #:phases
+       (alist-cons-after
+        'unpack 'fix-configuration
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "default.config"
+            (("csound=csound")
+             (string-append "csound="
+                            (assoc-ref inputs "csound")
+                            "/bin/csound"))
+            (("/usr/bin/aplay")
+             (string-append (assoc-ref inputs "aplay")
+                            "/bin/aplay"))
+            (("/usr/bin/timidity")
+             (string-append (assoc-ref inputs "timidity")
+                            "/bin/timidity"))
+            (("/usr/bin/mpg123")
+             (string-append (assoc-ref inputs "mpg123")
+                            "/bin/mpg123"))
+            (("/usr/bin/ogg123")
+             (string-append (assoc-ref inputs "ogg123")
+                            "/bin/ogg123"))))
+        (alist-cons-before
+         'build 'patch-python-shebangs
+         (lambda _
+           ;; Two python scripts begin with a Unicode BOM, so patch-shebang
+           ;; has no effect.
+           (substitute* '("solfege/parsetree.py"
+                          "solfege/presetup.py")
+             (("#!/usr/bin/python") (string-append "#!" (which "python")))))
+         (alist-cons-before
+          'build 'add-sitedirs
+          ;; .pth files are not automatically interpreted unless the
+          ;; directories containing them are added as "sites".  The directories
+          ;; are then added to those in the PYTHONPATH.  This is required for
+          ;; the operation of pygtk and pygobject.
+          (lambda _
+            (substitute* "run-solfege.py"
+              (("import os")
+               "import os, site
+for path in [path for path in sys.path if 'site-packages' in path]: site.addsitedir(path)")))
+          (alist-cons-before
+           'build 'adjust-config-file-prefix
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "run-solfege.py"
+               (("prefix = os.path.*$")
+                (string-append "prefix = " (assoc-ref outputs "out")))))
+           (alist-cons-after
+            'install 'wrap-program
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              ;; Make sure 'solfege' runs with the correct PYTHONPATH.  We
+              ;; also need to modify GDK_PIXBUF_MODULE_FILE for SVG support.
+              (let* ((out (assoc-ref outputs "out"))
+                     (path (getenv "PYTHONPATH"))
+                     (rsvg (assoc-ref inputs "librsvg"))
+                     (pixbuf (find-files rsvg "^loaders\\.cache$")))
+                (wrap-program (string-append out "/bin/solfege")
+                  `("PYTHONPATH" ":" prefix (,path))
+                  `("GDK_PIXBUF_MODULE_FILE" ":" prefix ,pixbuf))))
+            %standard-phases)))))))
+    (inputs
+     `(("python" ,python-2)
+       ("pygtk" ,python2-pygtk)
+       ("gettext" ,gnu-gettext)
+       ("gtk" ,gtk+)
+       ;; TODO: Lilypond is optional.  Produces errors at build time:
+       ;;   Drawing systems...Error: /undefinedresult in --glyphshow--
+       ;; Fontconfig is needed to fix one of the errors, but other similar
+       ;; errors remain.
+       ;;("lilypond" ,lilypond)
+       ("librsvg" ,librsvg) ; needed at runtime for icons
+       ("libpng" ,libpng) ; needed at runtime for icons
+       ;; players needed at runtime
+       ("aplay" ,alsa-utils)
+       ("csound" ,csound) ; optional, needed for some exercises
+       ("mpg123" ,mpg123)
+       ("ogg123" ,vorbis-tools)
+       ("timidity" ,timidity++)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("txt2man" ,txt2man)
+       ("libxml2" ,libxml2) ; for tests
+       ("ghostscript" ,ghostscript)
+       ;;("fontconfig" ,fontconfig) ; only needed with lilypond
+       ;;("freetype" ,freetype) ; only needed with lilypond
+       ("texinfo" ,texinfo)))
+    (home-page "https://www.gnu.org/software/solfege/")
+    (synopsis "Ear training")
+    (description
+     "GNU Solfege is a program for practicing musical ear-training.  With it,
+you can practice your recognition of various musical intervals and chords.  It
+features a statistics overview so you can monitor your progress across several
+sessions.  Solfege is also designed to be extensible so you can easily write
+your own lessons.")
+    (license license:gpl3+)))
+
+(define-public tuxguitar
+  (package
+    (name "tuxguitar")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/tuxguitar/TuxGuitar/TuxGuitar-"
+                    version "/tuxguitar-src-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1yf2gd06fzdhqb8kb8dmdcmr602s9y24f01kyl4940wimgr944"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib")
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "SWT_PATH="
+                                         (assoc-ref %build-inputs "swt")
+                                         "/share/java/swt.jar"))
+       #:tests? #f ;no "check" target
+       #:parallel-build? #f ;not supported
+       #:phases
+       (alist-cons-before
+        'build 'enter-dir-set-path-and-pass-ldflags
+        (lambda* (#:key inputs #:allow-other-keys)
+          (chdir "TuxGuitar")
+          (substitute* "GNUmakefile"
+            (("PROPERTIES\\?=")
+             (string-append "PROPERTIES?= -Dswt.library.path="
+                            (assoc-ref inputs "swt") "/lib"))
+            (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
+          #t)
+        (alist-delete 'configure %standard-phases))))
+    (inputs
+     `(("swt" ,swt)))
+    (native-inputs
+     `(("gcj" ,gcj-4.8)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://tuxguitar.com.ar")
+    (synopsis "Multitrack tablature editor and player")
+    (description
+     "TuxGuitar is a guitar tablature editor with player support through midi.
+It can display scores and multitrack tabs.  TuxGuitar provides various
+additional features, including autoscrolling while playing, note duration
+management, bend/slide/vibrato/hammer-on/pull-off effects, support for
+tuplets, time signature management, tempo management, gp3/gp4/gp5 import and
+export.")
+    (license license:lgpl2.1+)))

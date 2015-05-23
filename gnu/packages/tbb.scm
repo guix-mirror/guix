@@ -46,8 +46,15 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:phases (alist-delete
+       #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib"))
+       #:phases (alist-replace
                  'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (substitute* "build/linux.gcc.inc"
+                     (("LIB_LINK_FLAGS =")
+                      (string-append "LIB_LINK_FLAGS = -Wl,-rpath="
+                                     (assoc-ref outputs "out") "/lib"))))
                  (alist-replace
                   'install
                   (lambda* (#:key outputs #:allow-other-keys)

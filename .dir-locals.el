@@ -14,6 +14,7 @@
   ((indent-tabs-mode . nil)
    (eval . (put 'eval-when 'scheme-indent-function 1))
    (eval . (put 'test-assert 'scheme-indent-function 1))
+   (eval . (put 'test-assertm 'scheme-indent-function 1))
    (eval . (put 'test-equal 'scheme-indent-function 1))
    (eval . (put 'test-eq 'scheme-indent-function 1))
    (eval . (put 'call-with-input-string 'scheme-indent-function 1))

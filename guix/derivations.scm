@@ -60,6 +60,7 @@
             derivation-input-path
             derivation-input-sub-derivations
             derivation-input-output-paths
+            valid-derivation-input?
 
             &derivation-error
             derivation-error?
@@ -187,12 +188,25 @@ download with a fixed hash (aka. `fetchurl')."
      (map (cut derivation-path->output-path path <>)
           sub-drvs))))
 
-(define (derivation-prerequisites drv)
-  "Return the list of derivation-inputs required to build DRV, recursively."
+(define (valid-derivation-input? store input)
+  "Return true if INPUT is valid--i.e., if all the outputs it requests are in
+the store."
+  (every (cut valid-path? store <>)
+         (derivation-input-output-paths input)))
+
+(define* (derivation-prerequisites drv #:optional (cut? (const #f)))
+  "Return the list of derivation-inputs required to build DRV, recursively.
+
+CUT? is a predicate that is passed a derivation-input and returns true to
+eliminate the given input and its dependencies from the search.  An example of
+search a predicate is 'valid-derivation-input?'; when it is used as CUT?, the
+result is the set of prerequisites of DRV not already in valid."
   (let loop ((drv       drv)
              (result    '())
              (input-set (set)))
-    (let ((inputs (remove (cut set-contains? input-set <>)
+    (let ((inputs (remove (lambda (input)
+                            (or (set-contains? input-set input)
+                                (cut? input)))
                           (derivation-inputs drv))))
       (fold2 loop
              (append inputs result)
@@ -225,22 +239,36 @@ download with a fixed hash (aka. `fetchurl')."
 (define* (substitution-oracle store drv)
   "Return a one-argument procedure that, when passed a store file name,
 returns #t if it's substitutable and #f otherwise.  The returned procedure
-knows about all substitutes for all the derivations listed in DRV and their
-prerequisites.
+knows about all substitutes for all the derivations listed in DRV; it also
+knows about their prerequisites, unless they are themselves substitutable.
 
 Creating a single oracle (thus making a single 'substitutable-paths' call) and
 reusing it is much more efficient than calling 'has-substitutes?' or similar
 repeatedly, because it avoids the costs associated with launching the
 substituter many times."
+  (define valid?
+    (cut valid-path? store <>))
+
+  (define valid-input?
+    (cut valid-derivation-input? store <>))
+
+  (define (dependencies drv)
+    ;; Skip prerequisite sub-trees of DRV whose root is valid.  This allows us
+    ;; to ask the substituter for just as much as needed, instead of asking it
+    ;; for the whole world, which can be significantly faster when substitute
+    ;; info is not already in cache.
+    (append-map derivation-input-output-paths
+                (derivation-prerequisites drv valid-input?)))
+
   (let* ((paths (delete-duplicates
                  (fold (lambda (drv result)
                          (let ((self (match (derivation->output-paths drv)
                                        (((names . paths) ...)
-                                        paths)))
-                               (deps (append-map derivation-input-output-paths
-                                                 (derivation-prerequisites
-                                                  drv))))
-                           (append self deps result)))
+                                        paths))))
+                           (if (every valid? self)
+                               result
+                               (append (append self (dependencies drv))
+                                       result))))
                        '()
                        drv)))
          (subst (list->set (substitutable-paths store paths))))
@@ -664,7 +692,7 @@ HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
                      (inputs '()) (outputs '("out"))
                      hash hash-algo recursive?
                      references-graphs allowed-references
-                     local-build?)
+                     leaked-env-vars local-build?)
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -678,6 +706,12 @@ the build environment in the corresponding file, in a simple text format.
 
 When ALLOWED-REFERENCES is true, it must be a list of store items or outputs
 that the derivation's output may refer to.
+
+When LEAKED-ENV-VARS is true, it must be a list of strings denoting
+environment variables that are allowed to \"leak\" from the daemon's
+environment to the build environment.  This is only applicable to fixed-output
+derivations--i.e., when HASH is true.  The main use is to allow variables such
+as \"http_proxy\" to be passed to derivations that download files.
 
 When LOCAL-BUILD? is true, declare that the derivation is not a good candidate
 for offloading and should rather be built locally.  This is the case for small
@@ -722,6 +756,10 @@ derivations where the costs of data transfers would outweigh the benefits."
                       ,@(if allowed-references
                             `(("allowedReferences"
                                . ,(string-join allowed-references)))
+                            '())
+                      ,@(if leaked-env-vars
+                            `(("impureEnvVars"
+                               . ,(string-join leaked-env-vars)))
                             '())
                       ,@env-vars)))
       (match references-graphs

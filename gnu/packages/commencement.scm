@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,12 +26,12 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages ed)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
@@ -417,6 +417,40 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                              '("gcc" "libc")))
                                    (current-source-location)))))
 
+(define gettext-boot0
+  ;; A minimal gettext used during bootstrap.
+  (let ((gettext-minimal
+         (package (inherit gnu-gettext)
+           (name "gettext-boot0")
+           (inputs '())                           ;zero dependencies
+           (arguments
+            (substitute-keyword-arguments
+                `(#:tests? #f
+                  ,@(package-arguments gnu-gettext))
+              ((#:phases phases)
+               `(modify-phases ,phases
+                  ;; Build only the tools.
+                  (add-after 'unpack 'chdir
+                             (lambda _
+                               (chdir "gettext-tools")))
+
+                  ;; Some test programs require pthreads, which we don't have.
+                  (add-before 'configure 'no-test-programs
+                              (lambda _
+                                (substitute* "tests/Makefile.in"
+                                  (("^PROGRAMS =.*$")
+                                   "PROGRAMS =\n"))
+                                #t))
+
+                  ;; Don't try to link against libexpat.
+                  (delete 'link-expat)
+                  (delete 'patch-tests))))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs gettext-minimal
+                                   %boot1-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
 (define-public glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
   (package (inherit glibc-final-with-bootstrap-bash)
@@ -425,6 +459,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
               ,@(alist-delete
                  "static-bash"
                  (package-inputs glibc-final-with-bootstrap-bash))))
+
+    ;; This time we need 'msgfmt' to install all the libc.mo files.
+    (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
+                     ("gettext" ,gettext-boot0)))
 
     ;; The final libc only refers to itself, but the 'debug' output contains
     ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
@@ -500,6 +538,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
        #:allowed-references ("out" "lib" ,glibc-final)
 
+       ;; Things like libasan.so and libstdc++.so NEED ld.so for some
+       ;; reason, but it is not in their RUNPATH.  This is a false
+       ;; positive, so turn it off.
+       #:validate-runpath? #f
+
        ;; Build again GMP & co. within GCC's build process, because it's hard
        ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
@@ -540,54 +583,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define ld-wrapper-boot3
   ;; A linker wrapper that uses the bootstrap Guile.
-  (package
-    (name "ld-wrapper-boot3")
-    (version "0")
-    (source #f)
-    (build-system trivial-build-system)
-    (inputs `(("binutils" ,binutils-final)
-              ("guile"    ,%bootstrap-guile)
-              ("bash"     ,@(assoc-ref %boot2-inputs "bash"))
-              ("wrapper"  ,(search-path %load-path
-                                        "gnu/packages/ld-wrapper.scm"))))
-    (arguments
-     `(#:guile ,%bootstrap-guile
-       #:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (system base compile))
-
-                   (let* ((out (assoc-ref %outputs "out"))
-                          (bin (string-append out "/bin"))
-                          (ld  (string-append bin "/ld"))
-                          (go  (string-append bin "/ld.go")))
-
-                     (setvbuf (current-output-port) _IOLBF)
-                     (format #t "building ~s/bin/ld wrapper in ~s~%"
-                             (assoc-ref %build-inputs "binutils")
-                             out)
-
-                     (mkdir-p bin)
-                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
-                     (substitute* ld
-                       (("@GUILE@")
-                        (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                       (("@BASH@")
-                        (string-append (assoc-ref %build-inputs "bash")
-                                       "/bin/bash"))
-                       (("@LD@")
-                        (string-append (assoc-ref %build-inputs "binutils")
-                                       "/bin/ld")))
-                     (chmod ld #o555)
-                     (compile-file ld #:output-file go)))))
-    (synopsis "The linker wrapper")
-    (description
-     "The linker wrapper (or `ld-wrapper') wraps the linker to add any
-missing `-rpath' flags, and to detect any misuse of libraries outside of the
-store.")
-    (home-page #f)
-    (license gpl3+)))
+  (make-ld-wrapper "ld-wrapper-boot3"
+                   #:binutils binutils-final
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
 
 (define %boot3-inputs
   ;; 4th stage inputs.
@@ -616,7 +615,7 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
-(define glibc-utf8-locales-final
+(define-public glibc-utf8-locales-final
   ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed
   ;; by the build processes afterwards so their 'scm_to_locale_string' works
   ;; with the full range of Unicode codepoints (remember
@@ -757,16 +756,26 @@ COREUTILS-FINAL vs. COREUTILS, etc."
      '(#:modules ((guix build union))
        #:builder (begin
                    (use-modules (ice-9 match)
+                                (srfi srfi-26)
                                 (guix build union))
 
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)))
+                   (let ((out (assoc-ref %outputs "out")))
 
-                   (union-build (assoc-ref %outputs "debug")
-                                (list (assoc-ref %build-inputs
-                                                 "libc-debug"))))))
+                     (match %build-inputs
+                       (((names . directories) ...)
+                        (union-build out directories)))
+
+                     ;; Remove the 'sh' and 'bash' binaries that come with
+                     ;; libc to avoid polluting the user's profile (these are
+                     ;; statically-linked binaries with no locale support and
+                     ;; so on.)
+                     (for-each (lambda (file)
+                                 (delete-file (string-append out "/bin/" file)))
+                               '("sh" "bash"))
+
+                     (union-build (assoc-ref %outputs "debug")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-debug")))))))
 
     (native-search-paths (package-native-search-paths gcc))
     (search-paths (package-search-paths gcc))
@@ -794,5 +803,8 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
 
 (define-public gcc-toolchain-4.9
   (gcc-toolchain gcc-4.9))
+
+(define-public gcc-toolchain-5.1
+  (gcc-toolchain gcc-5.1))
 
 ;;; commencement.scm ends here

@@ -9,6 +9,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -65,6 +67,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages tcl)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -105,7 +108,7 @@ representation of the playing board.")
 (define-public gnubik
   (package
     (name "gnubik")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
       (method url-fetch)
@@ -113,7 +116,7 @@ representation of the playing board.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0mfpwz341i1qpzi2qgslpc5i7d4fv7i01kv392m11pczqdc7i7m5"))))
+        "0mhpfnxzbns0wfrsjv5vafqr34770rbvkmdzxk0x0aq67hb3zyl5"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
@@ -745,6 +748,43 @@ some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using Glk API.")
    (license (license:fsf-free "file://README"))))
 
+(define-public fizmo
+  (package
+    (name "fizmo")
+    (version "0.7.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://christoph-ender.de/fizmo/source/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1w7cgyjrhgkadjrazijzhq7zh0pl5bfc6wl7mdpgh020y4kp46d7"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (let ((libjpeg (assoc-ref %build-inputs "libjpeg"))
+             (ncurses (assoc-ref %build-inputs "ncurses")))
+         (list (string-append "jpeg_CFLAGS=-I" libjpeg "/include")
+               (string-append "jpeg_LIBS=-ljpeg")
+               (string-append "ncursesw_CFLAGS=-I" ncurses "/include")
+               (string-append "ncursesw_LIBS=-lncursesw")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)
+       ("libxml2" ,libxml2)
+       ("ncurses" ,ncurses)
+       ("sdl" ,sdl)))
+    (home-page "https://christoph-ender.de/fizmo/")
+    (synopsis "Z-machine interpreter")
+    (description
+     "Fizmo is a console-based Z-machine interpreter.  It is used to play
+interactive ficiton, also known as textadventures, which were implemented
+either by Infocom or created using the Inform compiler.")
+    (license license:bsd-3)))
+
 (define-public retroarch
   (package
     (name "retroarch")
@@ -821,4 +861,92 @@ interfaces or even in Emacs.  It supports the standard game storage format
 (SGF, Smart Game Format) and inter-process communication format (GMP, Go
 Modem Protocol).")
     (home-page "http://www.gnu.org/software/gnugo/")
+    (license license:gpl3+)))
+
+(define-public extremetuxracer
+  (package
+    (name "extremetuxracer")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.sourceforge.net/project/extremetuxracer/releases/"
+                    version "/etr-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0fl9pwkywqnsmgr6plfj9zb05xrdnl5xb2hcmbjk7ap9l4cjfca4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("libice" ,libice)
+       ("libpng" ,libpng)
+       ("sdl" ,sdl)
+       ("sdl-mixer" ,sdl-mixer)
+       ("sdl-image" ,sdl-image)
+       ("libsm" ,libsm)
+       ("libunwind" ,libunwind)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("libxt" ,libxt)
+       ("tcl" ,tcl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("CXXFLAGS =") "CXXFLAGS = ${CFLAGS}")))))))
+    (synopsis "High speed arctic racing game based on Tux Racer")
+    ;; Snarfed straight from Debian
+    (description "Extreme Tux Racer, or etracer as it is called for short, is
+a simple OpenGL racing game featuring Tux, the Linux mascot.  The goal of the
+game is to slide down a snow- and ice-covered mountain as quickly as possible,
+avoiding the trees and rocks that will slow you down.
+
+Collect herrings and other goodies while sliding down the hill, but avoid fish
+bones.
+
+This game is based on the GPL version of the famous game TuxRacer.")
+    (home-page "http://sourceforge.net/projects/extremetuxracer/")
+    (license license:gpl2+)))
+
+(define-public gnujump
+  (package
+    (name "gnujump")
+    (version "1.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gnujump/gnujump-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "05syy9mzbyqcfnm0hrswlmhwlwx54f0l6zhcaq8c1c0f8dgzxhqk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'link-libm
+          (lambda _ (setenv "LIBS" "-lm"))))))
+    (inputs
+     `(("glu" ,glu)
+       ("mesa", mesa)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)))
+    (home-page "http://gnujump.es.gnu.org/")
+    (synopsis
+     "Game of jumping to the next floor, trying not to fall")
+    (description
+     "GNUjump is a simple, yet addictive game in which you must jump from
+platform to platform to avoid falling, while the platforms drop at faster rates
+the higher you go.  The game features multiplayer, unlimited FPS, smooth floor
+falling, themeable graphics and sounds, and replays.")
     (license license:gpl3+)))

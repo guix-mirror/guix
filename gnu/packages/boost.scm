@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,11 @@
     (arguments
      (let ((build-flags
             `("threading=multi" "link=shared"
+
+              ;; Set the RUNPATH to $libdir so that the libs find each other.
+              (string-append "linkflags=-Wl,-rpath="
+                             (assoc-ref outputs "out") "/lib")
+
               ;; Boost's 'context' library is not yet supported on mips64, so
               ;; we disable it.  The 'coroutine' library depends on 'context',
               ;; so we disable that too.
@@ -58,7 +64,8 @@
                                                  (%current-system)))
                     '("--without-context" "--without-coroutine")
                     '()))))
-       `(#:phases
+       `(#:tests? #f
+         #:phases
          (alist-replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
@@ -79,18 +86,14 @@
                               "--with-toolset=gcc"))))
           (alist-replace
            'build
-           (lambda _
+           (lambda* (#:key outputs #:allow-other-keys)
              (zero? (system* "./b2" ,@build-flags)))
 
            (alist-replace
-            'check
-            (lambda _ #t)
-
-            (alist-replace
-             'install
-             (lambda _
-               (zero? (system* "./b2" "install" ,@build-flags)))
-             %standard-phases)))))))
+            'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (zero? (system* "./b2" "install" ,@build-flags)))
+            %standard-phases))))))
 
     (home-page "http://boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
@@ -99,3 +102,25 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
+
+(define-public mdds
+  (package
+    (name "mdds")
+    (version "0.12.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://kohei.us/files/mdds/src/mdds_" version ".tar.bz2"))
+             (sha256
+              (base32
+               "10ar7r0gkdl2r7916jlkl5c38cynrh7x9s90a5i8d242r8ixw8ia"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("boost" ,boost))) ; inclusion of header files
+    (home-page "https://code.google.com/p/multidimalgorithm/")
+    (synopsis "Multi-dimensional C++ data structures and indexing algorithms")
+    (description "Mdds (multi-dimensional data structure) provides a
+collection of multi-dimensional data structures and indexing algorithms
+for C++.  It includes flat segment trees, segment trees, rectangle sets,
+point quad trees, multi-type vectors and multi-type matrices.")
+    (license license:expat)))

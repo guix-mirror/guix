@@ -26,9 +26,10 @@
   #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages compression) #:select (bzip2 gzip))
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -51,22 +52,25 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.8.1
+(define-public guix-0.8.2
   (package
     (name "guix")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "12h5ldj1yf0za6ladlr8h7nx2gqrv2dxcsiwyqayvrza93lijkf5"))))
+               "1a5gnkh17w7fgi5zy63ph64iqdvarkdqypkwgw2iifpqa6jq04zz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
                           "--localstatedir=/var"
                           "--sysconfdir=/etc"
+                          (string-append "--with-bash-completion-dir="
+                                         (assoc-ref %outputs "out")
+                                         "/etc/bash_completion.d")
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
@@ -127,7 +131,8 @@
                        (base32
                         "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))))))
     (propagated-inputs
-     `(("guile-json" ,guile-json)
+     `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
+       ("guile-json" ,guile-json)
        ("geiser" ,geiser)))                       ;for guix.el
 
     (home-page "http://www.gnu.org/software/guix")
@@ -142,9 +147,12 @@ the Nix package manager.")
 
 (define guix-devel
   ;; Development version of Guix.
-  (let ((commit "07157e8"))
-    (package (inherit guix-0.8.1)
-      (version (string-append "0.8.1." commit))
+  ;;
+  ;; Note: use a short commit id; when using the long one, the limit on socket
+  ;; file names is exceeded while running the tests.
+  (let ((commit "c2ee19e"))
+    (package (inherit guix-0.8.2)
+      (version (string-append "0.8.2." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -152,9 +160,9 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0ksfvkkgzsz58h60a8kypg9x24sabl5007hr3a2ddgh05rjckbci"))))
+                  "1gwc1gypgscxg2m3n2vd0mw4dmxr7vsisqgh3y0lr05q9z5742sj"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.8.1)
+       (substitute-keyword-arguments (package-arguments guix-0.8.2)
          ((#:phases phases)
           `(alist-cons-after
             'unpack 'bootstrap
@@ -172,7 +180,7 @@ the Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix-0.8.1))))))
+         ,@(package-native-inputs guix-0.8.2))))))
 
 (define-public guix guix-devel)
 
@@ -197,10 +205,10 @@ the Nix package manager.")
               ("openssl" ,openssl)
               ("libgc" ,libgc)
               ("sqlite" ,sqlite)
-              ("bzip2" ,bzip2)
-              ("perl-www-curl" ,perl-www-curl)
-              ("perl-dbi" ,perl-dbi)
-              ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+              ("bzip2" ,bzip2)))
+    (propagated-inputs `(("perl-www-curl" ,perl-www-curl)
+                         ("perl-dbi" ,perl-dbi)
+                         ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
     (home-page "http://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description

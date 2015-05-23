@@ -60,6 +60,7 @@
             valid-path?
             query-path-hash
             hash-part->path
+            query-path-info
             add-text-to-store
             add-to-store
             build-things
@@ -79,9 +80,17 @@
             substitutable-paths
             substitutable-path-info
 
+            path-info?
+            path-info-deriver
+            path-info-hash
+            path-info-references
+            path-info-registration-time
+            path-info-nar-size
+
             references
             requisites
             referrers
+            optimize-store
             topologically-sorted
             valid-derivers
             query-derivation-outputs
@@ -163,7 +172,8 @@
   (query-substitutable-path-infos 30)
   (query-valid-paths 31)
   (query-substitutable-paths 32)
-  (query-valid-derivers 33))
+  (query-valid-derivers 33)
+  (optimize-store 34))
 
 (define-enumerate-type hash-algo
   ;; hash.hh
@@ -212,6 +222,24 @@
                 (cons (substitutable path deriver refs dl-size nar-size)
                       result))))))
 
+;; Information about a store path.
+(define-record-type <path-info>
+  (path-info deriver hash references registration-time nar-size)
+  path-info?
+  (deriver path-info-deriver)
+  (hash path-info-hash)
+  (references path-info-references)
+  (registration-time path-info-registration-time)
+  (nar-size path-info-nar-size))
+
+(define (read-path-info p)
+  (let ((deriver  (read-store-path p))
+        (hash     (base16-string->bytevector (read-string p)))
+        (refs     (read-store-path-list p))
+        (registration-time (read-int p))
+        (nar-size (read-long-long p)))
+    (path-info deriver hash refs registration-time nar-size)))
+
 (define-syntax write-arg
   (syntax-rules (integer boolean file string string-list string-pairs
                  store-path store-path-list base16)
@@ -236,7 +264,7 @@
 
 (define-syntax read-arg
   (syntax-rules (integer boolean string store-path store-path-list
-                 substitutable-path-list base16)
+                 substitutable-path-list path-info base16)
     ((_ integer p)
      (read-int p))
     ((_ boolean p)
@@ -249,6 +277,8 @@
      (read-store-path-list p))
     ((_ substitutable-path-list p)
      (read-substitutable-path-list p))
+    ((_ path-info p)
+     (read-path-info p))
     ((_ base16 p)
      (base16-string->bytevector (read-string p)))))
 
@@ -447,6 +477,10 @@ encoding conversion errors."
                               (message "invalid error code")
                               (status   k))))))))
 
+(define %default-substitute-urls
+  ;; Default list of substituters.
+  '("http://hydra.gnu.org"))
+
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
@@ -459,7 +493,12 @@ encoding conversion errors."
                             (print-build-trace #t)
                             (build-cores (current-processor-count))
                             (use-substitutes? #t)
-                            (substitute-urls '())) ; client "untrusted" cache URLs
+
+                            ;; Client-provided substitute URLs.  For
+                            ;; unprivileged clients, these are considered
+                            ;; "untrusted"; for root, they override the
+                            ;; daemon's settings.
+                            (substitute-urls %default-substitute-urls))
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -531,6 +570,10 @@ string).  Raise an error if no such path exists."
      ;; This RPC is primarily used by Hydra to reply to HTTP GETs of
      ;; /HASH.narinfo.
      (query-path-from-hash-part server hash-part))))
+
+(define-operation (query-path-info (store-path path))
+  "Return the info (hash, references, etc.) for PATH."
+  path-info)
 
 (define add-text-to-store
   ;; A memoizing version of `add-to-store', to avoid repeated RPCs with
@@ -718,6 +761,12 @@ topological order."
 substitutable.  For each substitutable path, a `substitutable?' object is
 returned."
              substitutable-path-list))
+
+(define-operation (optimize-store)
+  "Optimize the store by hard-linking identical files (\"deduplication\".)
+Return #t on success."
+  ;; Note: the daemon in Guix <= 0.8.2 does not implement this RPC.
+  boolean)
 
 (define (run-gc server action to-delete min-freed)
   "Perform the garbage-collector operation ACTION, one of the

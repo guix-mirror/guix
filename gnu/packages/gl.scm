@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,11 +21,13 @@
 
 (define-module (gnu packages gl)
   #:use-module (ice-9 match)
+  #:use-module (guix build utils)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
@@ -37,7 +39,9 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages zip))
 
 (define-public glu
   (package
@@ -50,7 +54,8 @@
 	     (sha256
 	      (base32 "0r72yyhj09x3krn3kn629jqbwyq50ji8w5ri2pn6zwrk35m4g1s3"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)))
+    (propagated-inputs
+      `(("mesa" ,mesa))) ; according to glu.pc
     (home-page "http://www.opengl.org/archives/resources/faq/technical/glu.htm")
     (synopsis "Mesa OpenGL Utility library")
     (description
@@ -84,7 +89,10 @@ as ASCII text.")
 	      ("libxxf86vm" ,libxxf86vm)
 	      ("inputproto" ,inputproto)
 	      ("xinput" ,xinput)))
-    (propagated-inputs `(("glu" ,glu)))
+    (propagated-inputs
+     ;; Headers from Mesa and GLU are needed.
+     `(("glu" ,glu)
+       ("mesa" ,mesa)))
     (home-page "http://freeglut.sourceforge.net/")
     (synopsis "Alternative to the OpenGL Utility Toolkit (GLUT)")
     (description
@@ -146,7 +154,7 @@ Polygon meshes, and Extruded polygon meshes")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after unpack autogen
+         (add-after 'unpack 'autogen
           (lambda _
             (zero? (system* "sh" "autogen.sh")))))))
     (home-page "https://github.com/divVerent/s2tc")
@@ -156,18 +164,35 @@ Polygon meshes, and Extruded polygon meshes")
 also known as DXTn or DXTC) for Mesa.")
     (license l:expat)))
 
+;;; Mesa needs LibVA headers to build its Gallium-based VA API implementation;
+;;; LibVA itself depends on Mesa.  We use the following to solve the circular
+;;; dependency.
+(define libva-without-mesa
+  ;; Delay to work around circular import problem.
+  (delay
+    (package
+      (inherit libva)
+      (name "libva-without-mesa")
+      (inputs (alist-delete "mesa" (package-inputs libva)))
+      (arguments
+       (strip-keyword-arguments
+        '(#:make-flags)
+        (substitute-keyword-arguments (package-arguments libva)
+          ((#:configure-flags flags)
+           '(list "--disable-glx" "--disable-egl"))))))))
+
 (define-public mesa
   (package
     (name "mesa")
-    (version "10.4.0")
+    (version "10.5.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
-                            version "/MesaLib-" version ".tar.bz2"))
+                            version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "069j4ck51hc70gryhw3z0rkyhhl0bnhbks4xg1wqqw56l7rxz9wq"))))
+          "00v89jna7m6r2w1yrnx09isc97r2bd1hkn4jib445n1078zp47mm"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -178,27 +203,25 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxfixes" ,libxfixes)
         ("libxshmfence" ,libxshmfence)
         ("libxxf86vm" ,libxxf86vm)))
+    ;; TODO: Add vdpau.
     (inputs
       `(("udev" ,eudev)
         ("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
         ("presentproto" ,presentproto)
         ("expat" ,expat)
+        ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
-        ;; TODO: Add 'libva'
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
+        ("libxvmc" ,libxvmc)
         ("makedepend" ,makedepend)
         ("s2tc" ,s2tc)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)
-        ("gettext" ,gnu-gettext)
-        ("flex" ,flex)
-        ("bison" ,bison)
-        ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
+      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
-         "--with-gallium-drivers=r600,svga,swrast"
+         "--with-gallium-drivers=r600,svga,swrast,nouveau"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "--with-egl-platforms=x11,drm"
@@ -216,51 +239,42 @@ also known as DXTn or DXTC) for Mesa.")
              (_
               '("--with-dri-drivers=nouveau,r200,radeon,swrast"))))
        #:phases (alist-cons-after
-                 'unpack 'add-missing-m4-files
+                 'unpack 'patch-create_test_cases
                  (lambda _
-                   ;; When these files are missing, make tries to rebuild
-                   ;; several parts of the build system.
-                   (zero? (system* "touch" "--date=@0"
-                                   "m4/libtool.m4" "m4/ltoptions.m4"
-                                   "m4/ltsugar.m4" "m4/ltversion.m4"
-                                   "m4/lt~obsolete.m4")))
-                 (alist-cons-after
-                  'unpack 'patch-create_test_cases
-                  (lambda _
-                    (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
-                      (("/usr/bin/env bash") (which "bash"))))
-                  (alist-cons-before
-                   'build 'fix-dlopen-libnames
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let ((s2tc (assoc-ref inputs "s2tc"))
-                           (udev (assoc-ref inputs "udev"))
-                           (out (assoc-ref outputs "out")))
-                       ;; Remain agnostic to .so.X.Y.Z versions while doing
-                       ;; the substitutions so we're future-safe.
-                       (substitute*
-                           '("src/gallium/auxiliary/util/u_format_s3tc.c"
-                             "src/mesa/main/texcompress_s3tc.c")
-                         (("\"libtxc_dxtn\\.so")
-                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
-                       (substitute* "src/gallium/targets/egl-static/egl_st.c"
-                         (("\"libglapi\"")
-                          (string-append "\"" out "/lib/libglapi\"")))
-                       (substitute* "src/loader/loader.c"
-                         (("dlopen\\(\"libudev\\.so")
-                          (string-append "dlopen(\"" udev "/lib/libudev.so")))
-                       (substitute* "src/glx/dri_common.c"
-                         (("dlopen\\(\"libGL\\.so")
-                          (string-append "dlopen(\"" out "/lib/libGL.so")))
-                       (substitute* "src/egl/drivers/dri2/egl_dri2.c"
-                         (("\"libglapi\\.so")
-                          (string-append "\"" out "/lib/libglapi.so")))
-                       (substitute* "src/gbm/main/backend.c"
-                         ;; No need to patch the gbm_gallium_drm.so reference;
-                         ;; it's never installed since Mesa removed its
-                         ;; egl_gallium support.
-                         (("\"gbm_dri\\.so")
-                          (string-append "\"" out "/lib/dri/gbm_dri.so")))))
-                   %standard-phases)))))
+                   (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
+                     (("/usr/bin/env bash") (which "bash"))))
+                 (alist-cons-before
+                  'build 'fix-dlopen-libnames
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((s2tc (assoc-ref inputs "s2tc"))
+                          (udev (assoc-ref inputs "udev"))
+                          (out (assoc-ref outputs "out")))
+                      ;; Remain agnostic to .so.X.Y.Z versions while doing
+                      ;; the substitutions so we're future-safe.
+                      (substitute*
+                          '("src/gallium/auxiliary/util/u_format_s3tc.c"
+                            "src/mesa/main/texcompress_s3tc.c")
+                        (("\"libtxc_dxtn\\.so")
+                         (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
+                      (substitute* "src/gallium/targets/egl-static/egl_st.c"
+                        (("\"libglapi\"")
+                         (string-append "\"" out "/lib/libglapi\"")))
+                      (substitute* "src/loader/loader.c"
+                        (("dlopen\\(\"libudev\\.so")
+                         (string-append "dlopen(\"" udev "/lib/libudev.so")))
+                      (substitute* "src/glx/dri_common.c"
+                        (("dlopen\\(\"libGL\\.so")
+                         (string-append "dlopen(\"" out "/lib/libGL.so")))
+                      (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+                        (("\"libglapi\\.so")
+                         (string-append "\"" out "/lib/libglapi.so")))
+                      (substitute* "src/gbm/main/backend.c"
+                        ;; No need to patch the gbm_gallium_drm.so reference;
+                        ;; it's never installed since Mesa removed its
+                        ;; egl_gallium support.
+                        (("\"gbm_dri\\.so")
+                         (string-append "\"" out "/lib/dri/gbm_dri.so")))))
+                  %standard-phases))))
     (home-page "http://mesa3d.org/")
     (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
@@ -279,10 +293,10 @@ emulation to complete hardware acceleration for modern GPUs.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete configure)
-         (delete build)
-         (delete check)
-         (replace install
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (copy-recursively "include" (string-append
                                                  (assoc-ref outputs "out")
@@ -315,7 +329,7 @@ emulation to complete hardware acceleration for modern GPUs.")
      '(#:phases
        (modify-phases %standard-phases
          (replace
-          install
+          'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir-p (string-append out "/bin"))
@@ -415,3 +429,102 @@ extension functionality is exposed in a single header file.")
      "Guile-OpenGL is a library for Guile that provides bindings to the
 OpenGL graphics API.")
     (license l:lgpl3+)))
+
+(define-public libepoxy
+  (package
+    (name "libepoxy")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/anholt/libepoxy/archive/v"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xp8g6b7xlbym2rj4vkbl6xpb7ijq7glpv656mc7k9b01x22ihs2"))))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'autoreconf
+        (lambda _
+          (zero? (system* "autoreconf" "-vif")))
+        (alist-cons-before
+         'configure 'patch-paths
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((python (assoc-ref inputs "python"))
+                 (mesa (assoc-ref inputs "mesa")))
+             (substitute* "src/gen_dispatch.py"
+               (("/usr/bin/env python") python))
+             (substitute* (find-files "." "\\.[ch]$")
+               (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
+               (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))
+
+             ;; XXX On armhf systems, we must add "GLIBC_2.4" to the list of
+             ;; versions in test/dlwrap.c:dlwrap_real_dlsym.  It would be
+             ;; better to make this a normal patch, but for now we do it here
+             ;; to prevent rebuilding on other platforms.
+             ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                             (%current-system)))
+                   '((substitute* '"test/dlwrap.c"
+                       (("\"GLIBC_2\\.0\"") "\"GLIBC_2.0\", \"GLIBC_2.4\"")))
+                   '())
+             #t))
+         %standard-phases))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (home-page "http://github.com/anholt/libepoxy/")
+    (synopsis "A library for handling OpenGL function pointer management")
+    (description
+     "A library for handling OpenGL function pointer management.")
+    (license l:x11)))
+
+(define-public soil
+  (package
+    (name "soil")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              ;; No versioned archive available.
+              (uri "http://www.lonesock.net/files/soil.zip")
+              (sha256
+               (base32
+                "00gpwp9dldzhsdhksjvmbhsd2ialraqbv6v6dpikdmpncj6mnc52"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'init-build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CFLAGS" "-fPIC") ; needed for shared library
+                        ;; Use alternate Makefile
+                        (copy-file "projects/makefile/alternate Makefile.txt"
+                                   "src/Makefile")
+                        (chdir "src")
+                        (substitute* '("Makefile")
+                          (("INCLUDEDIR = /usr/include/SOIL")
+                           (string-append "INCLUDEDIR = " out "/include/SOIL"))
+                          (("LIBDIR = /usr/lib")
+                           (string-append "LIBDIR = " out "/lib"))
+                          ;; Remove these flags from 'install' commands.
+                          (("-o root -g root") ""))))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (home-page "http://www.lonesock.net/soil.html")
+    (synopsis "OpenGL texture loading library")
+    (description
+     "SOIL is a tiny C library used primarily for uploading textures into
+OpenGL.")
+    (license l:public-domain)))

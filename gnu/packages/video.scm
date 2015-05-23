@@ -21,19 +21,21 @@
 
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
-  #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ bsd-3 public-domain
-                               fsf-free isc))
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -42,6 +44,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages guile)
@@ -53,23 +56,65 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages zip))
+
+(define-public aalib
+  (package
+    (name "aalib")
+    (version "1.4rc5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/aa-project/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vkh19gb76agvh4h87ysbrgy82hrw88lnsvhynjf4vng629dmpgv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("makeinfo" ,texinfo)))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    ;; This old `configure' script doesn't support
+                    ;; variables passed as arguments.
+                    (let ((out     (assoc-ref outputs "out"))
+                          (ncurses (assoc-ref inputs "ncurses")))
+                      (setenv "CONFIG_SHELL" (which "bash"))
+                      (zero? (system* "./configure"
+                                      (string-append "--prefix=" out)
+                                      (string-append "--with-ncurses="
+                                                     ncurses)))))))))
+    (home-page "http://aa-project.sourceforge.net/aalib/")
+    (synopsis "ASCII-art library")
+    (description
+     "AA-lib is a low level gfx library which does not require graphics device.
+In fact, there is no graphical output possible.  AA-lib replaces those
+old-fashioned output methods with powerful ascii-art renderer.")
+    (license license:lgpl2.0+)))
 
 (define-public liba52
   (package
@@ -86,12 +131,19 @@
                (base32
                 "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags
+                 '(;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
+                   ,@(if (%current-target-system)
+                         '()
+                         (let ((triplet
+                                (nix-system->gnu-triplet (%current-system))))
+                           (list (string-append "--build=" triplet)))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
     (description "liba52 is a library for decoding ATSC A/52 streams.  The
 A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libass
   (package
@@ -119,7 +171,7 @@ television and DVD.  It is also known as AC-3.")
     (synopsis "Subtitle rendering library for the ASS/SSA format")
     (description "libass is a subtitle rendering library for the
 ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public libcaca
   (package
@@ -147,7 +199,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
 pixels, so that it can work on older video cards or text terminals.  It
 supports Unicode, 2048 colors, dithering of color images, and advanced text
 canvas operations.")
-    (license (fsf-free "file://COPYING")))) ;WTFPL version 2
+    (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
 
 (define-public libdca
   (package
@@ -166,7 +218,7 @@ canvas operations.")
     (synopsis "DTS Coherent Acoustics decoder")
     (description "libdca is a library for decoding DTS Coherent Acoustics
 streams.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libdv
   (package
@@ -189,19 +241,69 @@ video, the encoding format used by most digital camcorders, typically those
 that support the IEEE 1394 (a.k.a. FireWire or i.Link) interface.  Libdv was
 developed according to the official standards for DV video: IEC 61834 and
 SMPTE 314M.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
+
+(define-public libva
+  (package
+    (name "libva")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.freedesktop.org/software/vaapi/releases/libva/libva-"
+             version".tar.bz2"))
+       (sha256
+        (base32 "01d01mm9fgpwzqycmjjcj3in3vvzcibi3f64icsw2sksmmgb4495"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("mesa" ,mesa)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'fix-dlopen-paths
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "va/drm/va_drm_auth_x11.c"
+                (("\"libva-x11\\.so\\.%d\"")
+                 (string-append "\"" out "/lib/libva-x11.so.%d\"")))))))
+       ;; Most drivers are in mesa's $prefix/lib/dri, so use that.  (Can be
+       ;; overridden at run-time via LIBVA_DRIVERS_PATH.)
+       #:configure-flags
+       (list (string-append "--with-drivers-path="
+                            (assoc-ref %build-inputs "mesa") "/lib/dri"))
+       ;; However, we can't write to mesa's store directory, so override the
+       ;; following make variable to install the dummy driver to libva's
+       ;; $prefix/lib/dri directory.
+       #:make-flags
+       (list (string-append "dummy_drv_video_ladir="
+                            (assoc-ref %outputs "out") "/lib/dri"))))
+    (home-page "http://www.freedesktop.org/wiki/Software/vaapi/")
+    (synopsis "Video acceleration library")
+    (description "The main motivation for VA-API (Video Acceleration API) is
+to enable hardware accelerated video decode/encode at various
+entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
+standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
+    (license license:expat)))
 
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.6")
+    (version "2.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14a7zp8pa1rvw6nr9l2rf57xr004n5kwkhn5lglybjnn1p68xhr3"))))
+               "1fi93zy98wmls7x3jpr2yvckk2ia6a1yyygwrfaxq95pd6h3m7l8"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -218,7 +320,6 @@ SMPTE 314M.")
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("openal" ,openal)
-       ("patchelf" ,patchelf)
        ("pulseaudio" ,pulseaudio)
        ("soxr" ,soxr)
        ("speex" ,speex)
@@ -235,15 +336,9 @@ SMPTE 314M.")
        ("yasm" ,yasm)))
     (arguments
      `(#:test-target "fate"
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build utils)
-                           (guix build rpath))
        #:phases
-         (alist-replace
+       (modify-phases %standard-phases
+         (replace
           'configure
           ;; configure does not work followed by "SHELL=..." and
           ;; "CONFIG_SHELL=..."; set environment variables instead
@@ -253,51 +348,51 @@ SMPTE 314M.")
                 (("#! /bin/sh") (string-append "#!" (which "bash"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-               ;; FIXME: only needed for ffmpeg-2.2.13, but easier to add
-               ;; globally; drop as soon as ffmpeg-2.2.13 is dropped
-              (setenv "LDFLAGS" "-ldl")
-;; possible additional inputs:
-;;   --enable-avisynth        enable reading of AviSynth script files [no]
-;;   --enable-frei0r          enable frei0r video filtering
-;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
-;;   --enable-libcelt         enable CELT decoding via libcelt [no]
-;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
-;;                            and libraw1394 [no]
-;;   --enable-libfaac         enable AAC encoding via libfaac [no]
-;;   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
-;;   --enable-libflite        enable flite (voice synthesis) support via libflite [no]
-;;   --enable-libgme          enable Game Music Emu via libgme [no]
-;;   --enable-libgsm          enable GSM de/encoding via libgsm [no]
-;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
-;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
-;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
-;;   --enable-libnut          enable NUT (de)muxing via libnut,
-;;                            native (de)muxer exists [no]
-;;   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
-;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
-;;   --enable-libopencv       enable video filtering via libopencv [no]
-;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
-;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
-;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
-;;   --enable-libssh          enable SFTP protocol via libssh [no]
-;;                            (libssh2 does not work)
-;;   --enable-libstagefright-h264  enable H.264 decoding via libstagefright [no]
-;;   --enable-libutvideo      enable Ut Video encoding and decoding via libutvideo [no]
-;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
-;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
-;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
-;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
-;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
-;;   --enable-libx264         enable H.264 encoding via x264 [no]
-;;   --enable-libxavs         enable AVS encoding via xavs [no]
-;;   --enable-libzmq          enable message passing via libzmq [no]
-;;   --enable-libzvbi         enable teletext support via libzvbi [no]
-;;   --enable-opencl          enable OpenCL code
-;;   --enable-x11grab         enable X11 grabbing [no]
+              ;; possible additional inputs:
+              ;;   --enable-avisynth        enable reading of AviSynth script files [no]
+              ;;   --enable-frei0r          enable frei0r video filtering
+              ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
+              ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
+              ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
+              ;;                            and libraw1394 [no]
+              ;;   --enable-libfaac         enable AAC encoding via libfaac [no]
+              ;;   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
+              ;;   --enable-libflite        enable flite (voice synthesis) support via libflite [no]
+              ;;   --enable-libgme          enable Game Music Emu via libgme [no]
+              ;;   --enable-libgsm          enable GSM de/encoding via libgsm [no]
+              ;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
+              ;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
+              ;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
+              ;;   --enable-libnut          enable NUT (de)muxing via libnut,
+              ;;                            native (de)muxer exists [no]
+              ;;   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
+              ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
+              ;;   --enable-libopencv       enable video filtering via libopencv [no]
+              ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
+              ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
+              ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
+              ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
+              ;;   --enable-libssh          enable SFTP protocol via libssh [no]
+              ;;                            (libssh2 does not work)
+              ;;   --enable-libstagefright-h264  enable H.264 decoding via libstagefright [no]
+              ;;   --enable-libutvideo      enable Ut Video encoding and decoding via libutvideo [no]
+              ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
+              ;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
+              ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
+              ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
+              ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
+              ;;   --enable-libx264         enable H.264 encoding via x264 [no]
+              ;;   --enable-libxavs         enable AVS encoding via xavs [no]
+              ;;   --enable-libzmq          enable message passing via libzmq [no]
+              ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
+              ;;   --enable-opencl          enable OpenCL code
+              ;;   --enable-x11grab         enable X11 grabbing [no]
               (zero? (system*
                       "./configure"
                       (string-append "--prefix=" out)
+                      ;; Add $libdir to the RUNPATH of all the binaries.
+                      (string-append "--extra-ldflags=-Wl,-rpath="
+                                     %output "/lib")
                       "--enable-avresample"
                       "--enable-gpl" ; enable optional gpl licensed parts
                       "--enable-shared"
@@ -329,41 +424,28 @@ SMPTE 314M.")
                       "--disable-mips32r2"
                       "--disable-mipsdspr1"
                       "--disable-mipsdspr2"
-                      "--disable-mipsfpu"))))
-       (alist-cons-after
-        'strip 'add-lib-to-runpath
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (lib (string-append out "/lib")))
-            ;; Add LIB to the RUNPATH of all the executables and libraries.
-            (with-directory-excursion out
-              (for-each (cut augment-rpath <> lib)
-                        (append (find-files "bin" ".*")
-                                (find-files "lib" "\\.so\\..*\\."))))))
-          %standard-phases))))
+                      "--disable-mipsfpu")))))
+         (add-before
+          'check 'set-ld-library-path
+          (lambda _
+            ;; Allow $(top_builddir)/ffmpeg to find its dependencies when
+            ;; running tests.
+            (let* ((dso  (find-files "." "\\.so$"))
+                   (path (string-join (map dirname dso) ":")))
+              (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
+              (setenv "LD_LIBRARY_PATH" path)
+              #t))))))
     (home-page "http://www.ffmpeg.org/")
     (synopsis "Audio and video framework")
     (description "FFmpeg is a complete, cross-platform solution to record,
 convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
-    (license gpl2+)))
-
-;; We need this older ffmpeg because vlc-2.1.5 doesn't work with ffmpeg-2.4.
-(define-public ffmpeg-2.2
-  (package (inherit ffmpeg)
-    (version "2.2.13")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "1vva8ffwxi3rg44byy09qlbiqrrd1h4rmsl5b1mbmvzvwl1lq1l0"))))))
+    (license license:gpl2+)))
 
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.1.5")
+    (version "2.2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -371,7 +453,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "0whzbn7ahn5maarcwl1yhk9lq10b0q0y9w5pjl9kh3frdjmncrbg"))))
+               "05smn9hqdp7iscc1dj4cxp1mrlad7b50lhlnlqisfzf493i2f2jy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
@@ -382,7 +464,7 @@ audio/video codec library.")
        ("avahi" ,avahi)
        ("dbus" ,dbus)
        ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg-2.2)     ; FIXME: vlc-2.1.5 won't work with ffmpeg-2.4
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gnutls" ,gnutls)
@@ -422,7 +504,7 @@ audio/video codec library.")
     (description "VLC is a cross-platform multimedia player and framework
 that plays most multimedia files as well as DVD, Audio CD, VCD, and various
 treaming protocols.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public mplayer
   (package
@@ -495,13 +577,13 @@ treaming protocols.")
                            '("--enable-runtime-cpudetection"
                              "--target=i686-linux"))
                           ("mips64el-linux"
-                           '("--target=mips3-linux")))
-                      "--disable-armv5te"
-                      "--disable-armv6"
-                      "--disable-armv6t2"
-                      "--disable-armvfp"
+                           '("--target=mips3-linux"))
+                          (_ (list (string-append
+                                    "--target="
+                                    (or (%current-target-system)
+                                        (nix-system->gnu-triplet
+                                         (%current-system)))))))
                       "--disable-neon"
-                      "--disable-thumb"
                       "--disable-iwmmxt"))))
           %standard-phases)))
     (home-page "http://www.mplayerhq.hu/design7/news.html")
@@ -510,7 +592,212 @@ treaming protocols.")
 Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
 NuppelVideo, FLI, YUV4MPEG, FILM, RoQ, PVA files.  One can watch VideoCD,
 SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
-    (license gpl2)))
+    (license license:gpl2)))
+
+;;; This is not version 2; it's a fork literally named "mplayer2".
+(define-public mplayer2
+  (package
+    (name "mplayer2")
+    ;; There are no tarballs.  The 2.0 git tag, which is actually the first
+    ;; release is from 2011.  The latest commit is from 2013 October, so we
+    ;; use that commit.
+    (version "201310")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    ;; XXX Change this if mplayer2.org goes up again.
+                    (url "http://repo.or.cz/mplayer2.git")
+                    (commit "2c378c71a4d9b1df382db9aa787b646628b4e3f9")))
+              (sha256
+               (base32
+                "0s8554sanj6cvnf0h148nsmjgy5v0568nmcza7grpv6fnmddpfam"))
+              (file-name (string-append name "-" version "-checkout"))
+              ;; Warning: after using this patch, one must pass the -ltheora
+              ;; linker flag manually to configure; see below.
+              (patches (list (search-patch "mplayer2-theora-fix.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("python-2" ,python-2)
+       ("python-docutils" ,python-docutils)
+       ;; ./configure uses which(1) to find rst2man.py.
+       ("which" ,which)))
+    ;; Missing features: DirectFB, Xss screensaver extensions, VDPAU, MNG,
+    ;; libnut, DirectShow TV interface, Radio interfaces of all kinds, vstream
+    ;; client, XMSS inputplugin support, joystick, lirc/lircc, and openal.
+    ;; OpenAL support is experimental and causes compilation to fail with
+    ;; linker errors.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("gettext" ,gnu-gettext)
+       ("jack" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("lcms" ,lcms)
+       ("liba52" ,liba52)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libbs2b" ,libbs2b)
+       ("libcaca" ,libcaca)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdca" ,libdca)
+       ("libdv" ,libdv)
+       ("libdvdread" ,libdvdread)
+       ("libdvdnav" ,libdvdnav-4)
+       ("libjpeg" ,libjpeg)
+       ("libmad" ,libmad)
+       ("libpng" ,libpng)
+       ("libquvi" ,libquvi)
+       ("libtheora" ,libtheora)
+       ("libungif" ,libungif)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)
+       ("libxv" ,libxv)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("ncurses" ,ncurses)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("rsound" ,rsound)
+       ("samba" ,samba)
+       ("sdl" ,sdl)
+       ("speex" ,speex)
+       ("xvid" ,xvid)))
+    (arguments
+     '(#:phases
+       (alist-replace
+        'configure
+        ;; ./configure does not work followed by "SHELL=..." and
+        ;; "CONFIG_SHELL=..."; set environment variables instead.
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (setenv "SHELL" (which "bash"))
+          (setenv "CONFIG_SHELL" (which "bash"))
+          (substitute* "configure"
+            (("/usr/X11") (assoc-ref inputs "libx11")))
+          (zero?
+           (system* "./configure"
+                    (string-append "--prefix=" (assoc-ref outputs "out"))
+                    "--enable-translation"
+                    "--enable-runtime-cpudetection"
+                    ;; This is needed in accordance with the theora patch.
+                    "--extra-libs=-ltheoradec")))
+        (alist-cons-before
+         'build 'fix-TOOLS-shebangs
+         (lambda _
+           (substitute* (find-files "TOOLS" "\\.(sh|pl|py)$")
+             (("/usr/bin/env") (which "env"))
+             (("/usr/bin/perl") (which "perl"))
+             (("/usr/bin/python3") (which "python3"))
+             (("/usr/bin/python") (which "python"))))
+         (alist-cons-before
+          'build 'fix-input-buffer-padding-size
+          (lambda _
+            (substitute* "libmpdemux/demuxer.h"
+              ;; This has to match with FFmpeg's FF_INPUT_BUFFER_PADDING_SIZE,
+              ;; which has changed at some point.
+              (("(#define MP_INPUT_BUFFER_PADDING_SIZE )[0-9]*" all)
+               (string-append all "32"))))
+          %standard-phases)))
+       ;; No 'check' target.
+       #:tests? #f))
+    ;; XXX Change this if mplayer2.org goes up again.
+    (home-page "http://repo.or.cz/w/mplayer2.git")
+    (synopsis "Audio and video player")
+    (description "mplayer2 is a general-purpose audio and video player.  It's
+a fork of the original MPlayer project, and contains further development in
+several areas.")
+    ;; See file Copyright.  Most files are gpl2+ or compatible, but talloc.c
+    ;; is under lgpl3+, thus the whole project becomes gpl3+.
+    (license license:gpl3+)))
+
+(define-public mpv
+  (package
+    (name "mpv")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mpv-player/mpv/archive/v" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "08nx0g6ji2d90f5w62g327szhkb7id7jzwgf3x069rc5id1x3bx7"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system waf-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python-docutils" ,python-docutils)))
+    ;; Missing features: libguess, Wayland, VDPAU, V4L2
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("enca" ,enca)
+       ("ffmpeg" ,ffmpeg)
+       ("jack" ,jack-2)
+       ("ladspa" ,ladspa)
+       ("lcms" ,lcms)
+       ("libass" ,libass)
+       ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
+       ("libbs2b" ,libbs2b)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdvdread" ,libdvdread)
+       ("libdvdnav" ,libdvdnav)
+       ("libjpeg" ,libjpeg)
+       ("libva" ,libva)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxv" ,libxv)
+       ("lua" ,lua)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("pulseaudio" ,pulseaudio)
+       ("rsound" ,rsound)
+       ("samba" ,samba)
+       ("vapoursynth" ,vapoursynth)
+       ("waf" ,(origin
+                 (method url-fetch)
+                 ;; Keep this in sync with the version in the bootstrap.py
+                 ;; script of the source tarball.
+                 (uri "http://www.freehackers.org/~tnagy/release/waf-1.8.4")
+                 (sha256
+                  (base32
+                   "1a7skwgpl91adhcwlmdr76xzdpidh91hvcmj34zz6548bpx3a87h"))))
+       ("youtube-dl" ,youtube-dl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'setup-waf
+          (lambda* (#:key inputs #:allow-other-keys)
+            (copy-file (assoc-ref inputs "waf") "waf")
+            (setenv "CC" "gcc")))
+         (add-before
+          'configure 'patch-wscript
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "wscript"
+              ;; XXX Remove this when our Samba package provides a .pc file.
+              (("check_pkg_config\\('smbclient'\\)")
+               "check_cc(lib='smbclient')")
+              ;; XXX Remove this when our Lua package provides a .pc file.
+              (("check_lua")
+               "check_cc(lib='lua')")))))
+       ;; No check function defined.
+       #:tests? #f))
+    (home-page "http://mpv.io/")
+    (synopsis "Audio and video player")
+    (description "mpv is a general-purpose audio and video player.  It is a
+fork of mplayer2 and MPlayer.  It shares some features with the former
+projects while introducing many more.")
+    (license license:gpl2+)))
 
 (define-public libvpx
   (package
@@ -534,6 +821,8 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                  (lambda* (#:key outputs #:allow-other-keys)
                    (setenv "CONFIG_SHELL" (which "bash"))
                    (let ((out (assoc-ref outputs "out")))
+                     (setenv "LDFLAGS"
+                             (string-append "-Wl,-rpath=" out "/lib"))
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
@@ -562,13 +851,13 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("yasm" ,yasm)))
     (synopsis "VP8/VP9 video codec")
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
-    (license bsd-3)
+    (license license:bsd-3)
     (home-page "http://www.webmproject.org/")))
 
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2015.01.23.4")
+    (version "2015.05.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -576,7 +865,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0pvvab9dk1righ3fa79000iz8fzdlcxakscx5sd31730c37j3kj2"))))
+                "1crfada7vq3d24062wr06sfam66cf14j06wnhg7w5ljzrbynvpll"))))
     (build-system python-build-system)
     (inputs `(("setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
@@ -584,7 +873,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (description
      "youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public libbluray
   (package
@@ -612,7 +901,7 @@ YouTube.com and a few more sites.")
     (description
      "libbluray is a library designed for Blu-Ray Disc playback for media
 players, like VLC or MPlayer.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libdvdread
   (package
@@ -635,7 +924,7 @@ disks.  It provides the functionality that is required to access many
 DVDs.  It parses IFO files, reads NAV-blocks, and performs CSS
 authentication and descrambling (if an external libdvdcss library is
 installed).")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libdvdnav
   (package
@@ -667,7 +956,7 @@ a loop regularly calling a function to get the next block, surrounded by
 additional calls to tell the library of user interaction.  The whole
 DVD virtual machine and internal playback states are completely
 encapsulated.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libdvdnav-4
   (package
@@ -713,7 +1002,7 @@ encapsulated.")
     (description
      "libdvdcss is a simple library designed for accessing DVDs like a block
 device without having to bother about the decryption.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public srt2vtt
   (package
@@ -734,7 +1023,7 @@ device without having to bother about the decryption.")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
     (home-page "http://dthompson.us/pages/software/srt2vtt")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public avidemux
   (package
@@ -849,7 +1138,7 @@ DVD compatible MPEG files, MP4 and ASF, using a variety of codecs.  Tasks
 can be automated using projects, job queue and powerful scripting
 capabilities.")
     ;; Software with various licenses is included, see License.txt.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public avidemux-2.5
   (package (inherit avidemux)
@@ -941,6 +1230,47 @@ capabilities.")
             (alist-delete 'install
                %standard-phases)))))))))
 
+(define-public vapoursynth
+  (package
+    (name "vapoursynth")
+    (version "26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/vapoursynth/vapoursynth/archive/R"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1qbg5kg0kgrxldd0ckn1s7vy7vx2ig8nqzv6djp38fxccpzw3x9k"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("cython" ,python-cython)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("yasm" ,yasm)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libass" ,libass)
+       ("tesseract-ocr" ,tesseract-ocr)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))))
+    (home-page "http://www.vapoursynth.com/")
+    (synopsis "Video processing framework")
+    (description "VapourSynth is a C++ library and Python module for video
+manipulation.  It aims to be a modern rewrite of Avisynth, supporting
+multithreading, generalized colorspaces, per frame properties, and videos with
+format changes.")
+    ;; As seen from the source files.
+    (license license:lgpl2.1+)))
+
 (define-public xvid
   (package
     (name "xvid")
@@ -972,4 +1302,31 @@ capabilities.")
 codec library.  It uses ASP features such as b-frames, global and quarter
 pixel motion compensation, lumi masking, trellis quantization, and H.263, MPEG
 and custom quantization matrices.")
-    (license gpl2+)))
+    (license license:gpl2+)))
+
+(define-public livestreamer
+  (package
+    (name "livestreamer")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/chrippa/livestreamer/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append "livestreamer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1dhgk8v8q1h3km4g5jc0cmjsxdaa2d456fvdb2wk7hmxmmwbqm9j"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests rely on external web servers
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-singledispatch" ,python-singledispatch)))
+    (synopsis "Internet video stream viewer")
+    (description "Livestreamer is a command-line utility that extracts streams
+from various services and pipes them into a video playing application.")
+    (home-page "http://livestreamer.io/")
+    (license license:bsd-2)))

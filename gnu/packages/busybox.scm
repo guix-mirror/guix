@@ -53,8 +53,9 @@
 
            ;; There is no /usr/bin or /bin - replace it with /gnu/store
            (substitute* "testsuite/cpio.tests"
-              (("/usr/bin") "/gnu/store")
-              (("usr") "gnu"))
+              (("/usr/bin") (%store-directory))
+              (("usr") (car (filter (negate string-null?)
+                                    (string-split (%store-directory) #\/)))))
 
            (substitute* "testsuite/date/date-works-1"
              (("/bin/date") (which "date")))

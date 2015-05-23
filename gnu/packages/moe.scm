@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,9 +17,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages moe)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (gnu packages ncurses)
-  #:use-module ((gnu packages compression) #:select (lzip))
+  #:use-module (gnu packages compression)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -27,7 +27,7 @@
 (define-public moe
   (package
     (name "moe")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +35,7 @@
                           version ".tar.lz"))
       (sha256
        (base32
-        "1cfwi67sdl2qchqbdib4p6wxjpwz2kmn6vxn9hmh1zs0gg4xkbwc"))))
+        "1fzimk1qpmsm7wzfnjzzrp4dvdn7ipdb5j7969910g1m93wndfik"))))
     (build-system gnu-build-system)
     (native-inputs `(("lzip" ,lzip)))
     (inputs `(("ncurses" ,ncurses)))

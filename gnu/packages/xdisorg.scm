@@ -1,11 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
@@ -35,6 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -442,6 +447,13 @@ transparent text on your screen.")
     (inputs
      `(("libx11" ,libx11)
        ("guile" ,guile-2.0)))
+    (arguments `(#:configure-flags
+                 '(;; FIXME: xbindkeys-1.8.6's config.guess fails on mips64el.
+                   ,@(if (%current-target-system)
+                         '()
+                         (let ((triplet
+                                (nix-system->gnu-triplet (%current-system))))
+                           (list (string-append "--build=" triplet)))))))
     (home-page "http://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
@@ -519,3 +531,68 @@ within a single process.")
 pressed and released on its own.  The default behaviour is to generate the
 Escape key when Left Control is pressed and released on its own.")
     (license license:gpl3+)))
+
+(define-public libwacom
+  (package
+    (name "libwacom")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "022d0097dk2glgb6772zpcsqm1w42sbsbr3i72pdhzq6naqawys8"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("eudev" ,eudev)
+       ("libxml2" ,libxml2)))
+    (home-page "http://linuxwacom.sourceforge.net/")
+    (synopsis "Helper library for Wacom tablet settings")
+    (description
+     "Libwacom is a library to help implement Wacom tablet settings.  It
+is intended to be used by client-programs that need model identification.  It
+is already being used by the gnome-settings-daemon and the GNOME 3.4 Control
+Center Wacom tablet applet.  In the future, the xf86-input-wacom driver may
+use it as well.")
+    (license license:x11)))
+
+(define-public xf86-input-wacom
+  (package
+    (name "xf86-input-wacom")
+    (version "0.29.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/linuxwacom/xf86-input-wacom/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "15lbzjkaf690i69qy0n0ibwczbclqq1nx0418c6a567by5v7wl48"))))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg")
+             (string-append "--with-xorg-conf-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/X11/xorg.conf.d"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xorg-server" ,xorg-server)
+       ("libxrandr" ,libxrandr)
+       ("libxinerama" ,libxinerama)
+       ("libxi" ,libxi)
+       ("eudev" ,eudev)))
+    (home-page "http://linuxwacom.sourceforge.net/")
+    (synopsis "Wacom input driver for X")
+    (description
+     "The xf86-input-wacom driver is the wacom-specific X11 input driver for
+the X.Org X Server version 1.7 and later (X11R7.5 or later).")
+    (license license:x11)))
