@@ -76,3 +76,42 @@ then
 else
     grep "service 'networking'.*more than once" "$errorfile"
 fi
+
+make_user_config ()
+{
+    cat > "$tmpfile" <<EOF
+(use-modules (gnu))
+(use-service-modules networking)
+
+(operating-system
+  (host-name "antelope")
+  (timezone "Europe/Paris")
+  (locale "en_US.UTF-8")
+
+  (bootloader (grub-configuration (device "/dev/sdX")))
+  (file-systems (cons (file-system
+                        (device "root")
+                        (title 'label)
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems))
+  (users (list (user-account
+                 (name "dave")
+                 (home-directory "/home/dave")
+                 (group "$1")
+                 (supplementary-groups '("$2"))))))
+EOF
+}
+
+make_user_config "users" "wheel"
+guix system build "$tmpfile" -n       # succeeds
+
+make_user_config "group-that-does-not-exist" "users"
+if guix system build "$tmpfile" -n 2> "$errorfile"
+then false
+else grep "primary group.*group-that-does-not-exist.*undeclared" "$errorfile"; fi
+
+make_user_config "users" "group-that-does-not-exist"
+if guix system build "$tmpfile" -n 2> "$errorfile"
+then false
+else grep "supplementary group.*group-that-does-not-exist.*undeclared" "$errorfile"; fi

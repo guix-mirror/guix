@@ -686,6 +686,8 @@ etc."
     (define group-specs
       (map user-group->gexp groups))
 
+    (assert-valid-users/groups accounts groups)
+
     (gexp->file "activate"
                 #~(begin
                     (eval-when (expand load eval)

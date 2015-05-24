@@ -21,12 +21,17 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix sets)
+  #:use-module (guix ui)
   #:use-module ((gnu system file-systems)
                 #:select (%tty-gid))
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile-wm)
+  #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (user-account
             user-account?
             user-account-name
@@ -48,7 +53,8 @@
 
             default-skeletons
             skeleton-directory
-            %base-groups))
+            %base-groups
+            assert-valid-users/groups))
 
 ;;; Commentary:
 ;;;
@@ -175,5 +181,32 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
                                     (copy-file source target)))
                                   '#$skeletons)
                         #t)))
+
+(define (assert-valid-users/groups users groups)
+  "Raise an error if USERS refer to groups not listed in GROUPS."
+  (let ((groups (list->set (map user-group-name groups))))
+    (define (validate-supplementary-group user group)
+      (unless (set-contains? groups group)
+        (raise (condition
+                (&message
+                 (message
+                  (format #f (_ "supplementary group '~a' \
+of user '~a' is undeclared")
+                          group
+                          (user-account-name user))))))))
+
+    (for-each (lambda (user)
+                (unless (set-contains? groups (user-account-group user))
+                  (raise (condition
+                          (&message
+                           (message
+                            (format #f (_ "primary group '~a' \
+of user '~a' is undeclared")
+                                    (user-account-group user)
+                                    (user-account-name user)))))))
+
+                (for-each (cut validate-supplementary-group user <>)
+                          (user-account-supplementary-groups user)))
+              users)))
 
 ;;; shadow.scm ends here
