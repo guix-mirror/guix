@@ -128,8 +128,9 @@ TARGET, and register them."
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
-  "Copy the output of OS-DRV and its dependencies to directory TARGET.  TARGET
-must be an absolute directory name since that's what 'guix-register' expects.
+  "Copy the closure of GRUB.CFG, which includes the output of OS-DRV, to
+directory TARGET.  TARGET must be an absolute directory name since that's what
+'guix-register' expects.
 
 When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   (define (maybe-copy to-copy)
@@ -160,7 +161,9 @@ the ownership of '~a' may be incorrect!~%")
         (populate (lift2 populate-root-file-system %store-monad)))
 
     (mbegin %store-monad
-      (maybe-copy os-dir)
+      ;; Copy the closure of GRUB.CFG, which includes OS-DIR, GRUB's
+      ;; background image and so on.
+      (maybe-copy grub.cfg)
 
       ;; Create a bunch of additional files.
       (format log-port "populating '~a'...~%" target)
