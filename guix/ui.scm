@@ -243,8 +243,8 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
           ;; information is missing as of Guile 2.0.11, making the exception
           ;; uninformative.)
           (apply throw key proc "~A: ~S"
-                 (append args (list link))
-                 errno))))))
+                 (list (strerror (car errno)) link)
+                 (list errno)))))))
 
 (set! copy-file
   ;; Note: here we use 'set!', not #:replace, because UIs typically use
