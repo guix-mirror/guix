@@ -284,10 +284,6 @@ it atomically, and then run OS's activation script."
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
-(define (grub.cfg os)
-  "Return the GRUB configuration file for OS."
-  (operating-system-grub.cfg os (previous-grub-entries)))
-
 (define* (maybe-build drvs
                       #:key dry-run? use-substitutes?)
   "Show what will/would be built, and actually build DRVS, unless DRY-RUN? is
@@ -317,7 +313,10 @@ boot directly to the kernel or to the bootloader."
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
        (grub      (package->derivation grub))
-       (grub.cfg  (grub.cfg os))
+       (grub.cfg  (operating-system-grub.cfg os
+                                             (if (eq? 'init action)
+                                                 '()
+                                                 (previous-grub-entries))))
        (drvs   -> (if (and grub? (memq action '(init reconfigure)))
                       (list sys grub grub.cfg)
                       (list sys)))
