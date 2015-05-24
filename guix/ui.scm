@@ -246,6 +246,23 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
                  (append args (list link))
                  errno))))))
 
+(set! copy-file
+  ;; Note: here we use 'set!', not #:replace, because UIs typically use
+  ;; 'copy-recursively', which doesn't use (guix ui).
+  (let ((real-copy-file (@ (guile) copy-file)))
+    (lambda (source target)
+      "This is a 'copy-file' replacement that provides proper error reporting."
+      (catch 'system-error
+        (lambda ()
+          (real-copy-file source target))
+        (lambda (key proc fmt args errno)
+          ;; Augment the FMT and ARGS with information about TARGET (this
+          ;; information is missing as of Guile 2.0.11, making the exception
+          ;; uninformative.)
+          (apply throw key proc "~A: ~S"
+                 (list (strerror (car errno)) target)
+                 (list errno)))))))
+
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
   (or (string->number str)
