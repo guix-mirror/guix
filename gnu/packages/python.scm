@@ -3274,9 +3274,7 @@ features useful for text console applications.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)))
+       ("dbus-glib" ,dbus-glib)))
     (synopsis "Python bindings for D-bus")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")

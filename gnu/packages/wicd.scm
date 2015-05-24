@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,8 +50,7 @@
                        "wicd-template-instantiation.patch")))))
     (build-system python-build-system)
     (native-inputs `(("gettext" ,gnu-gettext)))
-    (inputs `(("dbus" ,dbus)
-              ("dbus-glib" ,dbus-glib)
+    (inputs `(("dbus-glib" ,dbus-glib)
               ("python2-dbus" ,python2-dbus)
               ("python2-pygtk" ,python2-pygtk)
               ("python2-urwid" ,python2-urwid)

@@ -145,6 +145,16 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
             ;; Copy items to the new store.
             (copy-closure to-copy target #:log-port log-port)))))
 
+  ;; Make sure TARGET is root-owned when running as root, but still allow
+  ;; non-root uses (useful for testing.)  See
+  ;; <http://lists.gnu.org/archive/html/guix-devel/2015-05/msg00452.html>.
+  (if (zero? (geteuid))
+      (chown target 0 0)
+      (warning (_ "not running as 'root', so \
+the ownership of '~a' may be incorrect!~%")
+               target))
+
+  (chmod target #o755)
   (let ((os-dir   (derivation->output-path os-drv))
         (format   (lift format %store-monad))
         (populate (lift2 populate-root-file-system %store-monad)))
