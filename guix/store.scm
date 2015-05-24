@@ -121,6 +121,7 @@
             derivation-path?
             store-path-package-name
             store-path-hash-part
+            direct-store-path
             log-file))
 
 (define %protocol-version #x10c)
@@ -1011,6 +1012,15 @@ valid inputs."
        (not (string=? path (%store-prefix)))
        (let ((len (+ 1 (string-length (%store-prefix)))))
          (not (string-index (substring path len) #\/)))))
+
+(define (direct-store-path path)
+  "Return the direct store path part of PATH, stripping components after
+'/gnu/store/xxxx-foo'."
+  (let ((prefix-length (+ (string-length (%store-prefix)) 35)))
+    (if (> (string-length path) prefix-length)
+        (let ((slash (string-index path #\/ prefix-length)))
+          (if slash (string-take path slash) path))
+        path)))
 
 (define (derivation-path? path)
   "Return #t if PATH is a derivation path."
