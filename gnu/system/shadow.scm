@@ -54,6 +54,7 @@
             default-skeletons
             skeleton-directory
             %base-groups
+            %base-user-accounts
             assert-valid-users/groups))
 
 ;;; Commentary:
@@ -112,6 +113,16 @@
           (system-group (name "cdrom"))
           (system-group (name "tape"))
           (system-group (name "kvm")))))             ; for /dev/kvm
+
+(define %base-user-accounts
+  ;; List of standard user accounts.  Note that "root" is a special case, so
+  ;; it's not listed here.
+  (list (user-account
+         (name "nobody")
+         (uid 65534)
+         (group "nogroup")
+         (home-directory "/var/empty")
+         (system? #t))))
 
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by

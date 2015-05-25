@@ -23,7 +23,7 @@
   ;; This is where user accounts are specified.  The "root"
   ;; account is implicit, and is initially created with the
   ;; empty password.
-  (users (list (user-account
+  (users (cons (user-account
                 (name "alice")
                 (comment "Bob's sister")
                 (group "users")
@@ -34,7 +34,8 @@
                 ;; and access the webcam.
                 (supplementary-groups '("wheel"
                                         "audio" "video"))
-                (home-directory "/home/alice"))))
+                (home-directory "/home/alice"))
+               %base-user-accounts))
 
   ;; Globally-installed packages.
   (packages (cons tcpdump %base-packages))

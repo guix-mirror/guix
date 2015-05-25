@@ -4453,7 +4453,7 @@ A list of strings identifying devices to be used for ``swap space''
 (@pxref{Memory Concepts,,, libc, The GNU C Library Reference Manual}).
 For example, @code{'("/dev/sda3")}.
 
-@item @code{users} (default: @code{'()})
+@item @code{users} (default: @code{%base-user-accounts})
 @itemx @code{groups} (default: @var{%base-groups})
 List of user accounts and groups.  @xref{User Accounts}.
 
@@ -4830,6 +4830,14 @@ This is the list of basic user groups that users and/or packages expect
 to be present on the system.  This includes groups such as ``root'',
 ``wheel'', and ``users'', as well as groups used to control access to
 specific devices such as ``audio'', ``disk'', and ``cdrom''.
+@end defvr
+
+@defvr {Scheme Variable} %base-user-accounts
+This is the list of basic system accounts that programs may expect to
+find on a GNU/Linux system, such as the ``nobody'' account.
+
+Note that the ``root'' account is not included here.  It is a
+special-case and is automatically added whether or not it is specified.
 @end defvr
 
 @node Locales

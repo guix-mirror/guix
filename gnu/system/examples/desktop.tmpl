@@ -20,13 +20,14 @@
                         (type "ext4"))
                       %base-file-systems))
 
-  (users (list (user-account
+  (users (cons (user-account
                 (name "bob")
                 (comment "Alice's brother")
                 (group "users")
                 (supplementary-groups '("wheel" "netdev"
                                         "audio" "video"))
-                (home-directory "/home/bob"))))
+                (home-directory "/home/bob"))
+               %base-user-accounts))
 
   ;; Add Xfce and Ratpoison; that allows us to choose
   ;; sessions using either of these at the log-in screen.

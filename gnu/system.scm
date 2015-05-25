@@ -119,7 +119,7 @@
                 (default '()))
 
   (users operating-system-users                   ; list of user accounts
-         (default '()))
+         (default %base-user-accounts))
   (groups operating-system-groups                 ; list of user groups
           (default %base-groups))
 
