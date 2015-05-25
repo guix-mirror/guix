@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +23,12 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -225,3 +229,63 @@ COCOMO model or user-provided parameters.")
 files, but compared to grep is much faster and respects files like .gitignore,
 .hgignore, etc.")
     (license license:asl2.0)))
+
+(define-public withershins
+  (package
+    (name "withershins")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cameronwhite/withershins/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08z3lyvswx7sad10637vfpwglbcbgzzcpfihw0x8lzr74f3b70bh"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:out-of-source? #f
+       #:modules ((guix build utils)
+                  (guix build cmake-build-system)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'find-libiberty
+          (lambda _
+            (let ((plugin (let* ((port (open-input-pipe
+                                        "gcc -print-file-name=plugin"))
+                                 (str  (read-line port)))
+                            (close-pipe port)
+                            str)))
+              (substitute* "cmake/FindIberty.cmake"
+                (("/usr/include") (string-append plugin "/include"))
+                (("libiberty.a iberty") (string-append "NAMES libiberty.a iberty\nPATHS \""
+                                                       (assoc-ref %build-inputs "gcc")
+                                                       "/lib" "\"")))
+              #t)))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/lib"))
+              (mkdir (string-append out "/include"))
+              (copy-file "src/withershins.hpp"
+                         (string-append out "/include/withershins.hpp"))
+              (copy-file "src/libwithershins.a"
+                         (string-append out "/lib/libwithershins.a")))
+            #t)))))
+    (home-page "https://github.com/cameronwhite/withershins")
+    (inputs
+     `(("gcc" ,gcc-4.8 "lib") ;for libiberty.a
+       ("binutils" ,binutils) ;for libbfd
+       ("zlib" ,zlib)))
+    (synopsis "C++11 library for generating stack traces")
+    (description
+     "Withershins is a simple cross-platform C++11 library for generating
+stack traces.")
+    ;; Sources are released under Expat license, but since BFD is licensed
+    ;; under the GPLv3+ the combined work is GPLv3+ as well.
+    (license license:gpl3+)))
