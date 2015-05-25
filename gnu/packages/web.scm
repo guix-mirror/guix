@@ -259,6 +259,27 @@ easily construct JSON objects in C, output them as JSON formatted strings and
 parse JSON formatted strings back into the C representation of JSON objects.")
     (license l:x11)))
 
+(define-public rapidjson
+  (package
+    (name "rapidjson")
+    (version "1.0.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/miloyip/rapidjson/archive/v"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0rl6s0vg5y1dhh9vfl1lqay3sxf69sxjh0czxrjmasn7ng91wwf3"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/miloyip/rapidjson")
+    (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
+    (description
+     "RapidJSON is a fast JSON parser/generator for C++ with both SAX/DOM
+style API.")
+    (license l:expat)))
+
 (define-public libwebsockets
   (package
     (name "libwebsockets")
