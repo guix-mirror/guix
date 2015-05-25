@@ -245,7 +245,7 @@ guix package -I
 
 unset GUIX_BUILD_OPTIONS
 
-# Applying a manifest file
+# Applying a manifest file.
 cat > "$module_dir/manifest.scm"<<EOF
 (use-package-modules bootstrap)
 
@@ -254,3 +254,19 @@ EOF
 guix package --bootstrap -m "$module_dir/manifest.scm"
 guix package -I | grep guile
 test `guix package -I | wc -l` -eq 1
+
+# Error reporting.
+cat > "$module_dir/manifest.scm"<<EOF
+(use-package-modules bootstrap)
+(packages->manifest
+  (list %bootstrap-guile
+        wonderful-package-that-does-not-exist))
+EOF
+if guix package --bootstrap -n -m "$module_dir/manifest.scm" \
+	2> "$module_dir/stderr"
+then false
+else
+    cat "$module_dir/stderr"
+    grep "manifest.scm:[1-3]:.*[Uu]nbound variable.*wonderful-package" \
+	 "$module_dir/stderr"
+fi
