@@ -62,6 +62,7 @@ config.cache
 /pre-inst-env
 /doc/.dirstamp
 /doc/guix.info
+/doc/guix.info-[0-9]
 /doc/guix.pdf
 /doc/stamp-vti
 /doc/version.texi
