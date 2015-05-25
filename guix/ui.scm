@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-31)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
@@ -147,18 +148,50 @@ messages."
 
 (define (load* file user-module)
   "Load the user provided Scheme source code FILE."
+  (define (frame-with-source frame)
+    ;; Walk from FRAME upwards until source location information is found.
+    (let loop ((frame    frame)
+               (previous frame))
+      (if (not frame)
+          previous
+          (if (frame-source frame)
+              frame
+              (loop (frame-previous frame) frame)))))
+
   (catch #t
     (lambda ()
+      ;; XXX: Force a recompilation to avoid ABI issues.
       (set! %fresh-auto-compile #t)
+      (set! %load-should-auto-compile #t)
 
       (save-module-excursion
        (lambda ()
          (set-current-module user-module)
-         (primitive-load file))))
-    (lambda args
-      (report-load-error file args))))
 
-(define (report-load-error file args)
+         ;; Hide the "auto-compiling" messages.
+         (parameterize ((current-warning-port (%make-void-port "w")))
+           ;; Give 'load' an absolute file name so that it doesn't try to
+           ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
+           ;; 'primitive-load', so that FILE is compiled, which then allows us
+           ;; to provide better error reporting with source line numbers.
+           (load (canonicalize-path file))))))
+    (lambda _
+      ;; XXX: Errors are reported from the pre-unwind handler below, but
+      ;; calling 'exit' from there has no effect, so we call it here.
+      (exit 1))
+    (rec (handle-error . args)
+         ;; Capture the stack up to this procedure call, excluded, and pass
+         ;; the faulty stack frame to 'report-load-error'.
+         (let* ((stack (make-stack #t handle-error))
+                (depth (stack-length stack))
+                (last  (and (> depth 0) (stack-ref stack 0)))
+                (frame (frame-with-source
+                        (if (> depth 1)
+                            (stack-ref stack 1)   ;skip the 'throw' frame
+                            last))))
+           (report-load-error file args frame)))))
+
+(define* (report-load-error file args #:optional frame)
   "Report the failure to load FILE, a user-provided Scheme file, and exit.
 ARGS is the list of arguments received by the 'throw' handler."
   (match args
@@ -172,7 +205,7 @@ ARGS is the list of arguments received by the 'throw' handler."
        (exit 1)))
     ((error args ...)
      (report-error (_ "failed to load '~a':~%") file)
-     (apply display-error #f (current-error-port) args)
+     (apply display-error frame (current-error-port) args)
      (exit 1))))
 
 (define (warn-about-load-error file args)         ;FIXME: factorize with ↑

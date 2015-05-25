@@ -45,6 +45,32 @@ else
 fi
 
 
+# Reporting of unbound variables.
+
+cat > "$tmpfile" <<EOF
+(use-modules (gnu))                                   ; 1
+(use-service-modules networking)                      ; 2
+
+(operating-system                                     ; 4
+  (host-name "antelope")                              ; 5
+  (timezone "Europe/Paris")                           ; 6
+  (locale "en_US.UTF-8")                              ; 7
+
+  (bootloader (GRUB-config (device "/dev/sdX")))      ; 9
+  (file-systems (cons (file-system
+                        (device "root")
+                        (title 'label)
+                        (mount-point "/")
+                        (type "ext4"))
+                      %base-file-systems)))
+EOF
+
+if guix system build "$tmpfile" -n 2> "$errorfile"
+then false
+else
+    grep "$tmpfile:9:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
+fi
+
 # Reporting of duplicate service identifiers.
 
 cat > "$tmpfile" <<EOF
