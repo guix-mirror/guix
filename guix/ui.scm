@@ -43,6 +43,8 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
+  #:autoload   (system repl repl)  (start-repl)
+  #:autoload   (system repl debug) (make-debug stack->vector)
   #:replace (symlink)
   #:export (_
             N_
@@ -51,7 +53,6 @@
             leave
             make-user-module
             load*
-            report-load-error
             warn-about-load-error
             show-version-and-exit
             show-bug-report-information
@@ -146,7 +147,8 @@ messages."
               modules)
     module))
 
-(define (load* file user-module)
+(define* (load* file user-module
+                #:key (on-error 'nothing-special))
   "Load the user provided Scheme source code FILE."
   (define (frame-with-source frame)
     ;; Walk from FRAME upwards until source location information is found.
@@ -157,6 +159,14 @@ messages."
           (if (frame-source frame)
               frame
               (loop (frame-previous frame) frame)))))
+
+  (define (error-string frame args)
+    (call-with-output-string
+     (lambda (port)
+       (apply display-error frame port (cdr args)))))
+
+  (define tag
+    (make-prompt-tag "user-code"))
 
   (catch #t
     (lambda ()
@@ -170,11 +180,14 @@ messages."
 
          ;; Hide the "auto-compiling" messages.
          (parameterize ((current-warning-port (%make-void-port "w")))
-           ;; Give 'load' an absolute file name so that it doesn't try to
-           ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
-           ;; 'primitive-load', so that FILE is compiled, which then allows us
-           ;; to provide better error reporting with source line numbers.
-           (load (canonicalize-path file))))))
+           (call-with-prompt tag
+             (lambda ()
+               ;; Give 'load' an absolute file name so that it doesn't try to
+               ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
+               ;; 'primitive-load', so that FILE is compiled, which then allows us
+               ;; to provide better error reporting with source line numbers.
+               (load (canonicalize-path file)))
+             (const #f))))))
     (lambda _
       ;; XXX: Errors are reported from the pre-unwind handler below, but
       ;; calling 'exit' from there has no effect, so we call it here.
@@ -182,31 +195,43 @@ messages."
     (rec (handle-error . args)
          ;; Capture the stack up to this procedure call, excluded, and pass
          ;; the faulty stack frame to 'report-load-error'.
-         (let* ((stack (make-stack #t handle-error))
+         (let* ((stack (make-stack #t handle-error tag))
                 (depth (stack-length stack))
                 (last  (and (> depth 0) (stack-ref stack 0)))
                 (frame (frame-with-source
                         (if (> depth 1)
                             (stack-ref stack 1)   ;skip the 'throw' frame
                             last))))
-           (report-load-error file args frame)))))
+
+           (report-load-error file args frame)
+
+           (case on-error
+             ((debug)
+              (newline)
+              (display (_ "entering debugger; type ',bt' for a backtrace\n"))
+              (start-repl #:debug (make-debug (stack->vector stack) 0
+                                              (error-string frame args)
+                                              #f)))
+             ((backtrace)
+              (newline (current-error-port))
+              (display-backtrace stack (current-error-port)))
+             (else
+              #t))))))
 
 (define* (report-load-error file args #:optional frame)
-  "Report the failure to load FILE, a user-provided Scheme file, and exit.
+  "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
   (match args
     (('system-error . _)
      (let ((err (system-error-errno args)))
-       (leave (_ "failed to load '~a': ~a~%") file (strerror err))))
+       (report-error (_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (_ "~a: error: ~a~%")
-               (location->string loc) message)
-       (exit 1)))
+               (location->string loc) message)))
     ((error args ...)
      (report-error (_ "failed to load '~a':~%") file)
-     (apply display-error frame (current-error-port) args)
-     (exit 1))))
+     (apply display-error frame (current-error-port) args))))
 
 (define (warn-about-load-error file args)         ;FIXME: factorize with ↑
   "Report the failure to load FILE, a user-provided Scheme file, without

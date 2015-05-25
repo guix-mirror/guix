@@ -5995,6 +5995,25 @@ For the @code{vm-image} and @code{disk-image} actions, create an image
 of the given @var{size}.  @var{size} may be a number of bytes, or it may
 include a unit as a suffix (@pxref{Block size, size specifications,,
 coreutils, GNU Coreutils}).
+
+@item --on-error=@var{strategy}
+Apply @var{strategy} when an error occurs when reading @var{file}.
+@var{strategy} may be one of the following:
+
+@table @code
+@item nothing-special
+Report the error concisely and exit.  This is the default strategy.
+
+@item backtrace
+Likewise, but also display a backtrace.
+
+@item debug
+Report the error and enter Guile's debugger.  From there, you can run
+commands such as @code{,bt} to get a backtrace, @code{,locals} to
+display local variable values, and more generally inspect the program's
+state.  @xref{Debug Commands,,, guile, GNU Guile Reference Manual}, for
+a list of available debugging commands.
+@end table
 @end table
 
 Note that all the actions above, except @code{build} and @code{init},

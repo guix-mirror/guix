@@ -383,6 +383,9 @@ Build the operating system declared in FILE according to ACTION.\n"))
 
   (show-build-options-help)
   (display (_ "
+      --on-error=STRATEGY
+                         apply STRATEGY when an error occurs while reading FILE"))
+  (display (_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (_ "
       --no-grub          for 'init', do not install GRUB"))
@@ -422,6 +425,10 @@ Build the operating system declared in FILE according to ACTION.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix system")))
+         (option '("on-error") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'on-error (string->symbol arg)
+                               result)))
          (option '("image-size") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
@@ -514,7 +521,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
            (action   (assoc-ref opts 'action))
            (system   (assoc-ref opts 'system))
            (os       (if file
-                         (read-operating-system file)
+                         (load* file %user-module
+                                #:on-error (assoc-ref opts 'on-error))
                          (leave (_ "no configuration file specified~%"))))
 
            (dry?     (assoc-ref opts 'dry-run?))
