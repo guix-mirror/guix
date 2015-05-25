@@ -4413,7 +4413,7 @@ configuration (@pxref{Using the Configuration System}).
 
 @table @asis
 @item @code{kernel} (default: @var{linux-libre})
-The package object of the operating system to use@footnote{Currently
+The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
