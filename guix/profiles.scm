@@ -516,12 +516,14 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
           (for-each delete-file (find-files db-dir "\\.conf$"))
           success)))
 
-  ;; Don't depend on GHC when there's nothing to do.
-  (and (any (cut string-prefix? "ghc" <>)
-            (map manifest-entry-name (manifest-entries manifest)))
-       (gexp->derivation "ghc-package-cache" build
-                         #:modules '((guix build utils))
-                         #:local-build? #t)))
+  (with-monad %store-monad
+    ;; Don't depend on GHC when there's nothing to do.
+    (if (any (cut string-prefix? "ghc" <>)
+             (map manifest-entry-name (manifest-entries manifest)))
+        (gexp->derivation "ghc-package-cache" build
+                          #:modules '((guix build utils))
+                          #:local-build? #t)
+        (return #f))))
 
 (define (ca-certificate-bundle manifest)
   "Return a derivation that builds a single-file bundle containing the CA
@@ -602,11 +604,14 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
   (mlet %store-monad ((extras (if (null? (manifest-entries manifest))
                                   (return '())
                                   (sequence %store-monad
-                                            (filter-map (lambda (hook)
-                                                          (hook manifest))
-                                                        hooks)))))
+                                            (map (lambda (hook)
+                                                   (hook manifest))
+                                                 hooks)))))
     (define inputs
-      (append (map gexp-input extras)
+      (append (filter-map (lambda (gexp)
+                            (and (gexp? gexp)
+                                 (gexp-input gexp)))
+                          extras)
               (manifest-inputs manifest)))
 
     (define builder
