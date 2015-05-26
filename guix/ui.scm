@@ -446,8 +446,14 @@ interpreted."
       (lambda ()
         (eval exp (force %guix-user-module)))
       (lambda args
-        (leave (_ "failed to evaluate expression `~a': ~s~%")
-               exp args)))))
+        (report-error (_ "failed to evaluate expression '~a':~%") exp)
+        (match args
+          (('syntax-error proc message properties form . rest)
+           (report-error (_ "syntax error: ~a~%") message))
+          ((error args ...)
+           (apply display-error #f (current-error-port) args))
+          (what? #f))
+        (exit 1)))))
 
 (define (read/eval-package-expression str)
   "Read and evaluate STR and return the package it refers to, or exit an
