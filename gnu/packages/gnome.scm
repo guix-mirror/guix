@@ -506,6 +506,20 @@ update-desktop-database: updates the database containing a cache of MIME types
      "Icons for the GNOME desktop.")
     (license license:lgpl3))) ; or Creative Commons BY-SA 3.0
 
+;; gnome-icon-theme was renamed to adwaita-icon-theme after version 3.12.0.
+(define-public adwaita-icon-theme
+  (package (inherit gnome-icon-theme)
+    (name "adwaita-icon-theme")
+    (version "3.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hmlw7kvhr7c2asc5y77adpymi9ka17gaf76zz835nwwffnn4rlw"))))))
+
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
@@ -746,7 +760,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.6")
+    (version "2.40.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -754,7 +768,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01jgb11779080b80k2ncrhdphgillqrrnszal6vh8yv787r4kwwa"))))
+                "0fplymmqqr28y24vcnb01szn62pfbqhk8p1ngns54x9m6mflr5hk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
