@@ -1,0 +1,13 @@
+Change 'ensure-directories-exist' to look for 'mkdir' in $PATH, not in /bin.
+
+--- maxima-5.36.1/lisp-utils/defsystem.lisp.orig	2014-11-22 16:21:30.000000000 -0500
++++ maxima-5.36.1/lisp-utils/defsystem.lisp	2015-05-25 21:53:31.223648483 -0400
+@@ -4627,7 +4627,7 @@
+         (cmd (if (member :win32 *features*)
+                  (format nil "mkdir \"~a\""
+                          (coerce (subst #\\ #\/ (coerce (namestring dir) 'list)) 'string))
+-                 (format nil "/bin/mkdir -p ~S" (namestring dir)))))
++                 (format nil "mkdir -p ~S" (namestring dir)))))
+    (unless (directory dir)
+      (lisp:system cmd))
+    ;; The second return value is supposed to be T if directories were

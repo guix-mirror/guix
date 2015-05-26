@@ -922,7 +922,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.34.1")
+    (version "5.36.1")
     (source
      (origin
        (method url-fetch)
@@ -930,7 +930,8 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1dw9vfzldpj7lv303xbw0wpyn6ra6i2yzwlrjbcx7j0jm5n43ji0"))))
+         "0x1rk659sn3cq0n5c90848ilzr1gb1wf0072fl6jhkdq00qgh2s0"))
+       (patches (list (search-patch "maxima-defsystem-mkdir.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("gcl" ,gcl)
@@ -951,8 +952,8 @@ to BMP, JPEG or PNG image formats.")
                             (let ((v ,(package-version tk)))
                               (string-take v (string-index-right v #\.)))))
        ;; By default Maxima attempts to write temporary files to
-       ;; '/tmp/nix-build-maxima-5.34.1', which doesn't exist.  Work around
-       ;; that.
+       ;; '/tmp/nix-build-maxima-*', which won't exist at run time.
+       ;; Work around that.
        #:make-flags (list "TMPDIR=/tmp")
        #:phases (alist-cons-before
                  'check 'pre-check
