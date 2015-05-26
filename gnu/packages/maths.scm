@@ -7,6 +7,7 @@
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +69,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
@@ -997,6 +999,49 @@ point numbers")
     ;; At least one file (src/maxima.asd) says "version 2."
     ;; GPLv2 only is therefore the smallest subset.
     (license license:gpl2)))
+
+(define-public wxmaxima
+  (package
+    (name "wxmaxima")
+    (version "15.04.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/wxmaxima/wxMaxima/"
+                           version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fm47ah4aw5qdjqhkz67w5fwhy8yfffa5z896crp0d3hk2bh4180"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("wxwidgets" ,wxwidgets)
+       ("maxima" ,maxima)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'wrap-program
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (wrap-program (string-append (assoc-ref outputs "out")
+                                                  "/bin/wxmaxima")
+                       `("PATH" ":" prefix
+                         (,(string-append (assoc-ref inputs "maxima")
+                                          "/bin"))))
+                     #t)))))
+    (home-page "https://andrejv.github.io/wxmaxima/")
+    (synopsis "Graphical user interface for the Maxima computer algebra system")
+    (description
+     "wxMaxima is a graphical user interface for the Maxima computer algebra
+system.  It eases the use of Maxima by making most of its commands available
+through a menu system and by providing input dialogs for commands that require
+more than one argument.  It also implements its own display engine that
+outputs mathematical symbols directly instead of depicting them with ASCII
+characters.
+
+wxMaxima also features 2D and 3D inline plots, simple animations, mixing of
+text and mathematical calculations to create documents, exporting of input and
+output to TeX, and a browser for Maxima's manual including command index and
+full text searching.")
+    (license license:gpl2+)))
 
 (define-public muparser
   (package
