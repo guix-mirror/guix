@@ -595,10 +595,11 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
   ;; Return as a monadic value the GTK+ package or store path referenced by the
   ;; manifest ENTRY, or #f if not referenced.
   (define (entry-lookup-gtk+ entry)
-    (define (find-among-packages packages)
-      (find (lambda (package)
-              (equal? "gtk+" (package-name package)))
-            packages))
+    (define (find-among-inputs inputs)
+      (find (lambda (input)
+              (and (package? input)
+                   (string=? "gtk+" (package-name input))))
+            inputs))
 
     (define (find-among-store-items items)
       (find (lambda (item)
@@ -615,8 +616,8 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
       (match (manifest-entry-item entry)
         ((? package? package)
          (match (package-transitive-inputs package)
-           (((labels packages . _) ...)
-            (return (find-among-packages packages)))))
+           (((labels inputs . _) ...)
+            (return (find-among-inputs inputs)))))
         ((? string? item)
          (mlet %store-monad ((refs (references* item)))
            (return (find-among-store-items refs)))))))
