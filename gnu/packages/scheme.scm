@@ -454,14 +454,15 @@ mixed.")
 (define-public chibi-scheme
   (package
     (name "chibi-scheme")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "http://abrek.synthcode.com/chibi-scheme-" version ".tgz"))
+       (uri (string-append "https://github.com/ashinn/chibi-scheme/archive/"
+                           version ".tar.gz"))
        (sha256
-        (base32 "0h6k2gdb4xk2pzhdipffcg2w3kfr4zh1va556k1hvng2did6prds"))))
+        (base32 "16wppf4qzr0748iyp0m89gidsfgq9s6x3gw4xggym91waw4fh742"))
+       (file-name (string-append "chibi-scheme-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
