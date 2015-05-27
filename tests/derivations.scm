@@ -499,12 +499,16 @@
            (string=? path (derivation-file-name (%guile-for-build)))))
          (derivation-prerequisites drv))))
 
-(test-assert "derivation-prerequisites and derivation-input-is-valid?"
+(test-assert "derivation-prerequisites and valid-derivation-input?"
   (let* ((a (build-expression->derivation %store "a" '(mkdir %output)))
          (b (build-expression->derivation %store "b" `(list ,(random-text))))
          (c (build-expression->derivation %store "c" `(mkdir %output)
                                           #:inputs `(("a" ,a) ("b" ,b)))))
-    (build-derivations %store (list a))
+    ;; Make sure both A and %BOOTSTRAP-GUILE are built (the latter could have
+    ;; be removed by tests/guix-gc.sh.)
+    (build-derivations %store
+                       (list a (package-derivation %store %bootstrap-guile)))
+
     (match (derivation-prerequisites c
                                      (cut valid-derivation-input? %store
                                           <>))
