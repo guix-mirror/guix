@@ -439,6 +439,7 @@ following keywords are available:
          (define-key map (kbd "r") 'guix-history-forward)
          (define-key map (kbd "g") 'revert-buffer)
          (define-key map (kbd "R") 'guix-redisplay-buffer)
+         (define-key map (kbd "M") 'guix-apply-manifest)
          (define-key map (kbd "C-c C-z") 'guix-switch-to-repl)))))
 
 (put 'guix-define-buffer-type 'lisp-indent-function 'defun)
@@ -1021,6 +1022,32 @@ Ask a user with PROMPT for continuing an operation."
       :use-substitutes? (or guix-use-substitutes 'f)
       :dry-run? (or guix-dry-run 'f))
      nil 'source-download)))
+
+;;;###autoload
+(defun guix-apply-manifest (profile file &optional operation-buffer)
+  "Apply manifest from FILE to PROFILE.
+This function has the same meaning as 'guix package --manifest' command.
+See Info node `(guix) Invoking guix package' for details.
+
+Interactively, use the current profile and prompt for manifest
+FILE.  With a prefix argument, also prompt for PROFILE."
+  (interactive
+   (let* ((default-profile (or guix-profile guix-current-profile))
+          (profile (if current-prefix-arg
+                       (guix-profile-prompt)
+                     default-profile))
+          (file (read-file-name "File with manifest: "))
+          (buffer (and guix-profile (current-buffer))))
+     (list profile file buffer)))
+  (when (or (not guix-operation-confirm)
+            (y-or-n-p (format "Apply manifest from '%s' to profile '%s'? "
+                              file profile)))
+    (guix-eval-in-repl
+     (guix-make-guile-expression
+      'guix-package
+      (concat "--profile=" profile)
+      (concat "--manifest=" file))
+     operation-buffer)))
 
 
 ;;; Pull

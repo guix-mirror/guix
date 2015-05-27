@@ -183,6 +183,11 @@ packages/generations and redisplay it.
 @item R
 Redisplay current buffer (without updating information).
 
+@item M
+Apply manifest to the current profile or to a specified profile, if
+prefix argument is used.  This has the same meaning as @code{--manifest}
+option (@pxref{Invoking guix package}).
+
 @item C-c C-z
 Go to the Guix REPL (@pxref{The REPL,,, geiser, Geiser User Manual}).
 
