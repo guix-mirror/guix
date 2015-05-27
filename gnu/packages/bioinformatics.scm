@@ -24,6 +24,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
@@ -541,6 +543,74 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
+
+(define-public edirect
+  (package
+    (name "edirect")
+    (version "2.50")
+    (source (origin
+              (method url-fetch)
+              ;; Note: older versions are not retained.
+              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip")
+              (sha256
+               (base32
+                "08afhz2ph66h8h381hl1mqyxkdi5nbvzsyj9gfw3jfbdijnpi4qj"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((target (string-append (assoc-ref outputs "out")
+                                                 "/bin")))
+                      (mkdir-p target)
+                      (copy-file "edirect.pl"
+                                 (string-append target "/edirect.pl"))
+                      #t)))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
+            (let* ((out (assoc-ref outputs "out"))
+                   (path (getenv "PERL5LIB")))
+              (wrap-program (string-append out "/bin/edirect.pl")
+                `("PERL5LIB" ":" prefix (,path)))))))))
+    (inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-encode-locale" ,perl-encode-locale)
+       ("perl-file-listing" ,perl-file-listing)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-html-tree" ,perl-html-tree)
+       ("perl-http-cookies" ,perl-http-cookies)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-negotiate" ,perl-http-negotiate)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-net-http" ,perl-net-http)
+       ("perl-uri" ,perl-uri)
+       ("perl-www-robotrules" ,perl-www-robotrules)
+       ("perl" ,perl)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288")
+    (synopsis "Tools for accessing the NCBI's set of databases")
+    (description
+     "Entrez Direct (EDirect) is a method for accessing the National Center
+for Biotechnology Information's (NCBI) set of interconnected
+databases (publication, sequence, structure, gene, variation, expression,
+etc.) from a terminal.  Functions take search terms from command-line
+arguments.  Individual operations are combined to build multi-step queries.
+Record retrieval and formatting normally complete the process.
+
+EDirect also provides an argument-driven function that simplifies the
+extraction of data from document summaries or other results that are returned
+in structured XML format.  This can eliminate the need for writing custom
+software to answer ad hoc questions.")
+    (license license:public-domain)))
 
 (define-public express
   (package
