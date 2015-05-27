@@ -631,21 +631,21 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
       #~(begin
           (use-modules (guix build utils)
                        (guix build union)
+                       (guix build profiles)
                        (srfi srfi-26)
                        (ice-9 ftw))
+
           (let* ((destdir  (string-append #$output "/share/icons"))
                  (icondirs (filter file-exists?
                                    (map (cut string-append <> "/share/icons")
                                         '#$(manifest-inputs manifest))))
                  (update-icon-cache (string-append
                                      #+gtk+ "/bin/gtk-update-icon-cache")))
-            ;; XXX: Should move to (guix build utils).
-            (define ensure-writable-directory
-              (@@ (guix build profiles) ensure-writable-directory))
 
             ;; Union all the icons.
             (mkdir-p (string-append #$output "/share"))
             (union-build destdir icondirs)
+
             ;; Update the 'icon-theme.cache' file for each icon theme.
             (for-each
              (lambda (theme)

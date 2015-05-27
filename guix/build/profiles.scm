@@ -24,7 +24,8 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
-  #:export (build-profile))
+  #:export (ensure-writable-directory
+            build-profile))
 
 ;;; Commentary:
 ;;;
