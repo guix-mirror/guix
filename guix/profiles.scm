@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -588,12 +589,88 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                     #:modules '((guix build utils))
                     #:local-build? #t))
 
+(define (gtk-icon-themes manifest)
+  "Return a derivation that unions all icon themes from manifest entries and
+creates the GTK+ 'icon-theme.cache' file for each theme."
+  ;; Return as a monadic value the GTK+ package or store path referenced by the
+  ;; manifest ENTRY, or #f if not referenced.
+  (define (entry-lookup-gtk+ entry)
+    (define (find-among-packages packages)
+      (find (lambda (package)
+              (equal? "gtk+" (package-name package)))
+            packages))
+
+    (define (find-among-store-items items)
+      (find (lambda (item)
+              (equal? "gtk+"
+                      (package-name->name+version
+                       (store-path-package-name item))))
+            items))
+
+    ;; TODO: Factorize.
+    (define references*
+      (store-lift references))
+
+    (with-monad %store-monad
+      (match (manifest-entry-item entry)
+        ((? package? package)
+         (match (package-transitive-inputs package)
+           (((labels packages . _) ...)
+            (return (find-among-packages packages)))))
+        ((? string? item)
+         (mlet %store-monad ((refs (references* item)))
+           (return (find-among-store-items refs)))))))
+
+  (define (manifest-lookup-gtk+ manifest)
+    (anym %store-monad
+          entry-lookup-gtk+ (manifest-entries manifest)))
+
+  (mlet %store-monad ((gtk+ (manifest-lookup-gtk+ manifest)))
+    (define build
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build union)
+                       (srfi srfi-26)
+                       (ice-9 ftw))
+          (let* ((destdir  (string-append #$output "/share/icons"))
+                 (icondirs (filter file-exists?
+                                   (map (cut string-append <> "/share/icons")
+                                        '#$(manifest-inputs manifest))))
+                 (update-icon-cache (string-append
+                                     #+gtk+ "/bin/gtk-update-icon-cache")))
+            ;; XXX: Should move to (guix build utils).
+            (define ensure-writable-directory
+              (@@ (guix build profiles) ensure-writable-directory))
+
+            ;; Union all the icons.
+            (mkdir-p (string-append #$output "/share"))
+            (union-build destdir icondirs)
+            ;; Update the 'icon-theme.cache' file for each icon theme.
+            (for-each
+             (lambda (theme)
+               (let ((dir (string-append #$output "/share/icons/" theme)))
+                 (ensure-writable-directory dir)
+                 (system* update-icon-cache "-t" dir)))
+             (scandir destdir (negate (cut member <> '("." ".."))))))))
+
+    ;; Don't run the hook when there's nothing to do.
+    (if gtk+
+        (gexp->derivation "gtk-icon-themes" build
+                          #:modules '((guix build utils)
+                                      (guix build union)
+                                      (guix build profiles)
+                                      (guix search-paths)
+                                      (guix records))
+                          #:local-build? #t)
+        (return #f))))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
   (list info-dir-file
         ghc-package-cache-file
-        ca-certificate-bundle))
+        ca-certificate-bundle
+        gtk-icon-themes))
 
 (define* (profile-derivation manifest
                              #:key
