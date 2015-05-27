@@ -79,7 +79,7 @@ under /root/.guix-profile where GUIX is installed."
                             ;; extracting the archive.
                             "./root/.guix-profile"
                             "./var/guix"
-                            "./gnu")))))
+                            (string-append "." (%store-directory)))))))
 
     (gexp->derivation "guix-tarball.tar.xz" build
                       #:references-graphs `(("profile" ,profile))
