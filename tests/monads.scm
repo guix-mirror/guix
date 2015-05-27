@@ -163,7 +163,7 @@
 (test-assert "mapm"
   (every (lambda (monad run)
            (with-monad monad
-             (equal? (run (mapm monad (lift1 1+ monad) (map return (iota 10))))
+             (equal? (run (mapm monad (lift1 1+ monad) (iota 10)))
                      (map 1+ (iota 10)))))
          %monads
          %monad-run))
@@ -202,11 +202,12 @@
 (test-assert "anym"
   (every (lambda (monad run)
            (eq? (run (with-monad monad
-                       (let ((lst (list (return 1) (return 2) (return 3))))
-                         (anym monad
-                               (lambda (x)
-                                 (and (odd? x) 'odd!))
-                               lst))))
+                       (anym monad
+                             (lift1 (lambda (x)
+                                      (and (odd? x) 'odd!))
+                                    monad)
+                             (append (make-list 1000 0)
+                                     (list 1 2)))))
                 'odd!))
          %monads
          %monad-run))

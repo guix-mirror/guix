@@ -225,8 +225,11 @@ MONAD---i.e., return a monadic function in MONAD."
       (return (apply proc args)))))
 
 (define (foldm monad mproc init lst)
-  "Fold MPROC over LST, a list of monadic values in MONAD, and return a
-monadic value seeded by INIT."
+  "Fold MPROC over LST and return a monadic value seeded by INIT.
+
+  (foldm %state-monad (lift2 cons %state-monad) '() '(a b c))
+  => '(c b a)  ;monadic
+"
   (with-monad monad
     (let loop ((lst    lst)
                (result init))
@@ -234,18 +237,21 @@ monadic value seeded by INIT."
         (()
          (return result))
         ((head tail ...)
-         (mlet* monad ((item   head)
-                       (result (mproc item result)))
-           (loop tail result)))))))
+         (>>= (mproc head result)
+              (lambda (result)
+                (loop tail result))))))))
 
 (define (mapm monad mproc lst)
-  "Map MPROC over LST, a list of monadic values in MONAD, and return a monadic
-list.  LST items are bound from left to right, so effects in MONAD are known
-to happen in that order."
+  "Map MPROC over LST and return a monadic list.
+
+  (mapm %state-monad (lift1 1+ %state-monad) '(0 1 2))
+  => (1 2 3)  ;monadic
+"
   (mlet monad ((result (foldm monad
                               (lambda (item result)
-                                (mlet monad ((item (mproc item)))
-                                  (return (cons item result))))
+                                (>>= (mproc item)
+                                     (lambda (item)
+                                       (return (cons item result)))))
                               '()
                               lst)))
     (return (reverse result))))
@@ -268,20 +274,24 @@ evaluating each item of LST in sequence."
               (lambda (item)
                 (seq tail (cons item result)))))))))
 
-(define (anym monad proc lst)
-  "Apply PROC to the list of monadic values LST; return the first value,
-lifted in MONAD, for which PROC returns true."
+(define (anym monad mproc lst)
+  "Apply MPROC to the list of values LST; return as a monadic value the first
+value for which MPROC returns a true monadic value or #f.  For example:
+
+  (anym %state-monad (lift1 odd? %state-monad) '(0 1 2))
+  => #t   ;monadic
+"
   (with-monad monad
     (let loop ((lst lst))
       (match lst
         (()
          (return #f))
         ((head tail ...)
-         (mlet* monad ((value  head)
-                       (result -> (proc value)))
-           (if result
-               (return result)
-               (loop tail))))))))
+         (>>= (mproc head)
+              (lambda (result)
+                (if result
+                    (return result)
+                    (loop tail)))))))))
 
 (define-syntax listm
   (lambda (s)
