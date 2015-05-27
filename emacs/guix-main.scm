@@ -878,7 +878,8 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                      (format #t (N_ "~a package in profile~%"
                                     "~a packages in profile~%"
                                     count)
-                             count))))))))))
+                             count)
+                     (display-search-paths entries profile))))))))))
 
 (define (delete-generations* profile generations)
   "Delete GENERATIONS from PROFILE.

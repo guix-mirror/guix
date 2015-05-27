@@ -53,6 +53,7 @@
             roll-back
             delete-generation
             delete-generations
+            display-search-paths
             guix-package))
 
 (define %store
