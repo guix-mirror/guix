@@ -517,12 +517,13 @@ user @file{nobody};
 a writable @file{/tmp} directory.
 @end itemize
 
-If you are installing Guix as an unprivileged user, it is still
-possible to run @command{guix-daemon}.  However, build processes will
-not be isolated from one another, and not from the rest of the system.
-Thus, build processes may interfere with each other, and may access
-programs, libraries, and other files available on the system---making it
-much harder to view them as @emph{pure} functions.
+If you are installing Guix as an unprivileged user, it is still possible
+to run @command{guix-daemon} provided you pass @code{--disable-chroot}.
+However, build processes will not be isolated from one another, and not
+from the rest of the system.  Thus, build processes may interfere with
+each other, and may access programs, libraries, and other files
+available on the system---making it much harder to view them as
+@emph{pure} functions.
 
 
 @node Daemon Offload Setup
@@ -764,7 +765,9 @@ needs.
 Disable chroot builds.
 
 Using this option is not recommended since, again, it would allow build
-processes to gain access to undeclared dependencies.
+processes to gain access to undeclared dependencies.  It is necessary,
+though, when @command{guix-daemon} is running under an unprivileged user
+account.
 
 @item --disable-log-compression
 Disable compression of the build logs.
