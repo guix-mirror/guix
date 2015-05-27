@@ -292,13 +292,11 @@ See `guix-list-marked' for the meaning of ARGS."
 See `guix-list-get-marked' for details."
   (mapcar #'car (apply #'guix-list-get-marked mark-names)))
 
-(defun guix-list-mark (mark-name &optional advance &rest args)
+(defun guix-list--mark (mark-name &optional advance &rest args)
   "Put a mark on the current line.
 Also add the current entry to `guix-list-marked' using its ID and ARGS.
 MARK-NAME is a symbol from `guix-list-mark-alist'.
-If ADVANCE is non-nil, move forward by one line after marking.
-Interactively, put a general mark and move to the next line."
-  (interactive '(general t))
+If ADVANCE is non-nil, move forward by one line after marking."
   (let ((id (guix-list-current-id)))
     (if (eq mark-name 'empty)
         (setq guix-list-marked (assq-delete-all id guix-list-marked))
@@ -310,12 +308,21 @@ Interactively, put a general mark and move to the next line."
   (tabulated-list-put-tag (guix-list-get-mark-string mark-name)
                           advance))
 
-(defun guix-list-mark-all (mark-name)
+(defun guix-list-mark (&optional arg)
+  "Mark the current line and move to the next line.
+With ARG, mark all lines."
+  (interactive "P")
+  (if arg
+      (guix-list-mark-all)
+    (guix-list--mark 'general t)))
+
+(defun guix-list-mark-all (&optional mark-name)
   "Mark all lines with MARK-NAME mark.
 MARK-NAME is a symbol from `guix-list-mark-alist'.
 Interactively, put a general mark on all lines."
-  (interactive '(general))
-  (guix-list-for-each-line #'guix-list-mark mark-name))
+  (interactive)
+  (or mark-name (setq mark-name 'general))
+  (guix-list-for-each-line #'guix-list--mark mark-name))
 
 (defun guix-list-unmark (&optional arg)
   "Unmark the current line and move to the next line.
@@ -323,13 +330,13 @@ With ARG, unmark all lines."
   (interactive "P")
   (if arg
       (guix-list-unmark-all)
-    (guix-list-mark 'empty t)))
+    (guix-list--mark 'empty t)))
 
 (defun guix-list-unmark-backward ()
   "Move up one line and unmark it."
   (interactive)
   (forward-line -1)
-  (guix-list-mark 'empty))
+  (guix-list--mark 'empty))
 
 (defun guix-list-unmark-all ()
   "Unmark all lines."
@@ -360,7 +367,6 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
     (define-key map (kbd "RET") 'guix-list-describe)
     (define-key map (kbd "m")   'guix-list-mark)
     (define-key map (kbd "*")   'guix-list-mark)
-    (define-key map (kbd "M")   'guix-list-mark-all)
     (define-key map (kbd "u")   'guix-list-unmark)
     (define-key map (kbd "DEL") 'guix-list-unmark-backward)
     (define-key map [remap tabulated-list-sort] 'guix-list-sort)
@@ -417,7 +423,7 @@ This macro defines the following functions:
                         ,(concat "Put '" mark-name-str "' mark and move to the next line.\n"
                                  "Also add the current entry to `guix-list-marked'.")
                         (interactive)
-                        (guix-list-mark ',mark-name t))))
+                        (guix-list--mark ',mark-name t))))
                  marks-val)
 
        (defun ,init-fun ()
@@ -531,7 +537,7 @@ AVAILABLE list, otherwise mark all DEFAULT outputs."
                      (guix-completing-read-multiple
                       prompt available nil t)
                    default)))
-    (apply #'guix-list-mark mark t outputs)))
+    (apply #'guix-list--mark mark t outputs)))
 
 (defun guix-package-list-mark-install (&optional arg)
   "Mark the current package for installation and move to the next line.
@@ -606,7 +612,7 @@ accept an entry as argument."
   (interactive)
   (guix-list-mark-package-upgrades
    (lambda (entry)
-     (apply #'guix-list-mark
+     (apply #'guix-list--mark
             'upgrade nil
             (guix-get-installed-outputs entry)))))
 
@@ -661,7 +667,7 @@ The specification is suitable for `guix-process-package-actions'."
          (installed (guix-get-key-val entry 'installed)))
     (if installed
         (user-error "This output is already installed")
-      (guix-list-mark 'install t))))
+      (guix-list--mark 'install t))))
 
 (defun guix-output-list-mark-delete ()
   "Mark the current output for deletion and move to the next line."
@@ -670,7 +676,7 @@ The specification is suitable for `guix-process-package-actions'."
   (let* ((entry     (guix-list-current-entry))
          (installed (guix-get-key-val entry 'installed)))
     (if installed
-        (guix-list-mark 'delete t)
+        (guix-list--mark 'delete t)
       (user-error "This output is not installed"))))
 
 (defun guix-output-list-mark-upgrade ()
@@ -683,13 +689,13 @@ The specification is suitable for `guix-process-package-actions'."
         (user-error "This output is not installed"))
     (when (or (guix-get-key-val entry 'obsolete)
               (y-or-n-p "This output is not obsolete.  Try to upgrade it anyway? "))
-      (guix-list-mark 'upgrade t))))
+      (guix-list--mark 'upgrade t))))
 
 (defun guix-output-list-mark-upgrades ()
   "Mark all obsolete package outputs for upgrading."
   (interactive)
   (guix-list-mark-package-upgrades
-   (lambda (_) (guix-list-mark 'upgrade))))
+   (lambda (_) (guix-list--mark 'upgrade))))
 
 (defun guix-output-list-execute ()
   "Perform actions on the marked outputs."
@@ -850,7 +856,7 @@ With ARG, mark all generations for deletion."
   (interactive "P")
   (if arg
       (guix-list-mark-all 'delete)
-    (guix-list-mark 'delete t)))
+    (guix-list--mark 'delete t)))
 
 (defun guix-generation-list-execute ()
   "Delete marked generations."

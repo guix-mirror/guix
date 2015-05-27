@@ -213,9 +213,7 @@ Default key bindings available for both ``package-list'' and
 
 @table @kbd
 @item m
-Mark the current entry.
-@item M
-Mark all entries.
+Mark the current entry (with prefix, mark all entries).
 @item u
 Unmark the current entry (with prefix, unmark all entries).
 @item @key{DEL}
