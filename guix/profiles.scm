@@ -685,9 +685,9 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
                                                    (hook manifest))
                                                  hooks)))))
     (define inputs
-      (append (filter-map (lambda (gexp)
-                            (and (gexp? gexp)
-                                 (gexp-input gexp)))
+      (append (filter-map (lambda (drv)
+                            (and (derivation? drv)
+                                 (gexp-input drv)))
                           extras)
               (manifest-inputs manifest)))
 
