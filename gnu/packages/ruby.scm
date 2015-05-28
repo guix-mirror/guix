@@ -167,3 +167,51 @@ translation data, custom key/scope separator, custom exception handlers, and
 an extensible architecture with a swappable backend.")
     (home-page "http://github.com/svenfuchs/i18n")
     (license license:expat)))
+
+;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
+;; dependencies use RSpec for their test suites!  To avoid these circular
+;; dependencies, we disable tests for all of the RSpec-related packages.
+(define ruby-rspec-support
+  (package
+    (name "ruby-rspec-support")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-support/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pvzfrqgy0z0gwmdgjp9f2vz1d9c0cajyzfqj9z8i2ssxnzmj4bv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (synopsis "RSpec support library")
+    (description "Support utilities for RSpec gems.")
+    (home-page "https://github.com/rspec/rspec-support")
+    (license license:expat)))
+
+(define-public ruby-rspec-core
+  (package
+    (name "ruby-rspec-core")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-core/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1clsa4lkh5c9c7xc3xa336ym00ycr67pchpg1bv4y3fz5hvzw8ki"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-support" ,ruby-rspec-support)))
+    (synopsis "RSpec core library")
+    (description "Rspec-core provides the RSpec test runner and example
+groups.")
+    (home-page "https://github.com/rspec/rspec-core")
+    (license license:expat)))
