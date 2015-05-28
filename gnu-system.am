@@ -196,6 +196,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lxqt.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
+  gnu/packages/machine-learning.scm		\
   gnu/packages/man.scm				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
