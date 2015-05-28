@@ -289,3 +289,30 @@ outcomes of a code example.")
 support for stubbing and mocking.")
     (home-page "https://github.com/rspec/rspec-mocks")
     (license license:expat)))
+
+(define-public ruby-rspec
+  (package
+    (name "ruby-rspec")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jg38dbaknsdhiav5vnrwfccg524fwcg6sq1715441vx1xl6p54q"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+    (synopsis "Behavior-driven development framework for Ruby")
+    (description "RSpec is a behavior-driven development (BDD) framework for
+Ruby.  This meta-package includes the RSpec test runner, along with the
+expectations and mocks frameworks.")
+    (home-page "http://rspec.info/")
+    (license license:expat)))
