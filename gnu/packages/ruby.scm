@@ -215,3 +215,52 @@ an extensible architecture with a swappable backend.")
 groups.")
     (home-page "https://github.com/rspec/rspec-core")
     (license license:expat)))
+
+(define ruby-diff-lcs-for-rspec
+  (package
+    (name "ruby-diff-lcs")
+    (version "1.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/halostatue/diff-lcs/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kmfz2qdwbfjf97rx27hh9fm39mv3z9avjmvsajqnb5wxj2l5l4s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (synopsis "Compute the difference between two Enumerable sequences")
+    (description "Diff::LCS computes the difference between two Enumerable
+sequences using the McIlroy-Hunt longest common subsequence (LCS) algorithm.
+It includes utilities to create a simple HTML diff output format and a
+standard diff-like tool.")
+    (home-page "https://github.com/halostatue/diff-lcs")
+    (license license:expat)))
+
+(define-public ruby-rspec-expectations
+  (package
+    (name "ruby-rspec-expectations")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-expectations/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h0rpprbh6h59gmksiyi1b8w6cvcai4wdbkikajwx3w1asxi6f7x"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-support" ,ruby-rspec-support)
+       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+    (synopsis "RSpec expecations library")
+    (description "Rspec-expectations provides a simple API to express expected
+outcomes of a code example.")
+    (home-page "https://github.com/rspec/rspec-expectations")
+    (license license:expat)))
