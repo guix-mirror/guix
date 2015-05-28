@@ -339,3 +339,28 @@ expectations and mocks frameworks.")
 specified in a \"Gemfile\", as well as their dependencies.")
     (home-page "http://bundler.io/")
     (license license:expat)))
+
+(define-public ruby-useragent
+  (package
+    (name "ruby-useragent")
+    (version "0.13.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/gshutler/useragent/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hj00fw06i0y3rwxxhxmnrqxhpnffv4zfqx2sqqpc5qc4fdvd2x9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("bundler" ,bundler)))
+    (synopsis "HTTP user agent parser for Ruby")
+    (description "UserAgent is a Ruby library that parses and compares HTTP
+User Agents.")
+    (home-page "https://github.com/gshutler/useragent")
+    (license license:expat)))
