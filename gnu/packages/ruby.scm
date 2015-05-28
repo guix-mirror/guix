@@ -316,3 +316,26 @@ Ruby.  This meta-package includes the RSpec test runner, along with the
 expectations and mocks frameworks.")
     (home-page "http://rspec.info/")
     (license license:expat)))
+
+;; Bundler is yet another source of circular dependencies, so we must disable
+;; its test suite as well.
+(define-public bundler
+  (package
+    (name "bundler")
+    (version "1.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bundler/bundler/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08flx3n9hb3yz8mm5k16cdz0sb7g774f6vxn6gc3wfh5la83vfyx"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (synopsis "Ruby gem bundler")
+    (description "Bundler automatically downloads and installs a list of gems
+specified in a \"Gemfile\", as well as their dependencies.")
+    (home-page "http://bundler.io/")
+    (license license:expat)))
