@@ -649,9 +649,12 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
             ;; Update the 'icon-theme.cache' file for each icon theme.
             (for-each
              (lambda (theme)
-               (let ((dir (string-append #$output "/share/icons/" theme)))
-                 (ensure-writable-directory dir)
-                 (system* update-icon-cache "-t" dir)))
+               (let ((dir (string-append destdir "/" theme)))
+                 ;; Occasionally DESTDIR contains plain files, such as
+                 ;; "abiword_48.png".  Ignore these.
+                 (when (file-is-directory? dir)
+                   (ensure-writable-directory dir)
+                   (system* update-icon-cache "-t" dir))))
              (scandir destdir (negate (cut member <> '("." ".."))))))))
 
     ;; Don't run the hook when there's nothing to do.
