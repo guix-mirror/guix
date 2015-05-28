@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages linux))
@@ -357,6 +359,41 @@ level interface to James Clark's expat library.  XML::DOM::Parser is derived
 from XML::Parser.  It parses XML strings or files and builds a data structure
 that conforms to the API of the Document Object Model.")
     (home-page "http://search.cpan.org/~tjmather/XML-DOM-1.44/lib/XML/DOM.pm")))
+
+(define-public pugixml
+  (package
+    (name "pugixml")
+    (version "1.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/zeux/pugixml/archive/v"
+                          version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0czbcv9aqf2rw3s9cljz2wb1f4zbhd07wnj7ykklklccl0ipfnwi"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f
+       #:out-of-source? #f
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'chdir
+                   (lambda _
+                     (chdir "scripts")
+                     #t)))))
+    (home-page "http://pugixml.org")
+    (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
+    (description
+     "pugixml is a C++ XML processing library, which consists of a DOM-like
+interface with rich traversal/modification capabilities, a fast XML parser
+which constructs the DOM tree from an XML file/buffer, and an XPath 1.0
+implementation for complex data-driven tree queries.  Full Unicode support is
+also available, with Unicode interface variants and conversions between
+different Unicode encodings which happen automatically during
+parsing/saving.")
+    (license license:expat)))
 
 (define-public xmlto
   (package
