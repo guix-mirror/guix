@@ -1031,6 +1031,57 @@ and ALSA.")
 tempo and pitch of an audio recording independently of one another.")
     (license license:gpl2+)))
 
+(define-public rtmidi
+  (package
+    (name "rtmidi")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/powertab/rtmidi/archive/"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0d49lapnmdgmjxh4vw57h6xk74nn5r0zwysv7jbd7m8kqhpq5rjj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'autoconf
+                   (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+                  (add-before
+                   'build 'fix-makefile
+                   (lambda _
+                     (substitute* "Makefile"
+                       (("/bin/ln") "ln")
+                       (("RtMidi.h RtError.h") "RtMidi.h"))
+                     #t))
+                  (add-before
+                   'install 'make-target-dirs
+                   (lambda _
+                     (let ((out (assoc-ref %outputs "out")))
+                       (mkdir-p (string-append out "/bin"))
+                       (mkdir (string-append out "/lib"))
+                       (mkdir (string-append out "/include")))
+                     #t)))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/powertab/rtmidi")
+    (synopsis "Cross-platform MIDI library for C++")
+    (description
+     "RtMidi is a set of C++ classes (RtMidiIn, RtMidiOut, and API specific
+classes) that provide a common cross-platform API for realtime MIDI
+input/output.")
+    (license license:expat)))
+
 (define-public sratom
   (package
     (name "sratom")
