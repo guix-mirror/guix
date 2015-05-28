@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -103,6 +103,9 @@ shell command in that environment.\n"))
   (display (_ "
   -E, --exec=COMMAND     execute COMMAND in new environment"))
   (display (_ "
+      --ad-hoc           include all specified packages in the environment instead
+                         of only their inputs"))
+  (display (_ "
       --pure             unset existing environment variables"))
   (display (_ "
       --search-paths     display needed environment variable definitions"))
@@ -147,6 +150,9 @@ shell command in that environment.\n"))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '("ad-hoc") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'ad-hoc? #t result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -191,6 +197,18 @@ packages."
   (delete-duplicates
    (append-map transitive-inputs packages)))
 
+(define (packages+propagated-inputs packages)
+  "Return a list containing PACKAGES plus all of their propagated inputs."
+  (delete-duplicates
+   (append packages
+           (map (match-lambda
+                  ((or (_ (? package? package))
+                       (_ (? package? package) _))
+                   package)
+                  (_ #f))
+                (append-map package-transitive-propagated-inputs
+                            packages)))))
+
 (define (build-inputs inputs opts)
   "Build the packages in INPUTS using the build options in OPTS."
   (let ((substitutes? (assoc-ref opts 'substitutes?))
@@ -218,9 +236,12 @@ packages."
       (let* ((opts  (parse-command-line args %options (list %default-options)
                                         #:argument-handler handle-argument))
              (pure? (assoc-ref opts 'pure))
+             (ad-hoc? (assoc-ref opts 'ad-hoc?))
              (command (assoc-ref opts 'exec))
-             (inputs (packages->transitive-inputs
-                      (pick-all (options/resolve-packages opts) 'package)))
+             (packages (pick-all (options/resolve-packages opts) 'package))
+             (inputs (if ad-hoc?
+                         (packages+propagated-inputs packages)
+                         (packages->transitive-inputs packages)))
              (drvs (run-with-store store
                      (mbegin %store-monad
                        (set-guile-for-build (default-guile))

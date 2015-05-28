@@ -2381,7 +2381,7 @@ the @code{#:haddock-flags} parameter.  If the file @code{Setup.hs} is
 not found, the build system looks for @code{Setup.lhs} instead.
 
 Which Haskell compiler is used can be specified with the @code{#:haskell}
-parameter which defaults to @code{ghc}. 
+parameter which defaults to @code{ghc}.
 @end defvr
 
 Lastly, for packages that do not need anything as sophisticated, a
@@ -3931,6 +3931,21 @@ evaluates to.
 @item --exec=@var{command}
 @item -E @var{command}
 Execute @var{command} in the new environment.
+
+@item --ad-hoc
+Include all specified packages in the resulting environment, as if an
+@i{ad hoc} package were defined with them as inputs.  This option is
+useful for quickly creating an environment without having to write a
+package expression to contain the desired inputs.
+
+For instance, the command:
+
+@example
+guix environment --ad-hoc guile guile-sdl -E guile
+@end example
+
+runs @command{guile} in an environment where Guile and Guile-SDL are
+available.
 
 @item --pure
 Unset existing environment variables when building the new environment.
