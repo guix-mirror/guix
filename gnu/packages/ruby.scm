@@ -264,3 +264,28 @@ standard diff-like tool.")
 outcomes of a code example.")
     (home-page "https://github.com/rspec/rspec-expectations")
     (license license:expat)))
+
+(define-public ruby-rspec-mocks
+  (package
+    (name "ruby-rspec-mocks")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-mocks/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xzxsg0idxkg7czmjgqq10lcd821ibw1hjzn404sk9j6rw0fbx2g"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-support" ,ruby-rspec-support)
+       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+    (synopsis "RSpec stubbing and mocking library")
+    (description "Rspec-mocks provides RSpec's \"test double\" framework, with
+support for stubbing and mocking.")
+    (home-page "https://github.com/rspec/rspec-mocks")
+    (license license:expat)))
