@@ -18,25 +18,51 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libreoffice)
-  #:use-module (guix packages)
+  #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.1+ mpl1.1 mpl2.0 non-copyleft))
-  #:use-module (guix build-system gnu)
+                #:select (gpl2+ lgpl2.1+ mpl1.1 mpl2.0
+                          non-copyleft x11-style))
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages java)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages rdf)
+  #:use-module (gnu packages scanner)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip))
 
 (define-public ixion
   (package
@@ -632,3 +658,169 @@ data file and an index file with binary search to look up words and phrases
 and to return information on pronunciations, meaningss and synonyms.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING in the distribution."))))
+
+;; LibreOffice requires an xmlsec source tarball; it does not even check
+;; for the presence of an externally compiled library.
+(define xmlsec-src-libreoffice
+  (origin
+    (method url-fetch)
+    (uri
+      (string-append
+        "http://dev-www.libreoffice.org/src/"
+        "1f24ab1d39f4a51faf22244c94a6203f-xmlsec1-1.2.14.tar.gz"))
+    (sha256 (base32
+              "0jnxxygg6z5zi6za94dvxmg1bfar1wh8p5xa2bzbha0qcn2m02ir"))))
+
+(define-public libreoffice
+  (package
+    (name "libreoffice")
+    (version "4.4.3.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri
+        (string-append
+          "http://download.documentfoundation.org/libreoffice/src/"
+          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
+      (sha256 (base32
+               "0rl9x01ngxwnqwzxkrqy4vks4rb024m75z0w4zidwyp0az0m8qdd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(;; autoreconf is run by the LibreOffice build system, since after
+       ;; unpacking the external xmlsec tarball, it applies a series of
+       ;; patches to Makefile.am, configure.in, config.guess and config.sub.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bison" ,bison)
+       ("cppunit" ,cppunit)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("which" ,which)))
+    (inputs
+     `(("bluez" ,bluez)
+       ("boost" ,boost)
+       ("clucene" ,clucene)
+       ("cups" ,cups)
+       ("dbus-glib" ,dbus-glib)
+       ("fontconfig" ,fontconfig)
+       ("gconf" ,gconf)
+       ("glew" ,glew)
+       ("glm" ,glm)
+       ("gperf" ,gperf)
+       ("graphite2" ,graphite2)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+-2)
+       ("harfbuzz" ,harfbuzz)
+       ("hunspell" ,hunspell)
+       ("hyphen" ,hyphen)
+       ("libabw" ,libabw)
+       ("libcdr" ,libcdr)
+       ("libcmis" ,libcmis)
+       ("libjpeg" ,libjpeg)
+       ("libe-book" ,libe-book)
+       ("libetonyek" ,libetonyek)
+       ("libexttextcat" ,libexttextcat)
+       ("libfreehand" ,libfreehand)
+       ("libmspub" ,libmspub)
+       ("libmwaw" ,libmwaw)
+       ("libodfgen" ,libodfgen)
+       ("libpagemaker" ,libpagemaker)
+       ("libvisio" ,libvisio)
+       ("libwpg" ,libwpg)
+       ("libwps" ,libwps)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxslt" ,libxslt)
+       ("libxt" ,libxt)
+       ("lpsolve" ,lpsolve)
+       ("mdds" ,mdds)
+       ("mythes" ,mythes)
+       ("neon" ,neon)
+       ("nspr" ,nspr)
+       ("nss" ,nss)
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("orcus" ,orcus)
+       ("perl" ,perl)
+       ("perl-zip" ,perl-zip)
+       ("poppler" ,poppler)
+       ("postgresql" ,postgresql)
+       ("python" ,python)
+       ("redland" ,redland)
+       ("sane-backends" ,sane-backends)
+       ("unixodbc" ,unixodbc)
+       ("unzip" ,unzip)
+       ("vigra" ,vigra)
+       ("xmlsec-src" ,xmlsec-src-libreoffice)
+       ("zip" ,zip)))
+    (arguments
+     `(#:parallel-build? #f ; Otherwise the build fails.
+       #:tests? #f ; Building the tests already fails.
+       #:make-flags '("build-nocheck") ; Do not build unit tests, which fails.
+       #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'prepare-src
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((xmlsec (assoc-ref inputs "xmlsec-src")))
+                 (substitute*
+                   (list "sysui/CustomTarget_share.mk"
+                         "solenv/gbuild/gbuild.mk"
+                         "solenv/gbuild/platform/unxgcc.mk"
+                         "external/libxmlsec/xmlsec1-oldlibtool.patch")
+                   (("/bin/sh") (which "bash")))
+                 (mkdir "external/tarballs")
+                 (symlink
+                   xmlsec
+                   (string-append "external/tarballs/"
+                     "1f24ab1d39f4a51faf22244c94a6203f-"
+                     "xmlsec1-1.2.14.tar.gz"))
+                 ;; The following is required for building xmlsec from the
+                 ;; unpatched external tarball; since "configure" starts with
+                 ;; "/bin/sh", it needs to be executed by a command invoking
+                 ;; the shell.
+                 (setenv "SHELL" (which "bash"))
+                 (setenv "CONFIG_SHELL" (which "bash"))
+                 (substitute* "external/libxmlsec/ExternalProject_xmlsec.mk"
+                   (("./configure") "$(CONFIG_SHELL) ./configure" ))
+                 #t)))
+           (add-after 'install 'bin-install
+             ;; Create a symlink bin/soffice to the executable script.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir bin)
+                 (symlink
+                   (string-append out "/lib/libreoffice/program/soffice")
+                   (string-append bin "/soffice")))
+               #t)))
+       #:configure-flags
+        (list
+          "--enable-release-build"
+          "--enable-verbose"
+          "--without-parallelism" ; otherwise the build fails
+          "--disable-fetch-external" ; disable downloads
+          "--with-system-libs" ; enable all --with-system-* flags
+          (string-append "--with-boost-libdir="
+                         (assoc-ref %build-inputs "boost") "/lib")
+          ;; Avoid a dependency on ucpp.
+          "--with-idlc-cpp=cpp"
+          ;; The fonts require an external tarball (crosextrafonts).
+          ;; They should not be needed when system fonts are available.
+          "--without-fonts"
+          ;; With java, the build fails since sac.jar is missing.
+          "--without-java"
+          ;; FIXME: Enable once the corresponding inputs are packaged.
+          "--without-system-npapi-headers"
+          "--disable-coinmp"
+          "--disable-firebird-sdbc" ; embedded firebird
+          "--disable-gltf"
+          "--disable-liblangtag")))
+    (home-page "https://www.libreoffice.org/")
+    (synopsis "Office suite")
+    (description "LibreOffice is a comprehensive office suite.  It contains
+a number of components: Writer, a word processor; Calc, a spreadsheet
+application; Impress, a presentation engine; Draw, a drawing and
+flowcharting application; Base, a database and database frontend;
+Math for editing mathematics.")
+    (license mpl2.0)))
