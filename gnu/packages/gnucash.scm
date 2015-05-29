@@ -56,7 +56,7 @@
        ("libgnomecanvas" ,libgnomecanvas)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("webkitgtk" ,webkitgtk-2.4)))
+       ("webkitgtk" ,webkitgtk/gtk+-2)))
     (native-inputs
      `(("glib" ,glib "bin") ; glib-compile-schemas, etc.
        ("intltool" ,intltool)

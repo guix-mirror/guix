@@ -114,29 +114,39 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:bsd-2
                    license:bsd-3))))
 
+;; Latest release of the stable 2.4 series, with WebKit1 support.
 (define-public webkitgtk-2.4
-  ;; Latest release of the stable 2.4 series.
   (package (inherit webkitgtk)
     (name "webkitgtk")
-    (version "2.4.8")
+    (version "2.4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08xxqsxpa63nzgbsz63vrdxdxgpysyiy7jdcjb57k1hprdcibwb8"))
-              (patches (list (search-patch "webkitgtk-2.4.8-gmutexlocker.patch")))))
+                "0r651ar3p0f8zwl7764kyimxk5hy88cwy116pv8cl5l8hbkjkpxg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
        #:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'set-gcc
-                   (lambda _ (setenv "CC" "gcc") #t)))
-       #:configure-flags '("--enable-webkit2=no"
-                           "--with-gtk=2.0")))
-    (inputs
+                   (lambda _ (setenv "CC" "gcc") #t)))))
+    (native-inputs
      `(("flex" ,flex)
        ("which" ,which)
-       ,@(package-inputs webkitgtk)))))
+       ,@(package-native-inputs webkitgtk)))))
+
+;; Last GTK+2 port, required by GnuCash.
+(define-public webkitgtk/gtk+-2
+  (package (inherit webkitgtk-2.4)
+    (name "webkitgtk")
+    (arguments
+     `(#:configure-flags
+       '("--enable-webkit2=no"
+         "--with-gtk=2.0")
+       ,@(package-arguments webkitgtk-2.4)))
+    (propagated-inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libsoup" ,libsoup)))))

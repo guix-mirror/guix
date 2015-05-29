@@ -575,7 +575,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
-  gnu/packages/patches/webkitgtk-2.4.8-gmutexlocker.patch	\
   gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-template-instantiation.patch	\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
