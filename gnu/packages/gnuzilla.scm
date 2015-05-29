@@ -124,7 +124,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.18")
+    (version "3.19.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -135,7 +135,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0h0xy9kvd2s8r438q4dfn25cgvv5dc1hkm9lb4bgrxpr5bxv13b1"))
+                "1zrgqlli01gsg2a5w4bk2p0q3aagi5dhd31yirnj04zca6ap1gmp"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
@@ -205,6 +205,12 @@ in the Mozilla clients.")
        ("zlib" ,zlib)))
     (propagated-inputs `(("nspr" ,nspr))) ; required by nss.pc.
     (native-inputs `(("perl" ,perl)))
+
+    ;; The NSS test suite takes over 28 hours on Loongson 3A (MIPS), and
+    ;; possibly longer when another build is happening concurrently on the
+    ;; same machine.
+    (properties '((timeout . 144000)))  ; 40 hours
+
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS")
     (synopsis "Network Security Services")
