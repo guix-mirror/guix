@@ -2788,7 +2788,7 @@ services for your Python modules and applications.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "2.6.1")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
@@ -2796,17 +2796,19 @@ services for your Python modules and applications.")
                            "Pillow/Pillow-" version ".tar.gz"))
        (sha256
         (base32
-         "0iw36c73wkhz88wa78v6l43llsb080ihw8yq7adhfqxdib7l4hzr"))))
+         "15n92axxph2s3kvg68bki9gv3nzwgq7130kp7wbblpi1l0cc2q47"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-nose"       ,python-nose)))
     (inputs
-     `(("lcms"     ,lcms)
+     `(("freetype" ,freetype)
+       ("lcms"     ,lcms)
        ("zlib"     ,zlib)
        ("libjpeg"  ,libjpeg)
        ("openjpeg" ,openjpeg)
-       ("libtiff"  ,libtiff)))
+       ("libtiff"  ,libtiff)
+       ("libwebp"  ,libwebp)))
     (propagated-inputs
      `(;; Used at runtime for pkg_resources
        ("python-setuptools" ,python-setuptools)))
@@ -3359,43 +3361,6 @@ libxml2 and libxslt.")
 
 (define-public python2-lxml
   (package-with-python2 python-lxml))
-
-(define-public python-pillow
-  (package
-    (name "python-pillow")
-    (version "2.7.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/P/Pillow/Pillow-"
-              version
-              ".tar.gz"))
-        (sha256
-          (base32
-            "1y0rysgd7vqpl5lh0lsra7j2k30azwxqlh5jnqk1i0pmfc735s96"))))
-    (build-system python-build-system)
-    (inputs
-      `(("freetype" ,freetype)
-        ("lcms" ,lcms)
-        ("libjpeg" ,libjpeg)
-        ("libtiff" ,libtiff)
-        ("openjpeg" ,openjpeg)
-        ("python-setuptools" ,python-setuptools)
-        ("zlib" ,zlib)))
-    (arguments
-     `(#:tests? #f)) ; no check target
-    (home-page "http://python-pillow.github.io/")
-    (synopsis "Pillow fork of Python Imaging Library")
-    (description "Pillow is a fork of the Python Imaging Library (PIL).")
-    ;; PIL license, see
-    ;; http://www.pythonware.com/products/pil/license.htm
-    (license (x11-style
-               "file://PKG-INFO"
-               "See http://www.pythonware.com/products/pil/license.htm"))))
-
-(define-public python2-pillow
-  (package-with-python2 python-pillow))
 
 (define-public python2-pil
   (package
