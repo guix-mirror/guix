@@ -78,10 +78,8 @@
     (license . ,(package-license package))
     (home-page . ,(package-home-page package))
     (maintainers . ("bug-guix@gnu.org"))
-
-    ;; Work around versions of 'hydra-eval-guile-jobs' before Hydra commit
-    ;; 61448ca (27 Feb. 2014) which used a default timeout of 2h.
-    (timeout . 72000)))
+    (timeout . ,(or (assoc-ref (package-properties package) 'timeout)
+                    72000)))) ; 20 hours by default
 
 (define (package-job store job-name package system)
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
