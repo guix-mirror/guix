@@ -32,6 +32,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -59,7 +60,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.28.0")
+    (version "2.29.0")
     (source
       (origin
         (method url-fetch)
@@ -68,7 +69,7 @@
                             version ".tar.xz"))
         (sha256
           (base32
-           "15sb74v0nlj45fhlnw1afll35l90cxw78s15fb2nx3fih7ahv3cf"))
+           "1n3cfnjnghhhsgzcbcvbr0gh191lhl6az09q1s68jhlcc2lski6l"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))
@@ -105,6 +106,7 @@
        ("libpng" ,libpng)
        ("libusb" ,libusb)
        ("libxrender" ,libxrender)
+       ("openssl" ,openssl)
        ("podofo" ,podofo)
        ("python" ,python-2)
        ("python2-apsw" ,python2-apsw)
