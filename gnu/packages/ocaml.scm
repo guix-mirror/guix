@@ -186,3 +186,44 @@ Git-friendly development workflow.")
 
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
     (license lgpl3)))
+
+(define-public camlp5
+  (package
+    (name "camlp5")
+    (version "6.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://camlp5.gforge.inria.fr/distrib/src/"
+                                  name "-" version ".tgz"))
+              (sha256
+               (base32
+                "00jwgp6w4g64lfqjx77xziy532091fy00c42fsy0b4i892rch5mp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ocaml" ,ocaml)))
+    (arguments
+     `(#:tests? #f  ; XXX TODO figure out how to run the tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (mandir (string-append out "/share/man")))
+                      ;; Custom configure script doesn't recognize
+                      ;; --prefix=<PREFIX> syntax (with equals sign).
+                      (zero? (system* "./configure"
+                                      "--prefix" out
+                                      "--mandir" mandir)))))
+         (replace 'build
+                  (lambda _
+                    (zero? (system* "make" "-j" (number->string
+                                                 (parallel-job-count))
+                                    "world.opt")))))))
+    (home-page "http://camlp5.gforge.inria.fr/")
+    (synopsis "Pre-processor Pretty Printer for OCaml")
+    (description
+     "Camlp5 is a Pre-Processor-Pretty-Printer for Objective Caml.  It offers
+tools for syntax (Stream Parsers and Grammars) and the ability to modify the
+concrete syntax of the language (Quotations, Syntax Extensions).")
+    ;; Most files are distributed under bsd-3, but ocaml_stuff/* is under qpl.
+    (license (list bsd-3 qpl))))
