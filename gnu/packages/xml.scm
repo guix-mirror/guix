@@ -31,6 +31,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages linux))
 
 (define-public expat
@@ -68,10 +69,7 @@ things the parser might find in the XML document (like start tags).")
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
     (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
-    (native-inputs `(("perl" ,perl)
-                     ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
-
-
+    (native-inputs `(("perl" ,perl)))
     ;; $XML_CATALOG_FILES lists 'catalog.xml' files found in under the 'xml'
     ;; sub-directory of any given package.
     (native-search-paths (list (search-path-specification
@@ -81,28 +79,39 @@ things the parser might find in the XML document (like start tags).")
                                 (file-pattern "^catalog\\.xml$")
                                 (file-type 'regular))))
     (search-paths native-search-paths)
-
-    (arguments
-     `(#:phases
-        (alist-replace
-         'install
-         (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-          (let ((install (assoc-ref %standard-phases 'install))
-                (glibc (assoc-ref inputs ,(if (%current-target-system)
-                                              "cross-libc" "libc")))
-                (out (assoc-ref outputs "out")))
-            (apply install args)
-            (chdir "python")
-            (substitute* "setup.py"
-              (("/opt/include")
-               (string-append glibc "/include")))
-            (system* "python" "setup.py" "install"
-                     (string-append "--prefix=" out))))
-        %standard-phases)))
     (description
      "Libxml2 is the XML C parser and toolkit developed for the Gnome project
 (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+(define-public python-libxml2
+  (package (inherit libxml2)
+    (name "python-libxml2")
+    (build-system python-build-system)
+    (arguments
+     `(;; XXX: Tests are specified in 'Makefile.am', but not in 'setup.py'.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            (chdir "python")
+            (let ((glibc   (assoc-ref inputs ,(if (%current-target-system)
+                                                  "cross-libc" "libc")))
+                  (libxml2 (assoc-ref inputs "libxml2")))
+              (substitute* "setup.py"
+                ;; For 'libxml2/libxml/tree.h'.
+                (("ROOT = r'/usr'")
+                 (format #f "ROOT = r'~a'" libxml2))
+                ;; For 'iconv.h'.
+                (("/opt/include")
+                 (string-append glibc "/include")))))))))
+    (inputs `(("libxml2" ,libxml2)))
+    (synopsis "Python bindings for the libxml2 library")))
+
+(define-public python2-libxml2
+  (package-with-python2 python-libxml2))
 
 (define-public libxslt
   (package
