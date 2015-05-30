@@ -28,6 +28,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ncurses)
@@ -253,3 +254,53 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
      "HeVeA is a LaTeX to HTML translator that generates modern HTML 5.  It is
 written in Objective Caml.")
     (license qpl)))
+
+(define-public coq
+  (package
+    (name "coq")
+    (version "8.4pl6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://coq.inria.fr/distrib/V" version
+                                  "/files/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mpbj4yf36kpjg2v2sln12i8dzqn8rag6fd07hslj2lpm4qs4h55"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texlive" ,texlive)
+       ("hevea" ,hevea)))
+    (inputs
+     `(("ocaml" ,ocaml)
+       ("camlp5" ,camlp5)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (mandir (string-append out "/share/man"))
+                           (browser "icecat -remote \"OpenURL(%s,new-tab)\""))
+                      (zero? (system* "./configure"
+                                      "--prefix" out
+                                      "--mandir" mandir
+                                      "--browser" browser)))))
+         (replace 'build
+                  (lambda _
+                    (zero? (system* "make" "-j" (number->string
+                                                 (parallel-job-count))
+                                    "world"))))
+         (delete 'check)
+         (add-after 'install 'check
+                    (lambda _
+                      (with-directory-excursion "test-suite"
+                        (zero? (system* "make"))))))))
+    (home-page "https://coq.inria.fr")
+    (synopsis "Proof assistant for higher-order logic")
+    (description
+     "Coq is a proof assistant for higher-order logic, which allows the
+development of computer programs consistent with their formal specification.
+It is developed using Objective Caml and Camlp5.")
+    ;; The code is distributed under lgpl2.1.
+    ;; Some of the documentation is distributed under opl1.0+.
+    (license (list lgpl2.1 opl1.0+))))
