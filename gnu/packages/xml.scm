@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,14 +56,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.0")
+    (version "2.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "10ib8bpar2pl68aqksfinvfmqknwnk7i35ibq6yjl8dpb0cxj9dd"))))
+               "1g6mf03xcabmk5ing1lwqmasr803616gb2xhn7pll10x2l5w6y2i"))))
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
