@@ -1102,6 +1102,8 @@ for use with HTML5 video.")
                                  "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
                                  (string-append "-DCMAKE_INSTALL_PREFIX=" out)
                                  (string-append "-DCMAKE_INSTALL_RPATH=" lib)
+                                 (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                                                "\"-Wl,-rpath=" lib "\"")
                                  (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
                                  (string-append "-DSDL_INCLUDE_DIR="
                                                 sdl "/include/SDL")
