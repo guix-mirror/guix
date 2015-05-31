@@ -28,6 +28,7 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix gnu-maintenance)
+  #:use-module (guix monads)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -41,6 +42,7 @@
   #:use-module (web request)
   #:use-module (web response)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-6)                      ;Unicode string ports
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -70,6 +72,25 @@
             (location->string loc)
             (package-full-name package)
             message)))
+
+(define (call-with-accumulated-warnings thunk)
+  "Call THUNK, accumulating any warnings in the current state, using the state
+monad."
+  (let ((port (open-output-string)))
+    (mlet %state-monad ((state      (current-state))
+                        (result ->  (parameterize ((guix-warning-port port))
+                                      (thunk)))
+                        (warning -> (get-output-string port)))
+      (mbegin %state-monad
+        (munless (string=? "" warning)
+          (set-current-state (cons warning state)))
+        (return result)))))
+
+(define-syntax-rule (with-accumulated-warnings exp ...)
+  "Evaluate EXP and accumulate warnings in the state monad."
+  (call-with-accumulated-warnings
+   (lambda ()
+     exp ...)))
 
 
 ;;;
@@ -435,6 +456,16 @@ descriptions maintained upstream."
 (define (check-source package)
   "Emit a warning if PACKAGE has an invalid 'source' field, or if that
 'source' is not reachable."
+  (define (try-uris uris)
+    (run-with-state
+        (anym %state-monad
+              (lambda (uri)
+                (with-accumulated-warnings
+                 (validate-uri uri package 'source)))
+              (append-map (cut maybe-expand-mirrors <> %mirrors)
+                          uris))
+      '()))
+
   (let ((origin (package-source package)))
     (when (and origin
                (eqv? (origin-method origin) url-fetch))
@@ -442,10 +473,24 @@ descriptions maintained upstream."
              (uris (if (list? strings)
                        (map string->uri strings)
                        (list (string->uri strings)))))
+
         ;; Just make sure that at least one of the URIs is valid.
-        (any (cut validate-uri <> package 'source)
-             (append-map (cut maybe-expand-mirrors <> %mirrors)
-                         uris))))))
+        (call-with-values
+            (lambda () (try-uris uris))
+          (lambda (success? warnings)
+            ;; When everything fails, report all of WARNINGS, otherwise don't
+            ;; report anything.
+            ;;
+            ;; XXX: Ideally we'd still allow warnings to be raised if *some*
+            ;; URIs are unreachable, but distinguish that from the error case
+            ;; where *all* the URIs are unreachable.
+            (unless success?
+              (emit-warning package
+                            (_ "all the source URIs are unreachable:")
+                            'source)
+              (for-each (lambda (warning)
+                          (display warning (guix-warning-port)))
+                        (reverse warnings)))))))))
 
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
