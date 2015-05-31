@@ -38,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gdbm)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -474,5 +475,70 @@ slightly from miniKanren mainline.
 
 See http://minikanren.org/ for more on miniKanren generally.")
     (license expat)))
+
+
+;; There are two guile-gdbm packages, one using the FFI and one with
+;; direct C bindings, hence the verbose name.
+
+(define-public guile-gdbm-ffi
+  (package
+    (name "guile-gdbm-ffi")
+    (version "20120209.fa1d5b6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ijp/guile-gdbm.git")
+                    (commit "fa1d5b6231d0e4d096687b378c025f2148c5f246")))
+              (sha256
+               (base32
+                "1j8wrsw7v9w6qkl47xz0rdikg50v16nn6kbs3lgzcymjzpa7babj"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules
+       ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (system base compile))
+
+         (let* ((out (assoc-ref %outputs "out"))
+                (module-dir (string-append out "/share/guile/site/2.0"))
+                (source (assoc-ref %build-inputs "source"))
+                (doc (string-append out "/share/doc"))
+                (guild (string-append (assoc-ref %build-inputs "guile")
+                                      "/bin/guild"))
+                (gdbm.scm-dest
+                 (string-append module-dir "/gdbm.scm"))
+                (gdbm.go-dest
+                 (string-append module-dir "/gdbm.go")))
+           ;; Make installation directories.
+           (mkdir-p module-dir)
+           (mkdir-p doc)
+
+           ;; Switch directory for compiling and installing
+           (chdir source)
+
+           ;; copy the source
+           (copy-file "gdbm.scm" gdbm.scm-dest)
+
+           ;; Patch the FFI
+           (substitute* gdbm.scm-dest
+             (("\\(dynamic-link \"libgdbm\"\\)")
+              (format #f "(dynamic-link \"~a/lib/libgdbm.so\")"
+                      (assoc-ref %build-inputs "gdbm"))))
+
+           ;; compile to the destination
+           (compile-file gdbm.scm-dest
+                         #:output-file gdbm.go-dest)))))
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (propagated-inputs
+     `(("gdbm" ,gdbm)))
+    (home-page "https://github.com/ijp/guile-gdbm")
+    (synopsis "Guile bindings to the GDBM library via Guile's FFI")
+    (description
+     "Guile bindings to the GDBM key-value storage system, using
+Guile's foreign function interface.")
+    (license gpl3+)))
 
 ;;; guile.scm ends here
