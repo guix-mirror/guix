@@ -287,20 +287,22 @@ response from URI, and additional details, such as the actual HTTP response."
        (values 'unknown-protocol #f)))))
 
 (define (validate-uri uri package field)
-  "Return #t if the given URI can be reached, otherwise emit a
+  "Return #t if the given URI can be reached, otherwise return #f and emit a
 warning for PACKAGE mentionning the FIELD."
   (let-values (((status argument)
                 (probe-uri uri)))
     (case status
       ((http-response)
        (or (= 200 (response-code argument))
-           (emit-warning package
-                         (format #f
-                                 (_ "URI ~a not reachable: ~a (~s)")
-                                 (uri->string uri)
-                                 (response-code argument)
-                                 (response-reason-phrase argument))
-                         field)))
+           (begin
+             (emit-warning package
+                           (format #f
+                                   (_ "URI ~a not reachable: ~a (~s)")
+                                   (uri->string uri)
+                                   (response-code argument)
+                                   (response-reason-phrase argument))
+                           field)
+             #f)))
       ((ftp-response)
        (match argument
          (('ok) #t)
@@ -309,7 +311,8 @@ warning for PACKAGE mentionning the FIELD."
                         (format #f
                                 (_ "URI ~a not reachable: ~a (~s)")
                                 (uri->string uri)
-                                code (string-trim-both message))))))
+                                code (string-trim-both message)))
+          #f)))
       ((getaddrinfo-error)
        (emit-warning package
                      (format #f
