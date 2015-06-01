@@ -1331,7 +1331,7 @@ viewer.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1341,7 +1341,7 @@ viewer.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "09fakv9w87lfg9g70kwzmnryqdjj1sz2c7kw01i6drjf787gkjhw"))))
+         "1x58gpm574n0xmk2a98gmikbgycq78ia0bvnb42k5ck34fmd5v8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -1351,20 +1351,6 @@ viewer.")
         'configure
         (lambda* (#:key outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
-            ;; Only replace the version suffix, not the version number in the
-            ;; directory name; fixed in commit 46d4509fa8 (no release yet).
-            (substitute* "setup/konfigure.perl"
-              (((string-append "\\$\\(subst "
-                               "(\\$\\(VERSION[^\\)]*\\)),"
-                               "(\\$\\([^\\)]+\\)),"
-                               "(\\$\\([^\\)]+\\)|\\$\\@)"
-                               "\\)")
-                _ pattern replacement target)
-               (string-append "$(patsubst "
-                              "%" pattern ","
-                              "%" replacement ","
-                              target ")")))
-
             ;; The 'configure' script doesn't recognize things like
             ;; '--enable-fast-install'.
             (zero? (system* "./configure"
