@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +27,13 @@
   #:use-module (ice-9 ftw)
   #:export (errno
             MS_RDONLY
+            MS_NOSUID
+            MS_NODEV
+            MS_NOEXEC
             MS_REMOUNT
             MS_BIND
             MS_MOVE
+            MS_STRICTATIME
             restart-on-EINTR
             mount
             umount
@@ -136,10 +141,14 @@
                 entries))))
 
 ;; Linux mount flags, from libc's <sys/mount.h>.
-(define MS_RDONLY      1)
-(define MS_REMOUNT    32)
-(define MS_BIND     4096)
-(define MS_MOVE     8192)
+(define MS_RDONLY             1)
+(define MS_NOSUID             2)
+(define MS_NODEV              4)
+(define MS_NOEXEC             8)
+(define MS_REMOUNT           32)
+(define MS_BIND            4096)
+(define MS_MOVE            8192)
+(define MS_STRICTATIME 16777216)
 
 (define mount
   (let* ((ptr  (dynamic-func "mount" (dynamic-link)))
