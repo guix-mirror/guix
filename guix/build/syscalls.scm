@@ -47,6 +47,14 @@
             processes
             mkdtemp!
 
+            CLONE_NEWNS
+            CLONE_NEWUTS
+            CLONE_NEWIPC
+            CLONE_NEWUSER
+            CLONE_NEWPID
+            CLONE_NEWNET
+            clone
+
             IFF_UP
             IFF_BROADCAST
             IFF_LOOPBACK
@@ -279,6 +287,31 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
                  (list tmpl (strerror err))
                  (list err)))
         (pointer->string result)))))
+
+;; Linux clone flags, from linux/sched.h
+(define CLONE_NEWNS   #x00020000)
+(define CLONE_NEWUTS  #x04000000)
+(define CLONE_NEWIPC  #x08000000)
+(define CLONE_NEWUSER #x10000000)
+(define CLONE_NEWPID  #x20000000)
+(define CLONE_NEWNET  #x40000000)
+
+;; The libc interface to sys_clone is not useful for Scheme programs, so the
+;; low-level system call is wrapped instead.
+(define clone
+  (let* ((ptr        (dynamic-func "syscall" (dynamic-link)))
+         (proc       (pointer->procedure int ptr (list int int '*)))
+         ;; TODO: Don't do this.
+         (syscall-id (match (utsname:machine (uname))
+                       ("i686"   120)
+                       ("x86_64" 56)
+                       ("mips64" 5055)
+                       ("armv7l" 120))))
+    (lambda (flags)
+      "Create a new child process by duplicating the current parent process.
+Unlike the fork system call, clone accepts FLAGS that specify which resources
+are shared between the parent and child processes."
+      (proc syscall-id flags %null-pointer))))
 
 
 ;;;

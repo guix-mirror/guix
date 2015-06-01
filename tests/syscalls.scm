@@ -76,6 +76,21 @@
            (rmdir dir)
            #t))))
 
+(define (user-namespace pid)
+  (string-append "/proc/" (number->string pid) "/ns/user"))
+
+(test-assert "clone"
+  (match (clone (logior CLONE_NEWUSER SIGCHLD))
+    (0 (primitive-exit 42))
+    (pid
+     ;; Check if user namespaces are different.
+     (and (not (equal? (readlink (user-namespace pid))
+                       (readlink (user-namespace (getpid)))))
+          (match (waitpid pid)
+            ((_ . status)
+             (= 42 (status:exit-val status))))))))
+
+
 (test-assert "all-network-interfaces"
   (match (all-network-interfaces)
     (((? string? names) ..1)
