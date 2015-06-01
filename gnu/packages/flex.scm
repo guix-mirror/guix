@@ -61,7 +61,7 @@
        `(("bison" ,bison-for-tests)
          ("indent" ,indent))))
     ;; m4 is not present in PATH when cross-building
-    (native-inputs `("m4" ,m4))
+    (native-inputs `(("m4" ,m4)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://flex.sourceforge.net/")
     (synopsis "Fast lexical analyser generator")
