@@ -919,6 +919,41 @@ sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
 
+(define-public htslib
+  (package
+    (name "htslib")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1c32ssscbnjwfw3dra140fq7riarp2x990qxybh34nr1p5r17nxx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-tests
+          (lambda _
+            (substitute* "test/test.pl"
+              (("/bin/bash") (which "bash")))
+            #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://www.htslib.org")
+    (synopsis "C library for reading/writing high-throughput sequencing data")
+    (description
+     "HTSlib is a C library for reading/writing high-throughput sequencing
+data.  It also provides the bgzip, htsfile, and tabix utilities.")
+    ;; Files under cram/ are released under the modified BSD license;
+    ;; the rest is released under the Expat license
+    (license (list license:expat license:bsd-3))))
+
 (define-public macs
   (package
     (name "macs")
