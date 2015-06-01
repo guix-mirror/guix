@@ -1451,11 +1451,16 @@ simultaneously.")
                                    (assoc-ref inputs "hdf5"))))))
         (alist-cons-after
          'install 'install-interfaces
-         (lambda* (#:key system outputs #:allow-other-keys)
-           ;; Install interface libraries
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Install interface libraries.  On i686 the interface libraries
+           ;; are installed to "linux/gcc/i386", so we need to use the Linux
+           ;; architecture name ("i386") instead of the target system prefix
+           ;; ("i686").
            (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
            (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
-                                            (car (string-split system #\-))
+                                            ,(system->linux-architecture
+                                              (or (%current-target-system)
+                                                  (%current-system)))
                                             "/rel/ilib")
                              (string-append (assoc-ref outputs "out")
                                             "/ilib"))
