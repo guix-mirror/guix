@@ -182,6 +182,9 @@ dnl `dot' (from the Graphviz package) is only needed for maintainers.
 dnl See `HACKING' for more info.
 AM_MISSING_PROG([DOT], [dot])
 
+dnl Manual pages.
+AM_MISSING_PROG([HELP2MAN], [help2man])
+
 AC_CONFIG_FILES([Makefile
                  po/guix/Makefile.in
                  po/packages/Makefile.in
