@@ -357,7 +357,8 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
-    (let loop ((directory directory))
+    (let loop ((directory directory)
+               (result    #f))
       (let* ((entries (ftp-list conn directory))
 
              ;; Filter out sub-directories that do not contain digits---e.g.,
@@ -369,32 +370,38 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
                                    (((? contains-digit? dir) 'directory . _)
                                     dir)
                                    (_ #f))
-                                  entries)))
-        (match subdirs
-          (()
-           ;; No sub-directories, so assume that tarballs are here.
-           (let ((releases (filter-map (match-lambda
-                                        ((file 'file . _)
-                                         (and (release-file? project file)
-                                              (gnu-release
-                                               (package project)
-                                               (version
-                                                (tarball->version file))
-                                               (directory directory)
-                                               (files (list file)))))
-                                        (_ #f))
-                                       entries)))
-             (ftp-close conn)
-             (reduce latest-release #f (coalesce-releases releases))))
-          ((subdirs ...)
-           ;; Assume that SUBDIRS correspond to versions, and jump into the
-           ;; one with the highest version number.
-           (let ((target (reduce latest #f subdirs)))
-             (if target
-                 (loop (string-append directory "/" target))
-                 (begin
-                   (ftp-close conn)
-                   #f)))))))))
+                                  entries))
+
+             ;; Whether or not SUBDIRS is empty, compute the latest releases
+             ;; for the current directory.  This is necessary for packages
+             ;; such as 'sharutils' that have a sub-directory that contains
+             ;; only an older release.
+             (releases (filter-map (match-lambda
+                                     ((file 'file . _)
+                                      (and (release-file? project file)
+                                           (gnu-release
+                                            (package project)
+                                            (version
+                                             (tarball->version file))
+                                            (directory directory)
+                                            (files (list file)))))
+                                     (_ #f))
+                                   entries)))
+
+        ;; Assume that SUBDIRS correspond to versions, and jump into the
+        ;; one with the highest version number.
+        (let* ((release  (reduce latest-release #f
+                                 (coalesce-releases releases)))
+               (result   (if (and result release)
+                             (latest-release release result)
+                             (or release result)))
+               (target   (reduce latest #f subdirs)))
+          (if target
+              (loop (string-append directory "/" target)
+                    result)
+              (begin
+                (ftp-close conn)
+                result)))))))
 
 (define (gnu-release-archive-types release)
   "Return the available types of archives for RELEASE---a list of strings such
