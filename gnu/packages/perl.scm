@@ -2431,6 +2431,25 @@ easier to develop interactive applications: is_interactive(), interactive(),
 and busy()")
     (license (package-license perl))))
 
+(define-public perl-io-string
+  (package
+    (name "perl-io-string")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                           "IO-String-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18755m410yl70s17rgq3m0hyxl8r5mr47vsq1rw7141d8kc4lgra"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/~gaas/IO-String-1.08/")
+    (synopsis "Emulate file interface for in-core strings")
+    (description "IO::String is an IO::File (and IO::Handle) compatible class
+that reads or writes data from in-core strings.")
+    (license (package-license perl))))
+
 (define-public perl-io-stringy
   (package
     (name "perl-io-stringy")
