@@ -202,7 +202,8 @@ SCM_TESTS =					\
   tests/gremlin.scm				\
   tests/lint.scm				\
   tests/publish.scm				\
-  tests/size.scm
+  tests/size.scm				\
+  tests/containers.scm
 
 if HAVE_GUILE_JSON
 
