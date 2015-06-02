@@ -22,7 +22,8 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages python))
 
 (define-public libsvm
   (package
@@ -63,3 +64,35 @@ classification, (C-SVC, nu-SVC), regression (epsilon-SVR, nu-SVR) and
 distribution estimation (one-class SVM).  It supports multi-class
 classification.")
     (license license:bsd-3)))
+
+(define-public python-libsvm
+  (package (inherit libsvm)
+    (name "python-libsvm")
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("-C" "python")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace
+          'install
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((site (string-append (assoc-ref outputs "out")
+                                       "/lib/python"
+                                       (string-take
+                                        (string-take-right
+                                         (assoc-ref inputs "python") 5) 3)
+                                       "/site-packages/")))
+              (substitute* "python/svm.py"
+                (("../libsvm.so.2") "libsvm.so.2"))
+              (mkdir-p site)
+              (for-each (lambda (file)
+                          (copy-file file (string-append site (basename file))))
+                        (find-files "python" "\\.py"))
+              (copy-file "libsvm.so.2"
+                         (string-append site "libsvm.so.2")))
+            #t)))))
+    (inputs
+     `(("python" ,python)))
+    (synopsis "Python bindings of libSVM")))
