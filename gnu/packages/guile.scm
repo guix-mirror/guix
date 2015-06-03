@@ -229,25 +229,19 @@ without requiring the source code to be rewritten.")
 (define-public guile-reader
   (package
     (name "guile-reader")
-    (version "0.6")
+    (version "0.6.1")
     (source  (origin
                (method url-fetch)
                (uri (string-append "mirror://savannah/guile-reader/guile-reader-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
+                 "020wz5w8z6g79nbqifg2n496wxwkcjzh8xizpv6mz0hczpl155ma"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkgconfig" ,pkg-config)
                      ("gperf" ,gperf)))
     (inputs `(("guile" ,guile-2.0)))
-    (arguments `(;; The extract-*.sh scripts really expect to run in the C
-                 ;; locale.  Failing to do that, we end up with a build
-                 ;; failure while extracting doc.  (Fixed in Guile-Reader's
-                 ;; repo.)
-                 #:locale "C"
-
-                 #:configure-flags
+    (arguments `(#:configure-flags
                  (let ((out (assoc-ref %outputs "out")))
                    (list (string-append "--with-guilemoduledir="
                                         out "/share/guile/site/2.0")))))
