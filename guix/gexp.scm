@@ -33,6 +33,9 @@
             gexp-input?
             local-file
             local-file?
+            local-file-file
+            local-file-name
+            local-file-recursive?
 
             gexp->derivation
             gexp->file
