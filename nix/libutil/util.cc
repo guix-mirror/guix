@@ -19,6 +19,10 @@
 #include <sys/syscall.h>
 #endif
 
+#ifdef __linux__
+#include <sys/prctl.h>
+#endif
+
 
 extern char * * environ;
 
@@ -189,8 +193,12 @@ Path readLink(const Path & path)
     if (!S_ISLNK(st.st_mode))
         throw Error(format("`%1%' is not a symlink") % path);
     char buf[st.st_size];
-    if (readlink(path.c_str(), buf, st.st_size) != st.st_size)
-        throw SysError(format("reading symbolic link `%1%'") % path);
+    ssize_t rlsize = readlink(path.c_str(), buf, st.st_size);
+    if (rlsize == -1)
+        throw SysError(format("reading symbolic link '%1%'") % path);
+    else if (rlsize > st.st_size)
+        throw Error(format("symbolic link ‘%1%’ size overflow %2% > %3%")
+            % path % rlsize % st.st_size);
     return string(buf, st.st_size);
 }
 
@@ -260,8 +268,8 @@ void writeFile(const Path & path, const string & s)
 {
     AutoCloseFD fd = open(path.c_str(), O_WRONLY | O_TRUNC | O_CREAT, 0666);
     if (fd == -1)
-        throw SysError(format("opening file `%1%'") % path);
-    writeFull(fd, (unsigned char *) s.data(), s.size());
+        throw SysError(format("opening file '%1%'") % path);
+    writeFull(fd, s);
 }
 
 
@@ -288,7 +296,7 @@ string readLine(int fd)
 void writeLine(int fd, string s)
 {
     s += '\n';
-    writeFull(fd, (const unsigned char *) s.data(), s.size());
+    writeFull(fd, s);
 }
 
 
@@ -478,18 +486,13 @@ void warnOnce(bool & haveWarned, const FormatOrString & fs)
 }
 
 
-static void defaultWriteToStderr(const unsigned char * buf, size_t count)
-{
-    writeFull(STDERR_FILENO, buf, count);
-}
-
-
 void writeToStderr(const string & s)
 {
     try {
-        auto p = _writeToStderr;
-        if (!p) p = defaultWriteToStderr;
-        p((const unsigned char *) s.data(), s.size());
+        if (_writeToStderr)
+            _writeToStderr((const unsigned char *) s.data(), s.size());
+        else
+            writeFull(STDERR_FILENO, s);
     } catch (SysError & e) {
         /* Ignore failing writes to stderr if we're in an exception
            handler, otherwise throw an exception.  We need to ignore
@@ -501,7 +504,7 @@ void writeToStderr(const string & s)
 }
 
 
-void (*_writeToStderr) (const unsigned char * buf, size_t count) = defaultWriteToStderr;
+void (*_writeToStderr) (const unsigned char * buf, size_t count) = 0;
 
 
 void readFull(int fd, unsigned char * buf, size_t count)
@@ -532,6 +535,12 @@ void writeFull(int fd, const unsigned char * buf, size_t count)
         count -= res;
         buf += res;
     }
+}
+
+
+void writeFull(int fd, const string & s)
+{
+    writeFull(fd, (const unsigned char *) s.data(), s.size());
 }
 
 
@@ -867,6 +876,10 @@ pid_t startProcess(std::function<void()> fun,
     if (pid == 0) {
         _writeToStderr = 0;
         try {
+#if __linux__
+            if (dieWithParent && prctl(PR_SET_PDEATHSIG, SIGKILL) == -1)
+                throw SysError("setting death signal");
+#endif
             restoreAffinity();
             fun();
         } catch (std::exception & e) {
@@ -884,15 +897,18 @@ pid_t startProcess(std::function<void()> fun,
 }
 
 
+std::vector<const char *> stringsToCharPtrs(const Strings & ss)
+{
+    std::vector<const char *> res;
+    for (auto & s : ss) res.push_back(s.c_str());
+    res.push_back(0);
+    return res;
+}
+
+
 string runProgram(Path program, bool searchPath, const Strings & args)
 {
     checkInterrupt();
-
-    std::vector<const char *> cargs; /* careful with c_str()! */
-    cargs.push_back(program.c_str());
-    for (Strings::const_iterator i = args.begin(); i != args.end(); ++i)
-        cargs.push_back(i->c_str());
-    cargs.push_back(0);
 
     /* Create a pipe. */
     Pipe pipe;
@@ -902,6 +918,10 @@ string runProgram(Path program, bool searchPath, const Strings & args)
     Pid pid = startProcess([&]() {
         if (dup2(pipe.writeSide, STDOUT_FILENO) == -1)
             throw SysError("dupping stdout");
+
+        Strings args_(args);
+        args_.push_front(program);
+        auto cargs = stringsToCharPtrs(args_);
 
         if (searchPath)
             execvp(program.c_str(), (char * *) &cargs[0]);

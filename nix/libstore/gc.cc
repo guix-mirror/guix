@@ -96,7 +96,7 @@ Path addPermRoot(StoreAPI & store, const Path & _storePath,
                 "(are you running nix-build inside the store?)") % gcRoot);
 
     if (indirect) {
-        /* Don't clobber the the link if it already exists and doesn't
+        /* Don't clobber the link if it already exists and doesn't
            point to the Nix store. */
         if (pathExists(gcRoot) && (!isLink(gcRoot) || !isInStore(readLink(gcRoot))))
             throw Error(format("cannot create symlink `%1%'; already exists") % gcRoot);
@@ -191,7 +191,7 @@ void LocalStore::addTempRoot(const Path & path)
     lockFile(fdTempRoots, ltWrite, true);
 
     string s = path + '\0';
-    writeFull(fdTempRoots, (const unsigned char *) s.data(), s.size());
+    writeFull(fdTempRoots, s);
 
     /* Downgrade to a read lock. */
     debug(format("downgrading to read lock on `%1%'") % fnTempRoots);
@@ -231,7 +231,7 @@ static void readTempRoots(PathSet & tempRoots, FDs & fds)
         if (lockFile(*fd, ltWrite, false)) {
             printMsg(lvlError, format("removing stale temporary roots file `%1%'") % path);
             unlink(path.c_str());
-            writeFull(*fd, (const unsigned char *) "d", 1);
+            writeFull(*fd, "d");
             continue;
         }
 

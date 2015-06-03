@@ -38,6 +38,9 @@
 #if HAVE_SYS_MOUNT_H
 #include <sys/mount.h>
 #endif
+#if HAVE_SYS_SYSCALL_H
+#include <sys/syscall.h>
+#endif
 #if HAVE_SCHED_H
 #include <sched.h>
 #endif
@@ -48,7 +51,7 @@
 #include <linux/fs.h>
 #endif
 
-#define CHROOT_ENABLED HAVE_CHROOT && HAVE_UNSHARE && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE) && defined(CLONE_NEWNS)
+#define CHROOT_ENABLED HAVE_CHROOT && HAVE_UNSHARE && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE) && defined(CLONE_NEWNS) && defined(SYS_pivot_root)
 
 #if CHROOT_ENABLED
 #include <sys/socket.h>
@@ -414,19 +417,6 @@ static void commonChildInit(Pipe & logPipe)
     close(fdDevNull);
 }
 
-
-/* Convert a string list to an array of char pointers.  Careful: the
-   string list should outlive the array. */
-const char * * strings2CharPtrs(const Strings & ss)
-{
-    const char * * arr = new const char * [ss.size() + 1];
-    const char * * p = arr;
-    foreach (Strings::const_iterator, i, ss) *p++ = i->c_str();
-    *p = 0;
-    return arr;
-}
-
-
 /* Restore default handling of SIGPIPE, otherwise some programs will
    randomly say "Broken pipe". */
 static void restoreSIGPIPE()
@@ -764,7 +754,7 @@ private:
     typedef void (DerivationGoal::*GoalState)();
     GoalState state;
 
-    /* Stuff we need to pass to initChild(). */
+    /* Stuff we need to pass to runChild(). */
     typedef map<Path, Path> DirsInChroot; // maps target path to source path
     DirsInChroot dirsInChroot;
     typedef map<string, string> Environment;
@@ -828,8 +818,8 @@ private:
     /* Start building a derivation. */
     void startBuilder();
 
-    /* Initialise the builder's process. */
-    void initChild();
+    /* Run the builder's process. */
+    void runChild();
 
     friend int childEntry(void *);
 
@@ -1612,7 +1602,7 @@ void chmod_(const Path & path, mode_t mode)
 
 int childEntry(void * arg)
 {
-    ((DerivationGoal *) arg)->initChild();
+    ((DerivationGoal *) arg)->runChild();
     return 1;
 }
 
@@ -1759,36 +1749,10 @@ void DerivationGoal::startBuilder()
 
         /* Change ownership of the temporary build directory. */
         if (chown(tmpDir.c_str(), buildUser.getUID(), buildUser.getGID()) == -1)
-            throw SysError(format("cannot change ownership of `%1%'") % tmpDir);
-
-        /* Check that the Nix store has the appropriate permissions,
-           i.e., owned by root and mode 1775 (sticky bit on so that
-           the builder can create its output but not mess with the
-           outputs of other processes). */
-        struct stat st;
-        if (stat(settings.nixStore.c_str(), &st) == -1)
-            throw SysError(format("cannot stat `%1%'") % settings.nixStore);
-        if (!(st.st_mode & S_ISVTX) ||
-            ((st.st_mode & S_IRWXG) != S_IRWXG) ||
-            (st.st_gid != buildUser.getGID()))
-            throw Error(format(
-                "builder does not have write permission to `%2%'; "
-                "try `chgrp %1% %2%; chmod 1775 %2%'")
-                % buildUser.getGID() % settings.nixStore);
+            throw SysError(format("cannot change ownership of '%1%'") % tmpDir);
     }
 
-
-    /* Are we doing a chroot build?  Note that fixed-output
-       derivations are never done in a chroot, mainly so that
-       functions like fetchurl (which needs a proper /etc/resolv.conf)
-       work properly.  Purity checking for fixed-output derivations
-       is somewhat pointless anyway. */
     useChroot = settings.useChroot;
-
-    if (fixedOutput) useChroot = false;
-
-    /* Hack to allow derivations to disable chroot builds. */
-    if (get(drv.env, "__noChroot") == "1") useChroot = false;
 
     if (useChroot) {
 #if CHROOT_ENABLED
@@ -1803,6 +1767,12 @@ void DerivationGoal::startBuilder()
         autoDelChroot = std::shared_ptr<AutoDelete>(new AutoDelete(chrootRootDir));
 
         printMsg(lvlChatty, format("setting up chroot environment in `%1%'") % chrootRootDir);
+
+        if (mkdir(chrootRootDir.c_str(), 0750) == -1)
+            throw SysError(format("cannot create ‘%1%’") % chrootRootDir);
+
+        if (chown(chrootRootDir.c_str(), 0, buildUser.getGID()) == -1)
+            throw SysError(format("cannot change ownership of ‘%1%’") % chrootRootDir);
 
         /* Create a writable /tmp in the chroot.  Many builders need
            this.  (Of course they should really respect $TMPDIR
@@ -1830,7 +1800,8 @@ void DerivationGoal::startBuilder()
                 % (buildUser.enabled() ? buildUser.getGID() : getgid())).str());
 
         /* Create /etc/hosts with localhost entry. */
-        writeFile(chrootRootDir + "/etc/hosts", "127.0.0.1 localhost\n");
+        if (!fixedOutput)
+            writeFile(chrootRootDir + "/etc/hosts", "127.0.0.1 localhost\n");
 
         /* Bind-mount a user-configurable set of directories from the
            host file system. */
@@ -1853,8 +1824,12 @@ void DerivationGoal::startBuilder()
            can be bind-mounted).  !!! As an extra security
            precaution, make the fake Nix store only writable by the
            build user. */
-        createDirs(chrootRootDir + settings.nixStore);
-        chmod_(chrootRootDir + settings.nixStore, 01777);
+        Path chrootStoreDir = chrootRootDir + settings.nixStore;
+        createDirs(chrootStoreDir);
+        chmod_(chrootStoreDir, 01775);
+
+        if (chown(chrootStoreDir.c_str(), 0, buildUser.getGID()) == -1)
+            throw SysError(format("cannot change ownership of ‘%1%’") % chrootStoreDir);
 
         foreach (PathSet::iterator, i, inputPaths) {
             struct stat st;
@@ -1963,14 +1938,17 @@ void DerivationGoal::startBuilder()
     */
 #if CHROOT_ENABLED
     if (useChroot) {
-        char stack[32 * 1024];
-        pid = clone(childEntry, stack + sizeof(stack) - 8,
-            CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWNET | CLONE_NEWIPC | CLONE_NEWUTS | SIGCHLD, this);
+	char stack[32 * 1024];
+	int flags = CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWIPC | CLONE_NEWUTS | SIGCHLD;
+	if (!fixedOutput) flags |= CLONE_NEWNET;
+	pid = clone(childEntry, stack + sizeof(stack) - 8, flags, this);
+	if (pid == -1)
+	    throw SysError("cloning builder process");
     } else
 #endif
     {
         pid = fork();
-        if (pid == 0) initChild();
+        if (pid == 0) runChild();
     }
 
     if (pid == -1) throw SysError("unable to fork");
@@ -1993,7 +1971,7 @@ void DerivationGoal::startBuilder()
 }
 
 
-void DerivationGoal::initChild()
+void DerivationGoal::runChild()
 {
     /* Warning: in the child we should absolutely not make any SQLite
        calls! */
@@ -2022,9 +2000,11 @@ void DerivationGoal::initChild()
 
             /* Set the hostname etc. to fixed values. */
             char hostname[] = "localhost";
-            sethostname(hostname, sizeof(hostname));
+            if (sethostname(hostname, sizeof(hostname)) == -1)
+                throw SysError("cannot set host name");
             char domainname[] = "(none)"; // kernel default
-            setdomainname(domainname, sizeof(domainname));
+            if (setdomainname(domainname, sizeof(domainname)) == -1)
+                throw SysError("cannot set domain name");
 
             /* Make all filesystems private.  This is necessary
                because subtrees may have been mounted as "shared"
@@ -2042,12 +2022,17 @@ void DerivationGoal::initChild()
                     throw SysError(format("unable to make filesystem `%1%' private") % fs);
             }
 
+            /* Bind-mount chroot directory to itself, to treat it as a
+               different filesystem from /, as needed for pivot_root. */
+            if (mount(chrootRootDir.c_str(), chrootRootDir.c_str(), 0, MS_BIND, 0) == -1)
+                throw SysError(format("unable to bind mount ‘%1%’") % chrootRootDir);
+
             /* Set up a nearly empty /dev, unless the user asked to
                bind-mount the host /dev. */
+            Strings ss;
             if (dirsInChroot.find("/dev") == dirsInChroot.end()) {
                 createDirs(chrootRootDir + "/dev/shm");
                 createDirs(chrootRootDir + "/dev/pts");
-                Strings ss;
                 ss.push_back("/dev/full");
 #ifdef __linux__
                 if (pathExists("/dev/kvm"))
@@ -2058,12 +2043,23 @@ void DerivationGoal::initChild()
                 ss.push_back("/dev/tty");
                 ss.push_back("/dev/urandom");
                 ss.push_back("/dev/zero");
-                foreach (Strings::iterator, i, ss) dirsInChroot[*i] = *i;
                 createSymlink("/proc/self/fd", chrootRootDir + "/dev/fd");
                 createSymlink("/proc/self/fd/0", chrootRootDir + "/dev/stdin");
                 createSymlink("/proc/self/fd/1", chrootRootDir + "/dev/stdout");
                 createSymlink("/proc/self/fd/2", chrootRootDir + "/dev/stderr");
             }
+
+            /* Fixed-output derivations typically need to access the
+               network, so give them access to /etc/resolv.conf and so
+               on. */
+            if (fixedOutput) {
+                ss.push_back("/etc/resolv.conf");
+                ss.push_back("/etc/nsswitch.conf");
+                ss.push_back("/etc/services");
+                ss.push_back("/etc/hosts");
+            }
+
+            for (auto & i : ss) dirsInChroot[i] = i;
 
             /* Bind-mount all the directories from the "host"
                filesystem that we want in the chroot
@@ -2114,13 +2110,26 @@ void DerivationGoal::initChild()
                 chmod_(chrootRootDir + "/dev/pts/ptmx", 0666);
             }
 
-            /* Do the chroot().  Below we do a chdir() to the
-               temporary build directory to make sure the current
-               directory is in the chroot.  (Actually the order
-               doesn't matter, since due to the bind mount tmpDir and
-               tmpRootDit/tmpDir are the same directories.) */
-            if (chroot(chrootRootDir.c_str()) == -1)
-                throw SysError(format("cannot change root directory to `%1%'") % chrootRootDir);
+            /* Do the chroot(). */
+            if (chdir(chrootRootDir.c_str()) == -1)
+                throw SysError(format("cannot change directory to '%1%'") % chrootRootDir);
+
+            if (mkdir("real-root", 0) == -1)
+                throw SysError("cannot create real-root directory");
+
+#define pivot_root(new_root, put_old) (syscall(SYS_pivot_root, new_root, put_old))
+            if (pivot_root(".", "real-root") == -1)
+                throw SysError(format("cannot pivot old root directory onto '%1%'") % (chrootRootDir + "/real-root"));
+#undef pivot_root
+
+            if (chroot(".") == -1)
+                throw SysError(format("cannot change root directory to '%1%'") % chrootRootDir);
+
+            if (umount2("real-root", MNT_DETACH) == -1)
+                throw SysError("cannot unmount real root filesystem");
+
+            if (rmdir("real-root") == -1)
+                throw SysError("cannot remove real-root directory");
         }
 #endif
 
@@ -2159,11 +2168,7 @@ void DerivationGoal::initChild()
         Strings envStrs;
         foreach (Environment::const_iterator, i, env)
             envStrs.push_back(rewriteHashes(i->first + "=" + i->second, rewritesToTmp));
-        const char * * envArr = strings2CharPtrs(envStrs);
-
-        Path program = drv.builder.c_str();
-        std::vector<const char *> args; /* careful with c_str()! */
-        string user; /* must be here for its c_str()! */
+        auto envArr = stringsToCharPtrs(envStrs);
 
         /* If we are running in `build-users' mode, then switch to the
            user we allocated above.  Make sure that we drop all root
@@ -2189,29 +2194,25 @@ void DerivationGoal::initChild()
         }
 
         /* Fill in the arguments. */
+        Strings args;
         string builderBasename = baseNameOf(drv.builder);
-        args.push_back(builderBasename.c_str());
-        foreach (Strings::iterator, i, drv.args) {
-            auto re = rewriteHashes(*i, rewritesToTmp);
-            auto cstr = new char[re.length()+1];
-            std::strcpy(cstr, re.c_str());
-
-            args.push_back(cstr);
-        }
-        args.push_back(0);
+        args.push_back(builderBasename);
+        foreach (Strings::iterator, i, drv.args)
+            args.push_back(rewriteHashes(*i, rewritesToTmp));
+        auto argArr = stringsToCharPtrs(args);
 
         restoreSIGPIPE();
 
         /* Indicate that we managed to set up the build environment. */
-        writeToStderr("\n");
+        writeFull(STDERR_FILENO, "\n");
 
         /* Execute the program.  This should not return. */
-        execve(program.c_str(), (char * *) &args[0], (char * *) envArr);
+        execve(drv.builder.c_str(), (char * *) &argArr[0], (char * *) &envArr[0]);
 
         throw SysError(format("executing `%1%'") % drv.builder);
 
     } catch (std::exception & e) {
-        writeToStderr("while setting up the build environment: " + string(e.what()) + "\n");
+        writeFull(STDERR_FILENO, "while setting up the build environment: " + string(e.what()) + "\n");
         _exit(1);
     }
 
@@ -2526,7 +2527,7 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
             BZ2_bzWrite(&err, bzLogFile, (unsigned char *) data.data(), data.size());
             if (err != BZ_OK) throw Error(format("cannot write to compressed log file (BZip2 error = %1%)") % err);
         } else if (fdLogFile != -1)
-            writeFull(fdLogFile, (unsigned char *) data.data(), data.size());
+            writeFull(fdLogFile, data);
     }
 
     if (hook && fd == hook->fromHook.readSide)
@@ -2836,7 +2837,7 @@ void SubstitutionGoal::tryToRun()
     args.push_back("--substitute");
     args.push_back(storePath);
     args.push_back(destPath);
-    const char * * argArr = strings2CharPtrs(args);
+    auto argArr = stringsToCharPtrs(args);
 
     /* Fork the substitute program. */
     pid = startProcess([&]() {
@@ -2846,7 +2847,7 @@ void SubstitutionGoal::tryToRun()
         if (dup2(outPipe.writeSide, STDOUT_FILENO) == -1)
             throw SysError("cannot dup output pipe into stdout");
 
-        execv(sub.c_str(), (char * *) argArr);
+        execv(sub.c_str(), (char * *) &argArr[0]);
 
         throw SysError(format("executing `%1%'") % sub);
     });

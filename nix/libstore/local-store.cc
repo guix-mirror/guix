@@ -254,22 +254,25 @@ LocalStore::LocalStore(bool reserveSpace)
         Path perUserDir = profilesDir + "/per-user";
         createDirs(perUserDir);
         if (chmod(perUserDir.c_str(), 01777) == -1)
-            throw SysError(format("could not set permissions on `%1%' to 1777") % perUserDir);
+            throw SysError(format("could not set permissions on '%1%' to 1777") % perUserDir);
+
+        mode_t perm = 01775;
 
         struct group * gr = getgrnam(settings.buildUsersGroup.c_str());
         if (!gr)
             throw Error(format("the group `%1%' specified in `build-users-group' does not exist")
                 % settings.buildUsersGroup);
+        else {
+            struct stat st;
+            if (stat(settings.nixStore.c_str(), &st))
+                throw SysError(format("getting attributes of path '%1%'") % settings.nixStore);
 
-        struct stat st;
-        if (stat(settings.nixStore.c_str(), &st))
-            throw SysError(format("getting attributes of path `%1%'") % settings.nixStore);
-
-        if (st.st_uid != 0 || st.st_gid != gr->gr_gid || (st.st_mode & ~S_IFMT) != 01775) {
-            if (chown(settings.nixStore.c_str(), 0, gr->gr_gid) == -1)
-                throw SysError(format("changing ownership of path `%1%'") % settings.nixStore);
-            if (chmod(settings.nixStore.c_str(), 01775) == -1)
-                throw SysError(format("changing permissions on path `%1%'") % settings.nixStore);
+            if (st.st_uid != 0 || st.st_gid != gr->gr_gid || (st.st_mode & ~S_IFMT) != perm) {
+                if (chown(settings.nixStore.c_str(), 0, gr->gr_gid) == -1)
+                    throw SysError(format("changing ownership of path '%1%'") % settings.nixStore);
+                if (chmod(settings.nixStore.c_str(), perm) == -1)
+                    throw SysError(format("changing permissions on path '%1%'") % settings.nixStore);
+            }
         }
     }
 
@@ -499,7 +502,7 @@ void LocalStore::makeStoreWritable()
         if (unshare(CLONE_NEWNS) == -1)
             throw SysError("setting up a private mount namespace");
 
-        if (mount(0, settings.nixStore.c_str(), 0, MS_REMOUNT | MS_BIND, 0) == -1)
+        if (mount(0, settings.nixStore.c_str(), "none", MS_REMOUNT | MS_BIND, 0) == -1)
             throw SysError(format("remounting %1% writable") % settings.nixStore);
     }
 #endif
@@ -1404,7 +1407,7 @@ Path LocalStore::addToStoreFromDump(const string & dump, const string & name,
 }
 
 
-Path LocalStore::addToStore(const Path & _srcPath,
+Path LocalStore::addToStore(const string & name, const Path & _srcPath,
     bool recursive, HashType hashAlgo, PathFilter & filter, bool repair)
 {
     Path srcPath(absPath(_srcPath));
@@ -1419,7 +1422,7 @@ Path LocalStore::addToStore(const Path & _srcPath,
     else
         sink.s = readFile(srcPath);
 
-    return addToStoreFromDump(sink.s, baseNameOf(srcPath), recursive, hashAlgo, repair);
+    return addToStoreFromDump(sink.s, name, recursive, hashAlgo, repair);
 }
 
 

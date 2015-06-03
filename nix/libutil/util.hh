@@ -171,6 +171,7 @@ extern void (*_writeToStderr) (const unsigned char * buf, size_t count);
    requested number of bytes. */
 void readFull(int fd, unsigned char * buf, size_t count);
 void writeFull(int fd, const unsigned char * buf, size_t count);
+void writeFull(int fd, const string & s);
 
 MakeError(EndOfFile, Error)
 
@@ -279,6 +280,11 @@ string runProgram(Path program, bool searchPath = false,
     const Strings & args = Strings());
 
 MakeError(ExecError, Error)
+
+/* Convert a list of strings to a null-terminated vector of char
+   *'s. The result must not be accessed beyond the lifetime of the
+   list of strings. */
+std::vector<const char *> stringsToCharPtrs(const Strings & ss);
 
 /* Close all file descriptors except stdin, stdout, stderr, and those
    listed in the given set.  Good practice in child processes. */
