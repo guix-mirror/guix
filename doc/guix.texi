@@ -2948,7 +2948,8 @@ derivations can be defined, such that these objects can also be inserted
 into gexps.  Another useful type of high-level object that can be
 inserted in a gexp is @dfn{local files}, which allows files from the
 local file system to be added to the store and referred to by
-derivations and such (see @code{local-file} below.)
+derivations and such (see @code{local-file} and @code{plain-file}
+below.)
 
 To illustrate the idea, here is an example of a gexp:
 
@@ -3124,6 +3125,13 @@ permission bits are kept.
 
 This is the declarative counterpart of the @code{interned-file} monadic
 procedure (@pxref{The Store Monad, @code{interned-file}}).
+@end deffn
+
+@deffn {Scheme Procedure} plain-file @var{name} @var{content}
+Return an object representing a text file called @var{name} with the given
+@var{content} (a string) to be added to the store.
+
+This is the declarative counterpart of @code{text-file}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}

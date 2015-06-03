@@ -31,11 +31,17 @@
 
             gexp-input
             gexp-input?
+
             local-file
             local-file?
             local-file-file
             local-file-name
             local-file-recursive?
+
+            plain-file
+            plain-file?
+            plain-file-name
+            plain-file-content
 
             gexp->derivation
             gexp->file
@@ -140,7 +146,7 @@ cross-compiling.)"
 
 
 ;;;
-;;; Local files.
+;;; File declarations.
 ;;;
 
 (define-record-type <local-file>
@@ -168,6 +174,28 @@ This is the declarative counterpart of the 'interned-file' monadic procedure."
   (match file
     (($ <local-file> file name recursive?)
      (interned-file file name #:recursive? recursive?))))
+
+(define-record-type <plain-file>
+  (%plain-file name content references)
+  plain-file?
+  (name        plain-file-name)                   ;string
+  (content     plain-file-content)                ;string
+  (references  plain-file-references))            ;list (currently unused)
+
+(define (plain-file name content)
+  "Return an object representing a text file called NAME with the given
+CONTENT (a string) to be added to the store.
+
+This is the declarative counterpart of 'text-file'."
+  ;; XXX: For now just ignore 'references' because it's not clear how to use
+  ;; them in a declarative context.
+  (%plain-file name content '()))
+
+(define-gexp-compiler (plain-file-compiler (file plain-file?) system target)
+  ;; "Compile" FILE by adding it to the store.
+  (match file
+    (($ <plain-file> name content references)
+     (text-file name content references))))
 
 
 ;;;
