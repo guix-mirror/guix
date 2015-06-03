@@ -227,3 +227,29 @@ tools for syntax (Stream Parsers and Grammars) and the ability to modify the
 concrete syntax of the language (Quotations, Syntax Extensions).")
     ;; Most files are distributed under bsd-3, but ocaml_stuff/* is under qpl.
     (license (list bsd-3 qpl))))
+
+(define-public hevea
+  (package
+    (name "hevea")
+    (version "2.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hevea.inria.fr/distri/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f9pj48518ixhjxbviv2zx27v4anp92zgg3x704g1s5cki2w33nv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ocaml" ,ocaml)))
+    (arguments
+     `(#:tests? #f  ; no test suite
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (home-page "http://hevea.inria.fr/")
+    (synopsis "LaTeX to HTML translator")
+    (description
+     "HeVeA is a LaTeX to HTML translator that generates modern HTML 5.  It is
+written in Objective Caml.")
+    (license qpl)))
