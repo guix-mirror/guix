@@ -115,3 +115,4 @@ GTAGS
 /emacs/guix-profiles.el
 /doc/os-config-bare-bones.texi
 /doc/os-config-desktop.texi
+/doc/*.1
