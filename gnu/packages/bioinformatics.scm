@@ -51,7 +51,8 @@
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages zip)
+  #:use-module (srfi srfi-1))
 
 (define-public aragorn
   (package
@@ -275,6 +276,67 @@ which are widely used for genomic interval manipulation or \"genome algebra\".
 pybedtools extends BEDTools by offering feature-level manipulations from with
 Python.")
     (license license:gpl2+)))
+
+(define-public bioperl-minimal
+  (let* ((inputs `(("perl-module-build" ,perl-module-build)
+                   ("perl-data-stag" ,perl-data-stag)
+                   ("perl-libwww" ,perl-libwww)
+                   ("perl-uri" ,perl-uri)))
+         (transitive-inputs
+          (map (compose package-name cadr)
+               (delete-duplicates
+                (concatenate
+                 (map (compose package-transitive-target-inputs cadr) inputs))))))
+    (package
+      (name "bioperl-minimal")
+      (version "1.6.924")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://cpan/authors/id/C/CJ/CJFIELDS/BioPerl-"
+                             version ".tar.gz"))
+         (sha256
+          (base32
+           "1l3npcvvvwjlhkna9dndpfv1hklhrgva013kw96m0n1wpd37ask1"))))
+      (build-system perl-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after
+            'install 'wrap-programs
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Make sure all executables in "bin" find the required Perl
+              ;; modules at runtime.  As the PERL5LIB variable contains also
+              ;; the paths of native inputs, we pick the transitive target
+              ;; inputs from %build-inputs.
+              (let* ((out  (assoc-ref outputs "out"))
+                     (bin  (string-append out "/bin/"))
+                     (path (string-join
+                            (cons (string-append out "/lib/perl5/site_perl")
+                                  (map (lambda (name)
+                                         (assoc-ref %build-inputs name))
+                                       ',transitive-inputs))
+                            ":")))
+                (for-each (lambda (file)
+                            (wrap-program file
+                              `("PERL5LIB" ":" prefix (,path))))
+                          (find-files bin "\\.pl$"))
+                #t))))))
+      (inputs inputs)
+      (native-inputs
+       `(("perl-test-most" ,perl-test-most)))
+      (home-page "http://search.cpan.org/dist/BioPerl")
+      (synopsis "Bioinformatics toolkit")
+      (description
+       "BioPerl is the product of a community effort to produce Perl code which
+is useful in biology.  Examples include Sequence objects, Alignment objects
+and database searching objects.  These objects not only do what they are
+advertised to do in the documentation, but they also interact - Alignment
+objects are made from the Sequence objects, Sequence objects have access to
+Annotation and SeqFeature objects and databases, Blast objects can be
+converted to Alignment objects, and so on.  This means that the objects
+provide a coordinated and extensible framework to do computational biology.")
+      (license (package-license perl)))))
 
 (define-public python-biopython
   (package
