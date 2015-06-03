@@ -34,6 +34,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -437,6 +438,76 @@ multiple sequence alignments.")
     (description
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
+
+(define-public couger
+  (package
+    (name "couger")
+    (version "1.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://couger.oit.duke.edu/static/assets/COUGER"
+                    version ".zip"))
+              (sha256
+               (base32
+                "04p2b14nmhzxw5h72mpzdhalv21bx4w9b87z0wpw0xzxpysyncmq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (copy-recursively "src" (string-append out "/src"))
+              (mkdir (string-append out "/bin"))
+              ;; Add "src" directory to module lookup path.
+              (substitute* "couger"
+                (("from argparse")
+                 (string-append "import sys\nsys.path.append(\""
+                                out "\")\nfrom argparse")))
+              (copy-file "couger" (string-append out "/bin/couger")))
+            #t))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'couger' runs with the correct PYTHONPATH.
+            (let* ((out (assoc-ref outputs "out"))
+                   (path (getenv "PYTHONPATH")))
+              (wrap-program (string-append out "/bin/couger")
+                `("PYTHONPATH" ":" prefix (,path))))
+            #t)))))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pillow" ,python2-pillow)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-matplotlib" ,python2-matplotlib)))
+    (propagated-inputs
+     `(("r" ,r)
+       ("libsvm" ,libsvm)
+       ("randomjungle" ,randomjungle)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://couger.oit.duke.edu")
+    (synopsis "Identify co-factors in sets of genomic regions")
+    (description
+     "COUGER can be applied to any two sets of genomic regions bound by
+paralogous TFs (e.g., regions derived from ChIP-seq experiments) to identify
+putative co-factors that provide specificity to each TF.  The framework
+determines the genomic targets uniquely-bound by each TF, and identifies a
+small set of co-factors that best explain the in vivo binding differences
+between the two TFs.
+
+COUGER uses classification algorithms (support vector machines and random
+forests) with features that reflect the DNA binding specificities of putative
+co-factors.  The features are generated either from high-throughput TF-DNA
+binding data (from protein binding microarray experiments), or from large
+collections of DNA motifs.")
+    (license license:gpl3+)))
 
 (define-public clustal-omega
   (package
