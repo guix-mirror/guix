@@ -73,6 +73,10 @@ doc/guix.1: $(top_builddir)/scripts/guix
 	-LANGUAGE= $(top_builddir)/pre-inst-env	\
 	  $(HELP2MAN) --output="$@" guix
 
+doc/guix-daemon.1: $(top_builddir)/scripts/guix
+	-LANGUAGE= $(top_builddir)/pre-inst-env	\
+	  $(HELP2MAN) --output="$@" guix-daemon
+
 define subcommand-manual-target
 
 doc/guix-$(1).1: $(top_srcdir)/guix/scripts/$(1).scm
@@ -101,4 +105,5 @@ $(eval $(foreach subcommand,$(SUBCOMMANDS),			\
 
 dist_man1_MANS =				\
   doc/guix.1					\
+  doc/guix-daemon.1				\
   $(SUBCOMMANDS:%=doc/guix-%.1)
