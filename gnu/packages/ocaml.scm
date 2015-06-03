@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,11 +18,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ocaml)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:hide (zlib))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages commencement)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ncurses)
@@ -32,56 +37,94 @@
 (define-public ocaml
   (package
     (name "ocaml")
-    (version "4.00.1")
+    (version "4.02.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://caml.inria.fr/pub/distrib/ocaml-4.00/ocaml-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0yp86napnvbi2jgxr6bk1235bmjdclgzrzgq4mhwv87l7dymr3dl"))))
+              (method url-fetch)
+              (uri (string-append
+                    "http://caml.inria.fr/pub/distrib/ocaml-"
+                    (version-major+minor version)
+                    "/ocaml-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1p7lqvh64xpykh99014mz21q8fs3qyjym2qazhhbq8scwldv1i38"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("gcc:lib" ,gcc-final "lib") ; for libiberty, needed for objdump support
+       ("zlib" ,zlib)))             ; also needed for objdump support
     (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-1))
-         #:phases (alist-replace
-                   'configure
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; OCaml uses "-prefix <prefix>" rather than the usual
-                     ;; "--prefix=<prefix>".
-                     (let ((out (assoc-ref outputs "out")))
-                      (zero? (system* "./configure" "-prefix" out
-                                      "-mandir"
-                                      (string-append out "/share/man")))))
-                   (alist-replace
-                    'build
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; "make" does not do anything, we must use
-                      ;; "make world.opt".
-                      (zero? (system* "make" "world.opt")))
-                    (alist-replace
-                     'check-after-install
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       ;; There does not seem to be a "check" or "test" target.
-                       (zero? (system "cd testsuite && make all")))
-                     (let ((check (assq-ref %standard-phases 'check)))
-                      ;; OCaml assumes that "make install" is run before
-                      ;; launching the tests.
-                      (alist-cons-after
-                       'install 'check-after-install
-                       check
-                       (alist-delete 'check %standard-phases))))))))
-    (inputs `(("perl" ,perl)))
-    (home-page "http://caml.inria.fr/")
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (web server))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh-references
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let* ((sh (string-append (assoc-ref inputs "bash")
+                                                "/bin/sh"))
+                             (quoted-sh (string-append "\"" sh "\"")))
+                        (with-fluids ((%default-port-encoding #f))
+                          (for-each (lambda (file)
+                                      (substitute* file
+                                        (("\"/bin/sh\"")
+                                         (begin
+                                           (format (current-error-port) "\
+patch-/bin/sh-references: ~a: changing `\"/bin/sh\"' to `~a'~%"
+                                                   file quoted-sh)
+                                           quoted-sh))))
+                                    (find-files "." "\\.ml$"))
+                          #t))))
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (mandir (string-append out "/share/man")))
+                      ;; Custom configure script doesn't recognize
+                      ;; --prefix=<PREFIX> syntax (with equals sign).
+                      (zero? (system* "./configure"
+                                      "--prefix" out
+                                      "--mandir" mandir)))))
+         (replace 'build
+                  (lambda _
+                    (zero? (system* "make" "-j" (number->string
+                                                 (parallel-job-count))
+                                    "world.opt"))))
+         (delete 'check)
+         (add-after 'install 'check
+                    (lambda _
+                      (with-directory-excursion "testsuite"
+                        (zero? (system* "make" "all")))))
+         (add-before 'check 'prepare-socket-test
+                     (lambda _
+                       (format (current-error-port)
+                               "Spawning local test web server on port 8080~%")
+                       (when (zero? (primitive-fork))
+                         (run-server (lambda (request request-body)
+                                       (values '((content-type . (text/plain)))
+                                               "Hello!"))
+                                     'http '(#:port 8080)))
+                       (let ((file "testsuite/tests/lib-threads/testsocket.ml"))
+                         (format (current-error-port)
+                                 "Patching ~a to use localhost port 8080~%"
+                                 file)
+                         (substitute* file
+                           (("caml.inria.fr") "localhost")
+                           (("80") "8080")
+                           (("HTTP1.0") "HTTP/1.0"))
+                         #t))))))
+    (home-page "https://ocaml.org/")
     (synopsis "The OCaml programming language")
     (description
      "OCaml is a general purpose industrial-strength programming language with
 an emphasis on expressiveness and safety.  Developed for more than 20 years at
 Inria it benefits from one of the most advanced type systems and supports
 functional, imperative and object-oriented styles of programming.")
-    (license (list qpl gpl2))))
+    ;; The compiler is distributed under qpl1.0 with a change to choice of
+    ;; law: the license is governed by the laws of France.  The library is
+    ;; distributed under lgpl2.0.
+    (license (list qpl lgpl2.0))))
 
 (define-public opam
   (package
