@@ -1,0 +1,14 @@
+Do not try to create $localstatedir (aka. /var) since we don't have
+write access.
+
+--- findutils-4.4.2/locate/Makefile.in	2015-06-04 12:40:52.690935795 +0200
++++ findutils-4.4.2/locate/Makefile.in	2015-06-04 12:41:32.087286685 +0200
+@@ -1212,7 +1212,7 @@ updatedb: updatedb.sh Makefile
+ 	chmod +x $@
+ 
+ install-data-hook:
+-	$(top_srcdir)/build-aux/mkinstalldirs $(DESTDIR)$(localstatedir)
++	true
+ 
+ dblocation.texi: Makefile
+ 	echo '@set LOCATE_DB $(LOCATE_DB)' > $@

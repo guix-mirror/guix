@@ -206,14 +206,20 @@ interactive means to merge two files.")
             (sha256
              (base32
               "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))
-            (patches (list (search-patch "findutils-absolute-paths.patch")))))
+            (patches (map search-patch
+                          '("findutils-absolute-paths.patch"
+                            "findutils-localstatedir.patch")))))
    (build-system gnu-build-system)
    (arguments
-    ;; Work around cross-compilation failure.
-    ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
-    (if (%current-target-system)
-        '(#:configure-flags '("gl_cv_func_wcwidth_works=yes"))
-        '()))
+    `(#:configure-flags (list
+                         ;; Tell 'updatedb' to write to /var.
+                         "--localstatedir=/var"
+
+                         ;; Work around cross-compilation failure.  See
+                         ;; <http://savannah.gnu.org/bugs/?27299#comment1>.
+                         ,@(if (%current-target-system)
+                               '("gl_cv_func_wcwidth_works=yes")
+                               '()))))
    (synopsis "Operating on files matching given criteria")
    (description
     "Findutils supplies the basic file directory searching utilities of the
