@@ -54,18 +54,9 @@ file.
 You can re-build and re-install Guix using a system that already runs Guix.
 To do so:
 
-  - Install the dependencies (see 'Requirements' above) and build tools using
-    Guix:
+  - Start a shell with the development environment for Guix:
 
-      guix package --install autoconf automake bzip2 gcc-toolchain gettext \
-                             guile libgcrypt pkg-config sqlite
-
-  - Set the environment variables that Guix recommends you to set during the
-    package installation process:
-      ACLOCAL_PATH, CPATH, LIBRARY_PATH, PKG_CONFIG_PATH
-
-  - Set the PATH environment variable to refer to the profile:
-      PATH=$HOME/.guix-profile/bin:$PATH
+      guix environment guix
 
   - Re-run the 'configure' script passing it the option
     '--with-libgcrypt-prefix=$HOME/.guix-profile/', as well as
