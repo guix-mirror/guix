@@ -106,12 +106,21 @@
                (and (zero? (system* "make"
                                     (string-append "INSTALL_HDR_PATH=" out)
                                     "headers_install"))
-                    (mkdir (string-append out "/include/config"))
-                    (call-with-output-file
-                        (string-append out
-                                       "/include/config/kernel.release")
-                      (lambda (p)
-                        (format p "~a-default~%" ,version))))))))
+                    (begin
+                      (mkdir (string-append out "/include/config"))
+                      (call-with-output-file
+                          (string-append out
+                                         "/include/config/kernel.release")
+                        (lambda (p)
+                          (format p "~a-default~%" ,version)))
+
+                      ;; Remove the '.install' and '..install.cmd' files; the
+                      ;; latter contains store paths, which pulls in bootstrap
+                      ;; binaries in the build environment, and prevents bit
+                      ;; reproducibility for the bootstrap binaries.
+                      (for-each delete-file (find-files out "\\.install"))
+
+                      #t))))))
    (package
     (name "linux-libre-headers")
     (version version)
@@ -133,6 +142,7 @@
                  (alist-replace
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
+       #:allowed-references ()
        #:tests? #f))
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
