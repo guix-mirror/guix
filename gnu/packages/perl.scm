@@ -72,7 +72,18 @@
                         "-Dinstallstyle=lib/perl5"
                         "-Duseshrplib"
                         (string-append "-Dlocincpth=" libc "/include")
-                        (string-append "-Dloclibpth=" libc "/lib")))))))))
+                        (string-append "-Dloclibpth=" libc "/lib"))))))
+
+         (add-before
+          'strip 'make-shared-objects-writable
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; The 'lib/perl5' directory contains ~50 MiB of .so.  Make them
+            ;; writable so that 'strip' actually strips them.
+            (let* ((out (assoc-ref outputs "out"))
+                   (lib (string-append out "/lib")))
+              (for-each (lambda (dso)
+                          (chmod dso #o755))
+                        (find-files lib "\\.so$"))))))))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
                                 (files '("lib/perl5/site_perl")))))
