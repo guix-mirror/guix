@@ -313,10 +313,6 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
-
-              ;; ARM 'link' spec issue reported at
-              ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65711> and
-              ;; <https://gcc.gnu.org/ml/gcc-patches/2015-04/msg01387.html>.
               (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define-public gcc-4.9

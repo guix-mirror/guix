@@ -1,6 +1,10 @@
 Do not pass -dynamic-linker to linker when !shared.
 Fixes <http://bugs.gnu.org/20102>.
 
+ARM 'link' spec issue reported at
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65711 and
+https://gcc.gnu.org/ml/gcc-patches/2015-04/msg01387.html.
+
 Patch by Ludovic Courtès <ludo@gnu.org>.
 
 --- gcc-4.8.4/gcc/config/arm/linux-elf.h.orig	2015-04-08 20:31:20.376900478 +0200
