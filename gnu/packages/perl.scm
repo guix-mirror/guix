@@ -51,28 +51,28 @@
     (arguments
      '(#:tests? #f
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out  (assoc-ref outputs "out"))
-                (libc (assoc-ref inputs "libc")))
-            ;; Use the right path for `pwd'.
-            (substitute* "dist/Cwd/Cwd.pm"
-              (("/bin/pwd")
-               (which "pwd")))
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out  (assoc-ref outputs "out"))
+                  (libc (assoc-ref inputs "libc")))
+              ;; Use the right path for `pwd'.
+              (substitute* "dist/Cwd/Cwd.pm"
+                (("/bin/pwd")
+                 (which "pwd")))
 
-            (zero?
-             (system* "./Configure"
-                      (string-append "-Dprefix=" out)
-                      (string-append "-Dman1dir=" out "/share/man/man1")
-                      (string-append "-Dman3dir=" out "/share/man/man3")
-                      "-de" "-Dcc=gcc"
-                      "-Uinstallusrbinperl"
-                      "-Dinstallstyle=lib/perl5"
-                      "-Duseshrplib"
-                      (string-append "-Dlocincpth=" libc "/include")
-                      (string-append "-Dloclibpth=" libc "/lib")))))
-        %standard-phases)))
+              (zero?
+               (system* "./Configure"
+                        (string-append "-Dprefix=" out)
+                        (string-append "-Dman1dir=" out "/share/man/man1")
+                        (string-append "-Dman3dir=" out "/share/man/man3")
+                        "-de" "-Dcc=gcc"
+                        "-Uinstallusrbinperl"
+                        "-Dinstallstyle=lib/perl5"
+                        "-Duseshrplib"
+                        (string-append "-Dlocincpth=" libc "/include")
+                        (string-append "-Dloclibpth=" libc "/lib")))))))))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
                                 (files '("lib/perl5/site_perl")))))
