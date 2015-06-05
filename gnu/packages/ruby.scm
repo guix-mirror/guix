@@ -416,3 +416,25 @@ generation of complex SQL queries and adapts to various relational database
 implementations.")
     (home-page "https://github.com/rails/arel")
     (license license:expat)))
+
+(define-public ruby-connection-pool
+  (package
+    (name "ruby-connection-pool")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mperham/connection_pool/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02s5rwhmgy8qqns7a5y1daa0yaw38x6lzpwyvmy46h1yrj9mc6zf"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Generic connection pool for Ruby")
+    (description "Connection_pool provides a generic connection pooling
+interface for Ruby programs.")
+    (home-page "https://github.com/mperham/connection_pool")
+    (license license:expat)))
