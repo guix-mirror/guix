@@ -405,6 +405,7 @@ extension functionality is exposed in a single header file.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("freeglut" ,freeglut)))
     (arguments
      '(#:phases (alist-cons-before
@@ -419,7 +420,7 @@ extension functionality is exposed in a single header file.")
                    ;; Replace dynamic-link calls for libGL, libGLU, and
                    ;; libglut with absolute paths to the store.
                    (dynamic-link-substitute "glx/runtime.scm" "GL" "mesa")
-                   (dynamic-link-substitute "glu/runtime.scm" "GLU" "mesa")
+                   (dynamic-link-substitute "glu/runtime.scm" "GLU" "glu")
                    (dynamic-link-substitute "glut/runtime.scm" "glut"
                                             "freeglut"))
                  %standard-phases)))
