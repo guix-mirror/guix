@@ -465,3 +465,25 @@ interface for Ruby programs.")
 using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
     (home-page "https://github.com/drbrain/net-http-persistent")
     (license license:expat)))
+
+(define-public ruby-daemons
+  (package
+    (name "ruby-daemons")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/thuehlinger/daemons/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v5bpdvpvhk240pc7fkn44vfclppl44pp6wd42ipi5sd5lkk7zfd"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; no test suite
+    (synopsis "Daemonize Ruby programs")
+    (description "Daemons provides a way to wrap existing Ruby scripts to be
+run as a daemon and to be controlled by simple start/stop/restart commands.")
+    (home-page "https://github.com/thuehlinger/daemons")
+    (license license:expat)))
