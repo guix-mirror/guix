@@ -4480,9 +4480,9 @@ The host name.
 
 @item @code{hosts-file}
 @cindex hosts file
-A zero-argument monadic procedure that returns a text file for use as
+A file-like object (@pxref{G-Expressions, file-like objects}) for use as
 @file{/etc/hosts} (@pxref{Host Names,,, libc, The GNU C Library
-Reference Manual}).  The default is to produce a file with entries for
+Reference Manual}).  The default is a file with entries for
 @code{localhost} and @var{host-name}.
 
 @item @code{mapped-devices} (default: @code{'()})
@@ -5299,9 +5299,9 @@ This variable is typically used in the @code{hosts-file} field of an
   (hosts-file
     ;; Create a /etc/hosts file with aliases for "localhost"
     ;; and "mymachine", as well as for Facebook servers.
-    (text-file "hosts"
-               (string-append (local-host-aliases host-name)
-                              %facebook-host-aliases))))
+    (plain-file "hosts"
+                (string-append (local-host-aliases host-name)
+                               %facebook-host-aliases))))
 @end example
 
 This mechanism can prevent programs running locally, such as Web

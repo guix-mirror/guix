@@ -110,7 +110,7 @@
             (default %base-firmware))
 
   (host-name operating-system-host-name)          ; string
-  (hosts-file operating-system-hosts-file         ; M item | #f
+  (hosts-file operating-system-hosts-file         ; file-like | #f
               (default #f))
 
   (mapped-devices operating-system-mapped-devices ; list of <mapped-device>
@@ -374,7 +374,7 @@ This is the GNU system.  Welcome.\n")
 
 (define (default-/etc/hosts host-name)
   "Return the default /etc/hosts file."
-  (text-file "hosts" (local-host-aliases host-name)))
+  (plain-file "hosts" (local-host-aliases host-name)))
 
 (define (emacs-site-file)
   "Return the Emacs 'site-start.el' file.  That file contains the necessary
@@ -585,6 +585,22 @@ use 'plain-file' instead~%")
     (x
      x)))
 
+(define (maybe-file->monadic file-name thing)
+  "If THING is a value in %STORE-MONAD, return it as is; otherwise return
+THING in the %STORE-MONAD.
+
+This is for backward-compatibility of fields that used to be monadic values
+and are now file-like objects."
+  (with-monad %store-monad
+    (match thing
+      ((? procedure?)
+       (warning (_ "using a monadic value for '~a' is deprecated; \
+use 'plain-file' instead~%")
+                file-name)
+       thing)
+      (x
+       (return x)))))
+
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
   (mlet* %store-monad
@@ -595,8 +611,10 @@ use 'plain-file' instead~%")
                              (append-map service-pam-services services)))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os))
-       (/etc/hosts  (or (operating-system-hosts-file os)
-                        (default-/etc/hosts (operating-system-host-name os))))
+       (/etc/hosts  (maybe-file->monadic
+                     "hosts"
+                     (or (operating-system-hosts-file os)
+                         (default-/etc/hosts (operating-system-host-name os)))))
        (shells      (user-shells os)))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
