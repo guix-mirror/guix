@@ -364,3 +364,32 @@ specified in a \"Gemfile\", as well as their dependencies.")
 User Agents.")
     (home-page "https://github.com/gshutler/useragent")
     (license license:expat)))
+
+(define-public ruby-bacon
+  (package
+    (name "ruby-bacon")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/chneukirchen/bacon/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g03fxilrrx17dijww68n1lq5d8s69hrxgpga8c1i2k35bzcw5jc"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'generate-docs
+                    (lambda _
+                      ;; This rake task also tries to generate a ChangeLog
+                      ;; file from the Git log, which we don't have.  It fails
+                      ;; but creates an empty file, allowing the rest of the
+                      ;; build to succeed.
+                      (zero? (system* "rake" "predist")))))))
+    (synopsis "Small RSpec clone")
+    (description "Bacon is a small RSpec clone providing all essential
+features.")
+    (home-page "https://github.com/chneukirchen/bacon")
+    (license license:expat)))
