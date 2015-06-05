@@ -380,6 +380,56 @@ cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
     (license license:gpl3+)))
 
+(define-public magit-svn
+  (package
+    (name "magit-svn")
+    (version "b69b79")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (commit version)
+                    (url "https://github.com/magit/magit-svn.git")))
+              (sha256
+               (base32
+                "07xxszd12r38s46sz8fn2qz26b7s88i022cqp3gmkmmj3j57kqv6"))))
+    (build-system trivial-build-system)
+    (inputs `(("emacs" ,emacs-no-x)
+              ("magit" ,magit)))
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build emacs-utils))
+
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (guix build emacs-utils))
+
+         (let* ((emacs    (string-append (assoc-ref %build-inputs "emacs")
+                                         "/bin/emacs"))
+                (magit    (string-append (assoc-ref %build-inputs "magit")
+                                         "/share/emacs/site-lisp"))
+                (commit   (string-append (assoc-ref %build-inputs
+                                                    "magit/git-modes")
+                                         "/share/emacs/site-lisp"))
+                (source   (assoc-ref %build-inputs "source"))
+                (lisp-dir (string-append %output "/share/emacs/site-lisp")))
+           (mkdir-p lisp-dir)
+           (copy-file (string-append source "/magit-svn.el")
+                      (string-append lisp-dir "/magit-svn.el"))
+
+           (with-directory-excursion lisp-dir
+             (parameterize ((%emacs emacs))
+               (emacs-generate-autoloads ,name lisp-dir)
+               (setenv "EMACSLOADPATH"
+                       (string-append ":" magit ":" commit))
+               (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))))))
+    (home-page "https://github.com/magit/magit-svn")
+    (synopsis "Git-SVN extension to Magit")
+    (description
+     "This package is an extension to Magit, the Git Emacs mode, providing
+support for Git-SVN.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
