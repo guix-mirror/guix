@@ -2942,12 +2942,12 @@ and these dependencies are automatically added as inputs to the build
 processes that use them.
 @end itemize
 
-Actually this mechanism is not limited to package and derivation
-objects; @dfn{compilers} able to ``lower'' other high-level objects to
+This mechanism is not limited to package and derivation
+objects: @dfn{compilers} able to ``lower'' other high-level objects to
 derivations can be defined, such that these objects can also be inserted
-into gexps.  Another useful type of high-level object that can be
-inserted in a gexp is @dfn{local files}, which allows files from the
-local file system to be added to the store and referred to by
+into gexps.  For example, a useful type of high-level object that can be
+inserted in a gexp is ``file-like objects'', which make it easy to
+add files to the store and refer to them in
 derivations and such (see @code{local-file} and @code{plain-file}
 below.)
 
@@ -3112,6 +3112,24 @@ refer to.  Any reference to another store item will lead to a build error.
 
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
+
+@cindex file-like objects
+The @code{local-file} and @code{plain-file} procedures below return
+@dfn{file-like objects}.  That is, when unquoted in a G-expression,
+these objects lead to a file in the store.  Consider this G-expression:
+
+@example
+#~(system* (string-append #$glibc "/sbin/nscd") "-f"
+           #$(local-file "/tmp/my-nscd.conf"))
+@end example
+
+The effect here is to ``intern'' @file{/tmp/my-nscd.conf} by copying it
+to the store.  Once expanded, for instance @i{via}
+@code{gexp->derivation}, the G-expression refers to that copy under
+@file{/gnu/store}; thus, modifying or removing the file in @file{/tmp}
+does not have any effect on what the G-expression does.
+@code{plain-file} can be used similarly; it differs in that the file
+content is directly passed as a string.
 
 @deffn {Scheme Procedure} local-file @var{file} [@var{name}] @
    [#:recursive? #t]
