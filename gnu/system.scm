@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix profiles)
+  #:use-module (guix ui)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile)
@@ -147,7 +148,7 @@
   (setuid-programs operating-system-setuid-programs
                    (default %setuid-programs))    ; list of string-valued gexps
 
-  (sudoers operating-system-sudoers               ; /etc/sudoers contents
+  (sudoers operating-system-sudoers               ; file-like
            (default %sudoers-specification)))
 
 
@@ -439,11 +440,10 @@ on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
                         (pam-services '())
                         (profile "/run/current-system/profile")
                         hosts-file nss (shells '())
-                        (sudoers ""))
+                        (sudoers (plain-file "sudoers" "")))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
       ((pam.d      (pam-services->directory pam-services))
-       (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
        (shells     (shells-file shells))
        (emacs      (emacs-site-directory))
@@ -540,7 +540,7 @@ fi\n"))
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
-                  ("sudoers" ,#~#$sudoers)))))
+                  ("sudoers" ,sudoers)))))
 
 (define (operating-system-profile os)
   "Return a derivation that builds the system profile of OS."
@@ -570,6 +570,21 @@ fi\n"))
     (return (append users
                     (append-map service-user-accounts services)))))
 
+(define (maybe-string->file file-name thing)
+  "If THING is a string, return a <plain-file> with THING as its content.
+Otherwise just return THING.
+
+This is for backward-compatibility of fields that used to be strings and are
+now file-like objects.."
+  (match thing
+    ((? string?)
+     (warning (_ "using a string for file '~a' is deprecated; \
+use 'plain-file' instead~%")
+              file-name)
+     (plain-file file-name thing))
+    (x
+     x)))
+
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
   (mlet* %store-monad
@@ -591,7 +606,9 @@ fi\n"))
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
                   #:shells shells
-                  #:sudoers (operating-system-sudoers os)
+                  #:sudoers (maybe-string->file
+                             "sudoers"
+                             (operating-system-sudoers os))
                   #:profile profile-drv)))
 
 (define %setuid-programs
@@ -608,8 +625,9 @@ fi\n"))
   ;; group can do anything.  See
   ;; <http://www.sudo.ws/sudo/man/1.8.10/sudoers.man.html>.
   ;; TODO: Add a declarative API.
-  "root ALL=(ALL) ALL
-%wheel ALL=(ALL) ALL\n")
+  (plain-file "sudoers" "\
+root ALL=(ALL) ALL
+%wheel ALL=(ALL) ALL\n"))
 
 (define (user-group->gexp group)
   "Turn GROUP, a <user-group> object, into a list-valued gexp suitable for

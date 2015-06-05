@@ -4556,7 +4556,8 @@ List of string-valued G-expressions denoting setuid programs.
 
 @item @code{sudoers} (default: @var{%sudoers-specification})
 @cindex sudoers
-The contents of the @file{/etc/sudoers} file as a string.
+The contents of the @file{/etc/sudoers} file as a file-like object
+(@pxref{G-Expressions, @code{local-file} and @code{plain-file}}).
 
 This file specifies which users can use the @command{sudo} command, what
 they are allowed to do, and what privileges they may gain.  The default
