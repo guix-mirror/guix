@@ -66,6 +66,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages mail)
@@ -2407,3 +2408,30 @@ playlists in a variety of formats.")
      "Aisleriot (also known as Solitaire or sol) is a collection of card games
 which are easy to play with the aid of a mouse.")
     (license license:gpl3+)))
+
+(define-public devhelp
+  (package
+    (name "devhelp")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i8kyh86hzwxs8dm047ivghl2b92vigdxa3x4pk4ha0whpk38g37"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://wiki.gnome.org/Apps/Devhelp")
+    (synopsis "API documentation browser for GNOME")
+    (description
+     "Devhelp is an API documentation browser for GTK+ and GNOME.  It works
+natively with GTK-Doc (the API reference system developed for GTK+ and used
+throughout GNOME for API documentation).")
+    (license license:gpl2+)))
