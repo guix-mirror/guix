@@ -393,3 +393,26 @@ User Agents.")
 features.")
     (home-page "https://github.com/chneukirchen/bacon")
     (license license:expat)))
+
+(define-public ruby-arel
+  (package
+    (name "ruby-arel")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rails/arel/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fldwp2hmrmddx22xf7hdmybngzv97qnv5rvz3qw61m94ddd6w4n"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "SQL AST manager for Ruby")
+    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
+generation of complex SQL queries and adapts to various relational database
+implementations.")
+    (home-page "https://github.com/rails/arel")
+    (license license:expat)))
