@@ -438,3 +438,30 @@ implementations.")
 interface for Ruby programs.")
     (home-page "https://github.com/mperham/connection_pool")
     (license license:expat)))
+
+(define-public ruby-net-http-persistent
+  (package
+    (name "ruby-net-http-persistent")
+    (version "2.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/drbrain/net-http-persistent/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q18vji31w8gfr6ajziqkqs8n5lzkw0bl00dm2a8s05zhavzw9j9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-connection-pool" ,ruby-connection-pool)
+       ("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Persistent HTTP connection manager")
+    (description "Net::HTTP::Persistent manages persistent HTTP connections
+using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
+    (home-page "https://github.com/drbrain/net-http-persistent")
+    (license license:expat)))
