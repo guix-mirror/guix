@@ -46,7 +46,7 @@
    (eval . (put 'emacs-substitute-sexps 'scheme-indent-function 1))
    (eval . (put 'emacs-substitute-variables 'scheme-indent-function 1))
    (eval . (put 'with-derivation-narinfo 'scheme-indent-function 1))
-   (eval . (put 'with-derivation-substitute 'scheme-indent-function 1))
+   (eval . (put 'with-derivation-substitute 'scheme-indent-function 2))
 
    (eval . (put 'syntax-parameterize 'scheme-indent-function 1))
    (eval . (put 'with-monad 'scheme-indent-function 1))

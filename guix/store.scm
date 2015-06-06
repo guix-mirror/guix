@@ -91,6 +91,7 @@
             requisites
             referrers
             optimize-store
+            verify-store
             topologically-sorted
             valid-derivers
             query-derivation-outputs
@@ -174,7 +175,8 @@
   (query-valid-paths 31)
   (query-substitutable-paths 32)
   (query-valid-derivers 33)
-  (optimize-store 34))
+  (optimize-store 34)
+  (verify-store 35))
 
 (define-enumerate-type hash-algo
   ;; hash.hh
@@ -497,8 +499,8 @@ encoding conversion errors."
 
                             ;; Client-provided substitute URLs.  For
                             ;; unprivileged clients, these are considered
-                            ;; "untrusted"; for root, they override the
-                            ;; daemon's settings.
+                            ;; "untrusted"; for "trusted" users, they override
+                            ;; the daemon's settings.
                             (substitute-urls %default-substitute-urls))
   ;; Must be called after `open-connection'.
 
@@ -768,6 +770,19 @@ returned."
 Return #t on success."
   ;; Note: the daemon in Guix <= 0.8.2 does not implement this RPC.
   boolean)
+
+(define verify-store
+  (let ((verify (operation (verify-store (boolean check-contents?)
+                                         (boolean repair?))
+                           "Verify the store."
+                           boolean)))
+    (lambda* (store #:key check-contents? repair?)
+      "Verify the integrity of the store and return false if errors remain,
+and true otherwise.  When REPAIR? is true, repair any missing or altered store
+items by substituting them (this typically requires root privileges because it
+is not an atomic operation.)  When CHECK-CONTENTS? is true, check the contents
+of store items; this can take a lot of time."
+      (not (verify store check-contents? repair?)))))
 
 (define (run-gc server action to-delete min-freed)
   "Perform the garbage-collector operation ACTION, one of the
