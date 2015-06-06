@@ -225,7 +225,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.6.0-gnu1")
+    (version "31.7.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -234,18 +234,7 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1a4l23msg4cpc4yp59q2z6xv63r6advlbnjy65v4djv6yhgnqf1i"))
-      (patches (map search-patch '("icecat-CVE-2015-0797.patch"
-                                   "icecat-CVE-2015-2708-pt1.patch"
-                                   "icecat-CVE-2015-2708-pt2.patch"
-                                   "icecat-CVE-2015-2708-pt3.patch"
-                                   "icecat-CVE-2015-2708-pt4.patch"
-                                   "icecat-CVE-2015-2710-pt1.patch"
-                                   "icecat-CVE-2015-2710-pt2.patch"
-                                   "icecat-CVE-2015-2710-pt3.patch"
-                                   "icecat-CVE-2015-2713-pt1.patch"
-                                   "icecat-CVE-2015-2713-pt2.patch"
-                                   "icecat-CVE-2015-2716.patch")))))
+        "0a25jp5afla2dxzj7i4cyvqpa5smsn7ns3xvpzqw6pc7naixkpap"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

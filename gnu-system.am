@@ -453,17 +453,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
-  gnu/packages/patches/icecat-CVE-2015-0797.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2708-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2708-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2708-pt3.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2708-pt4.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2710-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2710-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2710-pt3.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2713-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2713-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-2716.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
