@@ -440,7 +440,10 @@ static void performOp(bool trusted, unsigned int clientVersion,
     case wopImportPaths: {
         startWork();
         TunnelSource source(from);
-        Paths paths = store->importPaths(!trusted, source);
+
+	/* Unlike Nix, always require a signature, even for "trusted"
+	   users.  */
+        Paths paths = store->importPaths(true, source);
         stopWork();
         writeStrings(paths, to);
         break;
