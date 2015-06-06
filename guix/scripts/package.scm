@@ -469,7 +469,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -A, --list-available[=REGEXP]
                          list available packages matching REGEXP"))
   (display (_ "
-  --show=PACKAGE         show details about PACKAGE"))
+      --show=PACKAGE     show details about PACKAGE"))
   (newline)
   (show-build-options-help)
   (newline)
