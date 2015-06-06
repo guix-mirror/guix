@@ -43,7 +43,7 @@
   #:use-module (gnu packages jemalloc)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
-                          bsd-2 public-domain))
+                          bsd-2 bsd-3 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -727,3 +727,30 @@ database engine.  UnQLite is a document store database similar to
 MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
 similar to BerkeleyDB, LevelDB, etc.")
     (license bsd-2)))
+
+(define-public redis
+  (package
+    (name "redis")
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.redis.io/releases/redis-"
+                                  version".tar.gz"))
+              (sha256
+               (base32
+                "19cxdrk380qachw160h1x51mwj7kpkxlggfzfh19bl0nbdkgl20x"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; tests related to master/slave and replication fail
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:make-flags `("CC=gcc"
+                      "MALLOC=libc"
+                      ,(string-append "PREFIX="
+                                      (assoc-ref %outputs "out")))))
+    (synopsis "Key-value cache and store")
+    (description "Redis is an advanced key-value cache and store.  Redis
+supports many data structures including strings, hashes, lists, sets, sorted
+sets, bitmaps and hyperloglogs.")
+    (home-page "http://redis.io/")
+    (license bsd-3)))
