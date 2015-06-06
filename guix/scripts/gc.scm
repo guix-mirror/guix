@@ -58,6 +58,11 @@ Invoke the garbage collector.\n"))
       --referrers        list the referrers of PATHS"))
   (newline)
   (display (_ "
+      --verify[=OPTS]    verify the integrity of the store; OPTS is a
+                         comma-separated combination of 'repair' and
+                         'contents'"))
+  (newline)
+  (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "
   -V, --version          display version information and exit"))
@@ -94,6 +99,17 @@ Invoke the garbage collector.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'action 'optimize
                               (alist-delete 'action result))))
+        (option '("verify") #f #t
+                (let ((not-comma (char-set-complement (char-set #\,))))
+                  (lambda (opt name arg result)
+                    (let ((options (if arg
+                                       (map string->symbol
+                                            (string-tokenize arg not-comma))
+                                       '())))
+                      (alist-cons 'action 'verify
+                                  (alist-cons 'verify-options options
+                                              (alist-delete 'action
+                                                            result)))))))
         (option '("list-dead") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-dead
@@ -177,6 +193,12 @@ Invoke the garbage collector.\n"))
          (list-relatives referrers))
         ((optimize)
          (optimize-store store))
+        ((verify)
+         (let ((options (assoc-ref opts 'verify-options)))
+           (exit
+            (verify-store store
+                          #:check-contents? (memq 'contents options)
+                          #:repair? (memq 'repair options)))))
         ((list-dead)
          (for-each (cut simple-format #t "~a~%" <>)
                    (dead-paths store)))

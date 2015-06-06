@@ -1541,8 +1541,9 @@ is achieved by running @code{guix package --delete-generations}
 
 The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
-files (the @code{--delete} option), or to print garbage-collector
-information.  The available options are listed below:
+files (the @code{--delete} option), to print garbage-collector
+information, or for more advanced queries.  The garbage collection
+options are as follows:
 
 @table @code
 @item --collect-garbage[=@var{min}]
@@ -1563,17 +1564,6 @@ When @var{min} is omitted, collect all the garbage.
 Attempt to delete all the store files and directories specified as
 arguments.  This fails if some of the files are not in the store, or if
 they are still live.
-
-@item --optimize
-@cindex deduplication
-Optimize the store by hard-linking identical files---this is
-@dfn{deduplication}.
-
-The daemon performs deduplication after each successful build or archive
-import, unless it was started with @code{--disable-deduplication}
-(@pxref{Invoking guix-daemon, @code{--disable-deduplication}}).  Thus,
-this option is primarily useful when the daemon was running with
-@code{--disable-deduplication}.
 
 @item --list-dead
 Show the list of dead files and directories still present in the
@@ -1602,6 +1592,47 @@ of these, recursively.  In other words, the returned list is the
 
 @end table
 
+Lastly, the following options allow you to check the integrity of the
+store and to control disk usage.
+
+@table @option
+
+@item --verify[=@var{options}]
+@cindex integrity, of the store
+@cindex integrity checking
+Verify the integrity of the store.
+
+By default, make sure that all the store items marked as valid in the
+daemon's database actually exist in @file{/gnu/store}.
+
+When provided, @var{options} must a comma-separated list containing one
+or more of @code{contents} and @code{repair}.
+
+When passing @option{--verify=contents}, the daemon will compute the
+content hash of each store item and compare it against its hash in the
+database.  Hash mismatches are reported as data corruptions.  Because it
+traverses @emph{all the files in the store}, this command can take a
+long time, especially on systems with a slow disk drive.
+
+@cindex repairing the store
+Using @option{--verify=repair} or @option{--verify=contents,repair}
+causes the daemon to try to repair corrupt store items by fetching
+substitutes for them (@pxref{Substitutes}).  Because repairing is not
+atomic, and thus potentially dangerous, it is available only to the
+system administrator.
+
+@item --optimize
+@cindex deduplication
+Optimize the store by hard-linking identical files---this is
+@dfn{deduplication}.
+
+The daemon performs deduplication after each successful build or archive
+import, unless it was started with @code{--disable-deduplication}
+(@pxref{Invoking guix-daemon, @code{--disable-deduplication}}).  Thus,
+this option is primarily useful when the daemon was running with
+@code{--disable-deduplication}.
+
+@end table
 
 @node Invoking guix pull
 @section Invoking @command{guix pull}
