@@ -19,6 +19,7 @@ guix package}).  Specifically, ``guix.el'' makes it easy to:
 * Usage: Emacs Usage.			Using the interface.
 * Configuration: Emacs Configuration.	Configuring the interface.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
+* Completions: Emacs Completions.       Completing @command{guix} shell command.
 @end menu
 
 @node Emacs Initial Setup
@@ -489,3 +490,34 @@ mode hooks (@pxref{Hooks,,, emacs, The GNU Emacs Manual}), for example:
 (add-hook 'shell-mode-hook 'guix-prettify-mode)
 (add-hook 'dired-mode-hook 'guix-prettify-mode)
 @end example
+
+
+@node Emacs Completions
+@subsection Shell Completions
+
+Another feature that becomes available after configuring Emacs interface
+(@pxref{Emacs Initial Setup}) is completing of @command{guix}
+subcommands, options, packages and other things in @code{shell}
+(@pxref{Interactive Shell,,, emacs, The GNU Emacs Manual}) and
+@code{eshell} (@pxref{Top,,, eshell, Eshell: The Emacs Shell}).
+
+It works the same way as other completions do.  Just press @key{TAB}
+when your intuition tells you.
+
+And here are some examples, where pressing @key{TAB} may complete
+something:
+
+@itemize @w{}
+
+@item @code{guix pa}@key{TAB}
+@item @code{guix package -}@key{TAB}
+@item @code{guix package --}@key{TAB}
+@item @code{guix package -i gei}@key{TAB}
+@item @code{guix build -L/tm}@key{TAB}
+@item @code{guix build --sy}@key{TAB}
+@item @code{guix build --system=i}@key{TAB}
+@item @code{guix system rec}@key{TAB}
+@item @code{guix lint --checkers=sy}@key{TAB}
+@item @code{guix lint --checkers=synopsis,des}@key{TAB}
+
+@end itemize
