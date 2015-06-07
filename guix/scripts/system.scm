@@ -368,18 +368,19 @@ boot directly to the kernel or to the bootloader."
 Build the operating system declared in FILE according to ACTION.\n"))
   (newline)
   (display (_ "The valid values for ACTION are:\n"))
+  (newline)
   (display (_ "\
-  - 'reconfigure', switch to a new operating system configuration\n"))
+   reconfigure      switch to a new operating system configuration\n"))
   (display (_ "\
-  - 'build', build the operating system without installing anything\n"))
+   build            build the operating system without installing anything\n"))
   (display (_ "\
-  - 'vm', build a virtual machine image that shares the host's store\n"))
+   vm               build a virtual machine image that shares the host's store\n"))
   (display (_ "\
-  - 'vm-image', build a freestanding virtual machine image\n"))
+   vm-image         build a freestanding virtual machine image\n"))
   (display (_ "\
-  - 'disk-image', build a disk image, suitable for a USB stick\n"))
+   disk-image       build a disk image, suitable for a USB stick\n"))
   (display (_ "\
-  - 'init', initialize a root file system to run GNU.\n"))
+   init             initialize a root file system to run GNU.\n"))
 
   (show-build-options-help)
   (display (_ "

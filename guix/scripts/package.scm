@@ -422,15 +422,17 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
     (substitutes? . #t)))
 
 (define (show-help)
-  (display (_ "Usage: guix package [OPTION]... PACKAGES...
-Install, remove, or upgrade PACKAGES in a single transaction.\n"))
+  (display (_ "Usage: guix package [OPTION]...
+Install, remove, or upgrade packages in a single transaction.\n"))
   (display (_ "
-  -i, --install=PACKAGE  install PACKAGE"))
+  -i, --install PACKAGE ...
+                         install PACKAGEs"))
   (display (_ "
   -e, --install-from-expression=EXP
                          install the package EXP evaluates to"))
   (display (_ "
-  -r, --remove=PACKAGE   remove PACKAGE"))
+  -r, --remove PACKAGE ...
+                         remove PACKAGEs"))
   (display (_ "
   -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
   (display (_ "

@@ -575,7 +575,8 @@ descriptions maintained upstream."
 
 (define (show-help)
   (display (_ "Usage: guix lint [OPTION]... [PACKAGE]...
-Run a set of checkers on the specified package; if none is specified, run the checkers on all packages.\n"))
+Run a set of checkers on the specified package; if none is specified,
+run the checkers on all packages.\n"))
   (display (_ "
   -c, --checkers=CHECKER1,CHECKER2...
                          only run the specificed checkers"))
