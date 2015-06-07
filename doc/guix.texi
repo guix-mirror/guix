@@ -478,6 +478,9 @@ Bash syntax and the @code{shadow} commands):
 @end example
 
 @noindent
+The number of build users determines how many build jobs may run in
+parallel, as specified by the @option{--max-jobs} option
+(@pxref{Invoking guix-daemon, @option{--max-jobs}}).
 The @code{guix-daemon} program may then be run as @code{root} with:
 
 @example
