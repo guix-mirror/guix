@@ -423,8 +423,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libcilkrts"
                        "--disable-libvtv"
                        "--disable-libssp"
-                       "--disable-libquadmath"
-                       "--disable-decimal-float")
+                       "--disable-libquadmath")
                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
                               ,flags)))
             ((#:phases phases)
