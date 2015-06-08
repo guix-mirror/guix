@@ -1,0 +1,48 @@
+See <http://lists.gnu.org/archive/html/bug-patch/2015-06/msg00009.html>
+
+From 0507dfad5f060161f01840067e1bb1615257b636 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ludovic=20Court=C3=A8s?= <ludo@gnu.org>
+Date: Mon, 8 Jun 2015 17:27:56 +0200
+Subject: [PATCH] Do not rely on PATH_MAX when reading a symlink target.
+
+* src/util.c (move_file, copy_file): Use 'fromst->st_size + 1' and
+'tost->st_size + 1' for the allocation, and 'fromst->st_size' and
+'tost->st_size' instead of PATH_MAX.  Fixes compilation on GNU/Hurd.
+---
+ src/util.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/util.c b/src/util.c
+index 82a7e37..c4c0f9d 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -460,12 +460,12 @@ move_file (char const *from, bool *from_needs_removal,
+ 
+ 	  /* FROM contains the contents of the symlink we have patched; need
+ 	     to convert that back into a symlink. */
+-	  char *buffer = xmalloc (PATH_MAX);
++	  char *buffer = xmalloc (fromst->st_size + 1);
+ 	  int fd, size = 0, i;
+ 
+ 	  if ((fd = safe_open (from, O_RDONLY | O_BINARY, 0)) < 0)
+ 	    pfatal ("Can't reopen file %s", quotearg (from));
+-	  while ((i = read (fd, buffer + size, PATH_MAX - size)) > 0)
++	  while ((i = read (fd, buffer + size, fromst->st_size - size)) > 0)
+ 	    size += i;
+ 	  if (i != 0 || close (fd) != 0)
+ 	    read_fatal ();
+@@ -610,9 +610,9 @@ copy_file (char const *from, char const *to, struct stat *tost,
+ 
+   if (S_ISLNK (mode))
+     {
+-      char *buffer = xmalloc (PATH_MAX);
++      char *buffer = xmalloc (tost->st_size + 1);
+ 
+-      if (safe_readlink (from, buffer, PATH_MAX) < 0)
++      if (safe_readlink (from, buffer, tost->st_size) < 0)
+ 	pfatal ("Can't read %s %s", "symbolic link", from);
+       if (safe_symlink (buffer, to) != 0)
+ 	pfatal ("Can't create %s %s", "symbolic link", to);
+-- 
+2.4.2
+

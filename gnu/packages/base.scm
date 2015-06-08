@@ -161,7 +161,8 @@ standard utility.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))))
+                "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))
+              (patches (list (search-patch "patch-hurd-path-max.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("ed", ed)))
    (synopsis "Apply differences to originals, with optional backups")
