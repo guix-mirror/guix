@@ -1,0 +1,34 @@
+7bb8d35d0330161a5af5341471d0c183a067e8c2
+Author: Jose E. Marchesi <jemarch@gnu.org>
+Date:   Sun Oct 6 14:43:38 2013 +0200
+
+    Set PATH_MAX to some constant in case it is not defined in system
+    headers.
+    
+    2013-10-06  Jose E. Marchesi  <jemarch@gnu.org>
+    
+    	* basicdefs.h (PATH_MAX): Defined to some constant in case it is
+    	not defined by system headers.
+    	* sed/utils.c: Do not include pathmax.h anymore.
+    	* bootstrap.conf (gnulib_modules): Do not use the gnulib module
+    	pathmax.
+
+diff --git a/basicdefs.h b/basicdefs.h
+index 0d28a97..09f5beb 100644
+--- a/basicdefs.h
++++ b/basicdefs.h
+@@ -40,6 +41,13 @@ typedef unsigned long countT;
+ #define obstack_chunk_alloc  ck_malloc
+ #define obstack_chunk_free   free
+ 
++/* MAX_PATH is not defined in some platforms, most notably GNU/Hurd.
++   In that case we define it here to some constant.  Note however that
++   this relies in the fact that sed does reallocation if a buffer
++   needs to be larger than PATH_MAX.  */
++#ifndef PATH_MAX
++# define PATH_MAX 200
++#endif
+ 
+ /* handle misdesigned <ctype.h> macros (snarfed from lib/regex.c) */
+ /* Jim Meyering writes:
+ 

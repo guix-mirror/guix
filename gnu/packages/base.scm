@@ -101,7 +101,8 @@ including, for example, recursive directory searching.")
                                 ".tar.bz2"))
             (sha256
              (base32
-              "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))))
+              "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))
+            (patches (list (search-patch "sed-hurd-path-max.patch")))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
