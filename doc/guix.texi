@@ -280,8 +280,9 @@ kernel Linux, and so on.
 As @code{root}, run:
 
 @example
-# cd /
+# cd /tmp
 # tar xf guix-binary-@value{VERSION}.@var{system}.tar.xz
+# mv var/guix /var/ && mv gnu /
 @end example
 
 This creates @file{/gnu/store} (@pxref{The Store}) and @file{/var/guix}.
