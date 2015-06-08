@@ -54,6 +54,7 @@
             CLONE_NEWPID
             CLONE_NEWNET
             clone
+            setns
 
             IFF_UP
             IFF_BROADCAST
@@ -312,6 +313,21 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
 Unlike the fork system call, clone accepts FLAGS that specify which resources
 are shared between the parent and child processes."
       (proc syscall-id flags %null-pointer))))
+
+(define setns
+  (let* ((ptr  (dynamic-func "setns" (dynamic-link)))
+         (proc (pointer->procedure int ptr (list int int))))
+    (lambda (fdes nstype)
+      "Reassociate the current process with the namespace specified by FDES, a
+file descriptor obtained by opening a /proc/PID/ns/* file.  NSTYPE specifies
+which type of namespace the current process may be reassociated with, or 0 if
+there is no such limitation."
+      (let ((ret (proc fdes nstype))
+            (err (errno)))
+        (unless (zero? ret)
+          (throw 'system-error "setns" "~d ~d: ~A"
+                 (list fdes nstype (strerror err))
+                 (list err)))))))
 
 
 ;;;

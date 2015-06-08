@@ -90,6 +90,32 @@
             ((_ . status)
              (= 42 (status:exit-val status))))))))
 
+(test-assert "setns"
+  (match (clone (logior CLONE_NEWUSER SIGCHLD))
+    (0 (primitive-exit 0))
+    (clone-pid
+     (match (pipe)
+       ((in . out)
+        (match (primitive-fork)
+          (0
+           (close in)
+           ;; Join the user namespace.
+           (call-with-input-file (user-namespace clone-pid)
+             (lambda (port)
+               (setns (port->fdes port) 0)))
+           (write 'done out)
+           (close out)
+           (primitive-exit 0))
+          (fork-pid
+           (close out)
+           ;; Wait for the child process to join the namespace.
+           (read in)
+           (let ((result (and (equal? (readlink (user-namespace clone-pid))
+                                      (readlink (user-namespace fork-pid))))))
+             ;; Clean up.
+             (waitpid clone-pid)
+             (waitpid fork-pid)
+             result))))))))
 
 (test-assert "all-network-interfaces"
   (match (all-network-interfaces)
