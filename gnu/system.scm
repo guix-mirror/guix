@@ -83,6 +83,11 @@
             operating-system-derivation
             operating-system-profile
             operating-system-grub.cfg
+            operating-system-etc-directory
+            operating-system-locale-directory
+            operating-system-boot-script
+
+            file-union
 
             local-host-aliases
             %setuid-programs
@@ -689,7 +694,7 @@ variable is not set---hence the need for this wrapper."
                       (apply execl #$modprobe
                              (cons #$modprobe (cdr (command-line))))))))
 
-(define (operating-system-activation-script os)
+(define* (operating-system-activation-script os #:key container?)
   "Return the activation script for OS---i.e., the code that \"activates\" the
 stateful part of OS, including user accounts and groups, special directories,
 etc."
@@ -763,12 +768,15 @@ etc."
                     ;; Tell the kernel to use our 'modprobe' command.
                     (activate-modprobe #$modprobe)
 
-                    ;; Tell the kernel where firmware is.
-                    (activate-firmware
-                     (string-append #$firmware "/lib/firmware"))
-
-                    ;; Let users debug their own processes!
-                    (activate-ptrace-attach)
+                    ;; Tell the kernel where firmware is, unless we are
+                    ;; activating a container.
+                    #$@(if container?
+                           #~()
+                           ;; Tell the kernel where firmware is.
+                           #~((activate-firmware
+                               (string-append #$firmware "/lib/firmware"))
+                              ;; Let users debug their own processes!
+                              (activate-ptrace-attach)))
 
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.
@@ -777,11 +785,13 @@ etc."
                     ;; Set up /run/current-system.
                     (activate-current-system)))))
 
-(define (operating-system-boot-script os)
+(define* (operating-system-boot-script os #:key container?)
   "Return the boot script for OS---i.e., the code started by the initrd once
-we're running in the final root."
+we're running in the final root.  When CONTAINER? is true, skip all
+hardware-related operations as necessary when booting a Linux container."
   (mlet* %store-monad ((services (operating-system-services os))
-                       (activate (operating-system-activation-script os))
+                       (activate (operating-system-activation-script
+                                  os #:container? container?))
                        (dmd-conf (dmd-configuration-file services)))
     (gexp->file "boot"
                 #~(begin
