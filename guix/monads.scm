@@ -112,6 +112,29 @@
   (lambda (s)
     (syntax-violation 'return "return used outside of 'with-monad'" s)))
 
+(define-syntax-rule (bind-syntax bind)
+  "Return a macro transformer that handles the expansion of '>>=' expressions
+using BIND as the binary bind operator.
+
+This macro exists to allow the expansion of n-ary '>>=' expressions, even
+though BIND is simply binary, as in:
+
+  (with-monad %state-monad
+    (>>= (return 1)
+         (lift 1+ %state-monad)
+         (lift 1+ %state-monad)))
+"
+  (lambda (stx)
+    (define (expand body)
+      (syntax-case body ()
+        ((_ mval mproc)
+         #'(bind mval mproc))
+        ((x mval mproc0 mprocs (... ...))
+         (expand #'(>>= (>>= mval mproc0)
+                        mprocs (... ...))))))
+
+    (expand stx)))
+
 (define-syntax with-monad
   (lambda (s)
     "Evaluate BODY in the context of MONAD, and return its result."
@@ -120,13 +143,13 @@
        (eq? 'macro (syntax-local-binding #'monad))
        ;; MONAD is a syntax transformer, so we can obtain the bind and return
        ;; methods by directly querying it.
-       #'(syntax-parameterize ((>>=    (identifier-syntax (monad %bind)))
+       #'(syntax-parameterize ((>>=    (bind-syntax (monad %bind)))
                                (return (identifier-syntax (monad %return))))
            body ...))
       ((_ monad body ...)
        ;; MONAD refers to the <monad> record that represents the monad at run
        ;; time, so use the slow method.
-       #'(syntax-parameterize ((>>=    (identifier-syntax
+       #'(syntax-parameterize ((>>=    (bind-syntax
                                         (monad-bind monad)))
                                (return (identifier-syntax
                                         (monad-return monad))))

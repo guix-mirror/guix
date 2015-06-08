@@ -2773,12 +2773,25 @@ in @var{monad}.
 Return a monadic value that encapsulates @var{val}.
 @end deffn
 
-@deffn {Scheme Syntax} >>= @var{mval} @var{mproc}
+@deffn {Scheme Syntax} >>= @var{mval} @var{mproc} ...
 @dfn{Bind} monadic value @var{mval}, passing its ``contents'' to monadic
-procedure @var{mproc}@footnote{This operation is commonly referred to as
-``bind'', but that name denotes an unrelated procedure in Guile.  Thus
-we use this somewhat cryptic symbol inherited from the Haskell
-language.}.
+procedures @var{mproc}@dots{}@footnote{This operation is commonly
+referred to as ``bind'', but that name denotes an unrelated procedure in
+Guile.  Thus we use this somewhat cryptic symbol inherited from the
+Haskell language.}.  There can be one @var{mproc} or several of them, as
+in this example:
+
+@example
+(run-with-state
+    (with-monad %state-monad
+      (>>= (return 1)
+           (lambda (x) (return (+ 1 x)))
+           (lambda (x) (return (* 2 x)))))
+  'some-state)
+
+@result{} 4
+@result{} some-state
+@end example
 @end deffn
 
 @deffn {Scheme Syntax} mlet @var{monad} ((@var{var} @var{mval}) ...) @

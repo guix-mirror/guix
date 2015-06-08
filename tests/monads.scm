@@ -103,6 +103,19 @@
          %monads
          %monad-run))
 
+(test-assert ">>= with more than two arguments"
+  (every (lambda (monad run)
+           (let ((1+ (lift1 1+ monad))
+                 (2* (lift1 (cut * 2 <>) monad)))
+             (with-monad monad
+               (let ((number (random 777)))
+                 (= (run (>>= (return number)
+                              1+ 1+ 1+
+                              2* 2* 2*))
+                    (* 8 (+ number 3)))))))
+         %monads
+         %monad-run))
+
 (test-assert "mbegin"
   (every (lambda (monad run)
            (with-monad monad
