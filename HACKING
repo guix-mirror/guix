@@ -20,6 +20,7 @@ addition to those mentioned in the installation instructions:
   - [[http://www.gnu.org/software/automake/][GNU Automake]]
   - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
   - [[http://www.graphviz.org/][Graphviz]]
+  - [[http://www.gnu.org/software/help2man/][GNU Help2man]] (optional)
 
 Run ‘./bootstrap’ to download the Nix daemon source code and to generate the
 build system infrastructure using autoconf.  It reports an error if an
