@@ -284,18 +284,26 @@ As @code{root}, run:
 # tar xf guix-binary-@value{VERSION}.@var{system}.tar.xz
 @end example
 
-This creates @file{/gnu/store} (@pxref{The Store}), @file{/var/guix},
-and @file{/root/.guix-profile}.  @file{/root/.guix-profile} is a
-ready-to-use profile for @code{root} where Guix is installed.
+This creates @file{/gnu/store} (@pxref{The Store}) and @file{/var/guix}.
+The latter contains a ready-to-use profile for @code{root} (see next
+step.)
 
 Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
 
 @item
+Make @code{root}'s profile available under @file{~/.guix-profile}:
+
+@example
+# ln -sf /var/guix/profiles/per-user/root/guix-profile \
+         ~root/.guix-profile
+@end example
+
+@item
 Run the daemon:
 
 @example
-# /root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
+# ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
 @end example
 
 @item
@@ -313,7 +321,7 @@ To use substitutes from @code{hydra.gnu.org} (@pxref{Substitutes}),
 authorize them:
 
 @example
-# guix archive --authorize < /root/.guix-profile/share/guix/hydra.gnu.org.pub
+# guix archive --authorize < ~root/.guix-profile/share/guix/hydra.gnu.org.pub
 @end example
 @end enumerate
 

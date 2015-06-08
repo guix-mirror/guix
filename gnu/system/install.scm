@@ -73,11 +73,12 @@ under /root/.guix-profile where GUIX is installed."
             (zero? (system* "tar" "--xz" "--format=gnu"
                             "--owner=root:0" "--group=root:0"
                             "-cvf" #$output
-                            ;; Avoid adding /, /var, or /root to the tarball,
+                            ;; Avoid adding / and /var to the tarball,
                             ;; so that the ownership and permissions of those
                             ;; directories will not be overwritten when
-                            ;; extracting the archive.
-                            "./root/.guix-profile"
+                            ;; extracting the archive.  Do not include /root
+                            ;; because the root account might have a different
+                            ;; home directory.
                             "./var/guix"
                             (string-append "." (%store-directory)))))))
 
