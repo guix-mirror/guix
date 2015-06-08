@@ -38,6 +38,7 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
@@ -329,7 +331,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.6.1")
+    (version "3.16.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -337,7 +339,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1da1pij030dh8mb0pr0jnyszgsbjnh8lc17rj5ii52j3kmbv51qv"))))
+               "0c31pwfzfm5x036f018q31k33vl8xb96nbs0iiccsc1abc37bzq6"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -348,12 +350,18 @@ forgotten when the session ends.")
        #:tests? #f))
     (inputs
      `(("libspectre" ,libspectre)
-       ;; ("djvulibre" ,djvulibre)
+       ("djvulibre" ,djvulibre)
        ("ghostscript" ,ghostscript)
        ("poppler" ,poppler)
+       ("libtiff" ,libtiff)
+       ;; TODO:
+       ;;   Add libgxps for XPS support.
+       ;;   Build libkpathsea as a shared library for DVI support.
+       ;; ("libkpathsea" ,texlive-bin)
+       ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libgnome-keyring" ,libgnome-keyring)
-       ("gnome-icon-theme" ,gnome-icon-theme)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
        ("itstool" ,itstool)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("atk" ,atk)
@@ -366,6 +374,7 @@ forgotten when the session ends.")
        ("shared-mime-info" ,shared-mime-info)
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
+       ("libsecret" ,libsecret)
 
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
