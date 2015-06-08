@@ -108,7 +108,12 @@ that will be shared with the host system."
                 (setenv "TMPDIR" "/tmp")
                 (setenv "GUIX_NEW_SYSTEM" #$os-drv)
                 (for-each mkdir-p '("/run" "/bin" "/etc" "/home" "/var"))
-                (primitive-load (string-append #$os-drv "/boot"))))))
+                (primitive-load (string-append #$os-drv "/boot")))
+              ;; A range of 65536 uid/gids is used to cover 16 bits worth of
+              ;; users and groups, which is sufficient for most cases.
+              ;;
+              ;; See: http://www.freedesktop.org/software/systemd/man/systemd-nspawn.html#--private-users=
+              #:host-uids 65536)))
 
       (gexp->script "run-container" script
                     #:modules '((ice-9 match)

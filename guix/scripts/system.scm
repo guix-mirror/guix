@@ -34,6 +34,7 @@
   #:use-module (gnu build install)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system linux-container)
   #:use-module (gnu system vm)
   #:use-module (gnu system grub)
   #:use-module (gnu services)
@@ -406,6 +407,8 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
   (case action
     ((build init reconfigure)
      (operating-system-derivation os))
+    ((container)
+     (container-script os #:mappings mappings))
     ((vm-image)
      (system-qemu-image os #:disk-image-size image-size))
     ((vm)
@@ -438,10 +441,12 @@ building anything."
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
        (grub      (package->derivation grub))
-       (grub.cfg  (operating-system-grub.cfg os
-                                             (if (eq? 'init action)
-                                                 '()
-                                                 (previous-grub-entries))))
+       (grub.cfg  (if (eq? 'container action)
+                      (return #f)
+                      (operating-system-grub.cfg os
+                                                 (if (eq? 'init action)
+                                                     '()
+                                                     (previous-grub-entries)))))
        (drvs   -> (if (and grub? (memq action '(init reconfigure)))
                       (list sys grub grub.cfg)
                       (list sys)))
@@ -523,6 +528,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
    list-generations list the system generations\n"))
   (display (_ "\
    build            build the operating system without installing anything\n"))
+  (display (_ "\
+  container         build a container that shares the host's store\n"))
   (display (_ "\
    vm               build a virtual machine image that shares the host's store\n"))
   (display (_ "\
@@ -694,7 +701,7 @@ argument list and OPTS is the option alist."
         (alist-cons 'argument arg result)
         (let ((action (string->symbol arg)))
           (case action
-            ((build vm vm-image disk-image reconfigure init
+            ((build container vm vm-image disk-image reconfigure init
               extension-graph dmd-graph list-generations)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
@@ -723,7 +730,7 @@ argument list and OPTS is the option alist."
         (exit 1))
 
       (case action
-        ((build vm vm-image disk-image reconfigure)
+        ((build container vm vm-image disk-image reconfigure)
          (unless (= count 1)
            (fail)))
         ((init)

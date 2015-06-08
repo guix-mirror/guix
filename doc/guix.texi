@@ -7264,6 +7264,27 @@ using the following command:
 # dd if=$(guix system disk-image my-os.scm) of=/dev/sdc
 @end example
 
+@item container
+Return a script to run the operating system declared in @var{file}
+within a container.  Containers are a set of lightweight isolation
+mechanisms provided by the kernel Linux-libre.  Containers are
+substantially less resource-demanding than full virtual machines since
+the kernel, shared objects, and other resources can be shared with the
+host system; this also means they provide thinner isolation.
+
+Currently, the script must be run as root in order to support more than
+a single user and group.  The container shares its store with the host
+system.
+
+As with the @code{vm} action (@pxref{guix system vm}), additional file
+systems to be shared between the host and container can be specified
+using the @option{--share} and @option{--expose} options:
+
+@example
+guix system container my-config.scm \
+   --expose=$HOME --share=$HOME/tmp=/exchange
+@end example
+
 @end table
 
 @var{options} can contain any of the common build options provided by
