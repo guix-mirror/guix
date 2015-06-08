@@ -24,6 +24,9 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages commencement)
@@ -304,3 +307,81 @@ It is developed using Objective Caml and Camlp5.")
     ;; The code is distributed under lgpl2.1.
     ;; Some of the documentation is distributed under opl1.0+.
     (license (list lgpl2.1 opl1.0+))))
+
+(define-public proof-general
+  (package
+    (name "proof-general")
+    (version "4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://proofgeneral.inf.ed.ac.uk/releases/"
+                    "ProofGeneral-" version ".tgz"))
+              (sha256
+               (base32
+                "09qb0myq66fw17v4ziz401ilsb5xlxz1nl2wsp69d0vrfy0bcrrm"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)
+       ("emacs" ,emacs-no-x)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("host-emacs" ,emacs)
+       ("perl" ,perl)
+       ("coq" ,coq)))
+    (arguments
+     `(#:tests? #f  ; no check target
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "DEST_PREFIX=" %output))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'disable-byte-compile-error-on-warn
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("\\(setq byte-compile-error-on-warn t\\)")
+                         "(setq byte-compile-error-on-warn nil)"))
+                      #t))
+         (add-after 'unpack 'patch-hardcoded-paths
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out   (assoc-ref outputs "out"))
+                            (coq   (assoc-ref inputs "coq"))
+                            (emacs (assoc-ref inputs "host-emacs")))
+                        (define (coq-prog name)
+                          (string-append coq "/bin/" name))
+                        (emacs-substitute-variables "coq/coq.el"
+                          ("coq-prog-name"           (coq-prog "coqtop"))
+                          ("coq-compiler"            (coq-prog "coqc"))
+                          ("coq-dependency-analyzer" (coq-prog "coqdep")))
+                        (substitute* "Makefile"
+                          (("/sbin/install-info") "install-info"))
+                        (substitute* "bin/proofgeneral"
+                          (("^PGHOMEDEFAULT=.*" all)
+                           (string-append all
+                                          "PGHOME=$PGHOMEDEFAULT\n"
+                                          "EMACS=" emacs "/bin/emacs")))
+                        #t)))
+         (add-after 'unpack 'clean
+                    (lambda _
+                      ;; Delete the pre-compiled elc files for Emacs 23.
+                      (zero? (system* "make" "clean"))))
+         (add-after 'install 'install-doc
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      ;; XXX FIXME avoid building/installing pdf files,
+                      ;; due to unresolved errors building them.
+                      (substitute* "Makefile"
+                        ((" [^ ]*\\.pdf") ""))
+                      (zero? (apply system* "make" "install-doc"
+                                    make-flags)))))))
+    (home-page "http://proofgeneral.inf.ed.ac.uk/")
+    (description "Generic front-end for proof assistants based on Emacs")
+    (synopsis
+     "Proof General is a major mode to turn Emacs into an interactive proof
+assistant to write formal mathematical proofs using a variety of theorem
+provers.")
+    (license gpl2+)))
