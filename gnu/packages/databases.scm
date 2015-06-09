@@ -49,6 +49,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -100,53 +101,47 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.1.73")
+    (version "5.6.25")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://dev.mysql.com/get/Downloads/MySQL-5.1/mysql-"
-                   version ".tar.gz"))
+                   "http://dev.mysql.com/get/Downloads/MySQL-"
+                   (version-major+minor version) "/"
+                   name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1dfwi4ck0vq6sdci6gz0031s7zz5lc3pddqlgm0292s00l9y5sq5"))))
-    (build-system gnu-build-system)
+               "1gbz5i1z3nswpq3q8f477vrx7g15j8n41pyb94k0jfnkhc5rq1qm"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-DBUILD_CONFIG=mysql_release"
+         "-DWITH_SSL=system"
+         "-DWITH_ZLIB=system"
+         "-DDEFAULT_CHARSET=utf8"
+         "-DDEFAULT_COLLATION=utf8_general_ci"
+         "-DMYSQL_DATADIR=/var/lib/mysql"
+         "-DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock"
+         "-DINSTALL_INFODIR=share/mysql/docs"
+         "-DINSTALL_MANDIR=share/man"
+         "-DINSTALL_PLUGINDIR=lib/mysql/plugin"
+         "-DINSTALL_SCRIPTDIR=bin"
+         "-DINSTALL_INCLUDEDIR=include/mysql"
+         "-DINSTALL_DOCREADMEDIR=share/mysql/docs"
+         "-DINSTALL_SUPPORTFILESDIR=share/mysql"
+         "-DINSTALL_MYSQLSHAREDIR=share/mysql"
+         "-DINSTALL_DOCDIR=share/mysql/docs"
+         "-DINSTALL_SHAREDIR=share/mysql"
+         ;; Get rid of test data.
+         "-DINSTALL_MYSQLTESTDIR="
+         "-DINSTALL_SQLBENCHDIR=")))
+    (native-inputs
+     `(("bison" ,bison)
+       ("perl" ,perl)))
     (inputs
-     `(("procps" ,procps)
+     `(("libaio" ,libaio)
        ("openssl" ,openssl)
-       ("perl" ,perl)
        ("zlib" ,zlib)
        ("ncurses" ,ncurses)))
-    (arguments
-     '(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 ftw))                    ; for "rm -rf"
-       #:phases (alist-cons-after
-                 'install 'clean-up
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Remove the 112 MiB of tests that get installed.
-                   (let ((out (assoc-ref outputs "out")))
-                     (define (rm-rf dir)
-                       (file-system-fold (const #t) ; enter?
-                                         (lambda (file stat result) ; leaf
-                                           (delete-file file))
-                                         (const #t)               ; down
-                                         (lambda (dir stat result) ; up
-                                           (rmdir dir))
-                                         (const #t)
-                                         (lambda (file stat errno result)
-                                           (format (current-error-port)
-                                                   "error: ~a: ~a~%"
-                                                   file (strerror errno)))
-                                         #t
-                                         (string-append out "/" dir)))
-                     (rm-rf "mysql-test")
-                     (rm-rf "sql-bench")
-
-                     ;; Compress the 14 MiB Info file.
-                     (zero?
-                      (system* "gzip" "--best"
-                               (string-append out "/share/info/mysql.info")))))
-                 %standard-phases)))
     (home-page "http://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
     (description
