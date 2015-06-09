@@ -1101,6 +1101,27 @@ RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
     (license license:gpl2)))
 
+(define-public orfm
+  (package
+    (name "orfm")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wwood/OrfM/releases/download/v"
+                    version "/orfm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00jqvlspj9662ni9r4n1snxfnwkzc02i46g5nk1kwjshi6v3vgg3"))))
+    (build-system gnu-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (synopsis "Simple and not slow open reading frame (ORF) caller")
+    (description
+     "An ORF caller finds stretches of DNA that when translated are not
+interrupted by stop codons.  OrfM finds and prints these ORFs.")
+    (home-page "https://github.com/wwood/OrfM")
+    (license license:lgpl3+)))
+
 (define-public python2-pbcore
   (package
     (name "python2-pbcore")
