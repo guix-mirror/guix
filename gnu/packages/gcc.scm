@@ -64,15 +64,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          '())))
 
 (define-public gcc-4.7
-  (let* ((stripped? #t)                           ; TODO: make this a parameter
-         (install-target
-          (lambda ()
-            ;; The 'install-strip' rule uses the native 'strip' instead of
-            ;; 'TARGET-strip' when cross-compiling.  Thus, use 'install' in that
-            ;; case.
-            (if (and stripped? (not (%current-target-system)))
-                "install-strip"
-                "install")))
+  (let* ((stripped? #t)      ;whether to strip the compiler, not the libraries
          (maybe-target-tools
           (lambda ()
             ;; Return the `_FOR_TARGET' variables that are needed when
@@ -144,8 +136,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
       ;; Separate out the run-time support libraries because all the
       ;; dynamic-linked objects depend on it.
-      (outputs '("out"                     ; commands, etc. (60+ MiB)
-                 "lib"))                   ; libgcc_s, libgomp, etc. (15+ MiB)
+      (outputs '("out"                    ;commands, etc. (60+ MiB)
+                 "lib"                    ;libgcc_s, libgomp, etc. (15+ MiB)
+                 "debug"))                ;debug symbols of run-time libraries
 
       (inputs `(("gmp" ,gmp)
                 ("mpfr" ,mpfr)
@@ -160,7 +153,6 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
       (arguments
        `(#:out-of-source? #t
-         #:strip-binaries? ,stripped?
          #:configure-flags ,(configure-flags)
          #:make-flags
          ;; None of the flags below are needed when doing a Canadian cross.
@@ -280,11 +272,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
              (substitute* "Makefile"
                (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
                 "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
-           (alist-replace 'install
-                          (lambda* (#:key outputs #:allow-other-keys)
-                            (zero?
-                             (system* "make" ,(install-target))))
-                          %standard-phases)))))
+           %standard-phases))))
 
       (native-search-paths
        (list (search-path-specification
