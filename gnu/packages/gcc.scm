@@ -235,8 +235,8 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    ;; below, make sure to update the relevant code in
                    ;; %gcc-static package as needed.
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
-\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
-                           libc libc libdir libdir suffix))
+\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib -lgcc_s}} \" ~a"
+                           libc libc libdir suffix))
                   (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
