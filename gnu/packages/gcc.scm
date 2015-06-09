@@ -240,6 +240,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (("static char const sed_cmd_z\\[\\] =.*;")
                  "static char const sed_cmd_z[] = \"sed\";"))
 
+              (when (file-exists? "libbacktrace")
+                ;; GCC 4.8+ comes with libbacktrace.  By default it builds
+                ;; with -Werror, which fails with a -Wcast-qual error in glibc
+                ;; 2.21's stdlib-bsearch.h.  Remove -Werror.
+                (substitute* "libbacktrace/configure"
+                  (("WARN_FLAGS=(.*)-Werror" _ flags)
+                   (string-append "WARN_FLAGS=" flags))))
+
               ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
               ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
               ;; and <http://bugs.gnu.org/20358>.
