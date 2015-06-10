@@ -52,7 +52,8 @@
              (sha256
               (base32
                "120m53c3p28qxmfzllicjzr8syjv6v4d9rsyrgkp7gnmcgvvgfmn"))
-             (patches (list (search-patch "qemu-CVE-2015-3456.patch")))))
+             (patches (map search-patch '("qemu-CVE-2015-3209.patch"
+                                          "qemu-CVE-2015-3456.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

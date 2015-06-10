@@ -527,6 +527,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  gnu/packages/patches/qemu-CVE-2015-3209.patch			\
   gnu/packages/patches/qemu-CVE-2015-3456.patch			\
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/qt4-tests.patch				\
