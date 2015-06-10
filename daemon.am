@@ -126,6 +126,7 @@ guix_daemon_SOURCES =				\
   nix/nix-daemon/guix-daemon.cc
 
 guix_daemon_CPPFLAGS =				\
+  -DLOCALEDIR=\"$(localedir)\"			\
   $(libutil_a_CPPFLAGS)				\
   -I$(top_srcdir)/nix/libstore
 
