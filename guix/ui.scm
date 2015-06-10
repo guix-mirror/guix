@@ -45,7 +45,6 @@
   #:use-module (ice-9 regex)
   #:autoload   (system repl repl)  (start-repl)
   #:autoload   (system repl debug) (make-debug stack->vector)
-  #:replace (symlink)
   #:export (_
             N_
             P_
@@ -294,7 +293,9 @@ Report bugs to: ~a.") %guix-bug-report-address)
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
 
-(define symlink
+(set! symlink
+  ;; We 'set!' the global binding because (gnu build ...) modules and similar
+  ;; typically don't use (guix ui).
   (let ((real-symlink (@ (guile) symlink)))
     (lambda (target link)
       "This is a 'symlink' replacement that provides proper error reporting."
