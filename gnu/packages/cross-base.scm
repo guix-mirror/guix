@@ -86,101 +86,107 @@ may be either a libc package or #f.)"
   ;; Set the current target system so that 'glibc-dynamic-linker' returns the
   ;; right name.
   (parameterize ((%current-target-system target))
-    (substitute-keyword-arguments (package-arguments gcc-4.9)
-      ((#:configure-flags flags)
-       `(append (list ,(string-append "--target=" target)
-                      ,@(if libc
-                            '()
-                            `( ;; Disable features not needed at this stage.
-                              "--disable-shared" "--enable-static"
+    ;; Disable stripping as this can break binaries, with object files of
+    ;; libgcc.a showing up as having an unknown architecture.  See
+    ;; <http://lists.fedoraproject.org/pipermail/arm/2010-August/000663.html>
+    ;; for instance.
+    (let ((args `(#:strip-binaries? #f
+                  ,@(package-arguments gcc-4.9))))
+     (substitute-keyword-arguments args
+       ((#:configure-flags flags)
+        `(append (list ,(string-append "--target=" target)
+                       ,@(if libc
+                             '()
+                             `( ;; Disable features not needed at this stage.
+                               "--disable-shared" "--enable-static"
 
-                              ;; Disable C++ because libstdc++'s configure
-                              ;; script otherwise fails with "Link tests are not
-                              ;; allowed after GCC_NO_EXECUTABLES."
-                              "--enable-languages=c"
+                               ;; Disable C++ because libstdc++'s configure
+                               ;; script otherwise fails with "Link tests are not
+                               ;; allowed after GCC_NO_EXECUTABLES."
+                               "--enable-languages=c"
 
-                              "--disable-threads"  ;libgcc, would need libc
-                              "--disable-libatomic"
-                              "--disable-libmudflap"
-                              "--disable-libgomp"
-                              "--disable-libssp"
-                              "--disable-libquadmath"
-                              "--disable-decimal-float" ;would need libc
-                              )))
+                               "--disable-threads" ;libgcc, would need libc
+                               "--disable-libatomic"
+                               "--disable-libmudflap"
+                               "--disable-libgomp"
+                               "--disable-libssp"
+                               "--disable-libquadmath"
+                               "--disable-decimal-float" ;would need libc
+                               )))
 
-                ,(if libc
-                     flags
-                     `(remove (cut string-match "--enable-languages.*" <>)
-                              ,flags))))
-      ((#:make-flags flags)
-       (if libc
-           `(let ((libc (assoc-ref %build-inputs "libc")))
-              ;; FLAGS_FOR_TARGET are needed for the target libraries to receive
-              ;; the -Bxxx for the startfiles.
-              (cons (string-append "FLAGS_FOR_TARGET=-B" libc "/lib")
-                    ,flags))
-           flags))
-      ((#:phases phases)
-       (let ((phases
-              `(alist-cons-after
-                'install 'make-cross-binutils-visible
-                (lambda* (#:key outputs inputs #:allow-other-keys)
-                  (let* ((out      (assoc-ref outputs "out"))
-                         (libexec  (string-append out "/libexec/gcc/"
-                                                  ,target))
-                         (binutils (string-append
-                                    (assoc-ref inputs "binutils-cross")
-                                    "/bin/" ,target "-"))
-                         (wrapper  (string-append
-                                    (assoc-ref inputs "ld-wrapper-cross")
-                                    "/bin/" ,target "-ld")))
-                    (for-each (lambda (file)
-                                (symlink (string-append binutils file)
-                                         (string-append libexec "/"
-                                                        file)))
-                              '("as" "nm"))
-                    (symlink wrapper (string-append libexec "/ld"))
-                    #t))
-                ,phases)))
-         (if libc
-             `(alist-cons-before
-               'configure 'set-cross-path
-               (lambda* (#:key inputs #:allow-other-keys)
-                 ;; Add the cross Linux headers to CROSS_CPATH, and remove them
-                 ;; from CPATH.
-                 (let ((libc  (assoc-ref inputs "libc"))
-                       (linux (assoc-ref inputs
-                                         "libc/linux-headers")))
-                   (define (cross? x)
-                     ;; Return #t if X is a cross-libc or cross Linux.
-                     (or (string-prefix? libc x)
-                         (string-prefix? linux x)))
+                 ,(if libc
+                      flags
+                      `(remove (cut string-match "--enable-languages.*" <>)
+                               ,flags))))
+       ((#:make-flags flags)
+        (if libc
+            `(let ((libc (assoc-ref %build-inputs "libc")))
+               ;; FLAGS_FOR_TARGET are needed for the target libraries to receive
+               ;; the -Bxxx for the startfiles.
+               (cons (string-append "FLAGS_FOR_TARGET=-B" libc "/lib")
+                     ,flags))
+            flags))
+       ((#:phases phases)
+        (let ((phases
+               `(alist-cons-after
+                 'install 'make-cross-binutils-visible
+                 (lambda* (#:key outputs inputs #:allow-other-keys)
+                   (let* ((out      (assoc-ref outputs "out"))
+                          (libexec  (string-append out "/libexec/gcc/"
+                                                   ,target))
+                          (binutils (string-append
+                                     (assoc-ref inputs "binutils-cross")
+                                     "/bin/" ,target "-"))
+                          (wrapper  (string-append
+                                     (assoc-ref inputs "ld-wrapper-cross")
+                                     "/bin/" ,target "-ld")))
+                     (for-each (lambda (file)
+                                 (symlink (string-append binutils file)
+                                          (string-append libexec "/"
+                                                         file)))
+                               '("as" "nm"))
+                     (symlink wrapper (string-append libexec "/ld"))
+                     #t))
+                 (alist-replace
+                  'install
+                  (lambda _
+                    ;; Unlike our 'strip' phase, this will do the right thing
+                    ;; for cross-compilers.
+                    (zero? (system* "make" "install-strip")))
+                  ,phases))))
+          (if libc
+              `(alist-cons-before
+                'configure 'set-cross-path
+                (lambda* (#:key inputs #:allow-other-keys)
+                  ;; Add the cross Linux headers to CROSS_CPATH, and remove them
+                  ;; from CPATH.
+                  (let ((libc  (assoc-ref inputs "libc"))
+                        (linux (assoc-ref inputs
+                                          "libc/linux-headers")))
+                    (define (cross? x)
+                      ;; Return #t if X is a cross-libc or cross Linux.
+                      (or (string-prefix? libc x)
+                          (string-prefix? linux x)))
 
-                   (setenv "CROSS_CPATH"
-                           (string-append libc "/include:"
-                                          linux "/include"))
-                   (setenv "CROSS_LIBRARY_PATH"
-                           (string-append libc "/lib"))
+                    (setenv "CROSS_CPATH"
+                            (string-append libc "/include:"
+                                           linux "/include"))
+                    (setenv "CROSS_LIBRARY_PATH"
+                            (string-append libc "/lib"))
 
-                   (let ((cpath   (search-path-as-string->list
-                                   (getenv "CPATH")))
-                         (libpath (search-path-as-string->list
-                                   (getenv "LIBRARY_PATH"))))
-                     (setenv "CPATH"
-                             (list->search-path-as-string
-                              (remove cross? cpath) ":"))
-                     (setenv "LIBRARY_PATH"
-                             (list->search-path-as-string
-                              (remove cross? libpath) ":"))
-                     #t)))
-               ,phases)
-             phases)))
-      ((#:strip-binaries? _)
-       ;; Disable stripping as this can break binaries, with object files of
-       ;; libgcc.a showing up as having an unknown architecture.  See
-       ;; <http://lists.fedoraproject.org/pipermail/arm/2010-August/000663.html>
-       ;; for instance.
-       #f))))
+                    (let ((cpath   (search-path-as-string->list
+                                    (getenv "CPATH")))
+                          (libpath (search-path-as-string->list
+                                    (getenv "LIBRARY_PATH"))))
+                      (setenv "CPATH"
+                              (list->search-path-as-string
+                               (remove cross? cpath) ":"))
+                      (setenv "LIBRARY_PATH"
+                              (list->search-path-as-string
+                               (remove cross? libpath) ":"))
+                      #t)))
+                ,phases)
+              phases)))))))
 
 (define (cross-gcc-patches target)
   "Return GCC patches needed for TARGET."
