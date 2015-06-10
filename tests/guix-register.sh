@@ -107,12 +107,13 @@ do
     NIX_STATE_DIR="$new_store$state_dir"
     NIX_LOG_DIR="$new_store$state_dir/log/guix"
     NIX_DB_DIR="$new_store$state_dir/db"
+    GUIX_DAEMON_SOCKET="$NIX_STATE_DIR/daemon-socket/socket"
 
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
-	NIX_LOG_DIR NIX_DB_DIR
+	   NIX_LOG_DIR NIX_DB_DIR GUIX_DAEMON_SOCKET
 
     # Check whether we overflow the limitation on local socket name lengths.
-    if [ `echo "$NIX_STATE_DIR/daemon-socket/socket" | wc -c` -ge 108 ]
+    if [ `echo "$GUIX_DAEMON_SOCKET" | wc -c` -ge 108 ]
     then
 	# Mark the test as skipped even though we already did some work so
 	# that the remainder is not silently skipped.
@@ -131,7 +132,7 @@ do
     # us because of the wrong prefix.  So we just list dead paths instead.
     guile -c "
       (use-modules (guix store))
-      (define s (open-connection))
+      (define s (open-connection \"$GUIX_DAEMON_SOCKET\"))
       (exit (equal? (list \"$copied\") (dead-paths s)))"
 
     # Kill the daemon so we can access the database below (otherwise we may
