@@ -553,6 +553,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   (package (inherit gcc-boot0)
     (name "gcc")
     (location (source-properties->location (current-source-location)))
+
+    ;; XXX: Currently #:allowed-references applies to all the outputs but the
+    ;; "debug" output contains disallowed references, notably
+    ;; linux-libre-headers.  Disable the debugging output to work around that.
+    (outputs (delete "debug" (package-outputs gcc-boot0)))
+
     (arguments
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
