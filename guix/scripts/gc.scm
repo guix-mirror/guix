@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +44,8 @@ Invoke the garbage collector.\n"))
   (display (_ "
   -d, --delete           attempt to delete PATHS"))
   (display (_ "
+      --optimize         optimize the store by deduplicating identical files"))
+  (display (_ "
       --list-dead        list dead paths"))
   (display (_ "
       --list-live        list live paths"))
@@ -54,6 +56,11 @@ Invoke the garbage collector.\n"))
   -R, --requisites       list the requisites of PATHS"))
   (display (_ "
       --referrers        list the referrers of PATHS"))
+  (newline)
+  (display (_ "
+      --verify[=OPTS]    verify the integrity of the store; OPTS is a
+                         comma-separated combination of 'repair' and
+                         'contents'"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -88,6 +95,21 @@ Invoke the garbage collector.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'action 'delete
                               (alist-delete 'action result))))
+        (option '("optimize") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'optimize
+                              (alist-delete 'action result))))
+        (option '("verify") #f #t
+                (let ((not-comma (char-set-complement (char-set #\,))))
+                  (lambda (opt name arg result)
+                    (let ((options (if arg
+                                       (map string->symbol
+                                            (string-tokenize arg not-comma))
+                                       '())))
+                      (alist-cons 'action 'verify
+                                  (alist-cons 'verify-options options
+                                              (alist-delete 'action
+                                                            result)))))))
         (option '("list-dead") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-dead
@@ -162,13 +184,21 @@ Invoke the garbage collector.\n"))
                (collect-garbage store min-freed)
                (collect-garbage store))))
         ((delete)
-         (delete-paths store paths))
+         (delete-paths store (map direct-store-path paths)))
         ((list-references)
          (list-relatives references))
         ((list-requisites)
          (list-relatives requisites))
         ((list-referrers)
          (list-relatives referrers))
+        ((optimize)
+         (optimize-store store))
+        ((verify)
+         (let ((options (assoc-ref opts 'verify-options)))
+           (exit
+            (verify-store store
+                          #:check-contents? (memq 'contents options)
+                          #:repair? (memq 'repair options)))))
         ((list-dead)
          (for-each (cut simple-format #t "~a~%" <>)
                    (dead-paths store)))

@@ -36,6 +36,88 @@ guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' |	\
 guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
+# Check --sources option with its arguments
+module_dir="t-guix-build-$$"
+mkdir "$module_dir"
+trap "rm -rf $module_dir" EXIT
+
+cat > "$module_dir/foo.scm"<<EOF
+(define-module (foo)
+  #:use-module (guix packages)
+  #:use-module (guix download)
+  #:use-module (guix build-system trivial))
+
+(define-public foo
+  (package
+    (name "foo")
+    (version "42")
+    (source (origin
+              (method url-fetch)
+              (uri "http://www.example.com/foo.tar.gz")
+              (sha256
+               (base32
+                "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"))))
+    (build-system trivial-build-system)
+    (inputs
+     (quasiquote (("bar" ,bar))))
+    (home-page "www.example.com")
+    (synopsis "Dummy package")
+    (description "foo is a dummy package for testing.")
+    (license #f)))
+
+(define-public bar
+  (package
+    (name "bar")
+    (version "9001")
+    (source (origin
+              (method url-fetch)
+              (uri "http://www.example.com/bar.tar.gz")
+              (sha256
+               (base32
+                "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"))))
+    (build-system trivial-build-system)
+    (inputs
+     (quasiquote
+      (("data" ,(origin
+                 (method url-fetch)
+                 (uri "http://www.example.com/bar.dat")
+                 (sha256
+                  (base32
+                   "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")))))))
+    (home-page "www.example.com")
+    (synopsis "Dummy package")
+    (description "bar is a dummy package for testing.")
+    (license #f)))
+EOF
+
+GUIX_PACKAGE_PATH="$module_dir"
+export GUIX_PACKAGE_PATH
+
+# foo.tar.gz
+guix build -d -S foo
+guix build -d -S foo | grep -e 'foo\.tar\.gz'
+
+guix build -d --sources=package foo
+guix build -d --sources=package foo | grep -e 'foo\.tar\.gz'
+
+# bar.tar.gz and bar.dat
+guix build -d --sources bar
+test `guix build -d --sources bar \
+      | grep -e 'bar\.tar\.gz' -e 'bar\.dat' \
+      | wc -l` -eq 2
+
+# bar.tar.gz and bar.dat
+guix build -d --sources=all bar
+test `guix build -d --sources bar \
+      | grep -e 'bar\.tar\.gz' -e 'bar\.dat' \
+      | wc -l` -eq 2
+
+# Should include foo.tar.gz, bar.tar.gz, and bar.dat
+guix build -d --sources=transitive foo
+test `guix build -d --sources=transitive foo \
+      | grep -e 'foo\.tar\.gz' -e 'bar\.tar\.gz' -e 'bar\.dat' \
+      | wc -l` -eq 3
+
 # Should all return valid log files.
 drv="`guix build -d -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
 out="`guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"

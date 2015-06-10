@@ -33,7 +33,11 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages audio)
-  #:use-module (gnu packages pulseaudio))
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages pkg-config))
 
 (define-public bullet
   (package
@@ -127,3 +131,40 @@ clone.")
 to ease the development of games and multimedia applications.  It is composed
 of five modules: system, window, graphics, audio and network.")
     (license license:zlib)))
+
+(define-public sfxr
+  (package
+    (name "sfxr")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.drpetter.se/files/sfxr-sdl-1.2.1.tar.gz"))
+              (sha256
+               (base32
+                "0dfqgid6wzzyyhc0ha94prxax59wx79hqr25r6if6by9cj4vx4ya"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure) ; no configure script
+                  (add-before 'build 'patch-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("\\$\\(DESTDIR\\)/usr") out))
+                        (substitute* "main.cpp"
+                          (("/usr/share")
+                           (string-append out "/share")))
+                        #t))))
+       #:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("gtk+" ,gtk+)))
+    (synopsis "Simple sound effect generator")
+    (description "Sfxr is a tool for quickly generating simple sound effects.
+Originally created for use in video game prototypes, it can generate random
+sounds from presets such as \"explosion\" or \"powerup\".")
+    (home-page "http://www.drpetter.se/project_sfxr.html")
+    (license license:expat)))

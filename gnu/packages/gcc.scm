@@ -335,7 +335,9 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
-              (patches (origin-patches (package-source gcc-4.9)))))))
+              (patches (map search-patch
+                            '("gcc-arm-link-spec-fix.patch"
+                              "gcc-5.0-libvtv-runpath.patch")))))))
 
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
@@ -405,38 +407,57 @@ Go.  It also includes runtime support libraries for these languages.")
              "--enable-languages=java"
              ,@(remove (cut string-match "--enable-languages.*" <>)
                        ,flags))))
-        ((#:phases phases)
-         `(alist-cons-after
-           'install 'install-javac-and-javap-wrappers
-           (lambda _
-             (let* ((javac  (assoc-ref %build-inputs "javac.in"))
-                    (ecj    (assoc-ref %build-inputs "ecj-bootstrap"))
-                    (gcj    (assoc-ref %outputs "out"))
-                    (gcjbin (string-append gcj "/bin/"))
-                    (jvm    (string-append gcj "/lib/jvm/"))
-                    (target (string-append jvm "/bin/javac")))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after
+            'unpack 'add-lib-output-to-rpath
+            (lambda _
+              (substitute* "libjava/Makefile.in"
+                (("libgcj_bc_dummy_LINK = .* -shared" line)
+                 (string-append line " -Wl,-rpath=$(libdir)"))
+                (("libgcj(_bc)?_la_LDFLAGS =" ldflags _)
+                 (string-append ldflags " -Wl,-rpath=$(libdir)")))))
+           (add-after
+            'install 'install-javac-and-javap-wrappers
+            (lambda _
+              (let* ((javac  (assoc-ref %build-inputs "javac.in"))
+                     (ecj    (assoc-ref %build-inputs "ecj-bootstrap"))
+                     (gcj    (assoc-ref %outputs "out"))
+                     (gcjbin (string-append gcj "/bin/"))
+                     (jvm    (string-append gcj "/lib/jvm/"))
+                     (target (string-append jvm "/bin/javac")))
 
-               (symlink (string-append gcjbin "jcf-dump")
-                        (string-append jvm "/bin/javap"))
+                (symlink (string-append gcjbin "jcf-dump")
+                         (string-append jvm "/bin/javap"))
 
-               (copy-file ecj (string-append gcj "/share/java/ecj.jar"))
+                (copy-file ecj (string-append gcj "/share/java/ecj.jar"))
 
-               ;; Create javac wrapper from the template javac.in by
-               ;; replacing the @VARIABLES@ with paths.
-               (copy-file javac target)
-               (patch-shebang target)
-               (substitute* target
-                 (("@JAVA@")
-                  (string-append jvm "/bin/java"))
-                 (("@ECJ_JAR@")
-                  (string-append gcj "/share/java/ecj.jar"))
-                 (("@RT_JAR@")
-                  (string-append jvm "/jre/lib/rt.jar"))
-                 (("@TOOLS_JAR@")
-                  (string-append jvm "/lib/tools.jar")))
-               (chmod target #o755)
-               #t))
-           ,phases))))))
+                ;; Create javac wrapper from the template javac.in by
+                ;; replacing the @VARIABLES@ with paths.
+                (copy-file javac target)
+                (patch-shebang target)
+                (substitute* target
+                  (("@JAVA@")
+                   (string-append jvm "/bin/java"))
+                  (("@ECJ_JAR@")
+                   (string-append gcj "/share/java/ecj.jar"))
+                  (("@RT_JAR@")
+                   (string-append jvm "/jre/lib/rt.jar"))
+                  (("@TOOLS_JAR@")
+                   (string-append jvm "/lib/tools.jar")))
+                (chmod target #o755)
+                #t)))
+           (add-after
+            'install 'remove-broken-or-conflicting-files
+            (lambda _
+              (let ((out (assoc-ref %outputs "out")))
+                (for-each
+                 delete-file
+                 (append (find-files (string-append out "/lib/jvm/jre/lib")
+                                     "libjawt.so")
+                         (find-files (string-append out "/bin")
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcc.*)"))))
+              #t))))))))
 
 (define ecj-bootstrap-4.8
   (origin

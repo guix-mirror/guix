@@ -152,25 +152,20 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "1.9.2")
+    (version "1.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04wrm0v7l4890mmbaawd6wjwdv08bkglgqhpz0q4dkb0l50fl8q4"))
-             (patches (list (search-patch "inetutils-syslogd.patch")))))
+               "06dshajjpyi9sxi7qfki9gnp5r3nxvyvf81r81gx0x2qkqzqcxlj"))))
     (build-system gnu-build-system)
     (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))            ; for 'ftp'
-
-    ;; Help2man is needed because of the patch that modifies syslogd.c.
-    (native-inputs `(("help2man" ,help2man)))
-
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
@@ -693,7 +688,7 @@ commands and their arguments.")
 (define-public wpa-supplicant-light
   (package
     (name "wpa-supplicant-light")
-    (version "2.3")
+    (version "2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -702,9 +697,16 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0skvkl6c10ls4s48b2wmf47h9j1y40nlzxnzn8hyaw2j0prmpapa"))
+                "08li21q1wjn5chrv289w666il9ah1w419y3dkq2rl4wnq0rci385"))
               (patches
-               (list (search-patch "wpa-supplicant-CVE-2015-1863.patch")))))
+               (map search-patch '("wpa-supplicant-CVE-2015-1863.patch"
+                                   "wpa-supplicant-2015-2-fix.patch"
+                                   "wpa-supplicant-2015-3-fix.patch"
+                                   "wpa-supplicant-2015-4-fix-pt1.patch"
+                                   "wpa-supplicant-2015-4-fix-pt2.patch"
+                                   "wpa-supplicant-2015-4-fix-pt3.patch"
+                                   "wpa-supplicant-2015-4-fix-pt4.patch"
+                                   "wpa-supplicant-2015-4-fix-pt5.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -872,7 +874,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20140724")
+    (version "20150410")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -880,7 +882,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "01vdgrh7dsxrrvg5yd8sxm63cw8210pnsi5qg9g15ac53gn243ac"))))
+                "0q1fjwkyw9x6gsva6fd0zbn7ly4fx0ha4853f416np9kf2irillw"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))

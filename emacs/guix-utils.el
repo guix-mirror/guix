@@ -1,6 +1,6 @@
-;;; guix-utils.el --- General utility functions
+;;; guix-utils.el --- General utility functions  -*- lexical-binding: t -*-
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -169,6 +169,35 @@ accessed with KEYS."
 (defun guix-diff (old new &optional switches no-async)
   "Same as `diff', but use `guix-diff-switches' as default."
   (diff old new (or switches guix-diff-switches) no-async))
+
+
+;;; Memoizing
+
+(defun guix-memoize (function)
+  "Return a memoized version of FUNCTION."
+  (let ((cache (make-hash-table :test 'equal)))
+    (lambda (&rest args)
+      (let ((result (gethash args cache 'not-found)))
+        (if (eq result 'not-found)
+            (let ((result (apply function args)))
+              (puthash args result cache)
+              result)
+          result)))))
+
+(defmacro guix-memoized-defun (name arglist docstring &rest body)
+  "Define a memoized function NAME.
+See `defun' for the meaning of arguments."
+  (declare (doc-string 3) (indent 2))
+  `(defalias ',name
+     (guix-memoize (lambda ,arglist ,@body))
+     ;; Add '(name args ...)' string with real arglist to the docstring,
+     ;; because *Help* will display '(name &rest ARGS)' for a defined
+     ;; function (since `guix-memoize' returns a lambda with '(&rest
+     ;; args)').
+     ,(format "(%S %s)\n\n%s"
+              name
+              (mapconcat #'symbol-name arglist " ")
+              docstring)))
 
 (provide 'guix-utils)
 

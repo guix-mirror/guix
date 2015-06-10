@@ -1129,6 +1129,30 @@ on one page.  This results in wanting to page through various pages of data.
 The maths behind this is unfortunately fiddly, hence this module.")
     (license (package-license perl))))
 
+(define-public perl-data-stag
+  (package
+    (name "perl-data-stag")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CM/CMUNGALL/"
+                           "Data-Stag-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ncf4l39ka23nb01jlm6rzxdb5pqbip01x0m38bnvf1gim825caa"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-string" ,perl-io-string)))
+    (home-page "http://search.cpan.org/dist/Data-Stag")
+    (synopsis "Structured tags datastructures")
+    (description
+     "This module is for manipulating data as hierarchical tag/value
+pairs (Structured TAGs or Simple Tree AGgreggates).  These datastructures can
+be represented as nested arrays, which have the advantage of being native to
+Perl.")
+    (license (package-license perl))))
+
 (define-public perl-data-stream-bulk
   (package
     (name "perl-data-stream-bulk")
@@ -2442,6 +2466,25 @@ easier to develop interactive applications: is_interactive(), interactive(),
 and busy()")
     (license (package-license perl))))
 
+(define-public perl-io-string
+  (package
+    (name "perl-io-string")
+    (version "1.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GA/GAAS/"
+                           "IO-String-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18755m410yl70s17rgq3m0hyxl8r5mr47vsq1rw7141d8kc4lgra"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/~gaas/IO-String-1.08/")
+    (synopsis "Emulate file interface for in-core strings")
+    (description "IO::String is an IO::File (and IO::Handle) compatible class
+that reads or writes data from in-core strings.")
+    (license (package-license perl))))
+
 (define-public perl-io-stringy
   (package
     (name "perl-io-stringy")
@@ -2583,7 +2626,7 @@ versa using either JSON::XS or JSON::PP.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirros://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "JSON-Any-" version ".tar.gz"))
        (sha256
         (base32

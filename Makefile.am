@@ -79,6 +79,7 @@ MODULES =					\
   guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
+  guix/build/profiles.scm			\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
@@ -87,10 +88,13 @@ MODULES =					\
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
+  guix/search-paths.scm				\
   guix/packages.scm				\
   guix/import/utils.scm				\
   guix/import/gnu.scm				\
   guix/import/snix.scm				\
+  guix/import/cabal.scm				\
+  guix/import/hackage.scm			\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
@@ -106,6 +110,7 @@ MODULES =					\
   guix/scripts/lint.scm				\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
+  guix/scripts/import/hackage.scm		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
   guix.scm					\
@@ -133,7 +138,8 @@ KCONFIGS =					\
 
 # Templates, examples.
 EXAMPLES =					\
-  gnu/system/os-config.tmpl
+  gnu/system/examples/bare-bones.tmpl		\
+  gnu/system/examples/desktop.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
 
@@ -175,6 +181,7 @@ SCM_TESTS =					\
   tests/build-utils.scm				\
   tests/packages.scm				\
   tests/snix.scm				\
+  tests/hackage.scm				\
   tests/store.scm				\
   tests/monads.scm				\
   tests/gexp.scm				\

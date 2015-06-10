@@ -1,0 +1,29 @@
+Wicd 1.7.3 fails to instantiate template lines that have several
+variable references.  For instance, the line:
+
+  wep_key$_KEY_INDEX=$_KEY
+
+which is found in in the 'wep-hex' template, expands to these two
+lines:
+
+  wep_key0=$_KEY
+  wep_key0=123456789ab
+
+This patch fixes that by only emitting the fully substituted line.
+
+Patch by Ludovic Courtès <ludo@gnu.org>.
+
+--- a/wicd/misc.py	2012-11-17 00:07:08 +0000
++++ b/wicd/misc.py	2015-05-09 11:22:37 +0000
+@@ -321,11 +321,11 @@ def ParseEncryption(network):
+                                 rep_val = '0'
+                         if rep_val:
+                             line = line.replace("$_%s" % cur_val, str(rep_val))
+-                            config_file = ''.join([config_file, line])
+                         else:
+                             print "Ignoring template line: '%s'" % line
+                     else:
+                         print "Weird parsing error occurred"
++                config_file = ''.join([config_file, line])
+             else:  # Just a regular entry.
+                 config_file = ''.join([config_file, line])

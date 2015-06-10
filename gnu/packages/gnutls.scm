@@ -39,7 +39,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.4")
+    (version "4.5")
     (source
      (origin
       (method url-fetch)
@@ -47,7 +47,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0p8c5s1gm3z3nn4s9qc6gs18grbk45mx44byqw2l2qzynjqrsd7q"))))
+        "1nhvnznhg2aqfrfjxc8v008hjlzkh5831jsfahqk89qrw7fbbcw9"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
 
@@ -104,7 +104,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.0")
+    (version "3.4.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -115,9 +115,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0bj7ydvsyvml59b6040wg7694iz37rwnqnv09bic9ddz652588ml"))
-             (patches
-              (list (search-patch "gnutls-fix-duplicate-manpages.patch")))))
+               "0bmih0zyiplr4v8798w0v9g3215zmganq18n8935cizkxj5zbdg9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

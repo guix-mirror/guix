@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (guix profiles)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages package-management)
@@ -31,6 +33,8 @@
   #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-26)
   #:export (self-contained-tarball
             installation-os))
 
@@ -67,7 +71,16 @@ under /root/.guix-profile where GUIX is installed."
           ;; length limitation.
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
-                            "-cvf" #$output ".")))))
+                            "--owner=root:0" "--group=root:0"
+                            "-cvf" #$output
+                            ;; Avoid adding / and /var to the tarball,
+                            ;; so that the ownership and permissions of those
+                            ;; directories will not be overwritten when
+                            ;; extracting the archive.  Do not include /root
+                            ;; because the root account might have a different
+                            ;; home directory.
+                            "./var/guix"
+                            (string-append "." (%store-directory)))))))
 
     (gexp->derivation "guix-tarball.tar.xz" build
                       #:references-graphs `(("profile" ,profile))
@@ -171,12 +184,17 @@ the given target.")
   "Return a dummy service whose purpose is to install an operating system
 configuration template file in the installation system."
 
-  (define local-template
-    "/etc/configuration-template.scm")
-  (define template
-    (search-path %load-path "gnu/system/os-config.tmpl"))
+  (define search
+    (cut search-path %load-path <>))
+  (define templates
+    (map (match-lambda
+           ((file '-> target)
+            (list (local-file (search file))
+                  (string-append "/etc/configuration/" target))))
+         '(("gnu/system/examples/bare-bones.tmpl" -> "bare-bones.scm")
+           ("gnu/system/examples/desktop.tmpl" -> "desktop.scm"))))
 
-  (mlet %store-monad ((template (interned-file template)))
+  (with-monad %store-monad
     (return (service
              (requirement '(root-file-system))
              (provision '(os-config-template))
@@ -185,8 +203,16 @@ configuration template file in the installation system."
              (start #~(const #t))
              (stop  #~(const #f))
              (activate
-              #~(unless (file-exists? #$local-template)
-                  (copy-file #$template #$local-template)))))))
+              #~(begin
+                  (use-modules (ice-9 match)
+                               (guix build utils))
+
+                  (mkdir-p "/etc/configuration")
+                  (for-each (match-lambda
+                              ((file target)
+                               (unless (file-exists? target)
+                                 (copy-file file target))))
+                            '#$templates)))))))
 
 (define %nscd-minimal-caches
   ;; Minimal in-memory caching policy for nscd.
@@ -316,6 +342,7 @@ Use Alt-F2 for documentation.
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
                      ;; space; furthermore util-linux's fdisk is already
                      ;; available here, so we keep that.
+                     bash-completion
                      %base-packages))))
 
 ;; Return it here so 'guix system' can consume it directly.

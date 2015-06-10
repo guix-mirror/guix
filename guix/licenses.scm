@@ -37,6 +37,7 @@
             freetype
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             fdl1.3+
+            opl1.0+
             isc
             ijg
             ibmpl1.0
@@ -205,6 +206,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "FDL 1.3+"
            "https://www.gnu.org/licenses/fdl.html"
            "https://www.gnu.org/licenses/license-list#FDL"))
+
+(define opl1.0+
+  (license "Open Publication License 1.0 or later"
+           "http://opencontent.org/openpub/"
+           "https://www.gnu.org/licenses/license-list#OpenPublicationL"))
 
 (define isc
   (license "ISC"

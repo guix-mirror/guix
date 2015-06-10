@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -21,8 +21,10 @@
 
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages web)
@@ -397,3 +399,32 @@ that conforms to the API of the Document Object Model.")
 stylesheet for the conversion you want and applies it using an external
 XSL-T processor.  It also performs any necessary post-processing.")
     (license license:gpl2+)))
+
+(define-public xmlsec
+  (package
+    (name "xmlsec")
+    (version "1.2.20")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://www.aleksey.com/xmlsec/download/"
+                                 name "1-" version ".tar.gz"))
+             (sha256
+              (base32
+               "01bkbv2y3x8d1sf4dcln1x3y2jyj391s3208d9a2ndhglly5j89j"))))
+    (build-system gnu-build-system)
+    (propagated-inputs ; according to xmlsec1.pc
+     `(("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)
+       ("libltdl" ,libltdl)))
+    (home-page "http://www.libexpat.org/")
+    (synopsis "XML Security Library")
+    (description
+     "The XML Security Library is a C library based on Libxml2.  It
+supports XML security standards such as XML Signature, XML Encryption,
+Canonical XML (part of Libxml2) and Exclusive Canonical XML (part of
+Libxml2).")
+    (license (license:x11-style "file://COPYING"
+                                "See 'COPYING' in the distribution."))))

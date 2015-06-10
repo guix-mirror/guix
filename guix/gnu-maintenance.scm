@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -179,9 +179,18 @@ network to check in GNU's database."
        (define (mirror-type url)
          (let ((uri (string->uri url)))
            (and (eq? (uri-scheme uri) 'mirror)
-                (if (member (uri-host uri) '("gnu" "gnupg" "gcc"))
-                    'gnu
-                    'non-gnu))))
+                (cond
+                 ((member (uri-host uri)
+                          '("gnu" "gnupg" "gcc" "gnome"))
+                  ;; Definitely GNU.
+                  'gnu)
+                 ((equal? (uri-host uri) "cran")
+                  ;; Possibly GNU: mirror://cran could be either GNU R itself
+                  ;; or a non-GNU package.
+                  #f)
+                 (else
+                  ;; Definitely non-GNU.
+                  'non-gnu)))))
 
        (let ((url  (and=> (package-source package) origin-uri))
              (name (package-name package)))
@@ -348,7 +357,8 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
-    (let loop ((directory directory))
+    (let loop ((directory directory)
+               (result    #f))
       (let* ((entries (ftp-list conn directory))
 
              ;; Filter out sub-directories that do not contain digits---e.g.,
@@ -360,32 +370,38 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
                                    (((? contains-digit? dir) 'directory . _)
                                     dir)
                                    (_ #f))
-                                  entries)))
-        (match subdirs
-          (()
-           ;; No sub-directories, so assume that tarballs are here.
-           (let ((releases (filter-map (match-lambda
-                                        ((file 'file . _)
-                                         (and (release-file? project file)
-                                              (gnu-release
-                                               (package project)
-                                               (version
-                                                (tarball->version file))
-                                               (directory directory)
-                                               (files (list file)))))
-                                        (_ #f))
-                                       entries)))
-             (ftp-close conn)
-             (reduce latest-release #f (coalesce-releases releases))))
-          ((subdirs ...)
-           ;; Assume that SUBDIRS correspond to versions, and jump into the
-           ;; one with the highest version number.
-           (let ((target (reduce latest #f subdirs)))
-             (if target
-                 (loop (string-append directory "/" target))
-                 (begin
-                   (ftp-close conn)
-                   #f)))))))))
+                                  entries))
+
+             ;; Whether or not SUBDIRS is empty, compute the latest releases
+             ;; for the current directory.  This is necessary for packages
+             ;; such as 'sharutils' that have a sub-directory that contains
+             ;; only an older release.
+             (releases (filter-map (match-lambda
+                                     ((file 'file . _)
+                                      (and (release-file? project file)
+                                           (gnu-release
+                                            (package project)
+                                            (version
+                                             (tarball->version file))
+                                            (directory directory)
+                                            (files (list file)))))
+                                     (_ #f))
+                                   entries)))
+
+        ;; Assume that SUBDIRS correspond to versions, and jump into the
+        ;; one with the highest version number.
+        (let* ((release  (reduce latest-release #f
+                                 (coalesce-releases releases)))
+               (result   (if (and result release)
+                             (latest-release release result)
+                             (or release result)))
+               (target   (reduce latest #f subdirs)))
+          (if target
+              (loop (string-append directory "/" target)
+                    result)
+              (begin
+                (ftp-close conn)
+                result)))))))
 
 (define (gnu-release-archive-types release)
   "Return the available types of archives for RELEASE---a list of strings such

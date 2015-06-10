@@ -124,4 +124,29 @@ files and directories.")
 command line tool for interacting with libtocc.")
     (license gpl3+)))
 
+(define-public bool
+  (package
+    (name "bool")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/bool/bool-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "1frdmgrmb509fxbdpsxxw3lvvwv7xm1pavqrqgm4jg698iix6xfw"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gnu.org/software/bool")
+    (synopsis "Finding text and HTML files that match boolean expressions")
+    (description
+     "GNU Bool is a utility to perform text searches on files using Boolean
+expressions.  For example, a search for \"hello AND world\" would return a
+file containing the phrase \"Hello, world!\".  It supports both AND and OR
+statements, as well as the NEAR statement to search for the occurrence of
+words in close proximity to each other.  It handles context gracefully,
+accounting for new lines and paragraph changes.  It also has robust support
+for parsing HTML files.")
+    (license gpl3+)))
+
 ;;; search.scm ends here

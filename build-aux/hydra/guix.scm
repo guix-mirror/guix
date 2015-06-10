@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,25 +68,10 @@
     (home-page . ,(package-home-page package))
     (maintainers . ("bug-guix@gnu.org"))))
 
-(define (tarball-package checkout nix-checkout)
+(define (tarball-package checkout)
   "Return a package that does `make distcheck' from CHECKOUT, a directory
 containing a Git checkout of Guix."
-  (let ((dist (dist-package guix checkout)))
-    (package (inherit dist)
-      (location (source-properties->location (current-source-location)))
-      (arguments (substitute-keyword-arguments (package-arguments dist)
-                   ((#:phases p)
-                    `(alist-cons-before
-                      'autoreconf 'set-nix-submodule
-                      (lambda _
-                        ;; Tell Git to use the Nix checkout that Hydra gave us.
-                        (zero?
-                         (system* "git" "config" "submodule.nix-upstream.url"
-                                  ,nix-checkout)))
-                      ,p))))
-      (native-inputs `(("git" ,git)
-                       ("graphviz" ,graphviz)
-                       ,@(package-native-inputs dist))))))
+  (dist-package guix checkout))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
@@ -104,13 +89,9 @@ containing a Git checkout of Guix."
   (define guix-checkout
     (assq-ref arguments 'guix))
 
-  (define nix-checkout
-    (assq-ref arguments 'nix))
-
-  (format (current-error-port) "using checkout ~s (Nix: ~s)~%"
-          guix-checkout nix-checkout)
-  (let ((guix (assq-ref guix-checkout 'file-name))
-        (nix  (assq-ref nix-checkout 'file-name)))
+  (let ((guix (assq-ref guix-checkout 'file-name)))
+    (format (current-error-port) "using checkout ~s (~s)~%"
+            guix-checkout guix)
     `((tarball . ,(cute package->alist store
-                        (tarball-package guix nix)
+                        (tarball-package guix)
                         (%current-system))))))

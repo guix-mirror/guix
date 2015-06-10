@@ -155,6 +155,36 @@
           (package-transitive-supported-systems d)
           (package-transitive-supported-systems e))))
 
+(let* ((o (dummy-origin))
+       (u (dummy-origin))
+       (i (dummy-origin))
+       (a (dummy-package "a"))
+       (b (dummy-package "b"
+            (inputs `(("a" ,a) ("i" ,i)))))
+       (c (package (inherit b) (source o)))
+       (d (dummy-package "d"
+            (build-system trivial-build-system)
+            (source u) (inputs `(("c" ,c))))))
+  (test-assert "package-direct-sources, no source"
+    (null? (package-direct-sources a)))
+  (test-equal "package-direct-sources, #f source"
+    (list i)
+    (package-direct-sources b))
+  (test-equal "package-direct-sources, not input source"
+    (list u)
+    (package-direct-sources d))
+  (test-assert "package-direct-sources"
+    (let ((s (package-direct-sources c)))
+      (and (= (length (pk 's-sources s)) 2)
+           (member o s)
+           (member i s))))
+  (test-assert "package-transitive-sources"
+    (let ((s (package-transitive-sources d)))
+      (and (= (length (pk 'd-sources s)) 3)
+           (member o s)
+           (member i s)
+           (member u s)))))
+
 (test-equal "package-transitive-supported-systems, implicit inputs"
   %supported-systems
 

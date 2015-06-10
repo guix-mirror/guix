@@ -6,6 +6,8 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,14 +38,15 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages djvu)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
@@ -59,13 +62,20 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages backup)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages ncurses)
+  #:use-module (srfi srfi-1))
 
 (define-public brasero
   (package
@@ -176,6 +186,50 @@ Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
     (license license:gpl2+))) ; xslt under lgpl
 
+(define-public gcr
+  (package
+    (name "gcr")
+    (version "3.16.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "0xfhi0w358lvca1jjx24x2gm67mif33dsnmi9cv5i0f83ks8vzpc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;25 of 598 tests fail because /var/lib/dbus/machine-id does
+                   ;not exist
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'check 'pre-check
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "build/tap-driver"
+                       (("/usr/bin/env python") (which "python"))))))))
+    (inputs
+     `(("dbus" ,dbus)
+       ("gnupg" ,gnupg) ;called as a child process during tests
+       ("libgcrypt" ,libgcrypt)))
+    (native-inputs
+     `(("python" ,python-2) ;for tests
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)))
+    ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
+    (propagated-inputs
+     `(("p11-kit" ,p11-kit)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Libraries for displaying certificates and accessing key stores")
+    (description
+     "The GCR package contains libraries used for displaying certificates and
+accessing key stores.  It also provides the viewer for crypto files on the
+GNOME Desktop.")
+    (license license:lgpl2.1+)))
+
 (define-public libgnome-keyring
   (package
     (name "libgnome-keyring")
@@ -207,10 +261,77 @@ and keep up to date translations of documentation.")
     ;; Though a couple of files are LGPLv2.1+.
     (license license:lgpl2.0+)))
 
+(define-public gnome-keyring
+  (package
+    (name "gnome-keyring")
+    (version "3.16.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1xg1xha3x3hzlmvdq2zm90hc61pj7pnf9yxxvgq4ynl5af6bp8qm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;48 of 603 tests fail because /var/lib/dbus/machine-id does
+                   ;not exist
+       #:configure-flags
+       (list
+        (string-append "--with-pkcs11-config="
+                       (assoc-ref %outputs "out") "/share/p11-kit/modules/")
+        (string-append "--with-pkcs11-modules="
+                       (assoc-ref %outputs "out") "/share/p11-kit/modules/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "build/tap-driver"
+              (("/usr/bin/env python") (which "python")))))
+         (add-before
+          'configure 'fix-docbook
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "docs/Makefile.am"
+              (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/manpages/docbook.xsl")))
+            (setenv "XML_CATALOG_FILES"
+                    (string-append (assoc-ref inputs "docbook-xml")
+                                   "/xml/dtd/docbook/catalog.xml")))))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("dbus" ,dbus)
+       ("gcr" ,gcr)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("python" ,python-2) ;for tests
+       ("intltool" ,intltool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libxslt" ,libxslt) ;for documentation
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Daemon to store passwords and encryption keys")
+    (description
+     "gnome-keyring is a program that keeps passwords and other secrets for
+users.  It is run as a daemon in the session, similar to ssh-agent, and other
+applications locate it via an environment variable or D-Bus.
+
+The program can manage several keyrings, each with its own master password,
+and there is also a session keyring which is never stored to disk, but
+forgotten when the session ends.")
+    (license license:lgpl2.1+)))
+
 (define-public evince
   (package
     (name "evince")
-    (version "3.6.1")
+    (version "3.16.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -218,7 +339,7 @@ and keep up to date translations of documentation.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1da1pij030dh8mb0pr0jnyszgsbjnh8lc17rj5ii52j3kmbv51qv"))))
+               "0c31pwfzfm5x036f018q31k33vl8xb96nbs0iiccsc1abc37bzq6"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -229,12 +350,18 @@ and keep up to date translations of documentation.")
        #:tests? #f))
     (inputs
      `(("libspectre" ,libspectre)
-       ;; ("djvulibre" ,djvulibre)
+       ("djvulibre" ,djvulibre)
        ("ghostscript" ,ghostscript)
        ("poppler" ,poppler)
+       ("libtiff" ,libtiff)
+       ;; TODO:
+       ;;   Add libgxps for XPS support.
+       ;;   Build libkpathsea as a shared library for DVI support.
+       ;; ("libkpathsea" ,texlive-bin)
+       ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libgnome-keyring" ,libgnome-keyring)
-       ("gnome-icon-theme" ,gnome-icon-theme)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
        ("itstool" ,itstool)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("atk" ,atk)
@@ -247,7 +374,8 @@ and keep up to date translations of documentation.")
        ("shared-mime-info" ,shared-mime-info)
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
-       
+       ("libsecret" ,libsecret)
+
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
@@ -365,7 +493,7 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public gnome-icon-theme
   (package
     (name "gnome-icon-theme")
-    (version "3.10.0")
+    (version "3.12.0")
     (source
      (origin
       (method url-fetch)
@@ -374,20 +502,33 @@ update-desktop-database: updates the database containing a cache of MIME types
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1xinbgkkvlhazj887ajcl13i7kdc1wcca02jwxzvjrvchjsp4m66"))))
+        "0fjh9qmmgj34zlgxb09231ld7khys562qxbpsjlaplq2j85p57im"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("icon-naming-utils" ,icon-naming-utils)))
     (native-inputs
-       `(("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)))
+     `(("gtk+" ,gtk+) ; for gtk-update-icon-cache
+       ("icon-naming-utils" ,icon-naming-utils)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://art.gnome.org/")
     (synopsis
      "GNOME icon theme")
     (description
      "Icons for the GNOME desktop.")
     (license license:lgpl3))) ; or Creative Commons BY-SA 3.0
+
+;; gnome-icon-theme was renamed to adwaita-icon-theme after version 3.12.0.
+(define-public adwaita-icon-theme
+  (package (inherit gnome-icon-theme)
+    (name "adwaita-icon-theme")
+    (version "3.16.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hmlw7kvhr7c2asc5y77adpymi9ka17gaf76zz835nwwffnn4rlw"))))))
 
 (define-public shared-mime-info
   (package
@@ -629,7 +770,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.6")
+    (version "2.40.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -637,7 +778,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01jgb11779080b80k2ncrhdphgillqrrnszal6vh8yv787r4kwwa"))))
+                "0fplymmqqr28y24vcnb01szn62pfbqhk8p1ngns54x9m6mflr5hk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -657,15 +798,15 @@ dealing with different structured file formats.")
         (alist-cons-after
          'install 'generate-full-cache
          (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((loaders-directory 
+           (let ((loaders-directory
                   (string-append (assoc-ref outputs "out")
                                  "/lib/gdk-pixbuf-2.0/2.10.0/loaders")))
              (zero?
-              (system 
-               (string-append 
-                "gdk-pixbuf-query-loaders " 
+              (system
+               (string-append
+                "gdk-pixbuf-query-loaders "
                 loaders-directory "/libpixbufloader-svg.so "
-                (string-join (find-files (assoc-ref inputs "gdk-pixbuf") 
+                (string-join (find-files (assoc-ref inputs "gdk-pixbuf")
                                          "libpixbufloader-.*\\.so") " ")
                 "> " loaders-directory ".cache")))))
          %standard-phases))))
@@ -716,7 +857,7 @@ library.")
 Definition Language (idl) files, which is a specification for defining
 portable interfaces. libidl was initially written for orbit (the orb from the
 GNOME project, and the primary means of libidl distribution).  However, the
-functionality was designed to be as reusable and portable as possible.") 
+functionality was designed to be as reusable and portable as possible.")
     (license license:lgpl2.0+)))
 
 
@@ -726,7 +867,7 @@ functionality was designed to be as reusable and portable as possible.")
     (version "2.14.19")
     (source (origin
               (method url-fetch)
-              (uri (let ((upstream-name "ORBit2")) 
+              (uri (let ((upstream-name "ORBit2"))
 		     (string-append "mirror://gnome/sources/" upstream-name "/"
                                     (version-major+minor version) "/"
                                     upstream-name "-" version ".tar.bz2")))
@@ -751,11 +892,11 @@ functionality was designed to be as reusable and portable as possible.")
     (home-page "https://projects.gnome.org/orbit2/")
     (synopsis "CORBA 2.4-compliant Object Request Broker")
     (description  "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)
-featuring mature C, C++ and Python bindings.") 
+featuring mature C, C++ and Python bindings.")
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving a version.
     ;; SOME of the code files have licence notices for GPLv2+
     ;; The tarball contains files of the text of GPLv2 and LGPLv2
-    (license license:gpl2+))) 
+    (license license:gpl2+)))
 
 
 (define-public libbonobo
@@ -798,7 +939,7 @@ featuring mature C, C++ and Python bindings.")
     (home-page "https://developer.gnome.org/libbonobo/")
     (synopsis "Framework for creating reusable components for use in GNOME applications")
     (description "Bonobo is a framework for creating reusable components for
-use in GNOME applications, built on top of CORBA.") 
+use in GNOME applications, built on top of CORBA.")
     ;; Licence not explicitly stated.  Source files contain no licence notices.
     ;; Tarball contains text of both GPLv2 and LGPLv2
     ;; GPLv2 covers both conditions
@@ -811,7 +952,7 @@ use in GNOME applications, built on top of CORBA.")
     (version "3.2.6")
     (source (origin
               (method url-fetch)
-	      (uri 
+	      (uri
 	       (let ((upstream-name "GConf"))
 		 (string-append "mirror://gnome/sources/" upstream-name "/"
                                 (version-major+minor version) "/"
@@ -819,11 +960,10 @@ use in GNOME applications, built on top of CORBA.")
               (sha256
                (base32 "0k3q9nh53yhc9qxf1zaicz4sk8p3kzq4ndjdsgpaa2db0ccbj4hr"))))
     (build-system gnu-build-system)
-    (inputs `(("glib" ,glib)
-              ("dbus" ,dbus)
-              ("dbus-glib" ,dbus-glib)
+    (inputs `(("dbus-glib" ,dbus-glib)
               ("libxml2" ,libxml2)))
-    (propagated-inputs `(("orbit2" ,orbit2))) ; referred to in the .pc file
+    (propagated-inputs `(("glib" ,glib) ; referred to in the .pc file
+                         ("orbit2" ,orbit2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
@@ -832,7 +972,7 @@ use in GNOME applications, built on top of CORBA.")
     (synopsis "Store application preferences")
     (description "Gconf is a system for storing application preferences.  It
 is intended for user preferences; not arbitrary data storage.")
-    (license license:lgpl2.0+))) 
+    (license license:lgpl2.0+)))
 
 
 (define-public gnome-mime-data
@@ -887,10 +1027,8 @@ designed to be accessed through the MIME functions in GnomeVFS.")
            (substitute* "test/test-async-cancel.c"
              (("EXIT_FAILURE") "77")))
          %standard-phases))))
-    (inputs `(("glib" ,glib)
-              ("libxml2" ,libxml2)
+    (inputs `(("libxml2" ,libxml2)
               ("dbus-glib" ,dbus-glib)
-              ("dbus" ,dbus)
               ("gconf" ,gconf)
               ("gnome-mime-data" ,gnome-mime-data)
               ("zlib" ,zlib)))
@@ -925,7 +1063,7 @@ to access local and remote files with a single consistent API.")
      `(#:phases
        (alist-cons-before
         'configure 'enable-deprecated
-        (lambda _ 
+        (lambda _
           (substitute* "libgnome/Makefile.in"
             (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
         %standard-phases)))
@@ -943,8 +1081,7 @@ to access local and remote files with a single consistent API.")
      `(("libcanberra" ,libcanberra)
        ("libbonobo" ,libbonobo)
        ("gconf" ,gconf)
-       ("gnome-vfs" ,gnome-vfs)
-       ("glib" ,glib)))
+       ("gnome-vfs" ,gnome-vfs)))
     (home-page "https://developer.gnome.org/libgnome/")
     (synopsis "Useful routines for building applications")
     (description  "The libgnome library provides a number of useful routines
@@ -971,7 +1108,7 @@ files and URIs, and displaying help.")
      `(("pkg-config" ,pkg-config)))
     (home-page "https://people.gnome.org/~mathieu/libart")
     (synopsis "2D drawing library")
-    (description  "Libart is a 2D drawing library intended as a 
+    (description  "Libart is a 2D drawing library intended as a
 high-quality vector-based 2D library with antialiasing and alpha composition.")
     (license license:lgpl2.0+)))
 
@@ -1143,7 +1280,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
               ("glib" ,glib)
               ("gnome-icon-theme" ,gnome-icon-theme)
               ("libgnomecanvas" ,libgnomecanvas)
-              ("libxml2" ,libxml2))) 
+              ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -1172,7 +1309,7 @@ since ca. 2006, when GTK+ itself incorporated printing support.")
         (lambda* (#:key inputs #:allow-other-keys)
           (let ((xorg-server (assoc-ref inputs "xorg-server"))
                 (disp ":1"))
-            
+
             (setenv "HOME" (getcwd))
             (setenv "DISPLAY" disp)
             ;; There must be a running X server and make check doesn't start one.
@@ -1269,10 +1406,37 @@ Hints specification (EWMH).")
     (home-page "https://developer.gnome.org/goffice/")
     (synopsis "Document-centric objects and utilities")
     (description "A GLib/GTK+ set of document-centric objects and utilities.")
-    (license 
+    (license
      ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
      ;; Note: NOT LGPL
      (list license:gpl2 license:gpl3))))
+
+(define-public goffice-0.8
+  (package (inherit goffice)
+    (version "0.8.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" (package-name goffice) "/"
+                                  (version-major+minor version)  "/"
+                                  (package-name goffice) "-" version ".tar.xz"))
+              (sha256
+               (base32 "05fvzbs5bin05bbsr4dp79aiva3lnq0a3a40zq55i13vnsz70l0n"))))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'fix-pcre-check
+        (lambda _
+          ;; Only glib.h can be included directly.  See
+          ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
+          (substitute* "configure"
+            (("glib/gregex\\.h") "glib.h")) #t)
+        %standard-phases)))
+    (propagated-inputs
+     ;; libgoffice-0.8.pc mentions libgsf-1
+     `(("libgsf" ,libgsf)))
+    (inputs
+     `(("gtk" ,gtk+-2)
+       ,@(alist-delete "gtk" (package-inputs goffice))))))
 
 (define-public gnumeric
   (package
@@ -1290,7 +1454,7 @@ Hints specification (EWMH).")
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
        ;; See https://bugzilla.gnome.org/show_bug.cgi?id=732387
-       #:tests? #f 
+       #:tests? #f
        #:phases
        (alist-cons-before
         'configure 'pre-conf
@@ -1299,9 +1463,9 @@ Hints specification (EWMH).")
           ;; I am informed that this only affects the possibility to embed a
           ;; spreadsheet inside an Abiword document.   So presumably when we
           ;; package Abiword we'll have to refer it to this directory.
-          (substitute* "configure" 
+          (substitute* "configure"
             (("^GOFFICE_PLUGINS_DIR=.*")
-             (string-append "GOFFICE_PLUGINS_DIR=" 
+             (string-append "GOFFICE_PLUGINS_DIR="
                             (assoc-ref outputs "out") "/goffice/plugins"))))
         %standard-phases)))
     (inputs
@@ -1336,7 +1500,7 @@ engineering.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/" 
+       (uri (string-append "mirror://gnome/sources/" name "/"
                            (version-major+minor version) "/" name "-"
                            version ".tar.xz"))
        (sha256
@@ -1361,8 +1525,8 @@ engineering.")
         ;; gdk-pixbuf because the latter does not include support for SVG
         ;; files.
         (lambda* (#:key inputs #:allow-other-keys)
-          (setenv "GDK_PIXBUF_MODULE_FILE" 
-                  (car (find-files (assoc-ref inputs "librsvg") 
+          (setenv "GDK_PIXBUF_MODULE_FILE"
+                  (car (find-files (assoc-ref inputs "librsvg")
                                    "loaders\\.cache"))))
         %standard-phases)))
     (home-page "https://launchpad.net/gnome-themes-standard")
@@ -1370,6 +1534,39 @@ engineering.")
     (description
      "The default GNOME 3 themes (Adwaita and some accessibility themes).")
     (license license:lgpl2.1+)))
+
+(define-public seahorse
+  (package
+    (name "seahorse")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/" name "-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0cg1grgpwbfkiny5148n17rzpc8kswyr5yff0kpm8l3lp01my2kp"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gcr" ,gcr)
+       ("gnupg" ,gnupg-1)
+       ("gpgme" ,gpgme)
+       ("openssh" ,openssh)
+       ("libsecret" ,libsecret)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://launchpad.net/gnome-themes-standard")
+    (synopsis "Manage encryption keys and passwords in the GNOME keyring")
+    (description
+     "Seahorse is a GNOME application for managing encryption keys and
+passwords in the GNOME keyring.")
+    (license license:gpl2+)))
 
 (define-public vala
   (package
@@ -1471,7 +1668,7 @@ editors, IDEs, etc.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/" 
+                    "mirror://gnome/sources/" name "/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
               (sha256
@@ -1493,7 +1690,7 @@ editors, IDEs, etc.")
                    ; or /etc/machine-id.
        #:configure-flags
        ;; Set the correct RUNPATH in binaries.
-       (list (string-append "LDFLAGS=-Wl,-rpath=" 
+       (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib")
              "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
        #:phases
@@ -1502,12 +1699,12 @@ editors, IDEs, etc.")
         (lambda* (#:key inputs #:allow-other-keys)
           (substitute* "docs/Makefile.in"
             (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-             (string-append (assoc-ref inputs "docbook-xsl") 
+             (string-append (assoc-ref inputs "docbook-xsl")
                             "/xml/xsl/docbook-xsl-"
                             ,(package-version docbook-xsl)
                             "/manpages/docbook.xsl")))
-          (setenv "XML_CATALOG_FILES" 
-                  (string-append (assoc-ref inputs "docbook-xml") 
+          (setenv "XML_CATALOG_FILES"
+                  (string-append (assoc-ref inputs "docbook-xml")
                                  "/xml/dtd/docbook/catalog.xml")))
         %standard-phases)))
     (home-page "https://developer.gnome.org/dconf")
@@ -1906,7 +2103,6 @@ keyboard shortcuts.")
        ("intltool" ,intltool)))
     (inputs
      `(("eudev" ,eudev)
-       ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("libusb" ,libusb)
        ("lcms" ,lcms)
@@ -1923,7 +2119,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.1.10")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1932,7 +2128,7 @@ output devices.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0s0ws2bx5g1cbjamxmm448r4n4crha2fwpzm8zbx6cq6qslygmzi"))
+         "0inlqx0zar498fhi9hh92p2g4kp8qy3zdl4z3vw6bjwp9w6xx454"))
        (patches (list (search-patch "geoclue-config.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -2040,7 +2236,6 @@ faster results and to avoid unnecessary server load.")
        ("python" ,python)))
     (inputs
      `(("eudev" ,eudev)
-       ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("libusb" ,libusb)))
     (home-page "http://upower.freedesktop.org/")
@@ -2152,4 +2347,100 @@ services for numerous locations.")
 parameters of a GNOME session and the applications that run under it.  It
 handles settings such keyboard layout, shortcuts, and accessibility, clipboard
 settings, themes, mouse settings, and startup of other daemons.")
+    (license license:gpl2+)))
+
+(define-public totem-pl-parser
+ (package
+   (name "totem-pl-parser")
+   (version "3.10.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/totem-pl-parser/3.10/"
+                                "totem-pl-parser-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0dw1kiwmjwdjrighri0j9nagsnj44dllm0mamnfh4y5nc47mhim7"))))
+   (build-system gnu-build-system)
+   (arguments
+    ;; FIXME: Tests require gvfs.
+    `(#:tests? #f))
+   (native-inputs
+    `(("intltool" ,intltool)
+      ("glib" ,glib "bin")
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("glib" ,glib)
+      ("gmime" ,gmime)
+      ("libarchive" ,libarchive)
+      ("libgcrypt" ,libgcrypt)
+      ("nettle" ,nettle)
+      ("libsoup" ,libsoup)
+      ("libxml2" ,libxml2)))
+   (home-page "https://projects.gnome.org/totem")
+   (synopsis "Library to parse and save media playlists for GNOME")
+   (description "Totem-pl-parser is a GObjects-based library to parse and save
+playlists in a variety of formats.")
+   (license license:lgpl2.0+)))
+
+(define-public aisleriot
+  (package
+    (name "aisleriot")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "19k483x9dkq8vjbq8f333pk9qil64clpsfg20q8xk9bgmk38aj8h"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--with-platform=gtk-only"
+         "--with-card-theme-formats=svg")))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("guile" ,guile-2.0)
+       ("libcanberra" ,libcanberra)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Aisleriot")
+    (synopsis "Solitaire card games")
+    (description
+     "Aisleriot (also known as Solitaire or sol) is a collection of card games
+which are easy to play with the aid of a mouse.")
+    (license license:gpl3+)))
+
+(define-public devhelp
+  (package
+    (name "devhelp")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i8kyh86hzwxs8dm047ivghl2b92vigdxa3x4pk4ha0whpk38g37"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://wiki.gnome.org/Apps/Devhelp")
+    (synopsis "API documentation browser for GNOME")
+    (description
+     "Devhelp is an API documentation browser for GTK+ and GNOME.  It works
+natively with GTK-Doc (the API reference system developed for GTK+ and used
+throughout GNOME for API documentation).")
     (license license:gpl2+)))

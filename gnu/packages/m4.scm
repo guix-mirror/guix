@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,11 +36,10 @@
               "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))))
    (build-system gnu-build-system)
    (arguments
-    ;; XXX: Disable tests on those platforms with know issues.
-    `(#:tests? ,(not (member (%current-system)
-                             '("x86_64-darwin"
-                               "i686-cygwin"
-                               "i686-sunos")))
+    `(;; Explicitly disable tests when cross-compiling, otherwise 'make check'
+      ;; proceeds and fails, unsurprisingly.
+      #:tests? ,(not (%current-target-system))
+
       #:phases (alist-cons-before
                 'check 'pre-check
                 (lambda* (#:key inputs #:allow-other-keys)

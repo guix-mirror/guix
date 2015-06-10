@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -40,7 +40,8 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages zip))
 
 (define-public glu
   (package
@@ -53,7 +54,8 @@
 	     (sha256
 	      (base32 "0r72yyhj09x3krn3kn629jqbwyq50ji8w5ri2pn6zwrk35m4g1s3"))))
     (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)))
+    (propagated-inputs
+      `(("mesa" ,mesa))) ; according to glu.pc
     (home-page "http://www.opengl.org/archives/resources/faq/technical/glu.htm")
     (synopsis "Mesa OpenGL Utility library")
     (description
@@ -219,7 +221,7 @@ also known as DXTn or DXTC) for Mesa.")
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
-         "--with-gallium-drivers=r600,svga,swrast"
+         "--with-gallium-drivers=r600,svga,swrast,nouveau"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "--with-egl-platforms=x11,drm"
@@ -403,6 +405,7 @@ extension functionality is exposed in a single header file.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)
               ("mesa" ,mesa)
+              ("glu" ,glu)
               ("freeglut" ,freeglut)))
     (arguments
      '(#:phases (alist-cons-before
@@ -417,7 +420,7 @@ extension functionality is exposed in a single header file.")
                    ;; Replace dynamic-link calls for libGL, libGLU, and
                    ;; libglut with absolute paths to the store.
                    (dynamic-link-substitute "glx/runtime.scm" "GL" "mesa")
-                   (dynamic-link-substitute "glu/runtime.scm" "GLU" "mesa")
+                   (dynamic-link-substitute "glu/runtime.scm" "GLU" "glu")
                    (dynamic-link-substitute "glut/runtime.scm" "glut"
                                             "freeglut"))
                  %standard-phases)))
@@ -484,3 +487,45 @@ OpenGL graphics API.")
     (description
      "A library for handling OpenGL function pointer management.")
     (license l:x11)))
+
+(define-public soil
+  (package
+    (name "soil")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              ;; No versioned archive available.
+              (uri "http://www.lonesock.net/files/soil.zip")
+              (sha256
+               (base32
+                "00gpwp9dldzhsdhksjvmbhsd2ialraqbv6v6dpikdmpncj6mnc52"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'init-build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (setenv "CFLAGS" "-fPIC") ; needed for shared library
+                        ;; Use alternate Makefile
+                        (copy-file "projects/makefile/alternate Makefile.txt"
+                                   "src/Makefile")
+                        (chdir "src")
+                        (substitute* '("Makefile")
+                          (("INCLUDEDIR = /usr/include/SOIL")
+                           (string-append "INCLUDEDIR = " out "/include/SOIL"))
+                          (("LIBDIR = /usr/lib")
+                           (string-append "LIBDIR = " out "/lib"))
+                          ;; Remove these flags from 'install' commands.
+                          (("-o root -g root") ""))))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (home-page "http://www.lonesock.net/soil.html")
+    (synopsis "OpenGL texture loading library")
+    (description
+     "SOIL is a tiny C library used primarily for uploading textures into
+OpenGL.")
+    (license l:public-domain)))

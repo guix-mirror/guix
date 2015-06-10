@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +73,6 @@
     `(("dbus" ,dbus)
       ("dconf" ,dconf)
       ("gconf" ,gconf)
-      ("glib" ,glib)
       ("gtk2" ,gtk+-2)
       ("intltool" ,intltool)
       ("libnotify" ,libnotify)

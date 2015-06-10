@@ -373,14 +373,13 @@ access to the full zlib feature set.")
     (arguments
      `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
     (home-page "https://github.com/bos/text")
-    (synopsis
-     "Efficient packed Unicode text type library.")
+    (synopsis "Efficient packed Unicode text type library")
     (description
      "An efficient packed, immutable Unicode text type (both strict and
 lazy), with a powerful loop fusion optimization framework.
 
 The 'Text' type represents Unicode character strings, in a time and
-space-efficient manner. This package provides text processing
+space-efficient manner.  This package provides text processing
 capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
     (license bsd-3)))
@@ -870,7 +869,7 @@ package into this package.")
     (home-page "https://github.com/haskell/HTTP")
     (synopsis "Library for client-side HTTP")
     (description
-     "The HTTP package supports client-side web programming in Haskell. It
+     "The HTTP package supports client-side web programming in Haskell.  It
 lets you set up HTTP connections, transmitting requests and processing the
 responses coming back.")
     (license bsd-3)))

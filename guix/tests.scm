@@ -37,7 +37,8 @@
             %substitute-directory
             with-derivation-narinfo
             with-derivation-substitute
-            dummy-package))
+            dummy-package
+            dummy-origin))
 
 ;;; Commentary:
 ;;;
@@ -218,6 +219,13 @@ initialized with default values, and with EXTRA-FIELDS set as specified."
            (build-system gnu-build-system)
            (synopsis #f) (description #f)
            (home-page #f) (license #f)))
+
+(define-syntax-rule (dummy-origin extra-fields ...)
+  "Return a \"dummy\" origin, with all its compulsory fields initialized with
+default values, and with EXTRA-FIELDS set as specified."
+  (origin extra-fields ...
+          (method #f) (uri "http://www.example.com")
+          (sha256 (base32 (make-string 52 #\x)))))
 
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)

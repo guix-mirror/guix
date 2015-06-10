@@ -56,15 +56,14 @@ guile -c "
   (exit (= (stat:ino (stat \"$new_file\"))
            (stat:ino (stat \"$new_file2\"))))"
 
-# Make sure both are valid, and delete them.
+# Make sure both are valid.
 guile -c "
    (use-modules (guix store))
    (define s (open-connection))
    (exit (and (valid-path? s \"$new_file\")
               (valid-path? s \"$new_file2\")
               (null? (references s \"$new_file\"))
-              (null? (references s \"$new_file2\"))
-              (pair? (delete-paths s (list \"$new_file\" \"$new_file2\")))))"
+              (null? (references s \"$new_file2\"))))"
 
 
 #
@@ -98,6 +97,33 @@ guix-register --prefix "$new_store" "$closure"
 guix-register -p "$new_store" \
     --state-directory "$new_store/chbouib" "$closure"
 
+# Register duplicate files.
+cp "$new_file" "$new_file2" "$new_store_dir"
+guix-register -p "$new_store" <<EOF
+$new_file
+
+0
+EOF
+guix-register -p "$new_store" <<EOF
+$new_file2
+
+0
+EOF
+
+copied_duplicate1="$new_store_dir/`basename $new_file`"
+copied_duplicate2="$new_store_dir/`basename $new_file2`"
+
+# Make sure there is indeed deduplication under $new_store and that there are
+# no cross-store hard links.
+guile -c "
+  (exit (and (= (stat:ino (stat \"$copied_duplicate1\"))
+                (stat:ino (stat \"$copied_duplicate2\")))
+             (not (= (stat:ino (stat \"$new_file\"))
+                     (stat:ino (stat \"$copied_duplicate1\"))))))"
+
+# Delete them.
+guix gc -d "$new_file" "$new_file2"
+
 # Now make sure this is recognized as valid.
 
 ls -R "$new_store"
@@ -107,12 +133,13 @@ do
     NIX_STATE_DIR="$new_store$state_dir"
     NIX_LOG_DIR="$new_store$state_dir/log/guix"
     NIX_DB_DIR="$new_store$state_dir/db"
+    GUIX_DAEMON_SOCKET="$NIX_STATE_DIR/daemon-socket/socket"
 
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
-	NIX_LOG_DIR NIX_DB_DIR
+	   NIX_LOG_DIR NIX_DB_DIR GUIX_DAEMON_SOCKET
 
     # Check whether we overflow the limitation on local socket name lengths.
-    if [ `echo "$NIX_STATE_DIR/daemon-socket/socket" | wc -c` -ge 108 ]
+    if [ `echo "$GUIX_DAEMON_SOCKET" | wc -c` -ge 108 ]
     then
 	# Mark the test as skipped even though we already did some work so
 	# that the remainder is not silently skipped.
@@ -130,9 +157,12 @@ do
     # that name in a 'valid-path?' query because 'assertStorePath' would kill
     # us because of the wrong prefix.  So we just list dead paths instead.
     guile -c "
-      (use-modules (guix store))
-      (define s (open-connection))
-      (exit (equal? (list \"$copied\") (dead-paths s)))"
+      (use-modules (guix store) (srfi srfi-1))
+      (define s (open-connection \"$GUIX_DAEMON_SOCKET\"))
+      (exit (lset= string=?
+                   (pk 1 (list \"$copied\" \"$copied_duplicate1\"
+                               \"$copied_duplicate2\"))
+                   (pk 2 (dead-paths s))))"
 
     # Kill the daemon so we can access the database below (otherwise we may
     # get "database is locked" errors.)

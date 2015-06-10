@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012,
      2013 Eelco Dolstra <eelco.dolstra@logicblox.com>
 
@@ -192,13 +192,21 @@ register_validity (LocalStore *store, std::istream &input,
      store's '.links' directory, which means 'optimisePath' would try to link
      to that instead of linking to the target store.  Thus, disable
      deduplication in this case.  */
-  if (optimize && prefix.empty ())
+  if (optimize)
     {
       /* Make sure deduplication is enabled.  */
       settings.autoOptimiseStore = true;
 
-      foreach (ValidPathInfos::const_iterator, i, infos)
-	store->optimisePath (i->path);
+      std::string store_dir = settings.nixStore;
+
+      /* 'optimisePath' creates temporary links under 'settings.nixStore' and
+	 this must be the real target store, under PREFIX, to avoid
+	 cross-device links.  Thus, temporarily switch the value of
+	 'settings.nixStore'.  */
+      settings.nixStore = prefix + store_dir;
+      for (auto&& i: infos)
+	store->optimisePath (prefix + i.path);
+      settings.nixStore = store_dir;
     }
 }
 

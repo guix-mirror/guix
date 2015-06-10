@@ -32,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages imagemagick))
 
@@ -127,10 +128,6 @@ buffers.")
                (base32
                 "0bdj0l7a94jqhjnj40m9rqaf622wj905iximivb55iy98639aanq"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       ;; We don't have pygtk which seems to be needed for this feature
-       `("--disable-python")))
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
@@ -141,6 +138,8 @@ buffers.")
        ("exif" ,libexif)                         ;optional, EXIF + XMP support
        ("lcms" ,lcms)                            ;optional, color management
        ("librsvg" ,librsvg)                      ;optional, SVG support
+       ("python" ,python-2)                      ;optional, Python support
+       ("python2-pygtk" ,python2-pygtk)          ;optional, Python support
        ("gegl" ,gegl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)

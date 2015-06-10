@@ -112,6 +112,29 @@
   (lambda (s)
     (syntax-violation 'return "return used outside of 'with-monad'" s)))
 
+(define-syntax-rule (bind-syntax bind)
+  "Return a macro transformer that handles the expansion of '>>=' expressions
+using BIND as the binary bind operator.
+
+This macro exists to allow the expansion of n-ary '>>=' expressions, even
+though BIND is simply binary, as in:
+
+  (with-monad %state-monad
+    (>>= (return 1)
+         (lift 1+ %state-monad)
+         (lift 1+ %state-monad)))
+"
+  (lambda (stx)
+    (define (expand body)
+      (syntax-case body ()
+        ((_ mval mproc)
+         #'(bind mval mproc))
+        ((x mval mproc0 mprocs (... ...))
+         (expand #'(>>= (>>= mval mproc0)
+                        mprocs (... ...))))))
+
+    (expand stx)))
+
 (define-syntax with-monad
   (lambda (s)
     "Evaluate BODY in the context of MONAD, and return its result."
@@ -120,13 +143,13 @@
        (eq? 'macro (syntax-local-binding #'monad))
        ;; MONAD is a syntax transformer, so we can obtain the bind and return
        ;; methods by directly querying it.
-       #'(syntax-parameterize ((>>=    (identifier-syntax (monad %bind)))
+       #'(syntax-parameterize ((>>=    (bind-syntax (monad %bind)))
                                (return (identifier-syntax (monad %return))))
            body ...))
       ((_ monad body ...)
        ;; MONAD refers to the <monad> record that represents the monad at run
        ;; time, so use the slow method.
-       #'(syntax-parameterize ((>>=    (identifier-syntax
+       #'(syntax-parameterize ((>>=    (bind-syntax
                                         (monad-bind monad)))
                                (return (identifier-syntax
                                         (monad-return monad))))
@@ -225,8 +248,11 @@ MONAD---i.e., return a monadic function in MONAD."
       (return (apply proc args)))))
 
 (define (foldm monad mproc init lst)
-  "Fold MPROC over LST, a list of monadic values in MONAD, and return a
-monadic value seeded by INIT."
+  "Fold MPROC over LST and return a monadic value seeded by INIT.
+
+  (foldm %state-monad (lift2 cons %state-monad) '() '(a b c))
+  => '(c b a)  ;monadic
+"
   (with-monad monad
     (let loop ((lst    lst)
                (result init))
@@ -234,18 +260,21 @@ monadic value seeded by INIT."
         (()
          (return result))
         ((head tail ...)
-         (mlet* monad ((item   head)
-                       (result (mproc item result)))
-           (loop tail result)))))))
+         (>>= (mproc head result)
+              (lambda (result)
+                (loop tail result))))))))
 
 (define (mapm monad mproc lst)
-  "Map MPROC over LST, a list of monadic values in MONAD, and return a monadic
-list.  LST items are bound from left to right, so effects in MONAD are known
-to happen in that order."
+  "Map MPROC over LST and return a monadic list.
+
+  (mapm %state-monad (lift1 1+ %state-monad) '(0 1 2))
+  => (1 2 3)  ;monadic
+"
   (mlet monad ((result (foldm monad
                               (lambda (item result)
-                                (mlet monad ((item (mproc item)))
-                                  (return (cons item result))))
+                                (>>= (mproc item)
+                                     (lambda (item)
+                                       (return (cons item result)))))
                               '()
                               lst)))
     (return (reverse result))))
@@ -268,20 +297,24 @@ evaluating each item of LST in sequence."
               (lambda (item)
                 (seq tail (cons item result)))))))))
 
-(define (anym monad proc lst)
-  "Apply PROC to the list of monadic values LST; return the first value,
-lifted in MONAD, for which PROC returns true."
+(define (anym monad mproc lst)
+  "Apply MPROC to the list of values LST; return as a monadic value the first
+value for which MPROC returns a true monadic value or #f.  For example:
+
+  (anym %state-monad (lift1 odd? %state-monad) '(0 1 2))
+  => #t   ;monadic
+"
   (with-monad monad
     (let loop ((lst lst))
       (match lst
         (()
          (return #f))
         ((head tail ...)
-         (mlet* monad ((value  head)
-                       (result -> (proc value)))
-           (if result
-               (return result)
-               (loop tail))))))))
+         (>>= (mproc head)
+              (lambda (result)
+                (if result
+                    (return result)
+                    (loop tail)))))))))
 
 (define-syntax listm
   (lambda (s)

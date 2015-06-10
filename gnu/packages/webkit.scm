@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,9 +23,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -45,19 +51,23 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.8.1")
+    (version "2.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1zv030ryfwwp57yzlpr9bgpxcmc64izsxk2vsyd4kjhns9cl88bx"))))
+                "05igg61lflgwy83cmxgyzmvf2bkhplmp8710ssrlpmbfcz461pmk"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
        #:build-type "Release" ; turn off debugging symbols to save space
-       #:configure-flags '("-DPORT=GTK")))
+       #:configure-flags (list
+                          "-DPORT=GTK"
+                          (string-append ; uses lib64 by default
+                           "-DLIB_INSTALL_DIR="
+                           (assoc-ref %outputs "out") "/lib"))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gnu-gettext)
@@ -103,3 +113,40 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
+
+;; Latest release of the stable 2.4 series, with WebKit1 support.
+(define-public webkitgtk-2.4
+  (package (inherit webkitgtk)
+    (name "webkitgtk")
+    (version "2.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.webkitgtk.org/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0r651ar3p0f8zwl7764kyimxk5hy88cwy116pv8cl5l8hbkjkpxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'set-gcc
+                   (lambda _ (setenv "CC" "gcc") #t)))))
+    (native-inputs
+     `(("flex" ,flex)
+       ("which" ,which)
+       ,@(package-native-inputs webkitgtk)))))
+
+;; Last GTK+2 port, required by GnuCash.
+(define-public webkitgtk/gtk+-2
+  (package (inherit webkitgtk-2.4)
+    (name "webkitgtk")
+    (arguments
+     `(#:configure-flags
+       '("--enable-webkit2=no"
+         "--with-gtk=2.0")
+       ,@(package-arguments webkitgtk-2.4)))
+    (propagated-inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libsoup" ,libsoup)))))

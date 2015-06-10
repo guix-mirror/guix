@@ -133,9 +133,19 @@ includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
             (directives (%store-directory)))
 
   ;; Add system generation 1.
-  (false-if-exception (delete-file "/var/guix/profiles/system-1-link"))
-  (symlink system
-           (string-append target "/var/guix/profiles/system-1-link")))
+  (let ((generation-1 (string-append target
+                                     "/var/guix/profiles/system-1-link")))
+    (let try ()
+      (catch 'system-error
+        (lambda ()
+          (symlink system generation-1))
+        (lambda args
+          ;; If GENERATION-1 already exists, overwrite it.
+          (if (= EEXIST (system-error-errno args))
+              (begin
+                (delete-file generation-1)
+                (try))
+              (apply throw args)))))))
 
 (define (reset-timestamps directory)
   "Reset the timestamps of all the files under DIRECTORY, so that they appear

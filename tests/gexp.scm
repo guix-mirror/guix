@@ -109,6 +109,16 @@
             (eq? x local)))
          (equal? `(display ,intd) (gexp->sexp* exp)))))
 
+(test-assert "one plain file"
+  (let* ((file     (plain-file "hi" "Hello, world!"))
+         (exp      (gexp (display (ungexp file))))
+         (expected (add-text-to-store %store "hi" "Hello, world!")))
+    (and (gexp? exp)
+         (match (gexp-inputs exp)
+           (((x "out"))
+            (eq? x file)))
+         (equal? `(display ,expected) (gexp->sexp* exp)))))
+
 (test-assert "same input twice"
   (let ((exp (gexp (begin
                      (display (ungexp coreutils))

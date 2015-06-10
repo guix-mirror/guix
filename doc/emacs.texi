@@ -19,6 +19,7 @@ guix package}).  Specifically, ``guix.el'' makes it easy to:
 * Usage: Emacs Usage.			Using the interface.
 * Configuration: Emacs Configuration.	Configuring the interface.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
+* Completions: Emacs Completions.       Completing @command{guix} shell command.
 @end menu
 
 @node Emacs Initial Setup
@@ -29,7 +30,7 @@ is ready to use, provided Guix is installed system-wide, which is the
 case by default.  So if that is what you're using, you can happily skip
 this section and read about the fun stuff.
 
-If you're not yet a happy user of GSD, a little bit of setup is needed.
+If you're not yet a happy user of GuixSD, a little bit of setup is needed.
 To be able to use ``guix.el'', you need to install the following
 packages:
 
@@ -44,23 +45,49 @@ used for interacting with the Guile process.
 
 @end itemize
 
-When it is done, add the following into your init file (@pxref{Init
-File,,, emacs, The GNU Emacs Manual}):
-
-@example
-(require 'guix-init nil t)
-@end example
-
-However there is a chance that @code{load-path} of your Emacs does not
-contain a directory with ``guix.el'' (usually it is
-@file{/usr/share/emacs/site-lisp/}).  In that case you need to add it
-before requiring (@pxref{Lisp Libraries,,, emacs, The GNU Emacs
-Manual}):
+When it is done ``guix.el'' may be configured by requiring a special
+@code{guix-init} file---i.e., by adding the following code into your
+init file (@pxref{Init File,,, emacs, The GNU Emacs Manual}):
 
 @example
 (add-to-list 'load-path "/path/to/directory-with-guix.el")
-(require 'guix-init)
+(require 'guix-init nil t)
 @end example
+
+So the only thing you need to figure out is where the directory with
+elisp files for Guix is placed.  It depends on how you installed Guix:
+
+@itemize
+@item
+If it was installed by a package manager of your distribution or by a
+usual @code{./configure && make && make install} command sequence, then
+elisp files are placed in a standard directory with Emacs packages
+(usually it is @file{/usr/share/emacs/site-lisp/}), which is already in
+@code{load-path}, so there is no need to add that directory there.
+
+@item
+If you used a binary installation method (@pxref{Binary Installation}),
+then Guix is installed somewhere in the store, so the elisp files are
+placed in @file{/gnu/store/@dots{}-guix-0.8.2/share/emacs/site-lisp/} or
+alike.  However it is not recommended to refer directly to a store
+directory.  Instead you can install Guix using Guix itself with
+@command{guix package -i guix} command (@pxref{Invoking guix package})
+and add @file{~/.guix-profile/share/emacs/site-lisp/} directory to
+@code{load-path} variable.
+
+@item
+If you did not install Guix at all and prefer a hacking way
+(@pxref{Running Guix Before It Is Installed}), along with augmenting
+@code{load-path} you need to set @code{guix-load-path} variable to the
+same directory, so your final configuration will look like this:
+
+@example
+(let ((dir "/path/to/your-guix-git-tree/emacs"))
+  (add-to-list 'load-path dir)
+  (setq guix-load-path dir))
+(require 'guix-init nil t)
+@end example
+@end itemize
 
 By default, along with autoloading (@pxref{Autoload,,, elisp, The GNU
 Emacs Lisp Reference Manual}) the main interactive commands for
@@ -183,6 +210,11 @@ packages/generations and redisplay it.
 @item R
 Redisplay current buffer (without updating information).
 
+@item M
+Apply manifest to the current profile or to a specified profile, if
+prefix argument is used.  This has the same meaning as @code{--manifest}
+option (@pxref{Invoking guix package}).
+
 @item C-c C-z
 Go to the Guix REPL (@pxref{The REPL,,, geiser, Geiser User Manual}).
 
@@ -213,9 +245,7 @@ Default key bindings available for both ``package-list'' and
 
 @table @kbd
 @item m
-Mark the current entry.
-@item M
-Mark all entries.
+Mark the current entry (with prefix, mark all entries).
 @item u
 Unmark the current entry (with prefix, unmark all entries).
 @item @key{DEL}
@@ -486,3 +516,34 @@ mode hooks (@pxref{Hooks,,, emacs, The GNU Emacs Manual}), for example:
 (add-hook 'shell-mode-hook 'guix-prettify-mode)
 (add-hook 'dired-mode-hook 'guix-prettify-mode)
 @end example
+
+
+@node Emacs Completions
+@subsection Shell Completions
+
+Another feature that becomes available after configuring Emacs interface
+(@pxref{Emacs Initial Setup}) is completing of @command{guix}
+subcommands, options, packages and other things in @code{shell}
+(@pxref{Interactive Shell,,, emacs, The GNU Emacs Manual}) and
+@code{eshell} (@pxref{Top,,, eshell, Eshell: The Emacs Shell}).
+
+It works the same way as other completions do.  Just press @key{TAB}
+when your intuition tells you.
+
+And here are some examples, where pressing @key{TAB} may complete
+something:
+
+@itemize @w{}
+
+@item @code{guix pa}@key{TAB}
+@item @code{guix package -}@key{TAB}
+@item @code{guix package --}@key{TAB}
+@item @code{guix package -i gei}@key{TAB}
+@item @code{guix build -L/tm}@key{TAB}
+@item @code{guix build --sy}@key{TAB}
+@item @code{guix build --system=i}@key{TAB}
+@item @code{guix system rec}@key{TAB}
+@item @code{guix lint --checkers=sy}@key{TAB}
+@item @code{guix lint --checkers=synopsis,des}@key{TAB}
+
+@end itemize

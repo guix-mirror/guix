@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT([GNU Guix], [0.8.2], [bug-guix@gnu.org], [guix],
+AC_INIT([GNU Guix], [0.8.3], [bug-guix@gnu.org], [guix],
   [http://www.gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -67,7 +67,7 @@ dnl Make sure they are available.
 m4_pattern_forbid([PKG_CHECK_MODULES])
 m4_pattern_forbid([GUILE_MODULE_AVAILABLE])
 
-PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.5])
+PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
 if test "x$GUILD" = "x"; then
@@ -181,6 +181,9 @@ m4_include([config-daemon.ac])
 dnl `dot' (from the Graphviz package) is only needed for maintainers.
 dnl See `HACKING' for more info.
 AM_MISSING_PROG([DOT], [dot])
+
+dnl Manual pages.
+AM_MISSING_PROG([HELP2MAN], [help2man])
 
 AC_CONFIG_FILES([Makefile
                  po/guix/Makefile.in

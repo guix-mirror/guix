@@ -167,3 +167,200 @@ translation data, custom key/scope separator, custom exception handlers, and
 an extensible architecture with a swappable backend.")
     (home-page "http://github.com/svenfuchs/i18n")
     (license license:expat)))
+
+;; RSpec is the dominant testing library for Ruby projects.  Even RSpec's
+;; dependencies use RSpec for their test suites!  To avoid these circular
+;; dependencies, we disable tests for all of the RSpec-related packages.
+(define ruby-rspec-support
+  (package
+    (name "ruby-rspec-support")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-support/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pvzfrqgy0z0gwmdgjp9f2vz1d9c0cajyzfqj9z8i2ssxnzmj4bv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (synopsis "RSpec support library")
+    (description "Support utilities for RSpec gems.")
+    (home-page "https://github.com/rspec/rspec-support")
+    (license license:expat)))
+
+(define-public ruby-rspec-core
+  (package
+    (name "ruby-rspec-core")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-core/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1clsa4lkh5c9c7xc3xa336ym00ycr67pchpg1bv4y3fz5hvzw8ki"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-support" ,ruby-rspec-support)))
+    (synopsis "RSpec core library")
+    (description "Rspec-core provides the RSpec test runner and example
+groups.")
+    (home-page "https://github.com/rspec/rspec-core")
+    (license license:expat)))
+
+(define ruby-diff-lcs-for-rspec
+  (package
+    (name "ruby-diff-lcs")
+    (version "1.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/halostatue/diff-lcs/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kmfz2qdwbfjf97rx27hh9fm39mv3z9avjmvsajqnb5wxj2l5l4s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (synopsis "Compute the difference between two Enumerable sequences")
+    (description "Diff::LCS computes the difference between two Enumerable
+sequences using the McIlroy-Hunt longest common subsequence (LCS) algorithm.
+It includes utilities to create a simple HTML diff output format and a
+standard diff-like tool.")
+    (home-page "https://github.com/halostatue/diff-lcs")
+    (license license:expat)))
+
+(define-public ruby-rspec-expectations
+  (package
+    (name "ruby-rspec-expectations")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-expectations/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h0rpprbh6h59gmksiyi1b8w6cvcai4wdbkikajwx3w1asxi6f7x"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-support" ,ruby-rspec-support)
+       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+    (synopsis "RSpec expecations library")
+    (description "Rspec-expectations provides a simple API to express expected
+outcomes of a code example.")
+    (home-page "https://github.com/rspec/rspec-expectations")
+    (license license:expat)))
+
+(define-public ruby-rspec-mocks
+  (package
+    (name "ruby-rspec-mocks")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec-mocks/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xzxsg0idxkg7czmjgqq10lcd821ibw1hjzn404sk9j6rw0fbx2g"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-support" ,ruby-rspec-support)
+       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+    (synopsis "RSpec stubbing and mocking library")
+    (description "Rspec-mocks provides RSpec's \"test double\" framework, with
+support for stubbing and mocking.")
+    (home-page "https://github.com/rspec/rspec-mocks")
+    (license license:expat)))
+
+(define-public ruby-rspec
+  (package
+    (name "ruby-rspec")
+    (version "3.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rspec/rspec/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jg38dbaknsdhiav5vnrwfccg524fwcg6sq1715441vx1xl6p54q"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+    (synopsis "Behavior-driven development framework for Ruby")
+    (description "RSpec is a behavior-driven development (BDD) framework for
+Ruby.  This meta-package includes the RSpec test runner, along with the
+expectations and mocks frameworks.")
+    (home-page "http://rspec.info/")
+    (license license:expat)))
+
+;; Bundler is yet another source of circular dependencies, so we must disable
+;; its test suite as well.
+(define-public bundler
+  (package
+    (name "bundler")
+    (version "1.9.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bundler/bundler/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08flx3n9hb3yz8mm5k16cdz0sb7g774f6vxn6gc3wfh5la83vfyx"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; avoid dependency cycles
+    (synopsis "Ruby gem bundler")
+    (description "Bundler automatically downloads and installs a list of gems
+specified in a \"Gemfile\", as well as their dependencies.")
+    (home-page "http://bundler.io/")
+    (license license:expat)))
+
+(define-public ruby-useragent
+  (package
+    (name "ruby-useragent")
+    (version "0.13.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/gshutler/useragent/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hj00fw06i0y3rwxxhxmnrqxhpnffv4zfqx2sqqpc5qc4fdvd2x9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("bundler" ,bundler)))
+    (synopsis "HTTP user agent parser for Ruby")
+    (description "UserAgent is a Ruby library that parses and compares HTTP
+User Agents.")
+    (home-page "https://github.com/gshutler/useragent")
+    (license license:expat)))

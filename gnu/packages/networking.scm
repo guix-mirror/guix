@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,14 +17,42 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages socat)
+(define-module (gnu packages networking)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages openssl))
 
-;; XXX: Group with other networking tools like tcpdump in a module?
+(define-public miredo
+  (package
+    (name "miredo")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.remlab.net/files/miredo/miredo-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0j9ilig570snbmj48230hf7ms8kvcwi2wblycqrmhh85lksd49ps"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The checkconf test in src/ requires network access.
+         (add-before
+          'check 'disable-checkconf-test
+          (lambda _
+            (substitute* "src/Makefile"
+              (("^TESTS = .*") "TESTS = \n")))))))
+    (home-page "http://www.remlab.net/miredo/")
+    (synopsis "Teredo IPv6 tunneling software")
+    (description
+     "Miredo is an implementation (client, relay, server) of the Teredo
+specification, which provides IPv6 Internet connectivity to IPv6 enabled hosts
+residing in IPv4-only networks, even when they are behind a NAT device.")
+    (license license:gpl2+)))
+
 (define-public socat
   (package
     (name "socat")
@@ -53,3 +82,26 @@ line, to logically connect serial lines on different computers, or to
 establish a relatively secure environment (su and chroot) for running client
 or server shell scripts with network connections. ")
     (license license:gpl2)))
+
+(define-public zeromq
+  (package
+    (name "zeromq")
+    (version "4.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.zeromq.org/zeromq-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0arl8fy8d03xd5h0mgda1s5bajwg8iyh1kk4hd1420rpcxgkrj9v"))))
+    (build-system gnu-build-system)
+    (home-page "http://zeromq.org")
+    (synopsis "Library for message-based applications")
+    (description
+     "The 0MQ lightweight messaging kernel is a library which extends the
+standard socket interfaces with features traditionally provided by specialized
+messaging middle-ware products.  0MQ sockets provide an abstraction of
+asynchronous message queues, multiple messaging patterns, message
+filtering (subscriptions), seamless access to multiple transport protocols and
+more.")
+    (license license:lgpl3+)))

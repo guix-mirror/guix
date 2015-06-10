@@ -138,24 +138,28 @@ affine transformation (scale, rotation, shear, etc.)")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "0.9.22")
+   (version "0.9.40")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1nkimwadri6v2kzrmz8y0crmy59gw0kg4i4f6cc786bngs0815lq"))))
+              "07rjp05axas96fp23lpf8l2yyfdj9yib4m0qjv592vdyhcsxaw8p"))))
    (build-system gnu-build-system)
    (inputs
     `(("cairo" ,cairo)
       ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
+   (propagated-inputs
+    `(("glib" ,glib))) ; required by harfbuzz-gobject.pc
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("python" ,python-wrapper)))
+    `(("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
    (arguments
-    `(#:configure-flags `("--with-graphite2=yes")))
+    `(#:configure-flags `("--with-graphite2"
+                          "--with-gobject")))
    (synopsis "OpenType text shaping engine")
    (description
     "HarfBuzz is an OpenType text shaping engine.")
@@ -426,7 +430,7 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
    (name "gtk+")
-   (version "2.24.27")
+   (version "2.24.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -434,7 +438,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1x14rnjvqslpa1q19fp1qalz5sxds72amsgjk8m7769rwk511jr0"))))
+              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
@@ -482,7 +486,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.16.2")
+   (version "3.16.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -490,7 +494,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1yhwg2l72l3khfkprydcjlpxjrg11ccqfc80sjl56llz3jk66fd0"))))
+              "195ykv53sl2gsc847wcnd79zilm1yzcc2cfjxnrakhh2dd5gshr9"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -501,7 +505,8 @@ application suites.")
       ("libxdamage" ,libxdamage)
       ("pango" ,pango)))
    (inputs
-    `(("libxml2" ,libxml2)
+    `(("librsvg" ,librsvg)                        ;for gtk-encode-symbolic-svg
+      ("libxml2" ,libxml2)
       ("cups" ,cups)))                            ;for printing support
    (native-inputs
     `(("perl" ,perl)
@@ -533,7 +538,18 @@ application suites.")
                         "demos/gtk-demo/Makefile.in")
            (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
          #t)
-       %standard-phases)))))
+       (alist-cons-after
+        'install 'wrap-gtk-encode-symbolic-svg
+        ;; By using GdkPixbuf, gtk-encode-symbolic-svg needs to know
+        ;; librsvg's loaders.cache to handle SVG files.
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (prog (string-append out "/bin/gtk-encode-symbolic-svg"))
+                 (librsvg (assoc-ref inputs "librsvg"))
+                 (loaders.cache (find-files librsvg "^loaders\\.cache$")))
+            (wrap-program prog
+              `("GDK_PIXBUF_MODULE_FILE" = ,loaders.cache))))
+        %standard-phases))))))
 
 ;;;
 ;;; Guile bindings.
@@ -844,7 +860,7 @@ write GNOME applications.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -852,7 +868,7 @@ write GNOME applications.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1phfmqp8y17zcy9yi6pm2f80x8ldbk60iswpm4bmjz5217jwqzxh"))))
+                "0pnfdsg435b5vc4x8l9pgm77aj7ram1q0bzrp9g4a3bh1r64xq1f"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)))
     (inputs `(("gtk+" ,gtk+)

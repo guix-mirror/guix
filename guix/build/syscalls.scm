@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,7 @@
             MS_REMOUNT
             MS_BIND
             MS_MOVE
+            restart-on-EINTR
             mount
             umount
             mount-points
@@ -46,6 +47,7 @@
             network-interface-address
             set-network-interface-flags
             set-network-interface-address
+            set-network-interface-up
             configure-network-interface))
 
 ;;; Commentary:
@@ -87,6 +89,19 @@
                                            (sizeof int)))))))))
             (ref bv))))
       (lambda () 0)))
+
+(define (call-with-restart-on-EINTR thunk)
+  (let loop ()
+    (catch 'system-error
+      thunk
+      (lambda args
+        (if (= (system-error-errno args) EINTR)
+            (loop)
+            (apply throw args))))))
+
+(define-syntax-rule (restart-on-EINTR expr)
+  "Evaluate EXPR and restart upon EINTR.  Return the value of EXPR."
+  (call-with-restart-on-EINTR (lambda () expr)))
 
 (define (augment-mtab source target type options)
   "Augment /etc/mtab with information about the given mount point."
@@ -203,7 +218,7 @@ constants from <sys/mount.h>."
       (let ((ret (proc (string->pointer device)))
             (err (errno)))
         (unless (zero? ret)
-          (throw 'system-error "swapff" "~S: ~A"
+          (throw 'system-error "swapoff" "~S: ~A"
                  (list device (strerror err))
                  (list err)))))))
 
@@ -549,6 +564,19 @@ the same type as that returned by 'make-socket-address'."
       (lambda ()
         (set-network-interface-address sock name sockaddr)
         (set-network-interface-flags sock name flags))
+      (lambda ()
+        (close-port sock)))))
+
+(define* (set-network-interface-up name
+                                   #:key (family AF_INET))
+  "Turn up the interface NAME."
+  (let ((sock (socket family SOCK_STREAM 0)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (let ((flags (network-interface-flags sock name)))
+          (set-network-interface-flags sock name
+                                       (logior flags IFF_UP))))
       (lambda ()
         (close-port sock)))))
 

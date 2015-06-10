@@ -26,6 +26,7 @@
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
+  #:use-module (guix search-paths)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -36,7 +37,8 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:re-export (%current-system
-               %current-target-system)
+               %current-target-system
+               search-path-specification)         ;for convenience
   #:export (origin
             origin?
             origin-uri
@@ -51,11 +53,6 @@
             origin-modules
             origin-imported-modules
             base32
-
-            <search-path-specification>
-            search-path-specification
-            search-path-specification?
-            search-path-specification->sexp
 
             package
             package?
@@ -82,6 +79,8 @@
             package-location
             package-field-location
 
+            package-direct-sources
+            package-transitive-sources
             package-direct-inputs
             package-transitive-inputs
             package-transitive-target-inputs
@@ -185,26 +184,6 @@ representation."
          #''bv))
       ((_ str)
        #'(nix-base32-string->bytevector str)))))
-
-;; The specification of a search path.
-(define-record-type* <search-path-specification>
-  search-path-specification make-search-path-specification
-  search-path-specification?
-  (variable     search-path-specification-variable) ;string
-  (files        search-path-specification-files)    ;list of strings
-  (separator    search-path-specification-separator ;string
-                (default ":"))
-  (file-type    search-path-specification-file-type ;symbol
-                (default 'directory))
-  (file-pattern search-path-specification-file-pattern ;#f | string
-                (default #f)))
-
-(define (search-path-specification->sexp spec)
-  "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
-corresponds to the arguments expected by `set-path-environment-variable'."
-  (match spec
-    (($ <search-path-specification> variable files separator type pattern)
-     `(,variable ,files ,separator ,type ,pattern))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
@@ -526,6 +505,28 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                (append t (cons i result)))))
       ((input rest ...)
        (loop rest (cons input result))))))
+
+(define (package-direct-sources package)
+  "Return all source origins associated with PACKAGE; including origins in
+PACKAGE's inputs."
+  `(,@(or (and=> (package-source package) list) '())
+    ,@(filter-map (match-lambda
+                   ((_ (? origin? orig) _ ...)
+                    orig)
+                   (_ #f))
+                  (package-direct-inputs package))))
+
+(define (package-transitive-sources package)
+  "Return PACKAGE's direct sources, and their direct sources, recursively."
+  (delete-duplicates
+   (concatenate (filter-map (match-lambda
+                             ((_ (? origin? orig) _ ...)
+                              (list orig))
+                             ((_ (? package? p) _ ...)
+                              (package-direct-sources p))
+                             (_ #f))
+                            (bag-transitive-inputs
+                             (package->bag package))))))
 
 (define (package-direct-inputs package)
   "Return all the direct inputs of PACKAGE---i.e, its direct inputs along

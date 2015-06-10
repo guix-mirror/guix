@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
             swap-service
             user-processes-service
             host-name-service
+            console-keymap-service
             console-font-service
             udev-service
             mingetty-service
@@ -312,6 +314,19 @@ stopped before 'kill' is called."
                   "unicode_start"))
           (else
            (zero? (cdr (waitpid pid))))))))
+
+(define (console-keymap-service file)
+  "Return a service to load console keymap from @var{file}."
+  (with-monad %store-monad
+    (return
+     (service
+      (documentation
+       (string-append "Load console keymap (loadkeys)."))
+      (provision '(console-keymap))
+      (start #~(lambda _
+                 (zero? (system* (string-append #$kbd "/bin/loadkeys")
+                                 #$file))))
+      (respawn? #f)))))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
   "Return a service that sets up Unicode support in @var{tty} and loads
@@ -836,10 +851,10 @@ gexp, to open it, and evaluate @var{close} to close it."
              (requirement `(udev ,@requirement))
              (documentation "Enable the given swap device.")
              (start #~(lambda ()
-                        (swapon #$device)
+                        (restart-on-EINTR (swapon #$device))
                         #t))
              (stop #~(lambda _
-                       (swapoff #$device)
+                       (restart-on-EINTR (swapoff #$device))
                        #f))
              (respawn? #f)))))
 

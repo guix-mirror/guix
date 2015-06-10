@@ -221,9 +221,10 @@ Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3.")
     (native-inputs
      `(("perl" ,perl) ; needed for installation
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("rasqal" ,rasqal))) ; in Requires.private field of .pc
     (inputs
-     `(("bdb" ,bdb)
-       ("rasqal" ,rasqal)))
+     `(("bdb" ,bdb)))
     (home-page "http://librdf.org/")
     (synopsis "RDF library")
     (description "The Redland RDF Library (librdf) provides the RDF API
@@ -317,7 +318,6 @@ ideal (e.g. in LV2 implementations or embedded applications).")
     (inputs
      `(("clucene" ,clucene)
        ("qt" ,qt-4)
-       ("rasqal" ,rasqal)
        ("redland" ,redland)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")

@@ -51,6 +51,10 @@ Publish ~a over HTTP.\n") %store-directory)
   (display (_ "
   -p, --port=PORT        listen on PORT"))
   (display (_ "
+      --listen=HOST      listen on the network interface for HOST"))
+  (display (_ "
+  -u, --user=USER        change privileges to USER as soon as possible"))
+  (display (_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
   (display (_ "
@@ -60,6 +64,15 @@ Publish ~a over HTTP.\n") %store-directory)
   (newline)
   (show-bug-report-information))
 
+(define (getaddrinfo* host)
+  "Like 'getaddrinfo', but properly report errors."
+  (catch 'getaddrinfo-error
+    (lambda ()
+      (getaddrinfo host))
+    (lambda (key error)
+      (leave (_ "lookup of host '~a' failed: ~a~%")
+             host (gai-strerror error)))))
+
 (define %options
   (list (option '(#\h "help") #f #f
                 (lambda _
@@ -68,9 +81,21 @@ Publish ~a over HTTP.\n") %store-directory)
         (option '(#\V "version") #f #f
                 (lambda _
                   (show-version-and-exit "guix publish")))
+        (option '(#\u "user") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'user arg result)))
         (option '(#\p "port") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'port (string->number* arg) result)))
+        (option '("listen") #t #f
+                (lambda (opt name arg result)
+                  (match (getaddrinfo* arg)
+                    ((info _ ...)
+                     (alist-cons 'address (addrinfo:addr info)
+                                 result))
+                    (()
+                     (leave (_ "lookup of host '~a' returned nothing")
+                            name)))))
         (option '(#\r "repl") #f #t
                 (lambda (opt name arg result)
                   ;; If port unspecified, use default Guile REPL port.
@@ -78,7 +103,8 @@ Publish ~a over HTTP.\n") %store-directory)
                     (alist-cons 'repl (or port 37146) result))))))
 
 (define %default-options
-  '((port . 8080)
+  `((port . 8080)
+    (address . ,(make-socket-address AF_INET INADDR_ANY 0))
     (repl . #f)))
 
 (define (lazy-read-file-sexp file)
@@ -220,24 +246,69 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
           (_ (not-found request)))
         (not-found request))))
 
-(define (run-publish-server port store)
+(define (run-publish-server socket store)
   (run-server (make-request-handler store)
               'http
-              `(#:addr ,INADDR_ANY
-                #:port ,port)))
+              `(#:socket ,socket)))
+
+(define (open-server-socket address)
+  "Return a TCP socket bound to ADDRESS, a socket address."
+  (let ((sock (socket (sockaddr:fam address) SOCK_STREAM 0)))
+    (setsockopt sock SOL_SOCKET SO_REUSEADDR 1)
+    (bind sock address)
+    sock))
+
+(define (gather-user-privileges user)
+  "Switch to the identity of USER, a user name."
+  (catch 'misc-error
+    (lambda ()
+      (let ((user (getpw user)))
+        (setgroups #())
+        (setgid (passwd:gid user))
+        (setuid (passwd:uid user))))
+    (lambda (key proc message args . rest)
+      (leave (_ "user '~a' not found: ~a~%")
+             user (apply format #f message args)))))
+
+
+;;;
+;;; Entry point.
+;;;
 
 (define (guix-publish . args)
   (with-error-handling
-    (let* ((opts (args-fold* args %options
-                             (lambda (opt name arg result)
-                               (leave (_ "~A: unrecognized option~%") name))
-                             (lambda (arg result)
-                               (leave (_ "~A: extraneuous argument~%") arg))
-                             %default-options))
-           (port (assoc-ref opts 'port))
+    (let* ((opts    (args-fold* args %options
+                                (lambda (opt name arg result)
+                                  (leave (_ "~A: unrecognized option~%") name))
+                                (lambda (arg result)
+                                  (leave (_ "~A: extraneuous argument~%") arg))
+                                %default-options))
+           (user    (assoc-ref opts 'user))
+           (port    (assoc-ref opts 'port))
+           (address (let ((addr (assoc-ref opts 'address)))
+                      (make-socket-address (sockaddr:fam addr)
+                                           (sockaddr:addr addr)
+                                           port)))
+           (socket  (open-server-socket address))
            (repl-port (assoc-ref opts 'repl)))
-      (format #t (_ "publishing ~a on port ~d~%") %store-directory port)
+      ;; Read the key right away so that (1) we fail early on if we can't
+      ;; access them, and (2) we can then drop privileges.
+      (force %private-key)
+      (force %public-key)
+
+      (when user
+        ;; Now that we've read the key material and opened the socket, we can
+        ;; drop privileges.
+        (gather-user-privileges user))
+
+      (when (zero? (getuid))
+        (warning (_ "server running as root; \
+consider using the '--user' option!~%")))
+      (format #t (_ "publishing ~a on ~a, port ~d~%")
+              %store-directory
+              (inet-ntop (sockaddr:fam address) (sockaddr:addr address))
+              (sockaddr:port address))
       (when repl-port
         (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
       (with-store store
-        (run-publish-server (assoc-ref opts 'port) store)))))
+        (run-publish-server socket store)))))

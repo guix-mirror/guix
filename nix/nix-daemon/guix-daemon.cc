@@ -33,6 +33,9 @@
 #include <strings.h>
 #include <exception>
 
+#include <libintl.h>
+#include <locale.h>
+
 /* Variables used by `nix-daemon.cc'.  */
 volatile ::sig_atomic_t blockInt;
 char **argvSaved;
@@ -45,16 +48,21 @@ extern void run (Strings args);
 
 /* Command-line options.  */
 
+#define n_(str)  str
+#define _(str)   gettext (str)
+static const char guix_textdomain[] = "guix";
+
+
 const char *argp_program_version =
   "guix-daemon (" PACKAGE_NAME ") " PACKAGE_VERSION;
 const char *argp_program_bug_address = PACKAGE_BUGREPORT;
 
 static char doc[] =
-"guix-daemon -- perform derivation builds and store accesses\
-\v\
-This program is a daemon meant to run in the background.  It serves \
+  n_("guix-daemon -- perform derivation builds and store accesses")
+  "\v\n"
+  n_("This program is a daemon meant to run in the background.  It serves \
 requests sent over a Unix-domain socket.  It accesses the store, and \
-builds derivations on behalf of its clients.";
+builds derivations on behalf of its clients.");
 
 #define GUIX_OPT_SYSTEM 1
 #define GUIX_OPT_DISABLE_CHROOT 2
@@ -75,56 +83,59 @@ builds derivations on behalf of its clients.";
 
 static const struct argp_option options[] =
   {
-    { "system", GUIX_OPT_SYSTEM, "SYSTEM", 0,
-      "Assume SYSTEM as the current system type" },
-    { "cores", 'c', "N", 0,
-      "Use N CPU cores to build each derivation; 0 means as many as available" },
-    { "max-jobs", 'M', "N", 0,
-      "Allow at most N build jobs" },
+    { "system", GUIX_OPT_SYSTEM, n_("SYSTEM"), 0,
+      n_("assume SYSTEM as the current system type") },
+    { "cores", 'c', n_("N"), 0,
+      n_("use N CPU cores to build each derivation; 0 means as many as available")
+    },
+    { "max-jobs", 'M', n_("N"), 0,
+      n_("allow at most N build jobs") },
     { "disable-chroot", GUIX_OPT_DISABLE_CHROOT, 0, 0,
-      "Disable chroot builds" },
-    { "chroot-directory", GUIX_OPT_CHROOT_DIR, "DIR", 0,
-      "Add DIR to the build chroot" },
-    { "build-users-group", GUIX_OPT_BUILD_USERS_GROUP, "GROUP", 0,
-      "Perform builds as a user of GROUP" },
+      n_("disable chroot builds") },
+    { "chroot-directory", GUIX_OPT_CHROOT_DIR, n_("DIR"), 0,
+      n_("add DIR to the build chroot") },
+    { "build-users-group", GUIX_OPT_BUILD_USERS_GROUP, n_("GROUP"), 0,
+      n_("perform builds as a user of GROUP") },
     { "no-substitutes", GUIX_OPT_NO_SUBSTITUTES, 0, 0,
-      "Do not use substitutes" },
-    { "substitute-urls", GUIX_OPT_SUBSTITUTE_URLS, "URLS", 0,
-      "Use URLS as the default list of substitute providers" },
+      n_("do not use substitutes") },
+    { "substitute-urls", GUIX_OPT_SUBSTITUTE_URLS, n_("URLS"), 0,
+      n_("use URLS as the default list of substitute providers") },
     { "no-build-hook", GUIX_OPT_NO_BUILD_HOOK, 0, 0,
-      "Do not use the 'build hook'" },
+      n_("do not use the 'build hook'") },
     { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
-      "Cache build failures" },
+      n_("cache build failures") },
     { "lose-logs", GUIX_OPT_LOSE_LOGS, 0, 0,
-      "Do not keep build logs" },
+      n_("do not keep build logs") },
     { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0, 0,
-      "Disable compression of the build logs" },
+      n_("disable compression of the build logs") },
 
     /* '--disable-deduplication' was known as '--disable-store-optimization'
        up to Guix 0.7 included, so keep the alias around.  */
     { "disable-deduplication", GUIX_OPT_DISABLE_DEDUPLICATION, 0, 0,
-      "Disable automatic file \"deduplication\" in the store" },
+      n_("disable automatic file \"deduplication\" in the store") },
     { "disable-store-optimization", GUIX_OPT_DISABLE_DEDUPLICATION, 0,
       OPTION_ALIAS | OPTION_HIDDEN, NULL },
 
-    { "impersonate-linux-2.6", GUIX_OPT_IMPERSONATE_LINUX_26, 0, 0,
-      "Impersonate Linux 2.6"
-#ifndef HAVE_SYS_PERSONALITY_H
-      " (this option has no effect in this configuration)"
+    { "impersonate-linux-2.6", GUIX_OPT_IMPERSONATE_LINUX_26, 0,
+#ifdef HAVE_SYS_PERSONALITY_H
+      0,
+#else
+      OPTION_HIDDEN,
 #endif
+      n_("impersonate Linux 2.6")
     },
     { "gc-keep-outputs", GUIX_OPT_GC_KEEP_OUTPUTS,
       "yes/no", OPTION_ARG_OPTIONAL,
-      "Tell whether the GC must keep outputs of live derivations" },
+      n_("tell whether the GC must keep outputs of live derivations") },
     { "gc-keep-derivations", GUIX_OPT_GC_KEEP_DERIVATIONS,
       "yes/no", OPTION_ARG_OPTIONAL,
-      "Tell whether the GC must keep derivations corresponding \
-to live outputs" },
+      n_("tell whether the GC must keep derivations corresponding \
+to live outputs") },
 
-    { "listen", GUIX_OPT_LISTEN, "SOCKET", 0,
-      "Listen for connections on SOCKET" },
+    { "listen", GUIX_OPT_LISTEN, n_("SOCKET"), 0,
+      n_("listen for connections on SOCKET") },
     { "debug", GUIX_OPT_DEBUG, 0, 0,
-      "Produce debugging output" },
+      n_("produce debugging output") },
     { 0, 0, 0, 0, 0 }
   };
 
@@ -154,8 +165,18 @@ parse_opt (int key, char *arg, struct argp_state *state)
       settings.useChroot = false;
       break;
     case GUIX_OPT_CHROOT_DIR:
-      settings.dirsInChroot.insert (arg);
-      break;
+      {
+	std::string chroot_dirs;
+
+	chroot_dirs = settings.get ("build-extra-chroot-dirs",
+				    (std::string) "");
+	if (chroot_dirs == "")
+	  chroot_dirs = arg;
+	else
+	  chroot_dirs = chroot_dirs + " " + arg;
+	settings.set("build-extra-chroot-dirs", chroot_dirs);
+	break;
+      }
     case GUIX_OPT_DISABLE_LOG_COMPRESSION:
       settings.compressLog = false;
       break;
@@ -181,7 +202,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	}
       catch (std::exception &e)
 	{
-	  fprintf (stderr, "error: %s\n", e.what ());
+	  fprintf (stderr, _("error: %s\n"), e.what ());
 	  exit (EXIT_FAILURE);
 	}
       break;
@@ -220,19 +241,29 @@ parse_opt (int key, char *arg, struct argp_state *state)
 }
 
 /* Argument parsing.  */
-static struct argp argp = { options, parse_opt, 0, doc };
+static const struct argp argp =
+  {
+    options, parse_opt,
+    NULL, doc,
+    NULL, NULL,					  // children and help_filter
+    guix_textdomain
+  };
 
 
 
 int
 main (int argc, char *argv[])
 {
-  Strings nothing;
+  static const Strings nothing;
+
+  setlocale (LC_ALL, "");
+  bindtextdomain (guix_textdomain, LOCALEDIR);
+  textdomain (guix_textdomain);
 
   /* Initialize libgcrypt.  */
   if (!gcry_check_version (GCRYPT_VERSION))
     {
-      fprintf (stderr, "error: libgcrypt version mismatch\n");
+      fprintf (stderr, _("error: libgcrypt version mismatch\n"));
       exit (EXIT_FAILURE);
     }
 
@@ -323,16 +354,17 @@ main (int argc, char *argv[])
       settings.update ();
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
-	fprintf (stderr, "warning: daemon is running as root, so "
-		 "using `--build-users-group' is highly recommended\n");
+	fprintf (stderr, _("warning: daemon is running as root, so \
+using `--build-users-group' is highly recommended\n"));
 
       if (settings.useChroot)
 	{
-	  foreach (PathSet::iterator, i, settings.dirsInChroot)
-	    {
-	      printMsg (lvlDebug,
-			format ("directory `%1%' added to the chroot") % *i);
-	    }
+	  std::string chroot_dirs;
+
+	  chroot_dirs = settings.get ("build-extra-chroot-dirs",
+				      (std::string) "");
+	  printMsg (lvlDebug,
+		    format ("extra chroot directories: '%1%'") % chroot_dirs);
 	}
 
       printMsg (lvlDebug,
@@ -346,7 +378,7 @@ main (int argc, char *argv[])
     }
   catch (std::exception &e)
     {
-      fprintf (stderr, "error: %s\n", e.what ());
+      fprintf (stderr, _("error: %s\n"), e.what ());
       return EXIT_FAILURE;
     }
 

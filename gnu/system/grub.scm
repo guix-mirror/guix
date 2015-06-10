@@ -80,7 +80,8 @@
 (define %background-image
   (grub-image
    (aspect-ratio 4/3)
-   (file #~(string-append #$%artwork-repository "/grub/GuixSD-4-3.svg"))))
+   (file #~(string-append #$%artwork-repository
+                          "/grub/GuixSD-fully-black-4-3.svg"))))
 
 (define %default-theme
   ;; Default theme contributed by Felipe López.

@@ -783,16 +783,26 @@ COREUTILS-FINAL vs. COREUTILS, etc."
      '(#:modules ((guix build union))
        #:builder (begin
                    (use-modules (ice-9 match)
+                                (srfi srfi-26)
                                 (guix build union))
 
-                   (match %build-inputs
-                     (((names . directories) ...)
-                      (union-build (assoc-ref %outputs "out")
-                                   directories)))
+                   (let ((out (assoc-ref %outputs "out")))
 
-                   (union-build (assoc-ref %outputs "debug")
-                                (list (assoc-ref %build-inputs
-                                                 "libc-debug"))))))
+                     (match %build-inputs
+                       (((names . directories) ...)
+                        (union-build out directories)))
+
+                     ;; Remove the 'sh' and 'bash' binaries that come with
+                     ;; libc to avoid polluting the user's profile (these are
+                     ;; statically-linked binaries with no locale support and
+                     ;; so on.)
+                     (for-each (lambda (file)
+                                 (delete-file (string-append out "/bin/" file)))
+                               '("sh" "bash"))
+
+                     (union-build (assoc-ref %outputs "debug")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-debug")))))))
 
     (native-search-paths (package-native-search-paths gcc))
     (search-paths (package-search-paths gcc))

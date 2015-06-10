@@ -86,6 +86,7 @@ rather than \\n."
 Run IMPORTER with ARGS.\n"))
   (newline)
   (display (_ "IMPORTER must be one of the importers listed below:\n"))
+  (newline)
   (format #t "~{   ~a~%~}" importers)
   (display (_ "
   -h, --help             display this help and exit"))

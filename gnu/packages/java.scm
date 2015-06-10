@@ -250,6 +250,11 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ;; gremlin) doesn't support it yet, so skip this phase.
        #:validate-runpath? #f
 
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
+
        #:configure-flags
        (let* ((gcjdir (assoc-ref %build-inputs "gcj"))
               (ecj    (string-append gcjdir "/share/java/ecj.jar"))
@@ -378,9 +383,16 @@ build process and its dependencies, whereas Make uses Makefile format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((gcjdir  (assoc-ref %build-inputs "gcj"))
                     (gcjlib  (string-append gcjdir "/lib"))
-                    (antpath (string-append (getcwd) "/../apache-ant-1.9.4")))
+                    (antpath (string-append (getcwd) "/../apache-ant-1.9.4"))
+                    ;; Get target-specific include directory so that
+                    ;; libgcj-config.h is found when compiling hotspot.
+                    (gcjinclude (let* ((port (open-input-pipe "gcj -print-file-name=include"))
+                                       (str  (read-line port)))
+                                  (close-pipe port)
+                                  str)))
                (setenv "CPATH"
-                       (string-append (assoc-ref %build-inputs "libxrender")
+                       (string-append gcjinclude ":"
+                                      (assoc-ref %build-inputs "libxrender")
                                       "/include/X11/extensions" ":"
                                       (assoc-ref %build-inputs "libxtst")
                                       "/include/X11/extensions" ":"

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system waf)
@@ -128,7 +130,23 @@ attacks, performing pitch detection, tapping the beat and producing MIDI
 streams from live audio.")
     (license license:gpl3+)))
 
-(define-public ardour
+(define (ardour-rpath-phase major-version)
+  `(lambda* (#:key outputs #:allow-other-keys)
+     (let ((libdir (string-append (assoc-ref outputs "out")
+                                  "/lib/ardour" ,major-version)))
+       (substitute* "wscript"
+         (("linker_flags = \\[\\]")
+          (string-append "linker_flags = [\""
+                         "-Wl,-rpath="
+                         libdir ":"
+                         libdir "/backends" ":"
+                         libdir "/engines" ":"
+                         libdir "/panners" ":"
+                         libdir "/surfaces" ":"
+                         libdir "/vamp" "\"]"))))
+     #t))
+
+(define-public ardour-3
   (package
     (name "ardour")
     (version "3.5.403")
@@ -140,6 +158,9 @@ streams from live audio.")
                     (url "git://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
+               ;; Ardour expects this file to exist at build time.  It can be
+               ;; created from a git checkout with:
+               ;;   ./waf create_stored_revision
                '(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
@@ -151,7 +172,12 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'set-rpath-in-LDFLAGS
+          ,(ardour-rpath-phase (version-prefix version 1))))
+       #:tests? #f ; no check target
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -183,8 +209,6 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
        ("sratom" ,sratom)
        ("suil" ,suil)
        ("lilv" ,lilv)
-       ("rasqal" ,rasqal)
-       ("raptor2" ,raptor2)
        ("redland" ,redland)
        ("rubberband" ,rubberband)
        ("taglib" ,taglib)
@@ -199,6 +223,35 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
 record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
+
+(define-public ardour
+  (package (inherit ardour-3)
+    (name "ardour")
+    (version "4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.ardour.org/ardour/ardour.git")
+                    (commit version)))
+              (snippet
+               ;; Ardour expects this file to exist at build time.  It can be
+               ;; created from a git checkout with:
+               ;;   ./waf create_stored_revision
+               '(call-with-output-file
+                    "libs/ardour/revision.cc"
+                  (lambda (port)
+                    (format port "#include \"ardour/revision.h\"
+namespace ARDOUR { const char* revision = \"4.0\" ; }"))))
+              (sha256
+               (base32
+                "0a8bydc24xv0cahdqfaxdmi1f43cyr9psiyshxpbrkdqw2c7a4xi"))
+              (file-name (string-append name "-" version))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ardour-3)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'set-rpath-in-LDFLAGS
+                    ,(ardour-rpath-phase (version-prefix version 1)))))))))
 
 (define-public azr3
   (package
@@ -464,6 +517,46 @@ PS, and DAB+.")
      "FreePats is a project to create a free and open set of GUS compatible
 patches that can be used with softsynths such as Timidity and WildMidi.")
     ;; GPLv2+ with exception for compositions using these patches.
+    (license license:gpl2+)))
+
+(define-public ir
+  (package
+    (name "ir")
+    (version "1.3.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://factorial.hu/system/files/ir.lv2-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1jh2z01l9m4ar7yz0n911df07dygc7n4cl59p7qdjbh0nvkm747g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       ;; no configure script
+       (alist-delete 'configure %standard-phases)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("lv2" ,lv2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://factorial.hu/plugins/lv2/ir")
+    (synopsis "LV2 convolution reverb")
+    (description
+     "IR is a low-latency, real-time, high performance signal convolver
+especially for creating reverb effects.  It supports impulse responses with 1,
+2 or 4 channels, in any soundfile format supported by libsndfile.")
     (license license:gpl2+)))
 
 (define-public jack-1
@@ -898,10 +991,8 @@ buffers, and audio capture.")
        ("boost" ,boost)
        ("jack" ,jack-1)
        ("ganv" ,ganv)
-       ("glib" ,glib)
        ("glibmm" ,glibmm)
        ("gtkmm" ,gtkmm-2)
-       ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1384,6 +1475,48 @@ interface.")
      "RSound allows you to send audio from an application and transfer it
 directly to a different computer on your LAN network.  It is an audio daemon
 with a much different focus than most other audio daemons.")
+    (license license:gpl3+)))
+
+(define-public zita-convolver
+  (package
+    (name "zita-convolver")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-convolver-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (alist-cons-after
+        'unpack 'patch-makefile-and-enter-directory
+        (lambda _
+          (substitute* "libs/Makefile"
+            (("ldconfig") "true")
+            (("^LIBDIR =.*") "LIBDIR = lib\n"))
+          (chdir "libs") #t)
+        (alist-cons-after
+         'install
+         'install-symlink
+         (lambda _
+           (symlink "libzita-convolver.so"
+                    (string-append (assoc-ref %outputs "out")
+                                   "/lib/libzita-convolver.so.3")))
+         ;; no configure script
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("fftwf" ,fftwf)))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "Fast, partitioned convolution engine library")
+    (description
+     "Zita convolver is a C++ library providing a real-time convolution
+engine.")
     (license license:gpl3+)))
 
 (define-public zita-alsa-pcmi

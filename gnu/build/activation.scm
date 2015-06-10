@@ -78,6 +78,11 @@
 (define (dot-or-dot-dot? file)
   (member file '("." "..")))
 
+(define (make-file-writable file)
+  "Make FILE writable for its owner.."
+  (let ((stat (lstat file)))                      ;XXX: symlinks
+    (chmod file (logior #o600 (stat:perms stat)))))
+
 (define* (copy-account-skeletons home
                                  #:optional (directory %skeleton-directory))
   "Copy the account skeletons from DIRECTORY to HOME."
@@ -85,8 +90,21 @@
                         string<?)))
     (mkdir-p home)
     (for-each (lambda (file)
-                (copy-file (string-append directory "/" file)
-                           (string-append home "/" file)))
+                (let ((target (string-append home "/" file)))
+                  (copy-file (string-append directory "/" file) target)
+                  (make-file-writable target)))
+              files)))
+
+(define* (make-skeletons-writable home
+                                  #:optional (directory %skeleton-directory))
+  "Make sure that the files that have been copied from DIRECTORY to HOME are
+owner-writable in HOME."
+  (let ((files (scandir directory (negate dot-or-dot-dot?)
+                        string<?)))
+    (for-each (lambda (file)
+                (let ((target (string-append home "/" file)))
+                  (when (file-exists? target)
+                    (make-file-writable target))))
               files)))
 
 (define* (add-user name group
@@ -128,7 +146,14 @@ properties.  Return #t on success."
                     ,@(if password `("-p" ,password) '())
                     ,@(if system? '("--system") '())
                     ,name)))
-        (zero? (apply system* "useradd" args)))))
+        (and (zero? (apply system* "useradd" args))
+             (begin
+               ;; Since /etc/skel is a link to a directory in the store where
+               ;; all files have the writable bit cleared, and since 'useradd'
+               ;; preserves permissions when it copies them, explicitly make
+               ;; them writable.
+               (make-skeletons-writable home)
+               #t)))))
 
 (define* (modify-user name group
                       #:key uid comment home shell password system?
@@ -344,9 +369,11 @@ found in Linux 3.4 onward that prevents users from attaching to their own
 processes--see Yama.txt in the Linux source tree for the rationale.  This
 sounds like an unacceptable restriction for little or no security
 improvement."
-  (call-with-output-file "/proc/sys/kernel/yama/ptrace_scope"
-    (lambda (port)
-      (display 0 port))))
+  (let ((file "/proc/sys/kernel/yama/ptrace_scope"))
+    (when (file-exists? file)
+      (call-with-output-file file
+        (lambda (port)
+          (display 0 port))))))
 
 
 (define %current-system

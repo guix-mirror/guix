@@ -7,6 +7,8 @@
 #include "affinity.hh"
 #include "globals.hh"
 
+#include <algorithm>
+
 #include <cstring>
 #include <unistd.h>
 #include <signal.h>
@@ -17,6 +19,8 @@
 #include <sys/un.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <pwd.h>
+#include <grp.h>
 
 using namespace nix;
 
@@ -44,7 +48,6 @@ static FdSource from(STDIN_FILENO);
 static FdSink to(STDOUT_FILENO);
 
 bool canSendStderr;
-pid_t myPid;
 
 
 
@@ -54,11 +57,7 @@ pid_t myPid;
    socket. */
 static void tunnelStderr(const unsigned char * buf, size_t count)
 {
-    /* Don't send the message to the client if we're a child of the
-       process handling the connection.  Otherwise we could screw up
-       the protocol.  It's up to the parent to redirect stderr and
-       send it to the client somehow (e.g., as in build.cc). */
-    if (canSendStderr && myPid == getpid()) {
+    if (canSendStderr) {
         try {
             writeInt(STDERR_NEXT, to);
             writeString(buf, count, to);
@@ -284,15 +283,6 @@ static void performOp(bool trusted, unsigned int clientVersion,
 {
     switch (op) {
 
-#if 0
-    case wopQuit: {
-        /* Close the database. */
-        store.reset((StoreAPI *) 0);
-        writeInt(1, to);
-        break;
-    }
-#endif
-
     case wopIsValidPath: {
         /* 'readStorePath' could raise an error leading to the connection
            being closed.  To be able to recover from an invalid path error,
@@ -450,6 +440,9 @@ static void performOp(bool trusted, unsigned int clientVersion,
     case wopImportPaths: {
         startWork();
         TunnelSource source(from);
+
+	/* Unlike Nix, always require a signature, even for "trusted"
+	   users.  */
         Paths paths = store->importPaths(true, source);
         stopWork();
         writeStrings(paths, to);
@@ -650,6 +643,25 @@ static void performOp(bool trusted, unsigned int clientVersion,
         break;
     }
 
+    case wopOptimiseStore:
+        startWork();
+        store->optimiseStore();
+        stopWork();
+        writeInt(1, to);
+        break;
+
+    case wopVerifyStore: {
+        bool checkContents = readInt(from) != 0;
+        bool repair = readInt(from) != 0;
+        startWork();
+        if (repair && !trusted)
+            throw Error("you are not privileged to repair paths");
+        bool errors = store->verifyStore(checkContents, repair);
+        stopWork();
+        writeInt(errors, to);
+        break;
+    }
+
     default:
         throw Error(format("invalid operation %1%") % op);
     }
@@ -659,7 +671,6 @@ static void performOp(bool trusted, unsigned int clientVersion,
 static void processConnection(bool trusted)
 {
     canSendStderr = false;
-    myPid = getpid();
     _writeToStderr = tunnelStderr;
 
 #ifdef HAVE_HUP_NOTIFICATION
@@ -708,7 +719,7 @@ static void processConnection(bool trusted)
         to.flush();
 
     } catch (Error & e) {
-        stopWork(false, e.msg());
+        stopWork(false, e.msg(), GET_PROTOCOL_MINOR(clientVersion) >= 8 ? 1 : 0);
         to.flush();
         return;
     }
@@ -735,12 +746,10 @@ static void processConnection(bool trusted)
                during addTextToStore() / importPath().  If that
                happens, just send the error message and exit. */
             bool errorAllowed = canSendStderr;
-            if (!errorAllowed) printMsg(lvlError, format("error processing client input: %1%") % e.msg());
             stopWork(false, e.msg(), GET_PROTOCOL_MINOR(clientVersion) >= 8 ? e.status : 0);
-            if (!errorAllowed) break;
+            if (!errorAllowed) throw;
         } catch (std::bad_alloc & e) {
-            if (canSendStderr)
-                stopWork(false, "Nix daemon out of memory", GET_PROTOCOL_MINOR(clientVersion) >= 8 ? 1 : 0);
+            stopWork(false, "Nix daemon out of memory", GET_PROTOCOL_MINOR(clientVersion) >= 8 ? 1 : 0);
             throw;
         }
 
@@ -749,7 +758,9 @@ static void processConnection(bool trusted)
         assert(!canSendStderr);
     };
 
-    printMsg(lvlError, format("%1% operations") % opCount);
+    canSendStderr = false;
+    _isInterrupted = false;
+    printMsg(lvlDebug, format("%1% operations") % opCount);
 }
 
 
@@ -771,11 +782,35 @@ static void setSigChldAction(bool autoReap)
 }
 
 
+bool matchUser(const string & user, const string & group, const Strings & users)
+{
+    if (find(users.begin(), users.end(), "*") != users.end())
+        return true;
+
+    if (find(users.begin(), users.end(), user) != users.end())
+        return true;
+
+    for (auto & i : users)
+        if (string(i, 0, 1) == "@") {
+            if (group == string(i, 1)) return true;
+            struct group * gr = getgrnam(i.c_str() + 1);
+            if (!gr) continue;
+            for (char * * mem = gr->gr_mem; *mem; mem++)
+                if (user == string(*mem)) return true;
+        }
+
+    return false;
+}
+
+
 #define SD_LISTEN_FDS_START 3
 
 
 static void daemonLoop()
 {
+    if (chdir("/") == -1)
+        throw SysError("cannot change current directory");
+
     /* Get rid of children automatically; don't let them become
        zombies. */
     setSigChldAction(true);
@@ -804,7 +839,8 @@ static void daemonLoop()
         /* Urgh, sockaddr_un allows path names of only 108 characters.
            So chdir to the socket directory so that we can pass a
            relative path name. */
-        chdir(dirOf(socketPath).c_str());
+        if (chdir(dirOf(socketPath).c_str()) == -1)
+            throw SysError("cannot change current directory");
         Path socketPathRel = "./" + baseNameOf(socketPath);
 
         struct sockaddr_un addr;
@@ -824,7 +860,8 @@ static void daemonLoop()
         if (res == -1)
             throw SysError(format("cannot bind to socket `%1%'") % socketPath);
 
-        chdir("/"); /* back to the root */
+        if (chdir("/") == -1) /* back to the root */
+            throw SysError("cannot change current directory");
 
         if (listen(fdSocket, 5) == -1)
             throw SysError(format("cannot listen on socket `%1%'") % socketPath);
@@ -856,58 +893,61 @@ static void daemonLoop()
 
             closeOnExec(remote);
 
-            /* Get the identity of the caller, if possible. */
-            uid_t clientUid = -1;
-            pid_t clientPid = -1;
             bool trusted = false;
+            pid_t clientPid = -1;
 
 #if defined(SO_PEERCRED)
+            /* Get the identity of the caller, if possible. */
             ucred cred;
             socklen_t credLen = sizeof(cred);
-            if (getsockopt(remote, SOL_SOCKET, SO_PEERCRED, &cred, &credLen) != -1) {
-                clientPid = cred.pid;
-                clientUid = cred.uid;
-                if (clientUid == 0) trusted = true;
-            }
+            if (getsockopt(remote, SOL_SOCKET, SO_PEERCRED, &cred, &credLen) == -1)
+                throw SysError("getting peer credentials");
+
+            clientPid = cred.pid;
+
+            struct passwd * pw = getpwuid(cred.uid);
+            string user = pw ? pw->pw_name : int2String(cred.uid);
+
+            struct group * gr = getgrgid(cred.gid);
+            string group = gr ? gr->gr_name : int2String(cred.gid);
+
+            Strings trustedUsers = settings.get("trusted-users", Strings({"root"}));
+            Strings allowedUsers = settings.get("allowed-users", Strings({"*"}));
+
+            if (matchUser(user, group, trustedUsers))
+                trusted = true;
+
+            if (!trusted && !matchUser(user, group, allowedUsers))
+                throw Error(format("user `%1%' is not allowed to connect to the Nix daemon") % user);
+
+            printMsg(lvlInfo, format((string) "accepted connection from pid %1%, user %2%"
+                    + (trusted ? " (trusted)" : "")) % clientPid % user);
 #endif
 
-            printMsg(lvlInfo, format("accepted connection from pid %1%, uid %2%") % clientPid % clientUid);
-
             /* Fork a child to handle the connection. */
-            pid_t child;
-            child = fork();
+            startProcess([&]() {
+                fdSocket.close();
 
-            switch (child) {
+                /* Background the daemon. */
+                if (setsid() == -1)
+                    throw SysError(format("creating a new session"));
 
-            case -1:
-                throw SysError("unable to fork");
+                /* Restore normal handling of SIGCHLD. */
+                setSigChldAction(false);
 
-            case 0:
-                try { /* child */
-
-                    /* Background the daemon. */
-                    if (setsid() == -1)
-                        throw SysError(format("creating a new session"));
-
-                    /* Restore normal handling of SIGCHLD. */
-                    setSigChldAction(false);
-
-                    /* For debugging, stuff the pid into argv[1]. */
-                    if (clientPid != -1 && argvSaved[1]) {
-                        string processName = int2String(clientPid);
-                        strncpy(argvSaved[1], processName.c_str(), strlen(argvSaved[1]));
-                    }
-
-                    /* Handle the connection. */
-                    from.fd = remote;
-                    to.fd = remote;
-                    processConnection(trusted);
-
-                } catch (std::exception & e) {
-                    writeToStderr("unexpected Nix daemon error: " + string(e.what()) + "\n");
+                /* For debugging, stuff the pid into argv[1]. */
+                if (clientPid != -1 && argvSaved[1]) {
+                    string processName = int2String(clientPid);
+                    strncpy(argvSaved[1], processName.c_str(), strlen(argvSaved[1]));
                 }
+
+                /* Handle the connection. */
+                from.fd = remote;
+                to.fd = remote;
+                processConnection(trusted);
+
                 exit(0);
-            }
+            }, false, "unexpected Nix daemon error: ", true);
 
         } catch (Interrupted & e) {
             throw;
@@ -925,7 +965,6 @@ void run(Strings args)
         if (arg == "--daemon") /* ignored for backwards compatibility */;
     }
 
-    chdir("/");
     daemonLoop();
 }
 

@@ -38,17 +38,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.41.0")
+   (version "7.42.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "08n7vrhdfzziy3a7n93r7qjhzk8p26q464hxg8w9irdk3v60pi62"))
-            (patches
-             (list (search-patch "curl-support-capath-on-gnutls.patch")
-                   (search-patch "curl-support-capath-on-gnutls-conf.patch")))))
+              "0ircrhi4i9iviq0d9044rq288sdrww19d0ci6vmb4fh8nmm1jv1x"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)

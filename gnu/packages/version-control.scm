@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,6 +49,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -536,29 +537,20 @@ WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
 property manipulation.")
     (license gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
-(define-public neon-0.29.6
-  (package (inherit neon)
-    (name "neon")
-    (version "0.29.6")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://www.webdav.org/neon/neon-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0hzbjqdx1z8zw0vmbknf159wjsxbcq8ii0wgwkqhxj3dimr0nr4w"))))))
-
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.7.18")
+    (version "1.8.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "06nrqnn3qq1hhskkcdbm0ilk2xv6ay2gyf2c7qvxp6xncb782wzn"))))
+               "0ybmc0yq83jhblp42wdqvn2cryra3sypx8mkxn5b8lq7hilcr68h"))
+             (patches
+              (list (search-patch "subversion-sqlite-3.8.9-fix.patch")))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -574,7 +566,7 @@ property manipulation.")
                      (substitute* "libtool"
                        (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))))
                  (alist-cons-after
-                  'install 'instal-perl-bindings
+                  'install 'install-perl-bindings
                   (lambda* (#:key outputs #:allow-other-keys)
                     ;; Follow the instructions from
                     ;; 'subversion/bindings/swig/INSTALL'.
@@ -603,7 +595,7 @@ property manipulation.")
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
-        ("neon" ,neon-0.29.6)
+        ("serf" ,serf)
         ("perl" ,perl)
         ("python" ,python-2) ; incompatible with Python 3 (print syntax)
         ("sqlite" ,sqlite)

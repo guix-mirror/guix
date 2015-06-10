@@ -35,6 +35,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-31)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
@@ -42,19 +43,22 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
-  #:replace (symlink)
+  #:autoload   (system repl repl)  (start-repl)
+  #:autoload   (system repl debug) (make-debug stack->vector)
   #:export (_
             N_
             P_
             report-error
             leave
-            report-load-error
+            make-user-module
+            load*
             warn-about-load-error
             show-version-and-exit
             show-bug-report-information
             string->number*
             size->number
             show-what-to-build
+            show-what-to-build*
             show-manifest-transaction
             call-with-error-handling
             with-error-handling
@@ -133,22 +137,102 @@ messages."
     (report-error args ...)
     (exit 1)))
 
-(define (report-load-error file args)
-  "Report the failure to load FILE, a user-provided Scheme file, and exit.
+(define (make-user-module modules)
+  "Return a new user module with the additional MODULES loaded."
+  ;; Module in which the machine description file is loaded.
+  (let ((module (make-fresh-user-module)))
+    (for-each (lambda (iface)
+                (module-use! module (resolve-interface iface)))
+              modules)
+    module))
+
+(define* (load* file user-module
+                #:key (on-error 'nothing-special))
+  "Load the user provided Scheme source code FILE."
+  (define (frame-with-source frame)
+    ;; Walk from FRAME upwards until source location information is found.
+    (let loop ((frame    frame)
+               (previous frame))
+      (if (not frame)
+          previous
+          (if (frame-source frame)
+              frame
+              (loop (frame-previous frame) frame)))))
+
+  (define (error-string frame args)
+    (call-with-output-string
+     (lambda (port)
+       (apply display-error frame port (cdr args)))))
+
+  (define tag
+    (make-prompt-tag "user-code"))
+
+  (catch #t
+    (lambda ()
+      ;; XXX: Force a recompilation to avoid ABI issues.
+      (set! %fresh-auto-compile #t)
+      (set! %load-should-auto-compile #t)
+
+      (save-module-excursion
+       (lambda ()
+         (set-current-module user-module)
+
+         ;; Hide the "auto-compiling" messages.
+         (parameterize ((current-warning-port (%make-void-port "w")))
+           (call-with-prompt tag
+             (lambda ()
+               ;; Give 'load' an absolute file name so that it doesn't try to
+               ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
+               ;; 'primitive-load', so that FILE is compiled, which then allows us
+               ;; to provide better error reporting with source line numbers.
+               (load (canonicalize-path file)))
+             (const #f))))))
+    (lambda _
+      ;; XXX: Errors are reported from the pre-unwind handler below, but
+      ;; calling 'exit' from there has no effect, so we call it here.
+      (exit 1))
+    (rec (handle-error . args)
+         ;; Capture the stack up to this procedure call, excluded, and pass
+         ;; the faulty stack frame to 'report-load-error'.
+         (let* ((stack (make-stack #t handle-error tag))
+                (depth (stack-length stack))
+                (last  (and (> depth 0) (stack-ref stack 0)))
+                (frame (frame-with-source
+                        (if (> depth 1)
+                            (stack-ref stack 1)   ;skip the 'throw' frame
+                            last))))
+
+           (report-load-error file args frame)
+
+           (case on-error
+             ((debug)
+              (newline)
+              (display (_ "entering debugger; type ',bt' for a backtrace\n"))
+              (start-repl #:debug (make-debug (stack->vector stack) 0
+                                              (error-string frame args)
+                                              #f)))
+             ((backtrace)
+              (newline (current-error-port))
+              (display-backtrace stack (current-error-port)))
+             (else
+              #t))))))
+
+(define* (report-load-error file args #:optional frame)
+  "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
   (match args
     (('system-error . _)
      (let ((err (system-error-errno args)))
-       (leave (_ "failed to load '~a': ~a~%") file (strerror err))))
+       (report-error (_ "failed to load '~a': ~a~%") file (strerror err))))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (_ "~a: error: ~a~%")
-               (location->string loc) message)
-       (exit 1)))
+               (location->string loc) message)))
+    (('srfi-34 obj)
+     (report-error (_ "exception thrown: ~s~%") obj))
     ((error args ...)
      (report-error (_ "failed to load '~a':~%") file)
-     (apply display-error #f (current-error-port) args)
-     (exit 1))))
+     (apply display-error frame (current-error-port) args))))
 
 (define (warn-about-load-error file args)         ;FIXME: factorize with ↑
   "Report the failure to load FILE, a user-provided Scheme file, without
@@ -161,6 +245,9 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (_ "~a: warning: ~a~%")
                (location->string loc) message)))
+    (('srfi-34 obj)
+     (warning (_ "failed to load '~a': exception thrown: ~s~%")
+              file obj))
     ((error args ...)
      (warning (_ "failed to load '~a':~%") file)
      (apply display-error #f (current-error-port) args))))
@@ -206,7 +293,9 @@ Report bugs to: ~a.") %guix-bug-report-address)
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
 
-(define symlink
+(set! symlink
+  ;; We 'set!' the global binding because (gnu build ...) modules and similar
+  ;; typically don't use (guix ui).
   (let ((real-symlink (@ (guile) symlink)))
     (lambda (target link)
       "This is a 'symlink' replacement that provides proper error reporting."
@@ -218,8 +307,25 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
           ;; information is missing as of Guile 2.0.11, making the exception
           ;; uninformative.)
           (apply throw key proc "~A: ~S"
-                 (append args (list link))
-                 errno))))))
+                 (list (strerror (car errno)) link)
+                 (list errno)))))))
+
+(set! copy-file
+  ;; Note: here we use 'set!', not #:replace, because UIs typically use
+  ;; 'copy-recursively', which doesn't use (guix ui).
+  (let ((real-copy-file (@ (guile) copy-file)))
+    (lambda (source target)
+      "This is a 'copy-file' replacement that provides proper error reporting."
+      (catch 'system-error
+        (lambda ()
+          (real-copy-file source target))
+        (lambda (key proc fmt args errno)
+          ;; Augment the FMT and ARGS with information about TARGET (this
+          ;; information is missing as of Guile 2.0.11, making the exception
+          ;; uninformative.)
+          (apply throw key proc "~A: ~S"
+                 (list (strerror (car errno)) target)
+                 (list errno)))))))
 
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
@@ -346,8 +452,16 @@ interpreted."
       (lambda ()
         (eval exp (force %guix-user-module)))
       (lambda args
-        (leave (_ "failed to evaluate expression `~a': ~s~%")
-               exp args)))))
+        (report-error (_ "failed to evaluate expression '~a':~%") exp)
+        (match args
+          (('syntax-error proc message properties form . rest)
+           (report-error (_ "syntax error: ~a~%") message))
+          (('srfi-34 obj)
+           (report-error (_ "exception thrown: ~s~%") obj))
+          ((error args ...)
+           (apply display-error #f (current-error-port) args))
+          (what? #f))
+        (exit 1)))))
 
 (define (read/eval-package-expression str)
   "Read and evaluate STR and return the package it refers to, or exit an
@@ -428,6 +542,9 @@ available for download."
                       (length download))
                   (null? download) download)))
     (pair? build)))
+
+(define show-what-to-build*
+  (store-lift show-what-to-build))
 
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
@@ -852,11 +969,8 @@ parameter of 'args-fold'."
   (define dot-scm?
     (cut string-suffix? ".scm" <>))
 
-  ;; In Guile 2.0.5 `scandir' would return "." and ".." regardless even though
-  ;; they don't match `dot-scm?'.  Work around it by doing additional
-  ;; filtering.
   (if directory
-      (filter dot-scm? (scandir directory dot-scm?))
+      (scandir directory dot-scm?)
       '()))
 
 (define (commands)

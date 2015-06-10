@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix base32)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 popen)
@@ -76,6 +77,13 @@
                    bv))
          ;; Examples from RFC 4648.
          (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
+
+(test-equal "&invalid-base32-character"
+  #\e
+  (guard (c ((invalid-base32-character? c)
+             (invalid-base32-character-value c)))
+    (nix-base32-string->bytevector
+     (string-append (make-string 51 #\a) "e"))))
 
 ;; The following test requires `nix-hash' in $PATH.
 (unless %have-nix-hash?

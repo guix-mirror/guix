@@ -24,6 +24,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
@@ -62,7 +64,17 @@
                (base32
                 "1brry29bw2xr2l9pqn240rkqwayg85b8qq78zk2zs6nlspk4d018"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ;no "check" target
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append
+                     "-Wl,-rpath="
+                     (assoc-ref outputs "out") "/lib/bamtools")))))))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://github.com/pezmaster31/bamtools")
     (synopsis "C++ API and command-line toolkit for working with BAM data")
@@ -532,6 +544,74 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
 
+(define-public edirect
+  (package
+    (name "edirect")
+    (version "2.50")
+    (source (origin
+              (method url-fetch)
+              ;; Note: older versions are not retained.
+              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip")
+              (sha256
+               (base32
+                "08afhz2ph66h8h381hl1mqyxkdi5nbvzsyj9gfw3jfbdijnpi4qj"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((target (string-append (assoc-ref outputs "out")
+                                                 "/bin")))
+                      (mkdir-p target)
+                      (copy-file "edirect.pl"
+                                 (string-append target "/edirect.pl"))
+                      #t)))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
+            (let* ((out (assoc-ref outputs "out"))
+                   (path (getenv "PERL5LIB")))
+              (wrap-program (string-append out "/bin/edirect.pl")
+                `("PERL5LIB" ":" prefix (,path)))))))))
+    (inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-encode-locale" ,perl-encode-locale)
+       ("perl-file-listing" ,perl-file-listing)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-html-tree" ,perl-html-tree)
+       ("perl-http-cookies" ,perl-http-cookies)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-negotiate" ,perl-http-negotiate)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-net-http" ,perl-net-http)
+       ("perl-uri" ,perl-uri)
+       ("perl-www-robotrules" ,perl-www-robotrules)
+       ("perl" ,perl)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288")
+    (synopsis "Tools for accessing the NCBI's set of databases")
+    (description
+     "Entrez Direct (EDirect) is a method for accessing the National Center
+for Biotechnology Information's (NCBI) set of interconnected
+databases (publication, sequence, structure, gene, variation, expression,
+etc.) from a terminal.  Functions take search terms from command-line
+arguments.  Individual operations are combined to build multi-step queries.
+Record retrieval and formatting normally complete the process.
+
+EDirect also provides an argument-driven function that simplifies the
+extraction of data from document summaries or other results that are returned
+in structured XML format.  This can eliminate the need for writing custom
+software to answer ad hoc questions.")
+    (license license:public-domain)))
+
 (define-public express
   (package
     (name "express")
@@ -839,6 +919,41 @@ sequencing (HTS) data.  There are also an number of useful utilities for
 manipulating HTS data.")
     (license license:expat)))
 
+(define-public htslib
+  (package
+    (name "htslib")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/samtools/htslib/releases/download/"
+                    version "/htslib-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1c32ssscbnjwfw3dra140fq7riarp2x990qxybh34nr1p5r17nxx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-tests
+          (lambda _
+            (substitute* "test/test.pl"
+              (("/bin/bash") (which "bash")))
+            #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://www.htslib.org")
+    (synopsis "C library for reading/writing high-throughput sequencing data")
+    (description
+     "HTSlib is a C library for reading/writing high-throughput sequencing
+data.  It also provides the bgzip, htsfile, and tabix utilities.")
+    ;; Files under cram/ are released under the modified BSD license;
+    ;; the rest is released under the Expat license
+    (license (list license:expat license:bsd-3))))
+
 (define-public macs
   (package
     (name "macs")
@@ -1003,6 +1118,84 @@ files and writing bioinformatics applications.")
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
 
+(define-public rsem
+  (package
+    (name "rsem")
+    (version "1.2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://deweylab.biostat.wisc.edu/rsem/src/rsem-"
+                       version ".tar.gz"))
+       (sha256
+        (base32 "0nzdc0j0hjllhsd5f2xli95dafm3nawskigs140xzvjk67xh0r9q"))
+       (patches (list (search-patch "rsem-makefile.patch")))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; remove bundled copy of boost
+           (delete-file-recursively "boost")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; No "configure" script.
+         ;; Do not build bundled samtools library.
+         (replace 'configure
+                  (lambda _
+                    (substitute* "Makefile"
+                      (("^all : sam/libbam.a") "all : "))
+                    #t))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (string-append (assoc-ref outputs "out")))
+                           (bin (string-append out "/bin/"))
+                           (perl (string-append out "/lib/perl5/site_perl")))
+                      (mkdir-p bin)
+                      (mkdir-p perl)
+                      (for-each (lambda (file)
+                                  (copy-file file
+                                             (string-append bin (basename file))))
+                                (find-files "." "rsem-.*"))
+                      (copy-file "rsem_perl_utils.pm"
+                                 (string-append perl "/rsem_perl_utils.pm")))
+                    #t))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (for-each (lambda (prog)
+                          (wrap-program (string-append out "/bin/" prog)
+                            `("PERL5LIB" ":" prefix
+                              (,(string-append out "/lib/perl5/site_perl")))))
+                        '("rsem-plot-transcript-wiggles"
+                          "rsem-calculate-expression"
+                          "rsem-generate-ngvector"
+                          "rsem-run-ebseq"
+                          "rsem-prepare-reference")))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("ncurses" ,ncurses)
+       ("r" ,r)
+       ("perl" ,perl)
+       ("samtools" ,samtools-0.1)
+       ("zlib" ,zlib)))
+    (home-page "http://deweylab.biostat.wisc.edu/rsem/")
+    (synopsis "Estimate gene expression levels from RNA-Seq data")
+    (description
+     "RSEM is a software package for estimating gene and isoform expression
+levels from RNA-Seq data.  The RSEM package provides a user-friendly
+interface, supports threads for parallel computation of the EM algorithm,
+single-end and paired-end read data, quality scores, variable-length reads and
+RSPD estimation.  In addition, it provides posterior mean and 95% credibility
+interval estimates for expression levels.  For visualization, it can generate
+BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
+    (license license:gpl3+)))
+
 (define-public rseqc
   (package
     (name "rseqc")
@@ -1068,32 +1261,31 @@ distribution, coverage uniformity, strand specificity, etc.")
        ;; systems.
        #:tests? ,(string=? (or (%current-system) (%current-target-system))
                            "x86_64-linux")
-       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:make-flags (list "LIBCURSES=-lncurses"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-cons-after
         'unpack
-        'patch-makefile-curses
-        (lambda _
-          (substitute* "Makefile"
-            (("-lcurses") "-lncurses")))
+        'patch-tests
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let ((bash (assoc-ref inputs "bash")))
+            (substitute* "test/test.pl"
+              ;; The test script calls out to /bin/bash
+              (("/bin/bash")
+               (string-append bash "/bin/bash"))
+              ;; There are two failing tests upstream relating to the "stats"
+              ;; subcommand in test_usage_subcommand ("did not have Usage"
+              ;; and "usage did not mention samtools stats"), so we disable
+              ;; them.
+              (("(test_usage_subcommand\\(.*\\);)" cmd)
+               (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
         (alist-cons-after
-         'unpack
-         'patch-tests
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((bash (assoc-ref inputs "bash")))
-             (substitute* "test/test.pl"
-               ;; The test script calls out to /bin/bash
-               (("/bin/bash")
-                (string-append bash "/bin/bash"))
-               ;; There are two failing tests upstream relating to the "stats"
-               ;; subcommand in test_usage_subcommand ("did not have Usage"
-               ;; and "usage did not mention samtools stats"), so we disable
-               ;; them.
-               (("(test_usage_subcommand\\(.*\\);)" cmd)
-                (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
-         (alist-delete
-          'configure
-          %standard-phases)))))
+         'install 'install-library
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+             (mkdir-p lib)
+             (copy-file "libbam.a" (string-append lib "/libbam.a"))))
+         (alist-delete 'configure %standard-phases)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
@@ -1107,6 +1299,34 @@ sequence alignments in the SAM, BAM, and CRAM formats, including indexing,
 variant calling (in conjunction with bcftools), and a simple alignment
 viewer.")
     (license license:expat)))
+
+(define-public samtools-0.1
+  ;; This is the most recent version of the 0.1 line of samtools.  The input
+  ;; and output formats differ greatly from that used and produced by samtools
+  ;; 1.x and is still used in many bioinformatics pipelines.
+  (package (inherit samtools)
+    (version "0.1.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/samtools/"
+                       version "/samtools-" version ".tar.bz2"))
+       (sha256
+        (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments samtools)
+       ((#:tests? tests) #f) ;no "check" target
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((bin (string-append
+                                  (assoc-ref outputs "out") "/bin")))
+                        (mkdir-p bin)
+                        (copy-file "samtools"
+                                   (string-append bin "/samtools")))))
+           (delete 'patch-tests)))))))
 
 (define-public ngs-sdk
   (package
@@ -1266,11 +1486,16 @@ simultaneously.")
                                    (assoc-ref inputs "hdf5"))))))
         (alist-cons-after
          'install 'install-interfaces
-         (lambda* (#:key system outputs #:allow-other-keys)
-           ;; Install interface libraries
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Install interface libraries.  On i686 the interface libraries
+           ;; are installed to "linux/gcc/i386", so we need to use the Linux
+           ;; architecture name ("i386") instead of the target system prefix
+           ;; ("i686").
            (mkdir (string-append (assoc-ref outputs "out") "/ilib"))
            (copy-recursively (string-append "build/ncbi-vdb/linux/gcc/"
-                                            (car (string-split system #\-))
+                                            ,(system->linux-architecture
+                                              (or (%current-target-system)
+                                                  (%current-system)))
                                             "/rel/ilib")
                              (string-append (assoc-ref outputs "out")
                                             "/ilib"))
@@ -1513,7 +1738,40 @@ against local background noises.")
              "/sources/shogun-" version ".tar.bz2"))
        (sha256
         (base32
-         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))))
+         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))
+       (modules '((guix build utils)
+                  (ice-9 rdelim)))
+       (snippet
+        '(begin
+           ;; Remove non-free sources and files referencing them
+           (for-each delete-file
+                     (find-files "src/shogun/classifier/svm/"
+                                 "SVMLight\\.(cpp|h)"))
+           (for-each delete-file
+                     (find-files "examples/undocumented/libshogun/"
+                                 (string-append
+                                  "(classifier_.*svmlight.*|"
+                                  "evaluation_cross_validation_locked_comparison).cpp")))
+           ;; Remove non-free functions.
+           (define (delete-ifdefs file)
+             (with-atomic-file-replacement file
+               (lambda (in out)
+                 (let loop ((line (read-line in 'concat))
+                            (skipping? #f))
+                   (if (eof-object? line)
+                       #t
+                       (let ((skip-next?
+                              (or (and skipping?
+                                       (not (string-prefix?
+                                             "#endif //USE_SVMLIGHT" line)))
+                                  (string-prefix?
+                                   "#ifdef USE_SVMLIGHT" line))))
+                         (when (or (not skipping?)
+                                   (and skipping? (not skip-next?)))
+                           (display line out))
+                         (loop (read-line in 'concat) skip-next?)))))))
+           (for-each delete-ifdefs (find-files "src/shogun/kernel/"
+                                               "^Kernel\\.(cpp|h)"))))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ;no check target
@@ -1621,6 +1879,7 @@ in terms of new algorithms.")
     (arguments
      `(#:tests? #f ; no "check" target
        #:make-flags (list
+                     "CFLAGS=-O2" ; override "-m64" flag
                      (string-append "PREFIX=" (assoc-ref %outputs "out"))
                      (string-append "MANDIR=" (assoc-ref %outputs "out")
                                     "/share/man/man1"))

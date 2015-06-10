@@ -857,7 +857,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2015.01.23.4")
+    (version "2015.06.04.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -865,7 +865,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0pvvab9dk1righ3fa79000iz8fzdlcxakscx5sd31730c37j3kj2"))))
+                "0rk5c2m19x119bly38yjbizkr99ayn265lm15rm2x5ipjvdixyyg"))))
     (build-system python-build-system)
     (inputs `(("setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
@@ -1102,6 +1102,8 @@ for use with HTML5 video.")
                                  "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
                                  (string-append "-DCMAKE_INSTALL_PREFIX=" out)
                                  (string-append "-DCMAKE_INSTALL_RPATH=" lib)
+                                 (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                                                "\"-Wl,-rpath=" lib "\"")
                                  (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
                                  (string-append "-DSDL_INCLUDE_DIR="
                                                 sdl "/include/SDL")

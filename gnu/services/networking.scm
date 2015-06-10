@@ -170,15 +170,33 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                         ;; up*.  However, the relevant interfaces are
                         ;; typically down at this point.  Thus we perform our
                         ;; own interface discovery here.
-                        (let* ((valid? (negate loopback-network-interface?))
-                               (ifaces (filter valid?
-                                               (all-network-interfaces)))
-                               (pid    (fork+exec-command
-                                        (cons* #$dhclient "-nw"
-                                               "-pf" #$pid-file
-                                               ifaces))))
+                        (define valid?
+                          (negate loopback-network-interface?))
+                        (define ifaces
+                          (filter valid? (all-network-interfaces)))
+
+                        ;; XXX: Make sure the interfaces are up so that
+                        ;; 'dhclient' can actually send/receive over them.
+                        (for-each set-network-interface-up ifaces)
+
+                        (false-if-exception (delete-file #$pid-file))
+                        (let ((pid (fork+exec-command
+                                    (cons* #$dhclient "-nw"
+                                           "-pf" #$pid-file ifaces))))
                           (and (zero? (cdr (waitpid pid)))
-                               (call-with-input-file #$pid-file read)))))
+                               (let loop ()
+                                 (catch 'system-error
+                                   (lambda ()
+                                     (call-with-input-file #$pid-file read))
+                                   (lambda args
+                                     ;; 'dhclient' returned before PID-FILE
+                                     ;; was created, so try again.
+                                     (let ((errno (system-error-errno args)))
+                                       (if (= ENOENT errno)
+                                           (begin
+                                             (sleep 1)
+                                             (loop))
+                                           (apply throw args))))))))))
              (stop #~(make-kill-destructor))))))
 
 (define %ntp-servers

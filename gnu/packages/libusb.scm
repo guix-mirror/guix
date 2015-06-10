@@ -24,12 +24,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config))
 
 (define-public libusb
   (package
     (name "libusb")
-    (version "1.0.9")
+    (version "1.0.19")
     (source
      (origin
       (method url-fetch)
@@ -37,8 +38,14 @@
                           "libusb-" version "/libusb-" version ".tar.bz2"))
       (sha256
        (base32
-        "16sz34ix6hw2wwl3kqx6rf26fg210iryr68wc439dc065pffw879"))))
+        "0h38p9rxfpg9vkrbyb120i1diq57qcln82h5fr7hvy82c20jql3c"))))
     (build-system gnu-build-system)
+
+    ;; XXX: Enabling udev is now recommended, but eudev indirectly depends on
+    ;; libusb.
+    (arguments `(#:configure-flags '("--disable-udev")))
+    ;; (inputs `(("eudev" ,eudev)))
+
     (home-page "http://www.libusb.org")
     (synopsis "User-space USB library")
     (description

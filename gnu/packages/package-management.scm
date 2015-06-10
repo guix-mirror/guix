@@ -29,6 +29,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -51,17 +52,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.8.1
+(define-public guix-0.8.2
   (package
     (name "guix")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "12h5ldj1yf0za6ladlr8h7nx2gqrv2dxcsiwyqayvrza93lijkf5"))))
+               "1a5gnkh17w7fgi5zy63ph64iqdvarkdqypkwgw2iifpqa6jq04zz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -130,7 +131,8 @@
                        (base32
                         "1mi3brl7l58aww34rawhvja84xc7l1b4hmwdmc36fp9q9mfx0lg5"))))))
     (propagated-inputs
-     `(("guile-json" ,guile-json)
+     `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
+       ("guile-json" ,guile-json)
        ("geiser" ,geiser)))                       ;for guix.el
 
     (home-page "http://www.gnu.org/software/guix")
@@ -148,9 +150,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a short commit id; when using the long one, the limit on socket
   ;; file names is exceeded while running the tests.
-  (let ((commit "fc34dee"))
-    (package (inherit guix-0.8.1)
-      (version (string-append "0.8.1." commit))
+  (let ((commit "c2ee19e"))
+    (package (inherit guix-0.8.2)
+      (version (string-append "0.8.2." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -158,9 +160,9 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0nx60wwiar0s4bgwrm3nrskc54jig3vw7yzwxkwilc43cnlgpkja"))))
+                  "1gwc1gypgscxg2m3n2vd0mw4dmxr7vsisqgh3y0lr05q9z5742sj"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.8.1)
+       (substitute-keyword-arguments (package-arguments guix-0.8.2)
          ((#:phases phases)
           `(alist-cons-after
             'unpack 'bootstrap
@@ -178,7 +180,7 @@ the Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix-0.8.1))))))
+         ,@(package-native-inputs guix-0.8.2))))))
 
 (define-public guix guix-devel)
 

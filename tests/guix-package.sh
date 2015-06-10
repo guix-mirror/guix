@@ -52,8 +52,13 @@ test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
 # No search path env. var. here.
-guix package --search-paths -p "$profile"
-test "`guix package --search-paths -p "$profile" | wc -l`" = 0
+guix package -p "$profile" --search-paths
+guix package -p "$profile" --search-paths | grep '^export PATH='
+test "`guix package -p "$profile" --search-paths | wc -l`" = 1  # $PATH
+( set -e; set -x;						\
+  eval `guix package --search-paths=prefix -p "$PWD/$profile"`;	\
+  test "`type -P guile`" = "$PWD/$profile/bin/guile" ;		\
+  type -P rm )
 
 # Exit with 1 when a generation does not exist.
 if guix package -p "$profile" --delete-generations=42;
@@ -237,3 +242,31 @@ export GUIX_BUILD_OPTIONS
 available2="`guix package -A | sort`"
 test "$available2" = "$available"
 guix package -I
+
+unset GUIX_BUILD_OPTIONS
+
+# Applying a manifest file.
+cat > "$module_dir/manifest.scm"<<EOF
+(use-package-modules bootstrap)
+
+(packages->manifest (list %bootstrap-guile))
+EOF
+guix package --bootstrap -m "$module_dir/manifest.scm"
+guix package -I | grep guile
+test `guix package -I | wc -l` -eq 1
+
+# Error reporting.
+cat > "$module_dir/manifest.scm"<<EOF
+(use-package-modules bootstrap)
+(packages->manifest
+  (list %bootstrap-guile
+        wonderful-package-that-does-not-exist))
+EOF
+if guix package --bootstrap -n -m "$module_dir/manifest.scm" \
+	2> "$module_dir/stderr"
+then false
+else
+    cat "$module_dir/stderr"
+    grep "manifest.scm:[1-3]:.*[Uu]nbound variable.*wonderful-package" \
+	 "$module_dir/stderr"
+fi

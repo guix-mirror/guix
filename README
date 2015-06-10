@@ -20,8 +20,9 @@ Guix is based on the [[http://nixos.org/nix/][Nix]] package manager.
 
 GNU Guix currently depends on the following packages:
 
-  - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]], version 2.0.5 or later
+  - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]], version 2.0.7 or later
   - [[http://gnupg.org/][GNU libgcrypt]]
+  - [[http://www.gnu.org/software/make/][GNU Make]]
   - optionally [[http://savannah.nongnu.org/projects/guile-json/][Guile-JSON]], for the 'guix import pypi' command
   - optionally [[http://www.gnutls.org][GnuTLS]] compiled with guile support enabled, for HTTPS support
     in the 'guix download' command.  Note that 'guix import pypi' requires
@@ -53,18 +54,9 @@ file.
 You can re-build and re-install Guix using a system that already runs Guix.
 To do so:
 
-  - Install the dependencies (see 'Requirements' above) and build tools using
-    Guix:
+  - Start a shell with the development environment for Guix:
 
-      guix package --install autoconf automake bzip2 gcc-toolchain gettext \
-                             guile libgcrypt pkg-config sqlite
-
-  - Set the environment variables that Guix recommends you to set during the
-    package installation process:
-      ACLOCAL_PATH, CPATH, LIBRARY_PATH, PKG_CONFIG_PATH
-
-  - Set the PATH environment variable to refer to the profile:
-      PATH=$HOME/.guix-profile/bin:$PATH
+      guix environment guix
 
   - Re-run the 'configure' script passing it the option
     '--with-libgcrypt-prefix=$HOME/.guix-profile/', as well as

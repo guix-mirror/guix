@@ -124,6 +124,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gl.scm				\
   gnu/packages/glib.scm				\
   gnu/packages/gnome.scm			\
+  gnu/packages/gnucash.scm			\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnustep.scm			\
@@ -173,6 +174,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libffcall.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libftdi.scm			\
+  gnu/packages/calendar.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libphidget.scm			\
   gnu/packages/libreoffice.scm			\
@@ -217,6 +219,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
+  gnu/packages/networking.scm			\
   gnu/packages/ninja.scm			\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
@@ -273,13 +276,13 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/slang.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
-  gnu/packages/socat.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/statistics.scm			\
   gnu/packages/swig.scm				\
   gnu/packages/sxiv.scm				\
   gnu/packages/synergy.scm			\
+  gnu/packages/task-management.scm		\
   gnu/packages/tbb.scm				\
   gnu/packages/tcl.scm				\
   gnu/packages/tcsh.scm				\
@@ -291,6 +294,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
   gnu/packages/tre.scm				\
+  gnu/packages/tv.scm				\
   gnu/packages/unrtf.scm			\
   gnu/packages/upnp.scm				\
   gnu/packages/uucp.scm				\
@@ -327,13 +331,12 @@ GNU_SYSTEM_MODULES =				\
   gnu/services.scm				\
   gnu/services/avahi.scm			\
   gnu/services/base.scm				\
-  gnu/services/colord.scm			\
-  gnu/services/dbus.scm				\
+  gnu/services/databases.scm			\
+  gnu/services/desktop.scm			\
   gnu/services/dmd.scm				\
   gnu/services/lirc.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
-  gnu/services/upower.scm			\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\
@@ -384,6 +387,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
+  gnu/packages/patches/bitlbee-configure-doc-fix.patch		\
   gnu/packages/patches/calibre-drop-unrar.patch			\
   gnu/packages/patches/calibre-no-updates-dialog.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
@@ -403,8 +407,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \
   gnu/packages/patches/cursynth-wave-rand.patch			\
-  gnu/packages/patches/curl-support-capath-on-gnutls.patch	\
-  gnu/packages/patches/curl-support-capath-on-gnutls-conf.patch	\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -419,10 +421,13 @@ dist_patch_DATA =						\
   gnu/packages/patches/findutils-localstatedir.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\
   gnu/packages/patches/flex-bison-tests.patch			\
+  gnu/packages/patches/fltk-shared-lib-defines.patch		\
+  gnu/packages/patches/fuse-CVE-2015-3202.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
   gnu/packages/patches/gcc-libvtv-runpath.patch			\
+  gnu/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
@@ -435,7 +440,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
-  gnu/packages/patches/gnutls-fix-duplicate-manpages.patch	\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
@@ -447,10 +451,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
-  gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
-  gnu/packages/patches/inetutils-syslogd.patch			\
+  gnu/packages/patches/hop-linker-flags.patch			\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
@@ -464,13 +467,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
-  gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/libvpx-fix-armhf-link.patch		\
   gnu/packages/patches/libvpx-fix-ssse3-quantize.patch		\
   gnu/packages/patches/libvpx-vp9-out-of-bounds-access.patch	\
-  gnu/packages/patches/linux-libre-libreboot-fix.patch		\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua51-liblua-so.patch                    \
@@ -479,6 +480,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
+  gnu/packages/patches/maxima-defsystem-mkdir.patch		\
   gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
@@ -523,14 +525,16 @@ dist_patch_DATA =						\
   gnu/packages/patches/pyqt-configure.patch			\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
-  gnu/packages/patches/python-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python2-sqlite-3.8.4-test-fix.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  gnu/packages/patches/qemu-CVE-2015-3209.patch			\
+  gnu/packages/patches/qemu-CVE-2015-3456.patch			\
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/qt4-tests.patch				\
   gnu/packages/patches/qt5-conflicting-typedefs.patch		\
   gnu/packages/patches/qt5-runpath.patch			\
+  gnu/packages/patches/r-fix-15899.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-libm.patch			\
@@ -538,17 +542,23 @@ dist_patch_DATA =						\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
   gnu/packages/patches/sdl-libx11-1.6.patch			\
+  gnu/packages/patches/serf-comment-style-fix.patch		\
+  gnu/packages/patches/serf-deflate-buckets-test-fix.patch	\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
   gnu/packages/patches/soprano-find-clucene.patch		\
+  gnu/packages/patches/subversion-sqlite-3.8.9-fix.patch	\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/tar-d_ino_in_dirent-fix.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/texi2html-document-encoding.patch	\
   gnu/packages/patches/texi2html-i18n.patch			\
-  gnu/packages/patches/udev-gir-libtool.patch			\
+  gnu/packages/patches/tvtime-gcc41.patch			\
+  gnu/packages/patches/tvtime-pngoutput.patch			\
+  gnu/packages/patches/tvtime-videodev2.patch			\
+  gnu/packages/patches/tvtime-xmltv.patch			\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
@@ -559,9 +569,17 @@ dist_patch_DATA =						\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
   gnu/packages/patches/weex-vacopy.patch			\
+  gnu/packages/patches/wicd-template-instantiation.patch	\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
   gnu/packages/patches/wpa-supplicant-CVE-2015-1863.patch	\
+  gnu/packages/patches/wpa-supplicant-2015-2-fix.patch		\
+  gnu/packages/patches/wpa-supplicant-2015-3-fix.patch		\
+  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt1.patch	\
+  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt2.patch	\
+  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt3.patch	\
+  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt4.patch	\
+  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt5.patch	\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-geode-glibc-2.20.patch	\

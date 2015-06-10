@@ -23,22 +23,25 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages autogen))
 
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnu-pw-mgr/gnu-pw-mgr-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "0rbnv5wszpr35py97vwylqkdlf06qpd2x9j9aqlmgkd4mr1n4hf0"))))
+        "0a352y1m33vp6zmdbn96fdrq9gr9lchc9vcrj14mfx7g0dsvxjns"))))
     (build-system gnu-build-system)
-    (inputs `(("which" ,which)))
+    (native-inputs
+     `(("which" ,which)
+       ("autogen" ,autogen)))
     (home-page "http://www.gnu.org/software/gnu-pw-mgr/")
     (synopsis "Retrieve login credentials without recording passwords")
     (description

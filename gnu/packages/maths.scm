@@ -7,6 +7,7 @@
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +69,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
@@ -382,6 +384,9 @@ extremely large and complex data collections.")
      `(("lapack" ,lapack)
        ("readline" ,readline)
        ("glpk" ,glpk)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("arpack" ,arpack-ng)
        ("curl" ,curl)
        ("pcre" ,pcre)
        ("fltk" ,fltk)
@@ -390,16 +395,18 @@ extremely large and complex data collections.")
        ("hdf5" ,hdf5)
        ("libxft" ,libxft)
        ("mesa" ,mesa)
+       ("glu" ,glu)
        ("zlib" ,zlib)))
     (native-inputs
      `(("gfortran" ,gfortran-4.8)
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
-       ;; The following inputs are not actually used in the build process.  However, the
-       ;; ./configure gratuitously tests for their existence and assumes that programs not
-       ;; present at build time are also not, and can never be, available at run time!
-       ;; If these inputs are therefore not present, support for them will be built out.
-       ;; However, Octave will still run without them, albeit without the features they
+       ;; The following inputs are not actually used in the build process.
+       ;; However, the ./configure gratuitously tests for their existence and
+       ;; assumes that programs not present at build time are also not, and
+       ;; can never be, available at run time!  If these inputs are therefore
+       ;; not present, support for them will be built out.  However, Octave
+       ;; will still run without them, albeit without the features they
        ;; provide.
        ("less" ,less)
        ("texinfo" ,texinfo)
@@ -411,11 +418,11 @@ extremely large and complex data collections.")
 			    "/bin/sh"))))
     (home-page "http://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
-    (description "GNU Octave is a high-level interpreted language that is specialized
-for numerical computations.  It can be used for both linear and non-linear
-applications and it provides great support for visualizing results.  Work may
-be performed both at the interactive command-line as well as via script
-files.")
+    (description "GNU Octave is a high-level interpreted language that is
+specialized for numerical computations.  It can be used for both linear and
+non-linear applications and it provides great support for visualizing results.
+Work may be performed both at the interactive command-line as well as via
+script files.")
     (license license:gpl3+)))
 
 (define-public gmsh
@@ -917,7 +924,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.34.1")
+    (version "5.36.1")
     (source
      (origin
        (method url-fetch)
@@ -925,7 +932,8 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1dw9vfzldpj7lv303xbw0wpyn6ra6i2yzwlrjbcx7j0jm5n43ji0"))))
+         "0x1rk659sn3cq0n5c90848ilzr1gb1wf0072fl6jhkdq00qgh2s0"))
+       (patches (list (search-patch "maxima-defsystem-mkdir.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("gcl" ,gcl)
@@ -946,8 +954,8 @@ to BMP, JPEG or PNG image formats.")
                             (let ((v ,(package-version tk)))
                               (string-take v (string-index-right v #\.)))))
        ;; By default Maxima attempts to write temporary files to
-       ;; '/tmp/nix-build-maxima-5.34.1', which doesn't exist.  Work around
-       ;; that.
+       ;; '/tmp/nix-build-maxima-*', which won't exist at run time.
+       ;; Work around that.
        #:make-flags (list "TMPDIR=/tmp")
        #:phases (alist-cons-before
                  'check 'pre-check
@@ -992,6 +1000,49 @@ point numbers")
     ;; GPLv2 only is therefore the smallest subset.
     (license license:gpl2)))
 
+(define-public wxmaxima
+  (package
+    (name "wxmaxima")
+    (version "15.04.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/wxmaxima/wxMaxima/"
+                           version "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fm47ah4aw5qdjqhkz67w5fwhy8yfffa5z896crp0d3hk2bh4180"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("wxwidgets" ,wxwidgets)
+       ("maxima" ,maxima)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'wrap-program
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (wrap-program (string-append (assoc-ref outputs "out")
+                                                  "/bin/wxmaxima")
+                       `("PATH" ":" prefix
+                         (,(string-append (assoc-ref inputs "maxima")
+                                          "/bin"))))
+                     #t)))))
+    (home-page "https://andrejv.github.io/wxmaxima/")
+    (synopsis "Graphical user interface for the Maxima computer algebra system")
+    (description
+     "wxMaxima is a graphical user interface for the Maxima computer algebra
+system.  It eases the use of Maxima by making most of its commands available
+through a menu system and by providing input dialogs for commands that require
+more than one argument.  It also implements its own display engine that
+outputs mathematical symbols directly instead of depicting them with ASCII
+characters.
+
+wxMaxima also features 2D and 3D inline plots, simple animations, mixing of
+text and mathematical calculations to create documents, exporting of input and
+output to TeX, and a browser for Maxima's manual including command index and
+full text searching.")
+    (license license:gpl2+)))
+
 (define-public muparser
   (package
     (name "muparser")
@@ -1020,7 +1071,7 @@ constant parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.2.13")
+    (version "0.2.14")
     (source
      (origin
        (method url-fetch)
@@ -1029,10 +1080,14 @@ constant parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1asg5mix13ipxgj5h2yj2p0r8km1di5jbcjkn5gmhb37nx7qfv6k"))))
+         "0av3pd96j8rx5i65f652xv9wqfkaqn0w4ma1gvbyz73i6j2hi9db"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f  ;no "check" target
+     `(#:tests? #f  ;no "check" target
+       ;; DYNAMIC_ARCH is not supported on MIPS.  When it is disabled,
+       ;; OpenBLAS will tune itself to the build host, so we need to disable
+       ;; substitutions.
+       #:substitutable? ,(not (string-prefix? "mips" (%current-system)))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
@@ -1040,7 +1095,10 @@ constant parts of it.")
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
-             "DYNAMIC_ARCH=1")
+             ;; Unfortunately, this is not supported on MIPS.
+             ,@(if (string-prefix? "mips" (%current-system))
+                   '()
+                   '("DYNAMIC_ARCH=1")))
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
@@ -1333,3 +1391,72 @@ library with poor performance.")
 library for graphics software based on the OpenGL Shading Language (GLSL)
 specifications.")
     (license license:expat)))
+
+(define-public lpsolve
+  (package
+    (name "lpsolve")
+    (version "5.5.2.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/lpsolve/lpsolve/" version
+                          "/lp_solve_" version "_source.tar.gz"))
+      (sha256
+       (base32
+        "176c7f023mb6b8bfmv4rfqnrlw88lsg422ca74zjh19i2h5s69sq"))
+      (modules '((guix build utils)))
+      (snippet
+       '(substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
+          (("^c=cc") "c=gcc")
+          ;; Pretend to be on a 64 bit platform to obtain a common directory
+          ;; name for the build results on all architectures; nothing else
+          ;; seems to depend on it.
+          (("^PLATFORM=.*$") "PLATFORM=ux64\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (with-directory-excursion "lpsolve55"
+               (system* "bash" "ccc"))
+             (with-directory-excursion "lp_solve"
+               (system* "bash" "ccc"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    ;; This is where LibreOffice expects to find the header
+                    ;; files, and where they are installed by Debian.
+                    (include (string-append out "/include/lpsolve")))
+               (mkdir-p lib)
+               (copy-file "lpsolve55/bin/ux64/liblpsolve55.a"
+                          (string-append lib "/liblpsolve55.a"))
+               (copy-file "lpsolve55/bin/ux64/liblpsolve55.so"
+                          (string-append lib "/liblpsolve55.so"))
+               (mkdir-p bin)
+               (copy-file "lp_solve/bin/ux64/lp_solve"
+                          (string-append bin "/lp_solve"))
+               (mkdir-p include)
+               ;; Install a subset of the header files as on Debian
+               ;; (plus lp_bit.h, which matches the regular expression).
+               (for-each
+                 (lambda (name)
+                   (copy-file name (string-append include "/" name)))
+                 (find-files "." "lp_[HMSa-z].*\\.h$"))
+               (with-directory-excursion "shared"
+                 (for-each
+                   (lambda (name)
+                     (copy-file name (string-append include "/" name)))
+                   (find-files "." "\\.h$")))
+               #t))))))
+    (home-page "http://lpsolve.sourceforge.net/")
+    (synopsis "Mixed integer linear programming (MILP) solver")
+    (description
+     "lp_solve is a mixed integer linear programming solver based on the
+revised simplex and the branch-and-bound methods.")
+    (license license:lgpl2.1+)))

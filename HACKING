@@ -2,7 +2,7 @@
 
 #+TITLE: Hacking GNU Guix and Its Incredible Distro
 
-Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 Copyright © 2014 Pierre-Antoine Rault <par@rigelk.eu>
 
@@ -20,6 +20,7 @@ addition to those mentioned in the installation instructions:
   - [[http://www.gnu.org/software/automake/][GNU Automake]]
   - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
   - [[http://www.graphviz.org/][Graphviz]]
+  - [[http://www.gnu.org/software/help2man/][GNU Help2man]] (optional)
 
 Run ‘./bootstrap’ to download the Nix daemon source code and to generate the
 build system infrastructure using autoconf.  It reports an error if an
@@ -46,17 +47,7 @@ take a look at “info '(guix) Installation'” or send a message to
 
 * Running Guix before it is installed
 
-Command-line tools can be used even if you have not run "make install".
-To do that, prefix each command with ‘./pre-inst-env’, as in:
-
-  ./pre-inst-env guix build --help
-
-Similarly, for a Guile session using the Guix modules:
-
-  ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'
-
-The ‘pre-inst-env’ script sets up all the environment variables
-necessary to support this.
+See the same-named section in the manual.
 
 * The Perfect Setup
 

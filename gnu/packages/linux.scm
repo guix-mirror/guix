@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -55,6 +55,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages calendar)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -208,7 +210,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.0")
+  (let* ((version "4.0.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -281,9 +283,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "12nkzn1n4si2zcp10b645qri83m2y7iwp29vs2rjmy612azdab8f"))
-             (patches
-              (list (search-patch "linux-libre-libreboot-fix.patch")))))
+               "0g8a4h8gjw51pp02hjfrp6bk2nkrclm3krp9mpjh3iwbf4vfh2al"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -318,7 +318,7 @@ It has been modified to remove all non-free binary blobs.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
-
+
 ;;;
 ;;; Pluggable authentication modules (PAM).
 ;;;
@@ -364,7 +364,7 @@ be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
     (license bsd-3)))
 
-
+
 ;;;
 ;;; Miscellaneous.
 ;;;
@@ -587,8 +587,21 @@ slabtop, and skill.")
                       (string-append "#!" (which "sh")))))
                  (alist-cons-after
                   'install 'install-libs
-                  (lambda _
-                    (zero? (system* "make" "install-libs")))
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (lib (string-append out "/lib")))
+                      (and (zero? (system* "make" "install-libs"))
+
+                           ;; Make the .a writable so that 'strip' works.
+                           ;; Failing to do that, due to debug symbols, we
+                           ;; retain a reference to the final
+                           ;; linux-libre-headers, which refer to the
+                           ;; bootstrap binaries.
+                           (let ((archives (find-files lib "\\.a$")))
+                             (for-each (lambda (file)
+                                         (chmod file #o666))
+                                       archives)
+                             #t))))
                   %standard-phases))
 
        ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
@@ -1041,6 +1054,17 @@ Linux-based operating systems.")
      '(#:phases (alist-cons-after
                  'unpack 'bootstrap
                  (lambda _
+                   ;; Fix "field ‘ip6’ has incomplete type" errors.
+                   (substitute* "libbridge/libbridge.h"
+                     (("#include <linux/if_bridge.h>")
+                      "#include <linux/in6.h>\n#include <linux/if_bridge.h>"))
+
+                   ;; Ensure that the entire build fails if one of the
+                   ;; sub-Makefiles fails.
+                   (substitute* "Makefile.in"
+                     (("\\$\\(MAKE\\) \\$\\(MFLAGS\\) -C \\$\\$x ;")
+                      "$(MAKE) $(MFLAGS) -C $$x || exit 1;"))
+
                    (zero? (system* "autoreconf" "-vf")))
                  %standard-phases)
        #:tests? #f))                              ; no 'check' target
@@ -1198,7 +1222,8 @@ processes currently causing I/O.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
+                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))
+              (patches (list (search-patch "fuse-CVE-2015-3202.patch")))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
@@ -1567,7 +1592,7 @@ from the module-init-tools project.")
                                ;; Work around undefined reference to
                                ;; 'mq_getattr' in sc-daemon.c.
                                "LDFLAGS=-lrt")
-       #:phases 
+       #:phases
        (alist-cons-before
         'build 'pre-build
         ;; The program 'g-ir-scanner' (part of the package
@@ -2171,3 +2196,40 @@ arrays when needed.")
 system calls, important for the performance of databases and other advanced
 applications.")
     (license lgpl2.1+)))
+
+(define-public bluez
+  (package
+    (name "bluez")
+    (version "5.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.kernel.org/pub/linux/bluetooth/bluez-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0b1qbnq1xzcdw5rajg9yyg31bf21jnff0n6gnf1snz89bbdllfhy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "--enable-library"
+               "--disable-systemd"
+               ;; Install dbus/udev files to the correct location.
+               (string-append "--with-dbusconfdir=" out "/etc")
+               (string-append "--with-udevdir=" out "/lib/udev")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)))
+    (inputs
+     `(("glib" ,glib)
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("libical" ,libical)
+       ("readline" ,readline)))
+    (home-page "http://www.bluez.org/")
+    (synopsis "Linux Bluetooth protocol stack")
+    (description
+     "BlueZ provides support for the core Bluetooth layers and protocols.  It
+is flexible, efficient and uses a modular implementation.")
+    (license gpl2+)))

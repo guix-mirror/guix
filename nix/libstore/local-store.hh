@@ -1,15 +1,11 @@
 #pragma once
 
 #include <string>
+#include <unordered_set>
 
 #include "store-api.hh"
 #include "util.hh"
 #include "pathlocks.hh"
-
-#if HAVE_TR1_UNORDERED_SET
-#include <tr1/unordered_set>
-#endif
-
 
 
 class sqlite3;
@@ -134,7 +130,7 @@ public:
     void querySubstitutablePathInfos(const PathSet & paths,
         SubstitutablePathInfos & infos);
 
-    Path addToStore(const Path & srcPath,
+    Path addToStore(const string & name, const Path & srcPath,
         bool recursive = true, HashType hashAlgo = htSHA256,
         PathFilter & filter = defaultPathFilter, bool repair = false);
 
@@ -170,6 +166,9 @@ public:
     /* Optimise the disk space usage of the Nix store by hard-linking
        files with the same contents. */
     void optimiseStore(OptimiseStats & stats);
+
+    /* Generic variant of the above method.  */
+    void optimiseStore();
 
     /* Optimise a single store path. */
     void optimisePath(const Path & path);
@@ -245,6 +244,10 @@ private:
 
     bool didSetSubstituterEnv;
 
+    /* The file to which we write our temporary roots. */
+    Path fnTempRoots;
+    AutoCloseFD fdTempRoots;
+
     int getSchema();
 
     void openDB(bool create);
@@ -306,11 +309,7 @@ private:
 
     void checkDerivationOutputs(const Path & drvPath, const Derivation & drv);
 
-#if HAVE_TR1_UNORDERED_SET
-    typedef std::tr1::unordered_set<ino_t> InodeHash;
-#else
-    typedef std::set<ino_t> InodeHash;
-#endif
+    typedef std::unordered_set<ino_t> InodeHash;
 
     InodeHash loadInodeHash();
     Strings readDirectoryIgnoringInodes(const Path & path, const InodeHash & inodeHash);

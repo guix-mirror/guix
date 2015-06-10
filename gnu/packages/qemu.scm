@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
@@ -42,14 +44,16 @@
   ;; This is QEMU without GUI support.
   (package
     (name "qemu-headless")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1703c3scl5n07gmpilg7g2xzyxnr7jczxgx6nn4m8kv9gin9p35n"))))
+               "120m53c3p28qxmfzllicjzr8syjv6v4d9rsyrgkp7gnmcgvvgfmn"))
+             (patches (map search-patch '("qemu-CVE-2015-3209.patch"
+                                          "qemu-CVE-2015-3456.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -137,4 +141,5 @@ server and embedded PowerPC, and S390 guests.")
     (synopsis "Machine emulator and virtualizer")
     (inputs `(("sdl" ,sdl)
               ("mesa" ,mesa)
+              ("libusb" ,libusb)                  ;USB pass-through support
               ,@(package-inputs qemu-headless)))))

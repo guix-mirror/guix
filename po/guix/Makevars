@@ -6,12 +6,14 @@ subdir = po/guix
 top_builddir = ../..
 
 # These options get passed to xgettext.  We want to catch standard
-# gettext uses, and SRFI-35 error condition messages.
+# gettext uses, and SRFI-35 error condition messages.  In C++ code
+# we use 'n_' instead of the more usual 'N_' for no-ops.
 XGETTEXT_OPTIONS =				\
-  --language=Scheme --from-code=UTF-8		\
+  --from-code=UTF-8				\
   --keyword=_ --keyword=N_:1,2			\
   --keyword=message				\
-  --keyword=description
+  --keyword=description				\
+  --keyword=n_
 
 COPYRIGHT_HOLDER = Ludovic Courtès
 

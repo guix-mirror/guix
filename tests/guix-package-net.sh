@@ -147,7 +147,7 @@ test "`readlink_base "$profile"`" = "$profile-2-link"
 
 # Make sure LIBRARY_PATH gets listed by `--search-paths'.
 guix package --bootstrap -p "$profile" -i guile-bootstrap -i gcc-bootstrap
-guix package --search-paths -p "$profile" | grep LIBRARY_PATH
+guix package -p "$profile" --search-paths | grep LIBRARY_PATH
 
 # Roll back so we can delete #3 below.
 guix package -p "$profile" --switch-generation=2

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +28,14 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.36")
+   (version "8.37")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/pcre/pcre/"
                                 version "/pcre-" version ".tar.bz2"))
             (sha256
              (base32
-              "1fs5p1z67m9f4xnyil3s4lhgyld78f7m4d1yawpyhh0cvrbk90zg"))))
+              "17bqykp604p7376wj3q2nmjdhrb6v1ny8q08zdwi7qvc02l9wrsi"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)

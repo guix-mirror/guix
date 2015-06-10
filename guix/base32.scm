@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +18,8 @@
 
 (define-module (guix base32)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 vlist)
@@ -25,7 +27,11 @@
             bytevector->base32-string
             bytevector->nix-base32-string
             base32-string->bytevector
-            nix-base32-string->bytevector))
+            nix-base32-string->bytevector
+            &invalid-base32-character
+            invalid-base32-character?
+            invalid-base32-character-value
+            invalid-base32-character-string))
 
 ;;; Commentary:
 ;;;
@@ -264,6 +270,12 @@ starting from the right of S."
                        s)
     bv))
 
+;; Invalid base32 character error condition when decoding base32.
+(define-condition-type &invalid-base32-character &error
+  invalid-base32-character?
+  (character invalid-base32-character-value)
+  (string    invalid-base32-character-string))
+
 (define (make-base32-string->bytevector base32-string-unfold base32-chars)
   (let ((char->value (let loop ((i 0)
                                 (v vlist-null))
@@ -276,7 +288,10 @@ starting from the right of S."
       "Return the binary representation of base32 string S as a bytevector."
       (base32-string-unfold (lambda (chr)
                               (or (and=> (vhash-assv chr char->value) cdr)
-                                  (error "invalid base32 character" chr)))
+                                  (raise (condition
+                                          (&invalid-base32-character
+                                           (character chr)
+                                           (string s))))))
                             s))))
 
 (define base32-string->bytevector

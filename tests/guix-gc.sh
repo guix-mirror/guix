@@ -64,3 +64,23 @@ guix gc -C 1KiB
 # Check trivial error cases.
 if guix gc --delete /dev/null;
 then false; else true; fi
+
+# Bug #19757
+out="`guix build guile-bootstrap`"
+test -d "$out"
+
+guix gc --delete "$out"
+
+! test -d "$out"
+
+out="`guix build guile-bootstrap`"
+test -d "$out"
+
+guix gc --delete "$out/"
+
+! test -d "$out"
+
+out="`guix build guile-bootstrap`"
+test -d "$out"
+
+guix gc --delete "$out/bin/guile"

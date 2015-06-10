@@ -25,6 +25,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
+  #:use-module (guix search-paths)
   #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)
@@ -52,6 +53,7 @@
             roll-back
             delete-generation
             delete-generations
+            display-search-paths
             guix-package))
 
 (define %store
@@ -87,6 +89,15 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
                      (dirname %user-profile-directory))
            (string=? (basename profile) (basename %user-profile-directory)))
       %current-profile
+      profile))
+
+(define (user-friendly-profile profile)
+  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
+indirectly, or PROFILE."
+  (if (and %user-profile-directory
+           (false-if-exception
+            (string=? (readlink %user-profile-directory) profile)))
+      %user-profile-directory
       profile))
 
 (define (link-to-empty-profile store generation)
@@ -365,77 +376,35 @@ an output path different than CURRENT-PATH."
 ;;; Search paths.
 ;;;
 
-(define-syntax-rule (with-null-error-port exp)
-  "Evaluate EXP with the error port pointing to the bit bucket."
-  (with-error-to-port (%make-void-port "w")
-    (lambda () exp)))
-
 (define* (search-path-environment-variables entries profile
-                                            #:optional (getenv getenv))
+                                            #:optional (getenv getenv)
+                                            #:key (kind 'exact))
   "Return environment variable definitions that may be needed for the use of
 ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
-current settings and report only settings not already effective."
+current settings and report only settings not already effective.  KIND
+must be one of 'exact, 'prefix, or 'suffix, depending on the kind of search
+path definition to be returned."
+  (let ((search-paths (delete-duplicates
+                       (cons $PATH
+                             (append-map manifest-entry-search-paths
+                                         entries)))))
+    (filter-map (match-lambda
+                  ((spec . value)
+                   (let ((variable (search-path-specification-variable spec))
+                         (sep      (search-path-specification-separator spec)))
+                     (environment-variable-definition variable value
+                                                      #:separator sep
+                                                      #:kind kind))))
+                (evaluate-search-paths search-paths (list profile)
+                                       getenv))))
 
-  ;; Prefer ~/.guix-profile to the real profile directory name.
-  (let ((profile (if (and %user-profile-directory
-                          (false-if-exception
-                           (string=? (readlink %user-profile-directory)
-                                     profile)))
-                     %user-profile-directory
-                     profile)))
-
-    ;; The search path info is not stored in the manifest.  Thus, we infer the
-    ;; search paths from same-named packages found in the distro.
-
-    (define manifest-entry->package
-      (match-lambda
-       (($ <manifest-entry> name version)
-        ;; Use 'find-best-packages-by-name' and not 'find-packages-by-name';
-        ;; the former traverses the module tree only once and then allows for
-        ;; efficient access via a vhash.
-        (match (find-best-packages-by-name name version)
-          ((p _ ...) p)
-          (_
-           (match (find-best-packages-by-name name #f)
-             ((p _ ...) p)
-             (_ #f)))))))
-
-    (define search-path-definition
-      (match-lambda
-       (($ <search-path-specification> variable files separator
-                                       type pattern)
-        (let* ((values (or (and=> (getenv variable)
-                                  (cut string-tokenize* <> separator))
-                           '()))
-               ;; Add a trailing slash to force symlinks to be treated as
-               ;; directories when 'find-files' traverses them.
-               (files  (if pattern
-                           (map (cut string-append <> "/") files)
-                           files))
-
-               ;; XXX: Silence 'find-files' when it stumbles upon non-existent
-               ;; directories (see
-               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)
-               (path   (with-null-error-port
-                        (search-path-as-list files (list profile)
-                                             #:type type
-                                             #:pattern pattern))))
-          (if (every (cut member <> values) path)
-              #f
-              (format #f "export ~a=\"~a\""
-                      variable
-                      (string-join path separator)))))))
-
-    (let* ((packages     (filter-map manifest-entry->package entries))
-           (search-paths (delete-duplicates
-                          (append-map package-native-search-paths
-                                      packages))))
-      (filter-map search-path-definition search-paths))))
-
-(define (display-search-paths entries profile)
+(define* (display-search-paths entries profile
+                               #:key (kind 'exact))
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let ((settings (search-path-environment-variables entries profile)))
+  (let* ((profile  (user-friendly-profile profile))
+         (settings (search-path-environment-variables entries profile
+                                                      #:kind kind)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
       (format #t "~{   ~a~%~}" settings))))
@@ -453,23 +422,29 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
     (substitutes? . #t)))
 
 (define (show-help)
-  (display (_ "Usage: guix package [OPTION]... PACKAGES...
-Install, remove, or upgrade PACKAGES in a single transaction.\n"))
+  (display (_ "Usage: guix package [OPTION]...
+Install, remove, or upgrade packages in a single transaction.\n"))
   (display (_ "
-  -i, --install=PACKAGE  install PACKAGE"))
+  -i, --install PACKAGE ...
+                         install PACKAGEs"))
   (display (_ "
   -e, --install-from-expression=EXP
                          install the package EXP evaluates to"))
   (display (_ "
-  -r, --remove=PACKAGE   remove PACKAGE"))
+  -r, --remove PACKAGE ...
+                         remove PACKAGEs"))
   (display (_ "
   -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
+  (display (_ "
+  -m, --manifest=FILE    create a new profile generation with the manifest
+                         from FILE"))
   (display (_ "
       --do-not-upgrade[=REGEXP] do not upgrade any packages matching REGEXP"))
   (display (_ "
       --roll-back        roll back to the previous generation"))
   (display (_ "
-      --search-paths     display needed environment variable definitions"))
+      --search-paths[=KIND]
+                         display needed environment variable definitions"))
   (display (_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
@@ -496,7 +471,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -A, --list-available[=REGEXP]
                          list available packages matching REGEXP"))
   (display (_ "
-  --show=PACKAGE         show details about PACKAGE"))
+      --show=PACKAGE     show details about PACKAGE"))
   (newline)
   (show-build-options-help)
   (newline)
@@ -556,6 +531,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'roll-back? #t result)
                            #f)))
+         (option '(#\m "manifest") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'manifest arg result)
+                           arg-handler)))
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result arg-handler)
                    (values (cons `(query list-generations ,(or arg ""))
@@ -570,10 +549,20 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'switch-generation arg result)
                            #f)))
-         (option '("search-paths") #f #f
+         (option '("search-paths") #f #t
                  (lambda (opt name arg result arg-handler)
-                   (values (cons `(query search-paths) result)
-                           #f)))
+                   (let ((kind (match arg
+                                 ((or "exact" "prefix" "suffix")
+                                  (string->symbol arg))
+                                 (#f
+                                  'exact)
+                                 (x
+                                  (leave (_ "~a: unsupported \
+kind of search path~%")
+                                         x)))))
+                     (values (cons `(query search-paths ,kind)
+                                   result)
+                             #f))))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'profile (canonicalize-profile arg)
@@ -822,6 +811,50 @@ more information.~%"))
     (define dry-run? (assoc-ref opts 'dry-run?))
     (define profile  (assoc-ref opts 'profile))
 
+    (define (build-and-use-profile manifest)
+      (let* ((bootstrap?  (assoc-ref opts 'bootstrap?)))
+
+        (when (equal? profile %current-profile)
+          (ensure-default-profile))
+
+        (let* ((prof-drv (run-with-store (%store)
+                           (profile-derivation
+                            manifest
+                            #:hooks (if bootstrap?
+                                        '()
+                                        %default-profile-hooks))))
+               (prof     (derivation->output-path prof-drv)))
+          (show-what-to-build (%store) (list prof-drv)
+                              #:use-substitutes?
+                              (assoc-ref opts 'substitutes?)
+                              #:dry-run? dry-run?)
+
+          (cond
+           (dry-run? #t)
+           ((and (file-exists? profile)
+                 (and=> (readlink* profile) (cut string=? prof <>)))
+            (format (current-error-port) (_ "nothing to be done~%")))
+           (else
+            (let* ((number (generation-number profile))
+
+                   ;; Always use NUMBER + 1 for the new profile,
+                   ;; possibly overwriting a "previous future
+                   ;; generation".
+                   (name   (generation-file-name profile
+                                                 (+ 1 number))))
+              (and (build-derivations (%store) (list prof-drv))
+                   (let* ((entries (manifest-entries manifest))
+                          (count   (length entries)))
+                     (switch-symlinks name prof)
+                     (switch-symlinks profile name)
+                     (unless (string=? profile %current-profile)
+                       (register-gc-root (%store) name))
+                     (format #t (N_ "~a package in profile~%"
+                                    "~a packages in profile~%"
+                                    count)
+                             count)
+                     (display-search-paths entries profile)))))))))
+
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
                 (not dry-run?))
@@ -856,60 +889,30 @@ more information.~%"))
                (alist-delete 'delete-generations opts)))
              (_ #f))
             opts))
+          ((assoc-ref opts 'manifest)
+           (let* ((file-name   (assoc-ref opts 'manifest))
+                  (user-module (make-user-module '((guix profiles)
+                                                   (gnu))))
+                  (manifest    (load* file-name user-module)))
+             (if (assoc-ref opts 'dry-run?)
+                 (format #t (_ "would install new manifest from '~a' with ~d entries~%")
+                         file-name (length (manifest-entries manifest)))
+                 (format #t (_ "installing new manifest from '~a' with ~d entries~%")
+                         file-name (length (manifest-entries manifest))))
+             (build-and-use-profile manifest)))
           (else
            (let* ((manifest    (profile-manifest profile))
                   (install     (options->installable opts manifest))
                   (remove      (options->removable opts manifest))
-                  (bootstrap?  (assoc-ref opts 'bootstrap?))
                   (transaction (manifest-transaction (install install)
                                                      (remove remove)))
                   (new         (manifest-perform-transaction
                                 manifest transaction)))
 
-             (when (equal? profile %current-profile)
-               (ensure-default-profile))
-
              (unless (and (null? install) (null? remove))
-               (let* ((prof-drv (run-with-store (%store)
-                                  (profile-derivation
-                                   new
-                                   #:hooks (if bootstrap?
-                                               '()
-                                               %default-profile-hooks))))
-                      (prof     (derivation->output-path prof-drv)))
-                 (show-manifest-transaction (%store) manifest transaction
-                                            #:dry-run? dry-run?)
-                 (show-what-to-build (%store) (list prof-drv)
-                                     #:use-substitutes?
-                                     (assoc-ref opts 'substitutes?)
-                                     #:dry-run? dry-run?)
-
-                 (cond
-                  (dry-run? #t)
-                  ((and (file-exists? profile)
-                        (and=> (readlink* profile) (cut string=? prof <>)))
-                   (format (current-error-port) (_ "nothing to be done~%")))
-                  (else
-                   (let* ((number (generation-number profile))
-
-                          ;; Always use NUMBER + 1 for the new profile,
-                          ;; possibly overwriting a "previous future
-                          ;; generation".
-                          (name   (generation-file-name profile
-                                                        (+ 1 number))))
-                     (and (build-derivations (%store) (list prof-drv))
-                          (let* ((entries (manifest-entries new))
-                                 (count   (length entries)))
-                            (switch-symlinks name prof)
-                            (switch-symlinks profile name)
-                            (unless (string=? profile %current-profile)
-                              (register-gc-root (%store) name))
-                            (format #t (N_ "~a package in profile~%"
-                                           "~a packages in profile~%"
-                                           count)
-                                    count)
-                            (display-search-paths entries
-                                                  profile))))))))))))
+               (show-manifest-transaction (%store) manifest transaction
+                                          #:dry-run? dry-run?)
+               (build-and-use-profile new))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
@@ -1014,11 +1017,13 @@ more information.~%"))
                       (find-packages-by-name name version)))
            #t))
 
-        (('search-paths)
+        (('search-paths kind)
          (let* ((manifest (profile-manifest profile))
                 (entries  (manifest-entries manifest))
+                (profile  (user-friendly-profile profile))
                 (settings (search-path-environment-variables entries profile
-                                                             (const #f))))
+                                                             (const #f)
+                                                             #:kind kind)))
            (format #t "~{~a~%~}" settings)
            #t))
 

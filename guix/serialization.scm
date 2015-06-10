@@ -279,17 +279,11 @@ sub-directories of FILE as needed."
          (write-string "type" p)
          (write-string "directory" p)
          (let ((entries
-                ;; NOTE: Guile 2.0.5's 'scandir' returns all subdirectories
-                ;; unconditionally, including "." and "..", regardless of the
-                ;; 'select?' predicate passed to it, so we have to filter
-                ;; those out externally.
-                (filter (negate (cut member <> '("." "..")))
-                        ;; 'scandir' defaults to 'string-locale<?' to sort
-                        ;; files, but this happens to be case-insensitive (at
-                        ;; least in 'en_US' locale on libc 2.18.)  Conversely,
-                        ;; we want files to be sorted in a case-sensitive
-                        ;; fashion.
-                        (scandir f (const #t) string<?))))
+                ;; 'scandir' defaults to 'string-locale<?' to sort files, but
+                ;; this happens to be case-insensitive (at least in 'en_US'
+                ;; locale on libc 2.18.)  Conversely, we want files to be
+                ;; sorted in a case-sensitive fashion.
+                (scandir f (negate (cut member <> '("." ".."))) string<?)))
            (for-each (lambda (e)
                        (let ((f (string-append f "/" e)))
                          (write-string "entry" p)

@@ -37,11 +37,21 @@
    (version "2.4.40")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                   "ftp://sunsite.cnlab-switch.ch/mirror/OpenLDAP/openldap-release/openldap-"
-                   version ".tgz"))
-            (sha256 (base32
-                     "1nyslrgwxwilgv5sixc37svls5rbvhsv9drb7hlrjr2vqaji29ni"))))
+
+            ;; See <http://www.openldap.org/software/download/> for a list of
+            ;; mirrors.
+            (uri (list (string-append
+                        "ftp://mirror.switch.ch/mirror/OpenLDAP/"
+                        "openldap-release/openldap-" version ".tgz")
+                       (string-append
+                        "ftp://ftp.OpenLDAP.org/pub/OpenLDAP/"
+                        "openldap-release/openldap-" version ".tgz")
+                       (string-append
+                        "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
+                        "openldap-release/openldap-" version ".tgz")))
+            (sha256
+             (base32
+              "1nyslrgwxwilgv5sixc37svls5rbvhsv9drb7hlrjr2vqaji29ni"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb)
              ("openssl" ,openssl)

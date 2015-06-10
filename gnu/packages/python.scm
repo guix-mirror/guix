@@ -26,7 +26,7 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
+                #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
                           psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
@@ -45,6 +45,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
@@ -628,6 +629,44 @@ datetime module, available in Python 2.3+.")
      "Parse human-readable date/time text")
     (license asl2.0)))
 
+(define-public python-pandas
+  (package
+    (name "python-pandas")
+    (version "0.16.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "pandas/pandas-" version ".tar.gz"))
+      (sha256
+       (base32 "1wfrp8dx1zcsry6f09ndza6qm1yr7f163211f4l9vjlnhxpxw4s0"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Three tests fail:
+       ;; - test_read_google
+       ;; - test_read_yahoo
+       ;; - test_month_range_union_tz_dateutil
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pytz" ,python-pytz)
+       ("python-dateutil" ,python-dateutil-2)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://pandas.pydata.org")
+    (synopsis "Data structures for data analysis, time series, and statistics")
+    (description
+     "Pandas is a Python package providing fast, flexible, and expressive data
+structures designed to make working with structured (tabular,
+multidimensional, potentially heterogeneous) and time series data both easy
+and intuitive.  It aims to be the fundamental high-level building block for
+doing practical, real world data analysis in Python.")
+    (license bsd-3)))
+
+(define-public python2-pandas
+  (package-with-python2 python-pandas))
+
 (define-public python-tzlocal
   (package
     (name "python-tzlocal")
@@ -1023,14 +1062,14 @@ syntax.")
 (define-public scons
   (package
     (name "scons")
-    (version "2.1.0")
+    (version "2.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/scons/scons-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "07cjn4afb2cljjrd3cr7xf062qq58z8q96f58z6yplhdyqafsfa1"))))
+               "0hdlci43wjz8maryj83mz04ir6rwcdrrzpd7cpzvdlzycqhdfmsb"))))
     (build-system python-build-system)
     (arguments
      ;; With Python 3.x, fails to build with a syntax error.
@@ -1598,6 +1637,33 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python2-certifi
   (package-with-python2 python-certifi))
 
+(define-public python-click
+  (package
+    (name "python-click")
+    (version "4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/click/click-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0294x9g28w6zgswl0rsygkwi0wf6n480gf7fiiw5f9az3xhh77pl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://click.pocoo.org")
+    (synopsis "Command line library for Python")
+    (description
+     "Click is a Python package for creating command line interfaces in a
+composable way with as little code as necessary.  Its name stands for
+\"Command Line Interface Creation Kit\".  It's highly configurable but comes
+with sensible defaults out of the box.")
+    (license bsd-3)))
+
+(define-public python2-click
+  (package-with-python2 python-click))
+
 (define-public python-requests
   (package
     (name "python-requests")
@@ -2065,6 +2131,101 @@ mining and data analysis.")
             (alist-delete
              "python-scipy" (package-propagated-inputs scikit))))))))
 
+(define-public python-scikit-image
+  (package
+    (name "python-scikit-image")
+    (version "0.11.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/scikit-image/scikit-image-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0jz416fqvpahqyffw8plmszzfj669w8wvf3y9clnr5lr6a7md3kn"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("python-pillow" ,python-pillow)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://scikit-image.org/")
+    (synopsis "Image processing in Python")
+    (description
+     "scikit-image is a collection of algorithms for image processing.")
+    (license bsd-3)))
+
+(define-public python2-scikit-image
+  (let ((scikit-image (package-with-python2 python-scikit-image)))
+    (package (inherit scikit-image)
+      (native-inputs
+       `(("python2-mock" ,python2-mock)
+         ,@(package-native-inputs scikit-image)))
+      (propagated-inputs
+       `(("python2-pytz" ,python2-pytz)
+         ,@(package-propagated-inputs scikit-image))))))
+
+(define-public python-redis
+  (package
+    (name "python-redis")
+    (version "2.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/redis/redis-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1701qjwn4n05q90fdg4bsg96s27xf5s4hsb4gxhv3xk052q3gyx4"))))
+    (build-system python-build-system)
+    ;; Tests require a running Redis server
+    (arguments '(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/andymccurdy/redis-py")
+    (synopsis "Redis Python client")
+    (description
+     "This package provides a Python interface to the Redis key-value store.")
+    (license license:expat)))
+
+(define-public python2-redis
+  (package-with-python2 python-redis))
+
+(define-public python-rq
+  (package
+    (name "python-rq")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/rq/rq-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0b0z5hn8wkfg300hx7816csgv3bcfamlr29fi3yzgqmpqxwj3fix"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-redis" ,python-redis)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://python-rq.org/")
+    (synopsis "Simple job queues for Python")
+    (description
+     "RQ (Redis Queue) is a simple Python library for queueing jobs and
+processing them in the background with workers.  It is backed by Redis and it
+is designed to have a low barrier to entry.")
+    (license bsd-2)))
+
+(define-public python2-rq
+  (package-with-python2 python-rq))
+
 (define-public python-cython
   (package
     (name "python-cython")
@@ -2122,7 +2283,7 @@ writing C extensions for Python as easy as Python itself.")
     (build-system python-build-system)
     (inputs
      `(("python-nose" ,python-nose)
-       ("atlas" ,atlas)))
+       ("openblas" ,openblas)))
     (native-inputs
      `(("gfortran" ,gfortran-4.8)))
     (arguments
@@ -2130,16 +2291,18 @@ writing C extensions for Python as easy as Python itself.")
        (alist-cons-before
         'build 'set-environment-variables
         (lambda* (#:key inputs #:allow-other-keys)
-          (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas")
-                                 "/lib/libtatlas.so"))
-                 ;; On single core CPUs only the serial library is created.
-                 (atlas-lib
-                  (if (file-exists? atlas-threaded)
-                      atlas-threaded
-                      (string-append (assoc-ref inputs "atlas")
-                                     "/lib/libsatlas.so"))))
-            (setenv "ATLAS" atlas-lib)))
+          (call-with-output-file "site.cfg"
+            (lambda (port)
+              (format port "[openblas]
+libraries = openblas
+library_dirs = ~a/lib
+include_dirs = ~a/include
+" (assoc-ref inputs "openblas") (assoc-ref inputs "openblas"))))
+          ;; Use "gcc" executable, not "cc".
+          (substitute* "numpy/distutils/system_info.py"
+            (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
+             "c = distutils.ccompiler.new_compiler(); c.set_executables(compiler='gcc',compiler_so='gcc',linker_exe='gcc',linker_so='gcc -shared')"))
+          #t)
         ;; Tests can only be run after the library has been installed and not
         ;; within the source directory.
         (alist-cons-after
@@ -2627,7 +2790,7 @@ services for your Python modules and applications.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "2.6.1")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
@@ -2635,17 +2798,19 @@ services for your Python modules and applications.")
                            "Pillow/Pillow-" version ".tar.gz"))
        (sha256
         (base32
-         "0iw36c73wkhz88wa78v6l43llsb080ihw8yq7adhfqxdib7l4hzr"))))
+         "15n92axxph2s3kvg68bki9gv3nzwgq7130kp7wbblpi1l0cc2q47"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-nose"       ,python-nose)))
     (inputs
-     `(("lcms"     ,lcms)
+     `(("freetype" ,freetype)
+       ("lcms"     ,lcms)
        ("zlib"     ,zlib)
        ("libjpeg"  ,libjpeg)
        ("openjpeg" ,openjpeg)
-       ("libtiff"  ,libtiff)))
+       ("libtiff"  ,libtiff)
+       ("libwebp"  ,libwebp)))
     (propagated-inputs
      `(;; Used at runtime for pkg_resources
        ("python-setuptools" ,python-setuptools)))
@@ -3113,9 +3278,7 @@ features useful for text console applications.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)))
+       ("dbus-glib" ,dbus-glib)))
     (synopsis "Python bindings for D-bus")
     (description "python-dbus provides bindings for libdbus, the reference
 implementation of D-Bus.")
@@ -3200,43 +3363,6 @@ libxml2 and libxslt.")
 
 (define-public python2-lxml
   (package-with-python2 python-lxml))
-
-(define-public python-pillow
-  (package
-    (name "python-pillow")
-    (version "2.7.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/P/Pillow/Pillow-"
-              version
-              ".tar.gz"))
-        (sha256
-          (base32
-            "1y0rysgd7vqpl5lh0lsra7j2k30azwxqlh5jnqk1i0pmfc735s96"))))
-    (build-system python-build-system)
-    (inputs
-      `(("freetype" ,freetype)
-        ("lcms" ,lcms)
-        ("libjpeg" ,libjpeg)
-        ("libtiff" ,libtiff)
-        ("openjpeg" ,openjpeg)
-        ("python-setuptools" ,python-setuptools)
-        ("zlib" ,zlib)))
-    (arguments
-     `(#:tests? #f)) ; no check target
-    (home-page "http://python-pillow.github.io/")
-    (synopsis "Pillow fork of Python Imaging Library")
-    (description "Pillow is a fork of the Python Imaging Library (PIL).")
-    ;; PIL license, see
-    ;; http://www.pythonware.com/products/pil/license.htm
-    (license (x11-style
-               "file://PKG-INFO"
-               "See http://www.pythonware.com/products/pil/license.htm"))))
-
-(define-public python2-pillow
-  (package-with-python2 python-pillow))
 
 (define-public python2-pil
   (package
@@ -3446,6 +3572,67 @@ providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
 
+(define-public python-seaborn
+  (package
+    (name "python-seaborn")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/seaborn/seaborn-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1236abw18ijjglmv60q85ckqrvgf5qyy4zlq7nz5aqfg6q87z3wc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
+    (synopsis "Statistical data visualization")
+    (description
+     "Seaborn is a library for making attractive and informative statistical
+graphics in Python.  It is built on top of matplotlib and tightly integrated
+with the PyData stack, including support for numpy and pandas data structures
+and statistical routines from scipy and statsmodels.")
+    (license bsd-3)))
+
+(define-public python2-seaborn
+  (let ((seaborn (package-with-python2 python-seaborn)))
+    (package (inherit seaborn)
+      (propagated-inputs
+       `(("python2-pytz" ,python2-pytz)
+         ,@(package-propagated-inputs seaborn))))))
+
+(define-public python-sympy
+  (package
+    (name "python-sympy")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/sympy/sympy/releases/download/sympy-"
+             version "/sympy-" version ".tar.gz"))
+       (sha256
+        (base32 "19yp0gy4i7p4g6l3b8vaqkj9qj7yqb5kqy0qgbdagpzgkdz958yz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.sympy.org/")
+    (synopsis "Python library for symbolic mathematics")
+    (description
+     "SymPy is a Python library for symbolic mathematics.  It aims to become a
+full-featured computer algebra system (CAS) while keeping the code as simple
+as possible in order to be comprehensible and easily extensible.")
+    (license bsd-3)))
+
+(define-public python2-sympy
+  (package-with-python2 python-sympy))
+
 (define-public python-testlib
   (package
     (name "python-testlib")
@@ -3606,3 +3793,37 @@ applications.")
 
 (define-public python2-waf
   (package-with-python2 python-waf))
+
+(define-public python-pyzmq
+  (package
+    (name "python-pyzmq")
+    (version "14.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pyzmq/pyzmq-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1frmbjykvhmdg64g7sn20c9fpamrsfxwci1nhhg8q7jgz5pq0ikp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--zmq=" (assoc-ref %build-inputs "zeromq")))
+       ;; FIXME: You must build pyzmq with 'python setup.py build_ext
+       ;; --inplace' for 'python setup.py test' to work.
+       #:tests? #f))
+    (inputs
+     `(("zeromq" ,zeromq)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/zeromq/pyzmq")
+    (synopsis "Python bindings for 0MQ")
+    (description
+     "PyZMQ is the official Python binding for the ZeroMQ messaging library.")
+    (license bsd-4)))
+
+(define-public python2-pyzmq
+  (package-with-python2 python-pyzmq))

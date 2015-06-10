@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <errno.h>
 #include <fcntl.h>
 
 #include <iostream>
@@ -87,8 +88,7 @@ void RemoteStore::openConnection(bool reserveSpace)
         processStderr();
     }
     catch (Error & e) {
-        throw Error(format("cannot start worker (%1%)")
-            % e.msg());
+        throw Error(format("cannot start daemon worker: %1%") % e.msg());
     }
 
     setOptions();
@@ -110,7 +110,7 @@ void RemoteStore::connectToDaemon()
        applications... */
     AutoCloseFD fdPrevDir = open(".", O_RDONLY);
     if (fdPrevDir == -1) throw SysError("couldn't open current directory");
-    chdir(dirOf(socketPath).c_str());
+    if (chdir(dirOf(socketPath).c_str()) == -1) throw SysError(format("couldn't change to directory of ‘%1%’") % socketPath);
     Path socketPathRel = "./" + baseNameOf(socketPath);
 
     struct sockaddr_un addr;
@@ -133,8 +133,6 @@ RemoteStore::~RemoteStore()
     try {
         to.flush();
         fdSocket.close();
-        if (child != -1)
-            child.wait(true);
     } catch (...) {
         ignoreException();
     }
@@ -387,7 +385,7 @@ Path RemoteStore::queryPathFromHashPart(const string & hashPart)
 }
 
 
-Path RemoteStore::addToStore(const Path & _srcPath,
+Path RemoteStore::addToStore(const string & name, const Path & _srcPath,
     bool recursive, HashType hashAlgo, PathFilter & filter, bool repair)
 {
     if (repair) throw Error("repairing is not supported when building through the Nix daemon");
@@ -397,13 +395,28 @@ Path RemoteStore::addToStore(const Path & _srcPath,
     Path srcPath(absPath(_srcPath));
 
     writeInt(wopAddToStore, to);
-    writeString(baseNameOf(srcPath), to);
+    writeString(name, to);
     /* backwards compatibility hack */
     writeInt((hashAlgo == htSHA256 && recursive) ? 0 : 1, to);
     writeInt(recursive ? 1 : 0, to);
     writeString(printHashType(hashAlgo), to);
-    dumpPath(srcPath, to, filter);
-    processStderr();
+
+    try {
+        to.written = 0;
+        to.warn = true;
+        dumpPath(srcPath, to, filter);
+        to.warn = false;
+        processStderr();
+    } catch (SysError & e) {
+        /* Daemon closed while we were sending the path. Probably OOM
+           or I/O error. */
+        if (e.errNo == EPIPE)
+            try {
+                processStderr();
+            } catch (EndOfFile & e) { }
+        throw;
+    }
+
     return readStorePath(from);
 }
 
@@ -564,6 +577,23 @@ void RemoteStore::clearFailedPaths(const PathSet & paths)
     readInt(from);
 }
 
+void RemoteStore::optimiseStore()
+{
+    openConnection();
+    writeInt(wopOptimiseStore, to);
+    processStderr();
+    readInt(from);
+}
+
+bool RemoteStore::verifyStore(bool checkContents, bool repair)
+{
+    openConnection();
+    writeInt(wopVerifyStore, to);
+    writeInt(checkContents, to);
+    writeInt(repair, to);
+    processStderr();
+    return readInt(from) != 0;
+}
 
 void RemoteStore::processStderr(Sink * sink, Source * source)
 {

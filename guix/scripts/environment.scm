@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +23,9 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
+  #:use-module (guix search-paths)
   #:use-module (guix utils)
   #:use-module (guix monads)
-  #:use-module (guix build utils)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (ice-9 format)
@@ -35,32 +36,20 @@
   #:use-module (srfi srfi-98)
   #:export (guix-environment))
 
-(define (for-each-search-path proc inputs derivations pure?)
-  "Apply PROC for each native search path in INPUTS in addition to 'PATH'.
-Use the output paths of DERIVATIONS to build each search path.  When PURE? is
-#t, the existing search path value is ignored.  Otherwise, the existing search
-path value is appended."
-  (let ((paths (append-map (lambda (drv)
-                             (map (match-lambda
-                                   ((_ . output)
-                                    (derivation-output-path output)))
-                                  (derivation-outputs drv)))
-                           derivations)))
-    (for-each (match-lambda
-               (($ <search-path-specification>
-                   variable directories separator)
-                (let* ((current (getenv variable))
-                       (path    (search-path-as-list directories paths))
-                       (value   (list->search-path-as-string path separator)))
-                  (proc variable
-                        (if (and current (not pure?))
-                            (string-append value separator current)
-                            value)))))
-              (cons* (search-path-specification
-                      (variable "PATH")
-                      (files '("bin" "sbin")))
-                     (delete-duplicates
-                      (append-map package-native-search-paths inputs))))))
+(define (evaluate-input-search-paths inputs derivations)
+  "Evaluate the native search paths of INPUTS, a list of packages, of the
+outputs of DERIVATIONS, and return a list of search-path/value pairs."
+  (let ((directories (append-map (lambda (drv)
+                                   (map (match-lambda
+                                          ((_ . output)
+                                           (derivation-output-path output)))
+                                        (derivation-outputs drv)))
+                                 derivations))
+        (paths       (cons $PATH
+                           (delete-duplicates
+                            (append-map package-native-search-paths
+                                        inputs)))))
+    (evaluate-search-paths paths directories)))
 
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables
@@ -80,15 +69,26 @@ as 'HOME' and 'USER' are left untouched."
 PURE? is #t, unset the variables in the current environment.  Otherwise,
 augment existing enviroment variables with additional search paths."
   (when pure? (purify-environment))
-  (for-each-search-path setenv inputs derivations pure?))
+  (for-each (match-lambda
+              ((($ <search-path-specification> variable _ separator) . value)
+               (let ((current (getenv variable)))
+                 (setenv variable
+                         (if (and current (not pure?))
+                             (string-append value separator current)
+                             value)))))
+            (evaluate-input-search-paths inputs derivations)))
 
 (define (show-search-paths inputs derivations pure?)
   "Display the needed search paths to build an environment that contains the
 packages within INPUTS.  When PURE? is #t, do not augment existing environment
 variables with additional search paths."
-  (for-each-search-path (lambda (variable value)
-                          (format #t "export ~a=\"~a\"~%" variable value))
-                        inputs derivations pure?))
+  (for-each (match-lambda
+              ((search-path . value)
+               (display
+                (search-path-definition search-path value
+                                        #:kind (if pure? 'exact 'prefix)))
+               (newline)))
+            (evaluate-input-search-paths inputs derivations)))
 
 (define (show-help)
   (display (_ "Usage: guix environment [OPTION]... PACKAGE...
@@ -102,6 +102,9 @@ shell command in that environment.\n"))
                          FILE evaluates to"))
   (display (_ "
   -E, --exec=COMMAND     execute COMMAND in new environment"))
+  (display (_ "
+      --ad-hoc           include all specified packages in the environment instead
+                         of only their inputs"))
   (display (_ "
       --pure             unset existing environment variables"))
   (display (_ "
@@ -147,6 +150,9 @@ shell command in that environment.\n"))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '("ad-hoc") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'ad-hoc? #t result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -191,12 +197,17 @@ packages."
   (delete-duplicates
    (append-map transitive-inputs packages)))
 
-;; TODO: Deduplicate these.
-(define show-what-to-build*
-  (store-lift show-what-to-build))
-
-(define set-build-options-from-command-line*
-  (store-lift set-build-options-from-command-line))
+(define (packages+propagated-inputs packages)
+  "Return a list containing PACKAGES plus all of their propagated inputs."
+  (delete-duplicates
+   (append packages
+           (map (match-lambda
+                  ((or (_ (? package? package))
+                       (_ (? package? package) _))
+                   package)
+                  (_ #f))
+                (append-map package-transitive-propagated-inputs
+                            packages)))))
 
 (define (build-inputs inputs opts)
   "Build the packages in INPUTS using the build options in OPTS."
@@ -225,9 +236,12 @@ packages."
       (let* ((opts  (parse-command-line args %options (list %default-options)
                                         #:argument-handler handle-argument))
              (pure? (assoc-ref opts 'pure))
+             (ad-hoc? (assoc-ref opts 'ad-hoc?))
              (command (assoc-ref opts 'exec))
-             (inputs (packages->transitive-inputs
-                      (pick-all (options/resolve-packages opts) 'package)))
+             (packages (pick-all (options/resolve-packages opts) 'package))
+             (inputs (if ad-hoc?
+                         (packages+propagated-inputs packages)
+                         (packages->transitive-inputs packages)))
              (drvs (run-with-store store
                      (mbegin %store-monad
                        (set-guile-for-build (default-guile))

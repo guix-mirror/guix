@@ -353,10 +353,11 @@ translated.")
               (base32
                "1xi1v1msz75qs0s4lkyf1psrksdppa3hwkg0mznc6gpw5flg3hdz"))))
     (build-system gnu-build-system)
-    (inputs
+    (propagated-inputs ; according to dbus-glib-1.pc
      `(("dbus" ,dbus)
-       ("expat" ,expat)
        ("glib" ,glib)))
+    (inputs
+     `(("expat" ,expat)))
     (native-inputs
      `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))

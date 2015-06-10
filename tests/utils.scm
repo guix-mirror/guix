@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +21,7 @@
   #:use-module ((guix config) #:select (%gzip))
   #:use-module (guix utils)
   #:use-module ((guix store) #:select (%store-prefix store-path-package-name))
+  #:use-module ((guix search-paths) #:select (string-tokenize*))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)

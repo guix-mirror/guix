@@ -63,7 +63,7 @@
                         (domains-to-browse '()))
   "Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
-\"zero-configuration\" host name lookups.
+\"zero-configuration\" host name lookups (see @uref{http://avahi.org/}).
 
 If @var{host-name} is different from @code{#f}, use that as the host name to
 publish for this machine; otherwise, use the machine's actual host name.

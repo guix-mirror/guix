@@ -95,7 +95,9 @@ caching facility provided by the library.")
 for CD-ROM and CD image file access.  It allows the developer to add CD
 access to an application without having to worry about the OS- and
 device-dependent properties of CD-ROM or the specific details of CD image
-formats.")
+formats.  It includes pycdio, a Python interface to libcdio, and
+libcdio-paranoia, a library providing jitter-free and error-free audio
+extraction from CDs.")
     (license gpl3+)))
 
 (define-public libcdio-paranoia
@@ -122,14 +124,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.3.8")
+    (version "1.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0zhhj9lr9z7hnb2alac54mc28w1l0mbanphhpmy3ylsi8rih84lh"))))
+               "0mhfxn2idkrw1i65a5y4gnb1fig85zpnszb9ax7w4a2v062y1l8b"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)

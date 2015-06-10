@@ -5,8 +5,11 @@ AC_MSG_RESULT([$guix_build_daemon])
 
 dnl C++ environment.  This macro must be used unconditionnaly.
 AC_PROG_CXX
+AC_LANG([C++])
 
 if test "x$guix_build_daemon" = "xyes"; then
+
+  GUIX_ASSERT_CXX11
 
   AC_PROG_RANLIB
   AC_CONFIG_HEADER([nix/config.h])
@@ -73,7 +76,7 @@ if test "x$guix_build_daemon" = "xyes"; then
 
   dnl Chroot support.
   AC_CHECK_FUNCS([chroot unshare])
-  AC_CHECK_HEADERS([sched.h sys/param.h sys/mount.h tr1/unordered_set])
+  AC_CHECK_HEADERS([sched.h sys/param.h sys/mount.h sys/syscall.h])
 
   if test "x$ac_cv_func_chroot" != "xyes"; then
     AC_MSG_ERROR(['chroot' function missing, bailing out])

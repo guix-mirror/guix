@@ -46,6 +46,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
@@ -547,6 +548,75 @@ URLs and extracting their actual media files.")
     (description "quvi is a command-line-tool suite to extract media files
 from streaming URLs.  It is a command-line wrapper for the libquvi library.")
     (license l:lgpl2.1+)))
+
+(define-public serf
+  (package
+    (name "serf")
+    (version "1.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://serf.googlecode.com/svn/src_releases/serf-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
+       (patches (map search-patch '("serf-comment-style-fix.patch"
+                                    "serf-deflate-buckets-test-fix.patch")))
+       (patch-flags '("-p0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("scons" ,scons)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("apr" ,apr)
+       ("apr-util" ,apr-util)
+       ("openssl" ,openssl)))
+    (inputs
+     `(;; TODO: Fix build with gss.
+       ;;("gss" ,gss)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       ;; TODO: Add scons-build-system and use it here.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scons-propagate-environment
+                    (lambda _
+                      ;; By design, SCons does not, by default, propagate
+                      ;; environment variables to subprocesses.  See:
+                      ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
+                      ;; Here, we modify the SConstruct file to arrange for
+                      ;; environment variables to be propagated.
+                      (substitute* "SConstruct"
+                        (("^env = Environment\\(")
+                         "env = Environment(ENV=os.environ, "))))
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((out      (assoc-ref outputs "out"))
+                          (apr      (assoc-ref inputs "apr"))
+                          (apr-util (assoc-ref inputs "apr-util"))
+                          (openssl  (assoc-ref inputs "openssl"))
+                          ;;(gss      (assoc-ref inputs "gss"))
+                          (zlib     (assoc-ref inputs "zlib")))
+                      (zero? (system* "scons"
+                                      (string-append "APR=" apr)
+                                      (string-append "APU=" apr-util)
+                                      (string-append "OPENSSL=" openssl)
+                                      ;;(string-append "GSSAPI=" gss)
+                                      (string-append "ZLIB=" zlib)
+                                      (string-append "PREFIX=" out))))))
+         (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
+         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+    (home-page "https://code.google.com/p/serf/")
+    (synopsis "High-performance asynchronous HTTP client library")
+    (description
+     "serf is a C-based HTTP client library built upon the Apache Portable
+Runtime (APR) library.  It multiplexes connections, running the read/write
+communication asynchronously.  Memory copies and transformations are kept to a
+minimum to provide high performance operation.")
+    ;; Most of the code is covered by the Apache License, Version 2.0, but the
+    ;; bundled CuTest framework uses a different non-copyleft license.
+    (license (list l:asl2.0 (l:non-copyleft "file://test/CuTest-README.txt")))))
 
 
 (define-public perl-apache-logformat-compiler

@@ -13,7 +13,9 @@
   .
   ((indent-tabs-mode . nil)
    (eval . (put 'eval-when 'scheme-indent-function 1))
+   (eval . (put 'call-with-prompt 'scheme-indent-function 1))
    (eval . (put 'test-assert 'scheme-indent-function 1))
+   (eval . (put 'test-assertm 'scheme-indent-function 1))
    (eval . (put 'test-equal 'scheme-indent-function 1))
    (eval . (put 'test-eq 'scheme-indent-function 1))
    (eval . (put 'call-with-input-string 'scheme-indent-function 1))
@@ -44,7 +46,7 @@
    (eval . (put 'emacs-substitute-sexps 'scheme-indent-function 1))
    (eval . (put 'emacs-substitute-variables 'scheme-indent-function 1))
    (eval . (put 'with-derivation-narinfo 'scheme-indent-function 1))
-   (eval . (put 'with-derivation-substitute 'scheme-indent-function 1))
+   (eval . (put 'with-derivation-substitute 'scheme-indent-function 2))
 
    (eval . (put 'syntax-parameterize 'scheme-indent-function 1))
    (eval . (put 'with-monad 'scheme-indent-function 1))

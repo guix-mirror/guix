@@ -4,6 +4,7 @@
 #include "local-store.hh"
 #include "globals.hh"
 
+#include <cstdlib>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -225,6 +226,22 @@ void LocalStore::optimiseStore(OptimiseStats & stats)
     }
 }
 
+static string showBytes(unsigned long long bytes)
+{
+    return (format("%.2f MiB") % (bytes / (1024.0 * 1024.0))).str();
+}
+
+void LocalStore::optimiseStore()
+{
+    OptimiseStats stats;
+
+    optimiseStore(stats);
+
+    printMsg(lvlError,
+        format("%1% freed by hard-linking %2% files")
+        % showBytes(stats.bytesFreed)
+        % stats.filesLinked);
+}
 
 void LocalStore::optimisePath(const Path & path)
 {

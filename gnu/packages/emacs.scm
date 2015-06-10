@@ -23,10 +23,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
@@ -146,6 +148,35 @@ editor (without an X toolkit)" )
     (arguments (append '(#:configure-flags '("--with-x-toolkit=no"))
                        (package-arguments emacs)))))
 
+(define-public guile-emacs
+  (package (inherit emacs)
+    (name "guile-emacs")
+    (version "20150512.41120e0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.hcoop.net/git/bpt/emacs.git")
+                    (commit "41120e0f595b16387eebfbf731fff70481de1b4b")))
+              (sha256
+               (base32
+                "0lvcvsz0f4mawj04db35p1dvkffdqkz8pkhc0jzh9j9x2i63kcz6"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("guile" ,guile-for-guile-emacs)
+       ,@(package-native-inputs emacs)))
+    (arguments
+     (substitute-keyword-arguments `(;; Build fails if we allow parallel build.
+                                     #:parallel-build? #f
+                                     ;; Tests aren't passing for now.
+                                     #:tests? #f
+                                     ,@(package-arguments emacs))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'autogen
+                      (lambda _
+                        (zero? (system* "sh" "autogen.sh"))))))))))
+
 
 ;;;
 ;;; Emacs hacking.
@@ -230,52 +261,115 @@ for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
 
+(define-public git-modes
+  (package
+    (name "git-modes")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magit/git-modes/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1biiss75bswx4alk85k3g9p0a3q3sc9i74h4mnrxc2rsk2iwhws0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build emacs-utils)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          ;; Don't put .el files in a 'git-modes'
+                          ;; sub-directory.
+                          (string-append "LISPDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/share/emacs/site-lisp"))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'install 'emacs-autoloads
+                             (lambda* (#:key outputs #:allow-other-keys)
+                               (let* ((out  (assoc-ref outputs "out"))
+                                      (lisp (string-append
+                                             out "/share/emacs/site-lisp/")))
+                                 (emacs-generate-autoloads ,name lisp)))))))
+    (native-inputs `(("emacs" ,emacs-no-x)))
+    (home-page "https://github.com/magit/git-modes")
+    (synopsis "Emacs major modes for Git configuration files")
+    (description
+     "This package provides Emacs major modes for editing various Git
+configuration files, such as .gitattributes, .gitignore, and .git/config.")
+    (license license:gpl3+)))
+
 (define-public magit
   (package
     (name "magit")
-    (version "1.2.1")
+    (version "1.4.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://github.com/magit/magit/releases/download/"
                    version "/" name "-" version ".tar.gz"))
              (sha256
-              (base32 "1in48g5l5xdc9cf2apnpgx73mqlz2njrpi1w52dgql4qxv3kg6gr"))))
+              (base32
+               "0bbvz6cma5vj6qxx9v2m60zqkjwgwjrdf9kp04iacybvrcm8vcg7"))))
     (build-system gnu-build-system)
-    (native-inputs `(("texinfo" ,texinfo)))
-    (inputs `(("emacs" ,emacs-no-x)
-              ("git" ,git)
+    (native-inputs `(("texinfo" ,texinfo)
+                     ("emacs" ,emacs-no-x)))
+    (inputs `(("git" ,git)
               ("git:gui" ,git "gui")))
+    (propagated-inputs `(("git-modes" ,git-modes)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build emacs-utils))
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
-       #:tests? #f  ; no check target
+
+       #:test-target "test"
+       #:tests? #f                          ;'tests/magit-tests.el' is missing
+
+       #:make-flags (list
+                     ;; Don't put .el files in a sub-directory.
+                     (string-append "lispdir=" (assoc-ref %outputs "out")
+                                    "/share/emacs/site-lisp"))
+
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "Makefile"
-              (("/usr/local") out)
-              (("/etc") (string-append out "/etc")))))
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((git (assoc-ref inputs "git"))
-                 (git:gui (assoc-ref inputs "git:gui")))
-             (emacs-substitute-variables "magit.el"
-               ("magit-git-executable" (string-append git "/bin/git"))
-               ("magit-gitk-executable" (string-append git:gui "/bin/gitk")))))
-         (alist-cons-after
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "Makefile"
+                (("/usr/local") out)
+                (("/etc") (string-append out "/etc"))))))
+         (add-before
+          'build 'patch-exec-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((git (assoc-ref inputs "git"))
+                  (git:gui (assoc-ref inputs "git:gui")))
+              (emacs-substitute-variables "magit.el"
+                ("magit-git-executable" (string-append git "/bin/git"))
+                ("magit-gitk-executable" (string-append git:gui
+                                                        "/bin/gitk"))))))
+         (add-before
+          'build 'augment-load-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Allow git-commit-mode.el & co. to be found.
+            (let ((git-modes (assoc-ref inputs "git-modes")))
+              (setenv "EMACSLOADPATH"
+                      (string-append ":" git-modes "/share/emacs/site-lisp"))
+              #t)))
+         (add-after
           'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
             (emacs-generate-autoloads
              ,name (string-append (assoc-ref outputs "out")
-                                  "/share/emacs/site-lisp/")))
-          %standard-phases)))))
+                                  "/share/emacs/site-lisp/")))))))
     (home-page "http://magit.github.io/")
     (synopsis "Emacs interface for the Git version control system")
     (description
@@ -284,6 +378,56 @@ You can review and commit the changes you have made to the tracked files, for
 example, and you can browse the history of past changes.  There is support for
 cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
+    (license license:gpl3+)))
+
+(define-public magit-svn
+  (package
+    (name "magit-svn")
+    (version "b69b79")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (commit version)
+                    (url "https://github.com/magit/magit-svn.git")))
+              (sha256
+               (base32
+                "07xxszd12r38s46sz8fn2qz26b7s88i022cqp3gmkmmj3j57kqv6"))))
+    (build-system trivial-build-system)
+    (inputs `(("emacs" ,emacs-no-x)
+              ("magit" ,magit)))
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build emacs-utils))
+
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (guix build emacs-utils))
+
+         (let* ((emacs    (string-append (assoc-ref %build-inputs "emacs")
+                                         "/bin/emacs"))
+                (magit    (string-append (assoc-ref %build-inputs "magit")
+                                         "/share/emacs/site-lisp"))
+                (commit   (string-append (assoc-ref %build-inputs
+                                                    "magit/git-modes")
+                                         "/share/emacs/site-lisp"))
+                (source   (assoc-ref %build-inputs "source"))
+                (lisp-dir (string-append %output "/share/emacs/site-lisp")))
+           (mkdir-p lisp-dir)
+           (copy-file (string-append source "/magit-svn.el")
+                      (string-append lisp-dir "/magit-svn.el"))
+
+           (with-directory-excursion lisp-dir
+             (parameterize ((%emacs emacs))
+               (emacs-generate-autoloads ,name lisp-dir)
+               (setenv "EMACSLOADPATH"
+                       (string-append ":" magit ":" commit))
+               (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))))))
+    (home-page "https://github.com/magit/magit-svn")
+    (synopsis "Git-SVN extension to Magit")
+    (description
+     "This package is an extension to Magit, the Git Emacs mode, providing
+support for Git-SVN.")
     (license license:gpl3+)))
 
 

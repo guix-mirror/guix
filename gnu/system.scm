@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix profiles)
+  #:use-module (guix ui)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile)
@@ -109,7 +110,7 @@
             (default %base-firmware))
 
   (host-name operating-system-host-name)          ; string
-  (hosts-file operating-system-hosts-file         ; M item | #f
+  (hosts-file operating-system-hosts-file         ; file-like | #f
               (default #f))
 
   (mapped-devices operating-system-mapped-devices ; list of <mapped-device>
@@ -119,7 +120,7 @@
                 (default '()))
 
   (users operating-system-users                   ; list of user accounts
-         (default '()))
+         (default %base-user-accounts))
   (groups operating-system-groups                 ; list of user groups
           (default %base-groups))
 
@@ -147,7 +148,7 @@
   (setuid-programs operating-system-setuid-programs
                    (default %setuid-programs))    ; list of string-valued gexps
 
-  (sudoers operating-system-sudoers               ; /etc/sudoers contents
+  (sudoers operating-system-sudoers               ; file-like
            (default %sudoers-specification)))
 
 
@@ -373,7 +374,7 @@ This is the GNU system.  Welcome.\n")
 
 (define (default-/etc/hosts host-name)
   "Return the default /etc/hosts file."
-  (text-file "hosts" (local-host-aliases host-name)))
+  (plain-file "hosts" (local-host-aliases host-name)))
 
 (define (emacs-site-file)
   "Return the Emacs 'site-start.el' file.  That file contains the necessary
@@ -439,11 +440,10 @@ on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
                         (pam-services '())
                         (profile "/run/current-system/profile")
                         hosts-file nss (shells '())
-                        (sudoers ""))
+                        (sudoers (plain-file "sudoers" "")))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
       ((pam.d      (pam-services->directory pam-services))
-       (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
        (shells     (shells-file shells))
        (emacs      (emacs-site-directory))
@@ -461,13 +461,39 @@ export TZDIR=\"" tzdata "/share/zoneinfo\"
 # Tell 'modprobe' & co. where to look for modules.
 export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
 
-export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
-export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
+# These variables are honored by OpenSSL (libssl) and Git.
+export SSL_CERT_DIR=/etc/ssl/certs
+export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
+export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
+
+# Crucial variables that could be missing the the profiles' 'etc/profile'
+# because they would require combining both profiles.
+# FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
 export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
-
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
+
+# Ignore the default value of 'PATH'.
+unset PATH
+
+# Load the system profile's settings.
+GUIX_PROFILE=/run/current-system/profile \\
+. /run/current-system/profile/etc/profile
+
+# Prepend setuid programs.
+export PATH=/run/setuid-programs:$PATH
+
+if [ -f \"$HOME/.guix-profile/etc/profile\" ]
+then
+  # Load the user profile's settings.
+  GUIX_PROFILE=\"$HOME/.guix-profile\" \\
+  . \"$HOME/.guix-profile/etc/profile\"
+else
+  # At least define this one so that basic things just work
+  # when the user installs their first package.
+  export PATH=\"$HOME/.guix-profile/bin:$PATH\"
+fi
 
 # Append the directory of 'site-start.el' to the search path.
 export EMACSLOADPATH=:/etc/emacs
@@ -476,18 +502,13 @@ export EMACSLOADPATH=:/etc/emacs
 # when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
 export DBUS_FATAL_WARNINGS=0
 
-# These variables are honored by OpenSSL (libssl) and Git.
-export SSL_CERT_DIR=/etc/ssl/certs
-export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
-export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
-
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 
 if [ -n \"$BASH_VERSION\" -a -f /etc/bashrc ]
 then
   # Load Bash-specific initialization code.
-  source /etc/bashrc
+  . /etc/bashrc
 fi
 "))
 
@@ -519,7 +540,7 @@ fi\n"))
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
-                  ("sudoers" ,#~#$sudoers)))))
+                  ("sudoers" ,sudoers)))))
 
 (define (operating-system-profile os)
   "Return a derivation that builds the system profile of OS."
@@ -549,6 +570,37 @@ fi\n"))
     (return (append users
                     (append-map service-user-accounts services)))))
 
+(define (maybe-string->file file-name thing)
+  "If THING is a string, return a <plain-file> with THING as its content.
+Otherwise just return THING.
+
+This is for backward-compatibility of fields that used to be strings and are
+now file-like objects.."
+  (match thing
+    ((? string?)
+     (warning (_ "using a string for file '~a' is deprecated; \
+use 'plain-file' instead~%")
+              file-name)
+     (plain-file file-name thing))
+    (x
+     x)))
+
+(define (maybe-file->monadic file-name thing)
+  "If THING is a value in %STORE-MONAD, return it as is; otherwise return
+THING in the %STORE-MONAD.
+
+This is for backward-compatibility of fields that used to be monadic values
+and are now file-like objects."
+  (with-monad %store-monad
+    (match thing
+      ((? procedure?)
+       (warning (_ "using a monadic value for '~a' is deprecated; \
+use 'plain-file' instead~%")
+                file-name)
+       thing)
+      (x
+       (return x)))))
+
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
   (mlet* %store-monad
@@ -559,8 +611,10 @@ fi\n"))
                              (append-map service-pam-services services)))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os))
-       (/etc/hosts  (or (operating-system-hosts-file os)
-                        (default-/etc/hosts (operating-system-host-name os))))
+       (/etc/hosts  (maybe-file->monadic
+                     "hosts"
+                     (or (operating-system-hosts-file os)
+                         (default-/etc/hosts (operating-system-host-name os)))))
        (shells      (user-shells os)))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
@@ -570,7 +624,9 @@ fi\n"))
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
                   #:shells shells
-                  #:sudoers (operating-system-sudoers os)
+                  #:sudoers (maybe-string->file
+                             "sudoers"
+                             (operating-system-sudoers os))
                   #:profile profile-drv)))
 
 (define %setuid-programs
@@ -587,8 +643,9 @@ fi\n"))
   ;; group can do anything.  See
   ;; <http://www.sudo.ws/sudo/man/1.8.10/sudoers.man.html>.
   ;; TODO: Add a declarative API.
-  "root ALL=(ALL) ALL
-%wheel ALL=(ALL) ALL\n")
+  (plain-file "sudoers" "\
+root ALL=(ALL) ALL
+%wheel ALL=(ALL) ALL\n"))
 
 (define (user-group->gexp group)
   "Turn GROUP, a <user-group> object, into a list-valued gexp suitable for
@@ -664,6 +721,8 @@ etc."
 
     (define group-specs
       (map user-group->gexp groups))
+
+    (assert-valid-users/groups accounts groups)
 
     (gexp->file "activate"
                 #~(begin

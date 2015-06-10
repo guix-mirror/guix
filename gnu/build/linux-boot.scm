@@ -418,7 +418,6 @@ to it are lost."
              (switch-root "/root")
              (format #t "loading '~a'...\n" to-load)
 
-             ;; TODO: Remove /lib, /share, and /loader.go.
              (primitive-load to-load)
 
              (format (current-error-port)

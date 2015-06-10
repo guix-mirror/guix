@@ -190,14 +190,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.2")
+    (version "2.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "14k7c5spai3yppz6izf1ggbnffskl54ln87v1wgy9pwism1mlks0"))))
+                "1c3c89b7ziknz6h1dnwmfjhgyy28g982rcncrhmhylb8v3npw4k4"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)
@@ -231,14 +231,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-2.0
   (package (inherit gnupg)
-    (version "2.0.27")
+    (version "2.0.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1wihx7dphacg9fy5wfj93h236lr1w5gwzh7ir3js37wi9cz6sr2p"))))
+                "0k2k399fnhfhhr4dvm8d6vs4ihq6gg06191lzfwikzaqmgj2w2ff"))))
     (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl)
@@ -300,7 +300,7 @@ libskba (working with X.509 certificates and CMS data).")
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
      `(("libgpg-error" ,libgpg-error)))
     (inputs
-     `(("gnupg" ,gnupg)
+     `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
     (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "http://www.gnupg.org/related_software/gpgme/")

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 #
 # This file is part of GNU Guix.
@@ -25,12 +25,16 @@ EXTRA_DIST +=					\
   doc/images/bootstrap-graph.eps		\
   doc/images/bootstrap-graph.pdf
 
-# Bundle this file so that makeinfo finds it in out-of-source-tree builds.
-BUILT_SOURCES        += doc/os-config.texi
-EXTRA_DIST           += doc/os-config.texi
-MAINTAINERCLEANFILES  = doc/os-config.texi
+OS_CONFIG_EXAMPLES_TEXI =			\
+  doc/os-config-bare-bones.texi			\
+  doc/os-config-desktop.texi
 
-doc/os-config.texi: gnu/system/os-config.tmpl
+# Bundle this file so that makeinfo finds it in out-of-source-tree builds.
+BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI)
+EXTRA_DIST           += $(OS_CONFIG_EXAMPLES_TEXI)
+MAINTAINERCLEANFILES  = $(OS_CONFIG_EXAMPLES_TEXI)
+
+doc/os-config-%.texi: gnu/system/examples/%.tmpl
 	$(MKDIR_P) "`dirname "$@"`"
 	cp "$<" "$@"
 
@@ -61,3 +65,45 @@ DOT_OPTIONS =					\
 pdf-local: $(top_srcdir)/doc/images/bootstrap-graph.pdf
 info-local: $(top_srcdir)/doc/images/bootstrap-graph.png
 ps-local: $(top_srcdir)/doc/images/bootstrap-graph.eps
+
+
+# Manual pages.
+
+doc/guix.1: scripts/guix
+	-LANGUAGE= $(top_builddir)/pre-inst-env	\
+	  $(HELP2MAN) --output="$@" guix
+
+doc/guix-daemon.1: guix-daemon
+	-LANGUAGE= $(top_builddir)/pre-inst-env	\
+	  $(HELP2MAN) --output="$@" guix-daemon
+
+define subcommand-manual-target
+
+doc/guix-$(1).1: scripts/guix guix/scripts/$(1).go
+	-LANGUAGE= $(top_builddir)/pre-inst-env		\
+	  $(HELP2MAN) --output="$$@" "guix $(1)"
+
+endef
+
+SUBCOMMANDS :=					\
+  archive					\
+  build						\
+  download					\
+  environment					\
+  gc						\
+  hash						\
+  import					\
+  lint						\
+  package					\
+  publish					\
+  pull						\
+  refresh					\
+  system
+
+$(eval $(foreach subcommand,$(SUBCOMMANDS),			\
+          $(call subcommand-manual-target,$(subcommand))))
+
+dist_man1_MANS =				\
+  doc/guix.1					\
+  doc/guix-daemon.1				\
+  $(SUBCOMMANDS:%=doc/guix-%.1)

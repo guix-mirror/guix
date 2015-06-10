@@ -3,6 +3,7 @@
 gnu/packages.scm
 gnu/system.scm
 gnu/services/dmd.scm
+gnu/system/shadow.scm
 guix/scripts/build.scm
 guix/scripts/download.scm
 guix/scripts/package.scm
@@ -19,3 +20,4 @@ guix/gnu-maintenance.scm
 guix/ui.scm
 guix/http-client.scm
 guix/nar.scm
+nix/nix-daemon/guix-daemon.cc

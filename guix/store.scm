@@ -90,6 +90,8 @@
             references
             requisites
             referrers
+            optimize-store
+            verify-store
             topologically-sorted
             valid-derivers
             query-derivation-outputs
@@ -120,6 +122,7 @@
             derivation-path?
             store-path-package-name
             store-path-hash-part
+            direct-store-path
             log-file))
 
 (define %protocol-version #x10c)
@@ -171,7 +174,9 @@
   (query-substitutable-path-infos 30)
   (query-valid-paths 31)
   (query-substitutable-paths 32)
-  (query-valid-derivers 33))
+  (query-valid-derivers 33)
+  (optimize-store 34)
+  (verify-store 35))
 
 (define-enumerate-type hash-algo
   ;; hash.hh
@@ -494,8 +499,8 @@ encoding conversion errors."
 
                             ;; Client-provided substitute URLs.  For
                             ;; unprivileged clients, these are considered
-                            ;; "untrusted"; for root, they override the
-                            ;; daemon's settings.
+                            ;; "untrusted"; for "trusted" users, they override
+                            ;; the daemon's settings.
                             (substitute-urls %default-substitute-urls))
   ;; Must be called after `open-connection'.
 
@@ -760,6 +765,25 @@ substitutable.  For each substitutable path, a `substitutable?' object is
 returned."
              substitutable-path-list))
 
+(define-operation (optimize-store)
+  "Optimize the store by hard-linking identical files (\"deduplication\".)
+Return #t on success."
+  ;; Note: the daemon in Guix <= 0.8.2 does not implement this RPC.
+  boolean)
+
+(define verify-store
+  (let ((verify (operation (verify-store (boolean check-contents?)
+                                         (boolean repair?))
+                           "Verify the store."
+                           boolean)))
+    (lambda* (store #:key check-contents? repair?)
+      "Verify the integrity of the store and return false if errors remain,
+and true otherwise.  When REPAIR? is true, repair any missing or altered store
+items by substituting them (this typically requires root privileges because it
+is not an atomic operation.)  When CHECK-CONTENTS? is true, check the contents
+of store items; this can take a lot of time."
+      (not (verify store check-contents? repair?)))))
+
 (define (run-gc server action to-delete min-freed)
   "Perform the garbage-collector operation ACTION, one of the
 `gc-action' values.  When ACTION is `delete-specific', the TO-DELETE is
@@ -1003,6 +1027,15 @@ valid inputs."
        (not (string=? path (%store-prefix)))
        (let ((len (+ 1 (string-length (%store-prefix)))))
          (not (string-index (substring path len) #\/)))))
+
+(define (direct-store-path path)
+  "Return the direct store path part of PATH, stripping components after
+'/gnu/store/xxxx-foo'."
+  (let ((prefix-length (+ (string-length (%store-prefix)) 35)))
+    (if (> (string-length path) prefix-length)
+        (let ((slash (string-index path #\/ prefix-length)))
+          (if slash (string-take path slash) path))
+        path)))
 
 (define (derivation-path? path)
   "Return #t if PATH is a derivation path."

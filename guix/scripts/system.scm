@@ -48,28 +48,14 @@
 
 (define %user-module
   ;; Module in which the machine description file is loaded.
-  (let ((module (make-fresh-user-module)))
-    (for-each (lambda (iface)
-                (module-use! module (resolve-interface iface)))
-              '((gnu system)
-                (gnu services)
-                (gnu system shadow)))
-    module))
+  (make-user-module '((gnu system)
+                      (gnu services)
+                      (gnu system shadow))))
 
 (define (read-operating-system file)
   "Read the operating-system declaration from FILE and return it."
-  ;; TODO: Factorize.
-  (catch #t
-    (lambda ()
-      ;; Avoid ABI incompatibility with the <operating-system> record.
-      (set! %fresh-auto-compile #t)
+  (load* file %user-module))
 
-      (save-module-excursion
-       (lambda ()
-         (set-current-module %user-module)
-         (primitive-load file))))
-    (lambda args
-      (report-load-error file args))))
 
 
 ;;;
@@ -81,8 +67,6 @@
   (store-lift references))
 (define topologically-sorted*
   (store-lift topologically-sorted))
-(define show-what-to-build*
-  (store-lift show-what-to-build))
 
 
 (define* (copy-item item target
@@ -92,6 +76,13 @@
     (let ((dest  (string-append target item))
           (state (string-append target "/var/guix")))
       (format log-port "copying '~a'...~%" item)
+
+      ;; Remove DEST if it exists to make sure that (1) we do not fail badly
+      ;; while trying to overwrite it (see <http://bugs.gnu.org/20722>), and
+      ;; (2) we end up with the right contents.
+      (when (file-exists? dest)
+        (delete-file-recursively dest))
+
       (copy-recursively item dest
                         #:log (%make-void-port "w"))
 
@@ -144,8 +135,9 @@ TARGET, and register them."
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
-  "Copy the output of OS-DRV and its dependencies to directory TARGET.  TARGET
-must be an absolute directory name since that's what 'guix-register' expects.
+  "Copy the closure of GRUB.CFG, which includes the output of OS-DRV, to
+directory TARGET.  TARGET must be an absolute directory name since that's what
+'guix-register' expects.
 
 When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   (define (maybe-copy to-copy)
@@ -161,12 +153,24 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
             ;; Copy items to the new store.
             (copy-closure to-copy target #:log-port log-port)))))
 
+  ;; Make sure TARGET is root-owned when running as root, but still allow
+  ;; non-root uses (useful for testing.)  See
+  ;; <http://lists.gnu.org/archive/html/guix-devel/2015-05/msg00452.html>.
+  (if (zero? (geteuid))
+      (chown target 0 0)
+      (warning (_ "not running as 'root', so \
+the ownership of '~a' may be incorrect!~%")
+               target))
+
+  (chmod target #o755)
   (let ((os-dir   (derivation->output-path os-drv))
         (format   (lift format %store-monad))
         (populate (lift2 populate-root-file-system %store-monad)))
 
     (mbegin %store-monad
-      (maybe-copy os-dir)
+      ;; Copy the closure of GRUB.CFG, which includes OS-DIR, GRUB's
+      ;; background image and so on.
+      (maybe-copy grub.cfg)
 
       ;; Create a bunch of additional files.
       (format log-port "populating '~a'...~%" target)
@@ -290,10 +294,6 @@ it atomically, and then run OS's activation script."
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
-(define (grub.cfg os)
-  "Return the GRUB configuration file for OS."
-  (operating-system-grub.cfg os (previous-grub-entries)))
-
 (define* (maybe-build drvs
                       #:key dry-run? use-substitutes?)
   "Show what will/would be built, and actually build DRVS, unless DRY-RUN? is
@@ -323,7 +323,10 @@ boot directly to the kernel or to the bootloader."
                                                 #:full-boot? full-boot?
                                                 #:mappings mappings))
        (grub      (package->derivation grub))
-       (grub.cfg  (grub.cfg os))
+       (grub.cfg  (operating-system-grub.cfg os
+                                             (if (eq? 'init action)
+                                                 '()
+                                                 (previous-grub-entries))))
        (drvs   -> (if (and grub? (memq action '(init reconfigure)))
                       (list sys grub grub.cfg)
                       (list sys)))
@@ -372,20 +375,24 @@ boot directly to the kernel or to the bootloader."
 Build the operating system declared in FILE according to ACTION.\n"))
   (newline)
   (display (_ "The valid values for ACTION are:\n"))
+  (newline)
   (display (_ "\
-  - 'reconfigure', switch to a new operating system configuration\n"))
+   reconfigure      switch to a new operating system configuration\n"))
   (display (_ "\
-  - 'build', build the operating system without installing anything\n"))
+   build            build the operating system without installing anything\n"))
   (display (_ "\
-  - 'vm', build a virtual machine image that shares the host's store\n"))
+   vm               build a virtual machine image that shares the host's store\n"))
   (display (_ "\
-  - 'vm-image', build a freestanding virtual machine image\n"))
+   vm-image         build a freestanding virtual machine image\n"))
   (display (_ "\
-  - 'disk-image', build a disk image, suitable for a USB stick\n"))
+   disk-image       build a disk image, suitable for a USB stick\n"))
   (display (_ "\
-  - 'init', initialize a root file system to run GNU.\n"))
+   init             initialize a root file system to run GNU.\n"))
 
   (show-build-options-help)
+  (display (_ "
+      --on-error=STRATEGY
+                         apply STRATEGY when an error occurs while reading FILE"))
   (display (_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (display (_ "
@@ -426,6 +433,10 @@ Build the operating system declared in FILE according to ACTION.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix system")))
+         (option '("on-error") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'on-error (string->symbol arg)
+                               result)))
          (option '("image-size") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
@@ -518,7 +529,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
            (action   (assoc-ref opts 'action))
            (system   (assoc-ref opts 'system))
            (os       (if file
-                         (read-operating-system file)
+                         (load* file %user-module
+                                #:on-error (assoc-ref opts 'on-error))
                          (leave (_ "no configuration file specified~%"))))
 
            (dry?     (assoc-ref opts 'dry-run?))
