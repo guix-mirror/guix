@@ -204,8 +204,8 @@ register_validity (LocalStore *store, std::istream &input,
 	 cross-device links.  Thus, temporarily switch the value of
 	 'settings.nixStore'.  */
       settings.nixStore = prefix + store_dir;
-      foreach (ValidPathInfos::const_iterator, i, infos)
-	store->optimisePath (prefix + i->path);
+      for (auto&& i: infos)
+	store->optimisePath (prefix + i.path);
       settings.nixStore = store_dir;
     }
 }
