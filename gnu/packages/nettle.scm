@@ -56,17 +56,17 @@ themselves.")
     (license gpl2+)))
 
 (define-public nettle
-  ;; This version is not API-compatible with version 2.  In particular GnuTLS
+  ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.1")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ly9kz5fgc8ilykz07crqwgjsfn4p2s6565gj1aq0w4fr179v1gn"))))
+                "0k1x57zviysvi91lkk66cg8v819vywm5g5yqs22wppfqcifx5m2z"))))
     (arguments
      (substitute-keyword-arguments (package-arguments nettle-2)
        ((#:configure-flags flags)
