@@ -76,6 +76,13 @@
     (let ((dest  (string-append target item))
           (state (string-append target "/var/guix")))
       (format log-port "copying '~a'...~%" item)
+
+      ;; Remove DEST if it exists to make sure that (1) we do not fail badly
+      ;; while trying to overwrite it (see <http://bugs.gnu.org/20722>), and
+      ;; (2) we end up with the right contents.
+      (when (file-exists? dest)
+        (delete-file-recursively dest))
+
       (copy-recursively item dest
                         #:log (%make-void-port "w"))
 
