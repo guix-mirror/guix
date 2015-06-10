@@ -13,6 +13,8 @@
 Copyright @copyright{} 2012, 2013, 2014, 2015 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
+Copyright @copyright{} 2015 Mathieu Lirzin@*
+Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer
 
 Permission is granted to copy, distribute and/or modify this document
@@ -88,7 +90,6 @@ Installation
 * Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
-* Running Guix Before It Is Installed:: Hacker tricks.
 
 Setting Up the Daemon
 
@@ -177,6 +178,21 @@ Packaging Guidelines
 * Perl Modules::                Little pearls.
 * Fonts::                       Fond of fonts.
 
+Contributing
+
+* Building from Git::           The latest and greatest.
+* Running Guix Before It Is Installed::  Hacker tricks.
+* The Perfect Setup::           The right tools.
+* Coding Style::                Hygiene of the contributor.
+* Submitting Patches::          Share your work.
+
+Coding Style
+
+* Programming Paradigm::        How to compose your elements.
+* Modules::                     Where to store your code?
+* Data Types and Pattern Matching::  Implementing data structures.
+* Formatting Code::             Writing conventions.
+
 @end detailmenu
 @end menu
 
@@ -253,7 +269,6 @@ instead, you want to install the complete GNU operating system,
 * Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
-* Running Guix Before It Is Installed::     Hacker tricks.
 @end menu
 
 @node Binary Installation
@@ -846,44 +861,6 @@ socket.  The default socket is
 useful in exceptional circumstances, such as if you need to run several
 daemons on the same machine.
 @end table
-
-@node Running Guix Before It Is Installed
-@section Running Guix Before It Is Installed
-
-If you are hacking Guix itself---which is a good idea!---you will find
-it useful to test the changes made in your local source tree checkout
-without actually installing them.
-
-To that end, all the command-line tools can be used even if you have not
-run @command{make install}.  To do that, prefix each command with
-@command{./pre-inst-env} (the @file{pre-inst-env} script lives in the
-top build tree of Guix), as in:
-
-@example
-$ sudo ./pre-inst-env guix-daemon --build-users-group=guixbuild
-$ ./pre-inst-env guix build hello
-@end example
-
-@noindent
-Similarly, for a Guile session using the Guix modules:
-
-@example
-$ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'
-@end example
-
-The @command{pre-inst-env} script sets up all the environment variables
-necessary to support this, including @code{PATH} and
-@code{GUILE_LOAD_PATH}.
-
-If you are hacking Guix from Emacs using the wonderful Geiser
-(@pxref{Introduction,,, geiser, Geiser User Manual}), make sure to
-augment Guile's load path so that it finds source files from your
-checkout:
-
-@lisp
-;; Assuming the Guix checkout is in ~/src/guix.
-(add-to-list 'geiser-guile-load-path "~/src/guix")
-@end lisp
 
 
 @c *********************************************************************
@@ -6788,22 +6765,8 @@ Second, some of the required packages could fail to build for that
 platform.  Lastly, the generated binaries could be broken for some
 reason.
 
-
 @c *********************************************************************
-@node Contributing
-@chapter Contributing
-
-This project is a cooperative effort, and we need your help to make it
-grow!  Please get in touch with us on @email{guix-devel@@gnu.org} and
-@code{#guix} on the Freenode IRC network.  We welcome ideas, bug
-reports, patches, and anything that may be helpful to the project.  We
-particularly welcome help on packaging (@pxref{Packaging Guidelines}).
-
-Please see the
-@url{http://git.savannah.gnu.org/cgit/guix.git/tree/HACKING,
-@file{HACKING} file} that comes with the Guix source code for practical
-details about contributions.
-
+@include contributing.texi
 
 @c *********************************************************************
 @node Acknowledgments

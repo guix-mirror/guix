@@ -2,141 +2,20 @@
 
 #+TITLE: Hacking GNU Guix and Its Incredible Distro
 
-Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-Copyright © 2014 Pierre-Antoine Rault <par@rigelk.eu>
+Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
+* Contributing
 
-* Building from Git
+See the manual for useful hacking informations, either by running
 
-When building Guix from a checkout, the following packages are required in
-addition to those mentioned in the installation instructions:
+  info -f doc/guix.info "(guix) Contributing"
 
-  - [[http://www.gnu.org/software/autoconf/][GNU Autoconf]]
-  - [[http://www.gnu.org/software/automake/][GNU Automake]]
-  - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
-  - [[http://www.graphviz.org/][Graphviz]]
-  - [[http://www.gnu.org/software/help2man/][GNU Help2man]] (optional)
-
-Run ‘./bootstrap’ to download the Nix daemon source code and to generate the
-build system infrastructure using autoconf.  It reports an error if an
-inappropriate version of the above packages is being used.
-
-If you get an error like this one:
-
-  configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES
-
-it probably means that Autoconf couldn’t find ‘pkg.m4’, which is provided by
-pkg-config.  Make sure that ‘pkg.m4’ is available.  For instance, if you
-installed Automake in ‘/usr/local’, it wouldn’t look for ‘.m4’ files in
-‘/usr/share’.  So you have to invoke the following command in that case
-
-  $ export ACLOCAL_PATH=/usr/share/aclocal
-
-See “info '(automake) Macro Search Path'” for more information.
-
-Then, run ‘./configure’ as usual.
-
-Finally, you have to invoke ‘make check’ to run tests.  If anything fails,
-take a look at “info '(guix) Installation'” or send a message to
-<guix-devel@gnu.org>.
-
-* Running Guix before it is installed
-
-See the same-named section in the manual.
-
-* The Perfect Setup
-
-The Perfect Setup to hack on Guix is basically the perfect setup used
-for Guile hacking (info "(guile) Using Guile in Emacs").  First, you
-need more than an editor, you need [[http://www.gnu.org/software/emacs][Emacs]], empowered by the wonderful
-[[http://nongnu.org/geiser/][Geiser]].
-
-Geiser allows for interactive and incremental development from within
-Emacs: code compilation and evaluation from within buffers, access to
-on-line documentation (docstrings), context-sensitive completion, M-. to
-jump to an object definition, a REPL to try out your code, and more.
-
-To actually edit the code, Emacs already has a neat Scheme mode.  But in
-addition to that, you must not miss [[http://www.emacswiki.org/emacs/ParEdit][Paredit]].  It provides facilities to
-directly operate on the syntax tree, such as raising an s-expression or
-wrapping it, swallowing or rejecting the following s-expression, etc.
-
-* Submitting Patches
-
-Development is done using the Git distributed version control system.  Thus,
-access to the repository is not strictly necessary.  We welcome contributions
-in the form of patches as produced by ‘git format-patch’ sent to
-guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog
-format]]; you can check the commit history for examples.
-
-Before submitting a patch that adds or modifies a package definition, please
-run ‘guix lint PACKAGE’, where PACKAGE is the name of the new or modified
-package, and fix any errors it reports.  In addition, please make sure the
-package builds on your platform, using ‘guix build’.  You may also want to
-check that dependent package (if applicable) are not affected by the change;
-‘guix refresh --list-dependent PACKAGE’ will help you do that.
-
-When posting a patch to the mailing list, use "[PATCH] ..." as a subject.  You
-may use your email client or the ‘git send-mail’ command.
-
-As you become a regular contributor, you may find it convenient to have write
-access to the repository (see below.)
-
-* Coding Style
-
-In general our code follows the [[info:standards][GNU Coding Standards]] (GCS).  However, the GCS
-do not say much about Scheme, so here are some additional rules.
-
-** Programming Paradigm
-
-Scheme code in Guix is written in a purely functional style.  One exception is
-code that involves input/output, and procedures that implement low-level
-concepts, such as the ‘memoize’ procedure.
-
-** Modules
-
-Guile modules that are meant to be used on the builder side must live in the
-(guix build …) name space.  They must not refer to other Guix or GNU modules.
-However, it is OK for a “host-side” module to use a build-side module.
-
-Modules that deal with the broader GNU system should be in the (gnu …) name
-space rather than (guix …).
-
-** Data Types and Pattern Matching
-
-The tendency in classical Lisp is to use lists to represent everything, and
-then to browse them “by hand” using ‘car’, ‘cdr’, ‘cadr’, and co.  There are
-several problems with that style, notably the fact that it is hard to read,
-error-prone, and a hindrance to proper type error reports.
-
-Guix code should define appropriate data types (for instance, using
-‘define-record-type*’) rather than abuse lists.  In addition, it should use
-pattern matching, via Guile’s (ice-9 match) module, especially when matching
-lists.
-
-** Formatting Code
-
-When writing Scheme code, we follow common wisdom among Scheme programmers.
-In general, we follow the [[http://mumble.net/~campbell/scheme/style.txt][Riastradh's Lisp Style Rules]].  This document happens
-to describe the conventions mostly used in Guile’s code too.  It is very
-thoughtful and well written, so please do read it.
-
-Some special forms introduced in Guix, such as the ‘substitute*’ macro, have
-special indentation rules.  These are defined in the .dir-locals.el file,
-which Emacs automatically uses.  If you do not use Emacs, please make sure to
-let your editor know the rules.
-
-We require all top-level procedures to carry a docstring.  This requirement
-can be relaxed for simple private procedures in the (guix build …) name space,
-though.
-
-Procedures should not have more than four positional parameters.  Use keyword
-parameters for procedures that take more than four parameters.
+or by checking the [[http://www.gnu.org/software/guix/manual/guix.html#Contributing][web copy of the manual]].
 
 * Commit Access
 

@@ -1,0 +1,216 @@
+@node Contributing
+@chapter Contributing
+
+This project is a cooperative effort, and we need your help to make it
+grow!  Please get in touch with us on @email{guix-devel@@gnu.org} and
+@code{#guix} on the Freenode IRC network.  We welcome ideas, bug
+reports, patches, and anything that may be helpful to the project.  We
+particularly welcome help on packaging (@pxref{Packaging Guidelines}).
+
+@menu
+* Building from Git::           The latest and greatest.
+* Running Guix Before It Is Installed::  Hacker tricks.
+* The Perfect Setup::           The right tools.
+* Coding Style::                Hygiene of the contributor.
+* Submitting Patches::          Share your work.
+@end menu
+
+@node Building from Git
+@section Building from Git
+
+If you want to hack Guix itself, it is recommended to use the latest
+version from the Git repository.  When building Guix from a checkout,
+the following packages are required in addition to those mentioned in
+the installation instructions (@pxref{Requirements}).
+
+@itemize
+@item @url{http://gnu.org/software/autoconf/, GNU Autoconf};
+@item @url{http://gnu.org/software/automake/, GNU Automake};
+@item @url{http://gnu.org/software/gettext/, GNU Gettext};
+@item @url{http://www.graphviz.org/, Graphviz};
+@item @url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
+@end itemize
+
+Run @command{./bootstrap} to download the Nix daemon source code and to
+generate the build system infrastructure using autoconf.  It reports an
+error if an inappropriate version of the above packages is being used.
+
+@noindent
+If you get an error like this one:
+
+@example
+configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES
+@end example
+
+it probably means that Autoconf couldn’t find @file{pkg.m4}, which is
+provided by @command{pkg-config}.  Make sure that @file{pkg.m4} is
+available.  For instance, if you installed Automake in
+@file{/usr/local}, it wouldn’t look for @file{.m4} files in
+@file{/usr/share}.  So you have to invoke the following command in that
+case
+
+@example
+export ACLOCAL_PATH=/usr/share/aclocal
+@end example
+
+See @pxref{Macro Search Path,,, automake, The GNU Automake Manual} for
+more information.
+
+Then, run @command{./configure} as usual.
+
+Finally, you have to invoke @code{make check} to run tests.  If anything
+fails, take a look at installation instructions (@pxref{Installation})
+or send a message to the @email{guix-devel@@gnu.org, mailing list}.
+
+
+@node Running Guix Before It Is Installed
+@section Running Guix Before It Is Installed
+
+In order to keep a sane working environment, you will find it useful to
+test the changes made in your local source tree checkout without
+actually installing them.  So that you can distinguish between your
+``end-user'' hat and your ``motley'' costume.
+
+To that end, all the command-line tools can be used even if you have not
+run @code{make install}.  To do that, prefix each command with
+@command{./pre-inst-env} (the @file{pre-inst-env} script lives in the
+top build tree of Guix), as in:
+
+@example
+$ sudo ./pre-inst-env guix-daemon --build-users-group=guixbuild
+$ ./pre-inst-env guix build hello
+@end example
+
+@noindent
+Similarly, for a Guile session using the Guix modules:
+
+@example
+$ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'
+@end example
+
+The @command{pre-inst-env} script sets up all the environment variables
+necessary to support this, including @env{PATH} and @env{GUILE_LOAD_PATH}.
+
+
+@node The Perfect Setup
+@section The Perfect Setup
+
+The Perfect Setup to hack on Guix is basically the perfect setup used
+for Guile hacking (@pxref{Using Guile in Emacs,,, guile, Guile Reference
+Manual}).  First, you need more than an editor, you need
+@url{http://www.gnu.org/software/emacs, Emacs}, empowered by the
+wonderful @url{http://nongnu.org/geiser/, Geiser}.
+
+Geiser allows for interactive and incremental development from within
+Emacs: code compilation and evaluation from within buffers, access to
+on-line documentation (docstrings), context-sensitive completion,
+@kbd{M-.} to jump to an object definition, a REPL to try out your code,
+and more (@pxref{Introduction,,, geiser, Geiser User Manual}).  For
+convenient Guix development, make sure to augment Guile’s load path so
+that it finds source files from your checkout:
+
+@lisp
+;; @r{Assuming the Guix checkout is in ~/src/guix.}
+(add-to-list 'geiser-guile-load-path "~/src/guix")
+@end lisp
+
+To actually edit the code, Emacs already has a neat Scheme mode.  But in
+addition to that, you must not miss
+@url{http://www.emacswiki.org/emacs/ParEdit, Paredit}.  It provides
+facilities to directly operate on the syntax tree, such as raising an
+s-expression or wrapping it, swallowing or rejecting the following
+s-expression, etc.
+
+
+@node Coding Style
+@section Coding Style
+
+In general our code follows the GNU Coding Standards (@pxref{Top,,,
+standards, GNU Coding Standards}).  However, they do not say much about
+Scheme, so here are some additional rules.
+
+@menu
+* Programming Paradigm::        How to compose your elements.
+* Modules::                     Where to store your code?
+* Data Types and Pattern Matching::  Implementing data structures.
+* Formatting Code::             Writing conventions.
+@end menu
+
+@node Programming Paradigm
+@subsection Programming Paradigm
+
+Scheme code in Guix is written in a purely functional style.  One
+exception is code that involves input/output, and procedures that
+implement low-level concepts, such as the @code{memoize} procedure.
+
+@node Modules
+@subsection Modules
+
+Guile modules that are meant to be used on the builder side must live in
+the @code{(guix build @dots{})} name space.  They must not refer to
+other Guix or GNU modules.  However, it is OK for a ``host-side'' module
+to use a build-side module.
+
+Modules that deal with the broader GNU system should be in the
+@code{(gnu @dots{})} name space rather than @code{(guix @dots{})}.
+
+@node Data Types and Pattern Matching
+@subsection Data Types and Pattern Matching
+
+The tendency in classical Lisp is to use lists to represent everything,
+and then to browse them ``by hand'' using @code{car}, @code{cdr},
+@code{cadr}, and co.  There are several problems with that style,
+notably the fact that it is hard to read, error-prone, and a hindrance
+to proper type error reports.
+
+Guix code should define appropriate data types (for instance, using
+@code{define-record-type*}) rather than abuse lists.  In addition, it
+should use pattern matching, via Guile’s @code{(ice-9 match)} module,
+especially when matching lists.
+
+@node Formatting Code
+@subsection Formatting Code
+
+When writing Scheme code, we follow common wisdom among Scheme
+programmers.  In general, we follow the
+@url{http://mumble.net/~campbell/scheme/style.txt, Riastradh's Lisp
+Style Rules}.  This document happens to describe the conventions mostly
+used in Guile’s code too.  It is very thoughtful and well written, so
+please do read it.
+
+Some special forms introduced in Guix, such as the @code{substitute*}
+macro, have special indentation rules.  These are defined in the
+@file{.dir-locals.el} file, which Emacs automatically uses.  If you do
+not use Emacs, please make sure to let your editor know the rules.
+
+We require all top-level procedures to carry a docstring.  This
+requirement can be relaxed for simple private procedures in the
+@code{(guix build @dots{})} name space, though.
+
+Procedures should not have more than four positional parameters.  Use
+keyword parameters for procedures that take more than four parameters.
+
+
+@node Submitting Patches
+@section Submitting Patches
+
+Development is done using the Git distributed version control system.
+Thus, access to the repository is not strictly necessary.  We welcome
+contributions in the form of patches as produced by @code{git
+format-patch} sent to the @email{guix-devel@@gnu.org, mailing list}.
+Please write commit logs in the ChangeLog format (@pxref{Change Logs,,,
+standards, GNU Coding Standards}); you can check the commit history for
+examples.
+
+Before submitting a patch that adds or modifies a package definition,
+please run @code{guix lint @var{package}}, where @var{package} is the
+name of the new or modified package, and fix any errors it reports
+(@pxref{Invoking guix lint}).  In addition, please make sure the package
+builds on your platform, using @code{guix build @var{package}}.  You may
+also want to check that dependent package (if applicable) are not
+affected by the change; @code{guix refresh --list-dependent
+@var{package}} will help you do that (@pxref{Invoking guix refresh}).
+
+When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as a
+subject.  You may use your email client or the @command{git send-mail}
+command.
