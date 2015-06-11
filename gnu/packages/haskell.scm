@@ -144,7 +144,7 @@
               (ghc-bootstrap-prefix
                (string-append ghc-bootstrap-path "/usr" )))
          (alist-cons-after
-          'unpack-bin 'unpack-and-fix-testsuite
+          'unpack-bin 'unpack-testsuite-and-fix-bins
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (with-directory-excursion ".."
               (copy-file (assoc-ref inputs "ghc-testsuite")
@@ -155,7 +155,9 @@
                       "testsuite/timeout/timeout.py"
                       "testsuite/timeout/timeout.hs"
                       "testsuite/tests/rename/prog006/Setup.lhs"
-                      "testsuite/tests/programs/life_space_leak/life.test")
+                      "testsuite/tests/programs/life_space_leak/life.test"
+                      "libraries/process/System/Process/Internals.hs"
+                      "libraries/unix/cbits/execvpe.c")
               (("/bin/sh") (which "sh"))
               (("/bin/rm") "rm"))
             #t)
