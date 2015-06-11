@@ -91,6 +91,16 @@ fields, and DELAYED is the list of identifiers of delayed fields."
                   #`(delay #,value))
                  (else value)))
 
+         (define default-values
+           ;; List of symbol/value tuples.
+           (map (match-lambda
+                  ((f v)
+                   (list (syntax->datum f) v)))
+                #'defaults))
+
+         (define (field-default-value f)
+           (car (assoc-ref default-values (syntax->datum f))))
+
          (define (field-bindings field+value)
            ;; Return field to value bindings, for use in 'let*' below.
            (map (lambda (field+value)
@@ -106,22 +116,15 @@ fields, and DELAYED is the list of identifiers of delayed fields."
                 #,(record-inheritance #'orig-record
                                       #'((field value) (... ...)))))
            ((_ (field value) (... ...))
-            (let ((fields (map syntax->datum #'(field (... ...))))
-                  (dflt   (map (match-lambda
-                                 ((f v)
-                                  (list (syntax->datum f) v)))
-                               #'defaults)))
-
+            (let ((fields (map syntax->datum #'(field (... ...)))))
               (define (field-value f)
                 (or (and=> (find (lambda (x)
                                    (eq? f (car (syntax->datum x))))
                                  #'((field value) (... ...)))
                            car)
-                    (let ((value
-                           (car (assoc-ref dflt (syntax->datum f)))))
-                      (wrap-field-value f value))))
+                    (wrap-field-value f (field-default-value f))))
 
-              (let ((fields (append fields (map car dflt))))
+              (let ((fields (append fields (map car default-values))))
                 (cond ((lset= eq? fields '(expected ...))
                        #`(let* #,(field-bindings
                                   #'((field value) (... ...)))
