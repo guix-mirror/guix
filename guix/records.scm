@@ -196,8 +196,8 @@ field."
       (syntax-case s (default)
         ((field (default val) _ ...)
          (list #'field #'val))
-        ((field _ options ...)
-         (field-default-value #'(field options ...)))
+        ((field _ properties ...)
+         (field-default-value #'(field properties ...)))
         (_ #f)))
 
     (define-field-property-predicate delayed-field? delayed)
@@ -210,7 +210,7 @@ field."
       ;; Return the name (an unhygienic syntax object) of the "real"
       ;; getter for field, which is assumed to be a wrapped field.
       (syntax-case field ()
-        ((field get options ...)
+        ((field get properties ...)
          (let* ((getter      (syntax->datum #'get))
                 (real-getter (symbol-append '% getter '-real)))
            (datum->syntax #'get real-getter)))))
@@ -219,7 +219,7 @@ field."
       ;; Convert a field spec of our style to a SRFI-9 field spec of the
       ;; form (field get).
       (syntax-case field ()
-        ((name get options ...)
+        ((name get properties ...)
          #`(name
             #,(if (wrapped-field? field)
                   (wrapped-field-accessor-name field)
@@ -247,12 +247,12 @@ field."
 
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
-          (field get options ...) ...)
-       (let* ((field-spec #'((field get options ...) ...))
+          (field get properties ...) ...)
+       (let* ((field-spec #'((field get properties ...) ...))
               (thunked    (filter-map thunked-field? field-spec))
               (delayed    (filter-map delayed-field? field-spec))
               (defaults   (filter-map field-default-value
-                                      #'((field options ...) ...))))
+                                      #'((field properties ...) ...))))
          (with-syntax (((field-spec* ...)
                         (map field-spec->srfi-9 field-spec))
                        ((thunked-field-accessor ...)
