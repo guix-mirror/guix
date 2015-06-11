@@ -282,14 +282,15 @@ in the store."
                             )))))
 
 (define* (download-to-store store url #:optional (name (basename url))
-                            #:key (log (current-error-port)))
+                            #:key (log (current-error-port)) recursive?)
   "Download from URL to STORE, either under NAME or URL's basename if
-omitted.  Write progress reports to LOG."
+omitted.  Write progress reports to LOG.  RECURSIVE? has the same effect as
+the same-named parameter of 'add-to-store'."
   (define uri
     (string->uri url))
 
   (if (or (not uri) (memq (uri-scheme uri) '(file #f)))
-      (add-to-store store name #f "sha256"
+      (add-to-store store name recursive? "sha256"
                     (if uri (uri-path uri) url))
       (call-with-temporary-output-file
        (lambda (temp port)
@@ -298,6 +299,6 @@ omitted.  Write progress reports to LOG."
                   (build:url-fetch url temp #:mirrors %mirrors))))
            (close port)
            (and result
-                (add-to-store store name #f "sha256" temp)))))))
+                (add-to-store store name recursive? "sha256" temp)))))))
 
 ;;; download.scm ends here

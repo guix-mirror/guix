@@ -3438,6 +3438,13 @@ candidates:
 guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
 @end example
 
+@dots{} or to build from a checkout in a pristine environment:
+
+@example
+$ git clone git://git.sv.gnu.org/guix.git
+$ guix build guix --with-source=./guix
+@end example
+
 @item --no-grafts
 Do not ``graft'' packages.  In practice, this means that package updates
 available as grafts are not applied.  @xref{Security Updates}, for more
