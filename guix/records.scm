@@ -51,6 +51,7 @@ fields, and DELAYED is the list of identifiers of delayed fields."
     ((_ type name ctor (expected ...)
         #:thunked thunked
         #:delayed delayed
+        #:innate innate
         #:defaults defaults)
      (define-syntax name
        (lambda (s)
@@ -73,8 +74,11 @@ fields, and DELAYED is the list of identifiers of delayed fields."
            #`(make-struct type 0
                           #,@(map (lambda (field index)
                                     (or (field-inherited-value field)
-                                        #`(struct-ref #,orig-record
-                                                      #,index)))
+                                        (if (innate-field? field)
+                                            (wrap-field-value
+                                             field (field-default-value field))
+                                            #`(struct-ref #,orig-record
+                                                          #,index))))
                                   '(expected ...)
                                   (iota (length '(expected ...))))))
 
@@ -83,6 +87,9 @@ fields, and DELAYED is the list of identifiers of delayed fields."
 
          (define (delayed-field? f)
            (memq (syntax->datum f) 'delayed))
+
+         (define (innate-field? f)
+           (memq (syntax->datum f) 'innate))
 
          (define (wrap-field-value f value)
            (cond ((thunked-field? f)
@@ -164,7 +171,8 @@ may look like this:
     thing?
     (name  thing-name (default \"chbouib\"))
     (port  thing-port
-           (default (current-output-port)) (thunked)))
+           (default (current-output-port)) (thunked))
+    (loc   thing-location (innate) (default (current-source-location))))
 
 This example defines a macro 'thing' that can be used to instantiate records
 of this type:
@@ -190,7 +198,8 @@ It is possible to copy an object 'x' created with 'thing' like this:
   (thing (inherit x) (name \"bar\"))
 
 This expression returns a new object equal to 'x' except for its 'name'
-field."
+field and its 'loc' field---the latter is marked as \"innate\", so it is not
+inherited."
 
     (define (field-default-value s)
       (syntax-case s (default)
@@ -202,6 +211,7 @@ field."
 
     (define-field-property-predicate delayed-field? delayed)
     (define-field-property-predicate thunked-field? thunked)
+    (define-field-property-predicate innate-field? innate)
 
     (define (wrapped-field? s)
       (or (thunked-field? s) (delayed-field? s)))
@@ -251,6 +261,7 @@ field."
        (let* ((field-spec #'((field get properties ...) ...))
               (thunked    (filter-map thunked-field? field-spec))
               (delayed    (filter-map delayed-field? field-spec))
+              (innate     (filter-map innate-field? field-spec))
               (defaults   (filter-map field-default-value
                                       #'((field properties ...) ...))))
          (with-syntax (((field-spec* ...)
@@ -278,6 +289,7 @@ field."
                                            (field ...)
                                            #:thunked #,thunked
                                            #:delayed #,delayed
+                                           #:innate #,innate
                                            #:defaults #,defaults))))))))
 
 (define* (alist->record alist make keys
