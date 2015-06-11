@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -605,7 +605,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
   (package (inherit pkg)
-    (location (source-properties->location (current-source-location)))
     (name (string-append (package-name pkg) "-tarball"))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)

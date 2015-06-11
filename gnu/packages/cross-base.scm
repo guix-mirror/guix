@@ -38,7 +38,6 @@
 
 (define (cross p target)
   (package (inherit p)
-    (location (source-properties->location (current-source-location)))
     (name (string-append (package-name p) "-cross-" target))
     (arguments
      (substitute-keyword-arguments (package-arguments p)

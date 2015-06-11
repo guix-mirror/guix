@@ -240,7 +240,8 @@ representation."
 
   (location package-location
             (default (and=> (current-source-location)
-                            source-properties->location))))
+                            source-properties->location))
+            (innate)))
 
 (set-record-type-printer! <package>
                           (lambda (package port)

@@ -123,7 +123,6 @@ languages.")
   ;; This is the version that you should use as an input to packages that just
   ;; need to byte-compile .el files.
   (package (inherit emacs)
-    (location (source-properties->location (current-source-location)))
     (name "emacs-no-x")
     (synopsis "The extensible, customizable, self-documenting text
 editor (console only)")
@@ -138,7 +137,6 @@ editor (console only)")
 
 (define-public emacs-no-x-toolkit
   (package (inherit emacs)
-    (location (source-properties->location (current-source-location)))
     (name "emacs-no-x-toolkit")
     (synopsis "The extensible, customizable, self-documenting text
 editor (without an X toolkit)" )
