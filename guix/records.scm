@@ -283,8 +283,8 @@ inherited."
                  (ctor field ...)
                  pred
                  field-spec* ...)
-               (begin thunked-field-accessor ...
-                      delayed-field-accessor ...)
+               thunked-field-accessor ...
+               delayed-field-accessor ...
                (make-syntactic-constructor type syntactic-ctor ctor
                                            (field ...)
                                            #:thunked #,thunked
