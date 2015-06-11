@@ -56,7 +56,7 @@
     (and (match (bar (x 1) (y (+ x 1)) (z (* y 2)))
            (($ <bar> 1 2 4) #t))
          (match (bar (x 7) (z (* x 3)))
-           (($ <bar> 7 42 21)))
+           (($ <bar> 7 42 21) #t))
          (match (bar (z 21) (x (/ z 3)))
            (($ <bar> 7 42 21) #t)))))
 
