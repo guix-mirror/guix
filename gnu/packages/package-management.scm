@@ -38,6 +38,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages bdw-gc))
@@ -150,7 +151,7 @@ the Nix package manager.")
   ;;
   ;; Note: use a short commit id; when using the long one, the limit on socket
   ;; file names is exceeded while running the tests.
-  (let ((commit "c2ee19e"))
+  (let ((commit "a43b55f"))
     (package (inherit guix-0.8.2)
       (version (string-append "0.8.2." commit))
       (source (origin
@@ -160,7 +161,8 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1gwc1gypgscxg2m3n2vd0mw4dmxr7vsisqgh3y0lr05q9z5742sj"))))
+                  "1r0l8gfh5nxc1j0sqj8ywkg280k9qbj7zsk33z84rvl7l0nwnk88"))
+                (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.2)
          ((#:phases phases)
@@ -180,6 +182,7 @@ the Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
+         ("help2man" ,help2man)
          ,@(package-native-inputs guix-0.8.2))))))
 
 (define-public guix guix-devel)
