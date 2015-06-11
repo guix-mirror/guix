@@ -142,6 +142,17 @@ fields, and DELAYED is the list of identifiers of delayed fields."
                                                       '(expected ...)
                                                       fields)))))))))))))
 
+(define-syntax-rule (define-field-property-predicate predicate property)
+  "Define PREDICATE as a procedure that takes a syntax object and, when passed
+a field specification, returns the field name if it has the given PROPERTY."
+  (define (predicate s)
+    (syntax-case s (property)
+      ((field (property values (... ...)) _ (... ...))
+       #'field)
+      ((field _ properties (... ...))
+       (predicate #'(field properties (... ...))))
+      (_ #f))))
+
 (define-syntax define-record-type*
   (lambda (s)
     "Define the given record type such that an additional \"syntactic
@@ -189,23 +200,8 @@ field."
          (field-default-value #'(field options ...)))
         (_ #f)))
 
-    (define (delayed-field? s)
-      ;; Return the field name if the field defined by S is delayed.
-      (syntax-case s (delayed)
-        ((field (delayed) _ ...)
-         #'field)
-        ((field _ options ...)
-         (delayed-field? #'(field options ...)))
-        (_ #f)))
-
-    (define (thunked-field? s)
-      ;; Return the field name if the field defined by S is thunked.
-      (syntax-case s (thunked)
-        ((field (thunked) _ ...)
-         #'field)
-        ((field _ options ...)
-         (thunked-field? #'(field options ...)))
-        (_ #f)))
+    (define-field-property-predicate delayed-field? delayed)
+    (define-field-property-predicate thunked-field? thunked)
 
     (define (wrapped-field? s)
       (or (thunked-field? s) (delayed-field? s)))
