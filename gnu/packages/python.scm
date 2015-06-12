@@ -2598,6 +2598,39 @@ toolkits.")
                                        (package-propagated-inputs
                                         matplotlib))))))))
 
+(define-public python2-pysnptools
+  (package
+    (name "python2-pysnptools")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pysnptools"
+             "/pysnptools-" version ".zip"))
+       (sha256
+        (base32
+         "1rzf5qvwfvd2pp84b14pb2gdvxdk5avnj7rb41ac8gndpkr9g6ib"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2)) ; only Python 2.7 is supported
+    (propagated-inputs
+     `(("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-pandas" ,python2-pandas)
+       ("python2-cython" ,python2-cython)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python2-setuptools" ,python2-setuptools)))
+    (home-page "http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/")
+    (synopsis "Library for reading and manipulating genetic data")
+    (description
+     "PySnpTools is a library for reading and manipulating genetic data.  It
+can, for example, efficiently read whole PLINK *.bed/bim/fam files or parts of
+those files.  It can also efficiently manipulate ranges of integers using set
+operators such as union, intersection, and difference.")
+    (license asl2.0)))
+
 (define-public python-scipy
   (package
     (name "python-scipy")
