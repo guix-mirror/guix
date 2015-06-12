@@ -1104,7 +1104,7 @@ that a read originated from a particular isoform.")
 (define-public orfm
   (package
     (name "orfm")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1112,7 +1112,7 @@ that a read originated from a particular isoform.")
                     version "/orfm-" version ".tar.gz"))
               (sha256
                (base32
-                "00jqvlspj9662ni9r4n1snxfnwkzc02i46g5nk1kwjshi6v3vgg3"))))
+                "05fmw145snk646ly076zby0fjav0k7ysbclck5d4s9pmgcfpijc2"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (synopsis "Simple and not slow open reading frame (ORF) caller")
