@@ -91,7 +91,10 @@
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))))
+                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))
+              (patches
+               ;; XXX Try removing this patch for perl-net-ssleay > 1.68
+               (list (search-patch "perl-net-ssleay-disable-ede-test.patch")))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments
