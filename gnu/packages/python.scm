@@ -2082,35 +2082,22 @@ sources.")
     (arguments
      `(#:phases
        (alist-cons-before
-        'build 'set-environment-variables
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas")
-                                 "/lib/libtatlas.so"))
-                 ;; On single core CPUs only the serial library is created.
-                 (atlas-lib
-                  (if (file-exists? atlas-threaded)
-                      atlas-threaded
-                      (string-append (assoc-ref inputs "atlas")
-                                     "/lib/libsatlas.so"))))
-            (setenv "ATLAS" atlas-lib)))
-        (alist-cons-before
-         'check 'set-HOME
-         ;; some tests require access to "$HOME"
-         (lambda _ (setenv "HOME" "/tmp"))
-         ;; Tests can only be run after the library has been installed and not
-         ;; within the source directory.
-         (alist-cons-after
-          'install 'check
-          (lambda _
-            (with-directory-excursion "/tmp"
-              ;; With Python 3 one test of 3334 fails
-              ;; (sklearn.tests.test_common.test_transformers); see
-              ;; https://github.com/scikit-learn/scikit-learn/issues/3693
-              (system* "nosetests" "-v" "sklearn")))
-          (alist-delete 'check %standard-phases))))))
+        'check 'set-HOME
+        ;; some tests require access to "$HOME"
+        (lambda _ (setenv "HOME" "/tmp"))
+        ;; Tests can only be run after the library has been installed and not
+        ;; within the source directory.
+        (alist-cons-after
+         'install 'check
+         (lambda _
+           (with-directory-excursion "/tmp"
+             ;; With Python 3 one test of 3334 fails
+             ;; (sklearn.tests.test_common.test_transformers); see
+             ;; https://github.com/scikit-learn/scikit-learn/issues/3693
+             (system* "nosetests" "-v" "sklearn")))
+         (alist-delete 'check %standard-phases)))))
     (inputs
-     `(("atlas" ,atlas)
+     `(("openblas" ,openblas)
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
