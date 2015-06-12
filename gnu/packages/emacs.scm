@@ -428,6 +428,70 @@ operations.")
 support for Git-SVN.")
     (license license:gpl3+)))
 
+(define-public haskell-mode
+  (package
+    (name "haskell-mode")
+    (version "13.14.2")
+    (source (origin
+              (method url-fetch)
+              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append
+                    "https://github.com/haskell/haskell-mode/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "1kxc2yj8vb122dv91r68h7c5ladcryx963fr16plfhg71fv7f9av"))))
+    (inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "EMACS="
+                                         (assoc-ref %build-inputs "emacs")
+                                         "/bin/emacs"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before
+          'build 'pre-build
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
+              (setenv "SHELL" "sh")
+              (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
+              #t)))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (el-dir (string-append out "/share/emacs/site-lisp"))
+                   (doc (string-append
+                         out "/share/doc/haskell-mode-" ,version))
+                   (info (string-append out "/share/info")))
+              (define (copy-to-dir dir files)
+                (mkdir-p dir)
+                (for-each
+                 (lambda (f)
+                   (copy-file f (string-append dir "/" (basename f))))
+                 files))
+
+              (with-directory-excursion "doc"
+                (unless (zero? (system* "makeinfo" "haskell-mode.texi"))
+                  (error "makeinfo failed"))
+                (mkdir-p info)
+                (copy-file "haskell-mode.info"
+                           (string-append info "/haskell-mode.info")))
+               (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
+               (copy-to-dir el-dir (find-files "." "\\.elc?"))
+               ;; these are now distributed with emacs
+               (with-directory-excursion el-dir
+                 (for-each delete-file '("cl-lib.el" "ert.el")))
+               #t))))))
+    (home-page "https://github.com/haskell/haskell-mode")
+    (synopsis "Haskell mode for Emacs")
+    (description
+     "This is an Emacs mode for editing, debugging and developing Haskell
+programs.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
