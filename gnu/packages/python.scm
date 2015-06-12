@@ -2285,7 +2285,8 @@ writing C extensions for Python as easy as Python itself.")
     (build-system python-build-system)
     (inputs
      `(("python-nose" ,python-nose)
-       ("openblas" ,openblas)))
+       ("openblas" ,openblas)
+       ("lapack" ,lapack)))
     (native-inputs
      `(("gfortran" ,gfortran-4.8)))
     (arguments
@@ -2295,11 +2296,21 @@ writing C extensions for Python as easy as Python itself.")
         (lambda* (#:key inputs #:allow-other-keys)
           (call-with-output-file "site.cfg"
             (lambda (port)
-              (format port "[openblas]
+              (format port
+                      "[openblas]
 libraries = openblas
 library_dirs = ~a/lib
 include_dirs = ~a/include
-" (assoc-ref inputs "openblas") (assoc-ref inputs "openblas"))))
+
+[lapack]
+lapack_libs = lapack
+library_dirs = ~a/lib
+include_dirs = ~a/include
+"
+                      (assoc-ref inputs "openblas")
+                      (assoc-ref inputs "openblas")
+                      (assoc-ref inputs "lapack")
+                      (assoc-ref inputs "lapack"))))
           ;; Use "gcc" executable, not "cc".
           (substitute* "numpy/distutils/system_info.py"
             (("c = distutils\\.ccompiler\\.new_compiler\\(\\)")
