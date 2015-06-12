@@ -2630,7 +2630,8 @@ toolkits.")
        ("python-pyparsing" ,python-pyparsing)
        ("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
-       ("atlas" ,atlas)))
+       ("lapack" ,lapack)
+       ("openblas" ,openblas)))
     (native-inputs
      `(("gfortran" ,gfortran-4.8)
        ("texlive" ,texlive)
@@ -2639,18 +2640,23 @@ toolkits.")
     (arguments
      `(#:phases
        (alist-cons-before
-        'build 'set-environment-variables
+        'build 'configure-openblas
         (lambda* (#:key inputs #:allow-other-keys)
-          (let* ((atlas-threaded
-                  (string-append (assoc-ref inputs "atlas")
-                                 "/lib/libtatlas.so"))
-                 ;; On single core CPUs only the serial library is created.
-                 (atlas-lib
-                  (if (file-exists? atlas-threaded)
-                      atlas-threaded
-                      (string-append (assoc-ref inputs "atlas")
-                                     "/lib/libsatlas.so"))))
-            (setenv "ATLAS" atlas-lib)))
+          (call-with-output-file "site.cfg"
+            (lambda (port)
+              (format port
+                      "[blas]
+libraries = openblas
+library_dirs = ~a/lib
+include_dirs = ~a/include
+[atlas]
+library_dirs = ~a/lib
+atlas_libs = openblas
+"
+                      (assoc-ref inputs "openblas")
+                      (assoc-ref inputs "openblas")
+                      (assoc-ref inputs "openblas"))))
+          #t)
         (alist-cons-after
          'install 'install-doc
          (lambda* (#:key outputs #:allow-other-keys)
