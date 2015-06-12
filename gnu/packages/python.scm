@@ -2068,7 +2068,7 @@ sources.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.15.2")
+    (version "0.16.1")
     (source
      (origin
        (method url-fetch)
@@ -2077,7 +2077,7 @@ sources.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1rb93h2q15f219sz60sczjb65rg70xjmnp0q4pkkaairx5s05q55"))))
+         "140skabifgc7lvvj873pnzlwx0ni6q8qkrsyad2ccjb3h8rxzkih"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
