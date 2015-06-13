@@ -99,7 +99,22 @@
                      (copy "x86_64")
                      (copy "mips64el")
                      (copy "armhf")
-                     #t)))))
+                     #t))
+                  (add-after
+                   'install 'wrap-program
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     ;; Make sure the 'guix' command finds GnuTLS and
+                     ;; Guile-JSON automatically.
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (json   (assoc-ref inputs "guile-json"))
+                            (gnutls (assoc-ref inputs "gnutls"))
+                            (path   (string-append
+                                     json "/share/guile/site/2.0:"
+                                     gnutls "/share/guile/site/2.0")))
+                       (wrap-program (string-append out "/bin/guix")
+                         `("GUILE_LOAD_PATH" ":" prefix (,path))
+                         `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+                       #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-no-x)))      ;for guix.el
     (inputs
