@@ -466,6 +466,34 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
     (home-page "https://github.com/drbrain/net-http-persistent")
     (license license:expat)))
 
+(define-public ruby-minitest
+  (package
+    (name "ruby-minitest")
+    (version "5.7.0")
+    (source (origin
+              (method git-fetch)
+              ;; No release tarballs nor git tags.  This is the commit
+              ;; corresponding to the addition of the release notes to
+              ;; History.rdoc.
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/minitest.git")
+                    (commit "e975248")))
+              (sha256
+               (base32
+                "09xjiahk7q8hid1i39ahrmghaslpj9n36zna72i3ah7kf1bh2l01"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Small test suite library for Ruby")
+    (description "Minitest provides a complete suite of Ruby testing
+facilities supporting TDD, BDD, mocking, and benchmarking.")
+    (home-page "https://github.com/seattlerb/minitest")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
