@@ -642,3 +642,25 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
 options and parsing command line flags.")
     (home-page "https://github.com/leejarvis/slop")
     (license license:expat)))
+
+(define-public ruby-multipart-post
+  (package
+    (name "ruby-multipart-post")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nicksieger/multipart-post/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03n271i3knfx4j9aingxzz2bajd379dw9nswsllviqc177lq1anm"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Multipart POST library for Ruby")
+    (description "Multipart-Post Adds multipart POST capability to Ruby's
+net/http library.")
+    (home-page "https://github.com/nicksieger/multipart-post")
+    (license license:expat)))
