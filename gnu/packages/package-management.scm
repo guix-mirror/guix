@@ -75,31 +75,31 @@
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
-       #:phases (alist-cons-before
-                 'configure 'copy-bootstrap-guile
-                 (lambda* (#:key system inputs #:allow-other-keys)
-                   (define (boot-guile-version arch)
-                     (if (string=? "armhf" arch)
-                         "2.0.11"
-                         "2.0.9"))
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'copy-bootstrap-guile
+                   (lambda* (#:key system inputs #:allow-other-keys)
+                     (define (boot-guile-version arch)
+                       (if (string=? "armhf" arch)
+                           "2.0.11"
+                           "2.0.9"))
 
-                   (define (copy arch)
-                     (let ((guile  (assoc-ref inputs
-                                              (string-append "boot-guile/"
-                                                             arch)))
-                           (target (string-append "gnu/packages/bootstrap/"
-                                                  arch "-linux/"
-                                                  "/guile-"
-                                                  (boot-guile-version arch)
-                                                  ".tar.xz")))
-                       (copy-file guile target)))
+                     (define (copy arch)
+                       (let ((guile  (assoc-ref inputs
+                                                (string-append "boot-guile/"
+                                                               arch)))
+                             (target (string-append "gnu/packages/bootstrap/"
+                                                    arch "-linux/"
+                                                    "/guile-"
+                                                    (boot-guile-version arch)
+                                                    ".tar.xz")))
+                         (copy-file guile target)))
 
-                   (copy "i686")
-                   (copy "x86_64")
-                   (copy "mips64el")
-                   (copy "armhf")
-                   #t)
-                 %standard-phases)))
+                     (copy "i686")
+                     (copy "x86_64")
+                     (copy "mips64el")
+                     (copy "armhf")
+                     #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-no-x)))      ;for guix.el
     (inputs
