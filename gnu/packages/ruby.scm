@@ -521,6 +521,34 @@ easier to re-run individual failing tests.")
     (home-page "https://github.com/seattlerb/minitest-sprint")
     (license license:expat)))
 
+(define-public ruby-minitest-bacon
+  (package
+    (name "ruby-minitest-bacon")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              ;; Same story as ruby-minitest.
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/minitest-bacon.git")
+                    (commit "38551d5")))
+              (sha256
+               (base32
+                "19r9fm41i0mm1xncqls8frbj1i9nr3sq1cx2mh878r6kdl02d70h"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Bacon compatibility library for minitest")
+    (description "Minitest-bacon extends minitest with bacon-like
+functionality, making it easier to migrate test suites from bacon to minitest.")
+    (home-page "https://github.com/seattlerb/minitest-bacon")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
