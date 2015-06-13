@@ -86,7 +86,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/dns.scm				\
   gnu/packages/docbook.scm			\
   gnu/packages/doxygen.scm			\
-  gnu/packages/dwm.scm				\
   gnu/packages/ebook.scm			\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
@@ -281,6 +280,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/statistics.scm			\
+  gnu/packages/suckless.scm			\
   gnu/packages/swig.scm				\
   gnu/packages/sxiv.scm				\
   gnu/packages/synergy.scm			\
