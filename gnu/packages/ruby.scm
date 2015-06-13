@@ -494,6 +494,33 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
     (home-page "https://github.com/seattlerb/minitest")
     (license license:expat)))
 
+(define-public ruby-minitest-sprint
+  (package
+    (name "ruby-minitest-sprint")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              ;; Same story as ruby-minitest.
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/minitest-sprint.git")
+                    (commit "49c02bc")))
+              (sha256
+               (base32
+                "0rbmxz94lqg5vjz60p8v2bzq8adwvmx501amvk0l124sfwmw94ms"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Fast test suite runner for minitest")
+    (description "Minitest-sprint is a test runner for minitest that makes it
+easier to re-run individual failing tests.")
+    (home-page "https://github.com/seattlerb/minitest-sprint")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
