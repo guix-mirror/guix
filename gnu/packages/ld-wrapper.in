@@ -143,12 +143,16 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
   (define path+files+args
     (fold (lambda (argument result)
             (match result
-              ((library-path library-files ("-dynamic-linker" . rest))
-               ;; When passed '-dynamic-linker ld.so', ignore 'ld.so'.
-               ;; See <http://bugs.gnu.org/20102>.
+              ((library-path library-files
+                             ((and flag
+                                   (or "-dynamic-linker" "-plugin"))
+                              . rest))
+               ;; When passed '-dynamic-linker ld.so', ignore 'ld.so'; when
+               ;; passed '-plugin liblto_plugin.so', ignore
+               ;; 'liblto_plugin.so'.  See <http://bugs.gnu.org/20102>.
                (list library-path
                      library-files
-                     (cons* argument "-dynamic-linker" rest)))
+                     (cons* argument flag rest)))
               ((library-path library-files previous-args)
                (cond ((string-prefix? "-L" argument) ;augment the search path
                       (list (append library-path
