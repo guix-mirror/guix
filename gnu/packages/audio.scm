@@ -1488,6 +1488,30 @@ to record and/or play sound using a callback function or a blocking read/write
 interface.")
     (license license:expat)))
 
+(define-public qsynth
+  (package
+    (name "qsynth")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/qsynth/qsynth-" version ".tar.gz"))
+       (sha256
+        (base32 "08kyn6cl755l9i1grzjx8yi3f8mgiz4gx0hgqad1n0d8yz85087b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no "check" phase
+    (inputs
+     `(("qt" ,qt)
+       ("fluidsynth" ,fluidsynth)))
+    (home-page "http://qsynth.sourceforge.net")
+    (synopsis "Graphical user interface for FluidSynth")
+    (description
+     "Qsynth is a GUI front-end application for the FluidSynth SoundFont
+synthesizer written in C++.")
+    (license license:gpl2+)))
+
 (define-public rsound
   (package
     (name "rsound")
