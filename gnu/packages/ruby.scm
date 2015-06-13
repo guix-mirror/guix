@@ -28,6 +28,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages version-control)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -569,4 +570,53 @@ functionality, making it easier to migrate test suites from bacon to minitest.")
     (description "Daemons provides a way to wrap existing Ruby scripts to be
 run as a daemon and to be controlled by simple start/stop/restart commands.")
     (home-page "https://github.com/thuehlinger/daemons")
+    (license license:expat)))
+
+(define-public ruby-git
+  (package
+    (name "ruby-git")
+    (version "1.2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/schacon/ruby-git/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08zg20zc7f7yy34ix2qdd8jbiz7xhjc8alk370869sq3h75hs9jc"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'patch-git-binary
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Make the default git binary an absolute path to the
+                      ;; store.
+                      (let ((git (string-append (assoc-ref inputs "git")
+                                                "/bin/git")))
+                        (substitute* '("lib/git/config.rb")
+                          (("'git'")
+                           (string-append "'" git "'")))
+                        ;; Fix a test that expects the binary to be simply
+                        ;; 'git'.
+                        (substitute* '("tests/units/test_logger.rb")
+                          (("def test_logger")
+                           (string-append
+                            "def test_logger\n"
+                            "Git::Base.config.binary_path = 'git'")))
+                        #t)))
+                  (add-before 'check 'create-fake-home
+                    (lambda _
+                      ;; The test suite runs 'git config --global' commands,
+                      ;; so a fake home directory is needed for them to
+                      ;; succeed.
+                      (let ((fake-home (string-append (getcwd) "/fake-home")))
+                        (mkdir fake-home)
+                        (setenv "HOME" fake-home)))))))
+    (inputs
+     `(("git" ,git)))
+    (synopsis "Ruby wrappers for Git")
+    (description "Ruby/Git is a Ruby library that can be used to create, read
+and manipulate Git repositories by wrapping system calls to the git binary.")
+    (home-page "https://github.com/schacon/ruby-git")
     (license license:expat)))
