@@ -221,7 +221,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 
 (define-public qt-4
   (package (inherit qt)
-    (version "4.8.6")
+    (version "4.8.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -231,7 +231,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0b036iqgmbbv37dgwwfihw3mihjbnw3kb5kaisdy0qi8nn8xs54b"))
+               "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
              (patches (map search-patch
                            '("qt4-ldflags.patch" "qt4-tests.patch")))))
     (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
