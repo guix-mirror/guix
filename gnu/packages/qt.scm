@@ -93,7 +93,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.4.1")
+    (version "5.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -103,7 +103,7 @@ X11 (yet).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0q6qzakq8xihw91xv310qi3vyylq7x2bzdkjgy8sqxii2lgbjzhv"))
+               "09gay5cimfdb0apy60v7z4r4zkl2vjysdppzihpla8dp2c30fvcc"))
              (patches (list (search-patch "qt5-conflicting-typedefs.patch")
                             (search-patch "qt5-runpath.patch")))
              (snippet
