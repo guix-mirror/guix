@@ -29,13 +29,13 @@
 (define-public screen
   (package
     (name "screen")
-    (version "4.2.1")
+    (version "4.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "105hp6qdd8rl71p81klmxiz4mlb60kh9r7czayrx40g38x858s2l"))))
+              (base32 "0ilccnwszaxr9wbrx0swh4fisha2rj2jiq76fwqikmv0rjdyhr2i"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses", ncurses)
