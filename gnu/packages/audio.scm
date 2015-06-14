@@ -1625,6 +1625,49 @@ with a much different focus than most other audio daemons.")
 engine.")
     (license license:gpl3+)))
 
+(define-public zita-resampler
+  (package
+    (name "zita-resampler")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-resampler-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0r9ary5sc3y8vba5pad581ha7mgsrlyai83w7w4x2fmhfy64q0wq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-makefile-and-enter-directory
+          (lambda _
+            (substitute* "libs/Makefile"
+              (("ldconfig") "true")
+              (("^LIBDIR =.*") "LIBDIR = lib\n"))
+            (chdir "libs")
+            #t))
+         (add-after
+          'install 'install-symlink
+          (lambda _
+            (symlink "libzita-resampler.so"
+                     (string-append (assoc-ref %outputs "out")
+                                    "/lib/libzita-resampler.so.1"))))
+         ;; no configure script
+         (delete 'configure))))
+    (home-page "http://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
+    (synopsis "C++ library for resampling audio signals")
+    (description
+     "Libzita-resampler is a C++ library for resampling audio signals.  It is
+designed to be used within a real-time processing context, to be fast, and to
+provide high-quality sample rate conversion.")
+    (license license:gpl3+)))
+
 (define-public zita-alsa-pcmi
   (package
     (name "zita-alsa-pcmi")
