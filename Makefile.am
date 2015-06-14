@@ -264,7 +264,6 @@ EXTRA_DIST =						\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
-  build-aux/list-packages.scm				\
   build-aux/make-binary-tarball.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
