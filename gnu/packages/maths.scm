@@ -560,7 +560,6 @@ scientific applications modeled by partial differential equations.")
 
 (define-public petsc-complex
   (package (inherit petsc)
-    (location (source-properties->location (current-source-location)))
     (name "petsc-complex")
     (arguments
      (substitute-keyword-arguments (package-arguments petsc)

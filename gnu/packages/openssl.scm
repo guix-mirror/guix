@@ -29,14 +29,14 @@
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2a")
+   (version "1.0.2b")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0jijgzf72659pikms2bc5w31h78xrd1h5zp2r01an2h340y3kdhm"))
+              "0gwf4fy1yqmai6wph0g9lh09iarwxaa70hm7jm0rf1qakz68im6m"))
             (patches (list (search-patch "openssl-runpath.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
@@ -91,7 +91,10 @@
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))))
+                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))
+              (patches
+               ;; XXX Try removing this patch for perl-net-ssleay > 1.68
+               (list (search-patch "perl-net-ssleay-disable-ede-test.patch")))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments

@@ -56,7 +56,7 @@
     (and (match (bar (x 1) (y (+ x 1)) (z (* y 2)))
            (($ <bar> 1 2 4) #t))
          (match (bar (x 7) (z (* x 3)))
-           (($ <bar> 7 42 21)))
+           (($ <bar> 7 42 21) #t))
          (match (bar (z 21) (x (/ z 3)))
            (($ <bar> 7 42 21) #t)))))
 
@@ -89,6 +89,20 @@
      (and (match a (($ <foo> 77 42) #t))
           (match b (($ <foo> 1 2) #t))
           (equal? b c)))))
+
+(test-assert "define-record-type* & inherit & innate"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar (innate) (default 42)))
+    (let* ((a (foo (bar 1)))
+           (b (foo (inherit a)))
+           (c (foo (inherit a) (bar 3)))
+           (d (foo)))
+      (and (match a (($ <foo> 1) #t))
+           (match b (($ <foo> 42) #t))
+           (match c (($ <foo> 3) #t))
+           (match d (($ <foo> 42) #t))))))
 
 (test-assert "define-record-type* & thunked"
   (begin
@@ -138,6 +152,22 @@
                (eq? (foo-bar y) (mark)))
              (parameterize ((mark (cons 'a 'b)))
                (eq? (foo-baz y) (mark))))))))
+
+(test-assert "define-record-type* & thunked & innate"
+  (let ((mark (make-parameter #f)))
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar (thunked) (innate) (default (mark)))
+      (baz foo-baz (default #f)))
+
+    (let* ((x (foo (bar 42)))
+           (y (foo (inherit x) (baz 'unused))))
+      (and (procedure? (struct-ref x 0))
+           (equal? (foo-bar x) 42)
+           (parameterize ((mark (cons 'a 'b)))
+             (eq? (foo-bar y) (mark)))
+           (parameterize ((mark (cons 'a 'b)))
+             (eq? (foo-bar y) (mark)))))))
 
 (test-assert "define-record-type* & delayed"
   (begin

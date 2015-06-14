@@ -65,7 +65,6 @@
   (package-with-bootstrap-guile
    (package (inherit gnu-make)
      (name "make-boot0")
-     (location (source-properties->location (current-source-location)))
      (arguments
       `(#:guile ,%bootstrap-guile
         #:implicit-inputs? #f
@@ -93,7 +92,6 @@
                                             ,@%bootstrap-inputs)
                                           #:guile %bootstrap-guile)))
      (package (inherit p)
-       (location (source-properties->location (current-source-location)))
        (arguments `(#:tests? #f         ; the test suite needs diffutils
                     ,@(package-arguments p)))))))
 
@@ -552,7 +550,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; The final GCC.
   (package (inherit gcc-boot0)
     (name "gcc")
-    (location (source-properties->location (current-source-location)))
 
     ;; XXX: Currently #:allowed-references applies to all the outputs but the
     ;; "debug" output contains disallowed references, notably

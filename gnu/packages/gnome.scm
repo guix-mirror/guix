@@ -1854,6 +1854,40 @@ library.")
 library.")
     (license license:lgpl2.0+)))
 
+(define-public librest
+  (package
+    (name "librest")
+    (version "0.7.93")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/rest/"
+                                  (version-major+minor version)  "/"
+                                  "rest-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05mj10hhiik23ai8w4wkk5vhsp7hcv24bih5q3fl82ilam268467"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; tests require internet connection
+       #:configure-flags
+       '("--with-ca-certificates=/etc/ssl/certs/ca-certificates.crt")))
+    (native-inputs
+     `(("glib-mkenums" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; rest-0.7.pc refers to all these.
+     `(("glib"    ,glib)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)))
+    (home-page "http://www.gtk.org/")
+    (synopsis "RESTful web api query library")
+    (description
+     "This library was designed to make it easier to access web services that
+claim to be \"RESTful\".  It includes convenience wrappers for libsoup and
+libxml to ease remote use of the RESTful API.")
+    (license license:lgpl2.1+)))
+
 (define-public libsoup
   (package
     (name "libsoup")

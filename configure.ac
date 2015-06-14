@@ -179,7 +179,7 @@ AC_CACHE_SAVE
 m4_include([config-daemon.ac])
 
 dnl `dot' (from the Graphviz package) is only needed for maintainers.
-dnl See `HACKING' for more info.
+dnl See `Building from Git' in the manual for more info.
 AM_MISSING_PROG([DOT], [dot])
 
 dnl Manual pages.

@@ -46,8 +46,8 @@ See the manual for the installation instructions, either by running
 
 or by checking the [[http://www.gnu.org/software/guix/manual/guix.html#Installation][web copy of the manual]].
 
-For information on installation from a Git checkout, please see the ‘HACKING’
-file.
+For information on installation from a Git checkout, please see the section
+"Building from Git" in the manual.
 
 * Installing Guix from Guix
 

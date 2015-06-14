@@ -259,6 +259,27 @@ easily construct JSON objects in C, output them as JSON formatted strings and
 parse JSON formatted strings back into the C representation of JSON objects.")
     (license l:x11)))
 
+(define-public rapidjson
+  (package
+    (name "rapidjson")
+    (version "1.0.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/miloyip/rapidjson/archive/v"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0rl6s0vg5y1dhh9vfl1lqay3sxf69sxjh0czxrjmasn7ng91wwf3"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/miloyip/rapidjson")
+    (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
+    (description
+     "RapidJSON is a fast JSON parser/generator for C++ with both SAX/DOM
+style API.")
+    (license l:expat)))
+
 (define-public libwebsockets
   (package
     (name "libwebsockets")
@@ -704,6 +725,41 @@ action with the generated name, and failing that it will try to dispatch to a
 regular method.")
     (license (package-license perl))))
 
+(define-public perl-catalyst-authentication-store-dbix-class
+  (package
+    (name "perl-catalyst-authentication-store-dbix-class")
+    (version "0.1506")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
+                           "Catalyst-Authentication-Store-DBIx-Class-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0i5ja7690fs9nhxcij6lw51j804sm8s06m5mvk1n8pi8jljrymvw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-catalyst-plugin-authorization-roles"
+        ,perl-catalyst-plugin-authorization-roles)
+       ("perl-catalyst-plugin-session-state-cookie"
+        ,perl-catalyst-plugin-session-state-cookie)
+       ("perl-dbd-sqlite" ,perl-dbd-sqlite)
+       ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)))
+    (propagated-inputs
+     `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-catalyst-plugin-authentication"
+        ,perl-catalyst-plugin-authentication)
+       ("perl-dbix-class" ,perl-dbix-class)
+       ("perl-catalyst-model-dbic-schema" ,perl-catalyst-model-dbic-schema)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Authentication-Store-DBIx-Class")
+    (synopsis "Storage class for Catalyst authentication using DBIx::Class")
+    (description "The Catalyst::Authentication::Store::DBIx::Class class
+provides access to authentication information stored in a database via
+DBIx::Class.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-component-instancepercontext
   (package
     (name "perl-catalyst-component-instancepercontext")
@@ -903,6 +959,35 @@ for you.  It will work even with Catalyst debug logging turned off.")
 Catalyst apps. It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
+    (license (package-license perl))))
+
+(define-public perl-catalyst-plugin-authorization-roles
+  (package
+    (name "perl-catalyst-plugin-authorization-roles")
+    (version "0.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/B/BO/BOBTFISH/"
+                           "Catalyst-Plugin-Authorization-Roles-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0l83lkwmq0lngwh8b1rv3r719pn8w1gdbyhjqm74rnd0wbjl8h7f"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (propagated-inputs
+     `(("perl-catalyst-plugin-authentication"
+        ,perl-catalyst-plugin-authentication)
+       ("perl-catalyst-runtime" ,perl-catalyst-runtime)
+       ("perl-set-object" ,perl-set-object)
+       ("perl-universal-isa" ,perl-universal-isa)))
+    (home-page
+     "http://search.cpan.org/dist/Catalyst-Plugin-Authorization-Roles")
+    (synopsis "Role-based authorization for Catalyst")
+    (description "Catalyst::Plugin::Authorization::Roles provides role-based
+authorization for Catalyst based on Catalyst::Plugin::Authentication.")
     (license (package-license perl))))
 
 (define-public perl-catalyst-plugin-captcha

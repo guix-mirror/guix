@@ -610,6 +610,9 @@ build process and its dependencies, whereas Make uses Makefile format.")
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
+                    ;; link against libgcj to avoid linker error
+                    (("-o native-ecj")
+                     "-lgcj -o native-ecj")
                     ;; do not leak information about the build host
                     (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
                      "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
@@ -627,15 +630,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
          #:locale "C"
          ,@(substitute-keyword-arguments (package-arguments icedtea6)
              ((#:configure-flags flags)
-              `(let ((jdk (assoc-ref %build-inputs "icedtea6"))
-                     (ant (assoc-ref %build-inputs "ant")))
-                 `("--disable-bootstrap"
-                   "--without-rhino"
-                   "--enable-nss"
-                   "--enable-system-lcms"
-                   "--disable-downloading"
-                   ,(string-append "--with-ant-home=" ant)
-                   ,(string-append "--with-jdk-home=" jdk))))
+              `(delete "--with-openjdk-src-dir=./openjdk" ,flags))
              ((#:phases phases)
               `(modify-phases ,phases
                  (replace
@@ -677,30 +672,37 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  (replace
                   'set-additional-paths
                   (lambda* (#:key inputs #:allow-other-keys)
-                    (substitute* "openjdk/jdk/make/common/shared/Sanity.gmk"
-                      (("ALSA_INCLUDE=/usr/include/alsa/version.h")
-                       (string-append "ALSA_INCLUDE="
-                                      (assoc-ref inputs "alsa-lib")
-                                      "/include/alsa/version.h")))
-                    (setenv "CC" "gcc")
-                    (setenv "CPATH"
-                            (string-append (assoc-ref inputs "libxrender")
-                                           "/include/X11/extensions" ":"
-                                           (assoc-ref inputs "libxtst")
-                                           "/include/X11/extensions" ":"
-                                           (assoc-ref inputs "libxinerama")
-                                           "/include/X11/extensions" ":"
-                                           (or (getenv "CPATH") "")))
-                    (setenv "ALT_OBJCOPY" (which "objcopy"))
-                    (setenv "ALT_CUPS_HEADERS_PATH"
-                            (string-append (assoc-ref inputs "cups")
-                                           "/include"))
-                    (setenv "ALT_FREETYPE_HEADERS_PATH"
-                            (string-append (assoc-ref inputs "freetype")
-                                           "/include"))
-                    (setenv "ALT_FREETYPE_LIB_PATH"
-                            (string-append (assoc-ref inputs "freetype")
-                                           "/lib"))))
+                    (let (;; Get target-specific include directory so that
+                          ;; libgcj-config.h is found when compiling hotspot.
+                          (gcjinclude (let* ((port (open-input-pipe "gcj -print-file-name=include"))
+                                             (str  (read-line port)))
+                                        (close-pipe port)
+                                        str)))
+                      (substitute* "openjdk/jdk/make/common/shared/Sanity.gmk"
+                        (("ALSA_INCLUDE=/usr/include/alsa/version.h")
+                         (string-append "ALSA_INCLUDE="
+                                        (assoc-ref inputs "alsa-lib")
+                                        "/include/alsa/version.h")))
+                      (setenv "CC" "gcc")
+                      (setenv "CPATH"
+                              (string-append gcjinclude ":"
+                                             (assoc-ref inputs "libxrender")
+                                             "/include/X11/extensions" ":"
+                                             (assoc-ref inputs "libxtst")
+                                             "/include/X11/extensions" ":"
+                                             (assoc-ref inputs "libxinerama")
+                                             "/include/X11/extensions" ":"
+                                             (or (getenv "CPATH") "")))
+                      (setenv "ALT_OBJCOPY" (which "objcopy"))
+                      (setenv "ALT_CUPS_HEADERS_PATH"
+                              (string-append (assoc-ref inputs "cups")
+                                             "/include"))
+                      (setenv "ALT_FREETYPE_HEADERS_PATH"
+                              (string-append (assoc-ref inputs "freetype")
+                                             "/include"))
+                      (setenv "ALT_FREETYPE_LIB_PATH"
+                              (string-append (assoc-ref inputs "freetype")
+                                             "/lib")))))
                  (add-after
                   'unpack 'fix-x11-extension-include-path
                   (lambda* (#:key inputs #:allow-other-keys)
@@ -733,7 +735,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  (delete 'patch-patches))))))
       (native-inputs
        `(("ant" ,ant)
-         ("icedtea6" ,icedtea6 "jdk")
          ("openjdk-drop"
           ,(drop "openjdk"
                  "03gxqn17cxwl1nspnwigacaqd28p02d45f396j5f4kkbzfnbl0ak"))
@@ -756,4 +757,4 @@ build process and its dependencies, whereas Make uses Makefile format.")
           ,(drop "hotspot"
                  "1yqxfd2jwbm5y41wscyfx8h0fr3h8ny2g2mda5iwd8sikxsaj96p"))
          ,@(fold alist-delete (package-native-inputs icedtea6)
-                 '("openjdk6-src" "ant-bootstrap" "gcj")))))))
+                 '("openjdk6-src" "ant-bootstrap")))))))

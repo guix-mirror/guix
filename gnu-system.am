@@ -59,6 +59,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cdrom.scm			\
   gnu/packages/certs.scm			\
   gnu/packages/check.scm			\
+  gnu/packages/ci.scm				\
   gnu/packages/cmake.scm			\
   gnu/packages/code.scm				\
   gnu/packages/commencement.scm			\
@@ -196,6 +197,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lxqt.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
+  gnu/packages/machine-learning.scm		\
   gnu/packages/man.scm				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
@@ -454,6 +456,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
+  gnu/packages/patches/hydra-automake-1.15.patch		\
+  gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
@@ -510,6 +514,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
   gnu/packages/patches/perl-module-pluggable-search.patch	\
   gnu/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
+  gnu/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/petsc-fix-threadcomm.patch		\
@@ -524,6 +529,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/pyqt-configure.patch			\
+  gnu/packages/patches/python-disable-ssl-test.patch		\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\

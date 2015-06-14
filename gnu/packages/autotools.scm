@@ -95,7 +95,6 @@ use our own Bash instead of /bin/sh in shebangs.  For that reason, it should
 only be used internally---users should not end up distributing `configure'
 files with a system-specific shebang."
   (package (inherit autoconf)
-    (location (source-properties->location (current-source-location)))
     (name (string-append (package-name autoconf) "-wrapper"))
     (build-system trivial-build-system)
     (inputs `(("guile"

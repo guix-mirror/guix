@@ -42,106 +42,123 @@
                        (format #f fmt args ...)
                        form))))
 
-(eval-when (expand load eval)
-  ;; This procedure is a syntactic helper used by 'define-record-type*', hence
-  ;; 'eval-when'.
+(define-syntax make-syntactic-constructor
+  (syntax-rules ()
+    "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
+expects all of EXPECTED fields to be initialized.  DEFAULTS is the list of
+FIELD/DEFAULT-VALUE tuples, THUNKED is the list of identifiers of thunked
+fields, and DELAYED is the list of identifiers of delayed fields."
+    ((_ type name ctor (expected ...)
+        #:thunked thunked
+        #:delayed delayed
+        #:innate innate
+        #:defaults defaults)
+     (define-syntax name
+       (lambda (s)
+         (define (record-inheritance orig-record field+value)
+           ;; Produce code that returns a record identical to ORIG-RECORD,
+           ;; except that values for the FIELD+VALUE alist prevail.
+           (define (field-inherited-value f)
+             (and=> (find (lambda (x)
+                            (eq? f (car (syntax->datum x))))
+                          field+value)
+                    car))
 
-  (define* (make-syntactic-constructor type name ctor fields
-                                       #:key (thunked '()) (defaults '())
-                                       (delayed '()))
-    "Make the syntactic constructor NAME for TYPE, that calls CTOR, and expects
-all of FIELDS to be initialized.  DEFAULTS is the list of FIELD/DEFAULT-VALUE
-tuples, THUNKED is the list of identifiers of thunked fields, and DELAYED is
-the list of identifiers of delayed fields."
-    (with-syntax ((type     type)
-                  (name     name)
-                  (ctor     ctor)
-                  (expected fields)
-                  (defaults defaults))
-      #`(define-syntax name
-          (lambda (s)
-            (define (record-inheritance orig-record field+value)
-              ;; Produce code that returns a record identical to ORIG-RECORD,
-              ;; except that values for the FIELD+VALUE alist prevail.
-              (define (field-inherited-value f)
-                (and=> (find (lambda (x)
-                               (eq? f (car (syntax->datum x))))
-                             field+value)
-                       car))
+           ;; Make sure there are no unknown field names.
+           (let* ((fields     (map (compose car syntax->datum) field+value))
+                  (unexpected (lset-difference eq? fields '(expected ...))))
+             (when (pair? unexpected)
+               (record-error 'name s "extraneous field initializers ~a"
+                             unexpected)))
 
-              ;; Make sure there are no unknown field names.
-              (let* ((fields     (map (compose car syntax->datum) field+value))
-                     (unexpected (lset-difference eq? fields 'expected)))
-                (when (pair? unexpected)
-                  (record-error 'name s "extraneous field initializers ~a"
-                                unexpected)))
+           #`(make-struct type 0
+                          #,@(map (lambda (field index)
+                                    (or (field-inherited-value field)
+                                        (if (innate-field? field)
+                                            (wrap-field-value
+                                             field (field-default-value field))
+                                            #`(struct-ref #,orig-record
+                                                          #,index))))
+                                  '(expected ...)
+                                  (iota (length '(expected ...))))))
 
-              #`(make-struct type 0
-                             #,@(map (lambda (field index)
-                                       (or (field-inherited-value field)
-                                           #`(struct-ref #,orig-record
-                                                         #,index)))
-                                     'expected
-                                     (iota (length 'expected)))))
+         (define (thunked-field? f)
+           (memq (syntax->datum f) 'thunked))
 
-            (define (thunked-field? f)
-              (memq (syntax->datum f) '#,thunked))
+         (define (delayed-field? f)
+           (memq (syntax->datum f) 'delayed))
 
-            (define (delayed-field? f)
-              (memq (syntax->datum f) '#,delayed))
+         (define (innate-field? f)
+           (memq (syntax->datum f) 'innate))
 
-            (define (wrap-field-value f value)
-              (cond ((thunked-field? f)
-                     #`(lambda () #,value))
-                    ((delayed-field? f)
-                     #`(delay #,value))
-                    (else value)))
+         (define (wrap-field-value f value)
+           (cond ((thunked-field? f)
+                  #`(lambda () #,value))
+                 ((delayed-field? f)
+                  #`(delay #,value))
+                 (else value)))
 
-            (define (field-bindings field+value)
-              ;; Return field to value bindings, for use in 'let*' below.
-              (map (lambda (field+value)
-                     (syntax-case field+value ()
-                       ((field value)
-                        #`(field
-                           #,(wrap-field-value #'field #'value)))))
-                   field+value))
+         (define default-values
+           ;; List of symbol/value tuples.
+           (map (match-lambda
+                  ((f v)
+                   (list (syntax->datum f) v)))
+                #'defaults))
 
-            (syntax-case s (inherit #,@fields)
-              ((_ (inherit orig-record) (field value) (... ...))
-               #`(let* #,(field-bindings #'((field value) (... ...)))
-                   #,(record-inheritance #'orig-record
-                                         #'((field value) (... ...)))))
-              ((_ (field value) (... ...))
-               (let ((fields (map syntax->datum #'(field (... ...))))
-                     (dflt   (map (match-lambda
-                                    ((f v)
-                                     (list (syntax->datum f) v)))
-                                  #'defaults)))
+         (define (field-default-value f)
+           (car (assoc-ref default-values (syntax->datum f))))
 
-                 (define (field-value f)
-                   (or (and=> (find (lambda (x)
-                                      (eq? f (car (syntax->datum x))))
-                                    #'((field value) (... ...)))
-                              car)
-                       (let ((value
-                              (car (assoc-ref dflt (syntax->datum f)))))
-                         (wrap-field-value f value))))
+         (define (field-bindings field+value)
+           ;; Return field to value bindings, for use in 'let*' below.
+           (map (lambda (field+value)
+                  (syntax-case field+value ()
+                    ((field value)
+                     #`(field
+                        #,(wrap-field-value #'field #'value)))))
+                field+value))
 
-                 (let ((fields (append fields (map car dflt))))
-                   (cond ((lset= eq? fields 'expected)
-                          #`(let* #,(field-bindings
-                                     #'((field value) (... ...)))
-                              (ctor #,@(map field-value 'expected))))
-                         ((pair? (lset-difference eq? fields 'expected))
-                          (record-error 'name s
-                                        "extraneous field initializers ~a"
-                                        (lset-difference eq? fields
-                                                         'expected)))
-                         (else
-                          (record-error 'name s
-                                        "missing field initializers ~a"
-                                        (lset-difference eq? 'expected
-                                                         fields)))))))))))))
+         (syntax-case s (inherit expected ...)
+           ((_ (inherit orig-record) (field value) (... ...))
+            #`(let* #,(field-bindings #'((field value) (... ...)))
+                #,(record-inheritance #'orig-record
+                                      #'((field value) (... ...)))))
+           ((_ (field value) (... ...))
+            (let ((fields (map syntax->datum #'(field (... ...)))))
+              (define (field-value f)
+                (or (and=> (find (lambda (x)
+                                   (eq? f (car (syntax->datum x))))
+                                 #'((field value) (... ...)))
+                           car)
+                    (wrap-field-value f (field-default-value f))))
+
+              (let ((fields (append fields (map car default-values))))
+                (cond ((lset= eq? fields '(expected ...))
+                       #`(let* #,(field-bindings
+                                  #'((field value) (... ...)))
+                           (ctor #,@(map field-value '(expected ...)))))
+                      ((pair? (lset-difference eq? fields
+                                               '(expected ...)))
+                       (record-error 'name s
+                                     "extraneous field initializers ~a"
+                                     (lset-difference eq? fields
+                                                      '(expected ...))))
+                      (else
+                       (record-error 'name s
+                                     "missing field initializers ~a"
+                                     (lset-difference eq?
+                                                      '(expected ...)
+                                                      fields)))))))))))))
+
+(define-syntax-rule (define-field-property-predicate predicate property)
+  "Define PREDICATE as a procedure that takes a syntax object and, when passed
+a field specification, returns the field name if it has the given PROPERTY."
+  (define (predicate s)
+    (syntax-case s (property)
+      ((field (property values (... ...)) _ (... ...))
+       #'field)
+      ((field _ properties (... ...))
+       (predicate #'(field properties (... ...))))
+      (_ #f))))
 
 (define-syntax define-record-type*
   (lambda (s)
@@ -154,7 +171,8 @@ may look like this:
     thing?
     (name  thing-name (default \"chbouib\"))
     (port  thing-port
-           (default (current-output-port)) (thunked)))
+           (default (current-output-port)) (thunked))
+    (loc   thing-location (innate) (default (current-source-location))))
 
 This example defines a macro 'thing' that can be used to instantiate records
 of this type:
@@ -180,33 +198,20 @@ It is possible to copy an object 'x' created with 'thing' like this:
   (thing (inherit x) (name \"bar\"))
 
 This expression returns a new object equal to 'x' except for its 'name'
-field."
+field and its 'loc' field---the latter is marked as \"innate\", so it is not
+inherited."
 
     (define (field-default-value s)
       (syntax-case s (default)
         ((field (default val) _ ...)
          (list #'field #'val))
-        ((field _ options ...)
-         (field-default-value #'(field options ...)))
+        ((field _ properties ...)
+         (field-default-value #'(field properties ...)))
         (_ #f)))
 
-    (define (delayed-field? s)
-      ;; Return the field name if the field defined by S is delayed.
-      (syntax-case s (delayed)
-        ((field (delayed) _ ...)
-         #'field)
-        ((field _ options ...)
-         (delayed-field? #'(field options ...)))
-        (_ #f)))
-
-    (define (thunked-field? s)
-      ;; Return the field name if the field defined by S is thunked.
-      (syntax-case s (thunked)
-        ((field (thunked) _ ...)
-         #'field)
-        ((field _ options ...)
-         (thunked-field? #'(field options ...)))
-        (_ #f)))
+    (define-field-property-predicate delayed-field? delayed)
+    (define-field-property-predicate thunked-field? thunked)
+    (define-field-property-predicate innate-field? innate)
 
     (define (wrapped-field? s)
       (or (thunked-field? s) (delayed-field? s)))
@@ -215,7 +220,7 @@ field."
       ;; Return the name (an unhygienic syntax object) of the "real"
       ;; getter for field, which is assumed to be a wrapped field.
       (syntax-case field ()
-        ((field get options ...)
+        ((field get properties ...)
          (let* ((getter      (syntax->datum #'get))
                 (real-getter (symbol-append '% getter '-real)))
            (datum->syntax #'get real-getter)))))
@@ -224,7 +229,7 @@ field."
       ;; Convert a field spec of our style to a SRFI-9 field spec of the
       ;; form (field get).
       (syntax-case field ()
-        ((name get options ...)
+        ((name get properties ...)
          #`(name
             #,(if (wrapped-field? field)
                   (wrapped-field-accessor-name field)
@@ -252,12 +257,13 @@ field."
 
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
-          (field get options ...) ...)
-       (let* ((field-spec #'((field get options ...) ...))
+          (field get properties ...) ...)
+       (let* ((field-spec #'((field get properties ...) ...))
               (thunked    (filter-map thunked-field? field-spec))
               (delayed    (filter-map delayed-field? field-spec))
+              (innate     (filter-map innate-field? field-spec))
               (defaults   (filter-map field-default-value
-                                      #'((field options ...) ...))))
+                                      #'((field properties ...) ...))))
          (with-syntax (((field-spec* ...)
                         (map field-spec->srfi-9 field-spec))
                        ((thunked-field-accessor ...)
@@ -277,13 +283,14 @@ field."
                  (ctor field ...)
                  pred
                  field-spec* ...)
-               (begin thunked-field-accessor ...
-                      delayed-field-accessor ...)
-               #,(make-syntactic-constructor #'type #'syntactic-ctor #'ctor
-                                             #'(field ...)
-                                             #:thunked thunked
-                                             #:delayed delayed
-                                             #:defaults defaults))))))))
+               thunked-field-accessor ...
+               delayed-field-accessor ...
+               (make-syntactic-constructor type syntactic-ctor ctor
+                                           (field ...)
+                                           #:thunked #,thunked
+                                           #:delayed #,delayed
+                                           #:innate #,innate
+                                           #:defaults #,defaults))))))))
 
 (define* (alist->record alist make keys
                         #:optional (multiple-value-keys '()))

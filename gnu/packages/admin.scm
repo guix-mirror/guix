@@ -152,14 +152,14 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "1.9.3")
+    (version "1.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "06dshajjpyi9sxi7qfki9gnp5r3nxvyvf81r81gx0x2qkqzqcxlj"))))
+               "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
     (build-system gnu-build-system)
     (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.

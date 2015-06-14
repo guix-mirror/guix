@@ -232,20 +232,22 @@ packages."
     (alist-cons 'package arg result))
 
   (with-error-handling
-    (with-store store
-      (let* ((opts  (parse-command-line args %options (list %default-options)
-                                        #:argument-handler handle-argument))
-             (pure? (assoc-ref opts 'pure))
-             (ad-hoc? (assoc-ref opts 'ad-hoc?))
-             (command (assoc-ref opts 'exec))
-             (packages (pick-all (options/resolve-packages opts) 'package))
-             (inputs (if ad-hoc?
+    (let* ((opts     (parse-command-line args %options (list %default-options)
+                                         #:argument-handler handle-argument))
+           (pure?    (assoc-ref opts 'pure))
+           (ad-hoc?  (assoc-ref opts 'ad-hoc?))
+           (command  (assoc-ref opts 'exec))
+           (packages (pick-all (options/resolve-packages opts) 'package))
+           (inputs   (if ad-hoc?
                          (packages+propagated-inputs packages)
-                         (packages->transitive-inputs packages)))
-             (drvs (run-with-store store
-                     (mbegin %store-monad
-                       (set-guile-for-build (default-guile))
-                       (build-inputs inputs opts)))))
+                         (packages->transitive-inputs packages))))
+      (with-store store
+        (define drvs
+          (run-with-store store
+            (mbegin %store-monad
+              (set-guile-for-build (default-guile))
+              (build-inputs inputs opts))))
+
         (cond ((assoc-ref opts 'dry-run?)
                #t)
               ((assoc-ref opts 'search-paths)

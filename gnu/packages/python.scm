@@ -207,7 +207,9 @@ data types.")
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
-              (patches (list (search-patch "python-fix-tests.patch")))
+              (patches (list (search-patch "python-fix-tests.patch")
+                             ;; XXX Try removing this patch for python > 3.4.3
+                             (search-patch "python-disable-ssl-test.patch")))
               (patch-flags '("-p0"))
               (sha256
                (base32

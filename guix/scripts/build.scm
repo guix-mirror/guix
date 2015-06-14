@@ -77,19 +77,26 @@ the new package's version number from URI."
     ;; Return the "base" of FILE-NAME, removing '.tar.gz' or similar
     ;; extensions.
     ;; TODO: Factorize.
-    (cond ((numeric-extension? file-name)
+    (cond ((not (file-extension file-name))
+           file-name)
+          ((numeric-extension? file-name)
            file-name)
           ((string=? (file-extension file-name) "tar")
            (file-sans-extension file-name))
+          ((file-extension file-name)
+           (tarball-base-name (file-sans-extension file-name)))
           (else
-           (tarball-base-name (file-sans-extension file-name)))))
+           file-name)))
 
   (let ((base (tarball-base-name (basename uri))))
     (let-values (((name version)
                   (package-name->name+version base)))
       (package (inherit p)
                (version (or version (package-version p)))
-               (source (download-to-store store uri))))))
+
+               ;; Use #:recursive? #t to allow for directories.
+               (source (download-to-store store uri
+                                          #:recursive? #t))))))
 
 
 ;;;

@@ -22,9 +22,15 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages base) ;libbdf
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages code)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
@@ -45,9 +51,11 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip))
@@ -222,6 +230,96 @@ you can practice your recognition of various musical intervals and chords.  It
 features a statistics overview so you can monitor your progress across several
 sessions.  Solfege is also designed to be extensible so you can easily write
 your own lessons.")
+    (license license:gpl3+)))
+
+(define-public powertabeditor
+  (package
+    (name "powertabeditor")
+    (version "2.0.0-alpha7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/powertab/powertabeditor/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yp6ck2r72c2pfq31z1kpw1j639rndrifj85l3cbj2kdf8rdzhkk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled sources for external libraries
+                  (delete-file-recursively "external")
+                  (substitute* "CMakeLists.txt"
+                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") "")
+                    ;; TODO: tests cannot be built:
+                    ;; test/test_main.cpp:28:12: error: ‘Session’ is not a member of ‘Catch’
+                    (("add_subdirectory\\(test\\)") "")
+                    (("add_subdirectory\\(external\\)") ""))
+                  (substitute* "test/CMakeLists.txt"
+                    (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") ""))
+
+                  ;; Add install target
+                  (substitute* "source/CMakeLists.txt"
+                    (("qt5_use_modules")
+                     (string-append
+                      "install(TARGETS powertabeditor "
+                      "RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)\n"
+                      "install(FILES data/tunings.json DESTINATION "
+                      "${CMAKE_INSTALL_PREFIX}/share/powertabeditor/)\n"
+                      "qt5_use_modules")))
+                  #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:configure-flags
+       ;; CMake appears to lose the RUNPATH for some reason, so it has to be
+       ;; explicitly set with CMAKE_INSTALL_RPATH.
+       (list (string-append "-DCMAKE_INSTALL_RPATH="
+                            (string-join (map (match-lambda
+                                                ((name . directory)
+                                                 (string-append directory "/lib")))
+                                              %build-inputs) ";")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'remove-third-party-libs
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Link with required static libraries, because we're not
+            ;; using the bundled version of withershins.
+            (substitute* '("source/CMakeLists.txt"
+                           "test/CMakeLists.txt")
+              (("target_link_libraries\\((powertabeditor)" _ target)
+               (string-append "target_link_libraries(" target " "
+                              (assoc-ref inputs "binutils")
+                              "/lib/libbfd.a "
+                              (assoc-ref inputs "gcc")
+                              "/lib/libiberty.a "
+                              "dl")))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("alsa-lib" ,alsa-lib)
+       ("qt" ,qt)
+       ("withershins" ,withershins)
+       ("gcc" ,gcc-4.8 "lib") ;for libiberty.a (for withershins)
+       ("binutils" ,binutils) ;for -lbfd and -liberty (for withershins)
+       ("timidity" ,timidity++)
+       ("pugixml" ,pugixml)
+       ("rtmidi" ,rtmidi)
+       ("rapidjson" ,rapidjson)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("catch" ,catch-framework)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://powertabs.net")
+    (synopsis "Guitar tablature editor")
+    (description
+     "Power Tab Editor 2.0 is the successor to the famous original Power Tab
+Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (license license:gpl3+)))
 
 (define-public tuxguitar

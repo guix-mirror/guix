@@ -113,18 +113,17 @@ supervised tests.")
 (define-public catch-framework
   (package
     (name "catch")
-    (version "1.0.53")                  ;Sub-minor is the build number
+    (version "1.1.3")                  ;Sub-minor is the build number
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/philsquared/Catch")
-                    ;; Semi-arbitrary.  Contains mostly documentation fixes
-                    ;; since build 53.
-                    (commit "b9ec8a1")))
+                    ;; Semi-arbitrary.
+                    (commit "c51e86819d")))
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "05iijiwjwcjbza7qamwd32d0jypi0lpywmilmmj2xh280mcl4dbd"))))
+                "0kgi7wxxysgjbpisqfj4dj0k19cyyai92f001zi8gzkybd4fkgv5"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

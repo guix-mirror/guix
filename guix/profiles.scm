@@ -500,7 +500,10 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
           (string-append #$output "/" db-subdir))
 
         (define (conf-files top)
-          (find-files (string-append top "/" db-subdir) "\\.conf$"))
+          (let ((db (string-append top "/" db-subdir)))
+            (if (file-exists? db)
+                (find-files db "\\.conf$")
+                '())))
 
         (define (copy-conf-file conf)
           (let ((base (basename conf)))
@@ -509,7 +512,8 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
         (system* (string-append #+ghc "/bin/ghc-pkg") "init" db-dir)
         (for-each copy-conf-file
                   (append-map conf-files
-                              '#$(manifest-inputs manifest)))
+                              (delete-duplicates
+                               '#$(manifest-inputs manifest))))
         (let ((success
                (zero?
                 (system* (string-append #+ghc "/bin/ghc-pkg") "recache"

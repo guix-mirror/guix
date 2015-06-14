@@ -34,6 +34,7 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -437,6 +438,76 @@ multiple sequence alignments.")
     (description
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
+
+(define-public couger
+  (package
+    (name "couger")
+    (version "1.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://couger.oit.duke.edu/static/assets/COUGER"
+                    version ".zip"))
+              (sha256
+               (base32
+                "04p2b14nmhzxw5h72mpzdhalv21bx4w9b87z0wpw0xzxpysyncmq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (copy-recursively "src" (string-append out "/src"))
+              (mkdir (string-append out "/bin"))
+              ;; Add "src" directory to module lookup path.
+              (substitute* "couger"
+                (("from argparse")
+                 (string-append "import sys\nsys.path.append(\""
+                                out "\")\nfrom argparse")))
+              (copy-file "couger" (string-append out "/bin/couger")))
+            #t))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'couger' runs with the correct PYTHONPATH.
+            (let* ((out (assoc-ref outputs "out"))
+                   (path (getenv "PYTHONPATH")))
+              (wrap-program (string-append out "/bin/couger")
+                `("PYTHONPATH" ":" prefix (,path))))
+            #t)))))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pillow" ,python2-pillow)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-matplotlib" ,python2-matplotlib)))
+    (propagated-inputs
+     `(("r" ,r)
+       ("libsvm" ,libsvm)
+       ("randomjungle" ,randomjungle)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://couger.oit.duke.edu")
+    (synopsis "Identify co-factors in sets of genomic regions")
+    (description
+     "COUGER can be applied to any two sets of genomic regions bound by
+paralogous TFs (e.g., regions derived from ChIP-seq experiments) to identify
+putative co-factors that provide specificity to each TF.  The framework
+determines the genomic targets uniquely-bound by each TF, and identifies a
+small set of co-factors that best explain the in vivo binding differences
+between the two TFs.
+
+COUGER uses classification algorithms (support vector machines and random
+forests) with features that reflect the DNA binding specificities of putative
+co-factors.  The features are generated either from high-throughput TF-DNA
+binding data (from protein binding microarray experiments), or from large
+collections of DNA motifs.")
+    (license license:gpl3+)))
 
 (define-public clustal-omega
   (package
@@ -1030,6 +1101,27 @@ RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
     (license license:gpl2)))
 
+(define-public orfm
+  (package
+    (name "orfm")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wwood/OrfM/releases/download/v"
+                    version "/orfm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00jqvlspj9662ni9r4n1snxfnwkzc02i46g5nk1kwjshi6v3vgg3"))))
+    (build-system gnu-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (synopsis "Simple and not slow open reading frame (ORF) caller")
+    (description
+     "An ORF caller finds stretches of DNA that when translated are not
+interrupted by stop codons.  OrfM finds and prints these ORFs.")
+    (home-page "https://github.com/wwood/OrfM")
+    (license license:lgpl3+)))
+
 (define-public python2-pbcore
   (package
     (name "python2-pbcore")
@@ -1331,7 +1423,7 @@ viewer.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1341,7 +1433,7 @@ viewer.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "09fakv9w87lfg9g70kwzmnryqdjj1sz2c7kw01i6drjf787gkjhw"))))
+         "1x58gpm574n0xmk2a98gmikbgycq78ia0bvnb42k5ck34fmd5v8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -1351,20 +1443,6 @@ viewer.")
         'configure
         (lambda* (#:key outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
-            ;; Only replace the version suffix, not the version number in the
-            ;; directory name; fixed in commit 46d4509fa8 (no release yet).
-            (substitute* "setup/konfigure.perl"
-              (((string-append "\\$\\(subst "
-                               "(\\$\\(VERSION[^\\)]*\\)),"
-                               "(\\$\\([^\\)]+\\)),"
-                               "(\\$\\([^\\)]+\\)|\\$\\@)"
-                               "\\)")
-                _ pattern replacement target)
-               (string-append "$(patsubst "
-                              "%" pattern ","
-                              "%" replacement ","
-                              target ")")))
-
             ;; The 'configure' script doesn't recognize things like
             ;; '--enable-fast-install'.
             (zero? (system* "./configure"

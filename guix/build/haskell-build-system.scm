@@ -166,13 +166,13 @@ generate the cache as it would clash in user profiles."
                                     (package-name-version haskell)
                                     "/package.conf.d"))
          (id-rx (make-regexp "^id: *(.*)$"))
-         (lib-rx (make-regexp "lib.*\\.(a|so)"))
-         (config-file (string-append config-dir "/" name ".conf"))
+         (config-file (string-append out "/" name ".conf"))
          (params
           (list (string-append "--gen-pkg-config=" config-file))))
-    (unless (null? (find-files lib lib-rx))
+    (run-setuphs "register" params)
+    ;; The conf file is created only when there is a library to register.
+    (when (file-exists? config-file)
       (mkdir-p config-dir)
-      (run-setuphs "register" params)
       (let ((config-file-name+id
              (call-with-ascii-input-file config-file (cut grep id-rx <>))))
         (rename-file config-file

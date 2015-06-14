@@ -601,7 +601,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
   (package (inherit pkg)
-    (location (source-properties->location (current-source-location)))
     (name (string-append (package-name pkg) "-tarball"))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)

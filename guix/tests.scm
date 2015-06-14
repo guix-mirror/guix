@@ -63,8 +63,16 @@
 
       store)))
 
+(define (random-seed)
+  (or (and=> (getenv "GUIX_TESTS_RANDOM_SEED")
+             number->string)
+      (logxor (getpid) (car (gettimeofday)))))
+
 (define %seed
-  (seed->random-state (logxor (getpid) (car (gettimeofday)))))
+  (let ((seed (random-seed)))
+    (format (current-error-port) "random seed for tests: ~a~%"
+            seed)
+    (seed->random-state seed)))
 
 (define (random-text)
   "Return the hexadecimal representation of a random number."
