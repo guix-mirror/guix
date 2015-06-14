@@ -836,7 +836,7 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://lv2plug.in/spec/lv2-"
@@ -844,11 +844,11 @@ significantly faster and have minimal dependencies.")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "1md41x9snrp4mcfyli7lyfpvcfa78nfy6xkdy84kppnl8m5qw378"))))
+               "1saq0vwqy5zjdkgc5ahs8kcabxfmff2mmg68fiqrkv8hiw9m6jks"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
-       #:configure-flags '("--lv2-system")))
+       #:configure-flags '("--no-plugins")))
     (inputs
      ;; Leaving off cairo and gtk+-2.0 which are needed for example plugins
      `(("libsndfile" ,libsndfile)))
