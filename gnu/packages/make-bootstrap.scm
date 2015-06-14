@@ -103,11 +103,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("cross-binutils" ,(cross-binutils target))
             ,@%final-inputs))
         `(("libc" ,(glibc-for-bootstrap))
-          ("gcc" ,(package (inherit gcc-4.8)
+          ("gcc" ,(package (inherit gcc-4.9)
                     (outputs '("out")) ; all in one so libgcc_s is easily found
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
-                       ,@(package-inputs gcc-4.8)))))
+                       ,@(package-inputs gcc-4.9)))))
           ,@(fold alist-delete %final-inputs '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
@@ -389,7 +389,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc-4.8)
+   (package (inherit gcc-4.9)
      (name "gcc-static")
      (outputs '("out"))                           ; all in one
      (arguments
@@ -398,7 +398,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    (srfi srfi-1)
                    (srfi srfi-26)
                    (ice-9 regex))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.9)
             ((#:guile _) #f)
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
@@ -422,6 +422,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libsanitizer"
                        "--disable-libitm"
                        "--disable-libgomp"
+                       "--disable-libcilkrts"
+                       "--disable-libvtv"
+                       "--disable-libbacktrace"
                        "--disable-libssp"
                        "--disable-libquadmath"
                        "--disable-decimal-float")
@@ -451,12 +454,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("gmp-native" ,gmp)
             ("mpfr-native" ,mpfr)
             ("mpc-native" ,mpc)
-            ,@(package-native-inputs gcc-4.8))
-          (package-native-inputs gcc-4.8))))))
+            ,@(package-native-inputs gcc-4.9))
+          (package-native-inputs gcc-4.9))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
-  (package (inherit gcc-4.8)
+  (package (inherit gcc-4.9)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
