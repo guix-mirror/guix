@@ -181,7 +181,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                             ;; Since we use `-static', remove
                             ;; `-export-dynamic'.
                             (substitute* "configure"
-                              (("-export-dynamic") "")))
+                              (("-Wl,-export-dynamic") "")))
                           ,phases)))))
                 (inputs (if (%current-target-system)
                             `(("bash" ,%bash-static))
