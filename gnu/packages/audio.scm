@@ -480,6 +480,37 @@ also play midifiles using a Soundfont.")
 PS, and DAB+.")
     (license license:gpl2)))
 
+(define-public faust
+  (package
+    (name "faust")
+    (version "0.9.67")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/faudiostream/faust-" version ".zip"))
+              (sha256
+               (base32
+                "068vl9536zn0j4pknwfcchzi90rx5pk64wbcbd67z32w0csx8xm1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'remove-prebuilt-library
+          (lambda _
+            (delete-file "architecture/android/libs/armeabi-v7a/libfaust_dsp.so")
+            #t))
+         (delete 'configure))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://faust.grame.fr/")
+    (synopsis "Signal processing language")
+    (description
+     "Faust is a programming language for realtime audio signal processing.")
+    (license license:gpl2+)))
+
 (define-public freepats
   (package
     (name "freepats")
