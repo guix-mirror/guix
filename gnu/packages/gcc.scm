@@ -246,7 +246,13 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; 2.21's stdlib-bsearch.h.  Remove -Werror.
                 (substitute* "libbacktrace/configure"
                   (("WARN_FLAGS=(.*)-Werror" _ flags)
-                   (string-append "WARN_FLAGS=" flags))))
+                   (string-append "WARN_FLAGS=" flags)))
+
+                (when (file-exists? "libsanitizer/libbacktrace")
+                  ;; Same in libsanitizer's bundled copy (!) found in 4.9+.
+                  (substitute* "libsanitizer/libbacktrace/Makefile.in"
+                    (("-Werror")
+                     ""))))
 
               ;; Add a RUNPATH to libstdc++.so so that it finds libgcc_s.
               ;; See <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=32354>
