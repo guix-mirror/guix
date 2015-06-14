@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
@@ -39,30 +39,29 @@
 (define-public hwloc
   (package
     (name "hwloc")
-    (version "1.9")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.open-mpi.org/software/hwloc/v"
-                                  version "/downloads/hwloc-"
-                                  version ".tar.bz2"))
+                                  (version-major+minor version)
+                                  "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0zjgiili2a8v63s8ly3a8qp8ibxv1jw3zbgm7diic3w1qgqiza14"))))
+                "0jji5rphy05s0lp6bknn8lxwixrq0hy5rjzsqvhjszbkl2li7kim"))
+              (patches (list
+                        (search-patch "hwloc-gather-topology-lstopo.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     ;; Enable libpci support, which effectively makes hwloc GPLv2+.
-     '(#:configure-flags '("--enable-libpci")))
     (inputs
      `(("libx11" ,libx11)
        ("cairo" ,cairo)
        ("ncurses" ,ncurses)
+       ("libpciaccess" ,libpciaccess)
        ("expat" ,expat)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     ;; 'hwloc.pc' refers to libpci and libnuma, hence the propagation.
-     `(("numactl" ,numactl)
-       ("pciutils" ,pciutils)))
+     ;; 'hwloc.pc' refers to libnuma, hence the propagation.
+     `(("numactl" ,numactl)))
     (home-page "http://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
     (description
@@ -77,8 +76,6 @@ exploit it accordingly and efficiently.
 hwloc may display the topology in multiple convenient formats.  It also offers
 a powerful programming interface to gather information about the hardware,
 bind processes, and much more.")
-
-    ;; But see above about linking against libpci.
     (license bsd-3)))
 
 (define-public openmpi

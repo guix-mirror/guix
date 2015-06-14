@@ -1,0 +1,13 @@
+Derived from upstream commit 0a32f719c.
+
+--- hwloc-1.10.1/tests/linux/Makefile.in	2015-01-26 03:37:52.000000000 -0600
++++ hwloc-1.10.1/tests/linux/Makefile.in	2015-06-15 11:21:49.824842511 -0500
+@@ -1633,7 +1633,7 @@
+ 
+ 
+ install-exec-hook:
+-	$(SED) -e 's/HWLOC_top_builddir\/utils/bindir/' -e '/HWLOC_top_builddir/d' $(DESTDIR)$(bindir)/hwloc-gather-topology > $(DESTDIR)$(bindir)/hwloc-gather-topology.tmp && mv -f $(DESTDIR)$(bindir)/hwloc-gather-topology.tmp $(DESTDIR)$(bindir)/hwloc-gather-topology
++	$(SED) -e 's/HWLOC_top_builddir\/utils\/lstopo/bindir/' -e '/HWLOC_top_builddir/d' $(DESTDIR)$(bindir)/hwloc-gather-topology > $(DESTDIR)$(bindir)/hwloc-gather-topology.tmp && mv -f $(DESTDIR)$(bindir)/hwloc-gather-topology.tmp $(DESTDIR)$(bindir)/hwloc-gather-topology
+ 	chmod +x $(DESTDIR)$(bindir)/hwloc-gather-topology
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
