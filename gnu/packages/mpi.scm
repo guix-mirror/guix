@@ -32,6 +32,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind))
@@ -91,7 +92,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.8.1")
+    (version "1.8.5")
     (source
      (origin
       (method url-fetch)
@@ -100,22 +101,24 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "13z1q69f3qwmmhpglarfjminfy2yw4rfqr9jydjk5507q3mjf50p"))))
+        "1i7vjf599kl5lm8n4vnwq9q1d9scn4sdjh42kfq1i9yzxnlhdsjc"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc)
        ("gfortran" ,gfortran)
        ("valgrind" ,valgrind)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)))
     (arguments
      `(#:configure-flags `("--enable-static"
                            "--enable-oshmem"
-                           ;; Thread support causes some applications to hang
-                           ;; "--enable-event-thread-support"
-                           ;; "--enable-opal-multi-threads"
-                           ;; "--enable-orte-progress-threads"
-                           ;; "--enable-mpi-thread-multiple"
+
+                           "--enable-event-thread-support"
+                           "--enable-opal-multi-threads"
+                           "--enable-orte-progress-threads"
+                           "--enable-mpi-thread-multiple"
+
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
                            "--enable-debug"
