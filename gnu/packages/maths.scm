@@ -802,15 +802,16 @@ implemented in ANSI C, and MPI for communications.")
        ("bison" ,bison)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'chdir-to-src
-        (lambda _ (chdir "src"))
-        (alist-replace
-         'configure
-         (lambda _
-           (call-with-output-file "Makefile.inc"
-             (lambda (port)
-               (format port "
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'chdir-to-src
+          (lambda _ (chdir "src")))
+         (replace
+          'configure
+          (lambda _
+            (call-with-output-file "Makefile.inc"
+              (lambda (port)
+                (format port "
 EXE =
 LIB = .a
 OBJ = .o
@@ -831,22 +832,21 @@ MV = mv
 RANLIB = ranlib
 YACC = bison -pscotchyy -y -b y
 "
-                       '("COMMON_FILE_COMPRESS_GZ"
-                         "COMMON_PTHREAD"
-                         "COMMON_RANDOM_FIXED_SEED"
-                         ;; XXX: Causes invalid frees in superlu-dist tests
-                         ;; "SCOTCH_PTHREAD"
-                         ;; "SCOTCH_PTHREAD_NUMBER=2"
-                         "restrict=__restrict")))))
-         (alist-replace
+                        '("COMMON_FILE_COMPRESS_GZ"
+                          "COMMON_PTHREAD"
+                          "COMMON_RANDOM_FIXED_SEED"
+                          ;; XXX: Causes invalid frees in superlu-dist tests
+                          ;; "SCOTCH_PTHREAD"
+                          ;; "SCOTCH_PTHREAD_NUMBER=2"
+                          "restrict=__restrict"))))))
+         (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir out)
               (zero? (system* "make"
                               (string-append "prefix=" out)
-                              "install"))))
-          %standard-phases)))))
+                              "install"))))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
@@ -867,26 +867,18 @@ bio-chemistry.")
     (arguments
      (substitute-keyword-arguments (package-arguments scotch)
        ((#:phases scotch-phases)
-        `(alist-replace
-          'build
-          ;; TODO: Would like to add parallelism here
-          (lambda _
-            (and
-             (zero? (system* "make" "ptscotch"))
-             ;; Install the serial metis compatibility library
-             (zero? (system* "make" "-C" "libscotchmetis" "install"))))
-          (alist-replace
-           'check
-           (lambda _ (zero? (system* "make" "ptcheck")))
-           (alist-replace
-            'install
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (mkdir out)
-                (zero? (system* "make"
-                                (string-append "prefix=" out)
-                                "install"))))
-            ,scotch-phases))))))
+        `(modify-phases ,scotch-phases
+           (replace
+            'build
+            ;; TODO: Would like to add parallelism here
+            (lambda _
+              (and
+               (zero? (system* "make" "ptscotch"))
+               ;; Install the serial metis compatibility library
+               (zero? (system* "make" "-C" "libscotchmetis" "install")))))
+           (replace
+            'check
+            (lambda _ (zero? (system* "make" "ptcheck"))))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
 (define-public gsegrafix
