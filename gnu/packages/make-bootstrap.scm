@@ -424,7 +424,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libgomp"
                        "--disable-libcilkrts"
                        "--disable-libvtv"
-                       "--disable-libbacktrace"
                        "--disable-libssp"
                        "--disable-libquadmath"
                        "--disable-decimal-float")
