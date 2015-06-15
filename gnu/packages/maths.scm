@@ -305,6 +305,35 @@ problems in numerical linear algebra.")
     (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
 
+(define-public scalapack
+  (package
+    (name "scalapack")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.netlib.org/scalapack/scalapack-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "0p1r61ss1fq0bs8ynnx7xq4wwsdvs32ljvwjnx6yxr8gd6pawx0c"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("mpi" ,openmpi)
+       ("fortran" ,gfortran)
+       ("lapack" ,lapack)))             ;for testing only
+    (arguments
+     `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")))
+    (home-page "http://www.netlib.org/scalapack/")
+    (synopsis "Library for scalable numerical linear algebra")
+    (description
+     "ScaLAPACK is a Fortran 90 library of high-performance linear algebra
+routines on parallel distributed memory machines.  ScaLAPACK solves dense and
+banded linear systems, least squares problems, eigenvalue problems, and
+singular value problems.")
+    (license (license:bsd-style "file://LICENSE"
+                                "See LICENSE in the distribution."))))
+
 (define-public gnuplot
   (package
     (name "gnuplot")
