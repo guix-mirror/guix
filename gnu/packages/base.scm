@@ -138,7 +138,9 @@ implementation offers several extensions over the standard utility.")
             (sha256
              (base32
               "1wi2zwm4c9r3h3b8y4w0nm0qq897kn8kyj9k22ba0iqvxj48vvk4"))
-            (patches (list (search-patch "tar-d_ino_in_dirent-fix.patch")))))
+            (patches (map search-patch
+                          '("tar-d_ino_in_dirent-fix.patch"
+                            "tar-skip-unreliable-tests.patch")))))
    (build-system gnu-build-system)
    (synopsis "Managing tar archives")
    (description

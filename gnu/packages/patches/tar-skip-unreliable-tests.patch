@@ -1,0 +1,32 @@
+Skip tests that rely on unlinkat(2) behavior that varies between
+kernel versions and is unspecified.
+
+See <http://bugs.gnu.org/20597>
+and <http://lists.gnu.org/archive/html/bug-tar/2015-06/msg00000.html>.
+
+--- tar-1.28/tests/testsuite	2014-07-27 22:35:27.000000000 +0200
++++ tar-1.28/tests/testsuite	2015-06-16 00:21:16.906380739 +0200
+@@ -34680,6 +34680,7 @@ find .
+ )"
+ at_fn_check_prepare_notrace 'an embedded newline' "remfiles08a.at:31"
+ ( $at_check_trace;
++exit 77
+ mkdir gnu
+ (cd gnu
+ TEST_TAR_FORMAT=gnu
+@@ -34762,6 +34763,7 @@ find .
+ )"
+ at_fn_check_prepare_notrace 'an embedded newline' "remfiles08b.at:36"
+ ( $at_check_trace;
++exit 77
+ mkdir gnu
+ (cd gnu
+ TEST_TAR_FORMAT=gnu
+@@ -34850,6 +34852,7 @@ find .
+ )"
+ at_fn_check_prepare_notrace 'a `...` command substitution' "remfiles08c.at:31"
+ ( $at_check_trace;
++exit 77
+ mkdir gnu
+ (cd gnu
+ TEST_TAR_FORMAT=gnu
