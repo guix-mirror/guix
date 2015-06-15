@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -775,4 +777,29 @@ light user interface.")
 an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
+    (license license:gpl3+)))
+
+(define-public emacs-auctex
+  (package
+    (name "emacs-auctex")
+    (version "11.88.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://elpa.gnu.org/packages/auctex-"
+             version
+             ".tar"))
+       (sha256
+        (base32
+         "1pmki8hdjjikxlvip3pzi350bln3gcimr27yjf0xfwjvnp5hh9nc"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://www.gnu.org/software/auctex/")
+    (synopsis "Integrated environment for TeX")
+    (description
+     "AUCTeX is a comprehensive customizable integrated environment for
+writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
+or XEmacs.")
     (license license:gpl3+)))
