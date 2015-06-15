@@ -42,7 +42,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0gvz86m4cs8bdf3mwmwsyx6lrq4ydfxgadrgd9jlx32z3bnz3jca"))))
+               "0gvz86m4cs8bdf3mwmwsyx6lrq4ydfxgadrgd9jlx32z3bnz3jca"))
+             (patches (list (search-patch "gettext-msgunfmt.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)))
