@@ -818,6 +818,7 @@ OBJ = .o
 MAKE = make
 AR = ar
 ARFLAGS = -ruv
+CAT = cat
 CCS = gcc
 CCP = mpicc
 CCD = gcc
@@ -835,10 +836,18 @@ YACC = bison -pscotchyy -y -b y
                         '("COMMON_FILE_COMPRESS_GZ"
                           "COMMON_PTHREAD"
                           "COMMON_RANDOM_FIXED_SEED"
+                          ;; Prevents symbolc clashes with libesmumps
+                          "SCOTCH_RENAME"
                           ;; XXX: Causes invalid frees in superlu-dist tests
                           ;; "SCOTCH_PTHREAD"
                           ;; "SCOTCH_PTHREAD_NUMBER=2"
                           "restrict=__restrict"))))))
+         (add-after
+          'build 'build-esmumps
+          (lambda _
+            (zero? (system* "make"
+                            (format #f "-j~a" (parallel-job-count))
+                            "esmumps"))))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
@@ -846,7 +855,14 @@ YACC = bison -pscotchyy -y -b y
               (mkdir out)
               (zero? (system* "make"
                               (string-append "prefix=" out)
-                              "install"))))))))
+                              "install"))
+              ;; esmumps files are not installed with the above
+              (for-each (lambda (f)
+                          (copy-file f (string-append out "/include/" f)))
+                        (find-files "../include" ".*esmumps.h$"))
+              (for-each (lambda (f)
+                          (copy-file f (string-append out "/lib/" f)))
+                        (find-files "../lib" "^lib.*esmumps.*"))))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
@@ -870,10 +886,11 @@ bio-chemistry.")
         `(modify-phases ,scotch-phases
            (replace
             'build
-            ;; TODO: Would like to add parallelism here
             (lambda _
               (and
-               (zero? (system* "make" "ptscotch"))
+               (zero? (system* "make"
+                               (format #f "-j~a" (parallel-job-count))
+                               "ptscotch" "ptesmumps"))
                ;; Install the serial metis compatibility library
                (zero? (system* "make" "-C" "libscotchmetis" "install")))))
            (replace
