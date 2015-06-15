@@ -5475,7 +5475,7 @@ adds or adjust services for a typical ``desktop'' setup.
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{slim-service}}), a network management tool (@pxref{Networking
 Services, @code{wicd-service}}), energy and color management services,
-an NTP client and an SSH server (@pxref{Networking Services}), the Avahi
+an NTP client (@pxref{Networking Services}), the Avahi
 daemon, and has the name service switch service configured to be able to
 use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
 @end defvr
