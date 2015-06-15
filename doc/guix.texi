@@ -4606,8 +4606,8 @@ Linux @dfn{pluggable authentication module} (PAM) services.
 List of string-valued G-expressions denoting setuid programs.
 @xref{Setuid Programs}.
 
-@item @code{sudoers} (default: @var{%sudoers-specification})
-@cindex sudoers
+@item @code{sudoers-file} (default: @var{%sudoers-specification})
+@cindex sudoers file
 The contents of the @file{/etc/sudoers} file as a file-like object
 (@pxref{G-Expressions, @code{local-file} and @code{plain-file}}).
 
