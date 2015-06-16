@@ -171,7 +171,7 @@ Desktops into Active Directory environments using the winbind daemon.")
     (version "2.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.samba.org/ftp/talloc/talloc-"
+              (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
