@@ -296,14 +296,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.6.2")
+    (version "2.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1fi93zy98wmls7x3jpr2yvckk2ia6a1yyygwrfaxq95pd6h3m7l8"))))
+               "0jl43b63b20db3yia5xxp0hh8zwdbirk5k9p1d7416nq1b5ckfx8"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -331,6 +331,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("bzip2" ,bzip2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
        ("python" ,python-2) ; scripts use interpreter python2
        ("speex" ,speex)
        ("yasm" ,yasm)))

@@ -28,6 +28,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages version-control)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -363,4 +364,303 @@ specified in a \"Gemfile\", as well as their dependencies.")
     (description "UserAgent is a Ruby library that parses and compares HTTP
 User Agents.")
     (home-page "https://github.com/gshutler/useragent")
+    (license license:expat)))
+
+(define-public ruby-bacon
+  (package
+    (name "ruby-bacon")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/chneukirchen/bacon/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g03fxilrrx17dijww68n1lq5d8s69hrxgpga8c1i2k35bzcw5jc"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'generate-docs
+                    (lambda _
+                      ;; This rake task also tries to generate a ChangeLog
+                      ;; file from the Git log, which we don't have.  It fails
+                      ;; but creates an empty file, allowing the rest of the
+                      ;; build to succeed.
+                      (zero? (system* "rake" "predist")))))))
+    (synopsis "Small RSpec clone")
+    (description "Bacon is a small RSpec clone providing all essential
+features.")
+    (home-page "https://github.com/chneukirchen/bacon")
+    (license license:expat)))
+
+(define-public ruby-arel
+  (package
+    (name "ruby-arel")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rails/arel/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fldwp2hmrmddx22xf7hdmybngzv97qnv5rvz3qw61m94ddd6w4n"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "SQL AST manager for Ruby")
+    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
+generation of complex SQL queries and adapts to various relational database
+implementations.")
+    (home-page "https://github.com/rails/arel")
+    (license license:expat)))
+
+(define-public ruby-connection-pool
+  (package
+    (name "ruby-connection-pool")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/mperham/connection_pool/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02s5rwhmgy8qqns7a5y1daa0yaw38x6lzpwyvmy46h1yrj9mc6zf"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Generic connection pool for Ruby")
+    (description "Connection_pool provides a generic connection pooling
+interface for Ruby programs.")
+    (home-page "https://github.com/mperham/connection_pool")
+    (license license:expat)))
+
+(define-public ruby-net-http-persistent
+  (package
+    (name "ruby-net-http-persistent")
+    (version "2.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/drbrain/net-http-persistent/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q18vji31w8gfr6ajziqkqs8n5lzkw0bl00dm2a8s05zhavzw9j9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-connection-pool" ,ruby-connection-pool)
+       ("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Persistent HTTP connection manager")
+    (description "Net::HTTP::Persistent manages persistent HTTP connections
+using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
+    (home-page "https://github.com/drbrain/net-http-persistent")
+    (license license:expat)))
+
+(define-public ruby-minitest
+  (package
+    (name "ruby-minitest")
+    (version "5.7.0")
+    (source (origin
+              (method git-fetch)
+              ;; No release tarballs nor git tags.  This is the commit
+              ;; corresponding to the addition of the release notes to
+              ;; History.rdoc.
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/minitest.git")
+                    (commit "e975248")))
+              (sha256
+               (base32
+                "09xjiahk7q8hid1i39ahrmghaslpj9n36zna72i3ah7kf1bh2l01"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Small test suite library for Ruby")
+    (description "Minitest provides a complete suite of Ruby testing
+facilities supporting TDD, BDD, mocking, and benchmarking.")
+    (home-page "https://github.com/seattlerb/minitest")
+    (license license:expat)))
+
+(define-public ruby-minitest-sprint
+  (package
+    (name "ruby-minitest-sprint")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              ;; Same story as ruby-minitest.
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/minitest-sprint.git")
+                    (commit "49c02bc")))
+              (sha256
+               (base32
+                "0rbmxz94lqg5vjz60p8v2bzq8adwvmx501amvk0l124sfwmw94ms"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Fast test suite runner for minitest")
+    (description "Minitest-sprint is a test runner for minitest that makes it
+easier to re-run individual failing tests.")
+    (home-page "https://github.com/seattlerb/minitest-sprint")
+    (license license:expat)))
+
+(define-public ruby-minitest-bacon
+  (package
+    (name "ruby-minitest-bacon")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              ;; Same story as ruby-minitest.
+              (uri (git-reference
+                    (url "https://github.com/seattlerb/minitest-bacon.git")
+                    (commit "38551d5")))
+              (sha256
+               (base32
+                "19r9fm41i0mm1xncqls8frbj1i9nr3sq1cx2mh878r6kdl02d70h"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'build ; no gemspec
+                    (lambda _ (zero? (system* "rake" "gem")))))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Bacon compatibility library for minitest")
+    (description "Minitest-bacon extends minitest with bacon-like
+functionality, making it easier to migrate test suites from bacon to minitest.")
+    (home-page "https://github.com/seattlerb/minitest-bacon")
+    (license license:expat)))
+
+(define-public ruby-daemons
+  (package
+    (name "ruby-daemons")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/thuehlinger/daemons/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v5bpdvpvhk240pc7fkn44vfclppl44pp6wd42ipi5sd5lkk7zfd"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; no test suite
+    (synopsis "Daemonize Ruby programs")
+    (description "Daemons provides a way to wrap existing Ruby scripts to be
+run as a daemon and to be controlled by simple start/stop/restart commands.")
+    (home-page "https://github.com/thuehlinger/daemons")
+    (license license:expat)))
+
+(define-public ruby-git
+  (package
+    (name "ruby-git")
+    (version "1.2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/schacon/ruby-git/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08zg20zc7f7yy34ix2qdd8jbiz7xhjc8alk370869sq3h75hs9jc"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'patch-git-binary
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Make the default git binary an absolute path to the
+                      ;; store.
+                      (let ((git (string-append (assoc-ref inputs "git")
+                                                "/bin/git")))
+                        (substitute* '("lib/git/config.rb")
+                          (("'git'")
+                           (string-append "'" git "'")))
+                        ;; Fix a test that expects the binary to be simply
+                        ;; 'git'.
+                        (substitute* '("tests/units/test_logger.rb")
+                          (("def test_logger")
+                           (string-append
+                            "def test_logger\n"
+                            "Git::Base.config.binary_path = 'git'")))
+                        #t)))
+                  (add-before 'check 'create-fake-home
+                    (lambda _
+                      ;; The test suite runs 'git config --global' commands,
+                      ;; so a fake home directory is needed for them to
+                      ;; succeed.
+                      (let ((fake-home (string-append (getcwd) "/fake-home")))
+                        (mkdir fake-home)
+                        (setenv "HOME" fake-home)))))))
+    (inputs
+     `(("git" ,git)))
+    (synopsis "Ruby wrappers for Git")
+    (description "Ruby/Git is a Ruby library that can be used to create, read
+and manipulate Git repositories by wrapping system calls to the git binary.")
+    (home-page "https://github.com/schacon/ruby-git")
+    (license license:expat)))
+
+(define-public ruby-slop
+  (package
+    (name "ruby-slop")
+    (version "4.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/leejarvis/slop/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cqs50a0b99kjd19xpln8jpnki07cjyp3l7wxbfr44ycasr6nznh"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Ruby command line option parser")
+    (description "Slop provides a Ruby domain specific language for gathering
+options and parsing command line flags.")
+    (home-page "https://github.com/leejarvis/slop")
+    (license license:expat)))
+
+(define-public ruby-multipart-post
+  (package
+    (name "ruby-multipart-post")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nicksieger/multipart-post/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03n271i3knfx4j9aingxzz2bajd379dw9nswsllviqc177lq1anm"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Multipart POST library for Ruby")
+    (description "Multipart-Post Adds multipart POST capability to Ruby's
+net/http library.")
+    (home-page "https://github.com/nicksieger/multipart-post")
     (license license:expat)))

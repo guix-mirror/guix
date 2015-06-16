@@ -23,7 +23,6 @@
   #:use-module (gnu services avahi)
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
-  #:use-module (gnu services ssh)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
@@ -286,7 +285,6 @@ site} for more information."
          (dbus-service (list avahi wicd upower colord))
 
          (ntp-service)
-         (lsh-service)
 
          (map (lambda (mservice)
                 ;; Provide an nscd ready to use nss-mdns.

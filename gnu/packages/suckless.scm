@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,13 +17,16 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages dwm)
-  #:use-module (guix licenses)
+(define-module (gnu packages suckless)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages fontutils))
 
 (define-public dwm
   (package
@@ -83,7 +87,7 @@ left corner.
 
 dwm draws a small customizable border around windows to indicate the focus
 state.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public dmenu
   (package
@@ -111,7 +115,7 @@ state.")
     (description
      "A dynamic menu for X, originally designed for dwm.  It manages large
 numbers of user-defined menu items efficiently.")
-    (license x11)))
+    (license license:x11)))
 
 (define-public slock
   (package
@@ -138,4 +142,50 @@ numbers of user-defined menu items efficiently.")
     (synopsis "Simple X session lock")
     (description
      "Simple X session lock with trivial feedback on password entry.")
-    (license x11)))
+    (license license:x11)))
+
+(define-public st
+  (package
+    (name "st")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.suckless.org/st/st-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0knxpzaa86pprng6hak8hx8bw22yw22rpz1ffxjpcvqlz3xdv05f"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'inhibit-terminfo-install
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("\t@tic -s st.info") ""))
+                      #t)))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("libxcomposite" ,libxcomposite)
+       ("compositeproto" ,compositeproto)
+       ("libxext" ,libxext)
+       ("xextproto" ,xextproto)
+       ("libxrender" ,libxrender)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("font-liberation" ,font-liberation)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://st.suckless.org/")
+    (synopsis "Simple terminal emulator")
+    (description
+     "St implements a simple and lightweight terminal emulator.  It
+implements 256 colors, most VT10X escape sequences, utf8, X11 copy/paste,
+antialiased fonts (using fontconfig), fallback fonts, resizing, and line
+drawing.")
+    (license license:x11)))
