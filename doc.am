@@ -106,5 +106,11 @@ $(eval $(foreach subcommand,$(SUBCOMMANDS),			\
 
 dist_man1_MANS =				\
   doc/guix.1					\
-  doc/guix-daemon.1				\
   $(SUBCOMMANDS:%=doc/guix-%.1)
+
+if BUILD_DAEMON
+
+dist_man1_MANS +=				\
+  doc/guix-daemon.1
+
+endif
