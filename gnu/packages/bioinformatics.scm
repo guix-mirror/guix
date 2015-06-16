@@ -33,6 +33,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpio)
   #:use-module (gnu packages file)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
@@ -259,6 +260,153 @@ into separate processes; and more.")
   (package (inherit (package-with-python2 python-biopython))
     (inputs
      `(("python2-numpy" ,python2-numpy)))))
+
+(define-public blast+
+  (package
+    (name "blast+")
+    (version "2.2.31")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/"
+                    version "/ncbi-blast-" version "+-src.tar.gz"))
+              (sha256
+               (base32
+                "19gq6as4k1jrgsd26158ads6h7v4jca3h4r5dzg1y0m6ya50x5ph"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled bzip2 and zlib
+                  (delete-file-recursively "c++/src/util/compress/bzip2")
+                  (delete-file-recursively "c++/src/util/compress/zlib")
+                  (substitute* "c++/src/util/compress/Makefile.in"
+                    (("bzip2 zlib api") "api"))
+                  ;; Remove useless msbuild directory
+                  (delete-file-recursively
+                   "c++/src/build-system/project_tree_builder/msbuild")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; There are three(!) tests for this massive library, and all fail with
+       ;; "unparsable timing stats".
+       ;; ERR [127] --  [util/regexp] test_pcre.sh     (unparsable timing stats)
+       ;; ERR [127] --  [serial/datatool] datatool.sh     (unparsable timing stats)
+       ;; ERR [127] --  [serial/datatool] datatool_xml.sh     (unparsable timing stats)
+       #:tests? #f
+       #:out-of-source? #t
+       #:parallel-build? #f ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-HOME
+          ;; $HOME needs to be set at some point during the configure phase
+          (lambda _ (setenv "HOME" "/tmp") #t))
+         (add-after
+          'unpack 'enter-dir
+          (lambda _ (chdir "c++") #t))
+         (add-after
+          'enter-dir 'fix-build-system
+          (lambda _
+            (define (which* cmd)
+              (cond ((string=? cmd "date")
+                     ;; make call to "date" deterministic
+                     "date -d @0")
+                    ((which cmd)
+                     => identity)
+                    (else
+                     (format (current-error-port)
+                             "WARNING: Unable to find absolute path for ~s~%"
+                             cmd)
+                     #f)))
+
+            ;; Rewrite hardcoded paths to various tools
+            (substitute* (append '("src/build-system/configure.ac"
+                                   "src/build-system/configure"
+                                   "scripts/common/impl/if_diff.sh"
+                                   "scripts/common/impl/run_with_lock.sh"
+                                   "src/build-system/Makefile.configurables.real"
+                                   "src/build-system/Makefile.in.top"
+                                   "src/build-system/Makefile.meta.gmake=no"
+                                   "src/build-system/Makefile.meta.in"
+                                   "src/build-system/Makefile.meta_l"
+                                   "src/build-system/Makefile.meta_p"
+                                   "src/build-system/Makefile.meta_r"
+                                   "src/build-system/Makefile.mk.in"
+                                   "src/build-system/Makefile.requirements"
+                                   "src/build-system/Makefile.rules_with_autodep.in")
+                                 (find-files "scripts/common/check" "\\.sh$"))
+              (("(/usr/bin/|/bin/)([a-z][-_.a-z]*)" all dir cmd)
+               (or (which* cmd) all)))
+
+            (substitute* (find-files "src/build-system" "^config.*")
+              (("LN_S=/bin/\\$LN_S") (string-append "LN_S=" (which "ln")))
+              (("^PATH=.*") ""))
+
+            ;; rewrite "/var/tmp" in check script
+            (substitute* "scripts/common/check/check_make_unix.sh"
+              (("/var/tmp") "/tmp"))
+
+            ;; do not reset PATH
+            (substitute* (find-files "scripts/common/impl/" "\\.sh$")
+              (("^ *PATH=.*") "")
+              (("action=/bin/") "action=")
+              (("export PATH") ":"))
+            #t))
+         (replace
+          'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out     (assoc-ref outputs "out"))
+                  (lib     (string-append (assoc-ref outputs "lib") "/lib"))
+                  (include (string-append (assoc-ref outputs "include")
+                                          "/include/ncbi-tools++")))
+              ;; The 'configure' script doesn't recognize things like
+              ;; '--enable-fast-install'.
+              (zero? (system* "./configure.orig"
+                              (string-append "--with-build-root=" (getcwd) "/build")
+                              (string-append "--prefix=" out)
+                              (string-append "--libdir=" lib)
+                              (string-append "--includedir=" include)
+                              (string-append "--with-bz2="
+                                             (assoc-ref inputs "bzip2"))
+                              (string-append "--with-z="
+                                             (assoc-ref inputs "zlib"))
+                              ;; Each library is built twice by default, once
+                              ;; with "-static" in its name, and again
+                              ;; without.
+                              "--without-static"
+                              "--with-dll"))))))))
+    (outputs '("out"       ;  19 MB
+               "lib"       ; 203 MB
+               "include")) ;  32 MB
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("cpio" ,cpio)))
+    (home-page "http://blast.ncbi.nlm.nih.gov")
+    (synopsis "Basic local alignment search tool")
+    (description
+     "BLAST is a popular method of performing a DNA or protein sequence
+similarity search, using heuristics to produce results quickly.  It also
+calculates an “expect value” that estimates how many matches would have
+occurred at a given score by chance, which can aid a user in judging how much
+confidence to have in an alignment.")
+    ;; Most of the sources are in the public domain, with the following
+    ;; exceptions:
+    ;;   * Expat:
+    ;;     * ./c++/include/util/bitset/
+    ;;     * ./c++/src/html/ncbi_menu*.js
+    ;;   * Boost license:
+    ;;     * ./c++/include/util/impl/floating_point_comparison.hpp
+    ;;   * LGPL 2+:
+    ;;     * ./c++/include/dbapi/driver/odbc/unix_odbc/
+    ;;   * ASL 2.0:
+    ;;     * ./c++/src/corelib/teamcity_*
+    (license (list license:public-domain
+                   license:expat
+                   license:boost1.0
+                   license:lgpl2.0+
+                   license:asl2.0))))
 
 (define-public bowtie
   (package
