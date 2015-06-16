@@ -3856,6 +3856,34 @@ package name by a hyphen and a version number as in the following example:
 @example
 guix import hackage mtl-2.1.3.1
 @end example
+
+@item elpa
+@cindex elpa
+Import meta-data from an Emacs Lisp Package Archive (ELPA) package
+repository (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
+
+Specific command-line options are:
+
+@table @code
+@item --archive=@var{repo}
+@itemx -a @var{repo}
+@var{repo} identifies the archive repository from which to retrieve the
+information.  Currently the supported repositories and their identifiers
+are:
+@itemize -
+@item
+@uref{"http://elpa.gnu.org/packages", GNU}, selected by the @code{gnu}
+identifier.  This is the default.
+
+@item
+@uref{"http://stable.melpa.org/packages", MELPA-Stable}, selected by the
+@code{melpa-stable} identifier.
+
+@item
+@uref{"http://melpa.org/packages", MELPA}, selected by the @code{melpa}
+identifier.
+@end itemize
+@end table
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
