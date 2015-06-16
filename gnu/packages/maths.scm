@@ -501,7 +501,7 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.4.4")
+    (version "3.6.0")
     (source
      (origin
       (method url-fetch)
@@ -509,9 +509,7 @@ ASCII text files using Gmsh's own scripting language.")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0v5dg6dhdjpi5ianvd4mm6hsvxzv1bsxwnh9f9myag0a0d9xk9iv"))
-      (patches
-       (list (search-patch "petsc-fix-threadcomm.patch")))))
+       (base32 "0lzhk1flgszks1wlhz2b92rnlx5np7bgad8vqy9fcqziz5b4pr26"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
@@ -525,7 +523,7 @@ ASCII text files using Gmsh's own scripting language.")
        ))
     (arguments
      `(#:test-target "test"
-       #:parallel-build? #f
+       #:parallel-build? #f             ;build is parallel by default
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
@@ -561,26 +559,22 @@ ASCII text files using Gmsh's own scripting language.")
             (let ((out     (assoc-ref outputs "out"))
                   (fortran (assoc-ref inputs  "gfortran")))
               (substitute* (map (lambda (file)
-                                  (string-append out "/" file))
-                                '("conf/petscvariables"
-                                  "conf/PETScConfig.cmake"))
+                                  (string-append out "/lib/petsc/conf/" file))
+                                '("petscvariables" "PETScConfig.cmake"))
                 (((getcwd)) out))
               ;; Make compiler references point to the store
-              (substitute* (string-append out "/conf/petscvariables")
+              (substitute* (string-append out "/lib/petsc/conf/petscvariables")
                 (("= g(cc|\\+\\+|fortran)" _ suffix)
                  (string-append "= " fortran "/bin/g" suffix)))
               ;; PETSc installs some build logs, which aren't necessary.
               (for-each (lambda (file)
-                          (let ((f (string-append out "/" file)))
+                          (let ((f (string-append out "/lib/petsc/conf/" file)))
                             (when (file-exists? f)
                               (delete-file f))))
-                        '("conf/configure.log"
-                          "conf/make.log"
-                          "conf/test.log"
-                          "conf/error.log"
-                          "conf/RDict.db"
+                        '("configure.log" "make.log" "gmake.log"
+                          "test.log" "error.log" "RDict.db"
                           ;; Once installed, should uninstall with Guix
-                          "conf/uninstall.py"))))
+                          "uninstall.py"))))
           %standard-phases)))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")

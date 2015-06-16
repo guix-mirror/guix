@@ -545,7 +545,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
-  gnu/packages/patches/petsc-fix-threadcomm.patch		\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
