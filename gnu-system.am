@@ -472,6 +472,25 @@ dist_patch_DATA =						\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
+  gnu/packages/patches/libtiff-CVE-2012-4564.patch		\
+  gnu/packages/patches/libtiff-CVE-2013-1960.patch		\
+  gnu/packages/patches/libtiff-CVE-2013-1961.patch		\
+  gnu/packages/patches/libtiff-CVE-2013-4231.patch		\
+  gnu/packages/patches/libtiff-CVE-2013-4232.patch		\
+  gnu/packages/patches/libtiff-CVE-2013-4243.patch		\
+  gnu/packages/patches/libtiff-CVE-2013-4244.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8127-pt1.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8127-pt2.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8127-pt3.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8127-pt4.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8128-pt1.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8128-pt2.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8128-pt3.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8128-pt4.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8128-pt5.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-8129.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-9330.patch		\
+  gnu/packages/patches/libtiff-CVE-2014-9655.patch		\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/libvpx-fix-armhf-link.patch		\
