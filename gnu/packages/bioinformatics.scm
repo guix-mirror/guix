@@ -1136,6 +1136,56 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
     ;; the rest is released under the Expat license
     (license (list license:expat license:bsd-3))))
 
+(define-public idr
+  (package
+    (name "idr")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nboley/idr/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k3x44biak00aiv3hpm1yd6nn4hhp7n0qnbs3zh2q9sw7qr1qj5r"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (python-version (string-take (string-take-right
+                                                 (assoc-ref inputs "python") 5) 3))
+                   (path (string-join
+                          (map (lambda (name)
+                                 (string-append (assoc-ref inputs name)
+                                                "/lib/python" python-version
+                                                "/site-packages"))
+                               '("python-scipy"
+                                 "python-numpy"
+                                 "python-matplotlib"))
+                          ":")))
+              (wrap-program (string-append out "/bin/idr")
+                `("PYTHONPATH" ":" prefix (,path))))
+            #t)))))
+    (inputs
+     `(("python-scipy" ,python-scipy)
+       ("python-numpy" ,python-numpy)
+       ("python-matplotlib" ,python-matplotlib)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/nboley/idr")
+    (synopsis "Tool to measure the irreproducible discovery rate (IDR)")
+    (description
+     "The IDR (Irreproducible Discovery Rate) framework is a unified approach
+to measure the reproducibility of findings identified from replicate
+experiments and provide highly stable thresholds based on reproducibility.")
+    (license license:gpl3+)))
+
 (define-public macs
   (package
     (name "macs")
