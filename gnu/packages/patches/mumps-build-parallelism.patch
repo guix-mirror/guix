@@ -1,0 +1,13 @@
+Building sublibraries in parallel can lead to race conditions on the libseq
+and lipord targets.
+
+--- MUMPS_5.0.0/Makefile.orig	2015-06-15 10:08:54.523146562 -0500
++++ MUMPS_5.0.0/Makefile	2015-06-15 10:19:44.074367512 -0500
+@@ -11,6 +11,7 @@
+ 	sexamples dexamples cexamples zexamples \
+ 	mumps_lib requiredobj libseqneeded clean
+ 
++.NOTPARALLEL:
+ alllib:		c z s d
+ all:		cexamples zexamples sexamples dexamples
+ 

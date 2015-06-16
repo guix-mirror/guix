@@ -32,6 +32,7 @@
   #:use-module (guix download)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
+  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
@@ -627,6 +628,174 @@ scientific applications modeled by partial differential equations.")
                            (assoc-ref %build-inputs "openmpi"))
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
+
+(define-public mumps
+  (package
+    (name "mumps")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://mumps.enseeiht.fr/MUMPS_"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0690yp73sqk8zn2jnrzdr5swnjdyd7j0774s4xamjjwcxarw87hr"))
+       (patches (list (search-patch "mumps-build-parallelism.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fortran" ,gfortran)
+       ;; These are required for linking against mumps, but we let the user
+       ;; declare the dependency.
+       ("blas" ,openblas)
+       ("metis" ,metis)
+       ("scotch" ,scotch)))
+    (arguments
+     `(#:modules ((ice-9 match)
+                  (ice-9 popen)
+                  (srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            (call-with-output-file "Makefile.inc"
+              (lambda (port)
+                (format port "
+PLAT         =
+LIBEXT       = .a
+OUTC         = -o
+OUTF         = -o
+RM           = rm -f~:[
+CC           = gcc
+FC           = gfortran
+FL           = gfortran
+INCSEQ       = -I$(topdir)/libseq
+LIBSEQ       = -L$(topdir)/libseq -lmpiseq
+LIBSEQNEEDED = libseqneeded~;
+CC           = mpicc
+FC           = mpifort
+FL           = mpifort~]
+AR           = ar vr # rules require trailing space, ugh...
+RANLIB       = ranlib
+LIBBLAS      = -L~a -lopenblas~@[
+SCALAP       = -L~a -lscalapack~]
+LIBOTHERS    = -pthread
+CDEFS        = -DAdd_
+PIC          = -fPIC
+OPTF         = -O2 -DALLOW_NON_INIT $(PIC)
+OPTL         = -O2 $(PIC)
+OPTC         = -O2 $(PIC)
+INCS         = $(INCSEQ)
+LIBS         = $(SCALAP) $(LIBSEQ)
+LPORDDIR     = $(topdir)/PORD/lib
+IPORD        = -I$(topdir)/PORD/include
+LPORD        = -L$(LPORDDIR) -lpord
+ORDERINGSF   = -Dpord~@[
+METISDIR     = ~a
+IMETIS       = -I$(METISDIR)/include
+LMETIS       = -L$(METISDIR)/lib -lmetis
+ORDERINGSF  += -Dmetis~]~@[~:{
+SCOTCHDIR    = ~a
+ISCOTCH      = -I$(SCOTCHDIR)/include
+LSCOTCH      = -L$(SCOTCHDIR)/lib ~a-lesmumps -lscotch -lscotcherr
+ORDERINGSF  += ~a~}~]
+ORDERINGSC   = $(ORDERINGSF)
+LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH)
+IORDERINGSF  = $(ISCOTCH)
+IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
+                        (assoc-ref inputs "mpi")
+                        (assoc-ref inputs "blas")
+                        (assoc-ref inputs "scalapack")
+                        (assoc-ref inputs "metis")
+                        (match (list (assoc-ref inputs "pt-scotch")
+                                     (assoc-ref inputs "scotch"))
+                          ((#f #f)
+                           #f)
+                          ((#f scotch)
+                           `((,scotch "" "-Dscotch")))
+                          ((ptscotch _)
+                           `((,ptscotch
+                              "-lptesmumps -lptscotch -lptscotcherr "
+                              "-Dptscotch")))))))))
+         (replace
+          'build
+          ;; By default only the d-precision library is built.  Make with "all"
+          ;; target so that all precision libraries and examples are built.
+          (lambda _
+            (zero? (system* "make" "all"
+                            (format #f "-j~a" (parallel-job-count))))))
+         (replace
+          'check
+          ;; Run the simple test drivers, which read test input from stdin:
+          ;; from the "real" input for the single- and double-precision
+          ;; testers, and from the "cmplx" input for complex-precision
+          ;; testers.  The EXEC-PREFIX key is used by the mumps-openmpi
+          ;; package to prefix execution with "mpirun".
+          (lambda* (#:key (exec-prefix '()) #:allow-other-keys)
+            (with-directory-excursion "examples"
+              (every
+               (lambda (prec type)
+                 (let ((tester (apply open-pipe*
+                                      `(,OPEN_WRITE
+                                        ,@exec-prefix
+                                        ,(string-append "./" prec
+                                                        "simpletest"))))
+                       (input  (open-input-file
+                                (string-append "input_simpletest_" type))))
+                   (begin
+                     (dump-port input tester)
+                     (close-port input)
+                     (zero? (close-pipe tester)))))
+               '("s" "d" "c" "z")
+               '("real" "real" "cmplx" "cmplx")))))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (copy-recursively "lib" (string-append out "/lib"))
+              (copy-recursively "include" (string-append out "/include"))
+              (when (file-exists? "libseq/libmpiseq.a")
+                (copy-file "libseq/libmpiseq.a"
+                           (string-append out "/lib/libmpiseq.a")))))))))
+    (home-page "http://mumps.enseeiht.fr")
+    (synopsis "Multifrontal sparse direct solver")
+    (description
+     "MUMPS (MUltifrontal Massively Parallel sparse direct Solver) solves a
+sparse system of linear equations A x = b using Guassian elimination.")
+    (license license:cecill-c)))
+
+(define-public mumps-metis
+  (package (inherit mumps)
+    (name "mumps-metis")
+    (inputs
+     (alist-delete "scotch" (package-inputs mumps)))))
+
+(define-public mumps-openmpi
+  (package (inherit mumps)
+    (name "mumps-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ("scalapack" ,scalapack)
+       ("pt-scotch" ,pt-scotch)
+       ,@(alist-delete "scotch" (package-inputs mumps))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments mumps)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace
+            'check
+            (lambda _
+              ((assoc-ref ,phases 'check)
+               #:exec-prefix '("mpirun" "-n" "2"))))))))
+    (synopsis "Multifrontal sparse direct solver (with MPI)")))
+
+(define-public mumps-metis-openmpi
+  (package (inherit mumps-openmpi)
+    (name "mumps-metis-openmpi")
+    (inputs
+     (alist-delete "pt-scotch" (package-inputs mumps-openmpi)))))
 
 (define-public superlu
   (package
