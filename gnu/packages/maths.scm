@@ -927,6 +927,52 @@ bio-chemistry.")
             (lambda _ (zero? (system* "make" "ptcheck"))))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
+(define-public p4est
+  (package
+    (name "p4est")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://p4est.github.io/release/p4est-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0faina2h5qsx3m2izbzaj9bbakma1krbbjmq43wrp1hcbyijflqb"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fortran" ,gfortran)
+       ("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags `(,(string-append "BLAS_LIBS=-L"
+                                           (assoc-ref %build-inputs "blas")
+                                           " -lopenblas")
+                           ,(string-append "LAPACK_LIBS=-L"
+                                           (assoc-ref %build-inputs "lapack")
+                                           " -llapack"))))
+    (home-page "http://www.p4est.org")
+    (synopsis "Adaptive mesh refinement on forests of octrees")
+    (description
+     "The p4est software library enables the dynamic management of a
+collection of adaptive octrees, conveniently called a forest of octrees.
+p4est is designed to work in parallel and scales to hundreds of thousands of
+processor cores.")
+    (license license:gpl2+)))
+
+(define-public p4est-openmpi
+  (package (inherit p4est)
+    (name "p4est-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs p4est)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments p4est)
+       ((#:configure-flags cf)
+        ``("--enable-mpi" ,@,cf))))
+    (synopsis "Parallel adaptive mesh refinement on forests of octrees")))
+
 (define-public gsegrafix
   (package
     (name "gsegrafix")
