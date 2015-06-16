@@ -53,7 +53,19 @@
               (base32
                "120m53c3p28qxmfzllicjzr8syjv6v4d9rsyrgkp7gnmcgvvgfmn"))
              (patches (map search-patch '("qemu-CVE-2015-3209.patch"
-                                          "qemu-CVE-2015-3456.patch")))))
+                                          "qemu-CVE-2015-3456.patch"
+                                          "qemu-CVE-2015-4037.patch"
+                                          "qemu-CVE-2015-4103.patch"
+                                          "qemu-CVE-2015-4104.patch"
+                                          "qemu-CVE-2015-4105.patch"
+                                          "qemu-CVE-2015-4106-pt1.patch"
+                                          "qemu-CVE-2015-4106-pt2.patch"
+                                          "qemu-CVE-2015-4106-pt3.patch"
+                                          "qemu-CVE-2015-4106-pt4.patch"
+                                          "qemu-CVE-2015-4106-pt5.patch"
+                                          "qemu-CVE-2015-4106-pt6.patch"
+                                          "qemu-CVE-2015-4106-pt7.patch"
+                                          "qemu-CVE-2015-4106-pt8.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
