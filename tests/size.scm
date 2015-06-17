@@ -1,0 +1,87 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (test-size)
+  #:use-module (guix store)
+  #:use-module (guix monads)
+  #:use-module (guix packages)
+  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix tests)
+  #:use-module (guix scripts size)
+  #:use-module (gnu packages bootstrap)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-64))
+
+(define %store
+  (open-connection-for-tests))
+
+(define-syntax-rule (test-assertm name exp)
+  (test-assert name
+    (run-with-store %store exp
+                    #:guile-for-build (%guile-for-build))))
+
+
+(test-begin "size")
+
+(test-assertm "store-profile"
+  (mlet* %store-monad ((file1 (gexp->derivation "file1"
+                                                #~(symlink #$%bootstrap-guile
+                                                           #$output)))
+                       (file2 (text-file* "file2"
+                                          "the file => " file1)))
+    (define (matching-profile item)
+      (lambda (profile)
+        (string=? item (profile-file profile))))
+
+    (mbegin %store-monad
+      (built-derivations (list file2))
+      (mlet %store-monad ((profiles (store-profile
+                                     (derivation->output-path file2)))
+                          (guile    (package->derivation %bootstrap-guile)))
+        (define (lookup-profile drv)
+          (find (matching-profile (derivation->output-path drv))
+                profiles))
+
+        (letrec-syntax ((match* (syntax-rules (=>)
+                                  ((_ ((drv => profile) rest ...) body)
+                                   (match (lookup-profile drv)
+                                     ((? profile? profile)
+                                      (match* (rest ...) body))))
+                                  ((_ () body)
+                                   body))))
+          ;; Make sure we get all three profiles with sensible values.
+          (return (and (= (length profiles) 3)
+                       (match* ((file1 => profile1)
+                                (file2 => profile2)
+                                (guile => profile3))
+                         (and (> (profile-closure-size profile2) 0)
+                              (= (profile-closure-size profile2)
+                                 (+ (profile-self-size profile1)
+                                    (profile-self-size profile2)
+                                    (profile-self-size profile3))))))))))))
+
+(test-end "size")
+
+
+(exit (= (test-runner-fail-count (test-runner-current)) 0))
+
+;;; Local Variables:
+;;; eval: (put 'match* 'scheme-indent-function 1)
+;;; End:

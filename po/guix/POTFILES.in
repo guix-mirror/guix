@@ -17,6 +17,7 @@ guix/scripts/system.scm
 guix/scripts/lint.scm
 guix/scripts/publish.scm
 guix/scripts/edit.scm
+guix/scripts/size.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
 guix/http-client.scm

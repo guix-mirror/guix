@@ -203,13 +203,31 @@ standards, GNU Coding Standards}); you can check the commit history for
 examples.
 
 Before submitting a patch that adds or modifies a package definition,
-please run @code{guix lint @var{package}}, where @var{package} is the
+please run through this check list:
+
+@enumerate
+@item
+Run @code{guix lint @var{package}}, where @var{package} is the
 name of the new or modified package, and fix any errors it reports
-(@pxref{Invoking guix lint}).  In addition, please make sure the package
-builds on your platform, using @code{guix build @var{package}}.  You may
-also want to check that dependent package (if applicable) are not
-affected by the change; @code{guix refresh --list-dependent
+(@pxref{Invoking guix lint}).
+
+@item
+Make sure the package builds on your platform, using @code{guix build
+@var{package}}.
+
+@item
+Take a look at the profile reported by @command{guix size}
+(@pxref{Invoking guix size}).  This will allow you to notice references
+to other packages unwillingly retained.  It may also help determine
+whether to split the package (@pxref{Packages with Multiple Outputs}),
+and which optional dependencies should be used.
+
+@item
+For important changes, check that dependent package (if applicable) are
+not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
+
+@end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as a
 subject.  You may use your email client or the @command{git send-mail}
