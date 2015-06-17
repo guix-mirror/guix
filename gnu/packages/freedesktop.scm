@@ -38,7 +38,9 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages libffi))
 
 (define-public xdg-utils
   (package
@@ -197,3 +199,36 @@ Python")
 
 (define-public python2-pyxdg
   (package-with-python2 python-pyxdg))
+
+(define-public wayland
+  (package
+    (name "wayland")
+    (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://wayland.freedesktop.org/releases/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1j3gfzn8i0xhk3j34mwb2srrscjxfyi279jhyq80mz943j6r6z7i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)
+       ("xmlto" ,xmlto)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("expat" ,expat)
+       ("libffi" ,libffi)
+       ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
+    (home-page "http://wayland.freedesktop.org/")
+    (synopsis "Display server protocol")
+    (description
+     "Wayland is a protocol for a compositor to talk to its clients as well as
+a C library implementation of that protocol.  The compositor can be a standalone
+display server running on Linux kernel modesetting and evdev input devices, an X
+application, or a wayland client itself.  The clients can be traditional
+applications, X servers (rootless or fullscreen) or other display servers.")
+    (license license:x11)))
