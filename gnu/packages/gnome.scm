@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages mail)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages nettle)
@@ -2481,3 +2483,70 @@ which are easy to play with the aid of a mouse.")
 natively with GTK-Doc (the API reference system developed for GTK+ and used
 throughout GNOME for API documentation).")
     (license license:gpl2+)))
+
+(define-public cogl
+  (package
+    (name "cogl")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0aqrj7gc0x7v536vdycgn2i23fj3nx3qwdd3mwgx7rr9b14kb7kj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")     ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ;;("xorg-server" ,xorg-server) ; for the test suite
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxdamage" ,libxdamage)
+       ("libxcomposite" ,libxcomposite)
+       ("libxrandr" ,libxrandr)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("cairo" ,cairo)
+       ("pango" ,pango)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (arguments
+     `(#:configure-flags (list "--enable-cogl-gst"
+                               ;; Arrange to pass an absolute file name to
+                               ;; dlopen for libGL.so.
+                               (string-append "--with-gl-libname="
+                                              (assoc-ref %build-inputs "mesa")
+                                              "/lib/libGL.so"))
+       ;; XXX FIXME: All tests fail, with many warnings printed like this:
+       ;;   _FontTransOpen: Unable to Parse address
+       ;;   ${prefix}/share/fonts/X11/misc/
+       #:tests? #f
+       #; #:phases
+       #;
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       ;; The test suite requires a running X server.
+                       (system (format #f "~a/bin/Xvfb :1 &"
+                                       (assoc-ref inputs "xorg-server")))
+                       (setenv "DISPLAY" ":1")
+                       #t)))))
+    (home-page "http://www.cogl3d.org")
+    (synopsis "Object oriented GL/GLES Abstraction/Utility Layer")
+    (description
+     "Cogl is a small library for using 3D graphics hardware to draw pretty
+pictures.  The API departs from the flat state machine style of OpenGL and is
+designed to make it easy to write orthogonal components that can render
+without stepping on each others toes.")
+    (license (list license:expat       ; most of the code
+                   license:bsd-3       ; cogl/cogl-point-in-poly.c
+                   license:sgifreeb2.0 ; cogl-path/tesselator/
+                   license:asl2.0))))  ; examples/android/
