@@ -113,6 +113,7 @@ MODULES =					\
   guix/scripts/import/hackage.scm		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
+  guix/scripts/edit.scm				\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 

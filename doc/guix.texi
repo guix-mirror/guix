@@ -124,6 +124,7 @@ Defining Packages
 Utilities
 
 * Invoking guix build::         Building packages from the command line.
+* Invoking guix edit::
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
@@ -1931,7 +1932,10 @@ unavailable to the build process, possibly leading to a build failure.
 
 Once a package definition is in place, the
 package may actually be built using the @code{guix build} command-line
-tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
+tool (@pxref{Invoking guix build}).  You can easily jump back to the
+package definition using the @command{guix edit} command
+(@pxref{Invoking guix edit}).
+@xref{Packaging Guidelines}, for
 more information on how to test package definitions, and
 @ref{Invoking guix lint}, for information on how to check a definition
 for style conformance.
@@ -3261,6 +3265,7 @@ programming interface of Guix in a convenient way.
 
 @menu
 * Invoking guix build::         Building packages from the command line.
+* Invoking guix edit::          Editing package definitions.
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
@@ -3546,6 +3551,28 @@ $ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
 These options are parsed independently, and the result is appended to
 the parsed command-line options.
 @end defvr
+
+
+@node Invoking guix edit
+@section Invoking @command{guix edit}
+
+@cindex package definition, editing
+So many packages, so many source files!  The @command{guix edit} command
+facilitates the life of packagers by pointing their editor at the source
+file containing the definition of the specified packages.  For instance:
+
+@example
+guix edit gcc-4.8 vim
+@end example
+
+@noindent
+launches the program specified in the @code{EDITOR} environment variable
+to edit the recipe of GCC@tie{}4.8.4 and that of Vim.
+
+If you are using Emacs, note that the Emacs user interface provides
+similar functionality in the ``package info'' buffers created by
+@kbd{M-x guix-search-by-name} and similar commands (@pxref{Emacs
+Commands}).
 
 
 @node Invoking guix download

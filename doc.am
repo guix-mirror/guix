@@ -90,6 +90,7 @@ SUBCOMMANDS :=					\
   archive					\
   build						\
   download					\
+  edit						\
   environment					\
   gc						\
   hash						\
