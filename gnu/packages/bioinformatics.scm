@@ -1230,9 +1230,12 @@ sequencing tag position and orientation.")
                (base32
                 "0x446867az8ir0z8c1vjqffkp0ma37wm4sylixnkhgawllzx8v5w"))
               (modules '((guix build utils)))
-              ;; use "gcc" instead of "cc" for compilation
               (snippet
                '(substitute* "setup.py"
+                  ;; Use setuptools, or else the executables are not
+                  ;; installed.
+                  (("distutils.core") "setuptools")
+                  ;; use "gcc" instead of "cc" for compilation
                   (("^defines")
                    "cc.set_executables(
 compiler='gcc',
@@ -1250,7 +1253,9 @@ linker_so='gcc -shared'); defines")))))
        ("python-scipy" ,python2-scipy)
        ("python-matplotlib" ,python2-matplotlib)))
     (native-inputs
-     `(("python-setuptools" ,python2-setuptools)))
+     `(("python-mock" ,python2-mock) ;for tests
+       ("python-pytz" ,python2-pytz) ;for tests
+       ("python-setuptools" ,python2-setuptools)))
     (home-page "http://genes.mit.edu/burgelab/miso/index.html")
     (synopsis "Mixture of Isoforms model for RNA-Seq isoform quantitation")
     (description
