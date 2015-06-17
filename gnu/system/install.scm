@@ -63,15 +63,19 @@ under /root/.guix-profile where GUIX is installed."
           (setenv "PATH"
                   (string-append #$guix "/sbin:" #$tar "/bin:" #$xz "/bin"))
 
+          ;; Note: there is not much to gain here with deduplication and there
+          ;; is the overhead of the '.links' directory, so turn it off.
           (populate-single-profile-directory %root
                                              #:profile #$profile
-                                             #:closure "profile")
+                                             #:closure "profile"
+                                             #:deduplicate? #f)
 
           ;; Create the tarball.  Use GNU format so there's no file name
           ;; length limitation.
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
                             "--owner=root:0" "--group=root:0"
+                            "--check-links"
                             "-cvf" #$output
                             ;; Avoid adding / and /var to the tarball,
                             ;; so that the ownership and permissions of those
