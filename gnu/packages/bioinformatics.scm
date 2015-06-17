@@ -1063,7 +1063,7 @@ sequencing tag position and orientation.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://pypi.python.org/packages/source/m/misopy/misopy-"
+                    "https://pypi.python.org/packages/source/m/misopy/misopy-"
                     version ".tar.gz"))
               (sha256
                (base32
