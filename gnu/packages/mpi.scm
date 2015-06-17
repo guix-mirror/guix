@@ -55,13 +55,23 @@
      `(("libx11" ,libx11)
        ("cairo" ,cairo)
        ("ncurses" ,ncurses)
+       ("numactl" ,numactl)
        ("libpciaccess" ,libpciaccess)
        ("expat" ,expat)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     ;; 'hwloc.pc' refers to libnuma, hence the propagation.
-     `(("numactl" ,numactl)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'refine-libnuma
+          ;; Give -L arguments for libraries to avoid propagation
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out  (assoc-ref outputs "out"))
+                  (numa (assoc-ref inputs "numactl")))
+              (substitute* (map (lambda (f) (string-append out "/" f))
+                                '("lib/pkgconfig/hwloc.pc" "lib/libhwloc.la"))
+                (("-lnuma" lib) (string-append "-L" numa "/lib " lib)))))))))
     (home-page "http://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
     (description
