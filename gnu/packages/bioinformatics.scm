@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -614,6 +616,56 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
+
+(define-public diamond
+  (package
+    (name "diamond")
+    (version "0.7.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bbuchfink/diamond/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hfkcfv9f76h5brbyw9fyvmc0l9cmbsxrcdqk0fa9xv82zj47p15"))
+              (snippet '(begin
+                          (delete-file "bin/diamond")
+                          #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f  ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source-dir
+                    (lambda _
+                      (chdir "src")
+                      #t))
+         (delete 'configure)
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((bin (string-append (assoc-ref outputs "out")
+                                              "/bin")))
+                      (mkdir-p bin)
+                      (copy-file "../bin/diamond"
+                                 (string-append bin "/diamond"))
+                      #t))))))
+    (native-inputs
+     `(("bc" ,bc)))
+    (inputs
+     `(("boost" ,boost)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/bbuchfink/diamond")
+    (synopsis "Accelerated BLAST compatible local sequence aligner")
+    (description
+     "DIAMOND is a BLAST-compatible local aligner for mapping protein and
+translated DNA query sequences against a protein reference database (BLASTP
+and BLASTX alignment mode).  The speedup over BLAST is up to 20,000 on short
+reads at a typical sensitivity of 90-99% relative to BLAST depending on the
+data and settings.")
+    (license (license:non-copyleft "file://src/COPYING"
+                                   "See src/COPYING in the distribution."))))
 
 (define-public edirect
   (package
