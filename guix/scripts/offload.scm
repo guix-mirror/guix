@@ -606,9 +606,7 @@ defines a total order on machines.)"
           ((machine1 slot1)
            (match b
              ((machine2 slot2)
-              (if (pred machine1 machine2)
-                  (list machine1 slot1)
-                  (list machine2 slot2))))))))
+              (pred machine1 machine2)))))))
 
     (let loop ((machines+slots
                 (sort machines+slots
