@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
             psfl public-domain
             qpl
             ruby
+            sgifreeb2.0
             silofl1.1
             vim
             x11 x11-style
@@ -317,6 +319,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Ruby License"
            "http://directory.fsf.org/wiki/License:Ruby"
            "https://www.ruby-lang.org/en/about/license.txt"))
+
+(define sgifreeb2.0
+  (license "SGI Free Software License B, version 2.0"
+           "http://directory.fsf.org/wiki/License:SGIFreeBv2"
+           "https://www.gnu.org/licenses/license-list.html#SGIFreeB"))
 
 (define silofl1.1
   (license "SIL OFL 1.1"
