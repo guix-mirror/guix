@@ -803,3 +803,26 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
 writing input files for TeX, LaTeX, ConTeXt, Texinfo, and docTeX using Emacs
 or XEmacs.")
     (license license:gpl3+)))
+
+(define-public emacs-mmm-mode
+  (package
+    (name "emacs-mmm-mode")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://stable.melpa.org/packages/mmm-mode-"
+             version
+             ".tar"))
+       (sha256
+        (base32
+         "1llkzb6d978ym3zv3yfzwj0w5zzmmj3ksrm5swrx1papxcnqnkb9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/mmm-mode")
+    (synopsis
+     "Allow multiple major modes in an Emacs buffer")
+    (description
+    "MMM Mode is a minor mode that allows multiple major modes to coexist in a
+single buffer.")
+    (license license:gpl3+)))
