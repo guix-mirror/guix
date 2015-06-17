@@ -1494,6 +1494,53 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
 files and writing bioinformatics applications.")
     (license license:bsd-3)))
 
+(define-public python2-warpedlmm
+  (package
+    (name "python2-warpedlmm")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/W/WarpedLMM/WarpedLMM-"
+             version ".zip"))
+       (sha256
+        (base32
+         "1agfz6zqa8nc6cw47yh0s3y14gkpa9wqazwcj7mwwj3ffnw39p3j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2  ; requires Python 2.7
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'remove-bin-directory
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; The "bin" directory only contains wrappers for running
+            ;; the module tests.  They are not needed after the
+            ;; "check" phase.
+            (delete-file-recursively
+             (string-append (assoc-ref outputs "out") "/bin"))
+            #t)))))
+    (propagated-inputs
+     `(("python-scipy" ,python2-scipy)
+       ("python-numpy" ,python2-numpy)
+       ("python-matplotlib" ,python2-matplotlib)
+       ("python-fastlmm" ,python2-fastlmm)
+       ("python-pandas" ,python2-pandas)
+       ("python-pysnptools" ,python2-pysnptools)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)
+       ("python-mock" ,python2-mock)
+       ("python-nose" ,python2-nose)
+       ("unzip" ,unzip)))
+    (home-page "https://github.com/PMBio/warpedLMM")
+    (synopsis "Implementation of warped linear mixed models")
+    (description
+     "WarpedLMM is a Python implementation of the warped linear mixed model,
+which automatically learns an optimal warping function (or transformation) for
+the phenotype as it models the data.")
+    (license license:asl2.0)))
+
 (define-public pbtranscript-tofu
   (let ((commit "c7bbd5472"))
     (package
