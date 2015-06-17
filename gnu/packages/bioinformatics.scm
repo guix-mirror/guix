@@ -87,7 +87,7 @@ BAM files.")
 (define-public bedops
   (package
     (name "bedops")
-    (version "2.4.5")
+    (version "2.4.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bedops/bedops/archive/v"
@@ -95,7 +95,7 @@ BAM files.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0wmg6j0icimlrnsidaxrzf3hfgjvlkkcwvpdg7n4gg7hdv2m9ni5"))))
+                "1kqbac547wyqma81cyky9n7mkgikjpsfd3nnmcm6hpqwanqgh10v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
