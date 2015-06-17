@@ -274,6 +274,15 @@ large scale eigenvalue problems.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
 
+(define-public arpack-ng-openmpi
+  (package (inherit arpack-ng)
+    (name "arpack-ng-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs arpack-ng)))
+    (arguments `(#:configure-flags '("--enable-mpi")))
+    (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
+
 (define-public lapack
   (package
     (name "lapack")
