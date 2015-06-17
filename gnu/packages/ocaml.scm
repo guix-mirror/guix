@@ -24,12 +24,12 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages commencement)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages perl)
@@ -57,8 +57,9 @@
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libx11" ,libx11)
-       ("gcc:lib" ,gcc-final "lib") ; for libiberty, needed for objdump support
-       ("zlib" ,zlib)))             ; also needed for objdump support
+       ;; For libiberty, needed for objdump support.
+       ("gcc:lib" ,(canonical-package gcc-4.8) "lib")
+       ("zlib" ,zlib)))                       ;also needed for objdump support
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
