@@ -632,6 +632,106 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
+(define-public slepc
+  (package
+    (name "slepc")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://slepc.upv.es/download/download.php?"
+                           "filename=slepc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ij8w864spzk4cq2mmkssqyj0mbckkkvxm0wpw9gywy2jgbj07jr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python-2)))
+    (inputs
+     `(("arpack" ,arpack-ng)
+       ("gfortran" ,gfortran)))
+    (propagated-inputs
+     `(("petsc" ,petsc)))
+    (arguments
+     `(#:parallel-build? #f             ;build is parallel by default
+       #:configure-flags
+       `(,(string-append "--with-arpack-dir="
+                         (assoc-ref %build-inputs "arpack")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          ;; configure is a python script, so we can't run it with bash.
+          (lambda* (#:key inputs outputs (configure-flags '())
+                    #:allow-other-keys)
+            (let* ((prefix (assoc-ref outputs "out"))
+                   (flags `(,(string-append "--prefix=" prefix)
+                            ,@configure-flags)))
+              (format #t "build directory: ~s~%" (getcwd))
+              (format #t "configure flags: ~s~%" flags)
+              (setenv "SLEPC_DIR" (getcwd))
+              (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+              (zero? (apply system* "./configure" flags)))))
+         (add-after
+          'install 'delete-doc
+          ;; TODO: SLEPc installs HTML documentation alongside headers in
+          ;; $out/include.  We'd like to move them to share/doc, but delete
+          ;; them for now, as they are incomplete and installing the complete
+          ;; documentation is difficult.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out")))
+              (for-each delete-file (find-files out "\\.html$")))))
+         (add-after
+          'install 'clean-install
+          ;; Clean up unnecessary build logs from installation.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (for-each (lambda (file)
+                          (let ((f (string-append out "/lib/slepc/conf/" file)))
+                            (when (file-exists? f)
+                              (delete-file f))))
+                        '("configure.log" "make.log" "gmake.log"
+                          "test.log" "error.log" "RDict.db"
+                          "uninstall.py"))))))))
+    (home-page "http://slepc.upv.es")
+    (synopsis "Scalable library for eigenproblems")
+    (description "SLEPc is a software library for the solution of large sparse
+eigenproblems on parallel computers.  It can be used for the solution of
+linear eigenvalue problems formulated in either standard or generalized form,
+as well as other related problems such as the singular value decomposition.
+The emphasis of the software is on methods and techniques appropriate for
+problems in which the associated matrices are sparse, for example, those
+arising after the discretization of partial differential equations.")
+    (license license:lgpl3)))
+
+(define-public slepc-complex
+  (package (inherit slepc)
+    (name "slepc-complex")
+    (propagated-inputs
+     `(("petsc" ,petsc-complex)
+       ,@(alist-delete "petsc" (package-propagated-inputs slepc))))
+    (synopsis "Scalable library for eigenproblems (with complex scalars)")))
+
+(define-public slepc-openmpi
+  (package (inherit slepc)
+    (name "slepc-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ("arpack" ,arpack-ng-openmpi)
+       ,@(alist-delete "arpack" (package-inputs slepc))))
+    (propagated-inputs
+     `(("petsc" ,petsc-openmpi)
+       ,@(alist-delete "petsc" (package-propagated-inputs slepc))))
+    (synopsis "Scalable library for eigenproblems (with MPI support)")))
+
+(define-public slepc-complex-openmpi
+  (package (inherit slepc-openmpi)
+    (name "slepc-complex-openmpi")
+    (propagated-inputs
+     `(("petsc" ,petsc-complex-openmpi)
+       ,@(alist-delete "petsc" (package-propagated-inputs slepc-openmpi))))
+    (synopsis "Scalable library for eigenproblems (with complex scalars and MPI support)")))
+
 (define-public mumps
   (package
     (name "mumps")
