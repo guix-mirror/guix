@@ -38,6 +38,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -321,6 +322,51 @@ your own lessons.")
      "Power Tab Editor 2.0 is the successor to the famous original Power Tab
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (license license:gpl3+)))
+
+(define-public setbfree
+  (package
+    (name "setbfree")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://github.com/pantherb/setBfree/releases/download/v"
+                version "/setbfree-" version ".tar.gz"))
+              (sha256
+               (base32
+                "045bgp7qsigpbrhk7qvgvliwiy26sajifwn7f2jvk90ckfqnlw4b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "FONTFILE="
+                            (assoc-ref %build-inputs "font-bitstream-vera")
+                            "/share/fonts/truetype/VeraBd.ttf"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+                     (lambda _ (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("zita-convolver" ,zita-convolver)
+       ("glu" ,glu)
+       ("ftgl" ,ftgl)
+       ("font-bitstream-vera" ,font-bitstream-vera)))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://setbfree.org")
+    (synopsis "Tonewheel organ")
+    (description
+     "setBfree is a MIDI-controlled, software synthesizer designed to imitate
+the sound and properties of the electromechanical organs and sound
+modification devices that brought world-wide fame to the names and products of
+Laurens Hammond and Don Leslie.")
+    (license license:gpl2+)))
 
 (define-public tuxguitar
   (package
