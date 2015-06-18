@@ -480,6 +480,37 @@ also play midifiles using a Soundfont.")
 PS, and DAB+.")
     (license license:gpl2)))
 
+(define-public faust
+  (package
+    (name "faust")
+    (version "0.9.67")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/faudiostream/faust-" version ".zip"))
+              (sha256
+               (base32
+                "068vl9536zn0j4pknwfcchzi90rx5pk64wbcbd67z32w0csx8xm1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'remove-prebuilt-library
+          (lambda _
+            (delete-file "architecture/android/libs/armeabi-v7a/libfaust_dsp.so")
+            #t))
+         (delete 'configure))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://faust.grame.fr/")
+    (synopsis "Signal processing language")
+    (description
+     "Faust is a programming language for realtime audio signal processing.")
+    (license license:gpl2+)))
+
 (define-public freepats
   (package
     (name "freepats")
@@ -1201,17 +1232,16 @@ disks as various audio file formats.")
 (define-public vamp
   (package
     (name "vamp")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://code.soundsoftware.ac.uk"
-                    "/attachments/download/690/vamp-plugin-sdk-"
-                    version
-                    ".tar.gz"))
+                    "/attachments/download/1514/vamp-plugin-sdk-"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "178kfgq08cmgdzv7g8dwyjp4adwx8q04riimncq4nqkm8ng9ywbv"))))
+                "1s986w0mfh1m0870qd7i50hdzayls8kc3shfqf9651jzwdk34lxa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -1488,6 +1518,30 @@ to record and/or play sound using a callback function or a blocking read/write
 interface.")
     (license license:expat)))
 
+(define-public qsynth
+  (package
+    (name "qsynth")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/qsynth/qsynth-" version ".tar.gz"))
+       (sha256
+        (base32 "08kyn6cl755l9i1grzjx8yi3f8mgiz4gx0hgqad1n0d8yz85087b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no "check" phase
+    (inputs
+     `(("qt" ,qt)
+       ("fluidsynth" ,fluidsynth)))
+    (home-page "http://qsynth.sourceforge.net")
+    (synopsis "Graphical user interface for FluidSynth")
+    (description
+     "Qsynth is a GUI front-end application for the FluidSynth SoundFont
+synthesizer written in C++.")
+    (license license:gpl2+)))
+
 (define-public rsound
   (package
     (name "rsound")
@@ -1568,6 +1622,49 @@ with a much different focus than most other audio daemons.")
     (description
      "Zita convolver is a C++ library providing a real-time convolution
 engine.")
+    (license license:gpl3+)))
+
+(define-public zita-resampler
+  (package
+    (name "zita-resampler")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/zita-resampler-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0r9ary5sc3y8vba5pad581ha7mgsrlyai83w7w4x2fmhfy64q0wq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-makefile-and-enter-directory
+          (lambda _
+            (substitute* "libs/Makefile"
+              (("ldconfig") "true")
+              (("^LIBDIR =.*") "LIBDIR = lib\n"))
+            (chdir "libs")
+            #t))
+         (add-after
+          'install 'install-symlink
+          (lambda _
+            (symlink "libzita-resampler.so"
+                     (string-append (assoc-ref %outputs "out")
+                                    "/lib/libzita-resampler.so.1"))))
+         ;; no configure script
+         (delete 'configure))))
+    (home-page "http://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
+    (synopsis "C++ library for resampling audio signals")
+    (description
+     "Libzita-resampler is a C++ library for resampling audio signals.  It is
+designed to be used within a real-time processing context, to be fast, and to
+provide high-quality sample rate conversion.")
     (license license:gpl3+)))
 
 (define-public zita-alsa-pcmi
