@@ -582,3 +582,26 @@ with lossy compression and typically provides 3x smaller file sizes compared
 to PNG when lossy compression is acceptable for the red/green/blue color
 channels.")
     (license license:bsd-3)))
+
+(define-public libmng
+  (package
+    (name "libmng")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libmng/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lvxnpds0vcf0lil6ia2036ghqlbl740c4d2sz0q5g6l93fjyija"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     ;; These are all in the 'Libs.private' field of libmng.pc.
+     `(("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("zlib" ,zlib)))
+    (home-page "http://www.libmng.com/")
+    (synopsis "Library for handling MNG files")
+    (description
+     "Libmng is the MNG (Multiple-image Network Graphics) reference library.")
+    (license license:bsd-3)))

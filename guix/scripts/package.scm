@@ -47,8 +47,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
-  #:export (specification->package+output
-            switch-to-generation
+  #:export (switch-to-generation
             switch-to-previous-generation
             roll-back
             delete-generation
@@ -323,39 +322,6 @@ similar."
       (if (= EPIPE (system-error-errno args))
           (primitive-_exit 0)
           (apply throw args)))))
-
-(define* (specification->package+output spec #:optional (output "out"))
-  "Return the package and output specified by SPEC, or #f and #f; SPEC may
-optionally contain a version number and an output name, as in these examples:
-
-  guile
-  guile-2.0.9
-  guile:debug
-  guile-2.0.9:debug
-
-If SPEC does not specify a version number, return the preferred newest
-version; if SPEC does not specify an output, return OUTPUT."
-  (define (ensure-output p sub-drv)
-    (if (member sub-drv (package-outputs p))
-        sub-drv
-        (leave (_ "package `~a' lacks output `~a'~%")
-               (package-full-name p)
-               sub-drv)))
-
-  (let-values (((name version sub-drv)
-                (package-specification->name+version+output spec output)))
-    (match (find-best-packages-by-name name version)
-      ((p)
-       (values p (ensure-output p sub-drv)))
-      ((p p* ...)
-       (warning (_ "ambiguous package specification `~a'~%")
-                spec)
-       (warning (_ "choosing ~a from ~a~%")
-                (package-full-name p)
-                (location->string (package-location p)))
-       (values p (ensure-output p sub-drv)))
-      (()
-       (leave (_ "~a: package not found~%") spec)))))
 
 (define (upgradeable? name current-version current-path)
   "Return #t if there's a version of package NAME newer than CURRENT-VERSION,

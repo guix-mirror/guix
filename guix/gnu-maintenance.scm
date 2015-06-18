@@ -192,15 +192,22 @@ network to check in GNU's database."
                   ;; Definitely non-GNU.
                   'non-gnu)))))
 
-       (let ((url  (and=> (package-source package) origin-uri))
-             (name (package-name package)))
-         (case (and (string? url) (mirror-type url))
-           ((gnu) #t)
-           ((non-gnu) #f)
-           (else
-            ;; Last resort: resort to the network.
-            (and (member name (map gnu-package-name (official-gnu-packages)))
-                 #t))))))))
+       (define (gnu-home-page? package)
+         (and=> (package-home-page package)
+                (lambda (url)
+                  (and=> (uri-host (string->uri url))
+                         (lambda (host)
+                           (member host '("www.gnu.org" "gnu.org")))))))
+
+       (or (gnu-home-page? package)
+           (let ((url  (and=> (package-source package) origin-uri))
+                 (name (package-name package)))
+             (case (and (string? url) (mirror-type url))
+               ((gnu) #t)
+               ((non-gnu) #f)
+               (else
+                (and (member name (map gnu-package-name (official-gnu-packages)))
+                     #t)))))))))
 
 
 ;;;

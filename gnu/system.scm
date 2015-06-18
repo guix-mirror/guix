@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -148,8 +149,8 @@
   (setuid-programs operating-system-setuid-programs
                    (default %setuid-programs))    ; list of string-valued gexps
 
-  (sudoers operating-system-sudoers               ; file-like
-           (default %sudoers-specification)))
+  (sudoers-file operating-system-sudoers-file     ; file-like
+                (default %sudoers-specification)))
 
 
 ;;;
@@ -440,7 +441,7 @@ on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
                         (pam-services '())
                         (profile "/run/current-system/profile")
                         hosts-file nss (shells '())
-                        (sudoers (plain-file "sudoers" "")))
+                        (sudoers-file (plain-file "sudoers" "")))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
       ((pam.d      (pam-services->directory pam-services))
@@ -540,7 +541,7 @@ fi\n"))
                   ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
-                  ("sudoers" ,sudoers)))))
+                  ("sudoers" ,sudoers-file)))))
 
 (define (operating-system-profile os)
   "Return a derivation that builds the system profile of OS."
@@ -624,9 +625,9 @@ use 'plain-file' instead~%")
                   #:timezone (operating-system-timezone os)
                   #:hosts-file /etc/hosts
                   #:shells shells
-                  #:sudoers (maybe-string->file
-                             "sudoers"
-                             (operating-system-sudoers os))
+                  #:sudoers-file (maybe-string->file
+                                  "sudoers"
+                                  (operating-system-sudoers-file os))
                   #:profile profile-drv)))
 
 (define %setuid-programs

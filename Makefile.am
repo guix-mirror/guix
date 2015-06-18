@@ -113,6 +113,8 @@ MODULES =					\
   guix/scripts/import/hackage.scm		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
+  guix/scripts/edit.scm				\
+  guix/scripts/size.scm				\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -191,7 +193,8 @@ SCM_TESTS =					\
   tests/syscalls.scm				\
   tests/gremlin.scm				\
   tests/lint.scm				\
-  tests/publish.scm
+  tests/publish.scm				\
+  tests/size.scm
 
 if HAVE_GUILE_JSON
 
@@ -264,7 +267,6 @@ EXTRA_DIST =						\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
-  build-aux/list-packages.scm				\
   build-aux/make-binary-tarball.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\

@@ -124,11 +124,13 @@ Defining Packages
 Utilities
 
 * Invoking guix build::         Building packages from the command line.
+* Invoking guix edit::          Editing package definitions.
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
+* Invoking guix size::          Profiling disk usage.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 
@@ -1494,7 +1496,8 @@ graphical user interfaces (GUIs).  The former depend solely on the C
 library, whereas the latter depend on Tcl/Tk and the underlying X
 libraries.  In this case, we leave the command-line tools in the default
 output, whereas the GUIs are in a separate output.  This allows users
-who do not need the GUIs to save space.
+who do not need the GUIs to save space.  The @command{guix size} command
+can help find out about such situations (@pxref{Invoking guix size}).
 
 There are several such multiple-output packages in the GNU distribution.
 Other conventional output names include @code{lib} for libraries and
@@ -1574,10 +1577,14 @@ as arguments.
 
 @item --requisites
 @itemx -R
+@cindex closure
 List the requisites of the store files passed as arguments.  Requisites
 include the store files themselves, their references, and the references
 of these, recursively.  In other words, the returned list is the
 @dfn{transitive closure} of the store files.
+
+@xref{Invoking guix size}, for a tool to profile the size of an
+element's closure.
 
 @end table
 
@@ -1931,7 +1938,10 @@ unavailable to the build process, possibly leading to a build failure.
 
 Once a package definition is in place, the
 package may actually be built using the @code{guix build} command-line
-tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
+tool (@pxref{Invoking guix build}).  You can easily jump back to the
+package definition using the @command{guix edit} command
+(@pxref{Invoking guix edit}).
+@xref{Packaging Guidelines}, for
 more information on how to test package definitions, and
 @ref{Invoking guix lint}, for information on how to check a definition
 for style conformance.
@@ -3261,11 +3271,13 @@ programming interface of Guix in a convenient way.
 
 @menu
 * Invoking guix build::         Building packages from the command line.
+* Invoking guix edit::          Editing package definitions.
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix import::        Importing package definitions.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
+* Invoking guix size::          Profiling disk usage.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 @end menu
@@ -3546,6 +3558,28 @@ $ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
 These options are parsed independently, and the result is appended to
 the parsed command-line options.
 @end defvr
+
+
+@node Invoking guix edit
+@section Invoking @command{guix edit}
+
+@cindex package definition, editing
+So many packages, so many source files!  The @command{guix edit} command
+facilitates the life of packagers by pointing their editor at the source
+file containing the definition of the specified packages.  For instance:
+
+@example
+guix edit gcc-4.8 vim
+@end example
+
+@noindent
+launches the program specified in the @code{EDITOR} environment variable
+to edit the recipe of GCC@tie{}4.8.4 and that of Vim.
+
+If you are using Emacs, note that the Emacs user interface provides
+similar functionality in the ``package info'' buffers created by
+@kbd{M-x guix-search-by-name} and similar commands (@pxref{Emacs
+Commands}).
 
 
 @node Invoking guix download
@@ -3944,6 +3978,73 @@ names returned by @code{--list-checkers}.
 @itemx -l
 List and describe all the available checkers that will be run on packages
 and exit.
+
+@end table
+
+@node Invoking guix size
+@section Invoking @command{guix size}
+
+The @command{guix size} command helps package developers profile the
+disk usage of packages.  It is easy to overlook the impact of an
+additional dependency added to a package, or the impact of using a
+single output for a package that could easily be split (@pxref{Packages
+with Multiple Outputs}).  These are the typical issues that
+@command{guix size} can highlight.
+
+The command can be passed a package specification such as @code{gcc-4.8}
+or @code{guile:debug}, or a file name in the store.  Consider this
+example:
+
+@example
+$ guix size coreutils
+store item                               total    self
+/gnu/store/@dots{}-coreutils-8.23          70.0    13.9  19.8%
+/gnu/store/@dots{}-gmp-6.0.0a              55.3     2.5   3.6%
+/gnu/store/@dots{}-acl-2.2.52              53.7     0.5   0.7%
+/gnu/store/@dots{}-attr-2.4.46             53.2     0.3   0.5%
+/gnu/store/@dots{}-gcc-4.8.4-lib           52.9    15.7  22.4%
+/gnu/store/@dots{}-glibc-2.21              37.2    37.2  53.1%
+@end example
+
+@cindex closure
+The store items listed here constitute the @dfn{transitive closure} of
+Coreutils---i.e., Coreutils and all its dependencies, recursively---as
+would be returned by:
+
+@example
+$ guix gc -R /gnu/store/@dots{}-coreutils-8.23
+@end example
+
+Here the output shows 3 columns next to store items.  The first column,
+labeled ``total'', shows the size in mebibytes (MiB) of the closure of
+the store item---that is, its own size plus the size of all its
+dependencies.  The next column, labeled ``self'', shows the size of the
+item itself.  The last column shows the ratio of the item's size to the
+space occupied by all the items listed here.
+
+In this example, we see that the closure of Coreutils weighs in at
+70@tie{}MiB, half of which is taken by libc.  (That libc represents a
+large fraction of the closure is not a problem @i{per se} because it is
+always available on the system anyway.)
+
+When the package passed to @command{guix size} is available in the
+store, @command{guix size} queries the daemon to determine its
+dependencies, and measures its size in the store, similar to @command{du
+-ms --apparent-size} (@pxref{du invocation,,, coreutils, GNU
+Coreutils}).
+
+When the given package is @emph{not} in the store, @command{guix size}
+reports information based on information about the available substitutes
+(@pxref{Substitutes}).  This allows it to profile disk usage of store
+items that are not even on disk, only available remotely.
+
+A single option is available:
+
+@table @option
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 
 @end table
 
@@ -4606,8 +4707,8 @@ Linux @dfn{pluggable authentication module} (PAM) services.
 List of string-valued G-expressions denoting setuid programs.
 @xref{Setuid Programs}.
 
-@item @code{sudoers} (default: @var{%sudoers-specification})
-@cindex sudoers
+@item @code{sudoers-file} (default: @var{%sudoers-specification})
+@cindex sudoers file
 The contents of the @file{/etc/sudoers} file as a file-like object
 (@pxref{G-Expressions, @code{local-file} and @code{plain-file}}).
 

@@ -27,6 +27,8 @@
   #:use-module (guix ui)
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
+  #:use-module (guix scripts build)
+  #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 rdelim)
@@ -34,8 +36,6 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
-  #:use-module (guix scripts build)
-  #:use-module (guix scripts package)
   #:use-module (rnrs io ports)
   #:export (guix-archive))
 

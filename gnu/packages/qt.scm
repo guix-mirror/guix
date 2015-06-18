@@ -29,6 +29,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gl)
@@ -93,7 +95,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.4.1")
+    (version "5.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -103,7 +105,7 @@ X11 (yet).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0q6qzakq8xihw91xv310qi3vyylq7x2bzdkjgy8sqxii2lgbjzhv"))
+               "09gay5cimfdb0apy60v7z4r4zkl2vjysdppzihpla8dp2c30fvcc"))
              (patches (list (search-patch "qt5-conflicting-typedefs.patch")
                             (search-patch "qt5-runpath.patch")))
              (snippet
@@ -119,12 +121,14 @@ webrtc/tools/e2e_quality/audio/perf")))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
+       ("cups" ,cups)
        ("expat" ,expat)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)
+       ("libmng" ,libmng)
        ("libpci" ,pciutils)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
@@ -143,10 +147,12 @@ webrtc/tools/e2e_quality/audio/perf")))))
        ("mysql" ,mysql)
        ("nss" ,nss)
        ("openssl" ,openssl)
+       ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
        ("pcre" ,pcre)
        ("sqlite" ,sqlite)
        ("udev" ,eudev)
+       ("unixodbc" ,unixodbc)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
@@ -221,7 +227,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 
 (define-public qt-4
   (package (inherit qt)
-    (version "4.8.6")
+    (version "4.8.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -231,7 +237,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0b036iqgmbbv37dgwwfihw3mihjbnw3kb5kaisdy0qi8nn8xs54b"))
+               "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
              (patches (map search-patch
                            '("qt4-ldflags.patch" "qt4-tests.patch")))))
     (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
