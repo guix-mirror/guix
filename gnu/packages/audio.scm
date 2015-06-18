@@ -1232,17 +1232,16 @@ disks as various audio file formats.")
 (define-public vamp
   (package
     (name "vamp")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://code.soundsoftware.ac.uk"
-                    "/attachments/download/690/vamp-plugin-sdk-"
-                    version
-                    ".tar.gz"))
+                    "/attachments/download/1514/vamp-plugin-sdk-"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "178kfgq08cmgdzv7g8dwyjp4adwx8q04riimncq4nqkm8ng9ywbv"))))
+                "1s986w0mfh1m0870qd7i50hdzayls8kc3shfqf9651jzwdk34lxa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
