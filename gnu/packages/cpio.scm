@@ -36,12 +36,14 @@
              (sha256
               (base32
                "1gavgpzqwgkpagjxw72xgxz52y1ifgz0ckqh8g7cckz7jvyhp0mv"))
-             (patches (list (search-patch "cpio-CVE-2014-9112-pt1.patch")
-                            (search-patch "cpio-CVE-2014-9112-pt2.patch")
-                            (search-patch "cpio-CVE-2014-9112-pt3.patch")
-                            (search-patch "cpio-CVE-2014-9112-pt4.patch")
-                            (search-patch "cpio-CVE-2014-9112-pt5.patch")
-                            (search-patch "cpio-gets-undeclared.patch")))))
+             (patches (map search-patch
+                           '("cpio-CVE-2014-9112-pt1.patch"
+                             "cpio-CVE-2014-9112-pt2.patch"
+                             "cpio-CVE-2014-9112-pt3.patch"
+                             "cpio-CVE-2014-9112-pt4.patch"
+                             "cpio-CVE-2014-9112-pt5.patch"
+                             "cpio-fix-symlink-bad-length-test.patch"
+                             "cpio-gets-undeclared.patch")))))
     (build-system gnu-build-system)
 
     ;; FIXME: autoconf is needed to run autom4te, to update to test suite
