@@ -22,22 +22,14 @@
 ;;; machine images that we build.
 ;;;
 
-(use-modules (gnu)
-
-             (gnu packages xorg)
-             (gnu packages avahi)
-             (gnu packages linux)
-             (gnu packages tor)
-
-             (gnu services networking)
-             (gnu services avahi)
-             (gnu services dbus)
-             (gnu services xorg))
+(use-modules (gnu))
+(use-service-modules desktop xorg networking avahi)
+(use-package-modules linux xorg tor avahi)
 
 (operating-system
  (host-name "gnu")
  (timezone "Europe/Paris")
- (locale "en_US.utf8")
+ (locale "en_US.UTF-8")
 
  (bootloader (grub-configuration
               (device "/dev/sda")))
