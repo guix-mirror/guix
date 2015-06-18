@@ -157,7 +157,7 @@ cross-compiling.)"
   (recursive? local-file-recursive?))             ;Boolean
 
 (define* (local-file file #:optional (name (basename file))
-                     #:key (recursive? #t))
+                     #:key recursive?)
   "Return an object representing local file FILE to add to the store; this
 object can be used in a gexp.  FILE will be added to the store under NAME--by
 default the base name of FILE.

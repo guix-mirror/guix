@@ -101,7 +101,7 @@
   (let* ((file  (search-path %load-path "guix.scm"))
          (local (local-file file))
          (exp   (gexp (display (ungexp local))))
-         (intd  (add-to-store %store (basename file) #t
+         (intd  (add-to-store %store (basename file) #f
                               "sha256" file)))
     (and (gexp? exp)
          (match (gexp-inputs exp)
@@ -360,7 +360,7 @@
 
 (test-assertm "gexp->derivation, local-file"
   (mlet* %store-monad ((file ->  (search-path %load-path "guix.scm"))
-                       (intd     (interned-file file))
+                       (intd     (interned-file file #:recursive? #f))
                        (local -> (local-file file))
                        (exp ->   (gexp (begin
                                          (stat (ungexp local))
