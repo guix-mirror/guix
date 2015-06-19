@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,16 @@ tools as well as libraries with equivalent functionality.")
     (propagated-inputs
      `(("llvm" ,llvm)))
     (arguments `(#:configure-flags '("-DCLANG_INCLUDE_TESTS=True")))
+
+    ;; Clang supports the same environment variables as GCC.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CPATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib" "lib64")))))
+
     (home-page "http://clang.llvm.org")
     (synopsis "C language family frontend for LLVM")
     (description
