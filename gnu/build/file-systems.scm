@@ -286,16 +286,13 @@ run a file system check."
        (when check?
          (check-file-system source type))
        (mkdir-p mount-point)
-       (mount source mount-point type flags
-              (if options
-                  (string->pointer options)
-                  %null-pointer))
+       (mount source mount-point type flags options)
 
        ;; For read-only bind mounts, an extra remount is needed, as per
        ;; <http://lwn.net/Articles/281157/>, which still applies to Linux 4.0.
        (when (and (= MS_BIND (logand flags MS_BIND))
                   (= MS_RDONLY (logand flags MS_RDONLY)))
-         (mount source mount-point type (logior MS_BIND MS_REMOUNT MS_RDONLY)
-                %null-pointer))))))
+         (let ((flags (logior MS_BIND MS_REMOUNT MS_RDONLY)))
+           (mount source mount-point type flags #f)))))))
 
 ;;; file-systems.scm ends here

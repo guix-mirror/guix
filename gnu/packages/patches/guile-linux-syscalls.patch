@@ -7,10 +7,10 @@ diff --git a/libguile/posix.c b/libguile/posix.c
 index 324f21b..cbee94d 100644
 --- a/libguile/posix.c
 +++ b/libguile/posix.c
-@@ -2286,6 +2286,261 @@ scm_init_popen (void)
+@@ -2245,6 +2245,267 @@ scm_init_popen (void)
  }
  #endif
- 
+
 +
 +/* Linux! */
 +
@@ -25,15 +25,18 @@ index 324f21b..cbee94d 100644
 +#define FUNC_NAME s_scm_mount
 +{
 +  int err;
-+  char *c_source, *c_target, *c_type;
++  char *c_source, *c_target, *c_type, *c_data;
 +  unsigned long c_flags;
-+  void *c_data;
 +
 +  c_source = scm_to_locale_string (source);
 +  c_target = scm_to_locale_string (target);
 +  c_type = scm_to_locale_string (type);
 +  c_flags = SCM_UNBNDP (flags) ? 0 : scm_to_ulong (flags);
-+  c_data = SCM_UNBNDP (data) ? NULL : scm_to_pointer (data);
++
++  if (SCM_UNBNDP (data) || scm_is_false (data))
++    c_data = NULL;
++  else
++    c_data = scm_to_locale_string (data);
 +
 +  err = mount (c_source, c_target, c_type, c_flags, c_data);
 +  if (err != 0)
@@ -42,6 +45,9 @@ index 324f21b..cbee94d 100644
 +  free (c_source);
 +  free (c_target);
 +  free (c_type);
++
++  if (c_data != NULL)
++    free (c_data);
 +
 +  if (err != 0)
 +    {
