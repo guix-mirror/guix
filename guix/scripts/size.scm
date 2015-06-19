@@ -168,8 +168,7 @@ profile of ITEM and its requisites."
                (return (profile item size dependencies)))))
           sizes)))
 
-(define* (ensure-store-item spec-or-item
-                            #:key dry-run?)
+(define* (ensure-store-item spec-or-item)
   "Return a store file name.  If SPEC-OR-ITEM is a store file name, return it
 as is.  Otherwise, assume SPEC-OR-ITEM is a package output specification such
 as \"guile:debug\" or \"gcc-4.8\" and return its store file name."
@@ -231,8 +230,7 @@ Report the size of PACKAGE and its dependencies.\n"))
                                    (('argument . file) file)
                                    (_ #f))
                                  opts))
-           (system   (assoc-ref opts 'system))
-           (dry-run? (assoc-ref opts 'dry-run?)))
+           (system   (assoc-ref opts 'system)))
       (match files
         (()
          (leave (_ "missing store item argument\n")))
