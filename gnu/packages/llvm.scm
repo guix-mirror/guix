@@ -26,6 +26,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
@@ -85,7 +87,8 @@ tools as well as libraries with equivalent functionality.")
        (method url-fetch)
        (uri (string-append "http://llvm.org/releases/"
                            version "/cfe-" version ".src.tar.xz"))
-       (sha256 (base32 hash))))
+       (sha256 (base32 hash))
+       (patches (list (search-patch "clang-libc-search-path.patch")))))
     ;; Using cmake allows us to treat llvm as an external library.  There
     ;; doesn't seem to be any way to do this with clang's autotools-based
     ;; build system.
@@ -93,10 +96,40 @@ tools as well as libraries with equivalent functionality.")
     (native-inputs (package-native-inputs llvm))
     (inputs
      `(("libxml2" ,libxml2)
+       ("gcc-lib" ,gcc-4.9 "lib")
        ,@(package-inputs llvm)))
     (propagated-inputs
      `(("llvm" ,llvm)))
-    (arguments `(#:configure-flags '("-DCLANG_INCLUDE_TESTS=True")))
+    (arguments
+     `(#:configure-flags
+       (list "-DCLANG_INCLUDE_TESTS=True"
+
+             ;; Find libgcc_s, crtbegin.o, and crtend.o.
+             (string-append "-DGCC_INSTALL_PREFIX="
+                            (assoc-ref %build-inputs "gcc-lib"))
+
+             ;; Use a sane default include directory.
+             (string-append "-DC_INCLUDE_DIRS="
+                            (assoc-ref %build-inputs "libc")
+                            "/include"))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'set-glibc-file-names
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((libc (assoc-ref inputs "libc")))
+                       ;; Patch the 'getLinuxDynamicLinker' function to that
+                       ;; it uses the right dynamic linker file name.
+                       (substitute* "lib/Driver/Tools.cpp"
+                         (("/lib64/ld-linux-x86-64.so.2")
+                          (string-append libc
+                                         ,(glibc-dynamic-linker))))
+
+                       ;; Same for libc's libdir, to allow crt1.o & co. to be
+                       ;; found.
+                       (substitute* "lib/Driver/ToolChains.cpp"
+                         (("@GLIBC_LIBDIR@")
+                          (string-append libc "/lib")))))))))
 
     ;; Clang supports the same environment variables as GCC.
     (native-search-paths
