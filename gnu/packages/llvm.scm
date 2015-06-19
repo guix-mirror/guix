@@ -113,6 +113,9 @@ tools as well as libraries with equivalent functionality.")
                             (assoc-ref %build-inputs "libc")
                             "/include"))
 
+       ;; Don't use '-g' during the build to save space.
+       #:build-type "Release"
+
        #:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'set-glibc-file-names
