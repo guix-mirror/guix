@@ -3577,9 +3577,9 @@ launches the program specified in the @code{EDITOR} environment variable
 to edit the recipe of GCC@tie{}4.8.4 and that of Vim.
 
 If you are using Emacs, note that the Emacs user interface provides
-similar functionality in the ``package info'' buffers created by
-@kbd{M-x guix-search-by-name} and similar commands (@pxref{Emacs
-Commands}).
+similar functionality in the ``package info'' and ``package list''
+buffers created by @kbd{M-x guix-search-by-name} and similar commands
+(@pxref{Emacs Commands}).
 
 
 @node Invoking guix download

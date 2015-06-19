@@ -172,6 +172,14 @@ If PATH is relative, it is considered to be relative to
       (move-to-column col)
       (recenter 1))))
 
+(defun guix-edit-package (id)
+  "Edit (go to location of) package with ID."
+  (let ((loc (guix-eval-read (guix-make-guile-expression
+                              'package-location-string id))))
+    (if loc
+        (guix-find-location loc)
+      (message "Couldn't find package location."))))
+
 
 ;;; Buffers and auto updating.
 

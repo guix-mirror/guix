@@ -467,6 +467,11 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
                  (list (guix-list-current-id)))))
     (guix-list-describe-maybe guix-entry-type ids)))
 
+(defun guix-list-edit-package ()
+  "Go to the location of the current package."
+  (interactive)
+  (guix-edit-package (guix-list-current-package-id)))
+
 
 ;;; Displaying packages
 
@@ -505,6 +510,7 @@ likely)."
   :group 'guix-package-list)
 
 (let ((map guix-package-list-mode-map))
+  (define-key map (kbd "e")   'guix-list-edit-package)
   (define-key map (kbd "x")   'guix-package-list-execute)
   (define-key map (kbd "i")   'guix-package-list-mark-install)
   (define-key map (kbd "d")   'guix-package-list-mark-delete)
@@ -662,6 +668,7 @@ The specification is suitable for `guix-process-package-actions'."
 
 (let ((map guix-output-list-mode-map))
   (define-key map (kbd "RET") 'guix-output-list-describe)
+  (define-key map (kbd "e")   'guix-list-edit-package)
   (define-key map (kbd "x")   'guix-output-list-execute)
   (define-key map (kbd "i")   'guix-output-list-mark-install)
   (define-key map (kbd "d")   'guix-output-list-mark-delete)
