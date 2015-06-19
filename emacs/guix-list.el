@@ -215,6 +215,14 @@ VAL may be nil."
   "Return alist of the current entry info."
   (guix-get-entry-by-id (guix-list-current-id) guix-entries))
 
+(defun guix-list-current-package-id ()
+  "Return ID of the current package."
+  (cl-ecase major-mode
+    (guix-package-list-mode
+     (guix-list-current-id))
+    (guix-output-list-mode
+     (guix-get-key-val (guix-list-current-entry) 'package-id))))
+
 (defun guix-list-for-each-line (fun &rest args)
   "Call FUN with ARGS for each entry line."
   (or (derived-mode-p 'guix-list-mode)
@@ -643,7 +651,8 @@ The specification is suitable for `guix-process-package-actions'."
 ;;; Displaying outputs
 
 (guix-define-buffer-type list output
-  :buffer-name "*Guix Package List*")
+  :buffer-name "*Guix Package List*"
+  :required (package-id))
 
 (guix-list-define-entry-type output
   :sort-key name
