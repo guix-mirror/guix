@@ -4681,6 +4681,18 @@ NumPy:
 guix environment --ad-hoc python2-numpy python-2.7 -- python
 @end example
 
+Sometimes it is desirable to isolate the environment as much as
+possible, for maximal purity and reproducibility.  In particular, when
+using Guix on a host distro that is not GuixSD, it is desirable to
+prevent access to @file{/usr/bin} and other system-wide resources from
+the development environment.  For example, the following command spawns
+a Guile REPL in a ``container'' where only the store and the current
+working directory are mounted:
+
+@example
+guix environment --ad-hoc --container guile -- guile
+@end example
+
 The available options are summarized below.
 
 @table @code
@@ -4741,6 +4753,49 @@ environment.
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}.
+
+@item --container
+@itemx -C
+@cindex container
+Run @var{command} within an isolated container.  The current working
+directory outside the container is mapped to @file{/env} inside the
+container.  Additionally, the spawned process runs as the current user
+outside the container, but has root privileges in the context of the
+container.
+
+@item --network
+@itemx -N
+For containers, share the network namespace with the host system.
+Containers created without this flag only have access to the loopback
+device.
+
+@item --expose=@var{source}[=@var{target}]
+For containers, expose the file system @var{source} from the host system
+as the read-only file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible read-only via the @file{/exchange}
+directory:
+
+@example
+guix environment --container --expose=$HOME=/exchange guile -- guile
+@end example
+
+@item --share
+For containers, share the file system @var{source} from the host system
+as the writable file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible for both reading and writing via the
+@file{/exchange} directory:
+
+@example
+guix environment --container --share=$HOME=/exchange guile -- guile
+@end example
 @end table
 
 It also supports all of the common build options that @command{guix
@@ -7064,6 +7119,7 @@ This command also installs GRUB on the device specified in
 @item vm
 @cindex virtual machine
 @cindex VM
+@anchor{guix system vm}
 Build a virtual machine that contain the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
 Arguments given to the script are passed as is to QEMU.

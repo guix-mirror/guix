@@ -34,6 +34,7 @@
   #:use-module (guix serialization)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
+  #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -80,6 +81,7 @@
             string->recutils
             package->recutils
             package-specification->name+version+output
+            specification->file-system-mapping
             string->generations
             string->duration
             run-guix-command
@@ -965,6 +967,23 @@ optionally contain a version number and an output name, as in these examples:
                 ((name version)
                  (package-name->name+version name)))
     (values name version sub-drv)))
+
+(define (specification->file-system-mapping spec writable?)
+  "Read the SPEC and return the corresponding <file-system-mapping>.  SPEC is
+a string of the form \"SOURCE\" or \"SOURCE=TARGET\".  The former specifies
+that SOURCE from the host should be mounted at SOURCE in the other system.
+The latter format specifies that SOURCE from the host should be mounted at
+TARGET in the other system."
+  (let ((index (string-index spec #\=)))
+    (if index
+        (file-system-mapping
+         (source (substring spec 0 index))
+         (target (substring spec (+ 1 index)))
+         (writable? writable?))
+        (file-system-mapping
+         (source spec)
+         (target spec)
+         (writable? writable?)))))
 
 
 ;;;

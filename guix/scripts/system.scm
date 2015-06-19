@@ -488,19 +488,6 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (newline)
   (show-bug-report-information))
 
-(define (specification->file-system-mapping spec writable?)
-  "Read the SPEC and return the corresponding <file-system-mapping>."
-  (let ((index (string-index spec #\=)))
-    (if index
-        (file-system-mapping
-         (source (substring spec 0 index))
-         (target (substring spec (+ 1 index)))
-         (writable? writable?))
-        (file-system-mapping
-         (source spec)
-         (target spec)
-         (writable? writable?)))))
-
 (define %options
   ;; Specifications of the command-line options.
   (cons* (option '(#\h "help") #f #f

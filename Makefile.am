@@ -253,6 +253,7 @@ SH_TESTS =					\
   tests/guix-archive.sh				\
   tests/guix-authenticate.sh			\
   tests/guix-environment.sh			\
+  tests/guix-environment-container.sh		\
   tests/guix-graph.sh				\
   tests/guix-lint.sh
 
