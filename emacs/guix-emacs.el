@@ -42,19 +42,40 @@ If PROFILE is nil, use `guix-user-profile'."
   (expand-file-name "share/emacs/site-lisp"
                     (or profile guix-user-profile)))
 
+(defun guix-emacs-find-autoloads-in-directory (directory)
+  "Return list of Emacs 'autoloads' files in DIRECTORY."
+  (directory-files directory 'full-name "-autoloads\\.el\\'" 'no-sort))
+
+(defun guix-emacs-subdirs (directory)
+  "Return list of DIRECTORY subdirectories."
+  (cl-remove-if (lambda (file)
+                  (or (string-match-p (rx "/." string-end) file)
+                      (string-match-p (rx "/.." string-end) file)
+                      (not (file-directory-p file))))
+                (directory-files directory 'full-name nil 'no-sort)))
+
 (defun guix-emacs-find-autoloads (&optional profile)
   "Return list of autoloads of Emacs packages installed in PROFILE.
 If PROFILE is nil, use `guix-user-profile'.
 Return nil if there are no emacs packages installed in PROFILE."
-  (let ((dir (guix-emacs-directory profile)))
-    (if (file-directory-p dir)
-        (directory-files dir 'full-name "-autoloads\\.el\\'")
+  (let ((elisp-root-dir (guix-emacs-directory profile)))
+    (if (file-directory-p elisp-root-dir)
+        (let ((elisp-pkgs-dir (expand-file-name "guix.d" elisp-root-dir))
+              (root-autoloads (guix-emacs-find-autoloads-in-directory
+                               elisp-root-dir)))
+          (if (file-directory-p elisp-pkgs-dir)
+              (let ((pkgs-autoloads
+                     (cl-mapcan #'guix-emacs-find-autoloads-in-directory
+                                (guix-emacs-subdirs elisp-pkgs-dir))))
+                (append root-autoloads pkgs-autoloads))
+            root-autoloads))
       (message "Directory '%s' does not exist." dir)
       nil)))
 
 ;;;###autoload
 (defun guix-emacs-load-autoloads (&optional all)
   "Load autoloads for Emacs packages installed in a user profile.
+Add autoloads directories to `load-path'.
 If ALL is nil, activate only those packages that were installed
 after the last activation, otherwise activate all Emacs packages
 installed in `guix-user-profile'."
@@ -65,6 +86,8 @@ installed in `guix-user-profile'."
                   (cl-nset-difference autoloads guix-emacs-autoloads
                                       :test #'string=))))
     (dolist (file files)
+      (cl-pushnew (file-name-directory file) load-path
+                  :test #'string=)
       (load file 'noerror))
     (setq guix-emacs-autoloads autoloads)))
 
