@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,32 +20,46 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix gexp)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages base))
 
 (define-public unrtf
   (package
     (name "unrtf")
-    (version "0.19.7")
+    (version "0.21.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/unrtf/" version
                                  "/unrtf-" version ".tar.gz"))
              (sha256
               (base32
-               "1c15miv4ni395wix6qxiqgjfspd6ssdk1ly6mm8srh0jgpidgjzf"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; No `configure' script; do it by hand.
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "Makefile"
-                       (("/usr/local") out))))
-                 %standard-phases)
+               "1pcdzf2h1prn393dkvg93v80vh38q0v817xnbwrlwxbdz4k7i8r2"))
+             (modules '((guix build utils)))
+             (snippet
+              #~(begin
+                  ;; The tarball includes site-specific generated files.
+                  ;; Remove them.
+                  (for-each delete-file '("config.log" "config.h"))
+                  (for-each delete-file
+                            (find-files "." "^Makefile$"))
 
-       ;; There are test files, but apparently no automated test suite.
-       #:tests? #f))
+                  ;; The config/ directory contains dangling symlinks to
+                  ;; /usr/share/automake.
+                  (for-each delete-file (find-files "config"))
+
+                  ;; Regenerate the whole thing.
+                  (setenv "PATH"
+                          (string-append #$autoconf "/bin:"
+                                         #$automake "/bin:"
+                                         #$m4 "/bin:"
+                                         #$grep "/bin:" #$sed "/bin:"
+                                         #$coreutils "/bin:"
+                                         (getenv "PATH")))
+                  (zero? (system* "autoreconf" "-vfi"))))))
+    (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/unrtf")
     (synopsis "Convert Rich Text Format documents to other formats")
     (description
