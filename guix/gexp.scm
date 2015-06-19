@@ -167,7 +167,11 @@ designates a flat file and RECURSIVE? is true, its contents are added, and its
 permission bits are kept.
 
 This is the declarative counterpart of the 'interned-file' monadic procedure."
-  (%local-file file name recursive?))
+  ;; Canonicalize FILE so that if it's a symlink, it is resolved.  Failing to
+  ;; do that, when RECURSIVE? is #t, we could end up creating a dangling
+  ;; symlink in the store, and when RECURSIVE? is #f 'add-to-store' would just
+  ;; throw an error, both of which are inconvenient.
+  (%local-file (canonicalize-path file) name recursive?))
 
 (define-gexp-compiler (local-file-compiler (file local-file?) system target)
   ;; "Compile" FILE by adding it to the store.

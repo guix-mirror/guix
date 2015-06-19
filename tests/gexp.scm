@@ -109,6 +109,25 @@
             (eq? x local)))
          (equal? `(display ,intd) (gexp->sexp* exp)))))
 
+(test-assert "one local file, symlink"
+  (let ((file (search-path %load-path "guix.scm"))
+        (link (tmpnam)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (symlink (canonicalize-path file) link)
+        (let* ((local (local-file link "my-file" #:recursive? #f))
+               (exp   (gexp (display (ungexp local))))
+               (intd  (add-to-store %store "my-file" #f
+                                    "sha256" file)))
+          (and (gexp? exp)
+               (match (gexp-inputs exp)
+                 (((x "out"))
+                  (eq? x local)))
+               (equal? `(display ,intd) (gexp->sexp* exp)))))
+      (lambda ()
+        (false-if-exception (delete-file link))))))
+
 (test-assert "one plain file"
   (let* ((file     (plain-file "hi" "Hello, world!"))
          (exp      (gexp (display (ungexp file))))
