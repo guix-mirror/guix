@@ -57,6 +57,7 @@
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
@@ -2823,3 +2824,81 @@ for application developers.")
      "Grilo is a framework focused on making media discovery and browsing easy
 for application developers.")
     (license license:lgpl2.1+)))
+
+(define-public totem
+  (package
+    (name "totem")
+    (version "3.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1nkm2i271ivq40hryrl6px39gbbvhmlx4vmvwvw4h3z8xh3013f9"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("atk" ,atk)
+       ("cairo" ,cairo)
+       ("dbus-glib" ,dbus-glib)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("clutter-gst" ,clutter-gst)
+       ("xproto" ,xproto)
+       ("libxxf86vm" ,libxxf86vm)
+       ("libxtst" ,libxtst)
+       ("libxrandr" ,libxrandr)
+       ("libxml2" ,libxml2)
+       ("libsoup" ,libsoup)
+       ("libpeas" ,libpeas)
+       ("librsvg" ,librsvg)
+       ("lirc" ,lirc)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ;; XXX We use python-2 because libxml2 because itstool (which needs
+       ;; libxml) currently uses python-2.
+       ("python" ,python-2)
+       ("python-pygobject" ,python2-pygobject)
+       ;; XXX TODO pylint needed for python support
+       ("totem-pl-parser" ,totem-pl-parser)
+       ("grilo" ,grilo)
+       ("grilo-plugins" ,grilo-plugins)
+       ("nettle" ,nettle)
+       ("vala" ,vala)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-totem
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out             (assoc-ref outputs "out"))
+                  (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                  (grl-plugin-path (getenv "GRL_PLUGIN_PATH")))
+              (wrap-program (string-append out "/bin/totem")
+                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+                `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))))
+            #t)))))
+    (home-page "https://wiki.gnome.org/Apps/Videos")
+    (synopsis "Simple media player for GNOME based on GStreamer")
+    (description "Totem is a simple yet featureful media player for GNOME
+which can read a large number of file formats.")
+    ;; GPL2+ with an exception clause for non-GPL compatible GStreamer plugins
+    ;; to be used and distributed together with GStreamer and Totem.  See
+    ;; file://COPYING in the source distribution for details.
+    (license license:gpl2+)))
