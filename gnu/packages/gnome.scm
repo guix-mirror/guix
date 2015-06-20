@@ -2625,3 +2625,34 @@ presentations, kiosk style applications and so on.")
 creating fast, mainly 2D single window applications such as media box UIs,
 presentations, kiosk style applications and so on.")
     (license license:lgpl2.0+)))
+
+(define-public clutter-gst
+  (package
+    (name "clutter-gst")
+    (version "3.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0xnzfdzawl1kdx715gp31nwjp7a1kib094s7xvg7bhbwwlx4kmfn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")     ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)))
+    (home-page "http://www.clutter-project.org")
+    (synopsis "Integration library for using GStreamer with Clutter")
+    (description
+     "Clutter-Gst is an integration library for using GStreamer with Clutter.
+It provides a GStreamer sink to upload frames to GL and an actor that
+implements the ClutterGstPlayer interface using playbin.  Clutter is an Open
+GL based interactive canvas library.")
+    (license license:lgpl2.0+)))
