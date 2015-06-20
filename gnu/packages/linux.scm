@@ -2137,7 +2137,8 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))))
+                "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))
+              (patches (list (search-patch "mdadm-gcc-4.9-fix.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
