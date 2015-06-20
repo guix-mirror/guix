@@ -173,6 +173,7 @@ The gnome-about program helps find which version of GNOME is installed.")
     (native-inputs
      `(("intltool" ,intltool)
        ("docbook-xml" ,docbook-xml-4.4)
+       ("python2-libxml2" ,python2-libxml2)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)
