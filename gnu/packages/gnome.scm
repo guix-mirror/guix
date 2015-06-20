@@ -2597,3 +2597,31 @@ without stepping on each others toes.")
 creating fast, mainly 2D single window applications such as media box UIs,
 presentations, kiosk style applications and so on.")
     (license license:lgpl2.0+)))
+
+(define-public clutter-gtk
+  (package
+    (name "clutter-gtk")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0k93hbf5d1970hs7vjddr3nnngygc7mxqbj474r3cdm0fjsm0dc8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("gtk+" ,gtk+)))
+    (home-page "http://www.clutter-project.org")
+    (synopsis "Open GL based interactive canvas library GTK+ widget")
+    (description
+     "Clutter is an Open GL based interactive canvas library, designed for
+creating fast, mainly 2D single window applications such as media box UIs,
+presentations, kiosk style applications and so on.")
+    (license license:lgpl2.0+)))
