@@ -450,6 +450,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/grep-CVE-2015-1345.patch			\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/grub-freetype.patch			\
+  gnu/packages/patches/gsl-poly-test-fix-pt1.patch		\
+  gnu/packages/patches/gsl-poly-test-fix-pt2.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-arm-fixes.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\

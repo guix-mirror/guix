@@ -154,7 +154,9 @@ semiconductors.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0lrgipi0z6559jqh82yx8n4xgnxkhzj46v96dl77hahdp58jzg3k"))))
+        "0lrgipi0z6559jqh82yx8n4xgnxkhzj46v96dl77hahdp58jzg3k"))
+      (patches (map search-patch '("gsl-poly-test-fix-pt1.patch"
+                                   "gsl-poly-test-fix-pt2.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f
