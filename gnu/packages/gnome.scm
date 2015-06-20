@@ -66,6 +66,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages qt)  ; for libxkbcommon
   #:use-module (gnu packages compression)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages web)
@@ -2550,3 +2551,49 @@ without stepping on each others toes.")
                    license:bsd-3       ; cogl/cogl-point-in-poly.c
                    license:sgifreeb2.0 ; cogl-path/tesselator/
                    license:asl2.0))))  ; examples/android/
+
+(define-public clutter
+  (package
+    (name "clutter")
+    (version "1.22.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b0ikh9q3c3qnny3kbvhqih35449q8ajcbh7zkm8k3kykwfx4scf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")     ; for glib-genmarshal
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     `(("cogl" ,cogl)
+       ("cairo" ,cairo)
+       ("atk" ,atk)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("glib" ,glib)
+       ("libxcomposite" ,libxcomposite)
+       ("libxdamage" ,libxdamage)
+       ("libxext" ,libxext)
+       ("xinput" ,xinput)))
+    (inputs
+     `(("libxkbcommon" ,libxkbcommon)
+       ("udev" ,eudev)))
+    (arguments
+     `(#:configure-flags '("--enable-x11-backend=yes")
+       ;; XXX FIXME: Get test suite working.  It would probably fail in the
+       ;; same way the cogl tests fail, since clutter is based on cogl.
+       #:tests? #f))
+    (home-page "http://www.clutter-project.org")
+    (synopsis "Open GL based interactive canvas library")
+    (description
+     "Clutter is an Open GL based interactive canvas library, designed for
+creating fast, mainly 2D single window applications such as media box UIs,
+presentations, kiosk style applications and so on.")
+    (license license:lgpl2.0+)))
