@@ -2718,3 +2718,54 @@ the patterned block to the area bordered by green markers.  To do so, you will
 need to slide other blocks out of the way.  Complete each puzzle in as few moves
 as possible!")
     (license license:gpl2+)))
+
+(define-public grilo
+  (package
+    (name "grilo")
+    (version "0.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "11bvc7rsrjjwz8hp67p3fn8zmywrpawrcbi3vgw8b0dwa0sndd2m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)
+       ;; XXX TODO: Add oauth
+       ("libsoup" ,libsoup)
+       ("totem-pl-parser" ,totem-pl-parser)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-introspection-install-dir
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* '("src/Makefile.in"
+                                       "libs/pls/Makefile.in"
+                                       "libs/net/Makefile.in")
+                          (("@INTROSPECTION_GIRDIR@")
+                           (string-append out "/share/gir-1.0/"))
+                          (("@INTROSPECTION_TYPELIBDIR@")
+                           (string-append out "/lib/girepository-1.0/")))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GRL_PLUGIN_PATH")
+            (files (list (string-append "lib/grilo-"
+                                        (version-major+minor version)))))))
+    (home-page "http://live.gnome.org/Grilo")
+    (synopsis "Framework for discovering and browsing media")
+    (description
+     "Grilo is a framework focused on making media discovery and browsing easy
+for application developers.")
+    (license license:lgpl2.1+)))
