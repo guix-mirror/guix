@@ -2401,6 +2401,7 @@ settings, themes, mouse settings, and startup of other daemons.")
    (native-inputs
     `(("intltool" ,intltool)
       ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)))
    (propagated-inputs
     `(("glib" ,glib)
