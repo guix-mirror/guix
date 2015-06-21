@@ -780,6 +780,65 @@ analysis (from RNA-Seq), transcription factor binding quantification in
 ChIP-Seq, and analysis of metagenomic data.")
     (license license:artistic2.0)))
 
+(define-public fasttree
+  (package
+   (name "fasttree")
+   (version "2.1.8")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.microbesonline.org/fasttree/FastTree-"
+                   version ".c"))
+             (sha256
+              (base32
+               "0dzqc9vr9iiiw21y159xfjl2z90vw0y7r4x6456pcaxiy5hd2wmi"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f ; no "check" target
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'unpack)
+        (delete 'configure)
+        (replace 'build
+                 (lambda* (#:key source #:allow-other-keys)
+                   (and (zero? (system* "gcc"
+                                        "-O3"
+                                        "-finline-functions"
+                                        "-funroll-loops"
+                                        "-Wall"
+                                        "-o"
+                                        "FastTree"
+                                        source
+                                        "-lm"))
+                        (zero? (system* "gcc"
+                                        "-DOPENMP"
+                                        "-fopenmp"
+                                        "-O3"
+                                        "-finline-functions"
+                                        "-funroll-loops"
+                                        "-Wall"
+                                        "-o"
+                                        "FastTreeMP"
+                                        source
+                                        "-lm")))))
+        (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((bin (string-append (assoc-ref outputs "out")
+                                             "/bin")))
+                     (mkdir-p bin)
+                     (copy-file "FastTree"
+                                (string-append bin "/FastTree"))
+                     (copy-file "FastTreeMP"
+                                (string-append bin "/FastTreeMP"))
+                     #t))))))
+   (home-page "http://www.microbesonline.org/fasttree")
+   (synopsis "Infers approximately-maximum-likelihood phylogenetic trees")
+   (description
+    "FastTree can handle alignments with up to a million of sequences in a
+reasonable amount of time and memory.  For large alignments, FastTree is
+100-1,000 times faster than PhyML 3.0 or RAxML 7.")
+   (license license:gpl2+)))
+
 (define-public fastx-toolkit
   (package
     (name "fastx-toolkit")
