@@ -34,6 +34,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cups)
@@ -56,6 +57,7 @@
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -2765,6 +2767,58 @@ as possible!")
                                         (version-major+minor version)))))))
     (home-page "http://live.gnome.org/Grilo")
     (synopsis "Framework for discovering and browsing media")
+    (description
+     "Grilo is a framework focused on making media discovery and browsing easy
+for application developers.")
+    (license license:lgpl2.1+)))
+
+(define-public grilo-plugins
+  (package
+    (name "grilo-plugins")
+    (version "0.2.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1aykhc679pwn2qxsg19g8nh9hffpsqkgxcbqq7lcfn2hcwb83wfh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")     ; for glib-mkenums and glib-genmarshal
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("grilo" ,grilo)
+       ("glib" ,glib)
+       ("libxml2" ,libxml2)
+       ("sqlite" ,sqlite)
+       ("gom" ,gom)
+       ;; XXX TODO: Add oauth
+       ;; XXX TODO: Add goa
+       ;; XXX TODO: Add gdata (e.g. needed for youtube plugin)
+       ;; XXX TODO: Add lua (needs help finding it)
+       ("json-glib" ,json-glib)
+       ("avahi" ,avahi)
+       ("gmime" ,gmime)
+       ("libsoup" ,libsoup)
+       ("libarchive" ,libarchive)
+       ("totem-pl-parser" ,totem-pl-parser)))
+    (arguments
+     `(#:make-flags (list (string-append "GRL_PLUGINS_DIR="
+                                         %output
+                                         "/lib/grilo-"
+                                         ,(version-major+minor version)))
+       ;; XXX FIXME: Try to get the test suite working.  It appears to require
+       ;; a working system dbus.  Inside the build container, all tests fail
+       ;; with: "assertion failed: (source)".  Outside of the build container,
+       ;; most tests succeed.
+       #:tests? #f))
+    (home-page "http://live.gnome.org/Grilo")
+    (synopsis "Plugins for the Grilo media discovery library")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
 for application developers.")
