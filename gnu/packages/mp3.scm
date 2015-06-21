@@ -21,6 +21,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -335,6 +337,12 @@ use with CD-recording software).")
               (base32
                "1zr3kadv35ii6liia0bpfgxpag27xcivp571ybckpbz4b10nnd14"))))
     (build-system gnu-build-system)
+    ;; XXX FIXME: Use gcc-4.8 on i686 to work around
+    ;; <http://bugs.gnu.org/20856>.
+    (native-inputs (if (and (not (%current-target-system))
+                            (string-prefix? "i686-" (%current-system)))
+                       `(("gcc" ,(canonical-package gcc-4.8)))
+                       '()))
     (home-page "http://lame.sourceforge.net/")
     (synopsis "MPEG Audio Layer III (MP3) encoder")
     (description "LAME is a high quality MPEG Audio Layer III (MP3) encoder.")
