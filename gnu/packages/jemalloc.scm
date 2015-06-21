@@ -20,6 +20,8 @@
   #:use-module ((guix licenses) #:select (bsd-2))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages gcc)
   #:use-module (guix build-system gnu))
 
 (define-public jemalloc
@@ -35,6 +37,12 @@
                (base32
                 "1zl4vxxjvhg72bdl53sl0idz9wp18c6yzjdmqcnwm09wvmcj2v71"))))
     (build-system gnu-build-system)
+    ;; XXX FIXME: Use gcc-4.8 on i686 to work around
+    ;; <http://bugs.gnu.org/20856>.
+    (native-inputs (if (and (not (%current-target-system))
+                            (string-prefix? "i686-" (%current-system)))
+                       `(("gcc" ,(canonical-package gcc-4.8)))
+                       '()))
     (home-page "http://www.canonware.com/jemalloc/")
     (synopsis "General-purpose scalable concurrent malloc implementation")
     (description
