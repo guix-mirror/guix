@@ -185,12 +185,53 @@ as \"guile:debug\" or \"gcc-4.8\" and return its store file name."
 
 
 ;;;
+;;; Charts.
+;;;
+
+;; Autoload Guile-Charting.
+;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
+;; See <http://bugs.gnu.org/12202>.
+(module-autoload! (current-module)
+                  '(charting) '(make-page-map))
+
+(define (profile->page-map profiles file)
+  "Write a 'page map' chart of PROFILES, a list of <profile> objects, to FILE,
+the name of a PNG file."
+  (define (strip name)
+    (string-drop name (+ (string-length (%store-prefix)) 28)))
+
+  (define data
+    (fold2 (lambda (profile result offset)
+             (match profile
+               (($ <profile> name self)
+                (let ((self (inexact->exact
+                             (round (/ self (expt 2. 10))))))
+                  (values `((,(strip name) ,offset . ,self)
+                            ,@result)
+                          (+ offset self))))))
+           '()
+           0
+           (sort profiles
+                 (match-lambda*
+                   ((($ <profile> _ _ total1) ($ <profile> _ _ total2))
+                    (> total1 total2))))))
+
+  ;; TRANSLATORS: This is the title of a graph, meaning that the graph
+  ;; represents a profile of the store (the "store" being the place where
+  ;; packages are stored.)
+  (make-page-map (_ "store profile") (pk data)
+                 #:write-to-png file))
+
+
+;;;
 ;;; Options.
 ;;;
 
 (define (show-help)
   (display (_ "Usage: guix size [OPTION]... PACKAGE
 Report the size of PACKAGE and its dependencies.\n"))
+  (display (_ "
+  -m, --map-file=FILE    write to FILE a graphical map of disk usage"))
   (display (_ "
   -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""))
   (newline)
@@ -207,6 +248,9 @@ Report the size of PACKAGE and its dependencies.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'system arg
                               (alist-delete 'system result eq?))))
+        (option '(#\m "map-file") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'map-file arg result)))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -230,6 +274,7 @@ Report the size of PACKAGE and its dependencies.\n"))
                                    (('argument . file) file)
                                    (_ #f))
                                  opts))
+           (map-file (assoc-ref opts 'map-file))
            (system   (assoc-ref opts 'system)))
       (match files
         (()
@@ -239,7 +284,11 @@ Report the size of PACKAGE and its dependencies.\n"))
            (run-with-store store
              (mlet* %store-monad ((item    (ensure-store-item file))
                                   (profile (store-profile item)))
-               (display-profile* profile))
+               (if map-file
+                   (begin
+                     (profile->page-map profile map-file)
+                     (return #t))
+                   (display-profile* profile)))
              #:system system)))
         ((files ...)
          (leave (_ "too many arguments\n")))))))

@@ -40,7 +40,9 @@ doc/os-config-%.texi: gnu/system/examples/%.tmpl
 	cp "$<" "$@"
 
 infoimagedir = $(infodir)/images
-dist_infoimage_DATA = doc/images/bootstrap-graph.png
+dist_infoimage_DATA =				\
+  doc/images/bootstrap-graph.png		\
+  doc/images/coreutils-size-map.png
 
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
 # in an Info or PDF document.

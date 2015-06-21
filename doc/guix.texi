@@ -4038,9 +4038,22 @@ reports information based on information about the available substitutes
 (@pxref{Substitutes}).  This allows it to profile disk usage of store
 items that are not even on disk, only available remotely.
 
-A single option is available:
+The available options are:
 
 @table @option
+
+@item --map-file=@var{file}
+Write to @var{file} a graphical map of disk usage as a PNG file.
+
+For the example above, the map looks like this:
+
+@image{images/coreutils-size-map,5in,, map of Coreutils disk usage
+produced by @command{guix size}}
+
+This option requires that
+@uref{http://wingolog.org/software/guile-charting/, Guile-Charting} be
+installed and visible in Guile's module search path.  When that is not
+the case, @command{guix size} fails as it tries to load it.
 
 @item --system=@var{system}
 @itemx -s @var{system}
