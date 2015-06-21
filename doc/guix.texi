@@ -2454,6 +2454,19 @@ Which Haskell compiler is used can be specified with the @code{#:haskell}
 parameter which defaults to @code{ghc}.
 @end defvr
 
+@defvr {Scheme Variable} emacs-build-system
+This variable is exported by @code{(guix build-system emacs)}.  It
+implements an installation procedure similar to the one of Emacs' own
+packaging system (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
+
+It first creates the @code{@var{package}-autoloads.el} file, then it
+byte compiles all Emacs Lisp files.  Differently from the Emacs
+packaging system, the Info documentation files are moved to the standard
+documentation directory and the @file{dir} file is deleted.  Each
+package is installed in its own directory under
+@file{share/emacs/site-lisp/guix.d}.
+@end defvr
+
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
 it provides basically no support: it does not pull any implicit inputs,
