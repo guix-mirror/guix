@@ -2402,15 +2402,17 @@ settings, themes, mouse settings, and startup of other daemons.")
    (native-inputs
     `(("intltool" ,intltool)
       ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)))
-   (inputs
+   (propagated-inputs
     `(("glib" ,glib)
       ("gmime" ,gmime)
-      ("libarchive" ,libarchive)
+      ("libxml2" ,libxml2)))
+   (inputs
+    `(("libarchive" ,libarchive)
       ("libgcrypt" ,libgcrypt)
       ("nettle" ,nettle)
-      ("libsoup" ,libsoup)
-      ("libxml2" ,libxml2)))
+      ("libsoup" ,libsoup)))
    (home-page "https://projects.gnome.org/totem")
    (synopsis "Library to parse and save media playlists for GNOME")
    (description "Totem-pl-parser is a GObjects-based library to parse and save

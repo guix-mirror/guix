@@ -254,7 +254,8 @@ group - the argument.")
   "Complete argument for guix COMMAND."
   (cond
    ((member command
-            '("archive" "build" "environment" "lint" "refresh"))
+            '("archive" "build" "edit" "environment" "lint" "refresh"
+              "size"))
     (while t
       (pcomplete-here (guix-pcomplete-all-packages))))
    (t (pcomplete-here* (pcomplete-entries)))))
@@ -302,7 +303,7 @@ INPUT is the current partially completed string."
        ((option? "-m" "--manifest")
         (complete* (pcomplete-entries)))))
 
-     ((and (command? "archive" "build")
+     ((and (command? "archive" "build" "size")
            (option? "-s" "--system"))
       (complete* guix-pcomplete-systems))
 

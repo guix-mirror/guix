@@ -518,6 +518,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define libstdc++
   ;; Intermediate libstdc++ that will allow us to build the final GCC
   ;; (remember that GCC-BOOT0 cannot build libstdc++.)
+  ;; TODO: Write in terms of 'make-libstdc++'.
   (package-with-bootstrap-guile
    (package (inherit gcc-4.9)
      (name "libstdc++")

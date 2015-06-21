@@ -345,6 +345,32 @@ Go.  It also includes runtime support libraries for these languages.")
                             '("gcc-arm-link-spec-fix.patch"
                               "gcc-5.0-libvtv-runpath.patch")))))))
 
+(define-public (make-libstdc++ gcc)
+  "Return a libstdc++ package based on GCC.  The primary use case is when
+using compilers other than GCC."
+  (package
+    (inherit gcc)
+    (name "libstdc++")
+    (arguments
+     `(#:out-of-source? #t
+       #:phases (alist-cons-before
+                 'configure 'chdir
+                 (lambda _
+                   (chdir "libstdc++-v3"))
+                 %standard-phases)
+       #:configure-flags `("--disable-libstdcxx-pch"
+                           ,(string-append "--with-gxx-include-dir="
+                                           (assoc-ref %outputs "out")
+                                           "/include"))))
+    (outputs '("out" "debug"))
+    (inputs '())
+    (native-inputs '())
+    (propagated-inputs '())
+    (synopsis "GNU C++ standard library")))
+
+(define-public libstdc++-4.9
+  (make-libstdc++ gcc-4.9))
+
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
   (package (inherit gcc)

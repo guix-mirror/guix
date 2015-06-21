@@ -394,6 +394,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/calibre-no-updates-dialog.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/chmlib-inttypes.patch			\
+  gnu/packages/patches/clang-libc-search-path.patch		\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-dummy-man.patch		\

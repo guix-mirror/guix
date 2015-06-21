@@ -1034,6 +1034,33 @@ buffers, and audio capture.")
 and ALSA.")
     (license license:gpl3+)))
 
+(define-public raul
+  (package
+    (name "raul")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.drobilla.net/raul-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "09ms40xc1x6qli6lxkwn5ibqh62nl9w7dq0b6jh1q2zvnrxwsd8b"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)) ; no check target
+    (inputs
+     `(("glib" ,glib)
+       ("boost" ,boost)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://drobilla.net/software/raul/")
+    (synopsis "Real-time audio utility library")
+    (description
+     "Raul (Real-time Audio Utility Library) is a C++ utility library primarily
+aimed at audio/musical applications.")
+    (license license:gpl2+)))
+
 (define-public rubberband
   (package
     (name "rubberband")
