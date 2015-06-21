@@ -2656,3 +2656,35 @@ It provides a GStreamer sink to upload frames to GL and an actor that
 implements the ClutterGstPlayer interface using playbin.  Clutter is an Open
 GL based interactive canvas library.")
     (license license:lgpl2.0+)))
+
+(define-public gom
+  (package
+    (name "gom")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1x9qgviszzh59d009jd13k0pdxzv9w4dmwp3wszbsk3qxr3fnlbr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("glib" ,glib)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("sqlite" ,sqlite)))
+    ;; XXX TODO: Figure out how to run the test suite.
+    (arguments `(#:tests? #f))
+    (home-page "https://wiki.gnome.org/Projects/Gom")
+    (synopsis "Object mapper from GObjects to SQLite")
+    (description
+     "Gom provides an object mapper from GObjects to SQLite.  It helps you
+write applications that need to store structured data as well as make complex
+queries upon that data.")
+    (license license:lgpl2.1+)))
