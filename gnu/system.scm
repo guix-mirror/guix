@@ -391,12 +391,8 @@ settings for 'guix.el' to work out-of-the-box."
                  ;; Attempt to load guix.el.
                  (require 'guix-init nil t)
 
-                 (when (require 'geiser-guile nil t)
-                   ;; Make sure Geiser's Scheme modules are in Guile's search
-                   ;; path.
-                   (add-to-list
-                    'geiser-guile-load-path
-                    "/run/current-system/profile/share/geiser/guile")))))
+                 ;; Attempt to load geiser.
+                 (require 'geiser-install nil t))))
 
 (define (emacs-site-directory)
   "Return the Emacs site directory, aka. /etc/emacs."
