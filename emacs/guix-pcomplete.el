@@ -330,7 +330,11 @@ INPUT is the current partially completed string."
 
      ((and (command? "refresh")
            (option? "-s" "--select"))
-      (complete* guix-pcomplete-refresh-subsets)))))
+      (complete* guix-pcomplete-refresh-subsets))
+
+     ((and (command? "size")
+           (option? "-m" "--map-file"))
+      (complete* (pcomplete-entries))))))
 
 (defun guix-pcomplete-complete-options (command)
   "Complete options (with their arguments) for guix COMMAND."
