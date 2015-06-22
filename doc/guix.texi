@@ -90,6 +90,7 @@ Installation
 * Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
+* Application Setup::           Application-specific setup.
 
 Setting Up the Daemon
 
@@ -271,6 +272,7 @@ instead, you want to install the complete GNU operating system,
 * Running the Test Suite::      Testing Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
+* Application Setup::           Application-specific setup.
 @end menu
 
 @node Binary Installation
@@ -864,6 +866,44 @@ useful in exceptional circumstances, such as if you need to run several
 daemons on the same machine.
 @end table
 
+
+@node Application Setup
+@section Application Setup
+
+When using Guix on top of GNU/Linux distribution other than GuixSD, a
+few additional steps are needed to get everything in place.  Here are
+some of them.
+
+@subsection Locales
+
+@cindex locales, when not on GuixSD
+Packages installed @i{via} Guix will not use the host system's locale
+data.  Instead, you must first install one of the locale packages
+available with Guix and then define the @code{LOCPATH} environment
+variable (@pxref{Locale Names, @code{LOCPATH},, libc, The GNU C Library
+Reference Manual}):
+
+@example
+$ guix package -i glibc-locales
+$ export LOCPATH=$HOME/.guix-profile/lib/locale
+@end example
+
+Note that the @code{glibc-locales} package contains data for all the
+locales supported by the GNU@tie{}libc and weighs in at around
+110@tie{}MiB.  Alternately, the @code{glibc-utf8-locales} is smaller but
+limited to a few UTF-8 locales.
+
+@subsection X11 Fonts
+
+The majority of graphical applications uses Fontconfig to locate and
+load fonts and perform X11-client-side rendering.  Guix's
+@code{fontconfig} package looks for fonts in @file{$HOME/.guix-profile}
+by default.  Thus, to allow graphical applications installed with Guix
+to display fonts, you will have to install fonts with Guix as well.
+Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
+@code{font-gnu-freefont}.
+
+@c TODO What else?
 
 @c *********************************************************************
 @node Package Management
