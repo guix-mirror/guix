@@ -470,7 +470,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
-(define-public glibc-final
+(define glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
   (package (inherit glibc-final-with-bootstrap-bash)
     (name "glibc")
@@ -547,7 +547,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (propagated-inputs '())
      (synopsis "GNU C++ standard library (intermediate)"))))
 
-(define-public gcc-final
+(define gcc-final
   ;; The final GCC.
   (package (inherit gcc-boot0)
     (name "gcc")
@@ -640,7 +640,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
-(define-public glibc-utf8-locales-final
+(define glibc-utf8-locales-final
   ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed
   ;; by the build processes afterwards so their 'scm_to_locale_string' works
   ;; with the full range of Unicode codepoints (remember
