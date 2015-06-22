@@ -47,23 +47,33 @@
                "18wbsjfccxlgsdsd6h9wvhcjrsglyi086jk4bk029ik07rh81laz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* "Makefile"
-                     ;; Clear the `LIBRARY_PATH' setting, which otherwise
-                     ;; interferes with our own use.
-                     (("^LIBRARY_PATH[[:blank:]]*=.*$")
-                      "")
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'build 'pre-build
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (substitute* "Makefile"
+                       ;; Clear the `LIBRARY_PATH' setting, which otherwise
+                       ;; interferes with our own use.
+                       (("^LIBRARY_PATH[[:blank:]]*=.*$")
+                        "")
 
-                     ;; Since the Makefile overrides $docdir, modify it to
-                     ;; refer to what we want.
-                     (("^DOCUMENTATION_PATH[[:blank:]]*=.*$")
-                      (let ((doc (assoc-ref outputs "doc")))
-                        (string-append "DOCUMENTATION_PATH = "
-                                       doc "/share/doc/"
-                                       ,name "-" ,version "\n")))))
-                 %standard-phases)))
+                       ;; Since the Makefile overrides $docdir, modify it to
+                       ;; refer to what we want.
+                       (("^DOCUMENTATION_PATH[[:blank:]]*=.*$")
+                        (let ((doc (assoc-ref outputs "doc")))
+                          (string-append "DOCUMENTATION_PATH = "
+                                         doc "/share/doc/"
+                                         ,name "-" ,version "\n"))))))
+                  (add-before
+                   'configure 'strip-configure-xml
+                   (lambda _
+                     (substitute* "config/configure.xml.in"
+                       ;; Do not record 'configure' arguments in the
+                       ;; configure.xml file that gets installed: That would
+                       ;; include --docdir, and thus retain a reference to the
+                       ;; 'doc' output.
+                       (("@CONFIGURE_ARGS@")
+                        "not recorded")))))))
     ;; TODO: Add Jasper etc.
     (inputs `(("fftw" ,fftw)
               ("graphviz" ,graphviz)
