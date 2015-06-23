@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,10 +25,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public zlib
   (package
@@ -347,6 +350,39 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
 archives that can be readily emailed.  A shell archive is a file that can be
 processed by a Bourne-type shell to unpack the original collection of files. 
 This package is mostly for compatibility and historical interest.")
+    (license license:gpl3+)))
+
+(define-public sfarklib
+  (package
+    (name "sfarklib")
+    (version "2.23.5ca96b779")
+    (source (origin
+              ;; The 2.23 tarball does not include the Makefile, but only
+              ;; Makefile.am.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/raboof/sfArkLib.git")
+                    (commit (last (string-split version #\.)))))
+              (sha256
+               (base32
+                "1hk1x88dl5b9jq016r6rx5wyszxknyv0sa7gmil4m4alnhwl4h7h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (substitute* "Makefile"
+                      (("/usr/local") (assoc-ref outputs "out")))
+                    #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/raboof/sfArkLib")
+    (synopsis "Library for SoundFont decompression")
+    (description
+     "SfArkLib is a C++ library for decompressing SoundFont files compressed
+with the sfArk algorithm.")
     (license license:gpl3+)))
 
 (define-public libmspack
