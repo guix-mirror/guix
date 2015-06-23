@@ -37,6 +37,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
@@ -72,7 +73,8 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages zip)
+  #:use-module (srfi srfi-1))
 
 (define-public units
   (package
@@ -1847,3 +1849,83 @@ specifications.")
      "lp_solve is a mixed integer linear programming solver based on the
 revised simplex and the branch-and-bound methods.")
     (license license:lgpl2.1+)))
+
+(define-public dealii
+  (package
+    (name "dealii")
+    (version "8.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dealii/dealii/releases/"
+                           "download/v" version "/dealii-" version ".tar.gz"))
+       (sha256
+        (base32
+         "185jych0gdnpkjwxni7pd0dda149492zwq2457xdjg76bzj78mnp"))
+       (patches (list (search-patch "dealii-p4est-interface.patch")))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
+        '(delete-file-recursively "bundled"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("tbb" ,tbb)
+       ("zlib" ,zlib)
+       ("boost" ,boost)
+       ("p4est" ,p4est)
+       ("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("arpack" ,arpack-ng)
+       ("muparser" ,muparser)
+       ("gfortran" ,gfortran)
+       ("suitesparse" ,suitesparse)))   ;for UMFPACK
+    (arguments
+     `(#:build-type "DebugRelease" ;only supports Release, Debug, or DebugRelease
+       #:configure-flags '("-DCOMPAT_FILES=OFF") ;Follow new directory structure
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'hint-example-prefix
+                   ;; Set Cmake hints in examples so that they can find this
+                   ;; deal.II when configuring.
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref %outputs "out"))
+                            (exmpl (string-append out "/share/doc"
+                                                  "/dealii/examples")))
+                       (substitute* (find-files exmpl "CMakeLists.txt")
+                         (("([[:space:]]*HINTS.*)\n" _ line)
+                          (string-append line " $ENV{HOME}/.guix-profile "
+                                         out "\n")))
+                       #t))))))
+    (home-page "https://www.dealii.org")
+    (synopsis "Finite element library")
+    (description
+     "Deal.II is a C++ program library targeted at the computational solution
+of partial differential equations using adaptive finite elements.  The main
+aim of deal.II is to enable rapid development of modern finite element codes,
+using among other aspects adaptive meshes and a wide array of tools often used
+in finite element programs.")
+    (license license:lgpl2.1+)))
+
+(define-public dealii-openmpi
+  (package (inherit dealii)
+    (name "dealii-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ;;Supported only with MPI:
+       ("p4est" ,p4est-openmpi)
+       ("petsc" ,petsc-openmpi)
+       ("slepc" ,slepc-openmpi)
+       ("metis" ,metis)               ;for MUMPS
+       ("scalapack" ,scalapack)       ;for MUMPS
+       ("mumps" ,mumps-metis-openmpi) ;configure supports only metis orderings
+       ("arpack" ,arpack-ng-openmpi)
+       ,@(fold alist-delete (package-inputs dealii)
+               '("p4est" "arpack"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments dealii)
+       ((#:configure-flags cf)
+        ``("-DMPI_C_COMPILER=mpicc"
+           "-DMPI_CXX_COMPILER=mpicxx"
+           "-DMPI_Fortran_COMPILER=mpifort"
+           ,@,cf))))
+    (synopsis "Finite element library (with MPI support)")))
