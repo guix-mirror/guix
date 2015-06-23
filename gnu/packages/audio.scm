@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
@@ -548,6 +550,65 @@ PS, and DAB+.")
      "FreePats is a project to create a free and open set of GUS compatible
 patches that can be used with softsynths such as Timidity and WildMidi.")
     ;; GPLv2+ with exception for compositions using these patches.
+    (license license:gpl2+)))
+
+(define-public guitarix
+  (package
+    (name "guitarix")
+    (version "0.32.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://sourceforge/guitarix/guitarix2-"
+                   version ".tar.bz2"))
+             (sha256
+              (base32
+               "1ybc5jk7fj6n8qh9ajzl1f6fzdmzab4nwjrh4fsylm94dn1jv0if"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:python ,python-2
+       #:configure-flags
+       (list
+        ;; FIXME: dsp2cc fails for src/faust/tonestack_engl.dsp, so we use the
+        ;; generated C++ files rather than compiling them from Faust sources.
+        "--no-faust"
+        ;; Add the output lib directory to the RUNPATH.
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("boost" ,boost)
+       ("avahi" ,avahi)
+       ("eigen" ,eigen)
+       ("lv2" ,lv2)
+       ("lilv" ,lilv)
+       ("ladspa" ,ladspa)
+       ("jack" ,jack-1)
+       ("gtkmm" ,gtkmm-2)
+       ("gtk+" ,gtk+-2)
+       ("fftwf" ,fftwf)
+       ("lrdf" ,lrdf)
+       ("zita-resampler" ,zita-resampler)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("gperf" ,gperf)
+       ;;("faust" ,faust) ; dsp2cc fails for src/faust/tonestack_engl.dsp
+       ("intltool" ,intltool)
+       ("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LV2_PATH")
+            (files '("lib/lv2")))))
+    (home-page "http://guitarix.org/")
+    (synopsis "Virtual guitar amplifier")
+    (description "Guitarix is a virtual guitar amplifier running JACK.
+Guitarix takes the signal from your guitar as a mono-signal from your sound
+card.  The input is processed by a main amp and a rack-section.  Both can be
+routed separately and deliver a processed stereo-signal via JACK.  You may
+fill the rack with effects from more than 25 built-in modules including stuff
+from a simple noise gate to modulation effects like flanger, phaser or
+auto-wah.")
     (license license:gpl2+)))
 
 (define-public ir
