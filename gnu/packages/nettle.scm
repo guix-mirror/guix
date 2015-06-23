@@ -68,8 +68,21 @@ themselves.")
                (base32
                 "0k1x57zviysvi91lkk66cg8v819vywm5g5yqs22wppfqcifx5m2z"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments nettle-2)
-       ((#:configure-flags flags)
-        ;; Build "fat" binaries where the right implementation is chosen at
-        ;; run time based on CPU features (starting from 3.1.)
-        `(cons "--enable-fat" ,flags))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'configure 'disable-ifunc-init-method
+          (lambda _
+            ;; Work around problems with the ifunc initialization method in
+            ;; nettle.  For details, see
+            ;; <http://lists.lysator.liu.se/pipermail/nettle-bugs/2015/003389.html>
+            ;; and <https://sourceware.org/ml/libc-help/2015-06/msg00010.html>.
+            (substitute* "config.h"
+              (("#define HAVE_LINK_IFUNC 1")
+               "/* #undef HAVE_LINK_IFUNC */"))
+            #t)))
+       ,@(substitute-keyword-arguments (package-arguments nettle-2)
+           ((#:configure-flags flags)
+            ;; Build "fat" binaries where the right implementation is chosen
+            ;; at run time based on CPU features (starting from 3.1.)
+            `(cons "--enable-fat" ,flags)))))))
