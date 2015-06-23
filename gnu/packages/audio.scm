@@ -490,18 +490,17 @@ PS, and DAB+.")
                     "mirror://sourceforge/faudiostream/faust-" version ".zip"))
               (sha256
                (base32
-                "068vl9536zn0j4pknwfcchzi90rx5pk64wbcbd67z32w0csx8xm1"))))
+                "068vl9536zn0j4pknwfcchzi90rx5pk64wbcbd67z32w0csx8xm1"))
+              (snippet
+               ;; Remove prebuilt library
+               '(delete-file "architecture/android/libs/armeabi-v7a/libfaust_dsp.so"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'remove-prebuilt-library
-          (lambda _
-            (delete-file "architecture/android/libs/armeabi-v7a/libfaust_dsp.so")
-            #t))
+         ;; no "configure" script
          (delete 'configure))))
     (native-inputs
      `(("unzip" ,unzip)))
