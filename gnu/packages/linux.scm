@@ -210,7 +210,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.0.5")
+  (let* ((version "4.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -283,7 +283,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0g8a4h8gjw51pp02hjfrp6bk2nkrclm3krp9mpjh3iwbf4vfh2al"))))
+               "092kfpch3j6v06vn88rvvdkjhnzbx1w73rh5nbf0n2kx0zmfbcj8"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -295,11 +295,6 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                          (if conf
                              `(("kconfig" ,conf))
                              '()))))
-
-    ;; XXX: Work around an ICE with our patched GCC 4.8.3 while compiling
-    ;; 'drivers/staging/vt6656/michael.o': <http://hydra.gnu.org/build/96389/>.
-    (inputs `(("gcc" ,gcc-4.9)))
-
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
