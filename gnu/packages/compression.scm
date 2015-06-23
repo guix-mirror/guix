@@ -385,6 +385,39 @@ This package is mostly for compatibility and historical interest.")
 with the sfArk algorithm.")
     (license license:gpl3+)))
 
+(define-public sfarkxtc
+  (package
+    (name "sfarkxtc")
+    (version "b5e0a2ba39")
+    (source (origin
+              ;; There are no release tarballs, so we just fetch the latest
+              ;; commit at this time.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/raboof/sfarkxtc.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (substitute* "Makefile"
+                      (("/usr/local") (assoc-ref outputs "out")))
+                    #t)))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("sfarklib" ,sfarklib)))
+    (home-page "https://github.com/raboof/sfarkxtc")
+    (synopsis "Basic sfArk decompressor")
+    (description "SfArk extractor converts SoundFonts in the compressed legacy
+sfArk file format to the uncompressed sf2 format.")
+    (license license:gpl3+)))
+
 (define-public libmspack
   (package
     (name "libmspack")
