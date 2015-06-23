@@ -1,0 +1,37 @@
+This patch has been submitted upstream: https://github.com/smithlabcode/preseq/pull/15
+
+From 65387b0d766e6c06a15cf8d8f9183d9a4ba644bb Mon Sep 17 00:00:00 2001
+From: Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
+Date: Thu, 25 Jun 2015 15:01:53 +0200
+Subject: [PATCH] Install to PREFIX
+
+---
+ Makefile | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 4d0367a..e334f2f 100644
+--- a/preseq-master/Makefile
++++ b/preseq-master/Makefile
+@@ -22,6 +22,10 @@ ifndef ROOT
+ ROOT = $(shell pwd)
+ endif
+ 
++ifndef PREFIX
++PREFIX = $(ROOT)
++endif
++
+ ifndef SMITHLAB_CPP
+ SMITHLAB_CPP=$(ROOT)/smithlab_cpp/
+ endif
+@@ -91,8 +95,8 @@ endif
+ 	$(CXX) $(CXXFLAGS) -o $@ $^ $(INCLUDEARGS) $(LIBS)
+ 
+ install: $(PROGS)
+-	@mkdir -p $(ROOT)/bin
+-	@install -m 755 $(PROGS) $(ROOT)/bin
++	@mkdir -p $(PREFIX)/bin
++	@install -m 755 $(PROGS) $(PREFIX)/bin
+ 
+ clean:
+ 	@-rm -f $(PROGS) *.o *~

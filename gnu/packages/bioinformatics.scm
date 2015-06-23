@@ -2087,6 +2087,62 @@ subsequent visualization, annotation and storage of results.")
     ;; LGPLv2.1+
     (license (list license:gpl2 license:lgpl2.1+))))
 
+(define-public preseq
+  (package
+    (name "preseq")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://smithlabresearch.org/downloads/preseq-"
+                              version ".tar.bz2"))
+              (sha256
+               (base32 "0r7sw07p6nv8ygvc17gd78lisbw5336v3vhs86b5wv8mw3pwqksc"))
+              (patches (list (search-patch "preseq-1.0.2-install-to-PREFIX.patch")
+                             (search-patch "preseq-1.0.2-link-with-libbam.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove bundled samtools.
+               '(delete-file-recursively "preseq-master/samtools"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'enter-dir
+          (lambda _
+            (chdir "preseq-master")
+            #t))
+         (add-after
+          'unpack 'use-samtools-headers
+          (lambda _
+            (substitute* '("smithlab_cpp/SAM.cpp"
+                           "smithlab_cpp/SAM.hpp")
+              (("sam.h") "samtools/sam.h"))
+            #t))
+         (delete 'configure))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "LIBBAM="
+                                         (assoc-ref %build-inputs "samtools")
+                                         "/lib/libbam.a"))))
+    (inputs
+     `(("gsl" ,gsl)
+       ("samtools" ,samtools-0.1)
+       ("zlib" ,zlib)))
+    (home-page "http://smithlabresearch.org/software/preseq/")
+    (synopsis "Program for analyzing library complexity")
+    (description
+     "The preseq package is aimed at predicting and estimating the complexity
+of a genomic sequencing library, equivalent to predicting and estimating the
+number of redundant reads from a given sequencing depth and how many will be
+expected from additional sequencing using an initial sequencing experiment.
+The estimates can then be used to examine the utility of further sequencing,
+optimize the sequencing depth, or to screen multiple libraries to avoid low
+complexity samples.")
+    (license license:gpl3+)))
+
 (define-public sra-tools
   (package
     (name "sra-tools")

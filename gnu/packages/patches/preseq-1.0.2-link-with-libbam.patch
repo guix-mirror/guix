@@ -1,0 +1,33 @@
+This patch has been submitted upstream: https://github.com/smithlabcode/preseq/pull/15
+
+From a937a54d56e8a6ff06237471e568154d1fa5f267 Mon Sep 17 00:00:00 2001
+From: Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
+Date: Thu, 25 Jun 2015 15:02:35 +0200
+Subject: [PATCH] Link with libbam.a if provided via LIBBAM
+
+---
+ Makefile | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index e334f2f..de310e4 100644
+--- a/preseq-master/Makefile
++++ b/preseq-master/Makefile
+@@ -83,10 +83,17 @@ $(PROGS): $(addprefix $(SMITHLAB_CPP)/, \
+ preseq: continued_fraction.o load_data_for_complexity.o moment_sequence.o
+ 
+ ifdef SAMTOOLS_DIR
++ifdef LIBBAM
++LIBS += -pthread
++bam2mr preseq: $(addprefix $(SMITHLAB_CPP)/, SAM.o) \
++        $(LIBBAM)
++else
+ bam2mr preseq: $(addprefix $(SMITHLAB_CPP)/, SAM.o) \
+         $(addprefix $(SAMTOOLS_DIR)/, sam.o bam.o bam_import.o bam_pileup.o \
+         faidx.o bam_aux.o kstring.o knetfile.o sam_header.o razf.o bgzf.o)
+ endif
++endif # SAMTOOLS_DIR
++
+ 
+ %.o: %.cpp %.hpp
+ 	$(CXX) $(CXXFLAGS) -c -o $@ $< $(INCLUDEARGS)
