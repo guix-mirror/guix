@@ -2688,3 +2688,33 @@ GL based interactive canvas library.")
 write applications that need to store structured data as well as make complex
 queries upon that data.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-klotski
+  (package
+    (name "gnome-klotski")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0a64935c7pp51jhaf29q9zlx3lamj7zrhyff7clvv0w8v1w6gpax"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (home-page "https://wiki.gnome.org/Apps/Klotski")
+    (synopsis "Sliding block puzzles")
+    (description
+     "GNOME Klotski is a set of block sliding puzzles.  The objective is to move
+the patterned block to the area bordered by green markers.  To do so, you will
+need to slide other blocks out of the way.  Complete each puzzle in as few moves
+as possible!")
+    (license license:gpl2+)))
