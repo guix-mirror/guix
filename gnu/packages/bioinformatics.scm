@@ -1885,7 +1885,7 @@ bioinformatics file formats, sequence alignment, and more.")
 (define-public star
   (package
     (name "star")
-    (version "2.4.0j")
+    (version "2.4.2a")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1893,7 +1893,7 @@ bioinformatics file formats, sequence alignment, and more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1y3bciych1aw6s7k8sy1saj23dcan9wk4d4f96an499slkxwz712"))
+                "1c3rnm7r5l0kl3d04gl1g7938xqf1c2l0mla87rlplqg1hcns5mc"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "source/Makefile"
