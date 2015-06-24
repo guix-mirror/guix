@@ -29,6 +29,7 @@ include gnu-system.am
 MODULES =					\
   guix/base32.scm				\
   guix/base64.scm				\
+  guix/cpio.scm					\
   guix/records.scm				\
   guix/gcrypt.scm				\
   guix/hash.scm					\
@@ -170,6 +171,7 @@ clean-go:
 SCM_TESTS =					\
   tests/base32.scm				\
   tests/base64.scm				\
+  tests/cpio.scm				\
   tests/hash.scm				\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
