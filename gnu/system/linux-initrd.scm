@@ -25,7 +25,6 @@
                 #:select (%store-prefix))
   #:use-module ((guix derivations)
                 #:select (derivation->output-path))
-  #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
@@ -51,7 +50,6 @@
 (define* (expression->initrd exp
                              #:key
                              (guile %guile-static-stripped)
-                             (cpio cpio)
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system))
@@ -78,11 +76,11 @@ MODULES is a list of Guile module names to be embedded in the initrd."
                         #:init #$init
                         ;; Copy everything INIT refers to into the initrd.
                         #:references-graphs '("closure")
-                        #:cpio (string-append #$cpio "/bin/cpio")
                         #:gzip (string-append #$gzip "/bin/gzip"))))
 
    (gexp->derivation name builder
-                     #:modules '((guix build utils)
+                     #:modules '((guix cpio)
+                                 (guix build utils)
                                  (guix build store-copy)
                                  (gnu build linux-initrd))
                      #:references-graphs `(("closure" ,init)))))
