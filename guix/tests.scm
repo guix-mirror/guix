@@ -27,10 +27,12 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:use-module (web uri)
   #:export (open-connection-for-tests
             random-text
             random-bytevector
+            file=?
             network-reachable?
             shebang-too-long?
             mock
@@ -87,6 +89,19 @@
             (bytevector-u8-set! bv i (random 256 %seed))
             (loop (1+ i)))
           bv))))
+
+(define (file=? a b)
+  "Return true if files A and B have the same type and same content."
+  (and (eq? (stat:type (lstat a)) (stat:type (lstat b)))
+       (case (stat:type (lstat a))
+         ((regular)
+          (equal?
+           (call-with-input-file a get-bytevector-all)
+           (call-with-input-file b get-bytevector-all)))
+         ((symlink)
+          (string=? (readlink a) (readlink b)))
+         (else
+          (error "what?" (lstat a))))))
 
 (define (network-reachable?)
   "Return true if we can reach the Internet."

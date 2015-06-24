@@ -108,17 +108,6 @@
     (cute string-drop <> (string-length input)))
   (define sibling
     (compose (cut string-append output <>) strip))
-  (define (file=? a b)
-    (and (eq? (stat:type (lstat a)) (stat:type (lstat b)))
-         (case (stat:type (lstat a))
-           ((regular)
-            (equal?
-             (call-with-input-file a get-bytevector-all)
-             (call-with-input-file b get-bytevector-all)))
-           ((symlink)
-            (string=? (readlink a) (readlink b)))
-           (else
-            (error "what?" (lstat a))))))
 
   (file-system-fold (const #t)
                     (lambda (name stat result)    ; leaf
