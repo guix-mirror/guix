@@ -394,6 +394,9 @@ using compilers other than GCC."
 (define-public gfortran-4.8
   (custom-gcc gcc-4.8 "gfortran" '("fortran")))
 
+(define-public gfortran-4.9
+  (custom-gcc gcc-4.9 "gfortran" '("fortran")))
+
 (define-public gccgo-4.8
   (custom-gcc gcc-4.8 "gccgo" '("go")
               ;; Suppress the separate "lib" output, because otherwise the
