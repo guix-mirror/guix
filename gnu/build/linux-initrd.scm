@@ -49,21 +49,22 @@ COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
   ;; directories."
 
   (define files
-    ;; XXX: Use a deterministic order.
-    (reverse
-     (file-system-fold (const #t)                 ;enter?
-                       (lambda (file stat result) ;leaf
-                         (cons file result))
-                       (lambda (dir stat result)  ;down
-                         (if (string=? dir directory)
-                             result
-                             (cons dir result)))
-                       (lambda (file stat result)
-                         result)
-                       (const #f)                 ;skip
-                       (const #f)                 ;error
-                       '()
-                       directory)))
+    ;; Use 'sort' so that (1) the order of files is deterministic, and (2)
+    ;; directories appear before the files they contain.
+    (sort (file-system-fold (const #t)                 ;enter?
+                            (lambda (file stat result) ;leaf
+                              (cons file result))
+                            (lambda (dir stat result)  ;down
+                              (if (string=? dir directory)
+                                  result
+                                  (cons dir result)))
+                            (lambda (file stat result)
+                              result)
+                            (const #f)                 ;skip
+                            (const #f)                 ;error
+                            '()
+                            directory)
+          string<?))
 
   (call-with-output-file output
     (lambda (port)
