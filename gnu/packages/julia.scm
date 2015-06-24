@@ -63,52 +63,56 @@
        #:validate-runpath? #f
 
        #:phases
-       (alist-cons-after
-        'unpack 'hardcode-soname-map
-        ;; ./src/ccall.cpp creates a map from library names to paths using the
-        ;; output of "/sbin/ldconfig -p".  Since ldconfig is not used in Guix,
-        ;; we patch ccall.cpp to contain a static map.
-        (lambda* (#:key inputs #:allow-other-keys)
-          (use-modules (ice-9 match))
-          (substitute* "src/ccall.cpp"
-            (("jl_read_sonames.*;")
-             (string-join
-              (map (match-lambda
-                    ((input libname soname)
-                     (string-append
-                      "sonameMap[\"" libname "\"] = "
-                      "\"" (assoc-ref inputs input) "/lib/" soname "\";")))
-                   '(("libc"        "libc"           "libc.so.6")
-                     ("pcre"        "libpcre"        "libpcre.so")
-                     ("mpfr"        "libmpfr"        "libmpfr.so")
-                     ("openblas"    "libblas"        "libopenblas.so")
-                     ("arpack-ng"   "libarpack"      "libarpack.so")
-                     ("lapack"      "liblapack"      "liblapack.so")
-                     ("gmp"         "libgmp"         "libgmp.so")
-                     ("openlibm"    "libopenlibm"    "libopenlibm.so")
-                     ("openspecfun" "libopenspecfun" "libopenspecfun.so")
-                     ("fftw"        "libfftw3"       "libfftw3.so")
-                     ("fftwf"       "libfftw3f"      "libfftw3f.so")))))))
-        (alist-cons-before
-         'build 'replace-default-shell
-         (lambda _
-           (substitute* "base/client.jl"
-             (("/bin/sh") (which "sh"))))
-         (alist-cons-before
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after
+          'unpack 'hardcode-soname-map
+          ;; ./src/ccall.cpp creates a map from library names to paths using the
+          ;; output of "/sbin/ldconfig -p".  Since ldconfig is not used in Guix,
+          ;; we patch ccall.cpp to contain a static map.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (use-modules (ice-9 match))
+            (substitute* "src/ccall.cpp"
+              (("jl_read_sonames.*;")
+               (string-join
+                (map (match-lambda
+                       ((input libname soname)
+                        (string-append
+                         "sonameMap[\"" libname "\"] = "
+                         "\"" (assoc-ref inputs input) "/lib/" soname "\";")))
+                     '(("libc"        "libc"           "libc.so.6")
+                       ("pcre"        "libpcre"        "libpcre.so")
+                       ("mpfr"        "libmpfr"        "libmpfr.so")
+                       ("openblas"    "libblas"        "libopenblas.so")
+                       ("arpack-ng"   "libarpack"      "libarpack.so")
+                       ("lapack"      "liblapack"      "liblapack.so")
+                       ("gmp"         "libgmp"         "libgmp.so")
+                       ("openlibm"    "libopenlibm"    "libopenlibm.so")
+                       ("openspecfun" "libopenspecfun" "libopenspecfun.so")
+                       ("fftw"        "libfftw3"       "libfftw3.so")
+                       ("fftwf"       "libfftw3f"      "libfftw3f.so"))))))
+            #t))
+         (add-before
           'build 'patch-include-path
           (lambda _
             (substitute* "deps/Makefile"
               (("/usr/include/double-conversion")
                (string-append (assoc-ref %build-inputs "double-conversion")
-                              "/include/double-conversion"))))
-          (alist-cons-before
-           'check 'disable-broken-test
-           ;; One test fails because it produces slightly different output.
-           (lambda _
-             (substitute* "test/repl.jl"
-               (("@test output") "# @test output")))
-           ;; no configure script
-           (alist-delete 'configure %standard-phases)))))
+                              "/include/double-conversion")))
+            #t))
+         (add-before
+          'build 'replace-default-shell
+          (lambda _
+            (substitute* "base/client.jl"
+              (("/bin/sh") (which "sh")))
+            #t))
+         (add-before
+          'check 'disable-broken-test
+          ;; One test fails because it produces slightly different output.
+          (lambda _
+            (substitute* "test/repl.jl"
+              (("@test output") "# @test output"))
+            #t)))
        #:make-flags
        (list
         (string-append "prefix=" (assoc-ref %outputs "out"))
