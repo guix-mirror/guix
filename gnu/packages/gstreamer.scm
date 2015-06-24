@@ -109,6 +109,10 @@ arrays of data.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GST_PLUGIN_SYSTEM_PATH")
+            (files '("lib/gstreamer-1.0")))))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis "Multimedia library")
     (description
@@ -171,10 +175,6 @@ This package provides the core library and elements.")
           ;; for g-ir-scanner.
           (setenv "CC" "gcc"))
         %standard-phases)))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "GST_PLUGIN_SYSTEM_PATH")
-            (files '("lib/gstreamer-1.0")))))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
