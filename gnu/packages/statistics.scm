@@ -90,7 +90,7 @@
     (inputs
      `(("atlas" ,atlas) ; --with-blas
        ("cairo" ,cairo)
-       ("gfortran" ,gfortran-4.8)
+       ("gfortran" ,gfortran-4.9)
        ("icu4c" ,icu4c)
        ("icedtea6" ,icedtea6 "jdk")
        ("lapack" ,lapack)
