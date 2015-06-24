@@ -68,7 +68,8 @@ COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
 
   (call-with-output-file output
     (lambda (port)
-      (cpio:write-cpio-archive files port)))
+      (cpio:write-cpio-archive files port
+                               #:file->header cpio:file->cpio-header*)))
 
   (or (not compress?)
       (and (zero? (system* gzip "--best" output))

@@ -26,6 +26,7 @@
   #:export (cpio-header?
             make-cpio-header
             file->cpio-header
+            file->cpio-header*
             write-cpio-header
             read-cpio-header
 
@@ -172,6 +173,18 @@ using FILE-NAME as its file name."
                       #:size (stat:size st)
                       #:dev (stat:dev st)
                       #:rdev (stat:rdev st)
+                      #:name-size (string-length file-name))))
+
+(define* (file->cpio-header* file
+                             #:optional (file-name file)
+                             #:key (stat lstat))
+  "Similar to 'file->cpio-header', but return a header with a zeroed
+modification time, inode number, UID/GID, etc.  This allows archives to be
+produced in a deterministic fashion."
+  (let ((st (stat file)))
+    (make-cpio-header #:mode (stat:mode st)
+                      #:nlink (stat:nlink st)
+                      #:size (stat:size st)
                       #:name-size (string-length file-name))))
 
 (define %trailer
