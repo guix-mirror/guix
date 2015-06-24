@@ -371,7 +371,9 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
 
 (defvar guix-list-mode-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map tabulated-list-mode-map)
+    (set-keymap-parent
+     map (make-composed-keymap guix-root-map
+                               tabulated-list-mode-map))
     (define-key map (kbd "RET") 'guix-list-describe)
     (define-key map (kbd "m")   'guix-list-mark)
     (define-key map (kbd "*")   'guix-list-mark)

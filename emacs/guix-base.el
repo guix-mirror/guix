@@ -295,6 +295,17 @@ See `guix-update-after-operation' for details."
 
 ;;; Common definitions for buffer types
 
+(defvar guix-root-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "l") 'guix-history-back)
+    (define-key map (kbd "r") 'guix-history-forward)
+    (define-key map (kbd "g") 'revert-buffer)
+    (define-key map (kbd "R") 'guix-redisplay-buffer)
+    (define-key map (kbd "M") 'guix-apply-manifest)
+    (define-key map (kbd "C-c C-z") 'guix-switch-to-repl)
+    map)
+  "Parent keymap for all guix modes.")
+
 (defvar-local guix-profile nil
   "Profile used for the current buffer.")
 (put 'guix-profile 'permanent-local t)
@@ -440,15 +451,7 @@ following keywords are available:
                   "\\{" mode-map-str "}")
          (setq-local revert-buffer-function 'guix-revert-buffer)
          (setq-local guix-history-size ,history-var)
-         (and (fboundp ',mode-init-fun) (,mode-init-fun)))
-
-       (let ((map ,mode-map))
-         (define-key map (kbd "l") 'guix-history-back)
-         (define-key map (kbd "r") 'guix-history-forward)
-         (define-key map (kbd "g") 'revert-buffer)
-         (define-key map (kbd "R") 'guix-redisplay-buffer)
-         (define-key map (kbd "M") 'guix-apply-manifest)
-         (define-key map (kbd "C-c C-z") 'guix-switch-to-repl)))))
+         (and (fboundp ',mode-init-fun) (,mode-init-fun))))))
 
 (put 'guix-define-buffer-type 'lisp-indent-function 'defun)
 

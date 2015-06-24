@@ -426,6 +426,9 @@ If you want to change default key bindings, use the following keymaps
 (@pxref{Init Rebinding,,, emacs, The GNU Emacs Manual}):
 
 @table @code
+@item guix-root-map
+Parent keymap with general keys for all guix modes.
+
 @item guix-list-mode-map
 Parent keymap with general keys for ``list'' buffers.
 

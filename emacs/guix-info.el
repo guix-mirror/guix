@@ -395,7 +395,7 @@ See `insert-text-button' for the meaning of PROPERTIES."
 (defvar guix-info-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent
-     map (make-composed-keymap button-buffer-map
+     map (make-composed-keymap (list guix-root-map button-buffer-map)
                                special-mode-map))
     map)
   "Parent keymap for info buffers.")
