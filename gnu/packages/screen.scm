@@ -24,7 +24,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages texinfo))
 
 (define-public screen
   (package
@@ -37,6 +38,8 @@
              (sha256
               (base32 "0ilccnwszaxr9wbrx0swh4fisha2rj2jiq76fwqikmv0rjdyhr2i"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("makeinfo" ,texinfo)))
     (inputs
      `(("ncurses", ncurses)
        ("perl" ,perl)))
