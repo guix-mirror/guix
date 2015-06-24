@@ -1032,6 +1032,35 @@ several alignment strategies enable effective alignment of RNA-seq reads, in
 particular, reads spanning multiple exons.")
     (license license:gpl3+)))
 
+(define-public hmmer
+  (package
+    (name "hmmer")
+    (version "3.1b2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://selab.janelia.org/software/hmmer"
+                    (version-prefix version 1) "/"
+                    version "/hmmer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl", perl)))
+    (home-page "http://hmmer.janelia.org")
+    (synopsis "Biosequence analysis using profile hidden Markov models")
+    (description
+     "HMMER is used for searching sequence databases for homologs of protein
+sequences, and for making protein sequence alignments.  It implements methods
+using probabilistic models called profile hidden Markov models (profile
+HMMs).")
+    (license (list license:gpl3+
+                   ;; The bundled library 'easel' is distributed
+                   ;; under The Janelia Farm Software License.
+                   (license:non-copyleft
+                    "file://easel/LICENSE"
+                    "See easel/LICENSE in the distribution.")))))
+
 (define-public htseq
   (package
     (name "htseq")
