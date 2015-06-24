@@ -330,8 +330,8 @@ and every application benefits from this.")
                      "0pdbyqz6k0bm182cz81ss7yckmpms5qhrrw0wcr4a1srzcjyzf5f"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
-             ("python" ,python-2)           ; uses the Python 2 'print' syntax
-             ("gpg" ,gnupg)))
+             ("python" ,python-2)          ;uses the Python 2 'print' syntax
+             ("gpg" ,gnupg-2.0)))          ;2.1 fails to talk to gpg-agent 2.0
    (arguments
     `(#:tests? #f
       #:phases
