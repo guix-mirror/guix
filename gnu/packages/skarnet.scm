@@ -47,3 +47,46 @@ from portability issues, providing a unified systems API on all platforms,
 including primitive data types, cryptography, and POSIX concepts like sockets
 and file system operations.  It is used by all skarnet.org software.")
     (license isc)))
+
+(define-public execline
+  (package
+    (name "execline")
+    (version "2.1.2.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://skarnet.org/software/execline/execline-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "01pckac5zijf6icrhwicbmq92yq68gfkf1yl03rr2v4q3cn8r85f"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'post-install
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (wrap-program (string-append bin "/execlineb")
+                        `("PATH" ":" prefix (,bin)))))))
+       #:tests? #f)) ; No tests exist.
+    (home-page "http://skarnet.org/software/execline/")
+    (license isc)
+    (synopsis "Non-interactive shell-like language with minimal overhead")
+    (description
+     "Execline is a (non-interactive) scripting language, separated into a
+parser (execlineb) and a set of commands meant to execute one another in a
+chain-execution fashion, storing the whole script in the argument array.
+It features conditional loops, getopt-style option handling, file name
+globbing, redirection and other shell concepts, expressed as discrete commands
+rather than in special syntax, minimizing runtime footprint and
+complexity.")))
