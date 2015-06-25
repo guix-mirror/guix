@@ -30,7 +30,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module ((rnrs io ports) #:select (put-bytevector))
   #:use-module ((guix build utils) #:select (dump-port))
-  #:use-module ((guix build syscalls) #:select (errno))
+  #:use-module ((guix build syscalls) #:select (errno mkdtemp!))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -77,6 +77,7 @@
             file-extension
             file-sans-extension
             call-with-temporary-output-file
+            call-with-temporary-directory
             with-atomic-file-output
             fold2
             fold-tree
@@ -651,6 +652,19 @@ call."
       (lambda ()
         (false-if-exception (close out))
         (false-if-exception (delete-file template))))))
+
+(define (call-with-temporary-directory proc)
+  "Call PROC with a name of a temporary directory; close the directory and
+delete it when leaving the dynamic extent of this call."
+  (let* ((directory (or (getenv "TMPDIR") "/tmp"))
+         (template  (string-append directory "/guix-directory.XXXXXX"))
+         (tmp-dir   (mkdtemp! template)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (proc tmp-dir))
+      (lambda ()
+        (false-if-exception (rmdir tmp-dir))))))
 
 (define (with-atomic-file-output file proc)
   "Call PROC with an output port for the file that is going to replace FILE.
