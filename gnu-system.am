@@ -272,6 +272,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/search.scm			\
   gnu/packages/serveez.scm			\
   gnu/packages/shishi.scm			\
+  gnu/packages/skarnet.scm			\
   gnu/packages/skribilo.scm			\
   gnu/packages/slang.scm			\
   gnu/packages/slim.scm				\
