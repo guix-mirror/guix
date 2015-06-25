@@ -171,7 +171,7 @@
        ("double-conversion" ,double-conversion)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
-       ("fortran" ,gfortran-4.8)
+       ("fortran" ,gfortran)
        ("pcre" ,pcre)
        ("utf8proc" ,utf8proc)
        ("git" ,git)

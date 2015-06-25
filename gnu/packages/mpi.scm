@@ -97,7 +97,7 @@ bind processes, and much more.")
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc)
-       ("gfortran" ,gfortran-4.8)
+       ("gfortran" ,gfortran)
        ("valgrind" ,valgrind)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

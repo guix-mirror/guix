@@ -265,7 +265,7 @@ be output in text, PostScript, PDF or HTML.")
     (home-page "https://github.com/opencollab/arpack-ng")
     (inputs
      `(("lapack" ,lapack)
-       ("fortran" ,gfortran-4.8)))
+       ("fortran" ,gfortran)))
     (synopsis "Fortran subroutines for solving eigenvalue problems")
     (description
      "ARPACK-NG is a collection of Fortran77 subroutines designed to solve
@@ -287,7 +287,7 @@ large scale eigenvalue problems.")
         "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
-    (inputs `(("fortran" ,gfortran-4.8)
+    (inputs `(("fortran" ,gfortran)
               ("python" ,python-2)))
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")
@@ -400,7 +400,7 @@ extremely large and complex data collections.")
        ("glu" ,glu)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran-4.8)
+     `(("gfortran" ,gfortran)
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ;; The following inputs are not actually used in the build process.
@@ -445,7 +445,7 @@ script files.")
     (build-system cmake-build-system)
     (propagated-inputs
      `(("fltk" ,fltk)
-       ("gfortran" ,gfortran-4.8)
+       ("gfortran" ,gfortran)
        ("gmp" ,gmp)
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)
@@ -487,7 +487,7 @@ ASCII text files using Gmsh's own scripting language.")
      `(("python" ,python-2)
        ("perl" ,perl)))
     (inputs
-     `(("gfortran" ,gfortran-4.8)
+     `(("gfortran" ,gfortran)
        ("lapack" ,lapack)
        ("superlu" ,superlu)
        ;; leaving out hdf5 and fftw, as petsc expects them to be built with mpi
@@ -615,7 +615,7 @@ scientific applications modeled by partial differential equations.")
      `(("tcsh" ,tcsh)))
     (inputs
      `(("lapack" ,lapack)
-       ("gfortran" ,gfortran-4.8)))
+       ("gfortran" ,gfortran)))
     (arguments
      `(#:parallel-build? #f
        #:tests? #f                      ;tests are run as part of `make all`
@@ -697,7 +697,7 @@ also provides threshold-based ILU factorization preconditioners.")
     (native-inputs
      `(("tcsh" ,tcsh)))
     (inputs
-     `(("gfortran" ,gfortran-4.8)))
+     `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("openmpi" ,openmpi)             ;headers include MPI heades
        ("lapack" ,lapack)               ;required to link with output library
@@ -1103,7 +1103,7 @@ constant parts of it.")
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
-     `(("fortran" ,gfortran-4.8)))
+     `(("fortran" ,gfortran)))
     (native-inputs
      `(("cunit" ,cunit)
        ("perl" ,perl)))
@@ -1171,7 +1171,7 @@ environments.")
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
-     `(("fortran" ,gfortran-4.8)))
+     `(("fortran" ,gfortran)))
     (home-page "https://github.com/JuliaLang/openspecfun")
     (synopsis "Collection of special mathematical functions")
     (description
@@ -1254,7 +1254,7 @@ packages.")
                 "0bqh4bdnjdyww4mcpg6kn0x7338mfqbdgysn97dzrwwb26di7ars"))))
     (build-system gnu-build-system)
     (home-page "http://math-atlas.sourceforge.net/")
-    (inputs `(("gfortran" ,gfortran-4.8)
+    (inputs `(("gfortran" ,gfortran)
               ("lapack-tar" ,(package-source lapack))))
     (outputs '("out" "doc"))
     ;; For the moment we drop support for MIPS at it fails to compile. See

@@ -133,7 +133,7 @@ classification.")
        ("libxml2" ,libxml2)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran-4.8)))
+     `(("gfortran" ,gfortran)))
     (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description

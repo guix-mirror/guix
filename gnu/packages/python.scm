@@ -2275,7 +2275,7 @@ writing C extensions for Python as easy as Python itself.")
        ("openblas" ,openblas)
        ("lapack" ,lapack)))
     (native-inputs
-     `(("gfortran" ,gfortran-4.8)))
+     `(("gfortran" ,gfortran)))
     (arguments
      `(#:phases
        (alist-cons-before
@@ -2620,7 +2620,7 @@ toolkits.")
        ("lapack" ,lapack)
        ("openblas" ,openblas)))
     (native-inputs
-     `(("gfortran" ,gfortran-4.8)
+     `(("gfortran" ,gfortran)
        ("texlive" ,texlive)
        ("perl" ,perl)))
     (outputs '("out" "doc"))
