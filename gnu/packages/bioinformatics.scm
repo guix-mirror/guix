@@ -1793,6 +1793,59 @@ Databases are stored in a portable image within the file system, and can be
 accessed/downloaded on demand across HTTP.")
     (license license:public-domain)))
 
+(define-public plink
+  (package
+    (name "plink")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://pngu.mgh.harvard.edu/~purcell/plink/dist/plink-"
+             version "-src.zip"))
+       (sha256
+        (base32 "0as8gxm4pjyc8dxmm1sl873rrd7wn5qs0l29nqfnl31x8i467xaa"))
+       (patches (list (search-patch "plink-1.07-unclobber-i.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:make-flags (list (string-append "LIB_LAPACK="
+                                         (assoc-ref %build-inputs "lapack")
+                                         "/lib/liblapack.so")
+                          "WITH_LAPACK=1"
+                          "FORCE_DYNAMIC=1"
+                          ;; disable phoning home
+                          "WITH_WEBCHECK=")
+       #:phases
+       (modify-phases %standard-phases
+         ;; no "configure" script
+         (delete 'configure)
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((bin (string-append (assoc-ref outputs "out")
+                                              "/bin/")))
+                      (mkdir-p bin)
+                      (copy-file "plink" (string-append bin "plink"))
+                      #t))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("lapack" ,lapack)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://pngu.mgh.harvard.edu/~purcell/plink/")
+    (synopsis "Whole genome association analysis toolset")
+    (description
+     "PLINK is a whole genome association analysis toolset, designed to
+perform a range of basic, large-scale analyses in a computationally efficient
+manner.  The focus of PLINK is purely on analysis of genotype/phenotype data,
+so there is no support for steps prior to this (e.g. study design and
+planning, generating genotype or CNV calls from raw data).  Through
+integration with gPLINK and Haploview, there is some support for the
+subsequent visualization, annotation and storage of results.")
+    ;; Code is released under GPLv2, except for fisher.h, which is under
+    ;; LGPLv2.1+
+    (license (list license:gpl2 license:lgpl2.1+))))
+
 (define-public sra-tools
   (package
     (name "sra-tools")

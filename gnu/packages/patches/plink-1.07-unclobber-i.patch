@@ -1,0 +1,69 @@
+GCC rightfully complains about redefined variables, as iterator declarations
+appear inside loops with a loop variable of the same name.
+
+This patch has been sent upstream.
+
+--- a/sets.cpp	2015-06-25 11:22:08.252821681 +0200
++++ b/sets.cpp	2015-06-25 11:22:23.239187985 +0200
+@@ -768,11 +768,11 @@
+       //////////////////////////////////////////////
+       // Reset original missing status
+ 
+-      vector<Individual*>::iterator i = PP->sample.begin();
+-      while ( i != PP->sample.end() )
++      vector<Individual*>::iterator it = PP->sample.begin();
++      while ( it != PP->sample.end() )
+ 	{
+-	  (*i)->missing = (*i)->flag;
+-	  ++i;
++	  (*it)->missing = (*it)->flag;
++	  ++it;
+ 	}
+ 
+       ////////////////////////////////////////////////
+
+--- a/elf.cpp	2009-10-10 18:00:21.000000000 +0200
++++ b/elf.cpp	2015-06-25 11:34:06.136835756 +0200
+@@ -1175,10 +1175,10 @@
+ 	  << setw(8) << gcnt << " "
+ 	  << setw(8) << (double)cnt / (double)gcnt << "\n";
+ 
+-      map<int,int>::iterator i = chr_cnt.begin();
+-      while ( i != chr_cnt.end() )
++      map<int,int>::iterator it = chr_cnt.begin();
++      while ( it != chr_cnt.end() )
+ 	{
+-	  int c = i->first;
++	  int c = it->first;
+ 	  int x = chr_cnt.find( c )->second;
+ 	  int y = chr_gcnt.find( c )->second;
+ 	  
+@@ -1189,7 +1189,7 @@
+ 	      << setw(8) << y << " "
+ 	      << setw(8) << (double)x / (double)y << "\n";
+ 	  
+-	  ++i;
++	  ++it;
+ 	}
+       
+     }
+
+--- plink-1.07-src/idhelp.cpp	2009-10-10 18:00:22.000000000 +0200
++++ plink-1.07-src/idhelp.cpp.patched	2015-06-25 11:37:39.387204086 +0200
+@@ -772,12 +772,12 @@
+       for (int j = 0 ; j < jointField.size(); j++ )
+ 	{
+ 	  set<IDField*> & jf = jointField[j];
+-	  set<IDField*>::iterator j = jf.begin();
++	  set<IDField*>::iterator jit = jf.begin();
+ 	  PP->printLOG(" { ");
+-	  while ( j != jf.end() )
++	  while ( jit != jf.end() )
+ 	    {
+-	      PP->printLOG( (*j)->name + " " );
+-	      ++j;
++	      PP->printLOG( (*jit)->name + " " );
++	      ++jit;
+ 	    }
+ 	  PP->printLOG(" }");
+ 	}
