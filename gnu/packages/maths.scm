@@ -927,6 +927,36 @@ bio-chemistry.")
             (lambda _ (zero? (system* "make" "ptcheck"))))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
 
+(define-public metis
+  (package
+    (name "metis")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/"
+                           "metis-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cjxgh41r8k6j029yxs8msp3z6lcnpm16g5pvckk35kc7zhfpykn"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("blas" ,openblas)))
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:configure-flags `("-DSHARED=ON"
+                           ,(string-append "-DGKLIB_PATH=" (getcwd)
+                                           "/metis-" ,version "/GKlib"))))
+    (home-page "http://glaros.dtc.umn.edu/gkhome/metis/metis/overview")
+    (synopsis "Graph partitioning and fill-reducing matrix ordering library")
+    (description
+     "METIS is a set of serial programs for partitioning graphs, partitioning
+finite element meshes, and producing fill-reducing orderings for sparse
+matrices.  The algorithms implemented in METIS are based on the multilevel
+recursive-bisection, multilevel k-way, and multi-constraint partitioning
+schemes.")
+    (license license:asl2.0)))          ;As of version 5.0.3
+
 (define-public p4est
   (package
     (name "p4est")
