@@ -345,6 +345,8 @@ Go.  It also includes runtime support libraries for these languages.")
                             '("gcc-arm-link-spec-fix.patch"
                               "gcc-5.0-libvtv-runpath.patch")))))))
 
+(define-public gcc gcc-4.9)
+
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
 using compilers other than GCC."
@@ -396,6 +398,9 @@ using compilers other than GCC."
 
 (define-public gfortran-4.9
   (custom-gcc gcc-4.9 "gfortran" '("fortran")))
+
+(define-public gfortran
+  (custom-gcc gcc "gfortran" '("fortran")))
 
 (define-public gccgo-4.8
   (custom-gcc gcc-4.8 "gccgo" '("go")
