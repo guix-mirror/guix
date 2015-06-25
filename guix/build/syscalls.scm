@@ -45,6 +45,7 @@
             swapon
             swapoff
             processes
+            mkdtemp!
 
             IFF_UP
             IFF_BROADCAST
@@ -264,6 +265,20 @@ user-land process."
                              pid)))
                     (scandir "/proc"))
         <))
+
+(define mkdtemp!
+  (let* ((ptr  (dynamic-func "mkdtemp" (dynamic-link)))
+         (proc (pointer->procedure '* ptr '(*))))
+    (lambda (tmpl)
+      "Create a new unique directory in the file system using the template
+string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
+      (let ((result (proc (string->pointer tmpl)))
+            (err    (errno)))
+        (when (null-pointer? result)
+          (throw 'system-error "mkdtemp!" "~S: ~A"
+                 (list tmpl (strerror err))
+                 (list err)))
+        (pointer->string result)))))
 
 
 ;;;

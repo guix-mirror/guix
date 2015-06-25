@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,14 @@
       #f)
     (lambda args
       (memv (system-error-errno args) (list EPERM EINVAL ENOENT)))))
+
+(test-assert "mkdtemp!"
+  (let* ((tmp (or (getenv "TMPDIR") "/tmp"))
+         (dir (mkdtemp! (string-append tmp "/guix-test-XXXXXX"))))
+    (and (file-exists? dir)
+         (begin
+           (rmdir dir)
+           #t))))
 
 (test-assert "all-network-interfaces"
   (match (all-network-interfaces)
