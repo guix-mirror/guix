@@ -34,6 +34,10 @@
             MS_BIND
             MS_MOVE
             MS_STRICTATIME
+            MNT_FORCE
+            MNT_DETACH
+            MNT_EXPIRE
+            UMOUNT_NOFOLLOW
             restart-on-EINTR
             mount
             umount
@@ -149,6 +153,11 @@
 (define MS_BIND            4096)
 (define MS_MOVE            8192)
 (define MS_STRICTATIME 16777216)
+
+(define MNT_FORCE       1)
+(define MNT_DETACH      2)
+(define MNT_EXPIRE      4)
+(define UMOUNT_NOFOLLOW 8)
 
 (define mount
   (let* ((ptr  (dynamic-func "mount" (dynamic-link)))
