@@ -3953,3 +3953,30 @@ PEP 8.")
     (description
       "Pyflakes statically checks Python source code for common errors.")
     (license license:expat)))
+
+(define-public python-mccabe
+  (package
+    (name "python-mccabe")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/m/mccabe/mccabe-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "05ix3vdv5hjk4irl97n2n3c4g1vqvz7dbmkzs13f3bx97bxsczjz"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/flintwork/mccabe")
+    (synopsis "McCabe checker, plugin for flake8")
+    (description
+      "This package provides a Flake8 plug-in to compute the McCabe cyclomatic
+complexity of Python source code.")
+    (license expat)))
+
+(define-public python2-mccabe
+  (package-with-python2 python-mccabe))
