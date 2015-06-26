@@ -129,8 +129,15 @@ printing, and psresize, for adjusting page sizes.")
             (sha256
              (base32
               "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
-            (patches (list (search-patch "ghostscript-runpath.patch")))))
+            (patches (list (search-patch "ghostscript-runpath.patch")))
+            (modules '((guix build utils)))
+            (snippet
+             ;; Honor --docdir.
+             '(substitute* "Makefile.in"
+                (("^docdir=.*$") "docdir = @docdir@\n")
+                (("^exdir=.*$") "exdir = $(docdir)/examples\n")))))
    (build-system gnu-build-system)
+   (outputs '("out" "doc"))                  ;16 MiB of HTML/PS doc + examples
    (inputs `(("freetype" ,freetype)
              ("lcms" ,lcms)
              ("libjpeg-8" ,libjpeg-8)
@@ -152,6 +159,14 @@ printing, and psresize, for adjusting page sizes.")
                        (("/bin/sh") (which "bash")))
                      (substitute* "base/unixhead.mak"
                        (("/bin/sh") (which "bash")))))
+        (add-after 'configure 'remove-doc-reference
+                   (lambda _
+                     ;; Don't retain a reference to the 'doc' output in 'gs'.
+                     ;; The only use of this definition is in the output of
+                     ;; 'gs --help', so this change is fine.
+                     (substitute* "base/gscdef.c"
+                       (("GS_DOCDIR")
+                        "\"~/.guix-profile/share/doc/ghostscript\""))))
         (add-after 'build 'build-so
                    (lambda _
                      (zero? (system* "make" "so"))))
