@@ -3980,3 +3980,73 @@ complexity of Python source code.")
 
 (define-public python2-mccabe
   (package-with-python2 python-mccabe))
+
+;; Flake8 2.4.1 requires an older version of pep8.
+;; This should be removed ASAP.
+(define-public python-pep8-1.5.7
+  (package (inherit python-pep8)
+    (version "1.5.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/p/pep8/pep8-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "12b9bbdbwnspxgak14xg58c130x2n0blxzlms5jn2dszn8qj3d0m"))))))
+
+(define-public python2-pep8-1.5.7
+  (package-with-python2 python-pep8-1.5.7))
+
+;; Flake8 2.4.1 requires an older version of pyflakes.
+;; This should be removed ASAP.
+(define-public python-pyflakes-0.8.1
+  (package (inherit python-pyflakes)
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))))
+
+(define-public python2-pyflakes-0.8.1
+  (package-with-python2 python-pyflakes))
+
+(define-public python-flake8
+  (package
+    (name "python-flake8")
+    (version "2.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/f/flake8/flake8-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0dvmrpv7x98xkzffjz1z7lqr90sp5zdz16bdwckfd1cckpjvnzif"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ("python-pep8" ,python-pep8-1.5.7)
+        ("python-pyflakes" ,python-pyflakes-0.8.1)
+        ("python-mccabe" ,python-mccabe)
+        ("python-mock" ,python-mock)
+        ("python-nose" ,python-nose)))
+    (home-page "https://gitlab.com/pycqa/flake8")
+    (synopsis
+      "The modular source code checker: pep8, pyflakes and co")
+    (description
+      "Flake8 is a wrapper around PyFlakes, pep8 and python-mccabe.")
+    (license license:expat)))
+
+(define-public python2-flake8
+  (package-with-python2 python-flake8))
