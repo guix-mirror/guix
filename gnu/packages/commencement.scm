@@ -167,7 +167,7 @@
 
 (define gcc-boot0
   (package-with-bootstrap-guile
-   (package (inherit gcc-4.9)
+   (package (inherit gcc)
      (name "gcc-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -177,7 +177,7 @@
                    (ice-9 regex)
                    (srfi srfi-1)
                    (srfi srfi-26))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.9)
+        ,@(substitute-keyword-arguments (package-arguments gcc)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -240,7 +240,7 @@
                     (with-directory-excursion
                         (string-append out "/lib/gcc/"
                                        ,(boot-triplet)
-                                       "/" ,(package-version gcc-4.9))
+                                       "/" ,(package-version gcc))
                       (symlink "libgcc.a" "libgcc_eh.a"))))
                 ,phases))))))
 
@@ -256,7 +256,7 @@
 
      ;; No need for Texinfo at this stage.
      (native-inputs (alist-delete "texinfo"
-                                  (package-native-inputs gcc-4.9))))))
+                                  (package-native-inputs gcc))))))
 
 (define perl-boot0
   (package-with-bootstrap-guile
@@ -352,7 +352,7 @@
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
 that makes it available under the native tool names."
-  (package (inherit gcc-4.9)
+  (package (inherit gcc)
     (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
@@ -520,7 +520,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; (remember that GCC-BOOT0 cannot build libstdc++.)
   ;; TODO: Write in terms of 'make-libstdc++'.
   (package-with-bootstrap-guile
-   (package (inherit gcc-4.9)
+   (package (inherit gcc)
      (name "libstdc++")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -539,7 +539,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                             (assoc-ref %outputs "out")
                                             "/include"
                                             ;; "/include/c++/"
-                                            ;; ,(package-version gcc-4.9)
+                                            ;; ,(package-version gcc)
                                             ))))
      (outputs '("out"))
      (inputs %boot2-inputs)
@@ -573,7 +573,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
        ,@(substitute-keyword-arguments (package-arguments gcc-boot0)
            ((#:configure-flags boot-flags)
-            (let loop ((args (package-arguments gcc-4.9)))
+            (let loop ((args (package-arguments gcc)))
               (match args
                 ((#:configure-flags normal-flags _ ...)
                  normal-flags)

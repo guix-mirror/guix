@@ -36,6 +36,11 @@
             cross-libc
             cross-gcc))
 
+(define %xgcc
+  ;; GCC package used as the basis for cross-compilation.  It doesn't have to
+  ;; be 'gcc' and can be a specific variant such as 'gcc-4.8'.
+  gcc)
+
 (define (cross p target)
   (package (inherit p)
     (name (string-append (package-name p) "-cross-" target))
@@ -90,7 +95,7 @@ may be either a libc package or #f.)"
     ;; <http://lists.fedoraproject.org/pipermail/arm/2010-August/000663.html>
     ;; for instance.
     (let ((args `(#:strip-binaries? #f
-                  ,@(package-arguments gcc-4.9))))
+                  ,@(package-arguments %xgcc))))
      (substitute-keyword-arguments args
        ((#:configure-flags flags)
         `(append (list ,(string-append "--target=" target)
@@ -199,14 +204,14 @@ may be either a libc package or #f.)"
   "Return a cross-compiler for TARGET, where TARGET is a GNU triplet.  Use
 XBINUTILS as the associated cross-Binutils.  If LIBC is false, then build a
 GCC that does not target a libc; otherwise, target that libc."
-  (package (inherit gcc-4.9)
+  (package (inherit %xgcc)
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
                          target))
-    (source (origin (inherit (package-source gcc-4.9))
+    (source (origin (inherit (package-source %xgcc))
               (patches
                (append
-                (origin-patches (package-source gcc-4.9))
+                (origin-patches (package-source %xgcc))
                 (cons (search-patch "gcc-cross-environment-variables.patch")
                       (cross-gcc-patches target))))))
 
@@ -236,7 +241,7 @@ GCC that does not target a libc; otherwise, target that libc."
        ("libc-native" ,@(assoc-ref %final-inputs "libc"))
 
        ;; Remaining inputs.
-       ,@(let ((inputs (append (package-inputs gcc-4.9)
+       ,@(let ((inputs (append (package-inputs %xgcc)
                                (alist-delete "libc" %final-inputs))))
            (if libc
                `(("libc" ,libc)

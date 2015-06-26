@@ -96,7 +96,7 @@ tools as well as libraries with equivalent functionality.")
     (native-inputs (package-native-inputs llvm))
     (inputs
      `(("libxml2" ,libxml2)
-       ("gcc-lib" ,gcc-4.9 "lib")
+       ("gcc-lib" ,gcc "lib")
        ,@(package-inputs llvm)))
     (propagated-inputs
      `(("llvm" ,llvm)))
