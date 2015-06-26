@@ -46,6 +46,7 @@
             swapoff
             processes
             mkdtemp!
+            pivot-root
 
             CLONE_NEWNS
             CLONE_NEWUTS
@@ -327,6 +328,20 @@ there is no such limitation."
         (unless (zero? ret)
           (throw 'system-error "setns" "~d ~d: ~A"
                  (list fdes nstype (strerror err))
+                 (list err)))))))
+
+(define pivot-root
+  (let* ((ptr  (dynamic-func "pivot_root" (dynamic-link)))
+         (proc (pointer->procedure int ptr (list '* '*))))
+    (lambda (new-root put-old)
+      "Change the root file system to NEW-ROOT and move the current root file
+system to PUT-OLD."
+      (let ((ret (proc (string->pointer new-root)
+                       (string->pointer put-old)))
+            (err (errno)))
+        (unless (zero? ret)
+          (throw 'system-error "pivot_root" "~S ~S: ~A"
+                 (list new-root put-old (strerror err))
                  (list err)))))))
 
 

@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-syscalls)
+  #:use-module (guix utils)
   #:use-module (guix build syscalls)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -116,6 +117,34 @@
              (waitpid clone-pid)
              (waitpid fork-pid)
              result))))))))
+
+(test-assert "pivot-root"
+  (match (pipe)
+    ((in . out)
+     (match (clone (logior CLONE_NEWUSER CLONE_NEWNS SIGCHLD))
+       (0
+        (close in)
+        (call-with-temporary-directory
+         (lambda (root)
+           (let ((put-old (string-append root "/real-root")))
+             (mount "none" root "tmpfs")
+             (mkdir put-old)
+             (call-with-output-file (string-append root "/test")
+               (lambda (port)
+                 (display "testing\n" port)))
+             (pivot-root root put-old)
+             ;; The test file should now be located inside the root directory.
+             (write (file-exists? "/test") out)
+             (close out))))
+        (primitive-exit 0))
+       (pid
+        (close out)
+        (let ((result (read in)))
+          (close in)
+          (and (zero? (match (waitpid pid)
+                        ((_ . status)
+                         (status:exit-val status))))
+               (eq? #t result))))))))
 
 (test-assert "all-network-interfaces"
   (match (all-network-interfaces)
