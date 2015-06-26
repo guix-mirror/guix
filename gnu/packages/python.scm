@@ -3929,3 +3929,27 @@ PEP 8.")
 
 (define-public python2-pep8
   (package-with-python2 python-pep8))
+
+(define-public python-pyflakes
+  (package
+    (name "python-pyflakes")
+    (version "0.9.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0pvawddspdq0y22dbraq5gld9qr6rwa7zhmpfhl2b7v9rqiiqs82"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page
+      "https://github.com/pyflakes/pyflakes")
+    (synopsis "Passive checker of Python programs")
+    (description
+      "Pyflakes statically checks Python source code for common errors.")
+    (license license:expat)))
