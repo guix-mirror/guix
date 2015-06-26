@@ -3902,3 +3902,30 @@ applications.")
 
 (define-public python2-pyzmq
   (package-with-python2 python-pyzmq))
+
+(define-public python-pep8
+  (package
+    (name "python-pep8")
+    (version "1.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/p/pep8/pep8-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1zybkcdw1sx84dvkfss96nhykqg9bc0cdpwpl4k9wlxm61bf7dxq"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pep8.readthedocs.org/")
+    (synopsis "Python style guide checker")
+    (description
+     "This tools checks Python code against some of the style conventions in
+PEP 8.")
+    (license license:expat)))
+
+(define-public python2-pep8
+  (package-with-python2 python-pep8))
