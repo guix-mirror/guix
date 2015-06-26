@@ -133,7 +133,19 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
          "-DINSTALL_SHAREDIR=share/mysql"
          ;; Get rid of test data.
          "-DINSTALL_MYSQLTESTDIR="
-         "-DINSTALL_SQLBENCHDIR=")))
+         "-DINSTALL_SQLBENCHDIR=")
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'strip-extra-references
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Strip references to GCC and other build-time
+                     ;; dependencies.
+                     (let ((out (assoc-ref outputs "out")))
+                       (for-each remove-store-references
+                                 (list (string-append out "/bin/mysqlbug")
+                                       (string-append
+                                        out "/share/mysql/docs/INFO_BIN")))
+                       #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
