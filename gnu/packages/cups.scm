@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,10 +55,12 @@
                    "CUPS_DATADIR = $(PREFIX)/share/cups")
                   (("pkgcupsserverrootdir = \\$\\(CUPS_SERVERROOT\\)")
                    "pkgcupsserverrootdir = $(PREFIX)")
+                  ;; Choose standard directories notably so that binaries are
+                  ;; stripped.
                   (("pkgbackenddir = \\$\\(CUPS_SERVERBIN\\)/backend")
-                   "pkgbackenddir = $(PREFIX)/backend")
+                   "pkgbackenddir = $(PREFIX)/lib/cups/backend")
                   (("pkgfilterdir = \\$\\(CUPS_SERVERBIN\\)/filter")
-                   "pkgfilterdir = $(PREFIX)/filter")))))
+                   "pkgfilterdir = $(PREFIX)/lib/cups/filter")))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
@@ -196,7 +199,7 @@ device-specific programs to convert and print many types of files.")
                 (string-append
                  "for dir in "
                  (assoc-ref %outputs "out") "/lib/cups/filter "
-                 filters "/filter"))
+                 filters "/lib/cups/filter"))
 
                ;; check for charsets in cups-filters output
                (("/usr/share/cups/charsets")
@@ -264,15 +267,16 @@ device-specific programs to convert and print many types of files.")
                (lambda (f)
                  (symlink f
                           (string-append out "/lib/cups/filter" (basename f))))
-               (find-files (string-append cups-filters "/filter") ".*"))
+               (find-files (string-append cups-filters "/lib/cups/filter")))
 
               ;; backends
               (for-each
                (lambda (f)
                  (symlink (string-append cups-filters f)
-                          (string-append out "/lib/cups" f)))
-               '("/backend/parallel"
-                 "/backend/serial"))
+                          (string-append out "/lib/cups/backend/"
+                                         (basename f))))
+               '("/lib/cups/backend/parallel"
+                 "/lib/cups/backend/serial"))
 
               ;; banners
               (let ((banners "/share/cups/banners"))
