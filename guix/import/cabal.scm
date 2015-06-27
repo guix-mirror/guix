@@ -317,29 +317,38 @@ or less-than the indentation of the current context."
 (define (is-relation? c)
   (and (char? c) (any (cut char=? c <>) '(#\< #\> #\=))))
 
-(define (make-rx-matcher pat)
-  "Compile PAT into a regular expression and creates a function matching a
-string against the created regexp."
-  (let ((rx (make-regexp pat))) (cut regexp-exec rx <>)))
+(define* (make-rx-matcher pat #:optional (flag #f))
+  "Compile PAT into a regular expression with FLAG and creates a function
+matching a string against the created regexp."
+  (let ((rx (if flag
+                (make-regexp pat flag)
+                (make-regexp pat))))
+    (cut regexp-exec rx <>)))
 
-(define is-property (make-rx-matcher "([a-zA-Z0-9-]+):[ \t]*(\\w?.*)$"))
+(define is-property (make-rx-matcher "([a-z0-9-]+):[ \t]*(\\w?.*)$"
+                                     regexp/icase))
 
-(define is-flag (make-rx-matcher "^[Ff]lag +([a-zA-Z0-9_-]+)"))
+(define is-flag (make-rx-matcher "^flag +([a-z0-9_-]+)"
+                                 regexp/icase))
 
 (define is-src-repo
-  (make-rx-matcher "^[Ss]ource-[Rr]epository +([a-zA-Z0-9_-]+)"))
+  (make-rx-matcher "^source-repository +([a-z0-9_-]+)"
+                   regexp/icase))
 
-(define is-exec (make-rx-matcher "^[Ee]xecutable +([a-zA-Z0-9_-]+)"))
+(define is-exec (make-rx-matcher "^executable +([a-z0-9_-]+)"
+                                 regexp/icase))
 
-(define is-test-suite (make-rx-matcher "^[Tt]est-[Ss]uite +([a-zA-Z0-9_-]+)"))
+(define is-test-suite (make-rx-matcher "^test-suite +([a-z0-9_-]+)"
+                                       regexp/icase))
 
-(define is-benchmark (make-rx-matcher "^[Bb]enchmark +([a-zA-Z0-9_-]+)"))
+(define is-benchmark (make-rx-matcher "^benchmark +([a-z0-9_-]+)"
+                                      regexp/icase))
 
-(define is-lib (make-rx-matcher "^[Ll]ibrary *"))
+(define is-lib (make-rx-matcher "^library *" regexp/icase))
 
-(define is-else (make-rx-matcher "^else"))
+(define is-else (make-rx-matcher "^else" regexp/icase))
 
-(define (is-if s) (string=? s "if"))
+(define (is-if s) (string-ci=? s "if"))
 
 (define (is-and s) (string=? s "&&"))
 
