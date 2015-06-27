@@ -264,7 +264,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "./configure"
                       "-verbose"
                       "-prefix" out
-                      "-docdir" (string-append doc "/share/doc/qt-" ,version)
+                      ;; Note: Don't pass '-docdir' since 'qmake' and
+                      ;; libQtCore would record its value, thereby defeating
+                      ;; the whole point of having a separate output.
                       "-datadir" (string-append out "/share/qt-" ,version
                                                 "/data")
                       "-importdir" (string-append out "/lib/qt-4"
@@ -296,7 +298,23 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-no-sse4.1"
                       "-no-sse4.2"
                       "-no-avx"
-                      "-no-neon"))))))))))
+                      "-no-neon")))))
+         (add-after
+          'install 'move-doc
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Because of qt4-documentation-path.patch, documentation ends up
+            ;; being installed in OUT.  Move it to the right place.
+            (let* ((out    (assoc-ref outputs "out"))
+                   (doc    (assoc-ref outputs "doc"))
+                   (olddoc (string-append out "/doc"))
+                   (docdir (string-append doc "/share/doc/qt-" ,version)))
+              (mkdir-p (dirname docdir))
+
+              ;; Note: We can't use 'rename-file' here because OUT and DOC are
+              ;; different "devices" due to bind-mounts.
+              (copy-recursively olddoc docdir)
+              (delete-file-recursively olddoc)
+              #t))))))))
 
 (define-public python-sip
   (package
