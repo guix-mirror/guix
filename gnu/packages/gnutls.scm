@@ -135,8 +135,24 @@ living in the same process.")
 
              ;; FIXME: Temporarily disable p11-kit support since it is not
              ;; working on mips64el.
-             "--without-p11-kit")))
-    (outputs '("out" "debug"))
+             "--without-p11-kit")
+
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'move-doc
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Copy the 4.1 MiB of section 3 man pages to "doc".
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (doc    (assoc-ref outputs "doc"))
+                            (mandir (string-append doc "/share/man"))
+                            (oldman (string-append out "/share/man/man3")))
+                       (mkdir-p mandir)
+                       (copy-recursively oldman mandir)
+                       (delete-file-recursively oldman)
+                       #t))))))
+    (outputs '("out"                              ;4.4 MiB
+               "debug"
+               "doc"))                            ;4.1 MiB of man pages
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
