@@ -52,7 +52,16 @@
             mapped-device-kind
             mapped-device-kind?
             mapped-device-kind-open
-            mapped-device-kind-close))
+            mapped-device-kind-close
+
+            <file-system-mapping>
+            file-system-mapping
+            file-system-mapping?
+            file-system-mapping-source
+            file-system-mapping-target
+            file-system-mapping-writable?
+
+            %store-mapping))
 
 ;;; Commentary:
 ;;;
@@ -198,5 +207,26 @@ file system."
   (open      mapped-device-kind-open)             ;source target -> gexp
   (close     mapped-device-kind-close             ;source target -> gexp
              (default (const #~(const #f)))))
+
+
+;;;
+;;; Shared file systems, for VMs/containers.
+;;;
+
+;; Mapping of host file system SOURCE to mount point TARGET in the guest.
+(define-record-type* <file-system-mapping> file-system-mapping
+  make-file-system-mapping
+  file-system-mapping?
+  (source    file-system-mapping-source)          ;string
+  (target    file-system-mapping-target)          ;string
+  (writable? file-system-mapping-writable?        ;Boolean
+             (default #f)))
+
+(define %store-mapping
+  ;; Mapping of the host's store into the guest.
+  (file-system-mapping
+   (source (%store-prefix))
+   (target (%store-prefix))
+   (writable? #f)))
 
 ;;; file-systems.scm ends here

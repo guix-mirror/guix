@@ -30,6 +30,7 @@
   #:use-module (guix build utils)
   #:use-module (gnu build install)
   #:use-module (gnu system)
+  #:use-module (gnu system file-systems)
   #:use-module (gnu system vm)
   #:use-module (gnu system grub)
   #:use-module (gnu packages grub)

@@ -58,12 +58,6 @@
             qemu-image
             system-qemu-image
 
-            file-system-mapping
-            file-system-mapping?
-            file-system-mapping-source
-            file-system-mapping-target
-            file-system-mapping-writable?
-
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
             system-disk-image))
@@ -353,22 +347,6 @@ of the GNU system as described by OS."
 ;;;
 ;;; VMs that share file systems with the host.
 ;;;
-
-;; Mapping of host file system SOURCE to mount point TARGET in the guest.
-(define-record-type* <file-system-mapping> file-system-mapping
-  make-file-system-mapping
-  file-system-mapping?
-  (source    file-system-mapping-source)          ;string
-  (target    file-system-mapping-target)          ;string
-  (writable? file-system-mapping-writable?        ;Boolean
-             (default #f)))
-
-(define %store-mapping
-  ;; Mapping of the host's store into the guest.
-  (file-system-mapping
-   (source (%store-prefix))
-   (target (%store-prefix))
-   (writable? #f)))
 
 (define (file-system->mount-tag fs)
   "Return a 9p mount tag for host file system FS."
