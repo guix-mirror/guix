@@ -145,6 +145,16 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                                  (list (string-append out "/bin/mysqlbug")
                                        (string-append
                                         out "/share/mysql/docs/INFO_BIN")))
+                       #t)))
+                  (add-after
+                   'install 'remove-extra-binaries
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       ;; Remove the 3 *_embedded files, which weigh in at
+                       ;; 14 MiB each.
+                       (for-each delete-file
+                                 (find-files (string-append out "/bin")
+                                             "_embedded$"))
                        #t))))))
     (native-inputs
      `(("bison" ,bison)
