@@ -265,6 +265,14 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-verbose"
                       "-prefix" out
                       "-docdir" (string-append doc "/share/doc/qt-" ,version)
+                      "-datadir" (string-append out "/share/qt-" ,version
+                                                "/data")
+                      "-importdir" (string-append out "/lib/qt-4"
+                                                  "/imports")
+                      "-plugindir" (string-append out "/lib/qt-4"
+                                                  "/plugins")
+                      "-translationdir" (string-append out "/share/qt-" ,version
+                                                       "/translations")
                       "-demosdir"    (string-append out "/share/qt-" ,version
                                                     "/demos")
                       "-examplesdir" (string-append out "/share/qt-" ,version
