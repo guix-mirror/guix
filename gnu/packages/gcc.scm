@@ -373,6 +373,41 @@ using compilers other than GCC."
 (define-public libstdc++-4.9
   (make-libstdc++ gcc-4.9))
 
+(define (make-libiberty gcc)
+  "Return a libiberty package based on GCC."
+  (package
+    (inherit gcc)
+    (name "libiberty")
+    (arguments
+     `(#:out-of-source? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+                     (lambda _
+                       (chdir "libiberty")
+                       #t))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out     (assoc-ref outputs "out"))
+                   (lib     (string-append out "/lib/"))
+                   (include (string-append out "/include/")))
+              (mkdir-p lib)
+              (mkdir-p include)
+              (copy-file "libiberty.a"
+                         (string-append lib "libiberty.a"))
+              (copy-file "../include/libiberty.h"
+                         (string-append include "libiberty.h"))
+              #t))))))
+    (inputs '())
+    (outputs '("out"))
+    (native-inputs '())
+    (propagated-inputs '())
+    (synopsis "Collection of subroutines used by various GNU programs")))
+
+(define-public libiberty
+  (make-libiberty gcc))
+
 (define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
   (package (inherit gcc)
