@@ -94,6 +94,27 @@ in compression.")
 utility.  Instead of being written in Java, FastJar is written in C.")
    (license license:gpl2+)))
 
+(define-public libtar
+  (package
+   (name "libtar")
+   (version "1.2.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "ftp://ftp.feep.net/pub/software/libtar/libtar-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "1f3vx1wa69a6c5y0z0aakd81gygirdcm0vimazg433q8nyvfybja"))))
+   (build-system gnu-build-system)
+   (arguments `(#:tests? #f)) ;no "check" target
+   (synopsis "C library for manipulating POSIX tar files")
+   (description
+    "libtar is a C library for manipulating POSIX tar files.  It handles
+adding and extracting files to/from a tar archive.")
+   (home-page "http://www.feep.net/libtar/")
+   (license license:bsd-3)))
+
 (define-public gzip
   (package
    (name "gzip")
