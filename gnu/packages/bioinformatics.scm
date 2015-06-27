@@ -1600,6 +1600,37 @@ the phenotype as it models the data.")
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
 
+(define-public prodigal
+  (package
+    (name "prodigal")
+    (version "2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/hyattpd/Prodigal/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m8sb0fg6lmxrlpzna0am6svbnlmd3dckrhgzxxgb3gxr5fyj284"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no check target
+       #:make-flags (list (string-append "INSTALLDIR="
+                                         (assoc-ref %outputs "out")
+                                         "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "http://prodigal.ornl.gov")
+    (synopsis "Protein-coding gene prediction for Archaea and Bacteria")
+    (description
+     "Prodigal runs smoothly on finished genomes, draft genomes, and
+metagenomes, providing gene predictions in GFF3, Genbank, or Sequin table
+format.  It runs quickly, in an unsupervised fashion, handles gaps, handles
+partial genes, and identifies translation initiation sites.")
+    (license license:gpl3+)))
+
 (define-public rsem
   (package
     (name "rsem")
