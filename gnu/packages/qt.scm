@@ -251,7 +251,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "doc"))                           ;280MiB of HTML + code
     (arguments
      `(#:phases
-         (alist-replace
+       (modify-phases %standard-phases
+         (replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
@@ -287,8 +288,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-no-sse4.1"
                       "-no-sse4.2"
                       "-no-avx"
-                      "-no-neon"))))
-          %standard-phases)))))
+                      "-no-neon"))))))))))
 
 (define-public python-sip
   (package
