@@ -246,25 +246,17 @@ files, but compared to grep is much faster and respects files like .gitignore,
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #f
-       #:modules ((guix build utils)
-                  (guix build cmake-build-system)
-                  (ice-9 popen)
-                  (ice-9 rdelim))
        #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'find-libiberty
           (lambda _
-            (let ((plugin (let* ((port (open-input-pipe
-                                        "gcc -print-file-name=plugin"))
-                                 (str  (read-line port)))
-                            (close-pipe port)
-                            str)))
+            (let ((libiberty (assoc-ref %build-inputs "libiberty")))
               (substitute* "cmake/FindIberty.cmake"
-                (("/usr/include") (string-append plugin "/include"))
-                (("libiberty.a iberty") (string-append "NAMES libiberty.a iberty\nPATHS \""
-                                                       (assoc-ref %build-inputs "gcc")
-                                                       "/lib" "\"")))
+                (("/usr/include") (string-append libiberty "/include"))
+                (("libiberty.a iberty")
+                 (string-append "NAMES libiberty.a iberty\nPATHS \""
+                                libiberty "/lib" "\"")))
               #t)))
          (replace
           'install
@@ -279,7 +271,7 @@ files, but compared to grep is much faster and respects files like .gitignore,
             #t)))))
     (home-page "https://github.com/cameronwhite/withershins")
     (inputs
-     `(("gcc" ,gcc-4.8 "lib") ;for libiberty.a
+     `(("libiberty" ,libiberty)
        ("binutils" ,binutils) ;for libbfd
        ("zlib" ,zlib)))
     (synopsis "C++11 library for generating stack traces")
