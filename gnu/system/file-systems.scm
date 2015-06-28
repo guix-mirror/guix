@@ -45,6 +45,7 @@
             %control-groups
 
             %base-file-systems
+            %container-file-systems
 
             mapped-device
             mapped-device?
@@ -197,6 +198,45 @@ initrd code."
                 %shared-memory-file-system
                 %immutable-store)
           %control-groups))
+
+;; File systems for Linux containers differ from %base-file-systems in that
+;; they impose additional restrictions such as no-exec or need different
+;; options to function properly.
+;;
+;; The file system flags and options conform to the libcontainer
+;; specification:
+;; https://github.com/docker/libcontainer/blob/master/SPEC.md#filesystem
+(define %container-file-systems
+  (list
+   ;; Psuedo-terminal file system.
+   (file-system
+     (device "none")
+     (mount-point "/dev/pts")
+     (type "devpts")
+     (flags '(no-exec no-suid))
+     (needed-for-boot? #t)
+     (create-mount-point? #t)
+     (check? #f)
+     (options "newinstance,ptmxmode=0666,mode=620"))
+   ;; Shared memory file system.
+   (file-system
+     (device "tmpfs")
+     (mount-point "/dev/shm")
+     (type "tmpfs")
+     (flags '(no-exec no-suid no-dev))
+     (options "mode=1777,size=65536k")
+     (needed-for-boot? #t)
+     (create-mount-point? #t)
+     (check? #f))
+   ;; Message queue file system.
+   (file-system
+     (device "mqueue")
+     (mount-point "/dev/mqueue")
+     (type "mqueue")
+     (flags '(no-exec no-suid no-dev))
+     (needed-for-boot? #t)
+     (create-mount-point? #t)
+     (check? #f))))
 
 
 
