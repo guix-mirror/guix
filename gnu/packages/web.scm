@@ -668,6 +668,27 @@ minimum to provide high performance operation.")
 to perl-code, for faster generation of access_log lines.")
     (license (package-license perl))))
 
+(define-public perl-authen-sasl
+  (package
+    (name "perl-authen-sasl")
+    (version "2.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/G/GB/GBARR/"
+                           "Authen-SASL-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02afhlrdq5hh5g8b32fa79fqq5i76qzwfqqvfi9zi57h31szl536"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-digest-hmac" ,perl-digest-hmac)
+       ("perl-gssapi" ,perl-gssapi)))
+    (home-page "http://search.cpan.org/dist/Authen-SASL")
+    (synopsis "SASL authentication framework")
+    (description "Authen::SASL provides an SASL authentication framework.")
+    (license (package-license perl))))
+
 (define-public perl-catalyst-action-renderview
   (package
     (name "perl-catalyst-action-renderview")
