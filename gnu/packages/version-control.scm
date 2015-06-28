@@ -60,7 +60,9 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define-public bazaar
   (package
@@ -97,6 +99,23 @@ changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
     (license gpl2+)))
 
+(define (package-transitive-propagated-labels* package)
+  "Return a list of the input labels of PACKAGE and its transitive inputs."
+  (let ((name (package-name package)))
+    `(,name
+      ,@(map (match-lambda
+               ((label (? package? _) . _)
+                (string-append name "/" label)))
+             (package-transitive-propagated-inputs package)))))
+
+(define (package-propagated-input-refs inputs packages)
+  "Return a list of (assoc-ref INPUTS <package-name>) for each package in
+PACKAGES and their propagated inputs."
+  (map (lambda (l)
+         `(assoc-ref ,inputs ,l))
+       (append-map package-transitive-propagated-labels*
+                   packages)))
+
 (define-public git
   ;; Keep in sync with 'git-manpages'!
   (package
@@ -124,10 +143,16 @@ as well as the classic centralized workflow.")
       ;; For 'git-svn'.
       ("subversion" ,subversion)
 
+      ;; For 'git-send-email'
+      ("perl-authen-sasl" ,perl-authen-sasl)
+      ("perl-net-smtp-ssl" ,perl-net-smtp-ssl)
+      ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+
       ;; For 'git gui', 'gitk', and 'git citool'.
       ("tcl" ,tcl)
       ("tk" ,tk)))
    (outputs '("out"                               ; the core
+              "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
               "gui"))                             ; gitk, git gui
    (arguments
@@ -141,6 +166,8 @@ as well as the classic centralized workflow.")
                                              (assoc-ref %build-inputs "tk")
                                              "/bin/wish8.6")) ; XXX
 
+      #:modules ((srfi srfi-1)
+                 ,@%gnu-build-system-modules)
       #:phases
        (alist-cons-after
         'configure 'patch-makefile-shebangs
@@ -164,6 +191,7 @@ as well as the classic centralized workflow.")
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Split the binaries to the various outputs.
             (let* ((out      (assoc-ref outputs "out"))
+                   (se       (assoc-ref outputs "send-email"))
                    (svn      (assoc-ref outputs "svn"))
                    (gui      (assoc-ref outputs "gui"))
                    (gitk     (string-append out "/bin/gitk"))
@@ -172,20 +200,23 @@ as well as the classic centralized workflow.")
                    (git-gui* (string-append gui "/libexec/git-core/git-gui"))
                    (git-cit  (string-append out "/libexec/git-core/git-citool"))
                    (git-cit* (string-append gui "/libexec/git-core/git-citool"))
+                   (git-se   (string-append out "/libexec/git-core/git-send-email"))
+                   (git-se*  (string-append se  "/libexec/git-core/git-send-email"))
                    (git-svn  (string-append out "/libexec/git-core/git-svn"))
                    (git-svn* (string-append svn "/libexec/git-core/git-svn"))
                    (git-sm   (string-append out
                                             "/libexec/git-core/git-submodule")))
               (mkdir-p (string-append gui "/bin"))
               (mkdir-p (string-append gui "/libexec/git-core"))
+              (mkdir-p (string-append se  "/libexec/git-core"))
               (mkdir-p (string-append svn "/libexec/git-core"))
 
               (for-each (lambda (old new)
                           (copy-file old new)
                           (delete-file old)
                           (chmod new #o555))
-                        (list gitk git-gui git-cit git-svn)
-                        (list gitk* git-gui* git-cit* git-svn*))
+                        (list gitk git-gui git-cit git-se git-svn)
+                        (list gitk* git-gui* git-cit* git-se* git-svn*))
 
               ;; Tell 'git-svn' where Subversion is.
               (wrap-program git-svn*
@@ -201,6 +232,18 @@ as well as the classic centralized workflow.")
                 `("LD_LIBRARY_PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "subversion")
                                    "/lib"))))
+
+              ;; Tell 'git-send-email' where perl modules are.
+              (wrap-program git-se*
+                `("PERL5LIB" ":" prefix
+                  ,(map (lambda (o) (string-append o "/lib/perl5/site_perl"))
+                        (delete-duplicates
+                         (list
+                          ,@(package-propagated-input-refs
+                             'inputs
+                             `(,perl-authen-sasl
+                               ,perl-net-smtp-ssl
+                               ,perl-io-socket-ssl)))))))
 
               ;; Tell 'git-submodule' where Perl is.
               (wrap-program git-sm
