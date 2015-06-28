@@ -40,6 +40,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
@@ -1574,6 +1575,29 @@ Encode::decode(locale => $string).")
      "The File::Listing module exports a single function called parse_dir(),
 which can be used to parse directory listings.")
     (home-page "http://search.cpan.org/~gaas/File-Listing/")))
+
+(define-public perl-gssapi
+  (package
+    (name "perl-gssapi")
+    (version "0.28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/A/AG/AGROLMS/"
+                           "GSSAPI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mkhwxjjlhr58pd770i9gnf7zy7jj092iv6jfbnb8bvnc5xjr3vx"))))
+    (build-system perl-build-system)
+    (inputs `(("gssapi" ,mit-krb5)))
+    (arguments
+     `(#:make-maker-flags
+       `(,(string-append "--gssapiimpl=" (assoc-ref %build-inputs "gssapi")))))
+    (home-page "http://search.cpan.org/dist/GSSAPI")
+    (synopsis "Perl extension providing access to the GSSAPIv2 library")
+    (description "This is a Perl extension for using GSSAPI C bindings as
+described in RFC 2744.")
+    (license (package-license perl))))
 
 (define-public perl-html-form
   (package
