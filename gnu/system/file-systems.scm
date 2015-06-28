@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system file-systems)
+  #:use-module (ice-9 match)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -32,6 +33,8 @@
             file-system-options
             file-system-check?
             file-system-create-mount-point?
+
+            file-system->spec
 
             %fuse-control-file-system
             %binary-format-file-system
@@ -94,6 +97,13 @@
 file system."
   (or (%file-system-needed-for-boot? fs)
       (string=? "/" (file-system-mount-point fs))))
+
+(define (file-system->spec fs)
+  "Return a list corresponding to file-system FS that can be passed to the
+initrd code."
+  (match fs
+    (($ <file-system> device title mount-point type flags options _ check?)
+     (list device title mount-point type flags options check?))))
 
 (define %fuse-control-file-system
   ;; Control file system for Linux' file systems in user-space (FUSE).
