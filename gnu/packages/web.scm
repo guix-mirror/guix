@@ -2235,6 +2235,26 @@ In all but the inetd type, the server provides the ability to connect to one
 or to multiple server ports.")
     (license (package-license perl))))
 
+(define-public perl-net-smtp-ssl
+  (package
+    (name "perl-net-smtp-ssl")
+    (version "1.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/"
+                           "Net-SMTP-SSL-" version ".tar.gz"))
+       (sha256
+	(base32
+	 "05y94mb1vdw32mvwb0cp2h4ggh32f8j8nwwfjb8kjwxvfkfhyp9h"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))
+    (home-page "http://search.cpan.org/dist/Net-SMTP-SSL")
+    (synopsis "SSL support for Net::SMTP")
+    (description "SSL support for Net::SMTP")
+    (license (package-license perl))))
+
 (define-public perl-plack
   (package
     (name "perl-plack")
