@@ -18,11 +18,12 @@
 
 (define-module (gnu packages synergy)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (gpl2))
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
@@ -31,19 +32,31 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.5.1-r2398")
+    (version "1.7.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.synergy-project.org/files/packages/"
-                          "synergy-" version "-Source.tar.gz"))
+      (uri (string-append "https://github.com/synergy/synergy/archive/"
+                          "v" version "-stable.tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "19q8ck15f0jgpbzlm34dzp046wf3iiwa21s1qfyj5sj7xjxwa367"))))
+        "098y71fiw1n5i7g1p6vjfs5rz472j192p9izz2axxxhfvcyzrvx4"))
+      (modules '((guix build utils)))
+      (snippet
+       ;; Remove ~14MB of unnecessary bundled source and binaries
+       '(for-each delete-file-recursively
+                  `("ext/bonjour"
+                    "ext/LICENSE (OpenSSL)"
+                    ,@(find-files "ext" "openssl-.*\\.tar\\.gz")
+                    "ext/openssl-osx"
+                    "ext/openssl-win32"
+                    "ext/openssl-win64")))))
     (build-system cmake-build-system)
     (native-inputs `(("unzip" ,unzip)))
     (inputs
      `(("python"  ,python-wrapper)
+       ("openssl" ,openssl)
        ("curl"    ,curl)
        ("libxi"   ,libxi)
        ("libx11"  ,libx11)
@@ -51,10 +64,7 @@
        ("xinput"  ,xinput)))
     (arguments
      `(#:phases
-       (let ((srcdir (string-append
-                      "../synergy-"
-                      (car (string-split ,version #\-))
-                      "-Source")))
+       (let ((srcdir (string-append "../synergy-" ,version "-stable")))
          (alist-cons-before
           'configure 'unpack-aux-src
           ;; TODO: package and use from system
@@ -66,7 +76,7 @@
                 (for-each
                  (lambda (f)
                    (system* unzip "-d" f (string-append f ".zip")))
-                 '("cryptopp562" "gmock-1.6.0" "gtest-1.6.0")))))
+                 '("gmock-1.6.0" "gtest-1.6.0")))))
           (alist-replace
            'check
            ;; Don't run "integtests" as it requires network and X an display.
@@ -77,15 +87,27 @@
             ;; There currently is no installation process, see:
             ;; http://synergy-project.org/spit/issues/details/3317/
             (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (ex  (string-append out "/share/doc/synergy-"
+                                         ,version "/examples")))
                 (begin
-                  (mkdir-p (string-append out "/bin"))
+                  (mkdir-p bin)
                   (for-each
                    (lambda (f)
                      (copy-file (string-append srcdir "/bin/" f)
-                                (string-append out    "/bin/" f)))
+                                (string-append bin "/" f)))
                    '("synergyc" "synergys" "synergyd"
-                     "usynergy" "syntool")))))
+                     "usynergy" "syntool"))
+                  ;; Install example configuration files
+                  (mkdir-p ex)
+                  (for-each
+                   (lambda (e)
+                     (copy-file (string-append srcdir "/doc/" e)
+                                (string-append ex "/" e)))
+                   '("synergy.conf.example"
+                     "synergy.conf.example-advanced"
+                     "synergy.conf.example-basic")))))
             %standard-phases))))))
     (home-page "http://www.synergy-project.org")
     (synopsis "Mouse and keyboard sharing utility")
