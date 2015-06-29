@@ -51,8 +51,10 @@
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio) ;libsndfile
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
@@ -60,6 +62,74 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip))
+
+(define-public hydrogen
+  (package
+    (name "hydrogen")
+    (version "0.9.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/hydrogen/Hydrogen/"
+                    (version-prefix version 3) "%20Sources/"
+                    "hydrogen-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fvyp6gfzcqcc90dmaqbm11p272zczz5pfz1z4lj33nfr7z0bqgb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       ;; TODO: Add scons-build-system and use it here.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scons-propagate-environment
+                    (lambda _
+                      ;; By design, SCons does not, by default, propagate
+                      ;; environment variables to subprocesses.  See:
+                      ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
+                      ;; Here, we modify the Sconstruct file to arrange for
+                      ;; environment variables to be propagated.
+                      (substitute* "Sconstruct"
+                        (("^env = Environment\\(")
+                         "env = Environment(ENV=os.environ, "))))
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (zero? (system* "scons"
+                                      (string-append "prefix=" out)
+                                      "lrdf=0" ; cannot be found
+                                      "lash=1")))))
+         (add-before
+          'install
+          'fix-img-install
+          (lambda _
+            ;; The whole ./data/img directory is copied to the target first.
+            ;; Scons complains about existing files when we try to install all
+            ;; images a second time.
+            (substitute* "Sconstruct"
+              (("os.path.walk\\(\"./data/img/\",install_images,env\\)") ""))
+            #t))
+         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+    (native-inputs
+     `(("scons" ,scons)
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("libtar" ,libtar)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("lash" ,lash)
+       ;;("lrdf" ,lrdf) ;FIXME: cannot be found by scons
+       ("qt" ,qt-4)
+       ("libsndfile" ,libsndfile)))
+    (home-page "http://www.hydrogen-music.org")
+    (synopsis "Drum machine")
+    (description
+     "Hydrogen is an advanced drum machine for GNU/Linux.  Its main goal is to
+enable professional yet simple and intuitive pattern-based drum programming.")
+    (license license:gpl2+)))
 
 (define-public lilypond
   (package
