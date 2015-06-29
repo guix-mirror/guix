@@ -307,14 +307,14 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-4.8
   (package (inherit gcc-4.7)
-    (version "4.8.4")
+    (version "4.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "15c6gwm6dzsaagamxkak5smdkf1rdfbqqjs9jdbrp3lbg4ism02a"))
+                "08yggr18v373a1ihj0rg2vd6psnic42b518xcgp3r9k81xz1xyr2"))
               (patches (list (search-patch "gcc-arm-link-spec-fix.patch")))))))
 
 (define-public gcc-4.9
