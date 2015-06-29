@@ -24,7 +24,8 @@ EXTRA_DIST +=					\
   doc/fdl-1.3.texi				\
   doc/images/bootstrap-graph.dot		\
   doc/images/bootstrap-graph.eps		\
-  doc/images/bootstrap-graph.pdf
+  doc/images/bootstrap-graph.pdf		\
+  doc/environment-gdb.scm
 
 OS_CONFIG_EXAMPLES_TEXI =			\
   doc/os-config-bare-bones.texi			\

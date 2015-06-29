@@ -4110,6 +4110,7 @@ Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 @section Invoking @command{guix environment}
 
 @cindex reproducible build environments
+@cindex development environments
 The purpose of @command{guix environment} is to assist hackers in
 creating reproducible development environments without polluting their
 package profile.  The @command{guix environment} tool takes one or more
@@ -4122,8 +4123,8 @@ The general syntax is:
 guix environment @var{options} @var{package}@dots{}
 @end example
 
-The following examples spawns a new shell that is capable of building
-the GNU Guile source code:
+The following example spawns a new shell set up for the development of
+GNU@tie{}Guile:
 
 @example
 guix environment guile
@@ -4153,17 +4154,43 @@ Sometimes an interactive shell session is not desired.  The
 guix environment guile --exec=make
 @end example
 
-The following options are available:
+In other situations, it is more convenient to specify the list of
+packages needed in the environment.  For example, the following command
+runs @command{python} from an environment containing Python@tie{}2.7 and
+NumPy:
+
+@example
+guix environment --ad-hoc python2-numpy python-2.7 -E python
+@end example
+
+The available options are summarized below.
 
 @table @code
 @item --expression=@var{expr}
 @itemx -e @var{expr}
 Create an environment for the package that @var{expr} evaluates to.
 
+For example, running:
+
+@example
+guix environment -e '(@@ (gnu packages maths) petsc-openmpi)'
+@end example
+
+starts a shell with the environment for this specific variant of the
+PETSc package.
+
 @item --load=@var{file}
 @itemx -l @var{file}
 Create an environment for the package that the code within @var{file}
 evaluates to.
+
+As an example, @var{file} might contain a definition like this
+(@pxref{Defining Packages}):
+
+@example
+@verbatiminclude environment-gdb.scm
+@end example
+
 
 @item --exec=@var{command}
 @item -E @var{command}
