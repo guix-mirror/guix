@@ -42,7 +42,7 @@
 (define-public r
   (package
     (name "r")
-    (version "3.2.0")
+    (version "3.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -50,8 +50,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dagyqgvi8i3nw158qi2zpwm04s4ffzvnmk5niaksvxs30zrbbpm"))
-              (patches (list (search-patch "r-fix-15899.patch")))))
+                "10n9yhs55v1nnmdgsrgfncw29vq3ly70n8gvy1f4lq7l0hzvr7fm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
