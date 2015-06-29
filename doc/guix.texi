@@ -2762,8 +2762,13 @@ omitted since it will take place implicitly, as we will see later
                                #$output)))
 @end example
 
-Calling the monadic @code{sh-symlink} has no effect.  To get the desired
-effect, one must use @code{run-with-store}:
+@c See
+@c <https://syntaxexclamation.wordpress.com/2014/06/26/escaping-continuations/> 
+@c for the funny quote.
+Calling the monadic @code{sh-symlink} has no effect.  As someone once
+said, ``you exit a monad like you exit a building on fire: by running''.
+So, to exit the monad and get the desired effect, one must use
+@code{run-with-store}:
 
 @example
 (run-with-store (open-connection) (sh-symlink))
