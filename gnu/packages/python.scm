@@ -3976,7 +3976,7 @@ PEP 8.")
     (description
       "This package provides a Flake8 plug-in to compute the McCabe cyclomatic
 complexity of Python source code.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-mccabe
   (package-with-python2 python-mccabe))
