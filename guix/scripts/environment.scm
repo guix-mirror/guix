@@ -200,7 +200,7 @@ packages."
                          (package-outputs package)))))
                 (('load . file)
                  ;; Add all the outputs of the package defined in FILE.
-                 (let ((package (load (string-append (getcwd) "/" file))))
+                 (let ((package (load* file (make-user-module '()))))
                    (map (lambda (output)
                           `(package ,package ,output))
                         (package-outputs package))))
