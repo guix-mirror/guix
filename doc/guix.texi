@@ -4219,6 +4219,10 @@ only contain package inputs.
 @item --search-paths
 Display the environment variable definitions that make up the
 environment.
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @end table
 
 It also supports all of the common build options that @command{guix

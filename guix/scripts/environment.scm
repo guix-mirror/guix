@@ -115,6 +115,8 @@ shell command in that environment.\n"))
       --pure             unset existing environment variables"))
   (display (_ "
       --search-paths     display needed environment variable definitions"))
+  (display (_ "
+  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (newline)
   (show-build-options-help)
   (newline)
@@ -128,6 +130,7 @@ shell command in that environment.\n"))
 (define %default-options
   ;; Default to opening a new shell.
   `((exec . ,(or (getenv "SHELL") "/bin/sh"))
+    (system . ,(%current-system))
     (substitutes? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
@@ -162,6 +165,10 @@ shell command in that environment.\n"))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
          %standard-build-options))
 
 (define (pick-all alist key)
@@ -243,7 +250,7 @@ OUTPUT) tuples, using the build options in OPTS."
                                               ((label item output)
                                                (list item output)))
                                             inputs)
-                                       #:system (%current-system))))
+                                       #:system (assoc-ref opts 'system))))
             (mbegin %store-monad
               ;; First build INPUTS.  This is necessary even for
               ;; --search-paths.
