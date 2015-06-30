@@ -31,10 +31,13 @@ mkdir "$tmpdir"
 
 # Check the environment variables for the bootstrap Guile.
 guix environment --ad-hoc guile-bootstrap --pure --search-paths > "$tmpdir/a"
+guix environment --ad-hoc guile-bootstrap:out --pure --search-paths > "$tmpdir/b"
 
 # $PATH must appear in the search paths, and nothing else.
 grep -E '^export PATH=.*guile-bootstrap-[0-9.]+/bin' "$tmpdir/a"
 test "`wc -l < "$tmpdir/a"`" = 1
+
+cmp "$tmpdir/a" "$tmpdir/b"
 
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then

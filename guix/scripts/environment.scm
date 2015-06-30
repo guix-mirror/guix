@@ -32,6 +32,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (srfi srfi-98)
@@ -91,9 +92,9 @@ existing environment variables with additional search paths."
                (newline)))
             (evaluate-input-search-paths inputs search-paths)))
 
-(define (package+propagated-inputs package)
-  "Return the union of PACKAGE and its transitive propagated inputs."
-  `((,(package-name package) ,package)
+(define (package+propagated-inputs package output)
+  "Return the union of PACKAGE's OUTPUT and its transitive propagated inputs."
+  `((,(package-name package) ,package ,output)
     ,@(package-transitive-propagated-inputs package)))
 
 (define (show-help)
@@ -185,17 +186,26 @@ shell command in that environment.\n"))
 (define (options/resolve-packages opts)
   "Return OPTS with package specification strings replaced by actual
 packages."
-  (map (match-lambda
-        (('package . (? string? spec))
-         `(package . ,(specification->package spec)))
-        (('expression . str)
-         (match (read/eval str)
-           ((? package? p)
-            `(package . ,p))))
-        (('load . file)
-         `(package . ,(load (string-append (getcwd) "/" file))))
-        (opt opt))
-       opts))
+  (append-map (match-lambda
+                (('package . (? string? spec))
+                 (let-values (((package output)
+                               (specification->package+output spec)))
+                   `((package ,package ,output))))
+                (('expression . str)
+                 ;; Add all the outputs of the package STR evaluates to.
+                 (match (read/eval str)
+                   ((? package? package)
+                    (map (lambda (output)
+                           `(package ,package ,output))
+                         (package-outputs package)))))
+                (('load . file)
+                 ;; Add all the outputs of the package defined in FILE.
+                 (let ((package (load (string-append (getcwd) "/" file))))
+                   (map (lambda (output)
+                          `(package ,package ,output))
+                        (package-outputs package))))
+                (opt (list opt)))
+              opts))
 
 (define (build-inputs inputs opts)
   "Build the derivations in INPUTS, a list of (DERIVATION) or (DERIVATION
@@ -228,9 +238,14 @@ OUTPUT) tuples, using the build options in OPTS."
            (command  (assoc-ref opts 'exec))
            (packages (pick-all (options/resolve-packages opts) 'package))
            (inputs   (if ad-hoc?
-                         (append-map package+propagated-inputs packages)
+                         (append-map (match-lambda
+                                       ((package output)
+                                        (package+propagated-inputs package
+                                                                   output)))
+                                     packages)
                          (append-map (compose bag-transitive-inputs
-                                              package->bag)
+                                              package->bag
+                                              first)
                                      packages)))
            (paths    (delete-duplicates
                       (cons $PATH

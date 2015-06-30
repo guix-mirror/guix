@@ -4211,6 +4211,11 @@ guix environment --ad-hoc guile guile-sdl -E guile
 runs @command{guile} in an environment where Guile and Guile-SDL are
 available.
 
+Note that this example implicitly asks for the default output of
+@code{guile} and @code{guile-sdl} but it is possible to ask for a
+specific output---e.g., @code{glib:bin} asks for the @code{bin} output
+of @code{glib} (@pxref{Packages with Multiple Outputs}).
+
 @item --pure
 Unset existing environment variables when building the new environment.
 This has the effect of creating an environment in which search paths
