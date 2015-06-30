@@ -223,6 +223,7 @@ SH_TESTS =					\
   tests/guix-system.sh				\
   tests/guix-archive.sh				\
   tests/guix-authenticate.sh			\
+  tests/guix-environment.sh			\
   tests/guix-lint.sh
 
 if BUILD_DAEMON
