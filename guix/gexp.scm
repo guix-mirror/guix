@@ -52,7 +52,9 @@
             compiled-modules
 
             define-gexp-compiler
-            gexp-compiler?))
+            gexp-compiler?
+
+            lower-inputs))
 
 ;;; Commentary:
 ;;;

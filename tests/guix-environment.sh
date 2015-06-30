@@ -58,4 +58,24 @@ then
          --exec='echo $PATH $CPATH $LIBRARY_PATH' > "$tmpdir/b"
     ( . "$tmpdir/a" ; echo $PATH $CPATH $LIBRARY_PATH ) > "$tmpdir/c"
     cmp "$tmpdir/b" "$tmpdir/c"
+
+    rm "$tmpdir"/*
+
+    # Compute the build environment for the initial GNU Findutils.
+    guix environment -e '(@@ (gnu packages commencement) findutils-boot0)' \
+	 --no-substitutes --search-paths --pure > "$tmpdir/a"
+
+    # Make sure the bootstrap binaries are all listed where they belong.
+    grep -E '^export PATH=.*-bootstrap-binaries-0/bin'      "$tmpdir/a"
+    grep -E '^export PATH=.*-make-boot0-[0-9.]+/bin'        "$tmpdir/a"
+    grep -E '^export CPATH=.*-gcc-bootstrap-0/include'      "$tmpdir/a"
+    grep -E '^export CPATH=.*-glibc-bootstrap-0/include'    "$tmpdir/a"
+    grep -E '^export LIBRARY_PATH=.*-glibc-bootstrap-0/lib' "$tmpdir/a"
+
+    # The following test assumes 'make-boot0' has a "debug" output.
+    make_boot0_debug="`guix build -e '(@@ (gnu packages commencement) gnu-make-boot0)' | grep -e -debug`"
+    test "x$make_boot0_debug" != "x"
+
+    # Make sure the "debug" output is not listed.
+    if grep -E "$make_boot0_debug" "$tmpdir/a"; then false; else true; fi
 fi

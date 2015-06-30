@@ -26,6 +26,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix utils)
   #:use-module (guix monads)
+  #:use-module ((guix gexp) #:select (lower-inputs))
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (ice-9 format)
@@ -36,20 +37,19 @@
   #:use-module (srfi srfi-98)
   #:export (guix-environment))
 
-(define (evaluate-input-search-paths inputs derivations)
-  "Evaluate the native search paths of INPUTS, a list of packages, of the
-outputs of DERIVATIONS, and return a list of search-path/value pairs."
-  (let ((directories (append-map (lambda (drv)
-                                   (map (match-lambda
-                                          ((_ . output)
-                                           (derivation-output-path output)))
-                                        (derivation-outputs drv)))
-                                 derivations))
-        (paths       (cons $PATH
-                           (delete-duplicates
-                            (append-map package-native-search-paths
-                                        inputs)))))
-    (evaluate-search-paths paths directories)))
+(define (evaluate-input-search-paths inputs search-paths)
+  "Evaluate SEARCH-PATHS, a list of search-path specifications, for the
+directories corresponding to INPUTS, a list of (DERIVATION) or (DERIVATION
+OUTPUT) tuples."
+  (let ((directories (map (match-lambda
+                            (((? derivation? drv))
+                             (derivation->output-path drv))
+                            (((? derivation? drv) output)
+                             (derivation->output-path drv output))
+                            (((? string? item))
+                             item))
+                          inputs)))
+    (evaluate-search-paths search-paths directories)))
 
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables
@@ -64,10 +64,11 @@ as 'HOME' and 'USER' are left untouched."
                       (((names . _) ...)
                        names)))))
 
-(define (create-environment inputs derivations pure?)
-  "Set the needed environment variables for all packages within INPUTS.  When
-PURE? is #t, unset the variables in the current environment.  Otherwise,
-augment existing enviroment variables with additional search paths."
+(define (create-environment inputs paths pure?)
+  "Set the environment variables specified by PATHS for all the packages
+within INPUTS.  When PURE? is #t, unset the variables in the current
+environment.  Otherwise, augment existing enviroment variables with additional
+search paths."
   (when pure? (purify-environment))
   (for-each (match-lambda
               ((($ <search-path-specification> variable _ separator) . value)
@@ -76,19 +77,24 @@ augment existing enviroment variables with additional search paths."
                          (if (and current (not pure?))
                              (string-append value separator current)
                              value)))))
-            (evaluate-input-search-paths inputs derivations)))
+            (evaluate-input-search-paths inputs paths)))
 
-(define (show-search-paths inputs derivations pure?)
-  "Display the needed search paths to build an environment that contains the
-packages within INPUTS.  When PURE? is #t, do not augment existing environment
-variables with additional search paths."
+(define (show-search-paths inputs search-paths pure?)
+  "Display SEARCH-PATHS applied to the packages specified by INPUTS, a list of
+ (DERIVATION) or (DERIVATION OUTPUT) tuples.  When PURE? is #t, do not augment
+existing environment variables with additional search paths."
   (for-each (match-lambda
               ((search-path . value)
                (display
                 (search-path-definition search-path value
                                         #:kind (if pure? 'exact 'prefix)))
                (newline)))
-            (evaluate-input-search-paths inputs derivations)))
+            (evaluate-input-search-paths inputs search-paths)))
+
+(define (package+propagated-inputs package)
+  "Return the union of PACKAGE and its transitive propagated inputs."
+  `((,(package-name package) ,package)
+    ,@(package-transitive-propagated-inputs package)))
 
 (define (show-help)
   (display (_ "Usage: guix environment [OPTION]... PACKAGE...
@@ -184,47 +190,23 @@ packages."
         (opt opt))
        opts))
 
-(define (packages->transitive-inputs packages)
-  "Return a list of the transitive inputs for all PACKAGES."
-  (define (transitive-inputs package)
-    (filter-map (match-lambda
-                 ((or (_ (? package? package))
-                      (_ (? package? package) _))
-                  package)
-                 (_ #f))
-                (bag-transitive-inputs
-                 (package->bag package))))
-  (delete-duplicates
-   (append-map transitive-inputs packages)))
-
-(define (packages+propagated-inputs packages)
-  "Return a list containing PACKAGES plus all of their propagated inputs."
-  (delete-duplicates
-   (append packages
-           (map (match-lambda
-                  ((or (_ (? package? package))
-                       (_ (? package? package) _))
-                   package)
-                  (_ #f))
-                (append-map package-transitive-propagated-inputs
-                            packages)))))
-
 (define (build-inputs inputs opts)
-  "Build the packages in INPUTS using the build options in OPTS."
+  "Build the derivations in INPUTS, a list of (DERIVATION) or (DERIVATION
+OUTPUT) tuples, using the build options in OPTS."
   (let ((substitutes? (assoc-ref opts 'substitutes?))
-        (dry-run? (assoc-ref opts 'dry-run?)))
-    (mlet* %store-monad ((drvs (sequence %store-monad
-                                         (map package->derivation inputs))))
-      (mbegin %store-monad
-        (show-what-to-build* drvs
-                             #:use-substitutes? substitutes?
-                             #:dry-run? dry-run?)
-        (if dry-run?
-            (return #f)
-            (mbegin %store-monad
-              (set-build-options-from-command-line* opts)
-              (built-derivations drvs)
-              (return drvs)))))))
+        (dry-run?     (assoc-ref opts 'dry-run?)))
+    (match inputs
+      (((derivations _ ...) ...)
+       (mbegin %store-monad
+         (show-what-to-build* derivations
+                              #:use-substitutes? substitutes?
+                              #:dry-run? dry-run?)
+         (if dry-run?
+             (return #f)
+             (mbegin %store-monad
+               (set-build-options-from-command-line* opts)
+               (built-derivations derivations)
+               (return derivations))))))))
 
 ;; Entry point.
 (define (guix-environment . args)
@@ -239,19 +221,38 @@ packages."
            (command  (assoc-ref opts 'exec))
            (packages (pick-all (options/resolve-packages opts) 'package))
            (inputs   (if ad-hoc?
-                         (packages+propagated-inputs packages)
-                         (packages->transitive-inputs packages))))
+                         (append-map package+propagated-inputs packages)
+                         (append-map (compose bag-transitive-inputs
+                                              package->bag)
+                                     packages)))
+           (paths    (delete-duplicates
+                      (cons $PATH
+                            (append-map (match-lambda
+                                          ((label (? package? p) _ ...)
+                                           (package-native-search-paths p))
+                                          (_
+                                           '()))
+                                        inputs))
+                      eq?)))
       (with-store store
-        (define drvs
-          (run-with-store store
+        (run-with-store store
+          (mlet %store-monad ((inputs (lower-inputs
+                                       (map (match-lambda
+                                              ((label item)
+                                               (list item))
+                                              ((label item output)
+                                               (list item output)))
+                                            inputs)
+                                       #:system (%current-system))))
             (mbegin %store-monad
-              (set-guile-for-build (default-guile))
-              (build-inputs inputs opts))))
-
-        (cond ((assoc-ref opts 'dry-run?)
-               #t)
-              ((assoc-ref opts 'search-paths)
-               (show-search-paths inputs drvs pure?))
-              (else
-               (create-environment inputs drvs pure?)
-               (system command)))))))
+              ;; First build INPUTS.  This is necessary even for
+              ;; --search-paths.
+              (build-inputs inputs opts)
+              (cond ((assoc-ref opts 'dry-run?)
+                     (return #t))
+                    ((assoc-ref opts 'search-paths)
+                     (show-search-paths inputs paths pure?)
+                     (return #t))
+                    (else
+                     (create-environment inputs paths pure?)
+                     (return (system command)))))))))))
