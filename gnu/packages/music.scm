@@ -367,7 +367,7 @@ your own lessons.")
                (string-append "target_link_libraries(" target " "
                               (assoc-ref inputs "binutils")
                               "/lib/libbfd.a "
-                              (assoc-ref inputs "gcc")
+                              (assoc-ref inputs "libiberty")
                               "/lib/libiberty.a "
                               "dl")))
             #t)))))
@@ -376,7 +376,7 @@ your own lessons.")
        ("alsa-lib" ,alsa-lib)
        ("qt" ,qt)
        ("withershins" ,withershins)
-       ("gcc" ,gcc-4.8 "lib") ;for libiberty.a (for withershins)
+       ("libiberty" ,libiberty) ;for withershins
        ("binutils" ,binutils) ;for -lbfd and -liberty (for withershins)
        ("timidity" ,timidity++)
        ("pugixml" ,pugixml)
