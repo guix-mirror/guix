@@ -4136,7 +4136,15 @@ version of the environment that @command{guix environment} was run in.
 It contains the necessary search paths for building the given package
 added to the existing environment variables.  To create a ``pure''
 environment in which the original environment variables have been unset,
-use the @code{--pure} option.
+use the @code{--pure} option@footnote{Users sometimes wrongfully augment
+environment variables such as @code{PATH} in their @file{~/.bashrc}
+file.  As a consequence, when @code{guix environment} launches it, Bash
+may read @file{~/.bashrc}, thereby introducing ``impurities'' in these
+environment variables.  It is an error to define such environment
+variables in @file{.bashrc}; instead, they should be defined in
+@file{.bash_profile}, which is sourced only by log-in shells.
+@xref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}, for
+details on Bash start-up files.}.
 
 Additionally, more than one package may be specified, in which case the
 union of the inputs for the given packages are used.  For example, the
