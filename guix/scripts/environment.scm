@@ -281,4 +281,4 @@ OUTPUT) tuples, using the build options in OPTS."
                      (return #t))
                     (else
                      (create-environment inputs paths pure?)
-                     (return (system command)))))))))))
+                     (return (exit (status:exit-val (system command)))))))))))))
