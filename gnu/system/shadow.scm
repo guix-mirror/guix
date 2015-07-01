@@ -153,7 +153,13 @@ then
     source /etc/profile
 fi
 
-PS1='\\u@\\h \\w\\$ '
+# Adjust the prompt depending on whether we're in 'guix environment'.
+if [ -n \"$GUIX_ENVIRONMENT\" ]
+then
+    export PS1='\\u@\\h \\w\\ [env]$ '
+else
+    export PS1='\\u@\\h \\w\\$ '
+fi
 alias ls='ls -p --color'
 alias ll='ls -l'\n"))
                       (zlogin (text-file "zlogin" "\

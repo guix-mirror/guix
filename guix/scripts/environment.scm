@@ -78,7 +78,11 @@ search paths."
                          (if (and current (not pure?))
                              (string-append value separator current)
                              value)))))
-            (evaluate-input-search-paths inputs paths)))
+            (evaluate-input-search-paths inputs paths))
+
+  ;; Give users a way to know that they're in 'guix environment', so they can
+  ;; adjust 'PS1' accordingly, for instance.
+  (setenv "GUIX_ENVIRONMENT" "t"))
 
 (define (show-search-paths inputs search-paths pure?)
   "Display SEARCH-PATHS applied to the packages specified by INPUTS, a list of

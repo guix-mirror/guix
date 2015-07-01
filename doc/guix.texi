@@ -4146,6 +4146,19 @@ variables in @file{.bashrc}; instead, they should be defined in
 @xref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}, for
 details on Bash start-up files.}.
 
+@vindex GUIX_ENVIRONMENT
+@command{guix environment} defines the @code{GUIX_ENVIRONMENT}
+variable in the shell it spaws.  This allows users to, say, define a
+specific prompt for development environments in their @file{.bashrc}
+(@pxref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}):
+
+@example
+if [ -n "$GUIX_ENVIRONMENT" ]
+then
+    export PS1="\u@@\h \w [dev]\$ "
+fi
+@end example
+
 Additionally, more than one package may be specified, in which case the
 union of the inputs for the given packages are used.  For example, the
 command below spawns a shell where all of the dependencies of both Guile
