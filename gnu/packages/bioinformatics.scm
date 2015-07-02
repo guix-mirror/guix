@@ -1774,6 +1774,10 @@ distribution, coverage uniformity, strand specificity, etc.")
        ;; systems.
        #:tests? ,(string=? (or (%current-system) (%current-target-system))
                            "x86_64-linux")
+       #:modules ((ice-9 ftw)
+                  (ice-9 regex)
+                  (guix build gnu-build-system)
+                  (guix build utils))
        #:make-flags (list "LIBCURSES=-lncurses"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
@@ -1798,7 +1802,18 @@ distribution, coverage uniformity, strand specificity, etc.")
            (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
              (mkdir-p lib)
              (copy-file "libbam.a" (string-append lib "/libbam.a"))))
-         (alist-delete 'configure %standard-phases)))))
+         (alist-cons-after
+          'install 'install-headers
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((include (string-append (assoc-ref outputs "out")
+                                          "/include/samtools/")))
+              (mkdir-p include)
+              (for-each (lambda (file)
+                          (copy-file file (string-append include
+                                                         (basename file))))
+                        (scandir "." (lambda (name) (string-match "\\.h$" name))))
+              #t))
+          (alist-delete 'configure %standard-phases))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
