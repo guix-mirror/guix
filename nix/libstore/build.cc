@@ -447,6 +447,7 @@ private:
     string user;
     uid_t uid;
     gid_t gid;
+    std::vector<gid_t> supplementaryGIDs;
 
 public:
     UserLock();
@@ -460,6 +461,7 @@ public:
     string getUser() { return user; }
     uid_t getUID() { return uid; }
     uid_t getGID() { return gid; }
+    std::vector<gid_t> getSupplementaryGIDs() { return supplementaryGIDs; }
 
     bool enabled() { return uid != 0; }
 
@@ -538,6 +540,17 @@ void UserLock::acquire()
             if (uid == getuid() || uid == geteuid())
                 throw Error(format("the Nix user should not be a member of `%1%'")
                     % settings.buildUsersGroup);
+
+            /* Get the list of supplementary groups of this build user.  This
+               is usually either empty or contains a group such as "kvm".  */
+            supplementaryGIDs.resize(10);
+            int ngroups = supplementaryGIDs.size();
+            int err = getgrouplist(pw->pw_name, pw->pw_gid,
+                supplementaryGIDs.data(), &ngroups);
+            if (err == -1)
+                throw Error(format("failed to get list of supplementary groups for ‘%1%’") % pw->pw_name);
+
+            supplementaryGIDs.resize(ngroups);
 
             return;
         }
@@ -1000,7 +1013,7 @@ void DerivationGoal::haveDerivation()
     /* We are first going to try to create the invalid output paths
        through substitutes.  If that doesn't work, we'll build
        them. */
-    if (settings.useSubstitutes && !willBuildLocally(drv))
+    if (settings.useSubstitutes && substitutesAllowed(drv))
         foreach (PathSet::iterator, i, invalidOutputs)
             addWaitee(worker.makeSubstitutionGoal(*i, buildMode == bmRepair));
 
@@ -1188,22 +1201,6 @@ void DerivationGoal::inputsRealised()
 }
 
 
-PathSet outputPaths(const DerivationOutputs & outputs)
-{
-    PathSet paths;
-    foreach (DerivationOutputs::const_iterator, i, outputs)
-        paths.insert(i->second.path);
-    return paths;
-}
-
-
-static string get(const StringPairs & map, const string & key)
-{
-    StringPairs::const_iterator i = map.find(key);
-    return i == map.end() ? (string) "" : i->second;
-}
-
-
 static bool canBuildLocally(const string & platform)
 {
     return platform == settings.thisSystem
@@ -1214,9 +1211,22 @@ static bool canBuildLocally(const string & platform)
 }
 
 
+static string get(const StringPairs & map, const string & key, const string & def = "")
+{
+    StringPairs::const_iterator i = map.find(key);
+    return i == map.end() ? def : i->second;
+}
+
+
 bool willBuildLocally(const Derivation & drv)
 {
     return get(drv.env, "preferLocalBuild") == "1" && canBuildLocally(drv.platform);
+}
+
+
+bool substitutesAllowed(const Derivation & drv)
+{
+    return get(drv.env, "allowSubstitutes", "1") == "1";
 }
 
 
@@ -1242,7 +1252,7 @@ void DerivationGoal::tryToBuild()
        can't acquire the lock, then continue; hopefully some other
        goal can start a build, and if not, the main loop will sleep a
        few seconds and then retry this goal. */
-    if (!outputLocks.lockPaths(outputPaths(drv.outputs), "", false)) {
+    if (!outputLocks.lockPaths(outputPaths(drv), "", false)) {
         worker.waitForAWhile(shared_from_this());
         return;
     }
@@ -1263,7 +1273,7 @@ void DerivationGoal::tryToBuild()
         return;
     }
 
-    missingPaths = outputPaths(drv.outputs);
+    missingPaths = outputPaths(drv);
     if (buildMode != bmCheck)
         foreach (PathSet::iterator, i, validPaths) missingPaths.erase(*i);
 
@@ -2168,7 +2178,6 @@ void DerivationGoal::runChild()
         Strings envStrs;
         foreach (Environment::const_iterator, i, env)
             envStrs.push_back(rewriteHashes(i->first + "=" + i->second, rewritesToTmp));
-        auto envArr = stringsToCharPtrs(envStrs);
 
         /* If we are running in `build-users' mode, then switch to the
            user we allocated above.  Make sure that we drop all root
@@ -2177,10 +2186,11 @@ void DerivationGoal::runChild()
            setuid() when run as root sets the real, effective and
            saved UIDs. */
         if (buildUser.enabled()) {
-            printMsg(lvlChatty, format("switching to user `%1%'") % buildUser.getUser());
-
-            if (setgroups(0, 0) == -1)
-                throw SysError("cannot clear the set of supplementary groups");
+            /* Preserve supplementary groups of the build user, to allow
+               admins to specify groups such as "kvm".  */
+            if (setgroups(buildUser.getSupplementaryGIDs().size(),
+                          buildUser.getSupplementaryGIDs().data()) == -1)
+                throw SysError("cannot set supplementary groups of build user");
 
             if (setgid(buildUser.getGID()) == -1 ||
                 getgid() != buildUser.getGID() ||
@@ -2199,7 +2209,6 @@ void DerivationGoal::runChild()
         args.push_back(builderBasename);
         foreach (Strings::iterator, i, drv.args)
             args.push_back(rewriteHashes(*i, rewritesToTmp));
-        auto argArr = stringsToCharPtrs(args);
 
         restoreSIGPIPE();
 
@@ -2207,7 +2216,7 @@ void DerivationGoal::runChild()
         writeFull(STDERR_FILENO, "\n");
 
         /* Execute the program.  This should not return. */
-        execve(drv.builder.c_str(), (char * *) &argArr[0], (char * *) &envArr[0]);
+        execve(drv.builder.c_str(), stringsToCharPtrs(args).data(), stringsToCharPtrs(envStrs).data());
 
         throw SysError(format("executing `%1%'") % drv.builder);
 
@@ -2837,7 +2846,6 @@ void SubstitutionGoal::tryToRun()
     args.push_back("--substitute");
     args.push_back(storePath);
     args.push_back(destPath);
-    auto argArr = stringsToCharPtrs(args);
 
     /* Fork the substitute program. */
     pid = startProcess([&]() {
@@ -2847,7 +2855,7 @@ void SubstitutionGoal::tryToRun()
         if (dup2(outPipe.writeSide, STDOUT_FILENO) == -1)
             throw SysError("cannot dup output pipe into stdout");
 
-        execv(sub.c_str(), (char * *) &argArr[0]);
+        execv(sub.c_str(), stringsToCharPtrs(args).data());
 
         throw SysError(format("executing `%1%'") % sub);
     });
