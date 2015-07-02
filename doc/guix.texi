@@ -144,6 +144,7 @@ Utilities
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 * Invoking guix challenge::     Challenging substitute servers.
+* Invoking guix container::     Process isolation.
 
 GNU Distribution
 
@@ -3583,6 +3584,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 * Invoking guix challenge::     Challenging substitute servers.
+* Invoking guix container::     Process isolation.
 @end menu
 
 @node Invoking guix build
@@ -5035,6 +5037,60 @@ URLs to compare to.
 
 @end table
 
+
+@node Invoking guix container
+@section Invoking @command{guix container}
+@cindex container
+
+@quotation Note
+As of version @value{VERSION}, this tool is experimental.  The interface
+is subject to radical change in the future.
+@end quotation
+
+The purpose of @command{guix container} is to manipulate processes
+running within an isolated environment, commonly known as a
+``container,'' typically created by the @command{guix environment}
+(@pxref{Invoking guix environment}) and @command{guix system container}
+(@pxref{Invoking guix system}) commands.
+
+The general syntax is:
+
+@example
+guix container @var{action} @var{options}@dots{}
+@end example
+
+@var{action} specifies the operation to perform with a container, and
+@var{options} specifies the context-specific arguments for the action.
+
+The following actions are available:
+
+@table @code
+@item exec
+Execute a command within the context of a running container.
+
+The syntax is:
+
+@example
+guix container exec @var{pid} @var{program} @var{arguments}@dots{}
+@end example
+
+@var{pid} specifies the process ID of the running container.
+@var{program} specifies an executable file name within the container's
+root file system.  @var{arguments} are the additional options that will
+be passed to @var{program}.
+
+The following command launches an interactive login shell inside a
+GuixSD container, started by @command{guix system container}, and whose
+process ID is 9001:
+
+@example
+guix container exec 9001 /run/current-system/profile/bin/bash --login
+@end example
+
+Note that the @var{pid} cannot be the parent process of a container.  It
+must be the container's PID 1 or one of its child processes.
+
+@end table
 
 @c *********************************************************************
 @node GNU Distribution
