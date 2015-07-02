@@ -1696,6 +1696,28 @@ which can be used to parse directory listings.")
 described in RFC 2744.")
     (license (package-license perl))))
 
+(define-public perl-html-element-extended
+  (package
+    (name "perl-html-element-extended")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSISK/"
+                           "HTML-Element-Extended-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0axknss8c368r5i082yhkfj8mq0w4nglfrpcxcayyzzj13qimvzk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-tree" ,perl-html-tree)))
+    (home-page "http://search.cpan.org/dist/HTML-Element-Extended")
+    (synopsis "Manipulate tables of HTML::Element")
+    (description
+     "HTML::Element::Extended is a Perl extension for manipulating a table
+composed of HTML::Element style components.")
+    (license (package-license perl))))
+
 (define-public perl-html-form
   (package
     (name "perl-html-form")
