@@ -1755,7 +1755,7 @@ distribution, coverage uniformity, strand specificity, etc.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -1764,7 +1764,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "1y5p2hs4gif891b4ik20275a8xf3qrr1zh9wpysp4g8m0g1jckf2"))))
+         "1akdqb685pk9xk1nb6sa9aq8xssjjhvvc06kp4cpdqvz2157l3j2"))))
     (build-system gnu-build-system)
     (arguments
      `(;; There are 87 test failures when building on non-64-bit architectures
