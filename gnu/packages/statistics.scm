@@ -58,11 +58,16 @@
                             (assoc-ref %outputs "out")
                             "/lib/R/lib"))
        #:phases
-       (alist-cons-before
-        'check 'set-timezone
-        ;; Some tests require the timezone to be set.
-        (lambda _ (setenv "TZ" "UTC"))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-default-pager
+          ;; Set default pager to "cat", because otherwise it is "false",
+          ;; making "help()" print nothing at all.
+          (lambda _ (setenv "PAGER" "cat") #t))
+         (add-before
+          'check 'set-timezone
+          ;; Some tests require the timezone to be set.
+          (lambda _ (setenv "TZ" "UTC") #t)))
        #:configure-flags
        '("--with-blas"
          "--with-lapack"
