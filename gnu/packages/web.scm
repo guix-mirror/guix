@@ -1766,6 +1766,29 @@ composed of HTML::Element style components.")
 syntactic legitmacy.")
     (license l:artistic2.0)))
 
+(define-public perl-html-tableextract
+  (package
+    (name "perl-html-tableextract")
+    (version "2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/M/MS/MSISK/"
+                           "HTML-TableExtract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01jimmss3q68a89696wmclvqwb2ybz6xgabpnbp6mm6jcni82z8a"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-element-extended" ,perl-html-element-extended)
+       ("perl-html-parser" ,perl-html-parser)))
+    (home-page "http://search.cpan.org/dist/HTML-TableExtract")
+    (synopsis "Extract contents from HTML tables")
+    (description
+     "HTML::TableExtract is a Perl module for extracting the content contained
+in tables within an HTML document, either as text or encoded element trees.")
+    (license (package-license perl))))
+
 (define-public perl-html-tree
   (package
     (name "perl-html-tree")
