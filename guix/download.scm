@@ -277,8 +277,8 @@ in the store."
                             ;; In general, offloading downloads is not a good idea.
                             ;;#:local-build? #t
                             ;; FIXME: The above would also disable use of
-                            ;; substitutes, so comment it out; see
-                            ;; <https://bugs.gnu.org/18747>.
+                            ;; substitutes on old daemons, so comment it out;
+                            ;; see <https://bugs.gnu.org/18747>.
                             )))))
 
 (define* (download-to-store store url #:optional (name (basename url))

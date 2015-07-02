@@ -90,6 +90,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
     (gexp->derivation (or name "git-checkout") build
                       #:system system
                       ;; FIXME: See <https://bugs.gnu.org/18747>.
+                      ;; Uncomment when fixed daemons are widely deployed.
                       ;;#:local-build? #t
                       #:hash-algo hash-algo
                       #:hash hash

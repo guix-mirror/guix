@@ -188,9 +188,21 @@
 
 (test-assert "offloadable-derivation?"
   (and (offloadable-derivation? (derivation %store "foo" %bash '()))
+       (offloadable-derivation?               ;see <http://bugs.gnu.org/18747>
+        (derivation %store "foo" %bash '()
+                    #:substitutable? #f))
        (not (offloadable-derivation?
              (derivation %store "foo" %bash '()
                          #:local-build? #t)))))
+
+(test-assert "substitutable-derivation?"
+  (and (substitutable-derivation? (derivation %store "foo" %bash '()))
+       (substitutable-derivation?             ;see <http://bugs.gnu.org/18747>
+        (derivation %store "foo" %bash '()
+                    #:local-build? #f))
+       (not (substitutable-derivation?
+             (derivation %store "foo" %bash '()
+                         #:substitutable? #f)))))
 
 (test-assert "fixed-output-derivation?"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
@@ -614,14 +626,11 @@
              (null? download*)
              (null? build*))))))
 
-(test-assert "derivation-prerequisites-to-build and substitutes, local build"
+(test-assert "derivation-prerequisites-to-build and substitutes, non-substitutable build"
   (let* ((store  (open-connection))
-         (drv    (build-expression->derivation store "prereq-subst-local"
+         (drv    (build-expression->derivation store "prereq-no-subst"
                                                (random 1000)
-                                               ;; XXX: Adjust once
-                                               ;; <http://bugs.gnu.org/18747>
-                                               ;; is fixed.
-                                               #:local-build? #t))
+                                               #:substitutable? #f))
          (output (derivation->output-path drv)))
 
     ;; Make sure substitutes are usable.
@@ -631,12 +640,33 @@
       (let-values (((build download)
                     (derivation-prerequisites-to-build store drv)))
         ;; Despite being available as a substitute, DRV will be built locally
-        ;; due to #:local-build?.
+        ;; due to #:substitutable? #f.
         (and (null? download)
              (match build
                (((? derivation-input? input))
                 (string=? (derivation-input-path input)
                           (derivation-file-name drv)))))))))
+
+(test-assert "derivation-prerequisites-to-build and substitutes, local build"
+  (with-store store
+    (let* ((drv    (build-expression->derivation store "prereq-subst-local"
+                                                 (random 1000)
+                                                 #:local-build? #t))
+           (output (derivation->output-path drv)))
+
+      ;; Make sure substitutes are usable.
+      (set-build-options store #:use-substitutes? #t)
+
+      (with-derivation-narinfo drv
+        (let-values (((build download)
+                      (derivation-prerequisites-to-build store drv)))
+          ;; #:local-build? is not be synonymous with #:substitutable?, so we
+          ;; must be able to substitute DRV's output.
+          ;; See <http://bugs.gnu.org/18747>.
+          (and (null? build)
+               (match download
+                 (((? string? item))
+                  (string=? item (derivation->output-path drv))))))))))
 
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin

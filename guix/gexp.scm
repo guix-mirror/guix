@@ -320,7 +320,7 @@ names and file names suitable for the #:allowed-references argument to
                            references-graphs
                            allowed-references
                            leaked-env-vars
-                           local-build?)
+                           local-build? (substitutable? #t))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
 derivation) on SYSTEM.  When TARGET is true, it is used as the
 cross-compilation target triplet for packages referred to by EXP.
@@ -439,7 +439,8 @@ The other arguments are as for 'derivation'."
                       #:references-graphs (and=> graphs graphs-file-names)
                       #:allowed-references allowed
                       #:leaked-env-vars leaked-env-vars
-                      #:local-build? local-build?))))
+                      #:local-build? local-build?
+                      #:substitutable? substitutable?))))
 
 (define* (gexp-inputs exp #:key native?)
   "Return the input list for EXP.  When NATIVE? is true, return only native

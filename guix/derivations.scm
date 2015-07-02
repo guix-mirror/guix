@@ -223,10 +223,13 @@ result is the set of prerequisites of DRV not already in valid."
     (("preferLocalBuild" . "1") #f)
     (_ #t)))
 
-(define substitutable-derivation?
-  ;; Return #t if the derivation can be substituted.  Currently the two are
-  ;; synonymous, see <http://bugs.gnu.org/18747>.
-  offloadable-derivation?)
+(define (substitutable-derivation? drv)
+  "Return #t if DRV can be substituted."
+  (match (assoc "allowSubstitutes"
+                (derivation-builder-environment-vars drv))
+    (("allowSubstitutes" . value)
+     (string=? value "1"))
+    (_ #t)))
 
 (define (derivation-output-paths drv sub-drvs)
   "Return the output paths of outputs SUB-DRVS of DRV."
@@ -692,7 +695,8 @@ HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
                      (inputs '()) (outputs '("out"))
                      hash hash-algo recursive?
                      references-graphs allowed-references
-                     leaked-env-vars local-build?)
+                     leaked-env-vars local-build?
+                     (substitutable? #t))
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -715,7 +719,10 @@ as \"http_proxy\" to be passed to derivations that download files.
 
 When LOCAL-BUILD? is true, declare that the derivation is not a good candidate
 for offloading and should rather be built locally.  This is the case for small
-derivations where the costs of data transfers would outweigh the benefits."
+derivations where the costs of data transfers would outweigh the benefits.
+
+When SUBSTITUTABLE? is false, declare that substitutes of the derivation's
+output should not be used."
   (define (add-output-paths drv)
     ;; Return DRV with an actual store path for each of its output and the
     ;; corresponding environment variable.
@@ -752,6 +759,9 @@ derivations where the costs of data transfers would outweigh the benefits."
     ;; where we kludgify those options.
     (let ((env-vars `(,@(if local-build?
                             `(("preferLocalBuild" . "1"))
+                            '())
+                      ,@(if (not substitutable?)
+                            `(("allowSubstitutes" . "0"))
                             '())
                       ,@(if allowed-references
                             `(("allowedReferences"
@@ -1173,7 +1183,7 @@ applied."
                                        guile-for-build
                                        references-graphs
                                        allowed-references
-                                       local-build?)
+                                       local-build? (substitutable? #t))
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
 tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
@@ -1193,7 +1203,7 @@ EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
 See the `derivation' procedure for the meaning of REFERENCES-GRAPHS,
-ALLOWED-REFERENCES, and LOCAL-BUILD?."
+ALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -1319,7 +1329,8 @@ ALLOWED-REFERENCES, and LOCAL-BUILD?."
                 #:outputs outputs
                 #:references-graphs references-graphs
                 #:allowed-references allowed-references
-                #:local-build? local-build?)))
+                #:local-build? local-build?
+                #:substitutable? substitutable?)))
 
 
 ;;;

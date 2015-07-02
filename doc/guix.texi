@@ -2582,7 +2582,8 @@ a derivation is the @code{derivation} procedure:
   @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
   [#:recursive? #f] [#:inputs '()] [#:env-vars '()] @
   [#:system (%current-system)] [#:references-graphs #f] @
-  [#:allowed-references #f] [#:leaked-env-vars #f] [#:local-build? #f]
+  [#:allowed-references #f] [#:leaked-env-vars #f] [#:local-build? #f] @
+  [#:substitutable? #t]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
@@ -2612,6 +2613,11 @@ When @var{local-build?} is true, declare that the derivation is not a
 good candidate for offloading and should rather be built locally
 (@pxref{Daemon Offload Setup}).  This is the case for small derivations
 where the costs of data transfers would outweigh the benefits.
+
+When @var{substitutable?} is false, declare that substitutes of the
+derivation's output should not be used (@pxref{Substitutes}).  This is
+useful, for instance, when building packages that capture details of the
+host CPU instruction set.
 @end deffn
 
 @noindent
@@ -2651,7 +2657,7 @@ is now deprecated in favor of the much nicer @code{gexp->derivation}.
        [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:references-graphs #f] [#:allowed-references #f] @
-       [#:local-build? #f] [#:guile-for-build #f]
+       [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -2674,7 +2680,8 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @code{%guile-for-build} fluid is used instead.
 
 See the @code{derivation} procedure for the meaning of
-@var{references-graphs}, @var{allowed-references}, and @var{local-build?}.
+@var{references-graphs}, @var{allowed-references}, @var{local-build?},
+and @var{substitutable?}.
 @end deffn
 
 @noindent
@@ -3163,7 +3170,7 @@ information about monads.)
        [#:module-path @var{%load-path}] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:leaked-env-vars #f] @
-       [#:local-build? #f] [#:guile-for-build #f]
+       [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
 @var{guile-for-build} (a derivation) on @var{system}.  When @var{target}
 is true, it is used as the cross-compilation target triplet for packages

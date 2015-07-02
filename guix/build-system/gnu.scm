@@ -367,10 +367,7 @@ are allowed to refer to."
                                 #:inputs input-drvs
                                 #:outputs outputs
                                 #:modules imported-modules
-
-                                ;; XXX: Update when
-                                ;; <http://bugs.gnu.org/18747> is fixed.
-                                #:local-build? (not substitutable?)
+                                #:substitutable? substitutable?
 
                                 #:allowed-references
                                 (and allowed-references
@@ -513,10 +510,7 @@ platform."
                                 #:inputs (append native-drvs target-drvs)
                                 #:outputs outputs
                                 #:modules imported-modules
-
-                                ;; XXX: Update when
-                                ;; <http://bugs.gnu.org/18747> is fixed.
-                                #:local-build? (not substitutable?)
+                                #:substitutable? substitutable?
 
                                 #:allowed-references
                                 (and allowed-references
