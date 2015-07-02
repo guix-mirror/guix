@@ -22,6 +22,7 @@
 (define-module (gnu packages gnupg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
@@ -199,9 +200,12 @@ compatible to GNU Pth.")
                (base32
                 "1zcj5vsrc64zyq7spnx2xlxlq6wxaf5bilpf6gbkp7qr8barlnay"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl)
+       ("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
@@ -239,6 +243,7 @@ libskba (working with X.509 certificates and CMS data).")
               (sha256
                (base32
                 "0k2k399fnhfhhr4dvm8d6vs4ihq6gg06191lzfwikzaqmgj2w2ff"))))
+    (native-inputs '())
     (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl)
@@ -269,6 +274,7 @@ libskba (working with X.509 certificates and CMS data).")
               (sha256
                (base32
                 "11pxx26sfilh0vswylh9mhiifw5yffw7nn733zknw3sb0jfk22bz"))))
+    (native-inputs '())
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
