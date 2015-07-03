@@ -19,9 +19,9 @@
 (define-module (gnu packages task-management)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages tls)
   #:use-module (guix download)
   #:use-module (guix build-system cmake))
 

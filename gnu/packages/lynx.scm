@@ -25,8 +25,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages libidn)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages compression))
 

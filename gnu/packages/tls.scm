@@ -19,7 +19,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages gnutls)
+(define-module (gnu packages tls)
   #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+ bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)

@@ -33,7 +33,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)

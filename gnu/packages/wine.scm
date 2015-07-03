@@ -32,7 +32,6 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -42,6 +41,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages scanner)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 

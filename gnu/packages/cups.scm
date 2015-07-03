@@ -30,9 +30,9 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages pdf)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls))
 
 (define-public cups-filters
   (package

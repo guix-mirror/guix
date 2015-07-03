@@ -18,10 +18,10 @@
 
 (define-module (gnu packages dns)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)

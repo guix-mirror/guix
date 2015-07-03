@@ -29,7 +29,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -41,7 +40,8 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages openssl)
-  #:use-module (gnu packages bdw-gc))
+  #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages tls))
 
 (define (boot-guile-uri arch)
   "Return the URI for the bootstrap Guile tarball for ARCH."

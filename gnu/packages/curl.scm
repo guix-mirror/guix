@@ -25,7 +25,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages libidn)
@@ -33,7 +32,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages ssh))
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tls))
 
 (define-public curl
   (package

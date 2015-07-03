@@ -27,11 +27,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
 (define-public gvpe

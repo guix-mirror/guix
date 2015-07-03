@@ -41,7 +41,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
   #:use-module ((gnu packages openssl) #:prefix o:)
-  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)

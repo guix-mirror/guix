@@ -27,7 +27,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages compression))
 
 (define-public lftp

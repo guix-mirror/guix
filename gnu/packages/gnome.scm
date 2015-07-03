@@ -52,7 +52,6 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
@@ -69,6 +68,7 @@
   #:use-module (gnu packages qt)  ; for libxkbcommon
   #:use-module (gnu packages compression)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
