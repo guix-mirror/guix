@@ -1316,9 +1316,10 @@ subprocess and see the output as well as any file modifications.")
         (base32
          "1dyml28ykpl5jb9khdmcdvhy1cxqingys6qvj2k04fzlaj6z3bbx"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-mimeparse" ,python-mimeparse)))
     (inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-mimeparse" ,python-mimeparse)
        ("python-extras" ,python-extras)))
     (home-page "https://github.com/testing-cabal/testtools")
     (synopsis
