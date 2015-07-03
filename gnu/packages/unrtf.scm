@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,8 +33,8 @@
     (version "0.21.9")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnu/unrtf/" version
-                                 "/unrtf-" version ".tar.gz"))
+             (uri (string-append "mirror://gnu/unrtf/unrtf-"
+                                 version ".tar.gz"))
              (sha256
               (base32
                "1pcdzf2h1prn393dkvg93v80vh38q0v817xnbwrlwxbdz4k7i8r2"))
