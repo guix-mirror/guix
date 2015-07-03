@@ -69,7 +69,7 @@
           ;; Some tests require the timezone to be set.
           (lambda _ (setenv "TZ" "UTC") #t)))
        #:configure-flags
-       '("--with-blas"
+       '("--with-blas=openblas"
          "--with-lapack"
          "--with-cairo"
          "--with-libpng"
@@ -92,7 +92,7 @@
        ("which" ,which) ; for tests/Examples/base-Ex.R
        ("xz" ,xz)))
     (inputs
-     `(("atlas" ,atlas) ; --with-blas
+     `(("openblas" ,openblas)
        ("cairo" ,cairo)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
