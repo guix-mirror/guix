@@ -240,15 +240,15 @@ contents and more.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.19.4")
+    (version "0.19.5")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
                 "http://download.enlightenment.org/rel/apps/enlightenment/enlightenment-"
-                version ".tar.gz"))
+                version ".tar.xz"))
               (sha256
-               (base32 "01pg3ng4m3vmwzzivlssdmvhf72bsvcmm3xwf45849cibllaib8v"))))
+               (base32 "0j66x7x76fbgqfw6fi77v8qy50slw3jnsq3vvs82rrfvniabm8wc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
