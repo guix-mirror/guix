@@ -30,12 +30,17 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libreoffice)  ;for hunspell
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pulseaudio)
@@ -235,6 +240,44 @@ standards.")
       (sha256
        (base32
         "0a25jp5afla2dxzj7i4cyvqpa5smsn7ns3xvpzqw6pc7naixkpap"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; Remove bundled libraries that we don't use, since they may
+          ;; contain unpatched security flaws, they waste disk space and
+          ;; network bandwidth, and may cause confusion.
+          (for-each delete-file-recursively
+                    '(;; FIXME: Removing the bundled icu breaks configure.
+                      ;;   * The bundled icu headers are used in some places.
+                      ;;   * The version number is taken from the bundled copy.
+                      ;;"intl/icu"
+                      ;;
+                      ;; FIXME: A script from the bundled nspr is used.
+                      ;;"nsprpub"
+                      ;;
+                      ;; TODO: Use system media libraries.  Waiting for:
+                      ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=517422>
+                      ;;   * libogg
+                      ;;   * libtheora
+                      ;;   * libvorbis
+                      ;;   * libtremor (not yet in guix)
+                      ;;   * libopus
+                      ;;   * speex
+                      ;;   * soundtouch (not yet in guix)
+                      ;;
+                      ;; TODO: Use system harfbuzz.  Waiting for:
+                      ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=847568>
+                      ;;
+                      "modules/freetype2"
+                      "modules/zlib"
+                      "modules/libbz2"
+                      "ipc/chromium/src/third_party/libevent"
+                      "media/libvpx"
+                      "security/nss"
+                      "gfx/cairo"
+                      "js/src/ctypes/libffi"
+                      "db/sqlite3"))
+          #t))
       (patches (map search-patch '("icecat-CVE-2015-2724-pt1.patch"
                                    "icecat-CVE-2015-2743.patch"
                                    "icecat-CVE-2015-2722-pt1.patch"
@@ -256,14 +299,22 @@ standards.")
      `(("alsa-lib" ,alsa-lib)
        ("bzip2" ,bzip2)
        ("cairo" ,cairo)
+       ("cups" ,cups)
        ("dbus-glib" ,dbus-glib)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+-2)
        ("pango" ,pango)
        ("freetype" ,freetype)
+       ("hunspell" ,hunspell)
+       ("libcanberra" ,libcanberra)
+       ("libgnome" ,libgnome)
        ("libxft" ,libxft)
        ("libevent" ,libevent)
+       ("libxinerama" ,libxinerama)
+       ("libxscrnsaver" ,libxscrnsaver)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("libvpx" ,libvpx)
@@ -271,9 +322,11 @@ standards.")
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
+       ("mit-krb5" ,mit-krb5)
        ("nspr" ,nspr)
        ("nss" ,nss)
        ("sqlite" ,sqlite)
+       ("startup-notification" ,startup-notification)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
        ("zip" ,zip)
@@ -294,16 +347,28 @@ standards.")
        ;; practice somehow.  See <http://hydra.gnu.org/build/378133>.
        #:validate-runpath? #f
 
-       #:configure-flags '(;; Building with debugging symbols takes ~5GiB, so
+       #:configure-flags '("--enable-default-toolkit=cairo-gtk2"
+                           "--enable-pango"
+                           "--enable-gio"
+                           "--enable-svg"
+                           "--enable-canvas"
+                           "--enable-mathml"
+                           "--enable-startup-notification"
+                           "--enable-pulseaudio"
+                           "--enable-gstreamer=1.0"
+
+                           "--disable-gnomevfs"
+                           "--disable-gconf"
+                           "--disable-gnomeui"
+
+                           ;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
                            "--disable-debug"
                            "--disable-debug-symbols"
 
-                           "--enable-pulseaudio"
-                           "--enable-gstreamer=1.0"
-
+                           ;; Avoid bundled libraries.
                            "--with-system-zlib"
-                           "--with-system-bz2"    ; FIXME: not used
+                           "--with-system-bz2"
                            "--with-system-libevent"
                            "--with-system-libvpx"
                            "--with-system-icu"
@@ -312,6 +377,7 @@ standards.")
                            "--enable-system-pixman"
                            "--enable-system-cairo"
                            "--enable-system-ffi"
+                           "--enable-system-hunspell"
                            "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
@@ -336,29 +402,55 @@ standards.")
                            )
 
        #:phases
-       (alist-replace
-        'configure
-        ;; configure does not work followed by both "SHELL=..." and
-        ;; "CONFIG_SHELL=..."; set environment variables instead
-        (lambda* (#:key outputs configure-flags #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (bash (which "bash"))
-                 (abs-srcdir (getcwd))
-                 (srcdir (string-append "../" (basename abs-srcdir)))
-                 (flags `(,(string-append "--prefix=" out)
-                          ,(string-append "--with-l10n-base="
-                                          abs-srcdir "/l10n")
-                          ,@configure-flags)))
-            (setenv "SHELL" bash)
-            (setenv "CONFIG_SHELL" bash)
-            (mkdir "../build")
-            (chdir "../build")
-            (format #t "build directory: ~s~%" (getcwd))
-            (format #t "configure flags: ~s~%" flags)
-            (zero? (apply system* bash
-                          (string-append srcdir "/configure")
-                          flags))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'remove-h264parse-from-blacklist
+          (lambda _
+            ;; Remove h264parse from gstreamer format helper blacklist.  It
+            ;; was put there to work around a bug in a pre-1.0 version of
+            ;; gstreamer.  See:
+            ;; https://www.mozilla.org/en-US/security/advisories/mfsa2015-47/
+            (substitute* "content/media/gstreamer/GStreamerFormatHelper.cpp"
+              (("^  \"h264parse\",\n") ""))
+            #t))
+         (add-after
+          'unpack 'arrange-to-link-libxul-with-libraries-it-might-dlopen
+          (lambda _
+            ;; libxul.so dynamically opens libraries, so here we explicitly
+            ;; link them into libxul.so instead.
+            ;;
+            ;; TODO: It might be preferable to patch in absolute file names in
+            ;; calls to dlopen or PR_LoadLibrary, but that didn't seem to
+            ;; work.  More investigation is needed.
+            (let ((p (open-file "toolkit/library/libxul.mk" "a")))
+              (display "\nOS_LIBS += -lGL -lgnome-2 -lcanberra -lXss \\
+                                     -lcups -lgssapi_krb5 -lgstreamer-1.0 \\
+                                     -lgstapp-1.0 -lgstvideo-1.0\n"
+                       p)
+              (close-port p)
+              #t)))
+         (replace
+          'configure
+          ;; configure does not work followed by both "SHELL=..." and
+          ;; "CONFIG_SHELL=..."; set environment variables instead
+          (lambda* (#:key outputs configure-flags #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bash (which "bash"))
+                   (abs-srcdir (getcwd))
+                   (srcdir (string-append "../" (basename abs-srcdir)))
+                   (flags `(,(string-append "--prefix=" out)
+                            ,(string-append "--with-l10n-base="
+                                            abs-srcdir "/l10n")
+                            ,@configure-flags)))
+              (setenv "SHELL" bash)
+              (setenv "CONFIG_SHELL" bash)
+              (mkdir "../build")
+              (chdir "../build")
+              (format #t "build directory: ~s~%" (getcwd))
+              (format #t "configure flags: ~s~%" flags)
+              (zero? (apply system* bash
+                            (string-append srcdir "/configure")
+                            flags))))))))
     (home-page "http://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
