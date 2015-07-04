@@ -1,6 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
+# Copyright © 2015 Alex Kost <alezost@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -363,7 +364,9 @@ guix-binary.%.tar.xz:
 	  "$(top_srcdir)/build-aux/make-binary-tarball.scm" "$*" "$@"
 
 
-dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
+dist-hook: sync-descriptions gen-ChangeLog gen-AUTHORS
+dist-hook: assert-no-store-file-names
+
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 sync-descriptions:
@@ -377,6 +380,11 @@ gen-ChangeLog:
 	  rm -f $(distdir)/ChangeLog;			\
 	  mv $(distdir)/cl-t $(distdir)/ChangeLog;	\
 	fi
+
+gen-AUTHORS:
+	$(top_builddir)/pre-inst-env "$(GUILE)"			\
+	  "$(top_srcdir)/build-aux/generate-authors.scm"	\
+	  "$(top_srcdir)" "$(distdir)/AUTHORS"
 
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names:
@@ -397,6 +405,6 @@ assert-final-inputs-self-contained:
 	$(top_builddir)/pre-inst-env "$(GUILE)"				\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
 
-.PHONY: sync-descriptions gen-ChangeLog clean-go
+.PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
