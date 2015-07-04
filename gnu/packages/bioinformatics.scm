@@ -2346,7 +2346,8 @@ against local background noises.")
            (lambda _ (setenv "HOME" "/tmp") #t)
            %standard-phases))))
        #:configure-flags
-       (list "-DUSE_SVMLIGHT=OFF" ;disable proprietary SVMLIGHT
+       (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
+             "-DUSE_SVMLIGHT=OFF" ;disable proprietary SVMLIGHT
              ;;"-DJavaModular=ON" ;requires unpackaged jblas
              ;;"-DRubyModular=ON" ;requires unpackaged ruby-narray
              ;;"-DPerlModular=ON" ;"FindPerlLibs" does not exist
