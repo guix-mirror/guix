@@ -50,14 +50,14 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.13.0")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://download.enlightenment.org/rel/libs/efl/efl-"
-                    version ".tar.gz"))
+                    version ".tar.xz"))
               (sha256
-               (base32 "0mwkxsfi5masiy6qfmdqy1j15cfz7nz8g8jq2bf3w501rpa9gxvz"))))
+               (base32 "0kg51v63ljq1z4dj65aiyxaqhq54gkl4hx53ifwbci6ihammandr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
