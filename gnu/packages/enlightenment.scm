@@ -187,15 +187,15 @@ files in Evas (EFL canvas library).")
 (define-public emotion-generic-players
   (package
     (name "emotion-generic-players")
-    (version "1.13.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append
                 "http://download.enlightenment.org/rel/libs/emotion_generic_players/emotion_generic_players-"
-                version ".tar.gz"))
+                version ".tar.xz"))
               (sha256
-               (base32 "0gin3cjhfj75v0gjsvv7harbj4fs4r7r1sfi74ncxzna71nrd8r3"))))
+               (base32 "0685jzag98ykknycfdqn70zif3fmcfi6m8k9yp6d79r1h8gc49n4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
