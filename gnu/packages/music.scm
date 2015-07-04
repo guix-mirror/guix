@@ -323,9 +323,6 @@ your own lessons.")
                   (delete-file-recursively "external")
                   (substitute* "CMakeLists.txt"
                     (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") "")
-                    ;; TODO: tests cannot be built:
-                    ;; test/test_main.cpp:28:12: error: ‘Session’ is not a member of ‘Catch’
-                    (("add_subdirectory\\(test\\)") "")
                     (("add_subdirectory\\(external\\)") ""))
                   (substitute* "test/CMakeLists.txt"
                     (("include_directories\\(\\$\\{PROJECT_SOURCE_DIR\\}/external/.*") ""))
@@ -342,20 +339,34 @@ your own lessons.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
-       #:modules ((guix build cmake-build-system)
+     `(#:modules ((guix build cmake-build-system)
                   (guix build utils)
                   (ice-9 match))
        #:configure-flags
        ;; CMake appears to lose the RUNPATH for some reason, so it has to be
        ;; explicitly set with CMAKE_INSTALL_RPATH.
-       (list (string-append "-DCMAKE_INSTALL_RPATH="
+       (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
+             "-DCMAKE_ENABLE_PRECOMPILED_HEADERS=OFF" ; if ON pte_tests cannot be built
+             (string-append "-DCMAKE_INSTALL_RPATH="
                             (string-join (map (match-lambda
                                                 ((name . directory)
                                                  (string-append directory "/lib")))
                                               %build-inputs) ";")))
        #:phases
        (modify-phases %standard-phases
+         (replace
+          'check
+          (lambda _
+            (zero? (system* "bin/pte_tests"
+                            ;; Exclude this failing test
+                            "~Formats/PowerTabOldImport/Directions"))))
+         (add-before
+          'configure 'fix-tests
+          (lambda _
+            ;; Tests cannot be built with precompiled headers
+            (substitute* "test/CMakeLists.txt"
+              (("cotire\\(pte_tests\\)") ""))
+            #t))
          (add-before
           'configure 'remove-third-party-libs
           (lambda* (#:key inputs #:allow-other-keys)
@@ -363,7 +374,7 @@ your own lessons.")
             ;; using the bundled version of withershins.
             (substitute* '("source/CMakeLists.txt"
                            "test/CMakeLists.txt")
-              (("target_link_libraries\\((powertabeditor)" _ target)
+              (("target_link_libraries\\((powertabeditor|pte_tests)" _ target)
                (string-append "target_link_libraries(" target " "
                               (assoc-ref inputs "binutils")
                               "/lib/libbfd.a "
