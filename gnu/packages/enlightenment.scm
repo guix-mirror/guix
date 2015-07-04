@@ -54,7 +54,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://download.enlightenment.org/rel/libs/efl/efl-"
+                    "https://download.enlightenment.org/rel/libs/efl/efl-"
                     version ".tar.xz"))
               (sha256
                (base32 "0kg51v63ljq1z4dj65aiyxaqhq54gkl4hx53ifwbci6ihammandr"))))
@@ -136,7 +136,7 @@ removable devices or support for multimedia.")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.enlightenment.org/rel/libs/elementary/elementary-"
+                "https://download.enlightenment.org/rel/libs/elementary/elementary-"
                 version ".tar.xz"))
               (sha256
                (base32 "1ck1jm9dfx2l72nklndqjfsxjqb0024b88naskld1dk9b8drs76b"))))
@@ -192,7 +192,7 @@ files in Evas (EFL canvas library).")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.enlightenment.org/rel/libs/emotion_generic_players/emotion_generic_players-"
+                "https://download.enlightenment.org/rel/libs/emotion_generic_players/emotion_generic_players-"
                 version ".tar.xz"))
               (sha256
                (base32 "0685jzag98ykknycfdqn70zif3fmcfi6m8k9yp6d79r1h8gc49n4"))))
@@ -218,7 +218,7 @@ The only supported now is VLC.")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.enlightenment.org/rel/apps/terminology/terminology-"
+                "https://download.enlightenment.org/rel/apps/terminology/terminology-"
                 version ".tar.gz"))
               (sha256
                (base32 "0a767ixackzmhb2awrhjy7q6vsivsd54wc434i617xiw095x843s"))))
@@ -245,7 +245,7 @@ contents and more.")
               (method url-fetch)
               (uri
                (string-append
-                "http://download.enlightenment.org/rel/apps/enlightenment/enlightenment-"
+                "https://download.enlightenment.org/rel/apps/enlightenment/enlightenment-"
                 version ".tar.xz"))
               (sha256
                (base32 "0j66x7x76fbgqfw6fi77v8qy50slw3jnsq3vvs82rrfvniabm8wc"))))
