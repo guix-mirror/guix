@@ -306,7 +306,7 @@ your own lessons.")
 (define-public powertabeditor
   (package
     (name "powertabeditor")
-    (version "2.0.0-alpha7")
+    (version "2.0.0-alpha8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -315,7 +315,7 @@ your own lessons.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1yp6ck2r72c2pfq31z1kpw1j639rndrifj85l3cbj2kdf8rdzhkk"))
+                "0gaa2x209v3azql8ak3r1n9a9qbxjx2ssirvwdxwklv2lmfqkm82"))
               (modules '((guix build utils)))
               (snippet
                '(begin
