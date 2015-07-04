@@ -466,6 +466,22 @@ dist_patch_DATA =						\
   gnu/packages/patches/hwloc-gather-topology-lstopo.patch	\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2722-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2722-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2724-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2724-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2724-pt3.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2724-pt4.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2728-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2728-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2733-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2733-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2735.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2736.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2738.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2739.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2740.patch		\
+  gnu/packages/patches/icecat-CVE-2015-2743.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
