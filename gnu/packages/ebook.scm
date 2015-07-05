@@ -32,11 +32,11 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libusb)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg))
 
 (define-public chmlib

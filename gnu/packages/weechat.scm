@@ -32,7 +32,6 @@
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages guile)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)

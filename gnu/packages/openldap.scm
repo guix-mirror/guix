@@ -25,7 +25,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:select (openldap2.8))
   #:use-module (guix packages)
   #:use-module (guix download)

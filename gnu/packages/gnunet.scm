@@ -34,7 +34,6 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)

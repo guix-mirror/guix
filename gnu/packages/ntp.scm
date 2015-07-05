@@ -23,7 +23,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix utils)

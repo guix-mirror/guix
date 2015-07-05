@@ -30,7 +30,6 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages pkg-config)

@@ -27,7 +27,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)

@@ -41,7 +41,6 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages mit-krb5)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages icu4c)
@@ -53,7 +52,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls))
 
 (define-public httpd
   (package

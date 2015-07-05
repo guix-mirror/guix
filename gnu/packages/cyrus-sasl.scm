@@ -21,7 +21,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages mit-krb5)
-  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)

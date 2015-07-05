@@ -39,7 +39,6 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
   #:use-module (gnu packages emacs)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages tls))
 

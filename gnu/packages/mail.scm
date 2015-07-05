@@ -50,7 +50,6 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)

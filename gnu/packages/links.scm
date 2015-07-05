@@ -23,7 +23,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))

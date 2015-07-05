@@ -24,10 +24,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages w3m))
 
 (define-public tor

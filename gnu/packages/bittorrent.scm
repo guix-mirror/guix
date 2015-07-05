@@ -23,7 +23,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages pkg-config)
@@ -36,7 +35,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages cyrus-sasl))
+  #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages tls))
 
 (define-public transmission
   (package

@@ -22,7 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages openssl))
+  #:use-module (gnu packages tls))
 
 (define-public miredo
   (package
