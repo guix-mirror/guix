@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Pjotr Prins <pjotr.public01@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,13 @@ directory."
 
 (define build
   (lambda _
-    (zero? (system* "gem" "build" (first-matching-file "\\.gemspec$")))))
+    (match (find-files "." "\\.gemspec$")
+      ;; No gemspec, try 'rake gem' instead.
+      (()
+       (zero? (system* "rake" "gem")))
+      ;; Build the first matching gemspec.
+      ((gemspec . _)
+       (zero? (system* "gem" "build" gemspec))))))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
   (if tests?
