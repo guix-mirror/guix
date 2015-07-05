@@ -29,16 +29,16 @@
 (define-public gxmessage
   (package
     (name "gxmessage")
-    (version "2.20.1")
+    (version "3.4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gxmessage/gxmessage-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "1b75qjx339c7q0xfxnwb2n5vw6xn8vi6nw2clggfzxnwwx58g2d1"))))
+              (base32 "01ggvvp0nyn8xczh93icifnji468wsjgqzd1f1bixwsqziaicknv"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+" ,gtk+-2)))
+     `(("gtk+" ,gtk+)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
