@@ -25,14 +25,14 @@
 (define-public gcal
   (package
     (name "gcal")
-    (version "3.6.3")
+    (version "4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gcal/gcal-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "06xkwkir9w4jd9i72m1izmf4rbry4slg8gkiml4w26h13lx92hk7"))))
+               "0vpzz2pb6xf5wlwyqj9xa29yvx72zdmffb0fv54hdirfn5vciiar"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/gcal")
     (synopsis "Calculating and printing a wide variety of calendars")
