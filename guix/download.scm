@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -204,7 +204,7 @@
 
 (define (gnutls-package)
   "Return the default GnuTLS package."
-  (let ((module (resolve-interface '(gnu packages gnutls))))
+  (let ((module (resolve-interface '(gnu packages tls))))
     (module-ref module 'gnutls)))
 
 (define* (url-fetch url hash-algo hash
