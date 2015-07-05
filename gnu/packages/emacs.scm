@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages linux)               ;alsa
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
@@ -825,4 +827,75 @@ or XEmacs.")
     (description
     "MMM Mode is a minor mode that allows multiple major modes to coexist in a
 single buffer.")
+    (license license:gpl3+)))
+
+(define-public emacs-pdf-tools
+  (package
+    (name "emacs-pdf-tools")
+    (version "0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/politza/pdf-tools/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y8k5n2jbyaxby0j6f4m9xbm0ddpmbkrfj6rp6ll5sb97lcg3vrx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir (lambda _ (chdir "server") #t))
+         (add-before
+          'configure 'autogen
+          (lambda _
+            (zero? (system* "bash" "autogen.sh"))))
+         (add-before
+          'build 'patch-variables
+          (lambda* (#:key outputs #:allow-other-keys)
+            (with-directory-excursion "../lisp"
+              ;; Set path to epdfinfo program.
+              (emacs-substitute-variables "pdf-info.el"
+                ("pdf-info-epdfinfo-program"
+                 (string-append (assoc-ref outputs "out")
+                                "/bin/epdfinfo")))
+              ;; Set 'pdf-tools-handle-upgrades' to nil to avoid "auto
+              ;; upgrading" that pdf-tools tries to perform.
+              (emacs-substitute-variables "pdf-tools.el"
+                ("pdf-tools-handle-upgrades" '())))))
+         (add-after
+          'install 'install-lisp
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((target (string-append (assoc-ref outputs "out")
+                                         "/share/emacs/site-lisp/")))
+              (mkdir-p target)
+              (for-each
+               (lambda (file)
+                 (copy-file file (string-append target (basename file))))
+               (find-files "../lisp" "^(pdf|tab).*\\.elc?"))
+              (emacs-byte-compile-directory target)
+              (emacs-generate-autoloads "pdf-tools" target)))))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("pkg-config" ,pkg-config)
+                     ("emacs" ,emacs-no-x)))
+    (inputs `(("poppler" ,poppler)
+              ("cairo" ,cairo)
+              ("glib" ,glib)
+              ("libpng" ,libpng)
+              ("zlib" ,zlib)))
+    (synopsis "Emacs support library for PDF files")
+    (description
+     "PDF Tools is, among other things, a replacement of DocView for PDF
+files.  The key difference is that pages are not pre-rendered by
+e.g. ghostscript and stored in the file-system, but rather created on-demand
+and stored in memory.")
+    (home-page "https://github.com/politza/pdf-tools")
     (license license:gpl3+)))
