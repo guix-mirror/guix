@@ -230,6 +230,42 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
+(define-public libressl
+  (package
+    (name "libressl")
+    (version "2.2.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+             "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-"
+             version ".tar.gz"))
+      (sha256 (base32
+               "0h1haqb4y39p1zihwvnr1ib0zfq5bcqfnbj5jm9l4j2xibrxi44n"))))
+    (build-system gnu-build-system)
+    (native-search-paths
+      ;; FIXME: These two variables must designate a single file or directory
+      ;; and are not actually "search paths."  In practice it works OK in
+      ;; user profiles because there's always just one item that matches the
+      ;; specification.
+     (list (search-path-specification
+            (variable "SSL_CERT_DIR")
+            (files '("etc/ssl/certs")))
+           (search-path-specification
+            (variable "SSL_CERT_FILE")
+            (files '("etc/ssl/certs/ca-certificates.crt")))))
+    (home-page "http://www.libressl.org/")
+    (synopsis "SSL/TLS implementation")
+    (description "LibreSSL is a version of the TLS/crypto stack forked
+from OpenSSL in 2014, with the goals of modernizing the codebase, improving
+security, and applying best practice development processes.")
+    ;; Files taken from OpenSSL keep their license, others are under various
+    ;; non-copyleft licenses.
+    (license (list license:openssl
+                   (license:non-copyleft
+                     "file://COPYING"
+                     "See COPYING in the distribution.")))))
+
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
