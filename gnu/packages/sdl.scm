@@ -299,7 +299,7 @@ directory.")
 (define-public guile-sdl
   (package
     (name "guile-sdl")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -307,7 +307,7 @@ directory.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "126n4rd0ydh6i2s11ari5k85iivradlf12zq13b34shf9k1wn5am"))))
+                "0cjgs012a9922hn6xqwj66w6qmfs3nycnm56hyykx5n3g5p7ag01"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -332,7 +332,13 @@ directory.")
                   (string-append (assoc-ref inputs "libjpeg") "/lib"))
           ;; Change the site directory /site/2.0 like Guile expects.
           (substitute* "build-aux/guile-baux/re-prefixed-site-dirs"
-            (("\"/site\"") "\"/site/2.0\"")))
+            (("\"/site\"") "\"/site/2.0\""))
+
+          ;; Skip tests that rely on sound support, which is unavailable in
+          ;; the build environment.
+          (substitute* "test/Makefile.in"
+            (("HAVE_MIXER = .*$")
+             "HAVE_MIXER = 0\n")))
         (alist-cons-before
          'check 'start-xorg-server
          (lambda* (#:key inputs #:allow-other-keys)
