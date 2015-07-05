@@ -20,8 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tls)
-  #:use-module ((guix licenses)
-                #:select (lgpl2.0+ lgpl2.1+ bsd-3 openssl))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -63,7 +62,7 @@
 for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public p11-kit
   (package
@@ -101,7 +100,7 @@ provides a standard configuration setup for installing PKCS#11 modules
 in such a way that they are discoverable.  It also solves problems with
 coordinating the use of PKCS#11 by different components or libraries
 living in the same process.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public gnutls
   (package
@@ -174,7 +173,7 @@ living in the same process.")
 and DTLS protocols.  It is provided in the form of a C library to support the
 protocols, as well as to parse and write X.5009, PKCS 12, OpenPGP and other
 required structures.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public openssl
   (package
@@ -228,7 +227,7 @@ required structures.")
    (synopsis "SSL/TLS implementation")
    (description
     "OpenSSL is an implementation of SSL/TLS")
-   (license openssl)
+   (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
 (define-public perl-net-ssleay
