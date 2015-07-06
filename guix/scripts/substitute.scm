@@ -462,17 +462,18 @@ to read the response body.  Return the list of results."
           (()
            (reverse result))
           ((head tail ...)
-           (let* ((resp (read-response p))
-                  (body (response-body-port resp)))
+           (let* ((resp   (read-response p))
+                  (body   (response-body-port resp))
+                  (result (cons (proc head resp body) result)))
              ;; The server can choose to stop responding at any time, in which
              ;; case we have to try again.  Check whether that is the case.
+             ;; Note that even upon "Connection: close", we can read from BODY.
              (match (assq 'connection (response-headers resp))
                (('connection 'close)
                 (close-port p)
-                (connect requests result))        ;try again
+                (connect tail result))            ;try again
                (_
-                (loop tail                        ;keep going
-                      (cons (proc head resp body) result)))))))))))
+                (loop tail result))))))))))       ;keep going
 
 (define (read-to-eof port)
   "Read from PORT until EOF is reached.  The data are discarded."
