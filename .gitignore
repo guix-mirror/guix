@@ -4,7 +4,16 @@
 *.go
 tmp
 *.log
-/build-aux
+/build-aux/compile
+/build-aux/config.guess
+/build-aux/config.rpath
+/build-aux/config.sub
+/build-aux/depcomp
+/build-aux/install-sh
+/build-aux/mdate-sh
+/build-aux/missing
+/build-aux/test-driver
+/build-aux/texinfo.tex
 /configure
 Makefile.in
 Makefile
