@@ -1176,8 +1176,10 @@ string LocalStore::getLineFromSubstituter(RunningSubstituter & run)
             if (n == 0) throw EndOfFile(format("substituter `%1%' died unexpectedly") % run.program);
             err.append(buf, n);
             string::size_type p;
-            while ((p = err.find('\n')) != string::npos) {
-                printMsg(lvlError, run.program + ": " + string(err, 0, p));
+            while (((p = err.find('\n')) != string::npos)
+		   || ((p = err.find('\r')) != string::npos)) {
+	        string thing(err, 0, p + 1);
+	        writeToStderr(run.program + ": " + thing);
                 err = string(err, p + 1);
             }
         }
