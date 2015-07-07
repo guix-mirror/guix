@@ -802,18 +802,15 @@ projects while introducing many more.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://webm.googlecode.com/files/libvpx-v"
-                                  version ".tar.bz2"))
+              (uri (string-append "http://storage.googleapis.com/"
+                                  "downloads.webmproject.org/releases/webm/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1aai0h0z1bhp89pxmg4fkrwpmqq24k39fhr15cw6q77m9bccip6k"))
-              (patches
-               (list (search-patch "libvpx-vp9-out-of-bounds-access.patch")
-                     (search-patch "libvpx-fix-ssse3-quantize.patch")
-                     (search-patch "libvpx-fix-armhf-link.patch")))))
+                "1r0ql5kgy0c8mh5w7iiqvsd7w5njl9f9cclc7m52ln8assrdk0pm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace
