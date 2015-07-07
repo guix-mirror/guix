@@ -161,6 +161,33 @@ A/52 standard is used in a variety of applications, including digital
 television and DVD.  It is also known as AC-3.")
     (license license:gpl2+)))
 
+(define-public libmpeg2
+  (package
+    (name "libmpeg2")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              ;; A mirror://sourceforge URI doesn't work, presumably
+              ;; because the SourceForge project is misconfigured.
+              (uri (string-append "http://libmpeg2.sourceforge.net/files/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1m3i322n2fwgrvbs1yck7g5md1dbg22bhq5xdqmjpz5m7j4jxqny"))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxv" ,libxv)
+       ("libsm" ,libsm)
+       ("libice" ,libice)
+       ("sdl" ,sdl)))
+    (build-system gnu-build-system)
+    (home-page "http://libmpeg2.sourceforge.net/")
+    (synopsis "MPEG1 and MPEG2 video decoder library")
+    (description
+     "libmpeg2 is a library which can decode MPEG1 and MPEG2 video streams.")
+    (license license:gpl2+)))
+
 (define-public libass
   (package
     (name "libass")
