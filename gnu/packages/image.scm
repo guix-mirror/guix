@@ -162,7 +162,11 @@ collection of tools for doing simple manipulations of TIFF images.")
                             name "/" version
                             "/" name "-" version ".tar.gz"))
         (sha256
-          (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))))
+         (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))
+        (patches
+         (map search-patch '("libwmf-CVE-2006-3376.patch"
+                             "libwmf-CVE-2009-1364.patch"
+                             "libwmf-CVE-2015-0848+4588+4695+4696.patch")))))
 
     (build-system gnu-build-system)
     (inputs

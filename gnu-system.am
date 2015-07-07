@@ -518,6 +518,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/libvpx-fix-armhf-link.patch		\
   gnu/packages/patches/libvpx-fix-ssse3-quantize.patch		\
   gnu/packages/patches/libvpx-vp9-out-of-bounds-access.patch	\
+  gnu/packages/patches/libwmf-CVE-2006-3376.patch		\
+  gnu/packages/patches/libwmf-CVE-2009-1364.patch		\
+  gnu/packages/patches/libwmf-CVE-2015-0848+4588+4695+4696.patch \
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua51-liblua-so.patch                    \
