@@ -996,8 +996,12 @@ permission bits are kept."
                          (system (%current-system)))
   "Run MVAL, a monadic value in the store monad, in STORE, an open store
 connection, and return the result."
+  ;; Initialize the dynamic bindings here to avoid bad surprises.  The
+  ;; difficulty lies in the fact that dynamic bindings are resolved at
+  ;; bind-time and not at call time, which can be disconcerting.
   (parameterize ((%guile-for-build guile-for-build)
-                 (%current-system system))
+                 (%current-system system)
+                 (%current-target-system #f))
     (call-with-values (lambda ()
                         (run-with-state mval store))
       (lambda (result store)

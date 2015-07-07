@@ -636,6 +636,17 @@
                                             file)))))
       #:guile-for-build (package-derivation %store %bootstrap-guile))))
 
+(test-assert "gexp->derivation vs. %current-target-system"
+  (let ((mval (gexp->derivation "foo"
+                                #~(begin
+                                    (mkdir #$output)
+                                    (foo #+gnu-make))
+                                #:target #f)))
+    ;; The value of %CURRENT-TARGET-SYSTEM at bind-time should have no
+    ;; influence.
+    (parameterize ((%current-target-system "fooooo"))
+      (derivation? (run-with-store %store mval)))))
+
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
  \"/bin/uname\"\\) [[:xdigit:]]+>$"
