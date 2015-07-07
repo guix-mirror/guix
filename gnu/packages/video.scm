@@ -947,7 +947,7 @@ players, like VLC or MPlayer.")
 (define-public libdvdread
   (package
     (name "libdvdread")
-    (version "5.0.0")
+    (version "5.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -955,7 +955,7 @@ players, like VLC or MPlayer.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "052z62l3x8ka5jpf5bi1mzp5p323n1z9rxj74nq5c35a88x1myv6"))))
+                "0ayqiq0psq18rcp6f5pz82sxsq66v0kwv0y55dbrcg68plnxy71j"))))
     (build-system gnu-build-system)
     (home-page "http://dvdnav.mplayerhq.hu/")
     (synopsis "Library for reading video DVDs")
