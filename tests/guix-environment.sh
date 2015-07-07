@@ -39,6 +39,14 @@ test "`wc -l < "$tmpdir/a"`" = 1
 
 cmp "$tmpdir/a" "$tmpdir/b"
 
+# Make sure the exit value is preserved.
+if guix environment --ad-hoc guile-bootstrap --pure -E 'guile -c "(exit 42)"'
+then
+    false
+else
+    test $? = 42
+fi
+
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
     # Compute the build environment for the initial GNU Make.
