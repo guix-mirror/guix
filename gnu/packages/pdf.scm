@@ -171,9 +171,9 @@
               ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
-          "PLUGINDIR=/lib/zathura" "CC=gcc")
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "PLUGINDIR=" %output "/lib/zathura")
+                          "CC=gcc")
        #:tests? #f ; Package does not contain tests.
        #:phases
        (alist-delete 'configure %standard-phases)))
@@ -202,9 +202,9 @@ using libarchive.")
               ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
-          "PLUGINDIR=/lib/zathura" "CC=gcc")
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "PLUGINDIR=" %output "/lib/zathura")
+                          "CC=gcc")
        #:tests? #f ; Package does not contain tests.
        #:phases
        (alist-delete 'configure %standard-phases)))
@@ -234,9 +234,9 @@ using libspectre.")
        ("zathura" ,zathura)))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
-          "PLUGINDIR=/lib/zathura" "CC=gcc")
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "PLUGINDIR=" %output "/lib/zathura")
+                          "CC=gcc")
        #:tests? #f ; Package does not contain tests.
        #:phases
        (alist-delete 'configure %standard-phases)))
@@ -267,9 +267,9 @@ using the DjVuLibre library.")
        ("cairo" ,cairo)))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "DESTDIR=" (assoc-ref %outputs "out"))
-          "PLUGINDIR=/lib/zathura" "CC=gcc")
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "PLUGINDIR=" %output "/lib/zathura")
+                          "CC=gcc")
        #:tests? #f ; Package does not include tests.
        #:phases
        (alist-delete 'configure %standard-phases)))
