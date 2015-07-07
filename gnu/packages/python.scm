@@ -48,9 +48,11 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -2723,6 +2725,42 @@ can, for example, efficiently read whole PLINK *.bed/bim/fam files or parts of
 those files.  It can also efficiently manipulate ranges of integers using set
 operators such as union, intersection, and difference.")
     (license asl2.0)))
+
+(define-public python-rpy2
+  (package
+    (name "python-rpy2")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/r/rpy2"
+                           "/rpy2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dp4l8hpv0jpf4crz4wis6in3lvwk86cr5zvpw410y4a07rrbqjk"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)
+       ("readline" ,readline)
+       ("icu4c" ,icu4c)
+       ("pcre" ,pcre)
+       ("r" ,r)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://rpy.sourceforge.net/")
+    (synopsis "Python interface to the R language")
+    (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
+low-level interface to R from Python, a proposed high-level interface,
+including wrappers to graphical libraries, as well as R-like structures and
+functions.")
+    (license gpl3+)))
+
+(define-public python2-rpy2
+  (let ((rpy2 (package-with-python2 python-rpy2)))
+    (package (inherit rpy2)
+      (native-inputs
+       `(("python2-singledispatch" ,python2-singledispatch)
+         ,@(package-native-inputs rpy2))))))
 
 (define-public python-scipy
   (package
