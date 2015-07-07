@@ -463,7 +463,7 @@ export SSL_CERT_DIR=/etc/ssl/certs
 export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
 export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
 
-# Crucial variables that could be missing the the profiles' 'etc/profile'
+# Crucial variables that could be missing in the profiles' 'etc/profile'
 # because they would require combining both profiles.
 # FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
