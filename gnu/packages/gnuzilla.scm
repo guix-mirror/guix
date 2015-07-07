@@ -293,7 +293,8 @@ standards.")
                                    "icecat-CVE-2015-2724-pt4.patch"
                                    "icecat-CVE-2015-2733-pt2.patch"
                                    "icecat-CVE-2015-2738.patch"
-                                   "icecat-CVE-2015-2740.patch")))))
+                                   "icecat-CVE-2015-2740.patch"
+                                   "icecat-libvpx-1.4.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
