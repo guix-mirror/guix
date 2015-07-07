@@ -1,0 +1,24 @@
+Copied from Debian.
+
+From: Rodeo
+Origin: https://github.com/HandBrake/HandBrake/blob/master/contrib/a52dec/A04-modern-gcc-cflags.patch
+
+--- a52dec-0.7.4/configure.in.orig
++++ a52dec-0.7.4/configure.in
+@@ -34,11 +34,11 @@
+     case "$host" in
+     i?86-* | k?-*)
+ 	case "$host" in
+-	i386-*) OPT_CFLAGS="$CFLAGS -mcpu=i386";;
+-	i486-*) OPT_CFLAGS="$CFLAGS -mcpu=i486";;
+-	i586-*) OPT_CFLAGS="$CFLAGS -mcpu=pentium";;
+-	i686-*) OPT_CFLAGS="$CFLAGS -mcpu=pentiumpro";;
+-	k6-*)   OPT_CFLAGS="$CFLAGS -mcpu=k6";;
++	i386-*) OPT_CFLAGS="$CFLAGS -mtune=i386";;
++	i486-*) OPT_CFLAGS="$CFLAGS -mtune=i486";;
++	i586-*) OPT_CFLAGS="$CFLAGS -mtune=pentium";;
++	i686-*) OPT_CFLAGS="$CFLAGS -mtune=pentiumpro";;
++	k6-*)   OPT_CFLAGS="$CFLAGS -mtune=k6";;
+ 	esac
+ 	AC_TRY_CFLAGS([$OPT_CFLAGS],[CFLAGS=$OPT_CFLAGS]);;
+     sparc-* | sparc64-*)

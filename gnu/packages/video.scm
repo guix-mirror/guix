@@ -128,15 +128,32 @@ old-fashioned output methods with powerful ascii-art renderer.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))))
+                "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))
+              (patches (map search-patch '("liba52-enable-pic.patch"
+                                           "liba52-set-soname.patch"
+                                           "liba52-use-mtune-not-mcpu.patch"
+                                           "liba52-link-with-libm.patch")))))
     (build-system gnu-build-system)
+    ;; XXX We need to run ./bootstrap because of the build system fixes above.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (arguments `(#:configure-flags
-                 '(;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
+                 '("--enable-shared"
+                   ;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
                    ,@(if (%current-target-system)
                          '()
                          (let ((triplet
                                 (nix-system->gnu-triplet (%current-system))))
-                           (list (string-append "--build=" triplet)))))))
+                           (list (string-append "--build=" triplet)))))
+                 #:phases
+                 (modify-phases %standard-phases
+                   ;; XXX We need to run ./bootstrap because of the build
+                   ;; system fixes above.
+                   (add-after
+                    'unpack 'bootstrap
+                    (lambda _ (zero? (system* "sh" "bootstrap")))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
     (description "liba52 is a library for decoding ATSC A/52 streams.  The

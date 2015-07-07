@@ -1,0 +1,23 @@
+Copied from Debian.
+
+Description: Sets the soname to liba52-$(VERSION).so
+Bug-Debian: http://bugs.debian.org/401636
+Author: Daniel Baumann <daniel@debian.org>, Dmitrijs Ledkovs <dmitrij.ledkov@gmail.com>
+
+
+---
+ liba52/Makefile.am |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+Index: a52dec-deb/liba52/Makefile.am
+===================================================================
+--- a52dec-deb.orig/liba52/Makefile.am	2009-12-05 02:52:12.000000000 +0000
++++ a52dec-deb/liba52/Makefile.am	2009-12-05 03:23:47.000000000 +0000
+@@ -4,6 +4,6 @@
+ 
+ liba52_la_SOURCES = bitstream.c imdct.c bit_allocate.c parse.c downmix.c
+ liba52_la_LIBADD = @LIBA52_LIBS@ -lm
+-liba52_la_LDFLAGS = -no-undefined
++liba52_la_LDFLAGS = -no-undefined -release @VERSION@
+ 
+ EXTRA_DIST = configure.incl a52_internal.h bitstream.h tables.h

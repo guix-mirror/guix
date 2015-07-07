@@ -1,0 +1,25 @@
+Copied from Debian.
+
+Description: Disabling -prefer-non-pic which enables -fPIC
+Bug-Debian: http://bugs.debian.org/401590
+Author: Daniel Baumann <daniel@debian.org>, Dmitrijs Ledkovs <dmitrij.ledkov@gmail.com>
+
+
+---
+ liba52/configure.incl |    3 ---
+ 1 files changed, 0 insertions(+), 3 deletions(-)
+
+Index: a52dec-deb/liba52/configure.incl
+===================================================================
+--- a52dec-deb.orig/liba52/configure.incl	2009-12-05 02:52:12.000000000 +0000
++++ a52dec-deb/liba52/configure.incl	2009-12-05 03:23:45.000000000 +0000
+@@ -1,9 +1,6 @@
+ AC_SUBST([LIBA52_CFLAGS])
+ AC_SUBST([LIBA52_LIBS])
+ 
+-dnl avoid -fPIC when possible
+-LIBA52_CFLAGS="$LIBA52_CFLAGS -prefer-non-pic"
+-
+ AC_ARG_ENABLE([double],
+     [  --enable-double         use double-precision samples])
+ if test x"$enable_double" = x"yes"; then

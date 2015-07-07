@@ -486,6 +486,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
+  gnu/packages/patches/liba52-enable-pic.patch			\
+  gnu/packages/patches/liba52-link-with-libm.patch		\
+  gnu/packages/patches/liba52-set-soname.patch			\
+  gnu/packages/patches/liba52-use-mtune-not-mcpu.patch		\
   gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
   gnu/packages/patches/libarchive-fix-lzo-test-case.patch	\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
