@@ -84,7 +84,7 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.7.3")
+   (version "2.7.4")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -92,7 +92,7 @@ solve the shortest vector problem.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "02k54m7p47r54lgxqanxvf7pdrss17n8if1qwk5wx0j1px22j0rq"))))
+                "0k1qqagfl6zn7gvwmsqffj6g9yrzqvszwh2mblhmxpjlw1pigfh8"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("perl" ,perl)
