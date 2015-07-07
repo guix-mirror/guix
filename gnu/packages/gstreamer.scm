@@ -243,6 +243,45 @@ GStreamer multimedia library.  This set contains those plug-ins which the
 developers consider to have good quality code and correct functionality.")
     (license lgpl2.0+)))
 
+(define-public gst-plugins-ugly
+  (package
+    (name "gst-plugins-ugly")
+    (version "1.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://gstreamer.freedesktop.org/src/"
+                           name "/" name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0rwhljn3f8mp2pfchzfcx4pvps1546dndw9mr56lz50qyqffimaw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gst-plugins-base" ,gst-plugins-base)
+       ("liba52" ,liba52)
+       ("libmad" ,libmad)
+       ("lame" ,lame)
+       ("libcdio" ,libcdio)
+       ("twolame" ,twolame)
+       ("libmpeg2" ,libmpeg2)
+       ("libdvdread" ,libdvdread)
+       ("libx264" ,libx264)
+       ;; TODO:
+       ;; * opencore-amr (for the AMR-NB decoder and encoder and the
+       ;;   AMR-WB decoder) <http://sourceforge.net/projects/opencore-amr/>
+       ("orc" ,orc)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)))
+    (home-page "http://gstreamer.freedesktop.org/")
+    (synopsis
+     "GStreamer plugins from the \"ugly\" set.")
+    (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
+which the developers consider to have good quality code but that might pose
+distribution problems in some jurisdictions, e.g. due to patent threats.")
+    (license lgpl2.0+)))
+
 (define-public gst-libav
   (package
     (name "gst-libav")
