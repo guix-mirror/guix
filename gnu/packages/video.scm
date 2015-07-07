@@ -970,7 +970,7 @@ installed).")
 (define-public libdvdnav
   (package
     (name "libdvdnav")
-    (version "5.0.1")
+    (version "5.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -978,7 +978,7 @@ installed).")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ad2lkkiydgwiyqfysra9lkwjv9yqnvcg4hv92hx8qzics1cpcbj"))))
+                "0v8byv5z598k06rqzdmj7739vc86xq3zf79zfr698dib7lz055sh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
