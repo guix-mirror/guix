@@ -188,6 +188,43 @@ television and DVD.  It is also known as AC-3.")
      "libmpeg2 is a library which can decode MPEG1 and MPEG2 video streams.")
     (license license:gpl2+)))
 
+(define-public libx264
+  (package
+    (name "libx264")
+    (version "20150706-2245")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.videolan.org/pub/x264/snapshots/"
+                                  "x264-snapshot-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v04xq25q66gsk78i4kryy7503ki87jxbhln2c0qpvyy0d47p466"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("yasm" ,yasm)))
+    ;; TODO: Add gpac input
+    (arguments
+     `(#:tests? #f  ;no check target
+       #:configure-flags '("--enable-shared"
+                           ;; Don't build the command-line program.  If we
+                           ;; want it later, we should do so in a different
+                           ;; package to avoid a circular dependency (the x264
+                           ;; program depends on ffmpeg and ffmpeg depends on
+                           ;; libx264).
+                           "--disable-cli")))
+    (home-page "http://www.videolan.org/developers/x264.html")
+    (synopsis "H.264 video coding library")
+    (description "libx264 is an advanced encoding library for creating
+H.264 (MPEG-4 AVC) video streams.")
+    (license (list license:gpl2+         ;most files
+                   license:isc           ;common/x86/x86inc.asm
+                   license:lgpl2.1+      ;extras/getopt.c
+                   license:bsd-3         ;extras/inttypes.h
+                   (license:non-copyleft ;extras/cl*.h
+                    "file://extras/cl.h"
+                    "See extras/cl.h in the distribution.")))))
+
 (define-public libass
   (package
     (name "libass")
