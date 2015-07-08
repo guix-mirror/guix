@@ -106,14 +106,14 @@ across a broad spectrum of applications.")
 (define-public mdds
   (package
     (name "mdds")
-    (version "0.12.0")
+    (version "0.12.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://kohei.us/files/mdds/src/mdds_" version ".tar.bz2"))
              (sha256
               (base32
-               "10ar7r0gkdl2r7916jlkl5c38cynrh7x9s90a5i8d242r8ixw8ia"))))
+               "0gg8mb9kxh3wggh7njj1gf90xy27p0yq2cw88wqar9hhg2fmwmi3"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("boost" ,boost))) ; inclusion of header files
