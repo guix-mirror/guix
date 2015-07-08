@@ -651,6 +651,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/wpa-supplicant-2015-4-fix-pt3.patch	\
   gnu/packages/patches/wpa-supplicant-2015-4-fix-pt4.patch	\
   gnu/packages/patches/wpa-supplicant-2015-4-fix-pt5.patch	\
+  gnu/packages/patches/wpa-supplicant-2015-5-fix.patch		\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-geode-glibc-2.20.patch	\

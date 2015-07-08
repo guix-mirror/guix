@@ -705,7 +705,8 @@ commands and their arguments.")
                                    "wpa-supplicant-2015-4-fix-pt2.patch"
                                    "wpa-supplicant-2015-4-fix-pt3.patch"
                                    "wpa-supplicant-2015-4-fix-pt4.patch"
-                                   "wpa-supplicant-2015-4-fix-pt5.patch")))))
+                                   "wpa-supplicant-2015-4-fix-pt5.patch"
+                                   "wpa-supplicant-2015-5-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
