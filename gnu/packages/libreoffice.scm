@@ -539,14 +539,14 @@ text documents, vector drawings, presentations and spreadsheets.")
 (define-public libmwaw
   (package
     (name "libmwaw")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "1sn95flxrh85qjsg1kk700c1ggxaaccr9j1nnw7x4daw8lky25ac"))))
+               "1vx9h419fcfcs0yj071hsg9d2qvkacgca6052m8hv3h743cdmzil"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
