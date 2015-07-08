@@ -3885,15 +3885,15 @@ information.  Currently the supported repositories and their identifiers
 are:
 @itemize -
 @item
-@uref{"http://elpa.gnu.org/packages", GNU}, selected by the @code{gnu}
+@uref{http://elpa.gnu.org/packages, GNU}, selected by the @code{gnu}
 identifier.  This is the default.
 
 @item
-@uref{"http://stable.melpa.org/packages", MELPA-Stable}, selected by the
+@uref{http://stable.melpa.org/packages, MELPA-Stable}, selected by the
 @code{melpa-stable} identifier.
 
 @item
-@uref{"http://melpa.org/packages", MELPA}, selected by the @code{melpa}
+@uref{http://melpa.org/packages, MELPA}, selected by the @code{melpa}
 identifier.
 @end itemize
 @end table
