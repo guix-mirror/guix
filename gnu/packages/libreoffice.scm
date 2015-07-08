@@ -569,14 +569,14 @@ spreadsheet documents.")
 (define-public libwps
   (package
     (name "libwps")
-    (version "0.3.1")
+    (version "0.4.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "14wfhw1ahavhx4hrdzc4hdwxjlffrm939kswf2x1250jnmyjlb5v"))))
+               "0nlrdk7di015l0sk0ivjdqs86zdcvf73p9z9s9ry5glyhrknzxjk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
