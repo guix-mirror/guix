@@ -30,15 +30,15 @@
 (define-public pumpa
   (package
     (name "pumpa")
-    (version "0.9")
+    (version "0.9.1")
     (source (origin
               (method git-fetch) ; no source tarballs
               (uri (git-reference
-                    (url "https://gitorious.org/pumpa/pumpa.git")
+                    (url "git://pumpa.branchable.com/")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0v55xq17wnc9mvpmrm5r3rjrsg9npnjv1lznbz8ppk77ba8pwimy"))))
+                "14s0m46yqph8bs5rjpmiq42f020j9l3mygan2zj93z6qzypwd07f"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
