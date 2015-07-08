@@ -341,19 +341,21 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.1")
+    (version "0.1.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0gn8v24jb9r9kxppbws6xlc7knpd9mk2n9xjvziccv5f2l7mlslw"))))
+               "0mghaqzj0qqza8z1gzprw62702adlww4kgdzynj5qpxxc9m2f4py"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
+       ("glm" ,glm)
        ("gperf" ,gperf)
+       ("mdds" ,mdds)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs ; in Requires or Requires.private field of .pkg
      `(("librevenge" ,librevenge)
