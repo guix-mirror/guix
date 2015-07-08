@@ -53,8 +53,8 @@ information about package NAME. (Function 'elpa-package-info'.)"
 (define package-source-url
   (@@ (guix import elpa) package-source-url))
 
-(define nil->empty
-  (@@ (guix import elpa) nil->empty))
+(define ensure-list
+  (@@ (guix import elpa) ensure-list))
 
 (define package-home-page
   (@@ (guix import elpa) package-home-page))
@@ -76,7 +76,7 @@ information about package NAME. (Function 'elpa-package-info'.)"
                   (ver (elpa-version->string version))
                   (url (package-source-url kind name ver repo)))
              (make-elpa-package name ver
-                                (nil->empty reqs) synopsis kind
+                                (ensure-list reqs) synopsis kind
                                 (package-home-page (first rest))
                                 auctex-readme-mock
                                 url)))
