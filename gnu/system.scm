@@ -689,6 +689,7 @@ etc."
       (gnu build linux-modules)
       (gnu build file-systems)
       (guix build utils)
+      (guix build syscalls)
       (guix elf)))
 
   (define (service-activations services)

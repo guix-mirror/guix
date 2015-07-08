@@ -50,6 +50,13 @@
 ;;;
 ;;; Code:
 
+;; 'mount' is already defined in the statically linked Guile used for initial
+;; RAM disks, but in all other cases the (guix build syscalls) module contains
+;; the mount binding.
+(unless (defined? 'mount)
+  (module-use! (current-module)
+               (resolve-interface '(guix build syscalls))))
+
 ;; Linux mount flags, from libc's <sys/mount.h>.
 (define MS_RDONLY 1)
 (define MS_NOSUID 2)
