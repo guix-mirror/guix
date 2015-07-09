@@ -69,6 +69,8 @@
   (speed           build-machine-speed            ; inexact real
                    (default 1.0))
   (features        build-machine-features         ; list of strings
+                   (default '()))
+  (ssh-options     build-machine-ssh-options      ; list of strings
                    (default '())))
 
 (define-record-type* <build-requirements>
@@ -200,10 +202,11 @@ not be started."
            ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
            "-i" (build-machine-private-key machine)
 
-           (build-machine-name machine)
-           (if quote?
-               (map shell-quote command)
-               command))))
+           (append (build-machine-ssh-options machine)
+                   (list (build-machine-name machine))
+                   (if quote?
+                       (map shell-quote command)
+                       command)))))
 
 
 ;;;
@@ -448,12 +451,14 @@ success, #f otherwise."
                    (format #f "~{~a~%~}" files))
                   ((missing pids)
                    (filtered-port
-                    (list (which %lshg-command)
-                          "-l" (build-machine-user machine)
-                          "-p" (number->string (build-machine-port machine))
-                          "-i" (build-machine-private-key machine)
-                          (build-machine-name machine)
-                          "guix" "archive" "--missing")
+                    (append (list (which %lshg-command)
+                                  "-l" (build-machine-user machine)
+                                  "-p" (number->string
+                                        (build-machine-port machine))
+                                  "-i" (build-machine-private-key machine))
+                            (build-machine-ssh-options machine)
+                            (cons (build-machine-name machine)
+                                  '("guix" "archive" "--missing")))
                     (open-input-string files)))
                   ((result)
                    (get-string-all missing)))
