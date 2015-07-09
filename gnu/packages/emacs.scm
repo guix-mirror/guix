@@ -814,18 +814,28 @@ or XEmacs.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://stable.melpa.org/packages/mmm-mode-"
-             version
-             ".tar"))
+             "https://github.com/purcell/mmm-mode/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1llkzb6d978ym3zv3yfzwj0w5zzmmj3ksrm5swrx1papxcnqnkb9"))))
-    (build-system emacs-build-system)
+         "10kwslnflbjqm62wkrq420crqzdqalzfflp9pqk1i12zm6dm4mfv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("emacs" ,emacs-no-x)
+       ("texinfo" ,texinfo)))
     (home-page "https://github.com/purcell/mmm-mode")
-    (synopsis
-     "Allow multiple major modes in an Emacs buffer")
+    (synopsis "Allow multiple major modes in an Emacs buffer")
     (description
-    "MMM Mode is a minor mode that allows multiple major modes to coexist in a
+     "MMM Mode is a minor mode that allows multiple major modes to coexist in a
 single buffer.")
     (license license:gpl3+)))
 
