@@ -154,16 +154,16 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.21")
+    (version "0.24")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "http://musicpd.org/download/ncmpc/"
                               (car (string-split version #\.))
-                              "/ncmpc-" version ".tar.gz"))
+                              "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1gpy6rr0awl6xgkswmr8rdvqfkrz83rmwk441c00a9d4z3zb1a16"))))
+                "1sf3nirs3mcx0r5i7acm9bsvzqzlh730m0yjg6jcyj8ln6r7cvqf"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("libmpdclient" ,libmpdclient)
