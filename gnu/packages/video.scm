@@ -399,6 +399,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
+       ("libx264" ,libx264)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("soxr" ,soxr)
@@ -462,7 +463,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
               ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
               ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
               ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
-              ;;   --enable-libx264         enable H.264 encoding via x264 [no]
               ;;   --enable-libxavs         enable AVS encoding via xavs [no]
               ;;   --enable-libzmq          enable message passing via libzmq [no]
               ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
@@ -496,6 +496,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                       "--enable-libvorbis"
                       "--enable-libvpx"
                       "--enable-libxvid"
+                      "--enable-libx264"
                       "--enable-openal"
 
                       "--enable-runtime-cpudetect"
