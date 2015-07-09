@@ -676,7 +676,7 @@ and to return information on pronunciations, meaningss and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "4.4.4.3")
+    (version "5.0.0.2")
     (source
      (origin
       (method url-fetch)
@@ -685,7 +685,7 @@ and to return information on pronunciations, meaningss and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "0wns7ny19bsl5ar1rq7n4033rfijl2cjn9l8bj1gwhpqlkd8db1i"))))
+               "0mzvxc4i5999xzmhgwrfvpvyx5772jylx5mary86drrld8klq7py"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
