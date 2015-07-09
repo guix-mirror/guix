@@ -178,7 +178,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.6.2")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -186,7 +186,7 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "1mrd6m6ph0fscxp9x96ipxh6ai7w0n1miapcfqrqfy058qx5zbck"))))
+                "1zfidkskmiqx1wfykinmr639lhd90s7b0rks6vaci4n56ml8y4ji"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
