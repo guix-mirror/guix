@@ -327,14 +327,14 @@ and every application benefits from this.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.0.11")
+   (version "2.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/pgpius/pius/"
                                 version "/pius-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "0pdbyqz6k0bm182cz81ss7yckmpms5qhrrw0wcr4a1srzcjyzf5f"))))
+                     "0ry3kc3x1qjmvb581ja2z2v32r1rl1g8rhfj7iqvs8nzq4ca512i"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
              ("python" ,python-2)          ;uses the Python 2 'print' syntax
