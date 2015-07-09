@@ -589,7 +589,7 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
         (user "alice")
         (private-key
          (string-append (getenv "HOME")
-                        "/.ssh/id-rsa-for-guix"))))
+                        "/.lsh/identity-for-guix"))))
 @end example
 
 @noindent
@@ -635,6 +635,10 @@ Port number of the machine's SSH server (default: 22).
 @item private-key
 The SSH private key file to use when connecting to the machine.
 
+Currently offloading uses GNU@tie{}lsh as its SSH client
+(@pxref{Invoking lsh,,, GNU lsh Manual}).  Thus, the key file here must
+be an lsh key file.  This may change in the future, though.
+
 @item parallel-builds
 The number of builds that may run in parallel on the machine (1 by
 default.)
@@ -654,22 +658,40 @@ name, and they will be scheduled on matching build machines.
 
 The @code{guix} command must be in the search path on the build
 machines, since offloading works by invoking the @code{guix archive} and
-@code{guix build} commands.
+@code{guix build} commands.  In addition, the Guix modules must be in
+@code{$GUILE_LOAD_PATH} on the build machine---you can check whether
+this is the case by running:
+
+@example
+lsh build-machine guile -c '(use-modules (guix config))'
+@end example
 
 There's one last thing to do once @file{machines.scm} is in place.  As
 explained above, when offloading, files are transferred back and forth
-between the machine stores.  For this to work, you need to generate a
-key pair to allow the daemon to export signed archives of files from the
-store (@pxref{Invoking guix archive}):
+between the machine stores.  For this to work, you first need to
+generate a key pair on each machine to allow the daemon to export signed
+archives of files from the store (@pxref{Invoking guix archive}):
 
 @example
 # guix archive --generate-key
 @end example
 
 @noindent
-Thus, when receiving files, a machine's build daemon can make sure they
-are genuine, have not been tampered with, and that they are signed by an
-authorized key.
+Each build machine must authorize the key of the master machine so that
+it accepts store items it receives from the master:
+
+@example
+# guix archive --authorize < master-public-key.txt
+@end example
+
+@noindent
+Likewise, the master machine must authorize the key of each build machine.
+
+All the fuss with keys is here to express pairwise mutual trust
+relations between the master and the build machines.  Concretely, when
+the master receives files from a build machine (and @i{vice versa}), its
+build daemon can make sure they are genuine, have not been tampered
+with, and that they are signed by an authorized key.
 
 
 @node Invoking guix-daemon
