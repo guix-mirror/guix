@@ -2115,7 +2115,7 @@ subsequent visualization, annotation and storage of results.")
             (chdir "preseq-master")
             #t))
          (add-after
-          'unpack 'use-samtools-headers
+          'enter-dir 'use-samtools-headers
           (lambda _
             (substitute* '("smithlab_cpp/SAM.cpp"
                            "smithlab_cpp/SAM.hpp")
