@@ -86,20 +86,30 @@
 (define-public brasero
   (package
     (name "brasero")
-    (version "3.8.0")
+    (version "3.12.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/brasero/3.8/brasero-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1r5wjsrm47amdaf862ymkdlwlb636c45wg14x20hdr99c653d2nr"))))
+               "09vi2hyhl0bz7imv3ky6h7x5m3d546n968wcghydwrkvwm9ylpls"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list
+                          (string-append "--with-girdir="
+                                         (assoc-ref %outputs "out")
+                                         "/share/gir-1.0")
+                          (string-append "--with-typelibdir="
+                                         (assoc-ref %outputs "out")
+                                         "/lib/girepository-1.0"))))
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
@@ -112,7 +122,9 @@
        ("libice" ,libice)
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
-       ("libxml2" ,libxml2)))
+       ("libxml2" ,libxml2)
+       ("nettle" ,nettle)
+       ("totem-pl-parser" ,totem-pl-parser)))
     (home-page "https://projects.gnome.org/brasero/")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
