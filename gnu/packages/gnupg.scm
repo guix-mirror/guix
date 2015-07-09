@@ -167,7 +167,7 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public npth
   (package
     (name "npth")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
       (method url-fetch)
@@ -176,7 +176,7 @@ specifications are building blocks of S/MIME and TLS.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0zyzwmk4mp6pas87jz35zx0jvwdz7x5b13w225gs73gcn8g5cv49"))))
+        "12n0nvhw4fzwp0k7gjv3rc6pdml0qiinbbfiz4ilg6pl5kdxvnvd"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnupg.org")
     (synopsis "Non-preemptive thread library")
