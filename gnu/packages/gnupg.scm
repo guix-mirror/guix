@@ -476,17 +476,18 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry
   (package
     (name "pinentry")
-    (version "0.9.0")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1awhajq21hcjgqfxg9czaxg555gij4bba6axrwg8w6lfmc3ml14h"))))
+                "1338hj1h3sh34897120y30x12b64wyj3xjzzk5asm2hdzhxgsmva"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
+       ("libassuan" ,libassuan)
        ("gtk+" ,gtk+-2)
        ("glib" ,glib)))
     (native-inputs
