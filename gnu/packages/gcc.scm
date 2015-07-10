@@ -55,9 +55,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          '("--with-arch=armv7-a"
            "--with-float=hard"
            "--with-mode=thumb"
-
-           ;; See <https://wiki.debian.org/ArmHardFloatPort/VfpComparison#FPU>
-           "--with-fpu=vfpv3-d16"))
+           "--with-fpu=neon"))
 
         (else
          ;; TODO: Add `arm.*-gnueabi', etc.
