@@ -239,6 +239,7 @@ loaded at boot time in the order in which they appear."
                       #:volatile-root? '#$volatile-root?))
      #:name "base-initrd"
      #:modules '((guix build utils)
+                 (guix build syscalls)
                  (gnu build linux-boot)
                  (gnu build linux-modules)
                  (gnu build file-systems)

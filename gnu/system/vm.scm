@@ -102,6 +102,7 @@
                                                 (gnu build file-systems)
                                                 (guix elf)
                                                 (guix build utils)
+                                                (guix build syscalls)
                                                 (guix build store-copy)))
                                              (guile-for-build
                                               (%guile-for-build))
