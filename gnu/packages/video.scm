@@ -658,7 +658,6 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-neon"
                       "--disable-iwmmxt"))))
           %standard-phases)))
     (home-page "http://www.mplayerhq.hu/design7/news.html")
@@ -898,23 +897,6 @@ projects while introducing many more.")
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
-                                     ,@(if (and (not (%current-target-system))
-                                                (string-prefix?
-                                                 "armhf-"
-                                                 (%current-system)))
-                                           ;; When building on ARMv7, libvpx
-                                           ;; assumes that NEON will be
-                                           ;; available.  On Guix, armhf
-                                           ;; does not require NEON, so we
-                                           ;; build for ARMv6 and -marm (since
-                                           ;; no thumb2 on ARMv6) to ensure
-                                           ;; compatibility with all ARMv7
-                                           ;; cores we support.  Based on
-                                           ;; the Debian libvpx package.
-                                           '("--target=armv6-linux-gcc"
-                                             "--extra-cflags=-marm"
-                                             "--enable-small")
-                                           '())
                                      (string-append "--prefix=" out)))))
                  %standard-phases)
        #:tests? #f)) ; no check target
