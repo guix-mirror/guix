@@ -297,8 +297,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-no-ssse3"
                       "-no-sse4.1"
                       "-no-sse4.2"
-                      "-no-avx"
-                      "-no-neon")))))
+                      "-no-avx")))))
          (add-after
           'install 'move-doc
           (lambda* (#:key outputs #:allow-other-keys)
