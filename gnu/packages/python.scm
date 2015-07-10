@@ -266,6 +266,36 @@ data types.")
      "\n\nThis wrapper package provides symbolic links to the python binaries
       without version suffix."))))
 
+(define-public python-psutil
+  (package
+    (name "python-psutil")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/psutil/psutil-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "00c8h1mzqysih99z8pnbmdv117d2naldf11yjy50dhykxsf3n89z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/psutil/")
+    (synopsis "Library for retrieving information on running processes")
+    (description
+     "psutil (Python system and process utilities) is a library for retrieving
+information on running processes and system utilization (CPU, memory, disks,
+network) in Python.  It is useful mainly for system monitoring, profiling and
+limiting process resources and management of running processes.  It implements
+many functionalities offered by command line tools such as: ps, top, lsof,
+netstat, ifconfig, who, df, kill, free, nice, ionice, iostat, iotop, uptime,
+pidof, tty, taskset, pmap.")
+    (license bsd-3)))
+
+(define-public python2-psutil
+  (package-with-python2 python-psutil))
 
 (define-public python-pytz
   (package
