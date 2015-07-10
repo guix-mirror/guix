@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,9 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
 
@@ -42,11 +45,9 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "103ir5qg6k8m2mmg9b99c3gn8myxh1gsqyr0mfhmrhqya68wfdr3"))))
+        "103ir5qg6k8m2mmg9b99c3gn8myxh1gsqyr0mfhmrhqya68wfdr3"))
+      (patches (list (search-patch "gnucash-price-quotes-perl.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ;FIXME: failing at /qof/gnc-date/qof print date dmy buff
-       #:configure-flags '("--disable-dbi")))
     (inputs
      `(("guile" ,guile-2.0)
        ("icu4c" ,icu4c)
@@ -56,11 +57,46 @@
        ("libgnomecanvas" ,libgnomecanvas)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("webkitgtk" ,webkitgtk/gtk+-2)))
+       ("webkitgtk" ,webkitgtk/gtk+-2)
+       ("perl-date-manip" ,perl-date-manip)
+       ("perl-finance-quote" ,perl-finance-quote)))
     (native-inputs
      `(("glib" ,glib "bin") ; glib-compile-schemas, etc.
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f ;FIXME: failing at /qof/gnc-date/qof print date dmy buff
+       #:configure-flags '("--disable-dbi")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-programs
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (for-each (lambda (prog)
+                        (wrap-program (string-append (assoc-ref outputs "out")
+                                                     "/bin/" prog)
+                          `("PERL5LIB" ":" prefix
+                            ,(map (lambda (o)
+                                    (string-append o "/lib/perl5/site_perl/"
+                                                   ,(package-version perl)))
+                                  (if (string=? prog "gnc-fq-helper")
+                                      (list
+                                       ,@(transitive-input-references
+                                          'inputs
+                                          (map (lambda (l)
+                                                 (assoc l (inputs)))
+                                               '("perl-finance-quote"
+                                                 "perl-date-manip"))))
+                                      (list
+                                       ,@(transitive-input-references
+                                          'inputs
+                                          (map (lambda (l)
+                                                 (assoc l (inputs)))
+                                               '("perl-finance-quote")))))))))
+                      '("gnucash"
+                        "gnc-fq-check"
+                        "gnc-fq-helper"
+                        "gnc-fq-dump")))))))
     (home-page "https://gnu.org/software/gnucash")
     (synopsis "Personal and small business financial accounting software")
     (description
