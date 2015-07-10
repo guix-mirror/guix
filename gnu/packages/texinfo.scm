@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,14 +31,14 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "5.2")
+    (version "6.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/texinfo/texinfo-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/texinfo/texinfo-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1r3i6jyynn6ab45fxw5bms8mflk9ry4qpj6gqyry72vfd5c47fhi"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("xz" ,xz)
@@ -53,17 +54,16 @@ their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
 
-(define-public texinfo-6
-  (package
-    (inherit texinfo)
-    (version "6.0")
+(define-public texinfo-5
+  (package (inherit texinfo)
+    (version "5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1r3i6jyynn6ab45fxw5bms8mflk9ry4qpj6gqyry72vfd5c47fhi"))))))
+                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
 
 (define-public texinfo-4
   (package (inherit texinfo)
