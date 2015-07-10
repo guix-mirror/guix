@@ -2154,6 +2154,35 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python2-feedgenerator
   (package-with-python2 python-feedgenerator))
 
+(define-public python-blinker
+  (package
+    (name "python-blinker")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/b/blinker/blinker-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0bvfxkmjx6bpa302pv7v2vw5rwr3dlzjzfdp3bj628i6144024b8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    ;; No "test" command supplied to setuptools, so unless there's another way
+    ;; to run tests, we're skipping them!
+    (arguments '(#:tests? #f))
+    (home-page "http://pythonhosted.org/blinker/")
+    (synopsis "Fast, simple object-to-object and broadcast signaling")
+    (description
+     "Blinker provides a fast dispatching system that allows any number of
+interested parties to subscribe to events, or \"signals\".")
+    (license license:expat)))
+
+(define-public python2-blinker
+  (package-with-python2 python-blinker))
+
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
