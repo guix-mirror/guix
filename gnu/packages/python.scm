@@ -28,7 +28,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
-                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+
+                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
                           psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
@@ -2182,6 +2182,55 @@ interested parties to subscribe to events, or \"signals\".")
 
 (define-public python2-blinker
   (package-with-python2 python-blinker))
+
+(define-public pelican
+  (package
+    (name "pelican")
+    (version "3.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pelican/pelican-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0lbkk902mqxpp452pp76n6qcjv6f99lq2zl204xmqyzcan9zr3ps"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-feedgenerator" ,python-feedgenerator)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pygments" ,python-pygments)
+       ("python-docutils" ,python-docutils)
+       ("python-pytz" ,python-pytz)
+       ("python-blinker" ,python-blinker)
+       ("python-unidecode" ,python-unidecode)
+       ("python-six" ,python-six)
+       ("python-dateutil-2" ,python-dateutil-2)))
+    (home-page "http://getpelican.com/")
+    (arguments
+     `(;; XXX Requires a lot more packages to do unit tests :P
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'install 'adjust-requires
+                   ;; Since feedgenerator is installed from git, it doesn't
+                   ;; conform to the version requirements.
+                   ;;
+                   ;; We *do have* "feedgenerator >= 1.6", but strip off the
+                   ;; version requirement so setuptools doesn't get confused.
+                   (lambda _
+                     (substitute* "setup.py"
+                       (("['\"]feedgenerator.*?['\"]")
+                        "'feedgenerator'")))))))
+    (synopsis "Python-based static site publishing system")
+    (description
+     "Pelican is a tool to generate a static blog from reStructuredText,
+Markdown input files, and more.  Pelican uses Jinja2 for templating
+and is very extensible.")
+    (license agpl3+)))
 
 (define-public python-scikit-learn
   (package
