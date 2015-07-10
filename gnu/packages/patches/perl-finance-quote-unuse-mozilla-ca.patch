@@ -1,0 +1,15 @@
+Rather than unconditionally using Mozilla's CA certificates, let the user tell
+LWP's UserAgent where to find certificates with the PERL_LWP_SSL_CA_FILE,
+HTTPS_CA_FILE, PERL_LWP_SSL_CA_PATH, or HTTPS_CA_DIR environment variables
+instead.
+
+--- Finance-Quote-1.37/lib/Finance/Quote/Tiaacref.pm.orig	2015-02-01 13:24:41.000000000 -0600
++++ Finance-Quote-1.37/lib/Finance/Quote/Tiaacref.pm	2015-07-07 20:09:47.278885944 -0500
+@@ -30,7 +30,6 @@
+ package Finance::Quote::Tiaacref;
+ require 5.005;
+ require LWP::Protocol::https;
+-require Mozilla::CA;
+ 
+ use strict;
+ 

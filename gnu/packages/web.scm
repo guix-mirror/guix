@@ -1673,6 +1673,39 @@ with Encode::decode(locale => $string).")
 which can be used to parse directory listings.")
     (home-page "http://search.cpan.org/~gaas/File-Listing/")))
 
+(define-public perl-finance-quote
+  (package
+   (name "perl-finance-quote")
+   (version "1.37")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://cpan.metacpan.org/authors/id/E/EC/ECOCODE/"
+                          "Finance-Quote-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1b6pbh7f76fb5sa4f0lhx085xy55pprz5v7z7li7pqiyw7i4f4bf"))
+      (patches (list
+                (search-patch "perl-finance-quote-unuse-mozilla-ca.patch")))))
+   (build-system perl-build-system)
+   (propagated-inputs
+    `(("perl-datetime" ,perl-datetime)
+      ("perl-html-parser" ,perl-html-parser)
+      ("perl-html-tableextract" ,perl-html-tableextract)
+      ("perl-html-tree" ,perl-html-tree)
+      ("perl-http-cookies" ,perl-http-cookies)
+      ("perl-http-message" ,perl-http-message)
+      ("perl-json" ,perl-json)
+      ("perl-libwww" ,perl-libwww)
+      ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+      ("perl-uri" ,perl-uri)))
+   (home-page "http://search.cpan.org/dist/Finance-Quote")
+   (synopsis "Stock and mutual fund quotes")
+   (description
+    "Finance::Quote gets stock quotes from various internet sources, including
+Yahoo! Finance, Fidelity Investments, and the Australian Stock Exchange.")
+   (license l:gpl2)))
+
 (define-public perl-gssapi
   (package
     (name "perl-gssapi")
