@@ -42,7 +42,8 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "1rfkqxns60171q62cppiyzj8pmsbwp1l8jd7p6crriryqd7j1z7x"))))
+                "1rfkqxns60171q62cppiyzj8pmsbwp1l8jd7p6crriryqd7j1z7x"))
+              (patches (list (search-patch "boost-mips-avoid-m32.patch")))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs
