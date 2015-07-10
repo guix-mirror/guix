@@ -434,7 +434,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gcc-libvtv-runpath.patch			\
   gnu/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   gnu/packages/patches/geoclue-config.patch			\
-  gnu/packages/patches/gettext-msgunfmt.patch			\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
   gnu/packages/patches/glib-tests-desktop.patch			\
