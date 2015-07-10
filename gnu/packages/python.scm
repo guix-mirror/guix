@@ -3290,6 +3290,37 @@ Python language binding specification.")
 (define-public python2-drmaa
   (package-with-python2 python-drmaa))
 
+(define-public python-gridmap
+  (package
+    (name "python-gridmap")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/pygridtools/gridmap/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gzjg2k6f14i1msm2b0ax8d9ds1hvk6qd5nlaivg8m4cxqp4cp1x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-psutil" ,python-psutil)
+       ("python-drmaa" ,python-drmaa)
+       ("python-pyzmq" ,python-pyzmq)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/pygridtools/gridmap")
+    (synopsis "Create jobs on a cluster directly from Python")
+    (description
+      "Gridmap is a Python package to allow you to easily create jobs on the
+cluster directly from Python.  You can directly map Python functions onto the
+cluster without needing to write any wrapper code yourself.")
+    (license gpl3+)))
+
+(define-public python2-gridmap
+  (package-with-python2 python-gridmap))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
