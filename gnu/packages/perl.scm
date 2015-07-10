@@ -1332,6 +1332,31 @@ applicable).")
 Date::Calc.")
     (license (list (package-license perl) lgpl2.0+))))
 
+(define-public perl-date-manip
+  (package
+    (name "perl-date-manip")
+    (version "6.50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/S/SB/SBECK/"
+                           "Date-Manip-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zd0wbf91i49753rnf7m1lw197hdl5r97mxy0n43zdmcmhvkb3qq"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; Tests would require tzdata for timezone information, but tzdata is in
+     ;; (gnu packages base) which would create a circular dependency.  TODO:
+     ;; Maybe put this package elsewhere so we can turn on tests.
+     '(#:tests? #f))
+    (home-page "http://search.cpan.org/dist/Date-Manip")
+    (synopsis "Date manipulation routines")
+    (description "Date::Manip is a series of modules for common date/time
+operations, such as comparing two times, determining a date a given amount of
+time from another, or parsing international times.")
+    (license (package-license perl))))
+
 (define-public perl-datetime
   (package
     (name "perl-datetime")
