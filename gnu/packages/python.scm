@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2066,6 +2067,44 @@ sources.")
 
 (define-public python2-sphinx-rtd-theme
   (package-with-python2 python-sphinx-rtd-theme))
+
+(define-public python-feedgenerator
+  (package
+    (name "python-feedgenerator")
+    (version "20150710.97185b7")
+    (source
+     ;; Using the git checkout for now because license file not added till
+     ;; https://github.com/dmdm/feedgenerator-py3k/commit/97185b7566c240c4bf5ed80db7d6c271204dab39
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dmdm/feedgenerator-py3k.git")
+             (commit "97185b7566c240c4bf5ed80db7d6c271204dab39")))
+       (sha256
+        (base32
+         "0dbd6apij5j1923ib905x0srgcyls4wlabqlwp4dzkwmksvnrr2a"))))
+    (arguments
+     `(;; With standard flags, the install phase attempts to create a zip'd
+       ;; egg file, and fails with an error: 'ZIP does not support timestamps
+       ;; before 1980'
+       #:configure-flags '("--single-version-externally-managed"
+                           "--record=feedgenerator.txt")))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytz" ,python-pytz)
+       ("python-six" ,python-six)))
+    (home-page
+     "https://github.com/dmdm/feedgenerator-py3k.git")
+    (synopsis
+     "Standalone version of Django's Atom/RSS feed generator")
+    (description
+     "Feedgenerator-py3k is a standalone version of Django's feedgenerator,
+which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
+    (license bsd-3)))
+
+(define-public python2-feedgenerator
+  (package-with-python2 python-feedgenerator))
 
 (define-public python-scikit-learn
   (package
