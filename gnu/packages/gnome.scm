@@ -2090,11 +2090,12 @@ floating in an ocean using only your brain and a little bit of luck.")
        ("desktop-file-utils" ,desktop-file-utils)
        ("intltool" ,intltool)
        ("itstool" ,itstool)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (inputs
      `(("gtk+" ,gtk+)
        ("vte" ,vte)
        ("gnutls" ,gnutls)
-       ("dconf" ,dconf)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("util-linux" ,util-linux)
        ("vala" ,vala)))
