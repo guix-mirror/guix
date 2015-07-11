@@ -491,21 +491,37 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                         #:guile-for-build guile-for-build))))
 
 (define (transitive-inputs inputs)
-  (let loop ((inputs  inputs)
-             (result '()))
+  "Return the closure of INPUTS when considering the 'propagated-inputs'
+edges.  Omit duplicate inputs, except for those already present in INPUTS
+itself.
+
+This is implemented as a breadth-first traversal such that INPUTS is
+preserved, and only duplicate propagated inputs are removed."
+  (define (seen? seen item outputs)
+    (match (vhash-assq item seen)
+      ((_ . o) (equal? o outputs))
+      (_       #f)))
+
+  (let loop ((inputs     inputs)
+             (result     '())
+             (propagated '())
+             (first?     #t)
+             (seen       vlist-null))
     (match inputs
       (()
-       (delete-duplicates (reverse result)))      ; XXX: efficiency
-      (((and i (name (? package? p) sub ...)) rest ...)
-       (let ((t (map (match-lambda
-                      ((dep-name derivation ...)
-                       (cons (string-append name "/" dep-name)
-                             derivation)))
-                     (package-propagated-inputs p))))
-         (loop (append t rest)
-               (append t (cons i result)))))
+       (if (null? propagated)
+           (reverse result)
+           (loop (reverse (concatenate propagated)) result '() #f seen)))
+      (((and input (label (? package? package) outputs ...)) rest ...)
+       (if (and (not first?) (seen? seen package outputs))
+           (loop rest result propagated first? seen)
+           (loop rest
+                 (cons input result)
+                 (cons (package-propagated-inputs package) propagated)
+                 first?
+                 (vhash-consq package outputs seen))))
       ((input rest ...)
-       (loop rest (cons input result))))))
+       (loop rest (cons input result) propagated first? seen)))))
 
 (define (package-direct-sources package)
   "Return all source origins associated with PACKAGE; including origins in
