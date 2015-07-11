@@ -72,7 +72,15 @@
                         "-Dinstallstyle=lib/perl5"
                         "-Duseshrplib"
                         (string-append "-Dlocincpth=" libc "/include")
-                        (string-append "-Dloclibpth=" libc "/lib"))))))
+                        (string-append "-Dloclibpth=" libc "/lib")
+
+                        ;; Force the library search path to contain only libc
+                        ;; because it is recorded in Config.pm and
+                        ;; Config_heavy.pl; we don't want to keep a reference
+                        ;; to everything that's in $LIBRARY_PATH at build
+                        ;; time (Binutils, bzip2, file, etc.)
+                        (string-append "-Dlibpth=" libc "/lib")
+                        (string-append "-Dplibpth=" libc "/lib"))))))
 
          (add-before
           'strip 'make-shared-objects-writable
