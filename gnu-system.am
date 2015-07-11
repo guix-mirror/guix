@@ -193,6 +193,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
   gnu/packages/lua.scm				\
+  gnu/packages/lxde.scm				\
   gnu/packages/lxqt.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
