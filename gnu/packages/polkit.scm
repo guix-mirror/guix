@@ -35,7 +35,7 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "0.112")
+    (version "0.113")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -43,7 +43,7 @@
                    name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1xkary7yirdcjdva950nqyhmsz48qhrdsr78zciahj27p8yg95fn"))
+               "109w86kfqrgz83g9ivggplmgc77rz8kx8646izvm2jb57h4rbh71"))
              (patches (list (search-patch "polkit-drop-test.patch")))))
     (build-system gnu-build-system)
     (inputs
