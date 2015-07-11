@@ -284,6 +284,7 @@
   ;; because we don't need the stand-alone Info reader.
   ;; Also, use %BOOT0-INPUTS to avoid building Perl once more.
   (let ((texinfo (package (inherit texinfo)
+                   (native-inputs '())
                    (inputs (alist-delete "ncurses" (package-inputs texinfo))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs texinfo %boot0-inputs

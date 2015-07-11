@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses))
 
 (define-public texinfo
@@ -40,6 +41,7 @@
                (base32
                 "1r3i6jyynn6ab45fxw5bms8mflk9ry4qpj6gqyry72vfd5c47fhi"))))
     (build-system gnu-build-system)
+    (native-inputs `(("procps" ,procps)))  ;one of the tests needs pgrep
     (inputs `(("ncurses" ,ncurses)
               ("xz" ,xz)
               ("perl" ,perl)))
@@ -63,7 +65,8 @@ is on expressing the content semantically, avoiding physical markup commands.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
+                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))
+    (native-inputs '())))
 
 (define-public texinfo-4
   (package (inherit texinfo)
@@ -77,6 +80,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
+    (native-inputs '())
     (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))))
 
 (define-public texi2html
