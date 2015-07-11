@@ -86,7 +86,13 @@
    (30 "0nrqb0m7s89qsrbfaffpilc5gcf82bx9yvgzld4hr79p5y54yhw5") ;CVE-2014-6278
    (31 "07d62bl3z7qa8v6kgk47vzzazw563mlk9zhrsr4xsbqgvmcrylnd")
    (32 "0jjgapfq4qhmndfrw8c3q3lva8xjdhlbd9cc631v41b0kb95g4w8")
-   (33 "05ma5rlxiadnfh925p4y7s0vvk917kmsdb1mfdx05gizl63pfapv")))
+   (33 "05ma5rlxiadnfh925p4y7s0vvk917kmsdb1mfdx05gizl63pfapv")
+   (34 "12gq9whkq3naa3iy7c7x5pfpvrg7d0kwqld8609zxphhy424ysgi")
+   (35 "1qy1jflmbazjykq766gwabkaiswnx7pwa66whqiny0w02zjqa39p")
+   (36 "0z6jbyy70lfdm6d3x0sbazbqdxb3xnpn9bmz7madpvrnbd284pxc")
+   (37 "04sqr8zkl6s5fccfvb775ppn3ldij5imria9swc39aq0fkfp1w9k")
+   (38 "0rv3g14mpgv8br267bf7rmgqlgwnc4v6g3g8y0sjba571i8amgmd")
+   (39 "1v3l3vkc3g2b6fjycqwlakr8xhiw6bmw6q0zd6bi0m0m4bnxr55b")))
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
 number/base32-hash tuples, directly usable in the 'patch-series' form."
