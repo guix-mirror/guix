@@ -19,6 +19,7 @@
 (define-module (gnu packages lxde)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu)
@@ -27,30 +28,44 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
-(define-public libfm-extra
+(define-public libfm
   (package
-    (name "libfm-extra")
+    (name "libfm")
     (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/pcmanfm/"
-                                  "PCManFM%20%2B%20Libfm%20%28tarball%20"
-                                  "release%29/LibFM/libfm-" version ".tar.xz"))
+                                  "PCManFM%20%2B%20Libfm%20%28tarball%20release"
+                                  "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
                 "1ygvw52262r3jp1f45m9cdpx5xgvd4rkyfszslfqvg2c99ig34n6"))))
     (build-system gnu-build-system)
+    (inputs `(("glib" ,glib)
+              ("gtk+" ,gtk+-2)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("glib"       ,glib "bin") ; for gtester
+                     ("libtool"    ,libtool)
+                     ("menu-cache" ,menu-cache)
+                     ("pkg-config" ,pkg-config)
+                     ("vala"       ,vala)))
+    (synopsis "File management support (core library)")
+    (description "LibFM provides file management functions built on top of
+Glib/GIO giving a higher-level API.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
+(define-public libfm-extra
+  (package (inherit libfm)
+    (name "libfm-extra")
     (arguments '(#:configure-flags '("--with-extra-only")))
     (inputs `(("glib" ,glib)))
     (native-inputs `(("intltool"   ,intltool)
                      ("libtool"    ,libtool)
                      ("pkg-config" ,pkg-config)))
     (synopsis "File management support (extra library)")
-    (description "LibFM provides file management functions built on top of
-Glib/GIO giving a higher-level API.  This package contains standalone library
-which extends libfm.")
-    (home-page "http://lxde.org")
-    (license license:gpl2+)))
+    (description "This package contains standalone library which extends the
+libFM file management library.")))
 
 (define-public lxappearance
   (package
