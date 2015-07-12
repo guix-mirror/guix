@@ -146,8 +146,11 @@ autotools system.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Convert X font from BDF to PCF")
+    (description
+     "BDFtoPCF is a font compiler for the X server and font server.  It
+converts X font from Bitmap Distribution Format to Portable Compiled Format
+which can be read by any architecture.")
     (license license:x11)))
 
 
@@ -168,8 +171,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg BigReqsProto protocol headers")
+    (description
+     "Big Requests Extension defines a protocol to enable the use of
+requests that exceed 262140 bytes in length.")
     (license license:x11)))
 
 
@@ -193,8 +198,10 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg CompositeProto protocol headers")
+    (description
+     "Composite Extension contains header files and documentation for
+the damage protocol.")
     (license license:x11)))
 
 
@@ -215,8 +222,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg DamageProto protocol headers")
+    (description
+     "Damage Extension contains header files and documentation for
+the damage protocol.")
     (license license:x11)))
 
 
@@ -237,8 +246,11 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg DMXProto protocol headers")
+    (description
+     "DMX (Distributed Multihead X) Extension defines a protocol for clients
+to access a front-end proxy X server that controls multiple back-end X
+servers making up a large display.")
     (license license:x11)))
 
 
@@ -258,10 +270,12 @@ autotools system.")
             "015az1vfdqmil1yay5nlsmpf6cf7vcbpslxjb72cfkzlvrv59dgr"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg DRI2Proto protocol headers")
+    (description
+     "Direct Rendering Infrastructure 2 Extension defines a protocol to
+securely allow user applications to access the video hardware without
+requiring data to be passed through the X server.")
     (license license:x11)))
-
 
 (define-public dri3proto
   (package
@@ -279,8 +293,12 @@ autotools system.")
             "0x609xvnl8jky5m8jdklw4nymx3irkv32w99dfd8nl800bblkgh1"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg DRI3Proto protocol headers")
+    (description
+     "Direct Rendering Infrastructure 3 Extension provides mechanisms to
+translate between direct rendered buffers and X pixmaps.  When combined with
+the Present extension, a complete direct rendering solution for OpenGL is
+provided.")
     (license (license:x11-style "file://dri3proto.h"
                                 "See 'dri3proto.h' in the distribution."))))
 
@@ -305,8 +323,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg font encoding files")
+    (description "Xorg font encoding files.")
     (license license:public-domain)))
 
 
@@ -337,8 +355,8 @@ autotools system.")
         ;; font-util-?.?.?/share/fonts/X11
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg adobe-100dpi fonts")
+    (description "Xorg adobe-100dpi fonts.")
     (license license:x11)))
 
 
@@ -367,8 +385,8 @@ autotools system.")
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg adobe-75dpi fonts")
+    (description "Xorg adobe-75dpi fonts.")
     (license license:x11)))
 
 
@@ -395,8 +413,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg font aliases")
+    (description
+     "This package provides some common aliases for Xorg fonts.
+For example: '6x10', '9x15bold', etc.")
     (license license:x11)))
 
 
@@ -421,8 +441,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg arabic-misc font")
+    (description "Xorg arabic-misc font.")
     (license license:x11)))
 
 
@@ -458,8 +478,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg cronyx-cyrillic font")
+    (description "Xorg cronyx-cyrillic font.")
     (license license:x11)))
 
 
@@ -491,8 +511,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg dec-misc font")
+    (description "Xorg dec-misc font.")
     (license license:x11)))
 
 
@@ -520,8 +540,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg isas-misc font")
+    (description "Xorg isas-misc font.")
     (license license:x11)))
 
 
@@ -550,8 +570,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg micro-misc font")
+    (description "Xorg micro-misc font.")
     (license license:public-domain)))
 
 
@@ -576,8 +596,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg misc-cyrillic fonts")
+    (description "Xorg misc-cyrillic fonts.")
     (license license:x11)))
 
 
@@ -601,8 +621,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg misc-ethiopic fonts")
+    (description "Xorg misc-ethiopic fonts.")
     (license license:x11)))
 
 
@@ -635,8 +655,8 @@ autotools system.")
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg misc-misc fonts")
+    (description "Xorg misc-misc fixed fonts.")
     (license license:public-domain)))
 
 
@@ -661,8 +681,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg mutt-misc fonts")
+    (description "Xorg mutt-misc fonts.")
     (license license:x11)))
 
 
@@ -691,8 +711,8 @@ autotools system.")
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg schumacher-misc fonts")
+    (description "Xorg schumacher-misc fonts.")
     (license license:x11)))
 
 
@@ -717,8 +737,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg screen-cyrillic fonts")
+    (description "Xorg screen-cyrillic fonts.")
     (license license:x11)))
 
 
@@ -743,8 +763,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg sony-misc fonts")
+    (description "Xorg sony-misc fonts.")
     (license license:x11)))
 
 
@@ -769,8 +789,8 @@ autotools system.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg sun-misc fonts")
+    (description "Xorg sun-misc fonts.")
     (license license:x11)))
 
 
@@ -791,8 +811,9 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg font utilities")
+    (description
+     "Xorg font package creation/installation utilities.")
     (license license:x11)))
 
 
@@ -817,8 +838,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg winitzki-cyrillic font")
+    (description "Xorg winitzki-cyrillic font.")
     (license license:public-domain)))
 
 
@@ -842,8 +863,8 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg xfree86-type1 font")
+    (description "Xorg xfree86-type1 font.")
     (license license:x11)))
 
 
@@ -864,8 +885,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg FontsProto protocol headers")
+    (description
+     "Fonts Extension contains header files and documentation for
+the fonts protocol.")
     (license license:x11)))
 
 
@@ -886,8 +909,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg GLProto protocol headers")
+    (description
+     "OpenGL Extension defines a protocol for the client to send 3D
+rendering commands to the X server.")
     (license license:x11)))
 
 
@@ -911,8 +936,12 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "ICE authority file utility")
+    (description
+     "ICEAuth program is used to edit and display the authorization
+information used in connecting with ICE (Inter-Client Exchange).  It
+operates very much like the xauth program for X11 connection
+authentication records.")
     (license license:x11)))
 
 
@@ -933,8 +962,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg InputProto protocol headers")
+    (description
+     "Input Extension defines a protocol to provide additional input
+devices management such as graphic tablets.")
     (license license:x11)))
 
 
@@ -955,8 +986,10 @@ autotools system.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg KBProto protocol headers")
+    (description
+     "X Keyboard (XKB) Extension defines a protocol to provide a number
+of new capabilities and controls for text keyboards.")
     (license license:x11)))
 
 
@@ -987,8 +1020,9 @@ autotools system.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg DMX library")
+    (description
+     "DMX (Distributed Multihead X) extension library.")
     (license license:x11)))
 
 
@@ -1008,7 +1042,7 @@ autotools system.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xproto" ,xproto)))
     (home-page "http://xorg.freedesktop.org")
-    (synopsis "X shared memory fences")
+    (synopsis "Xorg shared memory fences library")
     (description
      "This library provides an interface to shared-memory fences for
 synchronization between the X server and direct-rendering clients.")
@@ -1038,8 +1072,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg font encoding library")
+    (description "Xorg font encoding library.")
     (license license:x11)))
 
 
@@ -1065,8 +1099,11 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Font Service client library")
+    (description
+     "Font Service client library is used by clients of X Font
+Servers (xfs), such as xfsinfo, fslsfonts, and the X servers
+themselves.")
     (license license:x11)))
 
 
@@ -1090,8 +1127,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg PCI access library")
+    (description "Xorg Generic PCI access library.")
     (license license:x11)))
 
 
@@ -1112,8 +1149,13 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Library with pthread stubs")
+    (description
+     "This library provides weak aliases for pthread functions not
+provided in libc or otherwise available by default.  Libraries like
+libxcb rely on pthread stubs to use pthreads optionally, becoming
+thread-safe when linked to libpthread, while avoiding any performance
+hit when running single-threaded.")
     (license license:x11)))
 
 
@@ -1140,8 +1182,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Session Management library")
+    (description "Xorg Session Management library.")
     (license license:x11)))
 
 
@@ -1168,8 +1210,12 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg WindowsWM library")
+    (description
+     "Cygwin/X rootless window management extension.
+WindowsWM is a simple library designed to interface with the Windows-WM
+extension.  This extension allows X window managers to better interact
+with the Cygwin XWin server when running X11 in a rootless mode.")
     (license license:x11)))
 
 
@@ -1197,8 +1243,9 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Composite library")
+    (description
+     "Client library for the Composite extension to the X11 protocol.")
     (license license:x11)))
 
 
@@ -1222,8 +1269,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Display Manager Control Protocol library")
+    (description "Xorg Display Manager Control Protocol library.")
     (license license:x11)))
 
 
@@ -1253,8 +1300,11 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg FreeType library")
+    (description
+     "Xorg FreeType library connects X applications with the FreeType font
+rasterization library.  Xft uses fontconfig to locate fonts so it has no
+configuration files.")
     (license license:x11)))
 
 
@@ -1278,8 +1328,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XKB file handling library")
+    (description "Xorg XKB file handling library.")
     (license license:x11)))
 
 
@@ -1305,8 +1355,13 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Xmu library")
+    (description
+     "Xmu library contains miscellaneous utilities and is not part of the
+Xlib standard.  It is intended to support clients in the Xorg distribution;
+vendors may choose not to distribute this library if they wish.  Therefore,
+applications developers who depend on this library should be prepared to
+treat it as part of their software base when porting.")
     (license license:x11)))
 
 
@@ -1333,8 +1388,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XPM library")
+    (description "XPM (X Pixmap) image file format library.")
     (license license:x11)))
 
 
@@ -1361,8 +1416,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Resource extension library")
+    (description "X Resource extension library.")
     (license license:x11)))
 
 
@@ -1389,8 +1444,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Screen Saver library")
+    (description "X11 Screen Saver extension client library.")
     (license license:x11)))
 
 
@@ -1417,8 +1472,8 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XFree86-DGA library")
+    (description "Client library for the XFree86-DGA extension.")
     (license license:x11)))
 
 
@@ -1445,8 +1500,12 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Convert terminal I/O from legacy encodings to UTF-8")
+    (description
+     "Luit is a filter that can be run between an arbitrary application and
+a UTF-8 terminal emulator such as xterm.  It will convert application
+output from the locale's encoding into UTF-8, and convert terminal
+input from UTF-8 into the locale's encoding.")
     (license license:x11)))
 
 
@@ -1469,8 +1528,9 @@ synchronization between the X server and direct-rendering clients.")
       `(("xproto" ,xproto)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg makedepend utility")
+    (description
+     "Makedepend is an utility for creating dependencies in makefiles.")
     (license license:x11)))
 
 
@@ -1497,8 +1557,10 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Create an index of scalable font files for X server")
+    (description
+     "MkFontScale creates the 'fonts.scale' and 'fonts.dir' index files used
+by the legacy X11 font system.")
     (license license:x11)))
 
 
@@ -1518,8 +1580,12 @@ synchronization between the X server and direct-rendering clients.")
             "1kir51aqg9cwazs14ivcldcn3mzadqgykc9cg87rm40zf947sb41"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg PresentProto protocol headers")
+    (description
+     "Present Extension provides a way for applications to update their
+window contents from a pixmap in a well defined fashion, synchronizing
+with the display refresh and potentially using a more efficient
+mechanism than copying the contents of the source pixmap.")
     (license (license:x11-style "file://presentproto.h"
                                 "See 'presentproto.h' in the distribution."))))
 
@@ -1540,8 +1606,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg PrintProto protocol headers")
+    (description
+     "Print Extension defines a protocol for a portable,
+network-transparent printing system.")
     (license license:x11)))
 
 
@@ -1562,8 +1630,11 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg RandRProto protocol headers")
+    (description
+     "Resize and Rotate Extension defines a protocol for clients to
+dynamically change X screens, so as to resize, rotate and reflect the root
+window of a screen.")
     (license license:x11)))
 
 
@@ -1584,8 +1655,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg RecordProto protocol headers")
+    (description
+     "Record Extension defines a protocol for the recording and playback
+of user actions in the X Window System.")
     (license license:x11)))
 
 
@@ -1606,8 +1679,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg RenderProto protocol headers")
+    (description
+     "Rendering Extension defines a protcol for a digital image composition
+as the foundation of a new rendering model within the X Window System.")
     (license license:x11)))
 
 
@@ -1628,8 +1703,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg ResourceProto protocol headers")
+    (description
+     "Resource Extension defines a protocol that allows a client to
+query the X server about its usage of various resources.")
     (license license:x11)))
 
 
@@ -1650,8 +1727,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg ScrnSaverProto protocol headers")
+    (description
+     "Screen Saver Extension defines a protocol to control screensaver
+features and to query screensaver info on specific windows.")
     (license license:x11)))
 
 
@@ -1675,8 +1754,11 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Register X sessions in system utmp/utmpx databases")
+    (description
+     "SessReg is a simple program for managing utmp/wtmp entries for X
+sessions.  It was originally written for use with xdm, but may also be
+used with other display managers such as gdm or kdm.")
     (license license:x11)))
 
 
@@ -1707,8 +1789,11 @@ synchronization between the X server and direct-rendering clients.")
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Set the keyboard using the X Keyboard Extension")
+    (description
+     "Setxkbmap is an X11 client to change the keymaps in the X server
+for a specified keyboard to use the layout determined by the options
+listed on the command line.")
     (license license:x11)))
 
 
@@ -1733,8 +1818,10 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Session Manager Proxy")
+    (description
+     "SMProxy allows X applications that do not support X11R6 session
+management to participate in an X11R6 session.")
     (license license:x11)))
 
 
@@ -1771,8 +1858,11 @@ synchronization between the X server and direct-rendering clients.")
                         (rmdir "share/util-macros"))))
                   %standard-phases))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg autoconf macros")
+    (description
+     "This package provides a set of autoconf macros used by the
+configure.ac scripts in other Xorg modular packages, and is needed to
+generate new versions of their configure scripts with autoconf.")
     (license license:x11)))
 
 
@@ -1793,8 +1883,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg VideoProto protocol headers")
+    (description
+     "Video Extension provides a protocol for a video output mechanism,
+mainly to rescale video playback in the video controller hardware.")
     (license license:x11)))
 
 
@@ -1815,8 +1907,12 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg WindowsWMProto protocol headers")
+    (description
+     "WindowsWM Extension defines a protocol, used for coordination between
+an X11 server and the Microsoft Windows native window manager.  WindowsWM
+is only intended to be used on Cygwin when running a rootless XWin
+server.")
     (license license:x11)))
 
 
@@ -1843,8 +1939,9 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "X server performance benchmarker")
+    (description
+     "X11Perf is a simple performance benchmarker for the Xorg X server.")
     (license license:x11)))
 
 
@@ -1875,8 +1972,10 @@ synchronization between the X server and direct-rendering clients.")
     (arguments `(#:tests? #f))
 
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "X authority file utility")
+    (description
+     "XAuth program is used to edit and display the authorization
+information used in connecting to the X server.")
     (license license:x11)))
 
 
@@ -1901,8 +2000,12 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Control display backlight")
+    (description
+     "Xbacklight is used to adjust the backlight brightness where
+supported.  It uses the RandR extension to find all outputs on the X
+server supporting backlight brightness control and changes them all in
+the same way.")
     (license license:x11)))
 
 
@@ -1923,8 +2026,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "X bitmaps")
+    (description
+     "xbitmaps provides basic bitmaps (little pictures) used by some
+legacy X clients.")
     (license license:x11)))
 
 
@@ -1946,8 +2051,17 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-wrapper)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "XML-XCB protocol descriptions")
+    (description
+     "XCB-Proto provides the XML-XCB protocol descriptions that libxcb
+uses to generate the majority of its code and API.  XCB-Proto is
+separated from libxcb to allow reuse by other projects, such as
+additional language bindings, protocol dissectors, or documentation
+generators.
+
+XCB-Proto also contains language-independent Python libraries that are
+used to parse an XML description and create objects used by Python code
+generators in individual language bindings.")
     (license license:x11)))
 
 
@@ -1968,8 +2082,10 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XCMiscProto protocol headers")
+    (description
+     "XC-MISC Extension defines a protocol that provides Xlib two ways
+to query the server for available resource IDs.")
     (license license:x11)))
 
 
@@ -1993,8 +2109,12 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Device Color Characterization utility")
+    (description
+     "XCMSDB is used to load, query, or remove Device Color
+Characterization data stored in properties on the root window of the
+screen as specified in section 7, Device Color Characterization, of the
+X11 Inter-Client Communication Conventions Manual (ICCCM).")
     (license license:x11)))
 
 
@@ -2024,8 +2144,10 @@ synchronization between the X server and direct-rendering clients.")
                             (assoc-ref %outputs "out")
                             "/share/icons"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Default Xorg cursors")
+    (description
+     "This package provides a default set of cursor themes for the Xorg
+X server: 'handhelds', 'redglass' and 'whiteglass'.")
     (license license:x11)))
 
 
@@ -2050,8 +2172,9 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Create an X cursor file from PNG images")
+    (description
+     "XCursorGen prepares X11 cursor sets for use with libXcursor.")
     (license license:x11)))
 
 
@@ -2084,8 +2207,13 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg display information utility")
+    (description
+     "Xdpyinfo is used to display information about an X server: the
+capabilities of a server, the predefined values for various parameters
+used in communicating between clients and the server, and the different
+types of screens, visuals, and X11 protocol extensions that are
+available.")
     (license license:x11)))
 
 
@@ -2110,8 +2238,10 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Query DRI configuration information")
+    (description
+     "XDRIInfo is used to query configuration information of X11
+DRI (Direct Rendering Infrastructure) drivers.")
     (license license:x11)))
 
 
@@ -2138,8 +2268,15 @@ synchronization between the X server and direct-rendering clients.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Print contents of X events")
+    (description
+     "XEv creates a window and then asks the X server to send it X11
+events whenever anything happens to the window (such as it being moved,
+resized, typed in, clicked in, etc.).  You can also attach it to an
+existing window.  It is useful for seeing what causes events to occur
+and to display the information that they contain; it is essentially a
+debugging and development tool, and should not be needed in normal
+usage.")
     (license license:x11)))
 
 
@@ -2160,8 +2297,12 @@ synchronization between the X server and direct-rendering clients.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XExtProto protocol headers")
+    (description
+     "XExtProto provides the following extensions: DOUBLE-BUFFER, DPMS,
+Extended-Visual-Information, Generic Event Extension, LBX, MIT-SHM,
+MIT-SUNDRY-NONSTANDARD, Multi-Buffering, SECURITY, SHAPE, SYNC, TOG-CUP,
+XC-APPGROUP, XTEST.")
     (license license:x11)))
 
 
@@ -2217,8 +2358,11 @@ devices, thus making direct access unnecessary.")
                             (assoc-ref %outputs "out")
                             "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Generic input driver for X server")
+    (description
+     "xf86-input-evdev is a generic input driver for the Xorg X server.
+This driver supports all input devices that the kernel knows about,
+including most mice, keyboards, tablets and touchscreens.")
     (license license:x11)))
 
 (define-public xf86-input-libinput
@@ -2244,11 +2388,11 @@ devices, thus making direct access unnecessary.")
      `(("libinput" ,libinput)
        ("xorg-server" ,xorg-server)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg input driver")
+    (synopsis "Input driver for X server based on libinput")
     (description
-     "This is an Xorg input driver based on libinput.  It therefore supports
-all input devices that libinput can handle, including most mice, keyboards,
-tablets and touchscreens.")
+     "xf86-input-libinput is an input driver for the Xorg X server based
+on libinput.  It is a thin wrapper around libinput, so while it does
+provide all features that libinput supports it does little beyond.")
     (license license:x11)))
 
 (define-public xf86-input-joystick
@@ -2274,8 +2418,10 @@ tablets and touchscreens.")
                             (assoc-ref %outputs "out")
                             "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Joystick input driver for X server")
+    (description
+     "xf86-input-joystick is a joystick input driver for the Xorg X server.
+It is used to cotrol the pointer with a joystick device.")
     (license license:x11)))
 
 
@@ -2297,8 +2443,9 @@ tablets and touchscreens.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Keyboard input driver for X server")
+    (description
+     "xf86-input-keyboard is a keyboard input driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -2325,8 +2472,12 @@ tablets and touchscreens.")
                             (assoc-ref %outputs "out")
                             "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Mouse input driver for X server")
+    (description
+     "xf86-input-mouse is a mouse input driver for the Xorg X server.
+This driver supports four classes of mice: serial, bus and PS/2 mice,
+and additional mouse types supported by specific operating systems, such
+as USB mice.")
     (license license:x11)))
 
 
@@ -2360,9 +2511,9 @@ tablets and touchscreens.")
                             (assoc-ref %outputs "out")
                             "/share/X11/xorg.conf.d"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Synaptics touchpad driver for X.Org")
+    (synopsis "Touchpad input driver for X server")
     (description
-     "This package provides a touchpad driver for the X.Org window system.")
+     "xf86-input-synaptics is a touchpad driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -2384,8 +2535,9 @@ tablets and touchscreens.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Void (null) input driver for X server")
+    (description
+     "xf86-input-void is a null input driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -2408,8 +2560,9 @@ tablets and touchscreens.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Ark Logic video driver for X server")
+    (description
+     "xf86-video-ark is an Ark Logic video driver for the Xorg X server.")
     (license license:x11)))
 
 ;; This driver depends on XAA which has been removed from xorg-server.
@@ -2433,8 +2586,10 @@ tablets and touchscreens.")
 ;;     (inputs `(("xorg-server" ,xorg-server)))
 ;;     (native-inputs `(("pkg-config" ,pkg-config)))
 ;;     (home-page "http://www.x.org/wiki/")
-;;     (synopsis "Xorg implementation of the X Window System")
-;;     (description "X.org provides an implementation of the X Window System")
+;;     (synopsis "ASpeed Technologies video driver for X server")
+;;     (description
+;;      "xf86-video-ast is an ASpeed Technologies video driver for the Xorg
+;; X server.")
 ;;     (license license:x11)))
 
 
@@ -2459,8 +2614,10 @@ tablets and touchscreens.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments `(#:configure-flags `("--disable-glamor"))) ; TODO: Enable glamor
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "ATI Radeon video driver for X server")
+    (description
+     "xf86-video-ati is an ATI Radeon video driver for the Xorg
+X server.")
     (license license:x11)))
 
 
@@ -2482,8 +2639,10 @@ tablets and touchscreens.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Cirrus Logic video driver for X server")
+    (description
+     "xf86-video-cirrus is a Cirrus Logic video driver for the Xorg
+X server.")
     (license license:x11)))
 
 
@@ -2509,8 +2668,10 @@ tablets and touchscreens.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Framebuffer device video driver for X server")
+    (description
+     "xf86-video-fbdev is a video driver for the Xorg X server for
+framebuffer device.")
     (license license:x11)))
 
 
@@ -2537,8 +2698,12 @@ tablets and touchscreens.")
      (filter (lambda (system) (string-prefix? "i686-" system))
              %supported-systems))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "AMD Geode GX/LX video driver for X server")
+    (description
+     "xf86-video-geode is an Xorg X server video driver for the AMD
+Geode GX and LX processors.  The GX component supports both XAA and EXA
+for graphics acceleration.  The LX component supports EXA, including
+compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
     (license license:x11)))
 
 
@@ -2563,8 +2728,9 @@ tablets and touchscreens.")
 ;;     (inputs `(("pkg-config" ,pkg-config)
 ;;               ("xorg-server" ,xorg-server)))
 ;;     (home-page "http://www.x.org/wiki/")
-;;     (synopsis "Xorg implementation of the X Window System")
-;;     (description "X.org provides an implementation of the X Window System")
+;;     (synopsis "Glide video driver for X server")
+;;     (description
+;;      "xf86-video-glide is a Glide video driver for the Xorg X server.")
 ;;     (license license:x11)))
 
 
@@ -2589,8 +2755,10 @@ tablets and touchscreens.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "GLINT/Permedia video driver for X server")
+    (description
+     "xf86-video-glint is a GLINT/Permedia video driver for the Xorg
+X server.")
     (license license:x11)))
 
 
@@ -2614,8 +2782,10 @@ tablets and touchscreens.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "I128 video driver for X server")
+    (description
+     "xf86-video-i128 is an I128 (Imagine 128) video driver for the Xorg
+X server.")
     (license license:x11)))
 
 
@@ -2648,8 +2818,10 @@ tablets and touchscreens.")
                                   (string-prefix? "x86_64-" system)))
              %supported-systems))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Intel video driver for X server")
+    (description
+     "xf86-video-intel is a 2D graphics driver for the Xorg X server.
+It supports a variety of Intel graphics chipsets.")
     (license license:x11)))
 
 
@@ -2675,8 +2847,13 @@ tablets and touchscreens.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Mach64 video driver for X server")
+    (description
+     "xf86-video-mach64 is a video driver for the Xorg X server.
+This driver is intended for all ATI video adapters based on the Mach64
+series or older chipsets, providing maximum video function within
+hardware limitations.  The driver is also intended to optionally provide
+the same level of support for generic VGA or 8514/A adapters.")
     (license license:x11)))
 
 
@@ -2701,8 +2878,9 @@ tablets and touchscreens.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Matrox video driver for X server")
+    (description
+     "xf86-video-mga is a Matrox video driver for the Xorg X server.")
     (license license:x11)))
 
 (define-public xf86-video-modesetting
@@ -2725,7 +2903,7 @@ tablets and touchscreens.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "\"Modesetting\" graphics driver for the Xorg server")
+    (synopsis "\"Modesetting\" video driver for X server")
     (description
      "This is a generic \"modesetting\" video driver, that relies on the Linux
 kernel mode setting (KMS).")
@@ -2750,13 +2928,14 @@ kernel mode setting (KMS).")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "NeoMagic video driver for X server")
+    (description
+     "xf86-video-neomagic is a NeoMagic video driver for the Xorg X server.")
     (license license:x11)))
 
 
 ;; This driver depends on XAA which has been removed from xorg-server.
-;;
+
 ;; (define-public xf86-video-newport
 ;;   (package
 ;;     (name "xf86-video-newport")
@@ -2775,8 +2954,10 @@ kernel mode setting (KMS).")
 ;;     (inputs `(("xorg-server" ,xorg-server)))
 ;;     (native-inputs `(("pkg-config" ,pkg-config)))
 ;;     (home-page "http://www.x.org/wiki/")
-;;     (synopsis "Xorg implementation of the X Window System")
-;;     (description "X.org provides an implementation of the X Window System")
+;;     (synopsis "Newport video driver for X server")
+;;     (description
+;;      "xf86-video-newport is an Xorg X server video driver for the SGI
+;; newport cards.")
 ;;     (license license:x11)))
 
 
@@ -2799,7 +2980,7 @@ kernel mode setting (KMS).")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "NVIDIA video driver for the Xorg X server")
+    (synopsis "NVIDIA video driver for X server")
     (description
      "This package contains Xorg support for the NVIDIA GeForce 8 series of
 graphics processors.
@@ -2834,7 +3015,7 @@ supported, and the RENDER extension is not accelerated by this driver.")
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
     (home-page "http://nouveau.freedesktop.org")
-    (synopsis "NVIDIA video driver for the Xorg X server")
+    (synopsis "NVIDIA video driver for X server")
     (description
      "This package provides modern, high-quality Xorg drivers for NVIDIA
 graphics cards.")
@@ -2866,8 +3047,11 @@ graphics cards.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Openchrome video driver for X server")
+    (description
+     "xf86-video-openchrome is a video driver for the Xorg X server.
+This driver is intended for VIA chipsets featuring the VIA UniChrome,
+UniChrome Pro and Chrome9 integrated graphics processors.")
     (license license:x11)))
 
 
@@ -2892,8 +3076,10 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "ATI Rage 128 video driver for X server")
+    (description
+     "xf86-video-r128 is a video driver for the Xorg X server.
+This driver is intended for ATI Rage 128 based cards.")
     (license license:x11)))
 
 
@@ -2917,8 +3103,9 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Savage video driver for X server")
+    (description
+     "xf86-video-savage is an S3 Savage video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -2943,8 +3130,10 @@ graphics cards.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Silicon Motion video driver for X server")
+    (description
+     "xf86-video-siliconmotion is a Silicon Motion video driver for the
+Xorg X server.")
     (license license:x11)))
 
 
@@ -2972,8 +3161,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Sis video driver for X server")
+    (description
+     "xf86-video-SiS is a SiS video driver for the Xorg X server.
+This driver supports SiS chipsets of 300/315/330/340 series.")
     (license license:bsd-3)))
 
 
@@ -2995,8 +3186,9 @@ graphics cards.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "GX/TurboGX video driver for X server")
+    (description
+     "xf86-video-suncg6 is a GX/TurboGX video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -3018,8 +3210,9 @@ graphics cards.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "SUNFFB video driver for X server")
+    (description
+     "xf86-video-sunffb is a SUNFFB video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -3045,8 +3238,9 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "3Dfx video driver for X server")
+    (description
+     "xf86-video-tdfx is a 3Dfx video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -3070,8 +3264,10 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "TGA video driver for X server")
+    (description
+     "xf86-video-tga is a TGA (DEC 21030) video driver for the Xorg
+X server.")
     (license license:x11)))
 
 
@@ -3096,8 +3292,9 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Trident video driver for X server")
+    (description
+     "xf86-video-trident is a Trident video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -3123,8 +3320,10 @@ graphics cards.")
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "VESA video driver for X server")
+    (description
+     "xf86-video-vesa is a generic VESA video driver for the Xorg
+X server.")
     (license license:x11)))
 
 
@@ -3151,8 +3350,9 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "VMware SVGA video driver for X server")
+    (description
+     "xf86-video-vmware is a VMware SVGA video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -3175,8 +3375,9 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Voodoo/Voodoo2 video driver for X server")
+    (description
+     "xf86-video-voodoo is a Voodoo video driver for the Xorg X server.")
     (license license:x11)))
 
 
@@ -3200,8 +3401,10 @@ graphics cards.")
             "0j0n7sj5xfjpmmgx6n5x556rw21hdd18fwmavp95wps7qki214ms"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XF86BigFontProto protocol headers")
+    (description
+     "XFree86 Bigfont Extension contains header files and documentation
+for the XF86BigFontProto protocol.")
     (license license:x11)))
 
 
@@ -3221,8 +3424,10 @@ graphics cards.")
             "0l4hx48207mx0hp09026r6gy9nl3asbq0c75hri19wp1118zcpmc"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XF86DGAProto protocol headers")
+    (description
+     "XFree86 Direct Graphic Access Extension defines a protocol for
+direct linear framebuffer access.")
     (license license:x11)))
 
 
@@ -3242,8 +3447,11 @@ graphics cards.")
             "07v69m0g2dfzb653jni4x656jlr7l84c1k39j8qc8vfb45r8sjww"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XF86DRIProto protocol headers")
+    (description
+     "XFree86 Direct Rendering Infrastructure Extension defines a
+protocol to allow user applications to access the video hardware without
+requiring data to be passed through the X server.")
     (license license:x11)))
 
 
@@ -3263,8 +3471,10 @@ graphics cards.")
             "0w47d7gfa8zizh2bshdr2rffvbr4jqjv019mdgyh6cmplyd4kna5"))))
     (build-system gnu-build-system)
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XF86VidModeProto protocol headers")
+    (description
+     "XFree86 Video Mode Extension defines a protocol for dynamically
+configuring modelines and gamma.")
     (license license:x11)))
 
 
@@ -3289,8 +3499,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Alter a monitor's gamma correction")
+    (description
+     "XGamma is used to query and alter the gamma correction of a
+monitor via the X video mode extension.")
     (license license:x11)))
 
 
@@ -3316,8 +3528,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg server access control utility")
+    (description
+     "XHost is used to manage the list of host names or user names
+allowed to make connections to the X server.")
     (license license:x11)))
 
 
@@ -3338,8 +3552,16 @@ graphics cards.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XineramaProto protocol headers")
+    (description
+     "Xinerama Extension allows clients to query information about multiple
+physical screens controlled by a single X server that appear as a single
+screen to core X11 protocol operations.
+
+This extension provides a common network protocol for querying information
+which may be provided by different underlying screen combination
+technologies in the X server, such as the original Xinerama multiplexer, or
+alternative implementations like XRandR or TwinView.")
     (license license:x11)))
 
 
@@ -3369,8 +3591,9 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Configure input devices for X server")
+    (description
+     "XInput is used to configure and test XInput devices.")
     (license license:x11)))
 
 
@@ -3396,8 +3619,19 @@ graphics cards.")
     (native-inputs
         `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Compile XKB keyboard description")
+    (description
+     "xkbcomp keymap compiler converts a description of an XKB keymap
+into one of several output formats.  The most common use for xkbcomp is
+to create a compiled keymap file (.xkm extension) which can be read
+directly by XKB- capable X servers or utilities.
+
+X Keyboard (XKB) Extension essentially replaces the core protocol
+definition of keyboard.  The extension makes possible to clearly and
+explicitly specify most aspects of keyboard behaviour on per-key basis
+and to more closely track the logical and physical state of the
+keyboard.  It also includes a number of keyboard controls designed to
+make keyboards more accessible to people with physical impairments.")
     (license license:x11)))
 
 (define-public xkbcomp ; using xkeyboard-config as input
@@ -3434,8 +3668,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "XKB event daemon demo")
+    (description
+     "XKB event daemon listens for the specified XKB events and executes
+requested commands if they occur.")
     (license license:x11)))
 
 
@@ -3462,8 +3698,16 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "XKB utilities")
+    (description
+     "XKBUtils is a collection of small utilities for X Keyboard (XKB)
+extension to the X11 protocol.  It includes:
+
+- xkbbell: generate XKB bell events;
+
+- xkbvleds: display the state of LEDs on an XKB keyboard in a window;
+
+- xkbwatch: reports changes in the XKB keyboard state.")
     (license license:x11)))
 
 
@@ -3490,8 +3734,12 @@ graphics cards.")
       `(("intltool" ,intltool)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XKB configuration files")
+    (description
+     "xkeyboard-config provides a database for X Keyboard (XKB) Extension.
+There are five components that define a complete keyboard mapping:
+symbols, geometry, keycodes, compat, and types; these five components
+can be combined together using the 'rules' component of this database.")
     (license license:x11)))
 
 
@@ -3516,8 +3764,11 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Kill a client by its X resource")
+    (description
+     "XKill is used to force the X server to close connections to
+clients.  This program is very dangerous, but is useful for aborting
+programs that have displayed undesired windows on a user's screen.")
     (license license:x11)))
 
 
@@ -3541,8 +3792,9 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "List interned X server atoms")
+    (description
+     "XLsAtoms is used to list the interned atoms defined on X server.")
     (license license:x11)))
 
 
@@ -3566,8 +3818,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "List client applications running on a display")
+    (description
+     "XLsClients is used to list information about the client programs
+running on X server.")
     (license license:x11)))
 
 
@@ -3593,8 +3847,13 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Modify keymaps and button mappings on X server")
+    (description
+     "Xmodmap is used to display and edit the keyboard modifier map and
+keymap table that are used by client programs running on X server to
+convert event keycodes into keysyms.  It is usually run from the user's
+session startup script to configure the keyboard according to personal
+tastes.")
     (license license:x11)))
 
 
@@ -3619,8 +3878,14 @@ graphics cards.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg SGML documentation tools")
+    (description
+    "This package provides a common set of SGML entities and XML/CSS style
+sheets used in building/formatting the documentation provided in other
+Xorg packages.  It's typically only needed by people building from
+source who want to produce formatted documentation from their builds, or
+those who have installed the HTML version of the documentation, which
+refers to the included common xorg.css stylesheet.")
     (license license:x11)))
 
 
@@ -3646,8 +3911,10 @@ graphics cards.")
     (native-inputs
         `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Print an X window dump from xwd")
+    (description
+     "XPr takes as input a window dump file produced by xwd and formats
+it for output on various types of printers.")
     (license license:x11)))
 
 
@@ -3672,8 +3939,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Display X server properties")
+    (description
+     "xprop is used to display and/or set window and font properties of
+an X server.")
     (license license:x11)))
 
 
@@ -3700,8 +3969,10 @@ graphics cards.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Command line interface to X RandR extension")
+    (description
+     "xrandr - primitive command line interface to X11 Resize, Rotate,
+and Reflect (RandR) extension.")
     (license license:x11)))
 
 
@@ -3726,8 +3997,13 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "X server resource database utility")
+    (description
+     "XRDB is used to get or set the contents of the RESOURCE_MANAGER
+property on the root window of screen 0, or the SCREEN_RESOURCES
+property on the root window of any or all screens, or everything
+combined.  You would normally run this program from your X startup
+file.")
     (license license:x11)))
 
 
@@ -3751,8 +4027,11 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Refresh all or part of an X screen")
+    (description
+     "Xrefresh is a simple X program that causes all or part of your
+screen to be repainted.  This is useful when system messages have messed
+up your screen.")
     (license license:x11)))
 
 
@@ -3779,8 +4058,9 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "User preference utility for X server")
+    (description
+     "XSet is used to set various user preference options of the display.")
     (license license:x11)))
 
 
@@ -3806,8 +4086,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Root window parameter setting utility for X server")
+    (description
+     "XSetRoot allows you to tailor the appearance of the root window on
+a display running X server.")
     (license license:x11)))
 
 
@@ -3828,8 +4110,12 @@ graphics cards.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Network Transport layer library")
+    (description
+     "Xtrans is a library of code that is shared among various X packages to
+handle network protocol transport in a modular fashion, allowing a single
+place to add new transport types.  It is used by the X server, libX11,
+libICE, the X font server, and related components.")
     (license license:x11)))
 
 
@@ -3855,8 +4141,11 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Print out X-Video extension adaptor information")
+    (description
+     "XVInfo is used to print out the capabilities of any video adaptors
+associated with the display that are accessible through the X-Video
+extension.")
     (license license:x11)))
 
 
@@ -3882,8 +4171,14 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Dump current contents of X window or screen to file")
+    (description
+     "Xwd is used to store window images in a specially formatted dump
+file.  This file can then be read by various other X utilities for
+redisplay, printing, editing, formatting, archiving, image processing,
+etc.  The target window is selected by clicking the pointer in the
+desired window.  The keyboard bell is rung once at the beginning of the
+dump and twice whenthe dump is completed.")
     (license license:x11)))
 
 
@@ -3908,8 +4203,10 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Window information utility for X server")
+    (description
+     "XWinInfo is used to print out information about windows on an X server.
+Various information is displayed depending on which options are selected.")
     (license license:x11)))
 
 
@@ -3934,8 +4231,10 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Display an X window dump from xwd")
+    (description
+     "Xwud is used to display in a window an image saved in a specially
+formatted dump file, such as produced by xwd.")
     (license license:x11)))
 
 
@@ -3962,8 +4261,11 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg FixesProto protocol headers")
+    (description
+     "Fixes Extension makes changes to many areas of the protocol to resolve
+issues raised by application interaction with core protocol mechanisms that
+cannot be adequately worked around on the client side of the wire.")
     (license license:x11)))
 
 
@@ -3982,7 +4284,7 @@ graphics cards.")
           (base32
             "1bamagq7g6s0d23l8rb3nppj8ifqj05f7z9bhbs4fdg8az3ffgvw"))))
     (build-system gnu-build-system)
-    (propagated-inputs  
+    (propagated-inputs
       ;; These are all in the Requires or Requires.private field of xdamage.pc
       `(("damageproto" ,damageproto)
         ("libxfixes" ,libxfixes)
@@ -3991,8 +4293,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Damage Extension library")
+    (description "Xorg library for the XDamage extension.")
     (license license:x11)))
 
 
@@ -4019,8 +4321,9 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Common extensions library")
+    (description
+     "Library for common extensions to the X11 protocol.")
     (license license:x11)))
 
 
@@ -4047,8 +4350,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Xinerama protocol library")
+    (description "API for Xinerama extension to X11 protocol.")
     (license license:x11)))
 
 
@@ -4075,8 +4378,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Print Client library")
+    (description "Xorg Print Client library.")
     (license license:x11)))
 
 
@@ -4103,8 +4406,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Render Extension library")
+    (description "Library for the Render Extension to the X11 protocol.")
     (license license:x11)))
 
 
@@ -4132,8 +4435,18 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg library for Xtest and Record extensions")
+    (description
+     "libXtst provides the Xlib-based client API for the XTEST & RECORD
+extensions.
+
+The XTEST extension is a minimal set of client and server extensions
+required to completely test the X11 server with no user intervention.  This
+extension is not intended to support general journaling and playback of user
+actions.
+
+The RECORD extension supports the recording and reporting of all core X
+protocol and arbitrary X extension protocol.")
     (license license:x11)))
 
 
@@ -4161,8 +4474,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XVideo Extension library")
+    (description "Library for the X Video Extension to the X11 protocol.")
     (license license:x11)))
 
 
@@ -4186,8 +4499,11 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Create an index of X font files in a directory")
+    (description
+     "MkFontDir creates the 'fonts.dir' files needed by the legacy X
+server core font system.  The current implementation is a simple wrapper
+script around the mkfontscale program.")
     (license license:x11)))
 
 
@@ -4211,8 +4527,14 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg X11Proto protocol headers")
+    (description
+     "XProto provides the headers and specification documents defining
+the X Window System Core Protocol, Version 11.
+
+It also includes a number of headers that aren't purely protocol related,
+but are depended upon by many other X Window System packages to provide
+common definitions and porting layer.")
     (license license:x11)))
 
 
@@ -4241,8 +4563,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Inter-Client Exchange library")
+    (description "Xorg Inter-Client Exchange library.")
     (license license:x11)))
 
 
@@ -4266,8 +4588,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Authorization library")
+    (description
+     "libXau provides an authorization library for individual access to
+an X Window System display.")
     (license license:x11)))
 
 (define-public libxfixes
@@ -4293,8 +4617,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Fixes Extension library")
+    (description "Library for the XFixes Extension to the X11 protocol.")
     (license license:x11)))
 
 
@@ -4324,8 +4648,14 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Font handling library")
+    (description
+     "libXfont provides the core of the legacy X11 font system, handling the
+index files (fonts.dir, fonts.alias, fonts.scale), the various font file
+formats, and rasterizing them.  It is used by the X servers, the X Font
+Server (xfs), and some font utilities (bdftopcf for instance), but should
+not be used by normal X11 clients.  X11 clients access fonts via either the
+new API's in libXft, or the legacy API's in libX11.")
     (license license:x11)))
 
 
@@ -4354,8 +4684,8 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Input Extension library")
+    (description "Library for the XInput Extension to the X11 protocol.")
     (license license:x11)))
 
 
@@ -4384,8 +4714,9 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Resize and Rotate Extension library")
+    (description
+     "Library for the Resize and Rotate Extension to the X11 protocol.")
     (license license:x11)))
 
 
@@ -4413,8 +4744,8 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XvMC library")
+    (description "Xorg XvMC library.")
     (license license:x11)))
 
 
@@ -4441,8 +4772,10 @@ graphics cards.")
     (native-inputs
        `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XF86 Video Mode Extension library")
+    (description
+     "Library for the XFree86 Video Mode Extension Extension to the X11
+protocol.")
     (license license:x11)))
 
 
@@ -4474,8 +4807,21 @@ graphics cards.")
     (arguments
      `(#:configure-flags '("--enable-xkb")))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "The X C Binding (XCB) library")
+    (description
+     "libxcb provides an interface to the X Window System protocol,
+which replaces the current Xlib interface.  It has several advantages
+over Xlib, including:
+
+- size: small, simple library, and lower memory footprint;
+
+- latency hiding: batch several requests and wait for the replies later;
+
+- direct protocol access: interface and protocol correspond exactly;
+
+- proven thread support: transparently access XCB from multiple threads;
+
+- easy extension implementation: interfaces auto-generated from XML-XCB.")
     (license license:x11)))
 
 
@@ -4573,7 +4919,16 @@ graphics cards.")
                  %standard-phases)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (description
+     "This package provides the Xorg X server itself.
+The X server accepts requests from client programs to create windows, which
+are (normally rectangular) 'virtual screens' that the client program can
+draw into.
+
+Windows are then composed on the actual screen by the X server (or by a
+separate composite manager) as directed by the window manager, which usually
+communicates with the user via graphical controls such as buttons and
+draggable titlebars and borders.")
     (license license:x11)))
 
 
@@ -4605,8 +4960,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Core X11 protocol client library")
+    (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
 
 
@@ -4635,8 +4990,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Cursor management library")
+    (description "Xorg Cursor management library.")
     (license license:x11)))
 
 
@@ -4664,8 +5019,8 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg XToolkit Intrinsics library")
+    (description "Xorg XToolkit Intrinsics library.")
     (license license:x11)))
 
 
@@ -4694,8 +5049,10 @@ graphics cards.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Xaw library")
+    (description
+     "Xaw is the X Athena Widget Set based on the X Toolkit
+Intrinsics (Xt) Library.")
     (license license:x11)))
 
 
@@ -4717,17 +5074,21 @@ graphics cards.")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://cgit.freedesktop.org/xcb/util/")
     (synopsis "Core XCB utility functions")
-    (description "The XCB util module provides a number of libraries which
-    sit on top of libxcb, the core X protocol library, and some of the
-    extension libraries.  These experimental libraries provide convenience
-functions and interfaces which make the raw X protocol more usable.  Some of
-the libraries also provide client-side code which is not strictly part of
+    (description
+     "The XCB util module provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
 the X protocol but which has traditionally been provided by Xlib.
 
 The XCB util module provides the following libraries:
-aux: Convenient access to connection setup and some core requests.
-atom: Standard core X atom constants and atom caching.
-event: Some utilities that have little to do with events any more.")
+
+- aux: Convenient access to connection setup and some core requests.
+
+- atom: Standard core X atom constants and atom caching.
+
+- event: Some utilities that have little to do with events any more.")
     (license license:x11)))
 
 
@@ -4751,15 +5112,17 @@ event: Some utilities that have little to do with events any more.")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://cgit.freedesktop.org/xcb/util-image/")
     (synopsis "XCB port of Xlib's XImage and XShmImage")
-    (description "The XCB util module provides a number of libraries which
-    sit on top of libxcb, the core X protocol library, and some of the
-    extension libraries.  These experimental libraries provide convenience
-functions and interfaces which make the raw X protocol more usable.  Some of
-the libraries also provide client-side code which is not strictly part of
+    (description
+     "The XCB util module provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
 the X protocol but which has traditionally been provided by Xlib.
 
 The XCB util-image module provides the following library:
-image: Port of Xlib's XImage and XShmImage functions.")
+
+- image: Port of Xlib's XImage and XShmImage functions.")
     (license license:x11)))
 
 
@@ -4781,15 +5144,17 @@ image: Port of Xlib's XImage and XShmImage functions.")
      `(("pkg-config" ,pkg-config)))
     (home-page "http://cgit.freedesktop.org/xcb/util-keysyms/")
     (synopsis "Standard X constants and conversion to/from keycodes")
-    (description "The XCB util module provides a number of libraries which
-    sit on top of libxcb, the core X protocol library, and some of the
-    extension libraries.  These experimental libraries provide convenience
-functions and interfaces which make the raw X protocol more usable.  Some of
-the libraries also provide client-side code which is not strictly part of
+    (description
+     "The XCB util module provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
 the X protocol but which has traditionally been provided by Xlib.
 
 The XCB util-keysyms module provides the following library:
-keysyms: Standard X key constants and conversion to/from keycodes.")
+
+- keysyms: Standard X key constants and conversion to/from keycodes.")
     (license license:x11)))
 
 
@@ -4810,16 +5175,18 @@ keysyms: Standard X key constants and conversion to/from keycodes.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://cgit.freedesktop.org/xcb/util-renderutil/")
-    (synopsis "SConvenience functions for the Render extension")
-    (description "The XCB util module provides a number of libraries which
-    sit on top of libxcb, the core X protocol library, and some of the
-    extension libraries.  These experimental libraries provide convenience
-functions and interfaces which make the raw X protocol more usable.  Some of
-the libraries also provide client-side code which is not strictly part of
+    (synopsis "Convenience functions for the Render extension")
+    (description
+     "The XCB util module provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
 the X protocol but which has traditionally been provided by Xlib.
 
 The XCB util-renderutil module provides the following library:
-renderutil: Convenience functions for the Render extension.")
+
+- renderutil: Convenience functions for the Render extension.")
     (license license:x11)))
 
 
@@ -4842,16 +5209,19 @@ renderutil: Convenience functions for the Render extension.")
        ("pkg-config" ,pkg-config)))
     (home-page "http://cgit.freedesktop.org/xcb/util-wm/")
     (synopsis "Client and window-manager helpers for ICCCM and EWMH")
-    (description "The XCB util modules provides a number of libraries which
-    sit on top of libxcb, the core X protocol library, and some of the
-    extension libraries.  These experimental libraries provide convenience
-functions and interfaces which make the raw X protocol more usable.  Some of
-the libraries also provide client-side code which is not strictly part of
+    (description
+     "The XCB util modules provides a number of libraries which sit on
+top of libxcb, the core X protocol library, and some of the extension
+libraries.  These experimental libraries provide convenience functions
+and interfaces which make the raw X protocol more usable.  Some of the
+libraries also provide client-side code which is not strictly part of
 the X protocol but which has traditionally been provided by Xlib.
 
 The XCB util-wm module provides the following libraries:
-ewmh: Both client and window-manager helpers for EWMH.
-icccm: Both client and window-manager helpers for ICCCM.")
+
+- ewmh: Both client and window-manager helpers for EWMH.
+
+- icccm: Both client and window-manager helpers for ICCCM.")
     (license license:x11)))
 
 (define-public xinit
@@ -4908,8 +5278,10 @@ user-friendly mechanism to start the X server.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "Xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Xorg Xaw3d library")
+    (description
+     "Xaw is the X 3D Athena Widget Set based on the X Toolkit
+Intrinsics (Xt) Library.")
     (license license:x11)))
 
 (define-public xterm
