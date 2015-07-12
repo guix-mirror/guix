@@ -22,6 +22,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -109,5 +110,32 @@ able to change themes, icons, and fonts used by GTK+ applications.")
 speed up the access to freedesktop.org defined application menus.")
     (home-page "http://lxde.org")
     (license license:lgpl2.1+)))
+
+(define-public pcmanfm
+  (package
+    (name "pcmanfm")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/" name "/"
+                                  "PCManFM%20%2B%20Libfm%20%28tarball%20release"
+                                  "%29/PCManFM/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1033rw5jd7nlzbcdpx3bik7347kyh1sg1gkla424gq9vqqpxia6g"))))
+    (build-system gnu-build-system)
+    ;; (#:configure-flags '("--sysconfdir=/etc")) suggested in README.
+    (inputs `(("gtk+"   ,gtk+-2)
+              ;; TODO: add ("gvfs" ,gvfs).
+              ("libfm"  ,libfm)
+              ("libx11" ,libx11)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("libtool"    ,libtool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "LXDE file manager")
+    (description "PCMan is a lightweight GTK+ based file manager, compliant
+with freedesktop.org standard.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
 
 ;;; lxde.scm ends here
