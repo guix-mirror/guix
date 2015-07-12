@@ -24,7 +24,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public libfm-extra
   (package
@@ -71,5 +72,27 @@ which extends libfm.")
 able to change themes, icons, and fonts used by GTK+ applications.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
+
+(define-public menu-cache
+  (package
+    (name "menu-cache")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/lxde/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1bws84fiwk3anp30hcr0lw1xw5cgp44x5ik2yv2ijcgxpcvz8zgz"))))
+    (build-system gnu-build-system)
+    (inputs `(("glib"  ,glib)
+              ("libfm" ,libfm-extra)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "LXDE implementation of the freedesktop menu's cache")
+    (description "Menu-cache is a library creating and utilizing caches to
+speed up the access to freedesktop.org defined application menus.")
+    (home-page "http://lxde.org")
+    (license license:lgpl2.1+)))
 
 ;;; lxde.scm ends here
