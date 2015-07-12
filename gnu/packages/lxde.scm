@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages lxde)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
@@ -24,6 +25,31 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
+
+(define-public libfm-extra
+  (package
+    (name "libfm-extra")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/pcmanfm/"
+                                  "PCManFM%20%2B%20Libfm%20%28tarball%20"
+                                  "release%29/LibFM/libfm-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ygvw52262r3jp1f45m9cdpx5xgvd4rkyfszslfqvg2c99ig34n6"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--with-extra-only")))
+    (inputs `(("glib" ,glib)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("libtool"    ,libtool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "File management support (extra library)")
+    (description "LibFM provides file management functions built on top of
+Glib/GIO giving a higher-level API.  This package contains standalone library
+which extends libfm.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
 
 (define-public lxappearance
   (package
