@@ -27,6 +27,10 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
@@ -547,6 +551,65 @@ using compilers other than GCC."
 
 (define-public gcc-objc++-4.8
   (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")))
+
+(define (make-libstdc++-doc gcc)
+  "Return a package with the libstdc++ documentation for GCC."
+  (package
+    (inherit gcc)
+    (name "libstdc++-doc")
+    (version (package-version gcc))
+    (synopsis "GNU libstdc++ documentation")
+    (outputs '("out"))
+    (native-inputs `(("doxygen" ,doxygen)
+                     ("texinfo" ,texinfo)
+                     ("libxml2" ,libxml2)
+                     ("libxslt" ,libxslt)
+                     ("docbook-xml" ,docbook-xml)
+                     ("docbook-xsl" ,docbook-xsl)
+                     ("graphviz" ,graphviz))) ;for 'dot', invoked by 'doxygen'
+    (inputs '())
+    (propagated-inputs '())
+    (arguments
+     '(#:out-of-source? #t
+       #:tests? #f                                ;it's just documentation
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'chdir
+                              (lambda _
+                                (chdir "libstdc++-v3")))
+                  (add-before 'configure 'set-xsl-directory
+                              (lambda* (#:key inputs #:allow-other-keys)
+                                (let ((docbook (assoc-ref inputs "docbook-xsl")))
+                                  (substitute* (find-files "doc"
+                                                           "^Makefile\\.in$")
+                                    (("@XSL_STYLE_DIR@")
+                                     (string-append
+                                      docbook "/xml/xsl/"
+                                      (string-drop
+                                       docbook
+                                       (+ 34
+                                          (string-length
+                                           (%store-directory))))))))))
+                  (replace 'build
+                           (lambda _
+                             ;; XXX: There's also a 'doc-info' target, but it
+                             ;; relies on docbook2X, which itself relies on
+                             ;; DocBook 4.1.2, which is not really usable
+                             ;; (lacks a catalog.xml.)
+                             (zero? (system* "make"
+                                             "doc-html"
+                                             "doc-man"))))
+                  (replace 'install
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (let ((out (assoc-ref outputs "out")))
+                               (zero? (system* "make"
+                                               "doc-install-html"
+                                               "doc-install-man"))))))))))
+
+(define-public libstdc++-doc-4.9
+  (make-libstdc++-doc gcc-4.9))
+
+(define-public libstdc++-doc-5.1
+  (make-libstdc++-doc gcc-5.1))
 
 (define-public isl
   (package
