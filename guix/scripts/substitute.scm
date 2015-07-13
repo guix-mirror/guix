@@ -184,37 +184,29 @@ to the caller without emitting an error message."
                  (setvbuf port _IONBF)))
              (http-fetch uri #:text? #f #:port port))))))))
 
-(define-record-type <cache>
-  (%make-cache url store-directory wants-mass-query?)
-  cache?
-  (url               cache-url)
-  (store-directory   cache-store-directory)
-  (wants-mass-query? cache-wants-mass-query?))
+(define-record-type <cache-info>
+  (%make-cache-info url store-directory wants-mass-query?)
+  cache-info?
+  (url               cache-info-url)
+  (store-directory   cache-info-store-directory)
+  (wants-mass-query? cache-info-wants-mass-query?))
 
-(define (open-cache url)
-  "Open the binary cache at URL.  Return a <cache> object on success, or #f on
-failure."
-  (define (download-cache-info url)
+(define (download-cache-info url)
+  "Download the information for the cache at URL.  Return a <cache-info>
+object on success, or #f on failure."
+  (define (download url)
     ;; Download the `nix-cache-info' from URL, and return its contents as an
     ;; list of key/value pairs.
     (and=> (false-if-exception (fetch (string->uri url)))
            fields->alist))
 
-  (and=> (download-cache-info (string-append url "/nix-cache-info"))
+  (and=> (download (string-append url "/nix-cache-info"))
          (lambda (properties)
            (alist->record properties
-                          (cut %make-cache url <...>)
+                          (cut %make-cache-info url <...>)
                           '("StoreDir" "WantMassQuery")))))
 
-(define-syntax-rule (open-cache* url)
-  "Delayed variant of 'open-cache' that also lets the user know that they're
-gonna have to wait."
-  (delay (begin
-           (format (current-error-port)
-                   (_ "updating list of substitutes from '~a'...\r")
-                   url)
-           (open-cache url))))
-
+
 (define-record-type <narinfo>
   (%make-narinfo path uri uri-base compression file-hash file-size nar-hash nar-size
                  references deriver system signature contents)
@@ -418,9 +410,9 @@ be either #f (when PATH is unavailable) or the narinfo for PATH."
     (lambda _
       (values #f #f))))
 
-(define (cache-narinfo! cache path narinfo)
-  "Cache locally NARNIFO for PATH, which originates from CACHE.  NARINFO may
-be #f, in which case it indicates that PATH is unavailable at CACHE."
+(define (cache-narinfo! cache-url path narinfo)
+  "Cache locally NARNIFO for PATH, which originates from CACHE-URL.  NARINFO
+may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
   (define now
     (current-time time-monotonic))
 
@@ -432,7 +424,7 @@ be #f, in which case it indicates that PATH is unavailable at CACHE."
 
   (with-atomic-file-output (narinfo-cache-file path)
     (lambda (out)
-      (write (cache-entry (cache-url cache) narinfo) out)))
+      (write (cache-entry cache-url narinfo) out)))
   narinfo)
 
 (define (narinfo-request cache-url path)
@@ -491,11 +483,8 @@ if file doesn't exist, and the narinfo otherwise."
           #f
           (apply throw args)))))
 
-(define (fetch-narinfos cache paths)
-  "Retrieve all the narinfos for PATHS from CACHE and return them."
-  (define url
-    (cache-url cache))
-
+(define (fetch-narinfos url paths)
+  "Retrieve all the narinfos for PATHS from the cache at URL and return them."
   (define update-progress!
     (let ((done 0))
       (lambda ()
@@ -513,7 +502,7 @@ if file doesn't exist, and the narinfo otherwise."
       (case (response-code response)
         ((200)                                     ; hit
          (let ((narinfo (read-narinfo port url #:size len)))
-           (cache-narinfo! cache (narinfo-path narinfo) narinfo)
+           (cache-narinfo! url (narinfo-path narinfo) narinfo)
            (update-progress!)
            narinfo))
         ((404)                                     ; failure
@@ -522,7 +511,7 @@ if file doesn't exist, and the narinfo otherwise."
            (if len
                (get-bytevector-n port len)
                (read-to-eof port))
-           (cache-narinfo! cache
+           (cache-narinfo! url
                            (find (cut string-contains <> hash-part) paths)
                            #f)
            (update-progress!))
@@ -533,7 +522,12 @@ if file doesn't exist, and the narinfo otherwise."
              (read-to-eof port))
          #f))))
 
-  (and (string=? (cache-store-directory cache) (%store-prefix))
+  (define cache-info
+    (download-cache-info url))
+
+  (and cache-info
+       (string=? (cache-info-store-directory cache-info)
+                 (%store-prefix))
        (let ((uri (string->uri url)))
          (case (and=> uri uri-scheme)
            ((http)
@@ -568,11 +562,8 @@ information is available locally."
                        paths)))
     (if (null? missing)
         cached
-        (let* ((cache   (force cache))
-               (missing (if cache
-                            (fetch-narinfos cache missing)
-                            '())))
-          (append cached missing)))))
+        (let ((missing (fetch-narinfos cache missing)))
+          (append cached (or missing '()))))))
 
 (define (lookup-narinfo cache path)
   "Return the narinfo for PATH in CACHE, or #f when no substitute for PATH was
@@ -788,7 +779,7 @@ substituter disabled~%")
    (with-error-handling                           ; for signature errors
      (match args
        (("--query")
-        (let ((cache (open-cache* %cache-url))
+        (let ((cache %cache-url)
               (acl   (current-acl)))
           (define (valid? obj)
             (and (narinfo? obj) (valid-narinfo? obj acl)))
@@ -831,7 +822,7 @@ substituter disabled~%")
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
         ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-        (let* ((cache   (open-cache* %cache-url))
+        (let* ((cache   %cache-url)
                (narinfo (lookup-narinfo cache store-path))
                (uri     (narinfo-uri narinfo)))
           ;; Make sure it is signed and everything.
