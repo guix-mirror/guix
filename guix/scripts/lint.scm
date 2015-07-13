@@ -34,8 +34,6 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (web uri)
-  #:use-module (srfi srfi-34)
-  #:use-module (srfi srfi-35)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
                           open-connection-for-uri))
