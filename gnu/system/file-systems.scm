@@ -208,7 +208,7 @@ initrd code."
 ;; https://github.com/docker/libcontainer/blob/master/SPEC.md#filesystem
 (define %container-file-systems
   (list
-   ;; Psuedo-terminal file system.
+   ;; Pseudo-terminal file system.
    (file-system
      (device "none")
      (mount-point "/dev/pts")
