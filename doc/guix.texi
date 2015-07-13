@@ -2458,7 +2458,8 @@ implements the RubyGems build procedure used by Ruby packages, which
 involves running @code{gem build} followed by @code{gem install}.
 
 Which Ruby package is used can be specified with the @code{#:ruby}
-parameter.
+parameter.  A list of additional flags to be passed to the @command{gem}
+command can be specified with the @code{#:gem-flags} parameter.
 @end defvr
 
 @defvr {Scheme Variable} waf-build-system
