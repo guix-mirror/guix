@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
@@ -1517,6 +1519,47 @@ and playback rates of audio streams or audio files.  It is intended for
 application developers writing sound processing tools that require tempo/pitch
 control functionality, or just for playing around with the sound effects.")
     (license license:lgpl2.1+)))
+
+(define-public sox
+  (package
+    (name "sox")
+    (version "14.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/sox/sox-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "170lx90r1nlnb2j6lg00524iwvqy72p48vii4xc5prrh8dnrb9l1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; The upstream asks to identify the distribution to diagnose SoX
+       ;; bug reports.
+       '("--with-distro=Guix System Distribution")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ao" ,ao)
+       ("flac" ,flac)
+       ("lame" ,lame)
+       ("libid3tag" ,libid3tag)
+       ("libltdl" ,libltdl)
+       ("libmad" ,libmad)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("pulseaudio" ,pulseaudio)))
+    (home-page "http://sox.sourceforge.net")
+    (synopsis "Sound processing utility")
+    (description
+     "SoX (Sound eXchange) is a command line utility that can convert
+various formats of computer audio files to other formats.  It can also
+apply various effects to these sound files, and, as an added bonus, SoX
+can play and record audio files.")
+    ;; sox.c is distributed under GPL, while the files that make up
+    ;; libsox are licensed under LGPL.
+    (license (list license:gpl2+ license:lgpl2.1+))))
 
 (define-public soxr
   (package
