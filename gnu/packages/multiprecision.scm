@@ -47,15 +47,7 @@
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
                   "--enable-fat"
-                  "--enable-cxx"
-
-                  ;; FIXME: gmp-6.0.0a's config.guess fails on
-                  ;; multi-core armhf systems.
-                  ,@(if (%current-target-system)
-                        '()
-                        (let ((triplet
-                               (nix-system->gnu-triplet (%current-system))))
-                          (list (string-append "--build=" triplet)))))))
+                  "--enable-cxx")))
    (synopsis "Multiple-precision arithmetic library")
    (description
     "GMP is a library for arbitrary precision arithmetic, operating on
