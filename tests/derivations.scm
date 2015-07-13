@@ -612,7 +612,8 @@
          (output (derivation->output-path drv)))
 
     ;; Make sure substitutes are usable.
-    (set-build-options store #:use-substitutes? #t)
+    (set-build-options store #:use-substitutes? #t
+                       #:substitute-urls (%test-substitute-urls))
 
     (with-derivation-narinfo drv
       (let-values (((build download)
@@ -634,7 +635,8 @@
          (output (derivation->output-path drv)))
 
     ;; Make sure substitutes are usable.
-    (set-build-options store #:use-substitutes? #t)
+    (set-build-options store #:use-substitutes? #t
+                       #:substitute-urls (%test-substitute-urls))
 
     (with-derivation-narinfo drv
       (let-values (((build download)
@@ -655,7 +657,8 @@
            (output (derivation->output-path drv)))
 
       ;; Make sure substitutes are usable.
-      (set-build-options store #:use-substitutes? #t)
+      (set-build-options store #:use-substitutes? #t
+                         #:substitute-urls (%test-substitute-urls))
 
       (with-derivation-narinfo drv
         (let-values (((build download)

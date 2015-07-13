@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -54,11 +54,12 @@ EOF
 rm -f "$XDG_CACHE_HOME/guix/substitute/$hash_part"
 
 # Make sure we see the substitute.
-guile -c '
+guile -c "
   (use-modules (guix))
   (define store (open-connection))
-  (set-build-options store #:use-substitutes? #t)
-  (exit (has-substitutes? store "'"$out"'"))'
+  (set-build-options store #:use-substitutes? #t
+                     #:substitute-urls (list \"$GUIX_BINARY_SUBSTITUTE_URL\"))
+  (exit (has-substitutes? store \"$out\"))"
 
 # Now, run guix-daemon --no-substitutes.
 socket="$NIX_STATE_DIR/alternate-socket"
@@ -72,6 +73,7 @@ guile -c "
   (define store (open-connection \"$socket\"))
 
   ;; This setting MUST NOT override the daemon's --no-substitutes.
-  (set-build-options store #:use-substitutes? #t)
+  (set-build-options store #:use-substitutes? #t
+                     #:substitute-urls (list \"$GUIX_BINARY_SUBSTITUTE_URL\"))
 
   (exit (not (has-substitutes? store \"$out\")))"
