@@ -760,6 +760,7 @@ explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
 
 @item --substitute-urls=@var{urls}
+@anchor{daemon-substitute-urls}
 Consider @var{urls} the default whitespace-separated list of substitute
 source URLs.  When this option is omitted, @indicateurl{http://hydra.gnu.org}
 is used.
@@ -1434,9 +1435,12 @@ also result from derivation builds, can be available as substitutes.
 The @code{hydra.gnu.org} server is a front-end to a build farm that
 builds packages from the GNU distribution continuously for some
 architectures, and makes them available as substitutes.  This is the
-default source of substitutes; it can be overridden by passing
-@command{guix-daemon} the @code{--substitute-urls} option
-(@pxref{Invoking guix-daemon}).
+default source of substitutes; it can be overridden by passing the
+@option{--substitute-urls} option either to @command{guix-daemon}
+(@pxref{daemon-substitute-urls,, @code{guix-daemon --substitute-urls}})
+or to client tools such as @command{guix package}
+(@pxref{client-substitute-urls,, client @option{--substitute-urls}
+option}).
 
 @cindex security
 @cindex digital signatures
@@ -3583,6 +3587,16 @@ Do not build the derivations.
 @item --fallback
 When substituting a pre-built binary fails, fall back to building
 packages locally.
+
+@item --substitute-urls=@var{urls}
+@anchor{client-substitute-urls}
+Consider @var{urls} the whitespace-separated list of substitute source
+URLs, overriding the default list of URLs of @command{guix-daemon}
+(@pxref{daemon-substitute-urls,, @command{guix-daemon} URLs}).
+
+This means that substitutes may be downloaded from @var{urls}, provided
+they are signed by a key authorized by the system administrator
+(@pxref{Substitutes}).
 
 @item --no-substitutes
 Do not use substitutes for build products.  That is, always build things
