@@ -139,14 +139,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (arguments `(#:configure-flags
-                 '("--enable-shared"
-                   ;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
-                   ,@(if (%current-target-system)
-                         '()
-                         (let ((triplet
-                                (nix-system->gnu-triplet (%current-system))))
-                           (list (string-append "--build=" triplet)))))
+    (arguments `(#:configure-flags '("--enable-shared")
                  #:phases
                  (modify-phases %standard-phases
                    ;; XXX We need to run ./bootstrap because of the build
