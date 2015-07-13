@@ -699,6 +699,95 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
 
 
 ;;;
+;;; Daemon/substituter protocol.
+;;;
+
+(define (display-narinfo-data narinfo)
+  "Write to the current output port the contents of NARINFO is the format
+expected by the daemon."
+  (format #t "~a\n~a\n~a\n"
+          (narinfo-path narinfo)
+          (or (and=> (narinfo-deriver narinfo)
+                     (cute string-append (%store-prefix) "/" <>))
+              "")
+          (length (narinfo-references narinfo)))
+  (for-each (cute format #t "~a/~a~%" (%store-prefix) <>)
+            (narinfo-references narinfo))
+  (format #t "~a\n~a\n"
+          (or (narinfo-file-size narinfo) 0)
+          (or (narinfo-size narinfo) 0)))
+
+(define* (process-query command
+                        #:key cache-url acl)
+  "Reply to COMMAND, a query as written by the daemon to this process's
+standard input.  Use ACL as the access-control list against which to check
+authorized substitutes."
+  (define (valid? obj)
+    (and (narinfo? obj) (valid-narinfo? obj acl)))
+
+  (match (string-tokenize command)
+    (("have" paths ..1)
+     ;; Return the subset of PATHS available in CACHE-URL.
+     (let ((substitutable (lookup-narinfos cache-url paths)))
+       (for-each (lambda (narinfo)
+                   (format #t "~a~%" (narinfo-path narinfo)))
+                 (filter valid? substitutable))
+       (newline)))
+    (("info" paths ..1)
+     ;; Reply info about PATHS if it's in CACHE-URL.
+     (let ((substitutable (lookup-narinfos cache-url paths)))
+       (for-each display-narinfo-data (filter valid? substitutable))
+       (newline)))
+    (wtf
+     (error "unknown `--query' command" wtf))))
+
+(define* (process-substitution store-item destination
+                               #:key cache-url acl)
+  "Substitute STORE-ITEM (a store file name) from CACHE-URL, and write it to
+DESTINATION as a nar file.  Verify the substitute against ACL."
+  (let* ((narinfo (lookup-narinfo cache-url store-item))
+         (uri     (narinfo-uri narinfo)))
+    ;; Make sure it is signed and everything.
+    (assert-valid-narinfo narinfo acl)
+
+    ;; Tell the daemon what the expected hash of the Nar itself is.
+    (format #t "~a~%" (narinfo-hash narinfo))
+
+    (format (current-error-port) "downloading `~a'~:[~*~; (~,1f MiB installed)~]...~%"
+            store-item
+
+            ;; Use the Nar size as an estimate of the installed size.
+            (narinfo-size narinfo)
+            (and=> (narinfo-size narinfo)
+                   (cute / <> (expt 2. 20))))
+    (let*-values (((raw download-size)
+                   ;; Note that Hydra currently generates Nars on the fly
+                   ;; and doesn't specify a Content-Length, so
+                   ;; DOWNLOAD-SIZE is #f in practice.
+                   (fetch uri #:buffered? #f #:timeout? #f))
+                  ((progress)
+                   (let* ((comp     (narinfo-compression narinfo))
+                          (dl-size  (or download-size
+                                        (and (equal? comp "none")
+                                             (narinfo-size narinfo))))
+                          (progress (progress-proc (uri-abbreviation uri)
+                                                   dl-size
+                                                   (current-error-port))))
+                     (progress-report-port progress raw)))
+                  ((input pids)
+                   (decompressed-port (and=> (narinfo-compression narinfo)
+                                             string->symbol)
+                                      progress)))
+      ;; Unpack the Nar at INPUT into DESTINATION.
+      (restore-file input destination)
+
+      ;; Skip a line after what 'progress-proc' printed.
+      (newline (current-error-port))
+
+      (every (compose zero? cdr waitpid) pids))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -800,97 +889,25 @@ substituter disabled~%")
    (with-error-handling                           ; for signature errors
      (match args
        (("--query")
-        (let ((cache %cache-url)
-              (acl   (current-acl)))
-          (define (valid? obj)
-            (and (narinfo? obj) (valid-narinfo? obj acl)))
-
+        (let ((acl (current-acl)))
           (let loop ((command (read-line)))
             (or (eof-object? command)
                 (begin
-                  (match (string-tokenize command)
-                    (("have" paths ..1)
-                     ;; Return the subset of PATHS available in CACHE.
-                     (let ((substitutable
-                            (lookup-narinfos cache paths)))
-                       (for-each (lambda (narinfo)
-                                   (format #t "~a~%" (narinfo-path narinfo)))
-                                 (filter valid? substitutable))
-                       (newline)))
-                    (("info" paths ..1)
-                     ;; Reply info about PATHS if it's in CACHE.
-                     (let ((substitutable
-                            (lookup-narinfos cache paths)))
-                       (for-each (lambda (narinfo)
-                                   (format #t "~a\n~a\n~a\n"
-                                           (narinfo-path narinfo)
-                                           (or (and=> (narinfo-deriver narinfo)
-                                                      (cute string-append
-                                                            (%store-prefix) "/"
-                                                            <>))
-                                               "")
-                                           (length (narinfo-references narinfo)))
-                                   (for-each (cute format #t "~a/~a~%"
-                                                   (%store-prefix) <>)
-                                             (narinfo-references narinfo))
-                                   (format #t "~a\n~a\n"
-                                           (or (narinfo-file-size narinfo) 0)
-                                           (or (narinfo-size narinfo) 0)))
-                                 (filter valid? substitutable))
-                       (newline)))
-                    (wtf
-                     (error "unknown `--query' command" wtf)))
+                  (process-query command
+                                 #:cache-url %cache-url
+                                 #:acl acl)
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
         ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-        (let* ((cache   %cache-url)
-               (narinfo (lookup-narinfo cache store-path))
-               (uri     (narinfo-uri narinfo)))
-          ;; Make sure it is signed and everything.
-          (assert-valid-narinfo narinfo)
-
-          ;; Tell the daemon what the expected hash of the Nar itself is.
-          (format #t "~a~%" (narinfo-hash narinfo))
-
-          (format (current-error-port) "downloading `~a'~:[~*~; (~,1f MiB installed)~]...~%"
-                  store-path
-
-                  ;; Use the Nar size as an estimate of the installed size.
-                  (narinfo-size narinfo)
-                  (and=> (narinfo-size narinfo)
-                         (cute / <> (expt 2. 20))))
-          (let*-values (((raw download-size)
-                         ;; Note that Hydra currently generates Nars on the fly
-                         ;; and doesn't specify a Content-Length, so
-                         ;; DOWNLOAD-SIZE is #f in practice.
-                         (fetch uri #:buffered? #f #:timeout? #f))
-                        ((progress)
-                         (let* ((comp     (narinfo-compression narinfo))
-                                (dl-size  (or download-size
-                                              (and (equal? comp "none")
-                                                   (narinfo-size narinfo))))
-                                (progress (progress-proc (uri-abbreviation uri)
-                                                         dl-size
-                                                         (current-error-port))))
-                           (progress-report-port progress raw)))
-                        ((input pids)
-                         (decompressed-port (and=> (narinfo-compression narinfo)
-                                                   string->symbol)
-                                            progress)))
-            ;; Unpack the Nar at INPUT into DESTINATION.
-            (restore-file input destination)
-
-            ;; Skip a line after what 'progress-proc' printed.
-            (newline (current-error-port))
-
-            (every (compose zero? cdr waitpid) pids))))
+        (process-substitution store-path destination
+                              #:cache-url %cache-url
+                              #:acl (current-acl)))
        (("--version")
         (show-version-and-exit "guix substitute"))
        (("--help")
         (show-help))
        (opts
         (leave (_ "~a: unrecognized options~%") opts))))))
-
 
 ;;; Local Variables:
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
