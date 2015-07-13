@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -130,6 +131,28 @@
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
+    (license license:gpl2+)))
+
+(define-public gnome-common
+  (package
+    (name "gnome-common")
+    (version "3.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0b1676g4q44ah73c5gwl1kg88pc93pnq1pa9kwl43d0vg0pj802c"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gnome.org/")
+    (synopsis "Bootstrap GNOME modules built from Git")
+    (description "gnome-common contains various files needed to bootstrap
+GNOME modules built from Git.  It contains a common \"autogen.sh\" script that
+can be used to configure a source directory checked out from Git and some
+commonly used macros.")
     (license license:gpl2+)))
 
 (define-public gnome-desktop
