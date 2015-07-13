@@ -800,9 +800,7 @@ substituter disabled~%")
                     (("have" paths ..1)
                      ;; Return the subset of PATHS available in CACHE.
                      (let ((substitutable
-                            (if cache
-                                (lookup-narinfos cache paths)
-                                '())))
+                            (lookup-narinfos cache paths)))
                        (for-each (lambda (narinfo)
                                    (format #t "~a~%" (narinfo-path narinfo)))
                                  (filter valid? substitutable))
@@ -810,9 +808,7 @@ substituter disabled~%")
                     (("info" paths ..1)
                      ;; Reply info about PATHS if it's in CACHE.
                      (let ((substitutable
-                            (if cache
-                                (lookup-narinfos cache paths)
-                                '())))
+                            (lookup-narinfos cache paths)))
                        (for-each (lambda (narinfo)
                                    (format #t "~a\n~a\n~a\n"
                                            (narinfo-path narinfo)
