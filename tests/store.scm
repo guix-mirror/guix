@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix serialization)
+  #:use-module (guix build utils)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
@@ -371,9 +372,8 @@
       (with-derivation-narinfo d
         ;; Remove entry from the local cache.
         (false-if-exception
-         (delete-file (string-append (getenv "XDG_CACHE_HOME")
-                                     "/guix/substitute/"
-                                     (store-path-hash-part o))))
+         (delete-file-recursively (string-append (getenv "XDG_CACHE_HOME")
+                                                 "/guix/substitute")))
 
         ;; Make sure 'guix substitute' correctly communicates the above
         ;; data.

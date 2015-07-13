@@ -25,6 +25,7 @@
   #:use-module (guix records)
   #:use-module (guix serialization)
   #:use-module (guix hash)
+  #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
@@ -371,20 +372,23 @@ the cache STR originates form."
           (make-time time-monotonic 0 date)))
 
 
-(define (narinfo-cache-file path)
-  "Return the name of the local file that contains an entry for PATH."
+(define (narinfo-cache-file cache-url path)
+  "Return the name of the local file that contains an entry for PATH.  The
+entry is stored in a sub-directory specific to CACHE-URL."
   (string-append %narinfo-cache-directory "/"
-                 (store-path-hash-part path)))
+                 (bytevector->base32-string (sha256 (string->utf8 cache-url)))
+                 "/" (store-path-hash-part path)))
 
-(define (cached-narinfo path)
-  "Check locally if we have valid info about PATH.  Return two values: a
-Boolean indicating whether we have valid cached info, and that info, which may
-be either #f (when PATH is unavailable) or the narinfo for PATH."
+(define (cached-narinfo cache-url path)
+  "Check locally if we have valid info about PATH coming from CACHE-URL.
+Return two values: a Boolean indicating whether we have valid cached info, and
+that info, which may be either #f (when PATH is unavailable) or the narinfo
+for PATH."
   (define now
     (current-time time-monotonic))
 
   (define cache-file
-    (narinfo-cache-file path))
+    (narinfo-cache-file cache-url path))
 
   (catch 'system-error
     (lambda ()
@@ -422,9 +426,12 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
               (date ,(time-second now))
               (value ,(and=> narinfo narinfo->string))))
 
-  (with-atomic-file-output (narinfo-cache-file path)
-    (lambda (out)
-      (write (cache-entry cache-url narinfo) out)))
+  (let ((file (narinfo-cache-file cache-url path)))
+    (mkdir-p (dirname file))
+    (with-atomic-file-output file
+      (lambda (out)
+        (write (cache-entry cache-url narinfo) out))))
+
   narinfo)
 
 (define (narinfo-request cache-url path)
@@ -553,7 +560,7 @@ information is available locally."
   (let-values (((cached missing)
                 (fold2 (lambda (path cached missing)
                          (let-values (((valid? value)
-                                       (cached-narinfo path)))
+                                       (cached-narinfo cache path)))
                            (if valid?
                                (values (cons value cached) missing)
                                (values cached (cons path missing)))))
@@ -571,8 +578,8 @@ found."
   (match (lookup-narinfos cache (list path))
     ((answer) answer)))
 
-(define (remove-expired-cached-narinfos)
-  "Remove expired narinfo entries from the cache.  The sole purpose of this
+(define (remove-expired-cached-narinfos directory)
+  "Remove expired narinfo entries from DIRECTORY.  The sole purpose of this
 function is to make sure `%narinfo-cache-directory' doesn't grow
 indefinitely."
   (define now
@@ -596,15 +603,24 @@ indefinitely."
         #t)))
 
   (for-each (lambda (file)
-              (let ((file (string-append %narinfo-cache-directory
-                                         "/" file)))
+              (let ((file (string-append directory "/" file)))
                 (when (expired? file)
                   ;; Wrap in `false-if-exception' because FILE might have been
                   ;; deleted in the meantime (TOCTTOU).
                   (false-if-exception (delete-file file)))))
-            (scandir %narinfo-cache-directory
+            (scandir directory
                      (lambda (file)
                        (= (string-length file) 32)))))
+
+(define (narinfo-cache-directories)
+  "Return the list of narinfo cache directories (one per cache URL.)"
+  (map (cut string-append %narinfo-cache-directory "/" <>)
+       (scandir %narinfo-cache-directory
+                (lambda (item)
+                  (and (not (member item '("." "..")))
+                       (file-is-directory?
+                        (string-append %narinfo-cache-directory
+                                       "/" item)))))))
 
 (define (maybe-remove-expired-cached-narinfo)
   "Remove expired narinfo entries from the cache if deemed necessary."
@@ -619,8 +635,10 @@ indefinitely."
          (call-with-input-file expiry-file read))
         0))
 
-  (when (obsolete? last-expiry-date now %narinfo-expired-cache-entry-removal-delay)
-    (remove-expired-cached-narinfos)
+  (when (obsolete? last-expiry-date now
+                   %narinfo-expired-cache-entry-removal-delay)
+    (for-each remove-expired-cached-narinfos
+              (narinfo-cache-directories))
     (call-with-output-file expiry-file
       (cute write (time-second now) <>))))
 
