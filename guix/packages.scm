@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -480,7 +480,11 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
 
                       (begin (chdir "..") #t)
                       (zero? (system* (string-append #+tar "/bin/tar")
-                                      "cvfa" #$output directory)))))))
+                                      "cvfa" #$output directory
+                                      ;; avoid non-determinism in the archive
+                                      "--mtime=@0"
+                                      "--owner=root:0"
+                                      "--group=root:0")))))))
 
     (let ((name    (tarxz-name original-file-name))
           (modules (delete-duplicates (cons '(guix build utils) modules))))
