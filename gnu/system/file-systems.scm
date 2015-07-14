@@ -18,9 +18,13 @@
 
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix store)
+  #:use-module (rnrs bytevectors)
+  #:use-module ((gnu build file-systems) #:select (uuid->string))
+  #:re-export (uuid->string)
   #:export (<file-system>
             file-system
             file-system?
@@ -35,6 +39,8 @@
             file-system-create-mount-point?
 
             file-system->spec
+            string->uuid
+            uuid
 
             %fuse-control-file-system
             %binary-format-file-system
@@ -105,6 +111,57 @@ initrd code."
   (match fs
     (($ <file-system> device title mount-point type flags options _ check?)
      (list device title mount-point type flags options check?))))
+
+(define %uuid-rx
+  ;; The regexp of a UUID.
+  (make-regexp "^([[:xdigit:]]{8})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{12})$"))
+
+(define (string->uuid str)
+  "Parse STR as a DCE UUID (see <https://tools.ietf.org/html/rfc4122>) and
+return its contents as a 16-byte bytevector.  Return #f if STR is not a valid
+UUID representation."
+  (and=> (regexp-exec %uuid-rx str)
+         (lambda (match)
+           (letrec-syntax ((hex->number
+                            (syntax-rules ()
+                              ((_ index)
+                               (string->number (match:substring match index)
+                                               16))))
+                           (put!
+                            (syntax-rules ()
+                              ((_ bv index (number len) rest ...)
+                               (begin
+                                 (bytevector-uint-set! bv index number
+                                                       (endianness big) len)
+                                 (put! bv (+ index len) rest ...)))
+                              ((_ bv index)
+                               bv))))
+             (let ((time-low  (hex->number 1))
+                   (time-mid  (hex->number 2))
+                   (time-hi   (hex->number 3))
+                   (clock-seq (hex->number 4))
+                   (node      (hex->number 5))
+                   (uuid      (make-bytevector 16)))
+               (put! uuid 0
+                     (time-low 4) (time-mid 2) (time-hi 2)
+                     (clock-seq 2) (node 6)))))))
+
+(define-syntax uuid
+  (lambda (s)
+    "Return the bytevector corresponding to the given UUID representation."
+    (syntax-case s ()
+      ((_ str)
+       (string? (syntax->datum #'str))
+       ;; A literal string: do the conversion at expansion time.
+       (with-syntax ((bv (string->uuid (syntax->datum #'str))))
+         #''bv))
+      ((_ str)
+       #'(string->uuid str)))))
+
+
+;;;
+;;; Common file systems.
+;;;
 
 (define %fuse-control-file-system
   ;; Control file system for Linux' file systems in user-space (FUSE).
