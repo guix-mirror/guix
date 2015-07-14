@@ -1150,7 +1150,9 @@ for use with HTML5 video.")
            (with-directory-excursion "avidemux_core/ffmpeg_package"
              (substitute* "ffmpeg-1.2.1/configure"
                (("#! /bin/sh") (string-append "#!" (which "bash"))))
-             (system* "tar" "cjf" "ffmpeg-1.2.1.tar.bz2" "ffmpeg-1.2.1")
+             (system* "tar" "cjf" "ffmpeg-1.2.1.tar.bz2" "ffmpeg-1.2.1"
+                      ;; avoid non-determinism in the archive
+                      "--mtime=@0" "--owner=root:0" "--group=root:0")
              (delete-file-recursively "ffmpeg-1.2.1")))
          (alist-replace 'configure
           (lambda _

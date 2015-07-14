@@ -412,7 +412,11 @@ connection alive.")
                      (for-each patch-shebang
                                (find-files "bind-9.9.5-P1" ".*"))
                      (zero? (system* "tar" "cf" "bind.tar.gz"
-                                     "bind-9.9.5-P1"))))
+                                     "bind-9.9.5-P1"
+                                     ;; avoid non-determinism in the archive
+                                     "--mtime=@0"
+                                     "--owner=root:0"
+                                     "--group=root:0"))))
                  (alist-cons-after
                   'install 'post-install
                   (lambda* (#:key inputs outputs #:allow-other-keys)
