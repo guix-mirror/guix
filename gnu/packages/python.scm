@@ -783,7 +783,7 @@ password storage.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.7.2")
+    (version "1.9.0")
     (source
      (origin
       (method url-fetch)
@@ -791,7 +791,7 @@ password storage.")
                           "six/six-" version ".tar.gz"))
       (sha256
        (base32
-        "164rns26aqfqx2hwi0qq3scl50s69japn0fvgvrjsbyg7r1mxf67"))))
+        "1mci5i8mjqmljmv33h0q3d4djc13zk1kfmb3fbvd3yy43x0m4h72"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
