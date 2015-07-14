@@ -417,17 +417,17 @@ providing the system administrator with some help in common tasks.")
                                (string-append "--with-bashcompletiondir="
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out"))
-                         (net (assoc-ref inputs "net-base")))
-                     ;; Change the test to refer to the right file.
-                     (substitute* "tests/ts/misc/mcookie"
-                       (("/etc/services")
-                        (string-append net "/etc/services")))
-                     #t))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'check 'pre-check
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out"))
+                           (net (assoc-ref inputs "net-base")))
+                       ;; Change the test to refer to the right file.
+                       (substitute* "tests/ts/misc/mcookie"
+                         (("/etc/services")
+                          (string-append net "/etc/services")))
+                       #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)))
     (native-inputs
