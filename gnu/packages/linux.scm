@@ -419,6 +419,15 @@ providing the system administrator with some help in common tasks.")
                                               "/etc/bash_completion.d"))
        #:phases (modify-phases %standard-phases
                   (add-before
+                   'build 'set-umount-file-name
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Tell 'eject' the right file name of 'umount'.
+                     (let ((out (assoc-ref outputs "out")))
+                       (substitute* "sys-utils/eject.c"
+                         (("\"/bin/umount\"")
+                          (string-append "\"" out "/bin/umount\"")))
+                       #t)))
+                  (add-before
                    'check 'pre-check
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let ((out (assoc-ref outputs "out"))
