@@ -280,15 +280,16 @@ Report the size of PACKAGE and its dependencies.\n"))
         (()
          (leave (_ "missing store item argument\n")))
         ((file)
-         (with-store store
-           (run-with-store store
-             (mlet* %store-monad ((item    (ensure-store-item file))
-                                  (profile (store-profile item)))
-               (if map-file
-                   (begin
-                     (profile->page-map profile map-file)
-                     (return #t))
-                   (display-profile* profile)))
-             #:system system)))
+         (leave-on-EPIPE
+          (with-store store
+            (run-with-store store
+              (mlet* %store-monad ((item    (ensure-store-item file))
+                                   (profile (store-profile item)))
+                (if map-file
+                    (begin
+                      (profile->page-map profile map-file)
+                      (return #t))
+                    (display-profile* profile)))
+              #:system system))))
         ((files ...)
          (leave (_ "too many arguments\n")))))))
