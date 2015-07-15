@@ -383,7 +383,7 @@ cosine/ sine transforms or DCT/DST).")
                  (lambda _
                    ;; First build the tests, in parallel.
                    ;; See <http://eigen.tuxfamily.org/index.php?title=Tests>.
-                   (let* ((cores  (current-processor-count))
+                   (let* ((cores  (parallel-job-count))
                           (dash-j (format #f "-j~a" cores)))
                      ;; These variables are supposed to be honored.
                      (setenv "EIGEN_MAKE_ARGS" dash-j)
