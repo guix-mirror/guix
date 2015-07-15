@@ -1086,8 +1086,8 @@ to access local and remote files with a single consistent API.")
           (substitute* "libgnome/Makefile.in"
             (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
         %standard-phases)))
-    (inputs `(("popt" ,popt)
-              ("libxml2" ,libxml2)))
+    (propagated-inputs `(("popt" ,popt)))  ; gnome-program.h includes popt.h
+    (inputs `(("libxml2" ,libxml2)))
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
        ("intltool" ,intltool)
