@@ -320,6 +320,10 @@ Make @code{root}'s profile available under @file{~/.guix-profile}:
 @end example
 
 @item
+Create the group and user accounts for build users as explained below
+(@pxref{Build Environment Setup}).
+
+@item
 Run the daemon:
 
 @example
