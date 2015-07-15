@@ -89,6 +89,30 @@ able to change themes, icons, and fonts used by GTK+ applications.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
+(define-public lxtask
+  (package
+    (name "lxtask")
+    (version "0.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/lxde/LXTask"
+                                  "%20%28task%20manager%29/LXTask%20"
+                                  (version-major+minor version) ".x/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ia3i430lpwgl2kch6sl1za8qf96wc4fkcv91yhdzgnzafcnm3gp"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+-2)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "LXDE task manager")
+    (description "LXTask is a lightweight task manager derived from Xfce task
+manager with all dependencies on Xfce removed.  LXTask is based on the GTK+
+toolkit.  It allows users to monitor and control of running processes.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
 (define-public lxterminal
   (package
     (name "lxterminal")
