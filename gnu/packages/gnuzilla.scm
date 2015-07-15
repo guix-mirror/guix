@@ -230,7 +230,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.7.0-gnu1")
+    (version "31.8.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -239,7 +239,7 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0a25jp5afla2dxzj7i4cyvqpa5smsn7ns3xvpzqw6pc7naixkpap"))
+        "11wx29mb5pcg4mgk07a6vjwh52ca90k0x4m9wv0v3y5dmp88f01p"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -278,22 +278,7 @@ standards.")
                       "js/src/ctypes/libffi"
                       "db/sqlite3"))
           #t))
-      (patches (map search-patch '("icecat-CVE-2015-2724-pt1.patch"
-                                   "icecat-CVE-2015-2743.patch"
-                                   "icecat-CVE-2015-2722-pt1.patch"
-                                   "icecat-CVE-2015-2722-pt2.patch"
-                                   "icecat-CVE-2015-2724-pt2.patch"
-                                   "icecat-CVE-2015-2739.patch"
-                                   "icecat-CVE-2015-2724-pt3.patch"
-                                   "icecat-CVE-2015-2735.patch"
-                                   "icecat-CVE-2015-2736.patch"
-                                   "icecat-CVE-2015-2733-pt1.patch"
-                                   "icecat-CVE-2015-2728-pt1.patch"
-                                   "icecat-CVE-2015-2728-pt2.patch"
-                                   "icecat-CVE-2015-2724-pt4.patch"
-                                   "icecat-CVE-2015-2733-pt2.patch"
-                                   "icecat-CVE-2015-2738.patch"
-                                   "icecat-CVE-2015-2740.patch"
+      (patches (map search-patch '("icecat-enable-acceleration-and-webgl.patch"
                                    "icecat-libvpx-1.4.patch")))))
     (build-system gnu-build-system)
     (inputs

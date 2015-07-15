@@ -1,0 +1,12 @@
+Re-enable hardware acceleration and WebGL.
+
+--- icecat-31.8.0/browser/app/profile/icecat.js.orig	2015-07-13 18:14:27.000000000 -0400
++++ icecat-31.8.0/browser/app/profile/icecat.js	2015-07-15 13:55:39.273124982 -0400
+@@ -1756,7 +1756,3 @@
+ pref("security.ssl3.dhe_rsa_aes_256_sha", false);
+ pref("security.ssl3.dhe_dss_aes_128_sha", false);
+ pref("security.ssl3.dhe_rsa_des_ede3_sha", false);
+-
+-// Disable hardware acceleration and WebGL
+-pref("layers.acceleration.disabled", true);
+-pref("webgl.disabled", true);
