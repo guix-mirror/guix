@@ -307,22 +307,6 @@ RX."
        ((<)  #t)
        (else #f)))))
 
-(define-syntax-rule (leave-on-EPIPE exp ...)
-  "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'
-with successful exit code.  This is useful when writing to the standard output
-may lead to EPIPE, because the standard output is piped through 'head' or
-similar."
-  (catch 'system-error
-    (lambda ()
-      exp ...)
-    (lambda args
-      ;; We really have to exit this brutally, otherwise Guile eventually
-      ;; attempts to flush all the ports, leading to an uncaught EPIPE down
-      ;; the path.
-      (if (= EPIPE (system-error-errno args))
-          (primitive-_exit 0)
-          (apply throw args)))))
-
 (define (upgradeable? name current-version current-path)
   "Return #t if there's a version of package NAME newer than CURRENT-VERSION,
 or if the newest available version is equal to CURRENT-VERSION but would have

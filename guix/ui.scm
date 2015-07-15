@@ -62,6 +62,7 @@
             show-manifest-transaction
             call-with-error-handling
             with-error-handling
+            leave-on-EPIPE
             read/eval
             read/eval-package-expression
             location->string
@@ -429,6 +430,22 @@ interpreted."
       (lambda (key proc format-string format-args . rest)
         (leave (_ "~a: ~a~%") proc
                (apply format #f format-string format-args))))))
+
+(define-syntax-rule (leave-on-EPIPE exp ...)
+  "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'
+with successful exit code.  This is useful when writing to the standard output
+may lead to EPIPE, because the standard output is piped through 'head' or
+similar."
+  (catch 'system-error
+    (lambda ()
+      exp ...)
+    (lambda args
+      ;; We really have to exit this brutally, otherwise Guile eventually
+      ;; attempts to flush all the ports, leading to an uncaught EPIPE down
+      ;; the path.
+      (if (= EPIPE (system-error-errno args))
+          (primitive-_exit 0)
+          (apply throw args)))))
 
 (define %guix-user-module
   ;; Module in which user expressions are evaluated.
