@@ -89,6 +89,31 @@ able to change themes, icons, and fonts used by GTK+ applications.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
+(define-public lxterminal
+  (package
+    (name "lxterminal")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/lxde/LXTerminal"
+                                  "%20%28terminal%20emulator%29/LXTerminal%20"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1brb506vmnncih8nyvlrckrrn6msbsvz2vwbm7bsqwigcnchwjqp"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+-2)
+              ("vte"  ,vte/gtk+-2)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "LXDE terminal emulator")
+    (description "LXTerminal is a VTE-based terminal emulator.  It supports
+multiple tabs and has only minimal dependencies thus being completely
+desktop-independent.  In order to reduce memory usage and increase the
+performance, all instances of the terminal are sharing a single process.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
 (define-public menu-cache
   (package
     (name "menu-cache")
