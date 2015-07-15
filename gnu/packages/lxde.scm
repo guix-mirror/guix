@@ -89,6 +89,32 @@ able to change themes, icons, and fonts used by GTK+ applications.")
     (home-page "http://lxde.org")
     (license license:gpl2+)))
 
+(define-public lxrandr
+  (package
+    (name "lxrandr")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/lxde/LXRandR"
+                                  "%20%28monitor%20config%20tool%29/LXRandR%20"
+                                  (version-major+minor version) ".x/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0xkbqv66hisbxkvnf7y5kwqbhrq26f49wd7w6ylhnjlccpnylg8q"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+-2)))
+    (native-inputs `(("intltool"   ,intltool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "LXDE monitor configuration tool")
+    (description "LXRandR is a very basic monitor configuration tool.  It
+relies on the X11 resize-and-rotate (RandR) extension but doesn't aim to be a
+full frontend of it.  LXRandR only gives you some easy and quick options which
+are intuitive.  It's suitable for laptop users who frequently uses projectors
+or external monitor.")
+    (home-page "http://lxde.org")
+    (license license:gpl2+)))
+
 (define-public lxtask
   (package
     (name "lxtask")
