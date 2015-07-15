@@ -1,0 +1,15 @@
+The following patch prevents the use of the -m32 flag on mips, where it
+is not understood by gcc, as well as other non-x86 architectures.
+
+diff -u -r boost_1_58_0.orig/tools/build/src/tools/gcc.jam boost_1_58_0/tools/build/src/tools/gcc.jam
+--- boost_1_58_0.orig/tools/build/src/tools/gcc.jam	2015-04-04 19:25:07.000000000 +0200
++++ boost_1_58_0/tools/build/src/tools/gcc.jam	2015-07-10 01:08:19.822733823 +0200
+@@ -451,7 +451,7 @@
+         else
+         {
+             local arch = [ feature.get-values architecture : $(properties) ] ;
+-            if $(arch) != arm
++            if $(arch) = x86
+             {
+                 if $(model) = 32
+                 {

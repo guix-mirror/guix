@@ -37,6 +37,7 @@
   #:use-module (ice-9 popen)
   #:export (%daemon-socket-file
             %gc-roots-directory
+            %default-substitute-urls
 
             nix-server?
             nix-server-major-version

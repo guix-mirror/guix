@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix serialization)
+  #:use-module (guix build utils)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
@@ -371,13 +372,13 @@
       (with-derivation-narinfo d
         ;; Remove entry from the local cache.
         (false-if-exception
-         (delete-file (string-append (getenv "XDG_CACHE_HOME")
-                                     "/guix/substitute/"
-                                     (store-path-hash-part o))))
+         (delete-file-recursively (string-append (getenv "XDG_CACHE_HOME")
+                                                 "/guix/substitute")))
 
         ;; Make sure 'guix substitute' correctly communicates the above
         ;; data.
-        (set-build-options s #:use-substitutes? #t)
+        (set-build-options s #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
              (equal? (list o) (substitutable-paths s (list o)))
              (match (pk 'spi (substitutable-path-info s (list o)))
@@ -386,6 +387,34 @@
                                (derivation-file-name d))
                      (null? (substitutable-references s))
                      (equal? (substitutable-nar-size s) 1234)))))))))
+
+(test-assert "substitute query, alternating URLs"
+  (let* ((d (with-store s
+              (package-derivation s %bootstrap-guile (%current-system))))
+         (o (derivation->output-path d)))
+    (with-derivation-narinfo d
+      ;; Remove entry from the local cache.
+      (false-if-exception
+       (delete-file-recursively (string-append (getenv "XDG_CACHE_HOME")
+                                               "/guix/substitute")))
+
+      ;; Note: We reconnect to the daemon to force a new instance of 'guix
+      ;; substitute' to be used; otherwise the #:substitute-urls of
+      ;; 'set-build-options' would have no effect.
+
+      (and (with-store s                        ;the right substitute URL
+             (set-build-options s #:use-substitutes? #t
+                                #:substitute-urls (%test-substitute-urls))
+             (has-substitutes? s o))
+           (with-store s                        ;the wrong one
+             (set-build-options s #:use-substitutes? #t
+                                #:substitute-urls (list
+                                                   "http://does-not-exist"))
+             (not (has-substitutes? s o)))
+           (with-store s                        ;the right one again
+             (set-build-options s #:use-substitutes? #t
+                                #:substitute-urls (%test-substitute-urls))
+             (has-substitutes? s o))))))
 
 (test-assert "substitute"
   (with-store s
@@ -400,7 +429,8 @@
                  (package-derivation s %bootstrap-guile (%current-system))))
            (o   (derivation->output-path d)))
       (with-derivation-substitute d c
-        (set-build-options s #:use-substitutes? #t)
+        (set-build-options s #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
              (build-derivations s (list d))
              (equal? c (call-with-input-file o get-string-all)))))))
@@ -418,7 +448,8 @@
                  (package-derivation s %bootstrap-guile (%current-system))))
            (o   (derivation->output-path d)))
       (with-derivation-substitute d c
-        (set-build-options s #:use-substitutes? #t)
+        (set-build-options s #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
              (build-things s (list o))            ;give the output path
              (valid-path? s o)
@@ -442,7 +473,8 @@
         ;; Make sure we use 'guix substitute'.
         (set-build-options s
                            #:use-substitutes? #t
-                           #:fallback? #f)
+                           #:fallback? #f
+                           #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
              (guard (c ((nix-protocol-error? c)
                         ;; XXX: the daemon writes "hash mismatch in downloaded
@@ -467,13 +499,16 @@
       ;; Create fake substituter data, to be read by 'guix substitute'.
       (with-derivation-narinfo d
         ;; Make sure we use 'guix substitute'.
-        (set-build-options s #:use-substitutes? #t)
+        (set-build-options s #:use-substitutes? #t
+                           #:substitute-urls (%test-substitute-urls))
         (and (has-substitutes? s o)
              (guard (c ((nix-protocol-error? c)
                         ;; The substituter failed as expected.  Now make
                         ;; sure that #:fallback? #t works correctly.
                         (set-build-options s
                                            #:use-substitutes? #t
+                                           #:substitute-urls
+                                             (%test-substitute-urls)
                                            #:fallback? #t)
                         (and (build-derivations s (list d))
                              (equal? t (call-with-input-file o

@@ -24,6 +24,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages libevent)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -34,7 +35,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p2")
+   (version "4.2.8p3")
    (source (origin
 	    (method url-fetch)
 	    (uri (string-append 
@@ -43,17 +44,39 @@
                   "/ntp-" version ".tar.gz"))
 	    (sha256
 	     (base32
-	      "0ccv9kh5asxpk7bjn73vwrqimbkbfl743bgx0km47bfajl7bqs8d"))))
+	      "13zkzcvjm5kbxl4xbcmaq07slplhmpkgahzcqnqlba3cxpra9341"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                ;; Remove the bundled copy of libevent, but we must keep
+                ;; sntp/libevent/build-aux since configure.ac contains
+                ;; AC_CONFIG_AUX_DIR([sntp/libevent/build-aux])
+                (rename-file "sntp/libevent/build-aux"
+                             "sntp/libevent:build-aux")
+                (delete-file-recursively "sntp/libevent")
+                (mkdir "sntp/libevent")
+                (rename-file "sntp/libevent:build-aux"
+                             "sntp/libevent/build-aux")
+                #t))))
    (native-inputs `(("which" ,which)
                     ("pkg-config" ,pkg-config)))
    (inputs
     `(("openssl" ,openssl)
+      ("libevent" ,libevent)
       ;; Build with POSIX capabilities support on GNU/Linux.  This allows 'ntpd'
       ;; to run as non-root (when invoked with '-u'.)
       ,@(if (string-suffix? "-linux"
                             (or (%current-target-system) (%current-system)))
             `(("libcap" ,libcap))
             '())))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'disable-network-test
+                   (lambda _
+                     (substitute* "tests/libntp/Makefile.in"
+                       (("test-decodenetnum\\$\\(EXEEXT\\) ") ""))
+                     #t)))))
    (build-system gnu-build-system)
    (synopsis "Real time clock synchonization system")
    (description "NTP is a system designed to synchronize the clocks of

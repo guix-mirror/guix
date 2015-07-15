@@ -80,6 +80,8 @@
 (define (user-namespace pid)
   (string-append "/proc/" (number->string pid) "/ns/user"))
 
+(unless (file-exists? (user-namespace (getpid)))
+  (test-skip 1))
 (test-assert "clone"
   (match (clone (logior CLONE_NEWUSER SIGCHLD))
     (0 (primitive-exit 42))
@@ -91,6 +93,8 @@
             ((_ . status)
              (= 42 (status:exit-val status))))))))
 
+(unless (file-exists? (user-namespace (getpid)))
+  (test-skip 1))
 (test-assert "setns"
   (match (clone (logior CLONE_NEWUSER SIGCHLD))
     (0 (primitive-exit 0))
@@ -118,6 +122,8 @@
              (waitpid fork-pid)
              result))))))))
 
+(unless (file-exists? (user-namespace (getpid)))
+  (test-skip 1))
 (test-assert "pivot-root"
   (match (pipe)
     ((in . out)

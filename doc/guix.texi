@@ -760,6 +760,7 @@ explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
 
 @item --substitute-urls=@var{urls}
+@anchor{daemon-substitute-urls}
 Consider @var{urls} the default whitespace-separated list of substitute
 source URLs.  When this option is omitted, @indicateurl{http://hydra.gnu.org}
 is used.
@@ -1434,9 +1435,12 @@ also result from derivation builds, can be available as substitutes.
 The @code{hydra.gnu.org} server is a front-end to a build farm that
 builds packages from the GNU distribution continuously for some
 architectures, and makes them available as substitutes.  This is the
-default source of substitutes; it can be overridden by passing
-@command{guix-daemon} the @code{--substitute-urls} option
-(@pxref{Invoking guix-daemon}).
+default source of substitutes; it can be overridden by passing the
+@option{--substitute-urls} option either to @command{guix-daemon}
+(@pxref{daemon-substitute-urls,, @code{guix-daemon --substitute-urls}})
+or to client tools such as @command{guix package}
+(@pxref{client-substitute-urls,, client @option{--substitute-urls}
+option}).
 
 @cindex security
 @cindex digital signatures
@@ -3584,6 +3588,16 @@ Do not build the derivations.
 When substituting a pre-built binary fails, fall back to building
 packages locally.
 
+@item --substitute-urls=@var{urls}
+@anchor{client-substitute-urls}
+Consider @var{urls} the whitespace-separated list of substitute source
+URLs, overriding the default list of URLs of @command{guix-daemon}
+(@pxref{daemon-substitute-urls,, @command{guix-daemon} URLs}).
+
+This means that substitutes may be downloaded from @var{urls}, provided
+they are signed by a key authorized by the system administrator
+(@pxref{Substitutes}).
+
 @item --no-substitutes
 Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries
@@ -4949,8 +4963,24 @@ interpreted as a file name; when it is @code{label}, then @code{device}
 is interpreted as a partition label name; when it is @code{uuid},
 @code{device} is interpreted as a partition unique identifier (UUID).
 
+UUIDs may be converted from their string representation (as shown by the
+@command{tune2fs -l} command) using the @code{uuid} form, like this:
+
+@example
+(file-system
+  (mount-point "/home")
+  (type "ext4")
+  (title 'uuid)
+  (device (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")))
+@end example
+
 The @code{label} and @code{uuid} options offer a way to refer to disk
-partitions without having to hard-code their actual device name.
+partitions without having to hard-code their actual device
+name@footnote{Note that, while it is tempting to use
+@file{/dev/disk/by-uuid} and similar device names to achieve the same
+result, this is not recommended: These special device nodes are created
+by the udev daemon and may be unavailable at the time the device is
+mounted.}.
 
 However, when a file system's source is a mapped device (@pxref{Mapped
 Devices}), its @code{device} field @emph{must} refer to the mapped

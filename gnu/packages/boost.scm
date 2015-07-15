@@ -33,7 +33,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.57.0")
+    (version "1.58.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -42,7 +42,8 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "0rs94vdmg34bwwj23fllva6mhrml2i7mvmlb11zyrk1k5818q34i"))))
+                "1rfkqxns60171q62cppiyzj8pmsbwp1l8jd7p6crriryqd7j1z7x"))
+              (patches (list (search-patch "boost-mips-avoid-m32.patch")))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs

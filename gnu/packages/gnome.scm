@@ -2090,11 +2090,12 @@ floating in an ocean using only your brain and a little bit of luck.")
        ("desktop-file-utils" ,desktop-file-utils)
        ("intltool" ,intltool)
        ("itstool" ,itstool)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (inputs
      `(("gtk+" ,gtk+)
        ("vte" ,vte)
        ("gnutls" ,gnutls)
-       ("dconf" ,dconf)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("util-linux" ,util-linux)
        ("vala" ,vala)))
@@ -2914,3 +2915,89 @@ which can read a large number of file formats.")
     ;; to be used and distributed together with GStreamer and Totem.  See
     ;; file://COPYING in the source distribution for details.
     (license license:gpl2+)))
+
+(define-public rhythmbox
+ (package
+   (name "rhythmbox")
+   (version "3.2.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0f3radhlji7rxl760yl2vm49fvfslympxrpm8497acbmbd7wlhxz"))))
+   (build-system glib-or-gtk-build-system)
+   (arguments
+    `(#:configure-flags
+      (list "--enable-lirc"
+            "--enable-python"
+            "--enable-vala"
+            "--with-brasero"
+            "--with-gudev"
+            "--with-libsecret")
+      #:phases
+      (modify-phases %standard-phases
+        (add-after
+         'install 'wrap-rhythmbox
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out               (assoc-ref outputs "out"))
+                 (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                 (gst-plugin-path   (getenv "GST_PLUGIN_SYSTEM_PATH"))
+                 (grl-plugin-path   (getenv "GRL_PLUGIN_PATH")))
+             (wrap-program (string-append out "/bin/rhythmbox")
+               `("GI_TYPELIB_PATH"        ":" prefix (,gi-typelib-path))
+               `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))
+               `("GRL_PLUGIN_PATH"        ":" prefix (,grl-plugin-path))))
+           #t)))))
+   (propagated-inputs
+    `(("dconf" ,dconf)))
+   (native-inputs
+    `(("intltool" ,intltool)
+      ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("desktop-file-utils" ,desktop-file-utils)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("json-glib" ,json-glib)
+      ("tdb" ,tdb)
+      ("gnome-desktop" ,gnome-desktop)
+      ("python" ,python)
+      ("python-pygobject" ,python2-pygobject)
+      ("vala" ,vala)
+      ("gmime" ,gmime)
+      ("nettle" ,nettle)
+      ("itstool" ,itstool)
+      ("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("grilo" ,grilo)
+      ("grilo-plugins" ,grilo-plugins)
+      ("gstreamer" ,gstreamer)
+      ("gst-plugins-base" ,gst-plugins-base)
+      ("gst-plugins-good" ,gst-plugins-good)
+      ("eudev" ,eudev)
+      ("totem-pl-parser" ,totem-pl-parser)
+      ;;("libmtp" ,libmtp) FIXME: Not detected
+      ("libsecret" ,libsecret)
+      ("libsoup" ,libsoup)
+      ("libnotify" ,libnotify)
+      ("libpeas" ,libpeas)
+      ("lirc" ,lirc)
+      ;; TODO: clutter* only used by visualizer plugin, which also requires mx
+      ;;("clutter" ,clutter)
+      ;;("clutter-gtk" ,clutter-gtk)
+      ;;("clutter-gst" ,clutter-gst)
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+      ("atk" ,atk)
+      ("pango" ,pango)
+      ("gtk+" ,gtk+)
+      ;; TODO:
+      ;;  * libgpod
+      ;;  * mx
+      ;;  * webkit
+      ("brasero" ,brasero)))
+   (home-page "https://wiki.gnome.org/Apps/Rhythmbox")
+   (synopsis "Music player for GNOME")
+   (description "Rhythmbox is a music playing application for GNOME.  It
+supports playlists, song ratings, and any codecs installed through gstreamer.")
+   (license license:gpl2+)))

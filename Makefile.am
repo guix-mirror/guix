@@ -203,6 +203,7 @@ SCM_TESTS =					\
   tests/lint.scm				\
   tests/publish.scm				\
   tests/size.scm				\
+  tests/file-systems.scm			\
   tests/containers.scm
 
 if HAVE_GUILE_JSON

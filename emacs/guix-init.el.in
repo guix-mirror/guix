@@ -1,5 +1,4 @@
 (require 'guix-autoloads)
-(require 'guix-emacs)
 
 (defvar guix-load-path
   (replace-regexp-in-string "${prefix}" "@prefix@" "@emacsuidir@")
@@ -13,9 +12,8 @@ avoid loading autoloads of Emacs packages installed in
   :type 'boolean
   :group 'guix)
 
-(add-to-list 'load-path (guix-emacs-directory))
-
 (when guix-package-enable-at-startup
+  (require 'guix-emacs)
   (guix-emacs-load-autoloads 'all))
 
 (provide 'guix-init)

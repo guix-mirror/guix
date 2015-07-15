@@ -1,6 +1,7 @@
 ;;; guix-info.el --- Info buffers for displaying entries   -*- lexical-binding: t -*-
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 
 ;; This file is part of GNU Guix.
 
@@ -482,6 +483,12 @@ If nil, insert package in a default way.")
 (defvar guix-package-info-heading-params '(synopsis description)
   "List of parameters displayed in a heading along with name and version.")
 
+(defcustom guix-package-info-fill-heading t
+  "If nil, insert heading parameters in a raw form, without
+filling them to fit the window."
+  :type 'boolean
+  :group 'guix-package-info)
+
 (defun guix-package-info-insert-heading (entry)
   "Insert the heading for package ENTRY.
 Show package name, version, and `guix-package-info-heading-params'."
@@ -494,8 +501,12 @@ Show package name, version, and `guix-package-info-heading-params'."
                 (face (guix-get-symbol (symbol-name param)
                                        'info 'package)))
             (when val
-              (guix-format-insert val (and (facep face) face))
-              (insert "\n\n"))))
+              (let* ((col (min (window-width) fill-column))
+                     (val (if guix-package-info-fill-heading
+                              (guix-get-filled-string val col)
+                            val)))
+                (guix-format-insert val (and (facep face) face))
+                (insert "\n\n")))))
         guix-package-info-heading-params))
 
 (defun guix-package-info-insert-with-heading (entry)

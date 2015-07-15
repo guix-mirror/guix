@@ -22,13 +22,16 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 format)
   #:use-module (system foreign)
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (disk-partitions
             partition-label-predicate
+            partition-uuid-predicate
             find-partition-by-label
+            find-partition-by-uuid
             canonicalize-device-spec
 
             MS_RDONLY
@@ -53,9 +56,10 @@
 ;; 'mount' is already defined in the statically linked Guile used for initial
 ;; RAM disks, but in all other cases the (guix build syscalls) module contains
 ;; the mount binding.
-(unless (defined? 'mount)
-  (module-use! (current-module)
-               (resolve-interface '(guix build syscalls))))
+(eval-when (expand load eval)
+  (unless (defined? 'mount)
+    (module-use! (current-module)
+                 (resolve-interface '(guix build syscalls)))))
 
 ;; Linux mount flags, from libc's <sys/mount.h>.
 (define MS_RDONLY 1)
@@ -158,29 +162,42 @@ if DEVICE does not contain an ext2 file system."
                      (loop (cons name parts))
                      (loop parts))))))))))
 
-(define (partition-label-predicate label)
-  "Return a procedure that, when applied to a partition name such as \"sda1\",
-return #t if that partition's volume name is LABEL."
-  (lambda (part)
-    (let* ((device (string-append "/dev/" part))
-           (sblock (catch 'system-error
-                     (lambda ()
-                       (read-ext2-superblock device))
-                     (lambda args
-                       ;; When running on the hand-made /dev,
-                       ;; 'disk-partitions' could return partitions for which
-                       ;; we have no /dev node.  Handle that gracefully.
-                       (if (= ENOENT (system-error-errno args))
-                           (begin
-                             (format (current-error-port)
-                                     "warning: device '~a' not found~%"
-                                     device)
-                             #f)
-                           (apply throw args))))))
-      (and sblock
-           (let ((volume (ext2-superblock-volume-name sblock)))
-             (and volume
-                  (string=? volume label)))))))
+(define (read-ext2-superblock* device)
+  "Like 'read-ext2-superblock', but return #f when DEVICE does not exist
+instead of throwing an exception."
+  (catch 'system-error
+    (lambda ()
+      (read-ext2-superblock device))
+    (lambda args
+      ;; When running on the hand-made /dev,
+      ;; 'disk-partitions' could return partitions for which
+      ;; we have no /dev node.  Handle that gracefully.
+      (if (= ENOENT (system-error-errno args))
+          (begin
+            (format (current-error-port)
+                    "warning: device '~a' not found~%" device)
+            #f)
+          (apply throw args)))))
+
+(define (partition-predicate field =)
+  "Return a predicate that returns true if the FIELD of an ext2 superblock is
+= to the given value."
+  (lambda (expected)
+    "Return a procedure that, when applied to a partition name such as \"sda1\",
+returns #t if that partition's volume name is LABEL."
+    (lambda (part)
+      (let* ((device (string-append "/dev/" part))
+             (sblock (read-ext2-superblock* device)))
+        (and sblock
+             (let ((actual (field sblock)))
+               (and actual
+                    (= actual expected))))))))
+
+(define partition-label-predicate
+  (partition-predicate ext2-superblock-volume-name string=?))
+
+(define partition-uuid-predicate
+  (partition-predicate ext2-superblock-uuid bytevector=?))
 
 (define (find-partition-by-label label)
   "Return the first partition found whose volume name is LABEL, or #f if none
@@ -188,6 +205,28 @@ were found."
   (and=> (find (partition-label-predicate label)
                (disk-partitions))
          (cut string-append "/dev/" <>)))
+
+(define (find-partition-by-uuid uuid)
+  "Return the first partition whose unique identifier is UUID (a bytevector),
+or #f if none was found."
+  (and=> (find (partition-uuid-predicate uuid)
+               (disk-partitions))
+         (cut string-append "/dev/" <>)))
+
+(define-syntax %network-byte-order
+  (identifier-syntax (endianness big)))
+
+(define (uuid->string uuid)
+  "Convert UUID, a 16-byte bytevector, to its string representation, something
+like \"6b700d61-5550-48a1-874c-a3d86998990e\"."
+  ;; See <https://tools.ietf.org/html/rfc4122>.
+  (let ((time-low  (bytevector-uint-ref uuid 0 %network-byte-order 4))
+        (time-mid  (bytevector-uint-ref uuid 4 %network-byte-order 2))
+        (time-hi   (bytevector-uint-ref uuid 6 %network-byte-order 2))
+        (clock-seq (bytevector-uint-ref uuid 8 %network-byte-order 2))
+        (node      (bytevector-uint-ref uuid 10 %network-byte-order 6)))
+    (format #f "~8,'0x-~4,'0x-~4,'0x-~4,'0x-~12,'0x"
+            time-low time-mid time-hi clock-seq node)))
 
 (define* (canonicalize-device-spec spec #:optional (title 'any))
   "Return the device name corresponding to SPEC.  TITLE is a symbol, one of
@@ -197,6 +236,8 @@ the following:
      \"/dev/sda1\";
   • 'label', in which case SPEC is known to designate a partition label--e.g.,
      \"my-root-part\";
+  • 'uuid', in which case SPEC must be a UUID (a 16-byte bytevector)
+     designating a partition;
   • 'any', in which case SPEC can be anything.
 "
   (define max-trials
@@ -209,10 +250,26 @@ the following:
   (define canonical-title
     ;; The realm of canonicalization.
     (if (eq? title 'any)
-        (if (string-prefix? "/" spec)
-            'device
-            'label)
+        (if (string? spec)
+            (if (string-prefix? "/" spec)
+                'device
+                'label)
+            'uuid)
         title))
+
+  (define (resolve find-partition spec fmt)
+    (let loop ((count 0))
+      (let ((device (find-partition spec)))
+        (or device
+            ;; Some devices take a bit of time to appear, most notably USB
+            ;; storage devices.  Thus, wait for the device to appear.
+            (if (> count max-trials)
+                (error "failed to resolve partition" (fmt spec))
+                (begin
+                  (format #t "waiting for partition '~a' to appear...~%"
+                          (fmt spec))
+                  (sleep 1)
+                  (loop (+ 1 count))))))))
 
   (case canonical-title
     ((device)
@@ -220,19 +277,9 @@ the following:
      spec)
     ((label)
      ;; Resolve the label.
-     (let loop ((count 0))
-       (let ((device (find-partition-by-label spec)))
-         (or device
-             ;; Some devices take a bit of time to appear, most notably USB
-             ;; storage devices.  Thus, wait for the device to appear.
-             (if (> count max-trials)
-                 (error "failed to resolve partition label" spec)
-                 (begin
-                   (format #t "waiting for partition '~a' to appear...~%"
-                           spec)
-                   (sleep 1)
-                   (loop (+ 1 count))))))))
-    ;; TODO: Add support for UUIDs.
+     (resolve find-partition-by-label spec identity))
+    ((uuid)
+     (resolve find-partition-by-uuid spec uuid->string))
     (else
      (error "unknown device title" title))))
 

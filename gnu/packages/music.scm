@@ -424,7 +424,14 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "FONTFILE="
                             (assoc-ref %build-inputs "font-bitstream-vera")
-                            "/share/fonts/truetype/VeraBd.ttf"))
+                            "/share/fonts/truetype/VeraBd.ttf")
+             ;; Disable unsupported optimization flags on non-x86
+             ,@(let ((system (or (%current-target-system)
+                                 (%current-system))))
+                 (if (or (string-prefix? "x86_64" system)
+                         (string-prefix? "i686" system))
+                     '()
+                     '("OPTIMIZATIONS=-ffast-math -fomit-frame-pointer -O3"))))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'set-CC-variable

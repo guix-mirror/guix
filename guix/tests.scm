@@ -36,6 +36,7 @@
             network-reachable?
             shebang-too-long?
             mock
+            %test-substitute-urls
             %substitute-directory
             with-derivation-narinfo
             with-derivation-substitute
@@ -49,6 +50,12 @@
 ;;;
 ;;; Code:
 
+(define %test-substitute-urls
+  ;; URLs where to look for substitutes during tests.
+  (make-parameter
+   (or (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL") list)
+       '())))
+
 (define (open-connection-for-tests)
   "Open a connection to the build daemon for tests purposes and return it."
   (guard (c ((nix-error? c)
@@ -57,7 +64,9 @@
              #f))
     (let ((store (open-connection)))
       ;; Make sure we build everything by ourselves.
-      (set-build-options store #:use-substitutes? #f)
+      (set-build-options store
+                         #:use-substitutes? #f
+                         #:substitute-urls (%test-substitute-urls))
 
       ;; Use the bootstrap Guile when running tests, so we don't end up
       ;; building everything in the temporary test store.

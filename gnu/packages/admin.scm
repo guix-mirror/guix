@@ -480,7 +480,8 @@ tools: server, client, and relay agent.")
                 "14wyjywrdi1ikaj6yc9c72m6m2r64z94lb0gm7k1a3q6q5cj3scs"))))
     (build-system gnu-build-system)
     (native-inputs `(("bison" ,bison) ("flex" ,flex)))
-    (arguments '(#:tests? #f))                    ; no 'check' target
+    (arguments '(#:configure-flags '("--with-pcap=linux")
+                 #:tests? #f))                    ; no 'check' target
     (home-page "http://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description

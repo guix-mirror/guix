@@ -91,6 +91,39 @@ freedesktop.org project.")
 other applications that need to directly deal with input devices.")
     (license license:x11)))
 
+(define-public libxdg-basedir
+  (package
+    (name "libxdg-basedir")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/devnev/libxdg-basedir/archive/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0s28c7sfwqimsmb3kn91mx7wi55fs3flhbmynl9k60rrllr00aqw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             ;; Run 'configure' in its own phase, not now.
+             (substitute* "autogen.sh"
+               (("^.*\\./configure.*") ""))
+             (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/devnev/libxdg-basedir")
+    (synopsis "Implementation of the XDG Base Directory specification")
+    (description
+     "libxdg-basedir is a C library providing some functions to use with
+the freedesktop.org XDG Base Directory specification.")
+    (license license:expat)))
+
 (define-public elogind
   (let ((commit "14405a9"))
     (package

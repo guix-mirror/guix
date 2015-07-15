@@ -118,6 +118,9 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
   (display (_ "
+      --substitute-urls=URLS
+                         fetch substitute from URLS if they are authorized"))
+  (display (_ "
       --no-build-hook    do not attempt to offload builds via the build hook"))
   (display (_ "
       --max-silent-time=SECONDS
@@ -141,6 +144,8 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
+                     #:substitute-urls (or (assoc-ref opts 'substitute-urls)
+                                           %default-substitute-urls)
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
@@ -176,6 +181,13 @@ options handled by 'set-build-options-from-command-line', and listed in
                   (apply values
                          (alist-cons 'substitutes? #f
                                      (alist-delete 'substitutes? result))
+                         rest)))
+        (option '("substitute-urls") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'substitute-urls
+                                     (string-tokenize arg)
+                                     (alist-delete 'substitute-urls result))
                          rest)))
         (option '("no-build-hook") #f #f
                 (lambda (opt name arg result . rest)
