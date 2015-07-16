@@ -84,8 +84,8 @@ things the parser might find in the XML document (like start tags).")
                                 (file-type 'regular))))
     (search-paths native-search-paths)
     (description
-     "Libxml2 is the XML C parser and toolkit developed for the Gnome project
-(but it is usable outside of the Gnome platform).")
+     "Libxml2 is the XML C parser and toolkit developed for the Gnome
+project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
 (define-public python-libxml2

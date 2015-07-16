@@ -124,6 +124,7 @@ technique (ISP).")
     (home-page "http://dfu-programmer.github.io/")
     (synopsis "Device firmware update programmer for Atmel chips")
     (description
-     "Dfu-programmer is a multi-platform command-line programmer for Atmel
-(8051, AVR, XMEGA & AVR32) chips with a USB bootloader supporting ISP")
+     "Dfu-programmer is a multi-platform command-line programmer for
+Atmel (8051, AVR, XMEGA & AVR32) chips with a USB bootloader supporting
+ISP.")
     (license gpl2+)))

@@ -90,10 +90,10 @@
    (synopsis "Conversion between thousands of scales")
    (description
     "GNU Units converts numeric quantities between units of measure.  It
-can handle scale changes through adaptive usage of standard scale prefixes
-(micro-, kilo-, etc.).  It can also handle nonlinear conversions such as
-Fahrenheit to Celsius.  Its interpreter is powerful enough to be used
-effectively as a scientific calculator.")
+can handle scale changes through adaptive usage of standard scale
+prefixes (micro-, kilo-, etc.).  It can also handle nonlinear
+conversions such as Fahrenheit to Celsius.  Its interpreter is powerful
+enough to be used effectively as a scientific calculator.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
 

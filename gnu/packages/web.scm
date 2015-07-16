@@ -1566,13 +1566,13 @@ for files and urls.")
     (synopsis "Perl locale encoding determination")
     (description
      "The POSIX locale system is used to specify both the language
-conventions requested by the user and the preferred character set to consume
-and output.  The Encode::Locale module looks up the charset and encoding
-(called a CODESET in the locale jargon) and arranges for the Encode module
-to know this encoding under the name \"locale\".  It means bytes obtained
-from the environment can be converted to Unicode strings by calling
-Encode::encode(locale => $bytes) and converted back again with
-Encode::decode(locale => $string).")
+conventions requested by the user and the preferred character set to
+consume and output.  The Encode::Locale module looks up the charset and
+encoding (called a CODESET in the locale jargon) and arranges for the
+Encode module to know this encoding under the name \"locale\".  It means
+bytes obtained from the environment can be converted to Unicode strings
+by calling Encode::encode(locale => $bytes) and converted back again
+with Encode::decode(locale => $string).")
     (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
 
 (define-public perl-file-listing

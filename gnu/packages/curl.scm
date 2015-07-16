@@ -102,10 +102,10 @@
     "curl is a command line tool for transferring data with URL syntax,
 supporting DICT, FILE, FTP, FTPS, Gopher, HTTP, HTTPS, IMAP, IMAPS, LDAP,
 LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, Telnet and TFTP.
-curl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading,
-HTTP form based upload, proxies, cookies, user+password authentication
-(Basic, Digest, NTLM, Negotiate, kerberos...), file transfer resume,
-proxy tunneling, and so on")
+curl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading, HTTP
+form based upload, proxies, cookies, file transfer resume, user+password
+authentication (Basic, Digest, NTLM, Negotiate, kerberos...), proxy
+tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
-                       "See COPYING in the distribution."))
+                                  "See COPYING in the distribution."))
    (home-page "http://curl.haxx.se/")))

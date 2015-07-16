@@ -424,8 +424,8 @@ but also provides support for other operations such as searching and
 listing the table of contents and hyperlinks.
 
 The library ships with a rudimentary X11 viewer, and a set of command
-line tools for batch rendering (pdfdraw), examining the file structure
-(pdfshow), and rewriting files (pdfclean).")
+line tools for batch rendering (pdfdraw), rewriting files (pdfclean),
+and examining the file structure (pdfshow).")
     (license license:agpl3+)))
 
 (define-public qpdf

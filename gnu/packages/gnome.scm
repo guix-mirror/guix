@@ -1778,11 +1778,12 @@ configuration storage systems.")
      `(("glib" ,glib)))                         ;according to json-glib-1.0.pc
     (home-page "https://wiki.gnome.org/Projects/JsonGlib")
     (synopsis "Compiler for the GObject type system")
-    (description "JSON-GLib is a C library based on GLib providing
-serialization and deserialization support for the JavaScript Object Notation
-(JSON) format described by RFC 4627.  It provides parser and generator
-GObject classes and various wrappers for the complex data types employed by
-JSON, such as arrays and objects.")
+    (description
+     "JSON-GLib is a C library based on GLib providing serialization and
+deserialization support for the JavaScript Object Notation (JSON) format
+described by RFC 4627.  It provides parser and generator GObject classes and
+various wrappers for the complex data types employed by JSON, such as arrays
+and objects.")
     (license license:lgpl2.1+)))
 
 (define-public libxklavier
