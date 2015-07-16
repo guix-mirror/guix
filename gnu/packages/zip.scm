@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,23 +81,29 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
       (sha256
        (base32
         "0dxx11knh3nk95p2gg2ak777dd11pr7jx5das2g49l262scrcv83"))
-      (patches (list (search-patch "unzip-CVE-2014-8139.patch")
-                     (search-patch "unzip-CVE-2014-8140.patch")
-                     (search-patch "unzip-CVE-2014-8141.patch")))))
+      (patches (map search-patch '("unzip-CVE-2014-8139.patch"
+                                   "unzip-CVE-2014-8140.patch"
+                                   "unzip-CVE-2014-8141.patch"
+                                   "unzip-CVE-2014-9636.patch"
+                                   "unzip-allow-greater-hostver-values.patch"
+                                   "unzip-increase-size-of-cfactorstr.patch"
+                                   "unzip-initialize-symlink-flag.patch"
+                                   "unzip-remove-build-date.patch")))))
     (build-system gnu-build-system)
     ;; no inputs; bzip2 is not supported, since not compiled with BZ_NO_STDIO
     (arguments
-     `(#:make-flags '("generic_gcc")
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out")))
-             (copy-file "unix/Makefile" "Makefile")
-             (substitute* "Makefile"
-               (("/usr/local") out)
-               (("/man/") "/share/man/"))))
-        %standard-phases)))
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'build
+                           (lambda* (#:key make-flags #:allow-other-keys)
+                             (zero? (apply system* "make"
+                                           `("-j" ,(number->string
+                                                    (parallel-job-count))
+                                             ,@make-flags
+                                             "generic_gcc"))))))
+       #:make-flags (list "-f" "unix/Makefile"
+                          (string-append "prefix=" %output)
+                          (string-append "MANDIR=" %output "/share/man/man1"))))
     (home-page "http://www.info-zip.org/UnZip.html")
     (synopsis "Decompression and file extraction utility")
     (description
