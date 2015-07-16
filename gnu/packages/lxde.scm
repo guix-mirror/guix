@@ -31,7 +31,7 @@
     (version "0.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/project/lxde"
+              (uri (string-append "mirror://sourceforge/project/lxde/"
                                   "LXAppearance/" name "-" version ".tar.xz"))
               (sha256
                (base32
