@@ -62,6 +62,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -3023,4 +3024,54 @@ which can read a large number of file formats.")
    (synopsis "Music player for GNOME")
    (description "Rhythmbox is a music playing application for GNOME.  It
 supports playlists, song ratings, and any codecs installed through gstreamer.")
+   (license license:gpl2+)))
+
+(define-public eog
+ (package
+   (name "eog")
+   (version "3.16.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0frw1b5jix9pffznav5s7ajjx91a8rv5lf4sjvjv3fw65mbnhbw0"))))
+   (build-system glib-or-gtk-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after
+         'install 'wrap-eog
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out               (assoc-ref outputs "out"))
+                 (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+             (wrap-program (string-append out "/bin/eog")
+               `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+           #t)))))
+   (propagated-inputs
+    `(("dconf" ,dconf)))
+   (native-inputs
+    `(("intltool" ,intltool)
+      ("itstool", itstool)
+      ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("gnome-desktop" ,gnome-desktop)
+      ("shared-mime-info" ,shared-mime-info)
+      ("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("exempi" ,exempi)
+      ("lcms" ,lcms)
+      ("libexif" ,libexif)
+      ("libpeas" ,libpeas)
+      ("libjpeg" ,libjpeg)
+      ("librsvg" ,librsvg)
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+      ("gtk+" ,gtk+)))
+   (home-page "https://wiki.gnome.org/Apps/EyeOfGnome")
+   (synopsis "GNOME image viewer")
+   (description "Eye of GNOME is the GNOME image viewer.  It
+supports image conversion, rotation, and slideshows.")
    (license license:gpl2+)))
