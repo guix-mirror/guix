@@ -153,8 +153,10 @@ UUID representation."
       ((_ str)
        (string? (syntax->datum #'str))
        ;; A literal string: do the conversion at expansion time.
-       (with-syntax ((bv (string->uuid (syntax->datum #'str))))
-         #''bv))
+       (let ((bv (string->uuid (syntax->datum #'str))))
+         (unless bv
+           (syntax-violation 'uuid "invalid UUID" s))
+         (datum->syntax #'str bv)))
       ((_ str)
        #'(string->uuid str)))))
 
