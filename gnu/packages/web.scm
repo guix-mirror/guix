@@ -320,20 +320,15 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.6.0")
+    (version "0.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
                                   "archive/" version ".tar.gz"))
               (sha256
                (base32
-                "10s7xxxx6pp4ydp3san69sa6q379ih3pv92fyi565ggmlw8igv7a"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Believe it or not, the .pc is invalid.  Fix it.
-               '(substitute* "libpsl.pc.in"
-                  (("-llibpsl") "-lpsl")))))
+                "1k0klj668c9v0r4993vfs3kq773mzdz61vsigqw6v1mjcwnf1si3"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)))
     ;; The release tarball lacks the generated files.
@@ -341,7 +336,8 @@ for efficient socket-like bidirectional reliable communication channels.")
                      ("automake" ,automake)
                      ("gettext"  ,gnu-gettext)
                      ("which"    ,which)
-                     ("libtool"  ,libtool)))
+                     ("libtool"  ,libtool)
+                     ("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases (alist-cons-after
                  'unpack 'bootstrap
