@@ -75,6 +75,7 @@ under /root/.guix-profile where GUIX is installed."
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
                             "--owner=root:0" "--group=root:0"
+                            "--mtime=@0"          ;for files in /var/guix
                             "--check-links"
                             "-cvf" #$output
                             ;; Avoid adding / and /var to the tarball,
