@@ -493,7 +493,8 @@ exec " #$qemu "/bin/" #$(qemu-command (%current-system))
        #~(" -kernel " #$(operating-system-kernel os) "/bzImage \
             -initrd " #$os-drv "/initrd \
             -append \"" #$(if graphic? "" "console=ttyS0 ")
-            "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" "))
+            "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1 "
+            (string-join (list #+@(operating-system-kernel-arguments os))) "\" "))
 #$(common-qemu-options image
                        (map file-system-mapping-source
                             (cons %store-mapping mappings)))
