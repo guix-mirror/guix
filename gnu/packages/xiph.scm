@@ -318,12 +318,12 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
                     "ftp://ftp.mozilla.org/pub/mozilla.org/opus/opus-tools-"
                     version ".tar.gz"))
               (sha256
-               (base32 
+               (base32
                 "0fk4nknvl111k89j5yckmyrh6b2wvgyhrqfncp7rig3zikbkv1xi"))))
     (build-system gnu-build-system)
     (arguments
      ;; The package developers misuse pkg-config such that it doesn't work
-     ;; when cross compiling.  Therefore we avoid it completly and set the 
+     ;; when cross compiling.  Therefore we avoid it completly and set the
      ;; necessary flags ourselves.
      `(#:configure-flags (list (string-append "CFLAGS=-I"
                                               (assoc-ref %build-inputs "libogg")
@@ -333,11 +333,11 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (inputs `(("libogg" ,libogg)
               ("opus" ,opus)
               ("flac" ,flac)))
-    (synopsis "Command line utilities to encode, inspect, and decode .opus
-files")
+    (synopsis
+     "Command line utilities to encode, inspect, and decode .opus files")
     (description "Opus is a royalty-free, highly versatile audio codec.
 Opus-tools provide command line utilities for creating, inspecting and
-decoding .opus files")
+decoding .opus files.")
     (license license:bsd-3)
     (home-page "http://www.opus-codec.org")))
 

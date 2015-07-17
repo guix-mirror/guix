@@ -380,8 +380,8 @@ It is developed using Objective Caml and Camlp5.")
                       (zero? (apply system* "make" "install-doc"
                                     make-flags)))))))
     (home-page "http://proofgeneral.inf.ed.ac.uk/")
-    (description "Generic front-end for proof assistants based on Emacs")
-    (synopsis
+    (synopsis "Generic front-end for proof assistants based on Emacs")
+    (description
      "Proof General is a major mode to turn Emacs into an interactive proof
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")

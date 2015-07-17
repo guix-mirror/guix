@@ -226,7 +226,7 @@ required structures.")
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (synopsis "SSL/TLS implementation")
    (description
-    "OpenSSL is an implementation of SSL/TLS")
+    "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 

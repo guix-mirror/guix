@@ -124,7 +124,7 @@ to initiate and control SIP sessions.")
    (version "4.1.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append 
+            (uri (string-append
                   "http://download.savannah.gnu.org/releases/exosip/libeXosip2-"
                   version ".tar.gz"))
             (sha256 (base32
@@ -133,11 +133,11 @@ to initiate and control SIP sessions.")
    (inputs `(("osip" ,osip)))
    (synopsis "Sip abstraction library")
    (description "EXosip is a library that hides the complexity of using the
-SIP protocol for mutlimedia session establishement.  This protocol is mainly to
+SIP protocol for multimedia session establishment.  This protocol is mainly to
 be used by VoIP telephony applications (endpoints or conference server) but
-might be also usefull for any application that wish to establish sessions like
+might be also useful for any application that wish to establish sessions like
 multiplayer games.")
-   (license gpl2+) 
+   (license gpl2+)
    ;; (plus OpenSSL linking exception)
    ;; http://git.savannah.gnu.org/cgit/exosip.git/plain/LICENSE.OpenSSL
     (home-page "http://savannah.nongnu.org/projects/exosip")))
@@ -153,23 +153,23 @@ multiplayer games.")
             (sha256 (base32
                      "0117c5iid1vrwl7sl3pys2jlinpmx2vfp8wcdwk93m7cc6k9793b"))))
    (build-system gnu-build-system)
-   ;; The configure.ac uses pkg-config but in a kludgy way which breaks when 
+   ;; The configure.ac uses pkg-config but in a kludgy way which breaks when
    ;; cross-compiling.  Among other issues there the program name "pkg-config"
    ;; is hard coded instead of respecting the PKG_CONFIG environment variable.
-   ;; Fortunately we can avoid the use of pkg-config and set the dependency 
-   ;; flags ourselves. 
-   (arguments `(#:configure-flags 
+   ;; Fortunately we can avoid the use of pkg-config and set the dependency
+   ;; flags ourselves.
+   (arguments `(#:configure-flags
                 `("--without-pkg-config"
-                  ,(string-append "UCOMMON_CFLAGS=-I" 
+                  ,(string-append "UCOMMON_CFLAGS=-I"
                                   (assoc-ref %build-inputs "ucommon") "/include")
                   "UCOMMON_LIBS=-lusecure -lucommon -lrt -ldl -lpthread"
-                  ,(string-append "LIBOSIP2_CFLAGS=-I" 
+                  ,(string-append "LIBOSIP2_CFLAGS=-I"
                                   (assoc-ref %build-inputs "osip") "/include")
                   "LIBOSIP2_LIBS=-losipparser2 -losip2"
-                  ,(string-append "--sysconfdir=" (assoc-ref %outputs "out") 
+                  ,(string-append "--sysconfdir=" (assoc-ref %outputs "out")
                                   "/etc")
                   "EXOSIP2_LIBS=-leXosip2"
-                  ,(string-append "EXOSIP2_CFLAGS=-I" 
+                  ,(string-append "EXOSIP2_CFLAGS=-I"
                                   (assoc-ref %build-inputs "exosip")
                                   "/include"))))
    (inputs `(("ucommon" ,ucommon)

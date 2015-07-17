@@ -633,7 +633,7 @@ While based on the concepts used by DBIx::Abstract, the concepts used have
 been modified to make the SQL easier to generate from Perl data structures.
 The underlying idea is for this module to do what you mean, based on the data
 structures you provide it, so that you don't have to modify your code every
-time your data changes")
+time your data changes.")
     (license (package-license perl))))
 
 (define-public perl-sql-splitstatement
@@ -688,7 +688,7 @@ valid SQL query.")
    (version "2.3.2")
    (source (origin
             (method url-fetch)
-            (uri 
+            (uri
              (string-append
               "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-" version ".tar.gz"))
             (sha256
@@ -698,7 +698,7 @@ valid SQL query.")
    (description "Unixodbc is a library providing an API with which to access
 data sources.  Data sources include SQL Servers and any software with an ODBC
 Driver.")
-   (license lgpl2.1+) 
+   (license lgpl2.1+)
    ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
    (home-page "http://www.unixodbc.org")))
 

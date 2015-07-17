@@ -457,14 +457,14 @@ http:://json.org specification.  These are the main features:
     (inputs
      `(("guile" ,guile-2.0)))
     (home-page "https://github.com/ijp/minikanren")
-    (synopsis "miniKanren declarative logic system, packaged for Guile")
+    (synopsis "MiniKanren declarative logic system, packaged for Guile")
     (description
      "MiniKanren is a relational programming extension to the Scheme
 programming Language, written as a smaller version of Kanren suitable for
 pedagogical purposes.  It is featured in the book, The Reasoned Schemer,
 written by Dan Friedman, William Byrd, and Oleg Kiselyov.
 
-This is Ian Price's r6rs packaged version of miniKranen, which deviates
+This is Ian Price's r6rs packaged version of miniKanren, which deviates
 slightly from miniKanren mainline.
 
 See http://minikanren.org/ for more on miniKanren generally.")

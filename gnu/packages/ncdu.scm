@@ -40,7 +40,7 @@
    (build-system gnu-build-system)
    (synopsis "Ncurses based disk usage analyzer")
    (description "A disk usage analyzer with an ncurses interface, aimed to be
-run on a remote server where you don't have an entire gaphical setup, but have
+run on a remote server where you don't have an entire graphical setup, but have
 to do with a simple SSH connection. ncdu aims to be fast, simple and easy to
 use, and should be able to run in any minimal POSIX-like environment with
 ncurses installed.")

@@ -367,7 +367,7 @@ It has been modified to remove all non-free binary blobs.")
      "A *Free* project to implement OSF's RFC 86.0.
 Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
-at login.  Local and dynamic reconfiguration are its key features")
+at login.  Local and dynamic reconfiguration are its key features.")
     (license bsd-3)))
 
 
@@ -2058,10 +2058,10 @@ thanks to the use of namespaces.")
        #:phases (alist-delete 'configure %standard-phases)
        #:tests? #f))  ; no test suite
     (home-page "http://sourceforge.net/projects/hdparm/")
-    (synopsis "tune hard disk parameters for high performance")
+    (synopsis "Tune hard disk parameters for high performance")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
-is for enabling irq-unmasking and IDE multiplemode.")
+is for enabling irq-unmasking and IDE multiple-mode.")
     (license (non-copyleft "file://LICENSE.TXT"))))
 
 (define-public acpid
@@ -2164,7 +2164,7 @@ also contains the libsysfs library.")
     (home-page "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/")
     (synopsis "Utilities to get and set CPU frequency on Linux")
     (description
-     "The cpufrequtils suite contains utilities to retreive CPU frequency
+     "The cpufrequtils suite contains utilities to retrieve CPU frequency
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
     (license gpl2)))

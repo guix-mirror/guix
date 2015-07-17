@@ -138,7 +138,7 @@ you can create PNG images on the fly or modify existing files.")
      `(("perl-gd" ,perl-gd)
        ("perl-image-magick" ,perl-image-magick)))
     (home-page "http://search.cpan.org/dist/GD-SecurityImage")
-    (synopsis "Security image generator.")
+    (synopsis "Security image generator")
     (description "This module provides a basic interface to create
 security (captcha) images.  The final output is the actual graphic data, the
 mime type of the graphic, and the created random string.  The module also has

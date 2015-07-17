@@ -54,6 +54,6 @@
     (synopsis "Client for Windows Terminal Services")
     (description
      "rdesktop is a client for Microsoft's Windows Remote Desktop Services,
-capable of natively speaking Remote Desktop Protocol (RDP.)  It allows users
+capable of natively speaking Remote Desktop Protocol (RDP).  It allows users
 to remotely control a user's Windows desktop.")
     (license license:gpl3+)))

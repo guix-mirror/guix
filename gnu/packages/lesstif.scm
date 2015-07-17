@@ -45,5 +45,5 @@
         ("libxt" ,libxt)))
     (home-page "http://lesstif.sourceforge.net/")
     (synopsis "Clone of the Motif toolkit for the X window system")
-    (description "Clone of the Motif toolkit for the X window system")
+    (description "Clone of the Motif toolkit for the X window system.")
     (license license:gpl2+))) ; some files are lgpl2.1+ or x11

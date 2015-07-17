@@ -80,7 +80,7 @@ socat can be used, for instance, as TCP port forwarder, as a shell interface
 to UNIX sockets, IPv6 relay, for redirecting TCP oriented programs to a serial
 line, to logically connect serial lines on different computers, or to
 establish a relatively secure environment (su and chroot) for running client
-or server shell scripts with network connections. ")
+or server shell scripts with network connections.")
     (license license:gpl2)))
 
 (define-public zeromq

@@ -130,7 +130,7 @@ the X-Consortium license.")
     (description
      "FTGL is a font rendering library for OpenGL applications.  Supported
 rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
-Polygon meshes, and Extruded polygon meshes")
+Polygon meshes, and Extruded polygon meshes.")
     (license l:x11)))
 
 (define-public s2tc

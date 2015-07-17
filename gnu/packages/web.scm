@@ -364,7 +364,7 @@ files, checks if a given domain is a public suffix, provides immediate cookie
 domain verification, finds the longest public part of a given domain, finds
 the shortest private part of a given domain, works with international
 domains (UTF-8 and IDNA2008 Punycode), is thread-safe, and handles IDNA2008
-UTS#46")
+UTS#46.")
     (license l:x11)))
 
 (define-public tidy
@@ -432,7 +432,7 @@ used to validate and fix HTML data.")
     ;; All of the below are used to generate the documentation
     ;; (Should they be propagated inputs of asciidoc ??)
     (native-inputs `(("asciidoc" ,asciidoc)
-                     ("libxml2" ,libxml2) 
+                     ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
                      ("libxslt" ,libxslt)))
@@ -978,7 +978,7 @@ for you.  It will work even with Catalyst debug logging turned off.")
     (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Authentication")
     (synopsis "Infrastructure plugin for the Catalyst authentication framework")
     (description "The authentication plugin provides generic user support for
-Catalyst apps. It is the basis for both authentication (checking the user is
+Catalyst apps.  It is the basis for both authentication (checking the user is
 who they claim to be), and authorization (allowing the user to do what the
 system authorises them to do).")
     (license (package-license perl))))
@@ -1147,7 +1147,7 @@ cookie mechanism.")
        ("perl-path-class" ,perl-path-class)))
     (home-page
      "http://search.cpan.org/dist/Catalyst-Plugin-Session-Store-FastMmap")
-    (synopsis "FastMmap session storage backend.")
+    (synopsis "FastMmap session storage backend")
     (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
 storage plugin for Catalyst that uses an mmap'ed file to act as a shared
 memory interprocess cache.  It is based on Cache::FastMmap.")
@@ -1326,7 +1326,7 @@ replaced with the contents of the X-Request-Base header.")
     (synopsis "Download data in many formats")
     (description "The purpose of this module is to provide a method for
 downloading data into many supportable formats.  For example, downloading a
-table based report in a variety of formats (CSV, HTML, etc.). ")
+table based report in a variety of formats (CSV, HTML, etc.).")
     (license (package-license perl))))
 
 (define-public perl-catalyst-view-json
@@ -2297,7 +2297,7 @@ or to multiple server ports.")
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))
     (home-page "http://search.cpan.org/dist/Net-SMTP-SSL")
     (synopsis "SSL support for Net::SMTP")
-    (description "SSL support for Net::SMTP")
+    (description "SSL support for Net::SMTP.")
     (license (package-license perl))))
 
 (define-public perl-plack

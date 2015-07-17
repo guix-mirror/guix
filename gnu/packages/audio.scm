@@ -447,7 +447,7 @@ ALSA PCM devices.")
     (description
      "FluidSynth is a real-time software synthesizer based on the SoundFont 2
 specifications.  FluidSynth reads and handles MIDI events from the MIDI input
-device.  It is the software analogue of a MIDI synthesizer. FluidSynth can
+device.  It is the software analogue of a MIDI synthesizer.  FluidSynth can
 also play midifiles using a Soundfont.")
     (license license:gpl2+)))
 

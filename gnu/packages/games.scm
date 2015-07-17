@@ -781,7 +781,7 @@ reference interpreter, using Glk API.")
     (synopsis "Z-machine interpreter")
     (description
      "Fizmo is a console-based Z-machine interpreter.  It is used to play
-interactive ficiton, also known as textadventures, which were implemented
+interactive fiction, also known as text adventures, which were implemented
 either by Infocom or created using the Inform compiler.")
     (license license:bsd-3)))
 

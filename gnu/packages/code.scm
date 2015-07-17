@@ -60,7 +60,7 @@
     (description
      "GNU cflow analyzes C source files and produces a graph charting the
 control flow of the program.  It can output the graph in several styles and
-in either the POSIX format or in an extended GNU format. cflow also includes
+in either the POSIX format or in an extended GNU format.  cflow also includes
 a major mode for Emacs for examining the flowcharts that it produces.")
     (license license:gpl3+)))
 

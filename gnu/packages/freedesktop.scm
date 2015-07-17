@@ -230,7 +230,7 @@ of a the system to know what users are logged in, and where.")
     (synopsis "Implementations of freedesktop.org standards in Python")
     (description
      "PyXDG is a collection of implementations of freedesktop.org standards in
-Python")
+Python.")
     (license license:lgpl2.0)))
 
 (define-public python2-pyxdg

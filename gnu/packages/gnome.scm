@@ -690,7 +690,7 @@ some form of information without getting in the user's way.")
 every application the chance to assume its own extensibility.  It also has a
 set of features including, but not limited to: multiple extension points; on
 demand (lazy) programming language support for C, Python and JS; simplicity of
-the API")
+the API.")
     (license license:lgpl2.0+)))
 
 (define-public gtkglext
@@ -1235,7 +1235,8 @@ creating interactive structured graphics.")
     (home-page "https://developer.gnome.org/libgnomeui/")
     (synopsis "Additional widgets for applications")
     (description "The libgnomeui library provides additional widgets for
-applications.  Many of the widgets from libgnomeui have already been ported to GTK+.")
+applications.  Many of the widgets from libgnomeui have already been
+ported to GTK+.")
     (license license:lgpl2.0+)))
 
 (define-public libglade
@@ -1821,8 +1822,8 @@ and objects.")
     (synopsis "High-level API for X Keyboard Extension")
     (description
      "LibXklavier is a library providing high-level API for X Keyboard
-Extension known as XKB.  This library is indended to support XFree86 and other
-commercial X servers. It is useful for creating XKB-related software (layout
+Extension known as XKB.  This library is intended to support XFree86 and other
+commercial X servers.  It is useful for creating XKB-related software (layout
 indicators etc).")
     (license license:lgpl2.0+)))
 
@@ -2237,7 +2238,7 @@ output devices.")
 information.  The primary goal of the Geoclue project is to make creating
 location-aware applications as simple as possible, while the secondary goal is
 to ensure that no application can access location information without explicit
-permission from user. ")
+permission from user.")
     (license license:gpl2+)))
 
 (define-public geocode-glib

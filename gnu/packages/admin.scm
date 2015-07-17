@@ -317,7 +317,7 @@ allow automatic login and starting any app.")
     (description
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
 files, which contain information about the IANA-assigned port, protocol, and
-ONC RPC numbers")
+ONC RPC numbers.")
     (home-page "http://packages.debian.org/sid/netbase")
     (license license:gpl2)))
 
@@ -953,7 +953,7 @@ system is under heavy load.")
                                            (assoc-ref %build-inputs "popt")))
        #:tests? #f))                    ;no 'check' target
     (home-page "http://detox.sourceforge.net")
-    (synopsis "Clean up filenames")
+    (synopsis "Clean up file names")
     (description
      "Detox is a program that renames files to make them easier to work with
 under Unix and related operating systems.  Spaces and various other unsafe

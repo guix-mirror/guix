@@ -791,7 +791,7 @@ code control system SCCS.  This allows old code still under that system to be
 accessed and migrated on modern systems.")
     (license gpl3+)))
 
-;; This package can unfortunately work only in -TEST mode, since Aegis 
+;; This package can unfortunately work only in -TEST mode, since Aegis
 ;; requires that it is installed setuid root.
 (define-public aegis
   (package
@@ -799,7 +799,7 @@ accessed and migrated on modern systems.")
     (version "4.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/aegis/aegis-" 
+              (uri (string-append "mirror://sourceforge/aegis/aegis-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -822,17 +822,17 @@ accessed and migrated on modern systems.")
        ("groff" ,groff)
        ("perl" ,perl)
        ;; Various tests require the following:
-       ("cvs" ,cvs) 
+       ("cvs" ,cvs)
        ("flex" ,flex)
        ("cook" ,cook)
        ("subversion" ,subversion)
        ("rcs" ,rcs)
        ("ed" ,ed)))
     (arguments
-     `(#:configure-flags (list "--with-no-aegis-configured" 
+     `(#:configure-flags (list "--with-no-aegis-configured"
                                "--sharedstatedir=/var/com/aegis")
        #:parallel-build? #f ; There are some nasty racy rules in the Makefile.
-       #:phases 
+       #:phases
         (alist-cons-before
          'configure 'pre-conf
          (lambda _

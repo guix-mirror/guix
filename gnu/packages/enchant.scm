@@ -56,6 +56,6 @@ the dlopen() system call.
 Enchant steps in to provide uniformity and conformity on top of these libraries,
 and implement certain features that may be lacking in any individual provider
 library.  Everything should \"just work\" for any and every definition of \"just
-working.\"")
+working\".")
     (home-page "http://www.abisource.com/projects/enchant")
     (license lgpl2.1+)))

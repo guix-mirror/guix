@@ -70,12 +70,12 @@
     (home-page "http://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
-     "LLVM is a compiler infrastructure designed for compile-time, link-time, runtime,
-and idle-time optimization of programs from arbitrary programming languages.
-It currently supports compilation of C and C++ programs, using front-ends
-derived from GCC 4.0.1.  A new front-end for the C family of languages is in
-development.  The compiler infrastructure includes mirror sets of programming
-tools as well as libraries with equivalent functionality.")
+     "LLVM is a compiler infrastructure designed for compile-time, link-time,
+runtime, and idle-time optimization of programs from arbitrary programming
+languages.  It currently supports compilation of C and C++ programs, using
+front-ends derived from GCC 4.0.1.  A new front-end for the C family of
+languages is in development.  The compiler infrastructure includes mirror sets
+of programming tools as well as libraries with equivalent functionality.")
     (license ncsa)))
 
 (define (clang-from-llvm llvm hash)

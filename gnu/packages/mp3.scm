@@ -90,7 +90,7 @@ This package contains the library.")
    (synopsis "Library for reading ID3 tags")
    (description
     "Libid3tag is a library for reading ID3 tags, both ID3v1 and the various
-versions of ID3v2")
+versions of ID3v2.")
    (license license:gpl2+)
    (home-page "http://www.underbit.com/products/mad/")))
 
@@ -212,7 +212,7 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
     (synopsis "MP3 technical info viewer and ID3 1.x tag editor")
     (description
      "MP3Info is a little utility used to read and modify the ID3 tags of MP3
-files.  MP3Info can also display various techincal aspects of an MP3 file
+files.  MP3Info can also display various technical aspects of an MP3 file
 including playing time, bit-rate, sampling frequency and other attributes in a
 pre-defined or user-specifiable output format.")
     (license license:gpl2+)))
@@ -234,7 +234,7 @@ pre-defined or user-specifiable output format.")
              ("libmad" ,libmad)
              ("libogg" ,libogg)
              ("libltdl" ,libltdl)
-             ("libvorbid" ,libvorbis)
+             ("libvorbis" ,libvorbis)
              ("pcre" ,pcre)))
    (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -242,7 +242,7 @@ pre-defined or user-specifiable output format.")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
 and an end time position, without decoding.  For splitting an album, one may
-select split points and filenames manually or obtain them automatically from
+select split points and file names manually or obtain them automatically from
 CDDB (internet or a local file) or from .cue files.  The tool also supports
 automatic silence split, that can be used also to adjust cddb/cue splitpoints.
 
@@ -264,11 +264,11 @@ This package contains the library.")
               "106dnka56prlc9nsfh300f8841am2lmkwlzgl9lkr25mgnc35wwh"))))
    (build-system gnu-build-system)
    (inputs `(("libmp3splt" ,libmp3splt)))
-   (synopsis "Utiliy for splitting mp3 and ogg vorbis files")
+   (synopsis "Utility for splitting mp3 and ogg vorbis files")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
 and an end time position, without decoding.  For splitting an album, one may
-select split points and filenames manually or obtain them automatically from
+select split points and file names manually or obtain them automatically from
 CDDB (internet or a local file) or from .cue files.  The tool also supports
 automatic silence split, that can be used also to adjust cddb/cue splitpoints.
 
@@ -444,5 +444,5 @@ format.")
     (synopsis "Audio player for Musepack-formatted files")
     (description
      "Mpc123 is a command-line player for files in the Musepack audio
-compression format (.mpc files.)")
+compression format (.mpc files).")
     (license license:gpl2+)))

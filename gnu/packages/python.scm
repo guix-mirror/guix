@@ -628,7 +628,7 @@ datetime module, available in Python 2.3+.")
     (synopsis
      "Parse human-readable date/time text")
     (description
-     "Parse human-readable date/time text")
+     "Parse human-readable date/time text.")
     (license asl2.0)))
 
 (define-public python-pandas
@@ -808,7 +808,7 @@ Database API 2.0T.")
      "Mechanize implements stateful programmatic web browsing in Python,
 after Andy Lester’s Perl module WWW::Mechanize.")
     (license (non-copyleft "file://COPYING"
-                        "See COPYING in the distribution."))))
+                           "See COPYING in the distribution."))))
 
 
 (define-public python-simplejson
@@ -828,8 +828,9 @@ after Andy Lester’s Perl module WWW::Mechanize.")
     (synopsis
      "Json library for Python")
     (description
-     "JSON (JavaScript Object Notation) is a subset of JavaScript syntax
- (ECMA-262 3rd edition) used as a lightweight data interchange format.
+     "JSON (JavaScript Object Notation) is a subset of JavaScript
+syntax (ECMA-262 3rd edition) used as a lightweight data interchange
+format.
 
 Simplejson exposes an API familiar to users of the standard library marshal
 and pickle modules.  It is the externally maintained version of the json
@@ -1524,7 +1525,7 @@ executed.")
      "Python test discovery for unittest")
     (description
      "Discover provides test discovery for unittest, a feature that has been
-backported from Python 2.7 for Python 2.4+")
+backported from Python 2.7 for Python 2.4+.")
     (license bsd-3)))
 
 (define-public python2-discover
@@ -2147,7 +2148,7 @@ mining and data analysis.")
     (home-page "http://scikit-image.org/")
     (synopsis "Image processing in Python")
     (description
-     "scikit-image is a collection of algorithms for image processing.")
+     "Scikit-image is a collection of algorithms for image processing.")
     (license bsd-3)))
 
 (define-public python2-scikit-image
@@ -2318,7 +2319,7 @@ include_dirs = ~a/include
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
-with Python. It contains among other things: a powerful N-dimensional array
+with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")

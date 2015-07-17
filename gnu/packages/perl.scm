@@ -181,11 +181,11 @@ configuration files and parsing command line arguments.")
   (package
     (name "perl-archive-zip")
     (version "1.30")
-    (source 
+    (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-" 
+             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-"
              version ".tar.gz"))
        (sha256
         (base32
@@ -607,7 +607,7 @@ the Class::C3 method resolution order.")
     (description "Class::Data::Inheritable is for creating accessor/mutators
 to class data.  That is, if you want to store something about your class as a
 whole (instead of about a single object).  This data is then inherited by your
-subclasses and can be overriden.")
+subclasses and can be overridden.")
     (license (package-license perl))))
 
 (define-public perl-class-date
@@ -717,7 +717,7 @@ names, not Class::Name.  For that, this module provides \"load_class
     (home-page "http://search.cpan.org/dist/Class-Load-XS")
     (synopsis "XS implementation of parts of Class::Load")
     (description "This module provides an XS implementation for portions of
-Class::Load")
+Class::Load.")
     (license artistic2.0)))
 
 (define-public perl-class-methodmaker
@@ -758,11 +758,11 @@ write accessor methods for your objects that perform standard tasks.")
        ("perl-test-requires" ,perl-test-requires)))
     (home-page "http://search.cpan.org/dist/Class-Method-Modifiers")
     (synopsis "Moose-like method modifiers")
-    (description "Class::Method::Modifiers provides three modifiers: before,
-around, and after.  before and after are run just before and after the method
-they modify, but can not really affect that original method.  around is run in
-place of the original method, with a hook to easily call that original
-method.")
+    (description "Class::Method::Modifiers provides three modifiers: 'before',
+'around', and 'after'.  'before' and 'after' are run just before and after the
+method they modify, but can not really affect that original method.  'around'
+is run in place of the original method, with a hook to easily call that
+original method.")
     (license (package-license perl))))
 
 (define-public perl-class-singleton
@@ -781,7 +781,7 @@ method.")
     (home-page "http://search.cpan.org/dist/Class-Singleton")
     (synopsis "Implementation of a singleton class for Perl")
     (description "This module implements a Singleton class from which other
-classes can be derived. By itself, the Class::Singleton module does very
+classes can be derived.  By itself, the Class::Singleton module does very
 little other than manage the instantiation of a single object.")
     (license (package-license perl))))
 
@@ -1037,7 +1037,7 @@ versa.")
 to generate random passwords, constructed from words, letters, or characters.
 This code is a Perl implementation of the Automated Password Generator
 standard, like the program described in \"A Random Word Generator For
-Pronounceable Passwords\". This code is a re-engineering of the program
+Pronounceable Passwords\".  This code is a re-engineering of the program
 contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
     (license (package-license perl))))
@@ -1202,7 +1202,7 @@ necessary later on.")
     (home-page "http://search.cpan.org/dist/Data-Tumbler")
     (synopsis "Dynamic generation of nested combinations of variants")
     (description "Data::Tumbler - Dynamic generation of nested combinations of
-variants")
+variants.")
     (license (package-license perl))))
 
 (define-public perl-data-visitor
@@ -1401,7 +1401,7 @@ or \"every day\".  You can also create more complicated recurrences, such as
        ("perl-datetime-format-strptime" ,perl-datetime-format-strptime)
        ("perl-params-validate" ,perl-params-validate)))
     (home-page "http://search.cpan.org/dist/DateTime-Format-Builder")
-    (synopsis "Create DateTime parser classes and objects.")
+    (synopsis "Create DateTime parser classes and objects")
     (description "DateTime::Format::Builder creates DateTime parsers.  Many
 string formats of dates and times are simple and just require a basic regular
 expression to extract the relevant information.  Builder provides a simple way
@@ -1868,8 +1868,8 @@ modules separately and deal with them after the module is done installing.")
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Error")
     (synopsis "OO-ish Error/Exception handling for Perl")
-    (description "The Error package provides two interfaces. Firstly Error
-provides a procedural interface to exception handling. Secondly Error is a
+    (description "The Error package provides two interfaces.  Firstly Error
+provides a procedural interface to exception handling.  Secondly Error is a
 base class for errors/exceptions that can either be thrown, for subsequent
 catch, or can simply be recorded.")
     (license (package-license perl))))
@@ -2147,7 +2147,7 @@ in various parts of the CPAN ecosystem.")
     (home-page "http://search.cpan.org/dist/File-HomeDir")
     (synopsis "Find your home and other directories on any platform")
     (description "File::HomeDir is a module for locating the directories that
-are \"owned\" by a user (typicaly your user) and to solve the various issues
+are \"owned\" by a user (typically your user) and to solve the various issues
 that arise trying to find them consistently across a wide variety of
 platforms.")
     (license (package-license perl))))
@@ -2199,7 +2199,7 @@ matching a regular expression.")
     (description "File::Remove::remove removes files and directories.  It acts
 like /bin/rm, for the most part.  Although \"unlink\" can be given a list of
 files, it will not remove directories; this module remedies that.  It also
-accepts wildcards, * and ?, as arguments for filenames.")
+accepts wildcards, * and ?, as arguments for file names.")
     (license (package-license perl))))
 
 (define-public perl-file-sharedir
@@ -2266,7 +2266,7 @@ allows you to locate these files after installation.")
     (synopsis "Reading/Writing/Modifying of complete files")
     (description "File::Slurp provides subroutines to read or write entire
 files with a simple call.  It also has a subroutine for reading the list of
-filenames in a directory.")
+file names in a directory.")
     (license (package-license perl))))
 
 (define-public perl-file-temp
@@ -2463,7 +2463,7 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
     (synopsis "Utilities for interactive I/O")
     (description "This module provides three utility subroutines that make it
 easier to develop interactive applications: is_interactive(), interactive(),
-and busy()")
+and busy().")
     (license (package-license perl))))
 
 (define-public perl-io-string
@@ -2548,10 +2548,10 @@ pseudo ttys.")
                      ;; it, so disable it.
                      (delete-file "t/win32_compile.t"))))))
     (home-page "http://search.cpan.org/dist/IPC-Run")
-    (synopsis "system() and background procs w/ piping, redirs, ptys")
+    (synopsis "Run system() and background procs w/ piping, redirs, ptys")
     (description "IPC::Run allows you run and interact with child processes
-using files, pipes, and pseudo-ttys. Both system()-style and scripted usages
-are supported and may be mixed. Likewise, functional and OO API styles are
+using files, pipes, and pseudo-ttys.  Both system()-style and scripted usages
+are supported and may be mixed.  Likewise, functional and OO API styles are
 both supported and may be mixed.")
     (license (package-license perl))))
 
@@ -2567,7 +2567,7 @@ both supported and may be mixed.")
                (base32
                 "0r9m8q78bg7yycpixd7738jm40yz71p2q7inm766kzsw3g6c709x"))))
     (build-system perl-build-system)
-    (synopsis "Run a subprocess with input/ouput redirection")
+    (synopsis "Run a subprocess with input/output redirection")
     (description
      "The IPC::Run3 module allows you to run a subprocess and redirect stdin,
 stdout, and/or stderr to files and perl data structures.  It aims to satisfy
@@ -3391,8 +3391,8 @@ accessor, while set methods are prefixed with \"_set_\".")
     (home-page "http://search.cpan.org/dist/MooseX-StrictConstructor")
     (synopsis "Strict object constructors for Moose")
     (description "Simply loading this module makes your constructors
-\"strict\". If your constructor is called with an attribute init argument that
-your class does not declare, then it calls Moose->throw_error(). ")
+\"strict\".  If your constructor is called with an attribute init argument
+that your class does not declare, then it calls Moose->throw_error().")
     (license artistic2.0)))
 
 (define-public perl-moosex-traits-pluggable
@@ -3420,7 +3420,7 @@ your class does not declare, then it calls Moose->throw_error(). ")
      "http://search.cpan.org/dist/MooseX-Traits-Pluggable")
     (synopsis "Trait loading and resolution for Moose")
     (description "Adds support on top of MooseX::Traits for class precedence
-search for traits and some extra attributes")
+search for traits and some extra attributes.")
     (license (package-license perl))))
 
 (define-public perl-moosex-types
@@ -4144,7 +4144,7 @@ of Perl objects without duplicates for scalars and references.")
     (home-page "http://search.cpan.org/dist/Set-Scalar")
     (synopsis "Set operations for Perl")
     (description "The first priority of Set::Scalar is to be a convenient
-interface to sets (as in: unordered colletions of Perl scalars.)  While not
+interface to sets (as in: unordered collections of Perl scalars).  While not
 designed to be slow or big, neither has it been designed to be fast or
 compact.")
     (license (package-license perl))))
@@ -4249,7 +4249,7 @@ CamelCase and back again.")
     (home-page "http://search.cpan.org/dist/String-RewritePrefix")
     (synopsis "Rewrite strings based on a set of known prefixes")
     (description "This module allows you to rewrite strings based on a set of
-known pprefixes.")
+known prefixes.")
     (license (package-license perl))))
 
 (define-public perl-sub-exporter
@@ -4581,7 +4581,7 @@ stuff has been done, and maybe an estimate at how long remains.")
     (synopsis "Progress meter if run interactively")
     (description "Term::ProgressBar is a wonderful module for showing progress
 bars on the terminal.  This module acts very much like that module when it is
-run interactively. However, when it is not run interactively (for example, as
+run interactively.  However, when it is not run interactively (for example, as
 a cron job) then it does not show the progress bar.")
     (license (package-license perl))))
 
@@ -4705,7 +4705,7 @@ called as methods, which usually isn't want you want.")
     (description
      "Test::Deep compares two structures by going through each level, ensuring
 that the values match, that arrays and hashes have the same elements and that
-references are blessed into the correct class. It also handles circular data
+references are blessed into the correct class.  It also handles circular data
 structures without getting caught in an infinite loop.")
     (home-page (string-append "http://search.cpan.org/~rjbs/"
                               "Test-Deep-" version))
@@ -4730,7 +4730,7 @@ structures without getting caught in an infinite loop.")
     (home-page "http://search.cpan.org/dist/Test-Differences")
     (synopsis "Test strings and data structures and show differences")
     (description "This module exports three test functions and four diff-style
-functions")
+functions.")
     ;; See LICENSE section of Test/Differences.pm, which reads "... GNU public
     ;; license, any version, ..."
     (license gpl3+)))
@@ -4850,7 +4850,7 @@ automatically aggregated and output to STDOUT.")
     (home-page "http://search.cpan.org/dist/Test-LeakTrace")
     (synopsis "Traces memory leaks in Perl")
     (description "Test::LeakTrace provides several functions that trace memory
-leaks. This module scans arenas, the memory allocation system, so it can
+leaks.  This module scans arenas, the memory allocation system, so it can
 detect any leaked SVs in given blocks.")
     (license (package-license perl))))
 
@@ -4967,7 +4967,7 @@ bit more fine-grained control over test suites.")
     (description
      "This modules causes any warnings during testing to be captured and
 stored.  It automatically adds an extra test that will run when your script
-ends to check that there were no warnings.  If there were any warings, the
+ends to check that there were no warnings.  If there were any warnings, the
 test will fail and output diagnostics of where, when and what the warning was,
 including a stack trace of what was going on when it occurred.")
     (home-page (string-append "http://search.cpan.org/~adamk/"
@@ -5502,9 +5502,9 @@ as exceptions to standard program flow.")
   (home-page "http://search.cpan.org/dist/Tie-IxHash")
   (synopsis "Ordered associative arrays for Perl")
   (description "This Perl module implements Perl hashes that preserve the
-order in which the hash elements were added. The order is not affected when
-values corresponding to existing keys in the IxHash are changed. The elements
-can also be set to any arbitrary supplied order. The familiar perl array
+order in which the hash elements were added.  The order is not affected when
+values corresponding to existing keys in the IxHash are changed.  The elements
+can also be set to any arbitrary supplied order.  The familiar perl array
 operations can also be performed on the IxHash.")
   (license (package-license perl))))
 
@@ -5593,7 +5593,7 @@ duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
     (description "This module provides functions that are the inverse of
 built-in perl functions localtime() and gmtime().  They accept a date as a
 six-element array, and return the corresponding time(2) value in seconds since
-the system epoch")
+the system epoch.")
     (license (package-license perl))))
 
 (define-public perl-timedate
@@ -5762,7 +5762,7 @@ UNIVERSAL::can() as a function, which it is not.")
     (home-page "http://search.cpan.org/dist/UNIVERSAL-isa")
     (synopsis "UNIVERSAL::isa() reimplementation")
     (description "This module attempts to recover from people calling
-UNIVERSAL::isa as a function")
+UNIVERSAL::isa as a function.")
     (license (package-license perl))))
 
 (define-public perl-variable-magic

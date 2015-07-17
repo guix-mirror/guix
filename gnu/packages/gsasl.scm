@@ -41,7 +41,7 @@
    (build-system gnu-build-system)
    (synopsis "Library that implements NTLM authentication")
    (description
-    "Libntlm is a library that implements NTLM authentication")
+    "Libntlm is a library that implements NTLM authentication.")
    (license license:lgpl2.1+)
    (home-page "http://www.nongnu.org/libntlm/")))
 

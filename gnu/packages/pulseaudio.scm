@@ -106,7 +106,7 @@ SRC provides a small set of converters to allow quality to be traded off
 against computation cost.  The current best converter provides a
 signal-to-noise ratio of 145dB with -3dB passband extending from DC to 96% of
 the theoretical best bandwidth for a given pair of input and output sample
-rates. ")
+rates.")
     (license l:gpl2+)))
 
 (define pulseaudio
@@ -173,11 +173,12 @@ rates. ")
     (home-page "http://www.pulseaudio.org/")
     (synopsis "Sound server")
     (description
-     "PulseAudio is a sound server.  It is basically a proxy for your sound applications.
-It allows you to do advanced operations on your sound data as it passes
-between your application and your hardware.  Things like transferring the
-audio to a different machine, changing the sample format or channel count and
-mixing several sounds into one are easily achieved using a sound server. ")
+     "PulseAudio is a sound server.  It is basically a proxy for your sound
+applications.  It allows you to do advanced operations on your sound data as
+it passes between your application and your hardware.  Things like
+transferring the audio to a different machine, changing the sample format or
+channel count and mixing several sounds into one are easily achieved using a
+sound server.")
 
     ;; PulseAudio is LGPLv2+, but some of the optional dependencies (GNU dbm,
     ;; FFTW, etc.) are GPL'd, so the result is effectively GPLv2+.  See

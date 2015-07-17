@@ -56,7 +56,7 @@
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
      "GNU Wget is a non-interactive tool for fetching files using the HTTP,
-HTTPS and FTP protocols.  It can resume interrupted downloads, use filename
+HTTPS and FTP protocols.  It can resume interrupted downloads, use file name
 wild cards, supports proxies and cookies, and it can convert absolute links
 in downloaded documents to relative links.")
     (license gpl3+))) ; some files are under GPLv2+
