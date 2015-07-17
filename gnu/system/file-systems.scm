@@ -37,6 +37,7 @@
             file-system-options
             file-system-check?
             file-system-create-mount-point?
+            file-system-dependencies
 
             file-system->spec
             string->uuid
@@ -97,7 +98,10 @@
   (check?           file-system-check?            ; Boolean
                     (default #t))
   (create-mount-point? file-system-create-mount-point? ; Boolean
-                       (default #f)))
+                       (default #f))
+  (dependencies     file-system-dependencies      ; list of strings (mount
+                                                  ; points depended on)
+                    (default '())))
 
 (define-inlinable (file-system-needed-for-boot? fs)
   "Return true if FS has the 'needed-for-boot?' flag set, or if it's the root

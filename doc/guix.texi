@@ -5027,6 +5027,14 @@ errors before being mounted.
 @item @code{create-mount-point?} (default: @code{#f})
 When true, the mount point is created if it does not exist yet.
 
+@item @code{dependencies} (default: @code{'()})
+This is a list of @code{<file-system>} objects representing file systems
+that must be mounted before (and unmounted after) this one.
+
+As an example, consider a hierarchy of mounts: @file{/sys/fs/cgroup} is
+a dependency of @file{/sys/fs/cgroup/cpu} and
+@file{/sys/fs/cgroup/memory}.
+
 @end table
 @end deftp
 

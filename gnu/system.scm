@@ -228,10 +228,16 @@ as 'needed-for-boot'."
             (operating-system-mapped-devices os)))
 
   (define (requirements fs)
-    (map (lambda (md)
-           (symbol-append 'device-mapping-
-                          (string->symbol (mapped-device-target md))))
-         (device-mappings fs)))
+    ;; XXX: Fiddling with dmd service names is not nice.
+    (append (map (lambda (fs)
+                   (symbol-append 'file-system-
+                                  (string->symbol
+                                   (file-system-mount-point fs))))
+                 (file-system-dependencies fs))
+            (map (lambda (md)
+                   (symbol-append 'device-mapping-
+                                  (string->symbol (mapped-device-target md))))
+                 (device-mappings fs))))
 
   (sequence %store-monad
             (map (lambda (fs)
