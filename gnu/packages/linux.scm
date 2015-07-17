@@ -1704,6 +1704,75 @@ interface.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     (license gpl2+)))
 
+(define-public crda
+  (package
+    (name "crda")
+    (version "3.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/network/crda/"
+                                  "crda-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1gydiqgb08d9gbx4l6gv98zg3pljc984m50hmn3ysxcbkxkvkz23"))
+              (patches (list (search-patch "crda-optional-gcrypt.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before
+                   'build 'no-werror-no-ldconfig
+                   (lambda _
+                     (substitute* "Makefile"
+                       (("-Werror")  "")
+                       (("ldconfig") "true"))
+                     #t))
+                  (add-before
+                   'build 'set-regulator-db-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Tell CRDA where to find our database.
+                     (let ((regdb (assoc-ref inputs "wireless-regdb")))
+                       (substitute* "crda.c"
+                         (("\"/lib/crda/regulatory.bin\"")
+                          (string-append "\"" regdb
+                                         "/lib/crda/regulatory.bin\"")))
+                       #t))))
+       #:test-target "verify"
+       #:make-flags (let ((out   (assoc-ref %outputs "out"))
+                          (regdb (assoc-ref %build-inputs "wireless-regdb")))
+                      (list "CC=gcc" "V=1"
+
+                            ;; Disable signature-checking on 'regulatory.bin'.
+                            ;; The reason is that this simplifies maintenance
+                            ;; on our side (no need to manage a distro key
+                            ;; pair), and we can guarantee integrity of
+                            ;; 'regulatory.bin' by other means anyway, such as
+                            ;; 'guix gc --verify'.  See
+                            ;; <https://wireless.wiki.kernel.org/en/developers/regulatory/wireless-regdb>
+                            ;; for a discssion.
+                            "USE_OPENSSL=0"
+
+                            (string-append "PREFIX=" out)
+                            (string-append "SBINDIR=" out "/sbin/")
+                            (string-append "UDEV_RULE_DIR="
+                                           out "/lib/udev/rules.d")
+                            (string-append "LDFLAGS=-Wl,-rpath="
+                                           out "/lib -L.")
+                            (string-append "REG_BIN=" regdb
+                                           "/lib/crda/regulatory.bin")))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("python" ,python-2)
+                     ("wireless-regdb" ,wireless-regdb)))
+    (inputs `(("libnl" ,libnl)))
+    (home-page
+     "https://wireless.wiki.kernel.org/en/developers/Regulatory/CRDA")
+    (synopsis "Central regulatory domain agent (CRDA) for WiFi")
+    (description
+     "The Central Regulatory Domain Agent (CRDA) acts as the udev helper for
+communication between the kernel Linux and user space for regulatory
+compliance.")
+    (license copyleft-next)))
+
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
