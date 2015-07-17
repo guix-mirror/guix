@@ -168,7 +168,10 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
               ("readline" ,readline)
               ("libsigsegv" ,libsigsegv)))
     (arguments
-     '(#:phases
+     '(;; XXX The custom configure script does not cope well when passed
+       ;; --build=<triplet>.
+       #:build #f
+       #:phases
        (alist-cons-after
         'unpack 'patch-sh-and-pwd
         (lambda _
