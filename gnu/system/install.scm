@@ -274,8 +274,9 @@ You have been warned.  Thanks for being so brave.
           (guix-service #:authorize-hydra-key? #t)
 
           ;; Start udev so that useful device nodes are available.
-          ;; Use device-mapper rules for cryptsetup & co.
-          (udev-service #:rules (list lvm2))
+          ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for
+          ;; regulations-compliant WiFi access.
+          (udev-service #:rules (list lvm2 crda))
 
           ;; Add the 'cow-store' service, which users have to start manually
           ;; since it takes the installation directory as an argument.
