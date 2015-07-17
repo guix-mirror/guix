@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,9 +25,14 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages gtk) ;for "cairo"
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system waf))
 
 (define-public fltk
   (package
@@ -83,3 +89,48 @@ emulation.  FLTK is designed to be small and modular enough to be statically
 linked, but works fine as a shared library.  FLTK also includes an excellent
 UI builder called FLUID that can be used to create applications in minutes.")
     (license lgpl2.0))) ; plus certain additional permissions
+
+(define-public ntk
+  (package
+    (name "ntk")
+    (version "1.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.tuxfamily.org/gitroot/non/fltk.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0ggrh6rihf676z1vfgpgcl6kpqwyh39ih0hskcgzklh7fphfik39"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:python ,python-2
+       #:configure-flags '("--enable-gl")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-ldflags
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "LDFLAGS"
+                    (string-append "-Wl,-rpath="
+                                   (assoc-ref outputs "out") "/lib")))))))
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("glu" ,glu)))
+    ;; ntk.pc lists "x11" and "xft" in Requires.private, and "cairo" in
+    ;; Requires.
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("libxft" ,libxft)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://non.tuxfamily.org/ntk/")
+    (synopsis "Fork of FLTK with graphics rendering via Cairo")
+    (description "The Non Tool Kit (NTK) is a fork of the Fast Light ToolKit
+library, adding improved graphics rendering via Cairo, a streamlined and
+enhanced widget set, and other features designed to improve the appearance and
+performance of the Non applications.")
+    (license lgpl2.0+))) ; plus certain additional permissions
