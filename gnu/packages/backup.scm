@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,7 +45,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.6.24")
+    (version "0.6.26")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +55,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0l14nrhbgkyjgvh339bbhnm6hrdwrjadphq1jmpi0mcgcdbdfh8x"))
+        "0jh79syhr8n3l81jxlwsmwm1pklb4d923m2lgqbswyavh1fqmvwb"))
       (patches (list (search-patch "duplicity-piped-password.patch")
                      (search-patch "duplicity-test_selection-tmp.patch")))))
     (build-system python-build-system)
