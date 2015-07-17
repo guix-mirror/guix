@@ -190,7 +190,7 @@ required structures.")
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
-    '(#:parallel-build? #f
+    `(#:parallel-build? #f
       #:parallel-tests? #f
       #:test-target "test"
       #:phases
@@ -202,7 +202,13 @@ required structures.")
             (system* "./config"
                      "shared"                   ; build shared libraries
                      "--libdir=lib"
-                     (string-append "--prefix=" out)))))
+                     (string-append "--prefix=" out)
+                     ;; XXX FIXME: Work around a code generation bug in GCC
+                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.
+                     ,@(if (and (not (%current-target-system))
+                                (string-prefix? "armhf" (%current-system)))
+                           '("-mfpu=vfpv3")
+                           '())))))
        (alist-cons-before
         'patch-source-shebangs 'patch-tests
         (lambda* (#:key inputs native-inputs #:allow-other-keys)
