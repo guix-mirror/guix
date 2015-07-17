@@ -279,6 +279,7 @@ standards.")
                       "db/sqlite3"))
           #t))
       (patches (map search-patch '("icecat-enable-acceleration-and-webgl.patch"
+                                   "icecat-freetype-2.6.patch"
                                    "icecat-libvpx-1.4.patch")))))
     (build-system gnu-build-system)
     (inputs
