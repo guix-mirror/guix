@@ -237,21 +237,26 @@ UUID representation."
     (flags '(read-only bind-mount))))
 
 (define %control-groups
-  (cons (file-system
-          (device "cgroup")
-          (mount-point "/sys/fs/cgroup")
-          (type "tmpfs")
-          (check? #f))
-        (map (lambda (subsystem)
-               (file-system
-                 (device "cgroup")
-                 (mount-point (string-append "/sys/fs/cgroup/" subsystem))
-                 (type "cgroup")
-                 (check? #f)
-                 (options subsystem)
-                 (create-mount-point? #t)))
-             '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
-               "blkio" "perf_event" "hugetlb"))))
+  (let ((parent (file-system
+                  (device "cgroup")
+                  (mount-point "/sys/fs/cgroup")
+                  (type "tmpfs")
+                  (check? #f))))
+    (cons parent
+          (map (lambda (subsystem)
+                 (file-system
+                   (device "cgroup")
+                   (mount-point (string-append "/sys/fs/cgroup/" subsystem))
+                   (type "cgroup")
+                   (check? #f)
+                   (options subsystem)
+                   (create-mount-point? #t)
+
+                   ;; This must be mounted after, and unmounted before the
+                   ;; parent directory.
+                   (dependencies (list parent))))
+               '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
+                 "blkio" "perf_event" "hugetlb")))))
 
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
