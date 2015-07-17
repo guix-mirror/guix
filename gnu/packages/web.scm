@@ -324,11 +324,10 @@ for efficient socket-like bidirectional reliable communication channels.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
-                                  "archive/" version ".tar.gz"))
+                                  "archive/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "1k0klj668c9v0r4993vfs3kq773mzdz61vsigqw6v1mjcwnf1si3"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1k0klj668c9v0r4993vfs3kq773mzdz61vsigqw6v1mjcwnf1si3"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)))
     ;; The release tarball lacks the generated files.
