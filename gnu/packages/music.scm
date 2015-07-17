@@ -20,9 +20,11 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages base) ;libbdf
@@ -33,12 +35,14 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -191,6 +195,44 @@ music.  Music is input in a text file containing control sequences which are
 interpreted by LilyPond to produce the final document.  It is extendable with
 Guile.")
     (license license:gpl3+)))
+
+(define-public non-sequencer
+  ;; The latest tagged release is three years old and uses a custom build
+  ;; system, so we take the last commit affecting the "sequencer" directory.
+  (let ((commit "1d9bd576"))
+    (package
+      (name "non-sequencer")
+      (version (string-append "1.9.5-" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.tuxfamily.org/gitroot/non/non.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0pkkw8q6d55j38xm7r4rwpdv1wy00a44h8c4wrn7vbgpq9nij46y"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system waf-build-system)
+      (arguments
+       `(#:tests? #f ;no "check" target
+         #:configure-flags '("--project=sequencer")
+         #:python ,python-2))
+      (inputs
+       `(("jack" ,jack-1)
+         ("libsigc++" ,libsigc++)
+         ("liblo" ,liblo)
+         ("ntk" ,ntk)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "http://non.tuxfamily.org/wiki/Non%20Sequencer")
+      (synopsis "Pattern-based MIDI sequencer")
+      (description
+       "The Non Sequencer is a powerful, lightweight, real-time,
+pattern-based MIDI sequencer.  It utilizes the JACK Audio Connection Kit for
+MIDI I/O and the NTK GUI toolkit for its user interface.  Everything in Non
+Sequencer happens on-line, in real-time.  Music can be composed live, while the
+transport is rolling.")
+      (license license:gpl2+))))
 
 (define-public solfege
   (package
