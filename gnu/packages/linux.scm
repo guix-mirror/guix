@@ -1704,6 +1704,44 @@ interface.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     (license gpl2+)))
 
+(define-public wireless-regdb
+  (package
+    (name "wireless-regdb")
+    (version "2015.04.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/software/network/wireless-regdb/"
+                    "wireless-regdb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0czi83k311fp27z42hxjm8vi88fsbc23mhavv96lkb4pmari0jjc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:tests? #f                                ;no tests
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "LSB_ID=GuixSD")
+                            (string-append "DISTRO_PUBKEY=/dev/null")
+                            (string-append "DISTRO_PRIVKEY=/dev/null")
+                            (string-append "REGDB_PUBKEY=/dev/null")
+
+                            ;; Leave that empty so that db2bin.py doesn't try
+                            ;; to sign 'regulatory.bin'.  This allows us to
+                            ;; avoid managing a key pair for the whole distro.
+                            (string-append "REGDB_PRIVKEY=")))))
+    (native-inputs `(("python" ,python-2)))
+    (home-page
+     "https://wireless.wiki.kernel.org/en/developers/regulatory/wireless-regdb")
+    (synopsis "Wireless regulatory database")
+    (description
+     "This package contains the wireless regulatory database Central
+Regulatory Database Agent (CRDA) daemon.  The database contains information on
+country-specific regulations for the wireless spectrum.")
+    (license isc)))
+
 (define-public lm-sensors
   (package
     (name "lm-sensors")
