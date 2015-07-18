@@ -670,11 +670,12 @@ especially for creating reverb effects.  It supports impulse responses with 1,
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("bdb" ,bdb)
        ("readline" ,readline)))
     ;; uuid.h is included in the JACK type headers
+    ;; db.h is included in the libjack metadata headers
     (propagated-inputs
-     `(("libuuid" ,util-linux)))
+     `(("libuuid" ,util-linux)
+       ("bdb" ,bdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://jackaudio.org/")
