@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages python))
 
 (define-public ninja
@@ -37,11 +38,23 @@
               (sha256
                (base32
                 "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))
-              (patches (list (search-patch "ninja-tests.patch")))))
+              ;; XXX Ninja's build system doesn't cope well with zeroed
+              ;; time stamps in the source tree, so we must avoid using
+              ;; 'patch-and-repack'.
+              #; (patches (list (search-patch "ninja-tests.patch")))))
     (build-system gnu-build-system)
+    (native-inputs `(("python" ,python-2)
+                     ("patch" ,patch)
+                     ("ninja-tests.patch" ,(search-patch "ninja-tests.patch"))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after
+          'unpack 'apply-ninja-tests.patch
+          ;; XXX Apply the patch here to avoid 'patch-and-repack'.  See above.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (zero? (system* "patch" "--force" "-p1" "-i"
+                            (assoc-ref inputs "ninja-tests.patch")))))
          (replace
           'configure
           (lambda _
@@ -70,7 +83,6 @@
               (copy-file "doc/manual.asciidoc"
                          (string-append doc "/manual.asciidoc"))
               #t))))))
-    (native-inputs `(("python" ,python-2)))
     (home-page "http://martine.github.io/ninja/")
     (synopsis "Small build system")
     (description
