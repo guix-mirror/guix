@@ -1,0 +1,20 @@
+This patch allows us to make the libgcrypt dependency optional (which it
+is, if you look at the code), which in turns allows us to build CRDA
+without the signature-checking capability on 'regulatory.bin'.
+
+--- crda/Makefile	2015-07-17 11:33:33.546712893 +0200
++++ crda/Makefile	2015-07-17 11:34:05.210994373 +0200
+@@ -45,12 +45,14 @@ LDLIBS += `pkg-config --libs openssl`
+ $(LIBREG): keys-ssl.c
+ 
+ else
++ifeq ($(USE_GCRYPT),1)
+ CFLAGS += -DUSE_GCRYPT
+ LDLIBS += -lgcrypt
+ 
+ $(LIBREG): keys-gcrypt.c
+ 
+ endif
++endif
+ MKDIR ?= mkdir -p
+ INSTALL ?= install
