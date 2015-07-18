@@ -272,7 +272,13 @@ parse JSON formatted strings back into the C representation of JSON objects.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0rl6s0vg5y1dhh9vfl1lqay3sxf69sxjh0czxrjmasn7ng91wwf3"))))
+               "0rl6s0vg5y1dhh9vfl1lqay3sxf69sxjh0czxrjmasn7ng91wwf3"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Building with GCC 4.8 with -Werror was fine, but 4.9.3
+              ;; complains in new ways, so turn of -Werror.
+              '(substitute* (find-files "." "^CMakeLists\\.txt$")
+                 (("-Werror") "")))))
     (build-system cmake-build-system)
     (home-page "https://github.com/miloyip/rapidjson")
     (synopsis "JSON parser/generator for C++ with both SAX/DOM style API")
