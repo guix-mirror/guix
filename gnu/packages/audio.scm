@@ -691,6 +691,9 @@ synchronous execution of all clients, and low latency operation.")
     ;; licensed under the LGPL in order to allow for proprietary usage.
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+;; Packages depending on JACK should always prefer jack-1.  Both jack-1 and
+;; jack-2 implement the same API.  JACK2 is provided primarily as a client
+;; program for users who might benefit from the D-BUS features.
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
@@ -1633,7 +1636,7 @@ portions of LAME.")
     (inputs
      ;; TODO: Add ASIHPI.
      `(("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-2)))
+       ("jack" ,jack-1)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
