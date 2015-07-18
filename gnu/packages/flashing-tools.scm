@@ -108,7 +108,7 @@ technique (ISP).")
 (define-public dfu-programmer
   (package
     (name "dfu-programmer")
-    (version "0.7.0")
+    (version "0.7.2")
     (source
      (origin
       (method url-fetch)
@@ -116,9 +116,11 @@ technique (ISP).")
                           version ".tar.gz"))
       (sha256
        (base32
-        "17lglglk5xrqd2n0impg5bkq4j96qc51cw3kzcghzmzmn6fvg3gf"))
+        "15gr99y1z9vbvhrkd25zqhnzhg6zjmaam3vfjzf2mazd39mx7d0x"))
       (patches (list (search-patch "dfu-programmer-fix-libusb.patch")))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)))
     (home-page "http://dfu-programmer.github.io/")
