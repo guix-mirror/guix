@@ -27,6 +27,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (web http)
@@ -207,8 +208,10 @@ References: ~a~%"
     (if (file-exists? store-path)
         (values '((content-type . (application/x-nix-archive
                                    (charset . "ISO-8859-1"))))
-                (lambda (port)
-                  (write-file store-path port)))
+                ;; XXX: We're not returning the actual contents, deferring
+                ;; instead to 'http-write'.  This is a hack to work around
+                ;; <http://bugs.gnu.org/21093>.
+                store-path)
         (not-found request))))
 
 (define extract-narinfo-hash
@@ -236,6 +239,13 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define %http-write
   (@@ (web server http) http-write))
 
+(define (sans-content-length response)
+  "Return RESPONSE without its 'content-length' header."
+  (set-field response (response-headers)
+             (alist-delete 'content-length
+                           (response-headers response)
+                           eq?)))
+
 (define (http-write server client response body)
   "Write RESPONSE and BODY to CLIENT, possibly in a separate thread to avoid
 blocking."
@@ -245,7 +255,18 @@ blocking."
      ;; thread so that the main thread can keep working in the meantime.
      (call-with-new-thread
       (lambda ()
-        (%http-write server client response body))))
+        (let* ((response (write-response (sans-content-length response)
+                                         client))
+               (port     (response-port response)))
+          ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
+          ;; 'render-nar', BODY here is just the file name of the store item.
+          ;; We call 'write-file' from here because we know that's the only
+          ;; way to avoid building the whole nar in memory, which could
+          ;; quickly become a real problem.  As a bonus, we even do
+          ;; sendfile(2) directly from the store files to the socket.
+          (write-file (utf8->string body) port)
+          (close-port port)
+          (values)))))
     (_
      ;; Handle other responses sequentially.
      (%http-write server client response body))))
