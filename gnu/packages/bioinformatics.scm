@@ -1414,18 +1414,18 @@ sequencing tag position and orientation.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-includes
                     (lambda _
-                        (substitute* "SConstruct"
-                          (("/include/bam/bam.h")
-                           "/include/samtools/bam.h"))
-                        (substitute* "src/BamUtils.h"
-                          (("^#include \"bam/bam\\.h\"")
-                           "#include \"samtools/bam.h\"")
-                          (("^#include \"bam/sam\\.h\"")
-                           "#include \"samtools/sam.h\""))
-                        (substitute* "src/KseqReader.h"
-                          (("^#include \"bam/kseq\\.h\"")
-                           "#include \"samtools/kseq.h\""))
-                        #t))
+                      (substitute* "SConstruct"
+                        (("/include/bam/bam.h")
+                         "/include/samtools/bam.h"))
+                      (substitute* "src/BamUtils.h"
+                        (("^#include \"bam/bam\\.h\"")
+                         "#include \"samtools/bam.h\"")
+                        (("^#include \"bam/sam\\.h\"")
+                         "#include \"samtools/sam.h\""))
+                      (substitute* "src/KseqReader.h"
+                        (("^#include \"bam/kseq\\.h\"")
+                         "#include \"samtools/kseq.h\""))
+                      #t))
          (add-after 'unpack 'fix-scons
                     (lambda _
                       (substitute* "SConstruct" ; Do not distribute README
@@ -1471,7 +1471,7 @@ enables the study of individual organisms and their interactions.  MetaBAT is
 an automated metagenome binning software, which integrates empirical
 probabilistic distances of genome abundance and tetranucleotide frequency.")
    (license (license:non-copyleft "file://license.txt"
-                                  "See licence.txt in the distribution."))))
+                                  "See license.txt in the distribution."))))
 
 (define-public miso
   (package
