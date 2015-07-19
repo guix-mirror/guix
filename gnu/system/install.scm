@@ -75,6 +75,7 @@ under /root/.guix-profile where GUIX is installed."
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
                             "--owner=root:0" "--group=root:0"
+                            "--mtime=@0"          ;for files in /var/guix
                             "--check-links"
                             "-cvf" #$output
                             ;; Avoid adding / and /var to the tarball,
@@ -273,8 +274,9 @@ You have been warned.  Thanks for being so brave.
           (guix-service #:authorize-hydra-key? #t)
 
           ;; Start udev so that useful device nodes are available.
-          ;; Use device-mapper rules for cryptsetup & co.
-          (udev-service #:rules (list lvm2))
+          ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for
+          ;; regulations-compliant WiFi access.
+          (udev-service #:rules (list lvm2 crda))
 
           ;; Add the 'cow-store' service, which users have to start manually
           ;; since it takes the installation directory as an argument.

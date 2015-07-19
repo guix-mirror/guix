@@ -55,7 +55,7 @@
     (synopsis "Box style window manager")
     (description
      "Openbox is a highly configurable, next generation window manager with
-extensive standars support.  The *box visual style is well known for its
+extensive standards support.  The *box visual style is well known for its
 minimalistic appearance.  Openbox uses the *box visual style, while providing
 a greater number of options for theme developers than previous *box
 implementations.")

@@ -64,7 +64,7 @@
     (home-page "http://www.gnu.org/software/unrtf")
     (synopsis "Convert Rich Text Format documents to other formats")
     (description
-     "GNU UnRTF converts text documents from RTF to HTML, LaTeX, or troff. 
+     "GNU UnRTF converts text documents from RTF to HTML, LaTeX, or troff.
 It supports changes in font characteristics, underlines and strikethroughs,
 superscripts and subscripts, and more.")
     (license gpl2+)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -61,6 +62,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -130,6 +132,28 @@
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
+    (license license:gpl2+)))
+
+(define-public gnome-common
+  (package
+    (name "gnome-common")
+    (version "3.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0b1676g4q44ah73c5gwl1kg88pc93pnq1pa9kwl43d0vg0pj802c"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gnome.org/")
+    (synopsis "Bootstrap GNOME modules built from Git")
+    (description "gnome-common contains various files needed to bootstrap
+GNOME modules built from Git.  It contains a common \"autogen.sh\" script that
+can be used to configure a source directory checked out from Git and some
+commonly used macros.")
     (license license:gpl2+)))
 
 (define-public gnome-desktop
@@ -666,7 +690,7 @@ some form of information without getting in the user's way.")
 every application the chance to assume its own extensibility.  It also has a
 set of features including, but not limited to: multiple extension points; on
 demand (lazy) programming language support for C, Python and JS; simplicity of
-the API")
+the API.")
     (license license:lgpl2.0+)))
 
 (define-public gtkglext
@@ -1211,7 +1235,8 @@ creating interactive structured graphics.")
     (home-page "https://developer.gnome.org/libgnomeui/")
     (synopsis "Additional widgets for applications")
     (description "The libgnomeui library provides additional widgets for
-applications.  Many of the widgets from libgnomeui have already been ported to GTK+.")
+applications.  Many of the widgets from libgnomeui have already been
+ported to GTK+.")
     (license license:lgpl2.0+)))
 
 (define-public libglade
@@ -1754,11 +1779,12 @@ configuration storage systems.")
      `(("glib" ,glib)))                         ;according to json-glib-1.0.pc
     (home-page "https://wiki.gnome.org/Projects/JsonGlib")
     (synopsis "Compiler for the GObject type system")
-    (description "JSON-GLib is a C library based on GLib providing
-serialization and deserialization support for the JavaScript Object Notation
-(JSON) format described by RFC 4627.  It provides parser and generator
-GObject classes and various wrappers for the complex data types employed by
-JSON, such as arrays and objects.")
+    (description
+     "JSON-GLib is a C library based on GLib providing serialization and
+deserialization support for the JavaScript Object Notation (JSON) format
+described by RFC 4627.  It provides parser and generator GObject classes and
+various wrappers for the complex data types employed by JSON, such as arrays
+and objects.")
     (license license:lgpl2.1+)))
 
 (define-public libxklavier
@@ -1796,8 +1822,8 @@ JSON, such as arrays and objects.")
     (synopsis "High-level API for X Keyboard Extension")
     (description
      "LibXklavier is a library providing high-level API for X Keyboard
-Extension known as XKB.  This library is indended to support XFree86 and other
-commercial X servers. It is useful for creating XKB-related software (layout
+Extension known as XKB.  This library is intended to support XFree86 and other
+commercial X servers.  It is useful for creating XKB-related software (layout
 indicators etc).")
     (license license:lgpl2.0+)))
 
@@ -2212,7 +2238,7 @@ output devices.")
 information.  The primary goal of the Geoclue project is to make creating
 location-aware applications as simple as possible, while the secondary goal is
 to ensure that no application can access location information without explicit
-permission from user. ")
+permission from user.")
     (license license:gpl2+)))
 
 (define-public geocode-glib
@@ -3000,4 +3026,54 @@ which can read a large number of file formats.")
    (synopsis "Music player for GNOME")
    (description "Rhythmbox is a music playing application for GNOME.  It
 supports playlists, song ratings, and any codecs installed through gstreamer.")
+   (license license:gpl2+)))
+
+(define-public eog
+ (package
+   (name "eog")
+   (version "3.16.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "0frw1b5jix9pffznav5s7ajjx91a8rv5lf4sjvjv3fw65mbnhbw0"))))
+   (build-system glib-or-gtk-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after
+         'install 'wrap-eog
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out               (assoc-ref outputs "out"))
+                 (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+             (wrap-program (string-append out "/bin/eog")
+               `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+           #t)))))
+   (propagated-inputs
+    `(("dconf" ,dconf)))
+   (native-inputs
+    `(("intltool" ,intltool)
+      ("itstool", itstool)
+      ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("gnome-desktop" ,gnome-desktop)
+      ("shared-mime-info" ,shared-mime-info)
+      ("adwaita-icon-theme" ,adwaita-icon-theme)
+      ("exempi" ,exempi)
+      ("lcms" ,lcms)
+      ("libexif" ,libexif)
+      ("libpeas" ,libpeas)
+      ("libjpeg" ,libjpeg)
+      ("librsvg" ,librsvg)
+      ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+      ("gtk+" ,gtk+)))
+   (home-page "https://wiki.gnome.org/Apps/EyeOfGnome")
+   (synopsis "GNOME image viewer")
+   (description "Eye of GNOME is the GNOME image viewer.  It
+supports image conversion, rotation, and slideshows.")
    (license license:gpl2+)))

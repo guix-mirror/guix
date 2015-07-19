@@ -71,6 +71,7 @@
 
 (define* (ruby-build store name inputs
                      #:key
+                     (gem-flags ''())
                      (test-target "test")
                      (tests? #t)
                      (phases '(@ (guix build ruby-build-system)
@@ -95,6 +96,7 @@
                                (source
                                 source))
                    #:system ,system
+                   #:gem-flags ,gem-flags
                    #:test-target ,test-target
                    #:tests? ,tests?
                    #:phases ,phases

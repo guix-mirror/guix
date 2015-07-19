@@ -356,8 +356,7 @@ seven weights: ExtraLight, Light, Normal, Regular, Medium, Bold, and Heavy.
 And in several OpenType/CFF-based deployment configurations to accommodate
 various system requirements or limitations.  As the name suggests, Pan-CJK
 fonts are intended to support the characters necessary to render or display
-text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.
-")
+text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
     (license license:asl2.0)))
 
 (define-public font-wqy-zenhei

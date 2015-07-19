@@ -264,10 +264,10 @@ arithmetic ops.")
     (build-system gnu-build-system)
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
-      "JBIG2 is designed for lossy or lossless encoding of 'bilevel'
-(1-bit monochrome) images at moderately high resolution, and in
-particular scanned paper documents.  In this domain it is very
-efficient, offering compression ratios on the order of 100:1.
+      "JBIG2 is designed for lossy or lossless encoding of 'bilevel' (1-bit
+monochrome) images at moderately high resolution, and in particular scanned
+paper documents.  In this domain it is very efficient, offering compression
+ratios on the order of 100:1.
 
 This is a decoder only implementation, and currently is in the alpha
 stage, meaning it doesn't completely work yet.  However, it is

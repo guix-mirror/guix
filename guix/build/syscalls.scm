@@ -398,22 +398,23 @@ system to PUT-OLD."
 
 (define-syntax read-types
   (syntax-rules ()
-    ((_ bv offset ())
-     '())
-    ((_ bv offset (type0 types ...))
-     (cons (read-type bv offset type0)
-           (read-types bv (+ offset (type-size type0)) (types ...))))))
+    ((_ return bv offset () (values ...))
+     (return values ...))
+    ((_ return bv offset (type0 types ...) (values ...))
+     (read-types return
+                 bv (+ offset (type-size type0)) (types ...)
+                 (values ... (read-type bv offset type0))))))
 
 (define-syntax define-c-struct
   (syntax-rules ()
-    "Define READ as an optimized serializer and WRITE! as a deserializer for
-the C structure with the given TYPES."
-    ((_ name read write! (fields types) ...)
+    "Define READ as a deserializer and WRITE! as a serializer for the C
+structure with the given TYPES.  READ uses WRAP-FIELDS to return its value."
+    ((_ name wrap-fields read write! (fields types) ...)
      (begin
        (define (write! bv offset fields ...)
          (write-types bv offset (types ...) (fields ...)))
        (define (read bv offset)
-         (read-types bv offset (types ...)))))))
+         (read-types wrap-fields bv offset (types ...) ()))))))
 
 
 ;;;
@@ -463,6 +464,8 @@ the C structure with the given TYPES."
       32))
 
 (define-c-struct sockaddr-in                      ;<linux/in.h>
+  (lambda (family port address)
+    (make-socket-address family address port))
   read-sockaddr-in
   write-sockaddr-in!
   (family    unsigned-short)
@@ -470,6 +473,8 @@ the C structure with the given TYPES."
   (address   (int32 ~ big)))
 
 (define-c-struct sockaddr-in6                     ;<linux/in6.h>
+  (lambda (family port flowinfo address scopeid)
+    (make-socket-address family address port flowinfo scopeid))
   read-sockaddr-in6
   write-sockaddr-in6!
   (family    unsigned-short)
@@ -501,14 +506,9 @@ bytevector BV at INDEX."
   "Read a socket address from bytevector BV at INDEX."
   (let ((family (bytevector-u16-native-ref bv index)))
     (cond ((= family AF_INET)
-           (match (read-sockaddr-in bv index)
-             ((family port address)
-              (make-socket-address family address port))))
+           (read-sockaddr-in bv index))
           ((= family AF_INET6)
-           (match (read-sockaddr-in6 bv index)
-             ((family port flowinfo address scopeid)
-              (make-socket-address family address port
-                                   flowinfo scopeid))))
+           (read-sockaddr-in6 bv index))
           (else
            "unsupported socket address family" family))))
 

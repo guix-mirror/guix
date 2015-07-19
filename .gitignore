@@ -125,3 +125,4 @@ GTAGS
 /doc/os-config-bare-bones.texi
 /doc/os-config-desktop.texi
 /doc/*.1
+/etc/guix-daemon.service

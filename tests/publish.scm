@@ -81,7 +81,7 @@ NarSize: ~d
 References: ~a~%"
                   %item
                   (basename %item)
-                  (bytevector->base32-string
+                  (bytevector->nix-base32-string
                    (path-info-hash info))
                   (path-info-nar-size info)
                   (basename (first (path-info-references info)))))

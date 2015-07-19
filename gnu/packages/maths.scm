@@ -90,10 +90,10 @@
    (synopsis "Conversion between thousands of scales")
    (description
     "GNU Units converts numeric quantities between units of measure.  It
-can handle scale changes through adaptive usage of standard scale prefixes
-(micro-, kilo-, etc.).  It can also handle nonlinear conversions such as
-Fahrenheit to Celsius.  Its interpreter is powerful enough to be used
-effectively as a scientific calculator.")
+can handle scale changes through adaptive usage of standard scale
+prefixes (micro-, kilo-, etc.).  It can also handle nonlinear
+conversions such as Fahrenheit to Celsius.  Its interpreter is powerful
+enough to be used effectively as a scientific calculator.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
 
@@ -1381,7 +1381,7 @@ to BMP, JPEG or PNG image formats.")
     (description "Maxima is a system for the manipulation of symbolic and
 numerical expressions.  It yields high precision numeric results by using
 exact fractions, arbitrary precision integers, and variable precision floating
-point numbers")
+point numbers.")
     ;; Some files are lgpl2.1+. Some are gpl2+.  Some explicitly state gpl1+.
     ;; Others simply say "GNU General Public License" without stating a
     ;; version (which implicitly means gpl1+).
@@ -1528,7 +1528,7 @@ constant parts of it.")
      "OpenLibm is an effort to have a high quality, portable, standalone C
 mathematical library (libm).  It can be used standalone in applications and
 programming language implementations.  The project was born out of a need to
-have a good libm for the Julia programming langage that worked consistently
+have a good libm for the Julia programming language that worked consistently
 across compilers and operating systems, and in 32-bit and 64-bit
 environments.")
     ;; See LICENSE.md for details.

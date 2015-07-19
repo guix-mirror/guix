@@ -1394,6 +1394,85 @@ resolution of binding sites through combining the information of both
 sequencing tag position and orientation.")
     (license license:bsd-3)))
 
+
+(define-public metabat
+  (package
+    (name "metabat")
+    (version "0.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://bitbucket.org/berkeleylab/metabat/get/"
+                    version ".tar.bz2"))
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0vgrhbaxg4dkxyax2kbigak7w0arhqvw0szwp6gd9wmyilc44kfa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-includes
+                    (lambda _
+                      (substitute* "SConstruct"
+                        (("/include/bam/bam.h")
+                         "/include/samtools/bam.h"))
+                      (substitute* "src/BamUtils.h"
+                        (("^#include \"bam/bam\\.h\"")
+                         "#include \"samtools/bam.h\"")
+                        (("^#include \"bam/sam\\.h\"")
+                         "#include \"samtools/sam.h\""))
+                      (substitute* "src/KseqReader.h"
+                        (("^#include \"bam/kseq\\.h\"")
+                         "#include \"samtools/kseq.h\""))
+                      #t))
+         (add-after 'unpack 'fix-scons
+                    (lambda _
+                      (substitute* "SConstruct" ; Do not distribute README
+                        (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)")
+                         ""))
+                      #t))
+         (delete 'configure)
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (mkdir (assoc-ref outputs "out"))
+                    (zero? (system* "scons"
+                                    (string-append
+                                     "PREFIX="
+                                     (assoc-ref outputs "out"))
+                                    (string-append
+                                     "HTSLIB_DIR="
+                                     (assoc-ref inputs "htslib"))
+                                    (string-append
+                                     "SAMTOOLS_DIR="
+                                     (assoc-ref inputs "samtools"))
+                                    (string-append
+                                     "BOOST_ROOT="
+                                     (assoc-ref inputs "boost"))
+                                    "install"))))
+         ;; check and install carried out during build phase
+         (delete 'check)
+         (delete 'install))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("perl" ,perl)
+       ("samtools" ,samtools)
+       ("htslib" ,htslib)
+       ("boost" ,boost)))
+    (native-inputs
+     `(("scons" ,scons)))
+    (home-page "https://bitbucket.org/berkeleylab/metabat")
+    (synopsis
+     "Reconstruction of single genomes from complex microbial communities")
+    (description
+     "Grouping large genomic fragments assembled from shotgun metagenomic
+sequences to deconvolute complex microbial communities, or metagenome binning,
+enables the study of individual organisms and their interactions.  MetaBAT is
+an automated metagenome binning software, which integrates empirical
+probabilistic distances of genome abundance and tetranucleotide frequency.")
+   (license (license:non-copyleft "file://license.txt"
+                                  "See license.txt in the distribution."))))
+
 (define-public miso
   (package
     (name "miso")

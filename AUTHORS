@@ -5,45 +5,5 @@ build daemon whose code comes from Nix (see the manual for details.)
 Nix was initially written by Eelco Dolstra; other people have been
 contributing to it.  See `nix/AUTHORS' for details.
 
-The fine people listed below have contributed code to GNU Guix (in
-alphabetical order):
-
-           Arne Babenhauserheide <arne.babenhauserheide@kit.edu>
-           Eric Bavier <bavier@member.fsf.org>
-  Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-       Federico Beffa <beffa@fbengineering.ch>
-          Marek Benc <merkur32@gmail.com>
-      Amirouche Boubekki <amirouche@hypermove.net>
-            Sou Bunnbu (宋文武) <iyzsong@gmail.com>
-          Tomáš Čech <sleep_walker@gnu.org>
-        Ludovic Courtès <ludo@gnu.org>
-           John Darrington <jmd@gnu.org>
-            Ian Denhardt <ian@zenhack.net>
-        Andreas Enge <andreas@enge.fr>
-         Alírio Eyng <alirioeyng@gmail.com>
-   Alexander I. Grafov <grafov@gmail.com>
-         Joshua Grant <tadni@riseup.net>
-         Raimon Grau <raimonster@gmail.com>
-          David Hashe <david.hashe@dhashe.com>
-         Nikita Karetnikov <nikita@karetnikov.org>
-           Alex Kost <alezost@gmail.com>
-          Kevin Lemonnier <lemonnierk@ulrar.net>
-         Julien Lepiller <julien@lepiller.eu>
-        Mathieu Lirzin <mthl@openmailbox.org>
-        Aljosha Papsch <misc@rpapsch.de>
-           Deck Pickard <deck.r.pickard@gmail.com>
-        Manolis Ragkousis <manolis837@gmail.com>
- Pierre-Antoine Rault <par@rigelk.eu>
-          Cyril Roelandt <tipecaml@gmail.com>
-           Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
-         Cyrill Schenkel <cyrill.schenkel@gmail.com>
-          Jason Self <j@jxself.org>
-    Sree Harsha Totakura <sreeharsha@totakura.in>
-          David Thompson <davet@gnu.org>
-          Claes Wallin (韋嘉誠) <claes.wallin@greatsinodevelopment.com>
-   Paul van der Walt <paul@denknerd.org>
-         Mark H Weaver <mhw@netris.org>
- Christopher A. Webber <cwebber@dustycloud.org>
-           Andy Wingo <wingo@pobox.com>
-            Ben Woodcroft <b.woodcroft@uq.edu.au>
-        Ricardo Wurmus <rekado@elephly.net>
+The list of GNU Guix contributors is now generated from the output of
+'git log' and written to this file, as can be seen in release tarballs.

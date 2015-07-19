@@ -118,8 +118,8 @@ arrays of data.")
     (description
      "GStreamer is a library for constructing graphs of media-handling
 components.  The applications it supports range from simple Ogg/Vorbis
-playback, audio/video streaming to complex audio (mixing) and video
- (non-linear editing) processing.
+playback, audio/video streaming to complex audio mixing and video
+non-linear editing.
 
 Applications can take advantage of advances in codec and filter technology
 transparently.  Developers can add new codecs and filters by writing a
@@ -190,7 +190,7 @@ for the GStreamer multimedia library.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append 
+      (uri (string-append
             "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
             version ".tar.xz"))
       (sha256
@@ -275,8 +275,7 @@ developers consider to have good quality code and correct functionality.")
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
     (home-page "http://gstreamer.freedesktop.org/")
-    (synopsis
-     "GStreamer plugins from the \"ugly\" set.")
+    (synopsis "GStreamer plugins from the \"ugly\" set")
     (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
 which the developers consider to have good quality code but that might pose
 distribution problems in some jurisdictions, e.g. due to patent threats.")

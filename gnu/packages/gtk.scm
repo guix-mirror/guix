@@ -131,7 +131,7 @@ The cairo API provides operations similar to the drawing operators of
 PostScript and PDF.  Operations in cairo including stroking and filling cubic
 Bézier splines, transforming and compositing translucent images, and
 antialiased text rendering.  All drawing operations can be transformed by any
-affine transformation (scale, rotation, shear, etc.)")
+affine transformation (scale, rotation, shear, etc.).")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "http://cairographics.org/")))
 

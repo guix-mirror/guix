@@ -1275,7 +1275,7 @@ and custom quantization matrices.")
 (define-public livestreamer
   (package
     (name "livestreamer")
-    (version "1.12.1")
+    (version "1.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1284,7 +1284,7 @@ and custom quantization matrices.")
               (file-name (string-append "livestreamer-" version ".tar.gz"))
               (sha256
                (base32
-                "1dhgk8v8q1h3km4g5jc0cmjsxdaa2d456fvdb2wk7hmxmmwbqm9j"))))
+                "1fp3d3z2grb1ls97smjkraazpxnvajda2d1g1378s6gzmda2jvjd"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; tests rely on external web servers

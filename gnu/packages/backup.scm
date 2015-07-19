@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,7 +45,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.6.24")
+    (version "0.6.26")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +55,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0l14nrhbgkyjgvh339bbhnm6hrdwrjadphq1jmpi0mcgcdbdfh8x"))
+        "0jh79syhr8n3l81jxlwsmwm1pklb4d923m2lgqbswyavh1fqmvwb"))
       (patches (list (search-patch "duplicity-piped-password.patch")
                      (search-patch "duplicity-test_selection-tmp.patch")))))
     (build-system python-build-system)
@@ -237,14 +237,14 @@ random access nor for in-place modification.")
                     (setenv "HOME" (getcwd))
                     (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
                       (("/bin/cat") (which "cat"))))
-                  
+
                   %standard-phases))))
     (home-page "http://archive.miek.nl/projects/rdup/index.html")
     (synopsis "Provide a list of files to backup")
     (description
      "Rdup is a utility inspired by rsync and the plan9 way of doing backups.
 Rdup itself does not backup anything, it only print a list of absolute
-filenames to standard output.  Auxiliary scripts are needed that act on this
+file names to standard output.  Auxiliary scripts are needed that act on this
 list and implement the backup strategy.")
     (license license:gpl3+)))
 
@@ -314,5 +314,5 @@ modification times, extended attributes, acls, and resource forks.  Also,
 rdiff-backup can operate in a bandwidth efficient manner over a pipe, like
 rsync.  Thus you can use rdiff-backup and ssh to securely back a hard drive up
 to a remote location, and only the differences will be transmitted.  Finally,
-rdiff-backup is easy to use and settings have sensical defaults.")
+rdiff-backup is easy to use and settings have sensible defaults.")
     (license license:gpl2+)))

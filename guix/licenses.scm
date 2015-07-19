@@ -32,6 +32,7 @@
             cddl1.0
             cecill-c
             artistic2.0 clarified-artistic
+            copyleft-next
             cpl1.0
             epl1.0
             expat
@@ -153,6 +154,11 @@ at URI, which may be a file:// URI pointing the package's tree."
            ;; http://directory.fsf.org/wiki/User:Jgay/license-categorization#Clarified_Artistic_License
            "http://gianluca.dellavedova.org/2011/01/03/clarified-artistic-license/"
            "https://www.gnu.org/licenses/license-list.html#ArtisticLicense2"))
+
+(define copyleft-next
+  (license "copyleft-next"
+           "https://raw.github.com/richardfontana/copyleft-next/master/Releases/copyleft-next-0.3.0"
+           "GPL-compatible copyleft license"))
 
 (define cpl1.0
   (license "CPL 1.0"

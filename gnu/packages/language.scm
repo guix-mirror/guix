@@ -372,7 +372,7 @@ stemmer at http://snowball.sourceforge.net.")
        ("perl-text-unidecode" ,perl-text-unidecode)
        ("perl-namespace-clean" ,perl-namespace-clean)))
     (home-page "http://search.cpan.org/dist/String-ToIdentifier-EN")
-    (synopsis "Convert strings to english program identifiers")
+    (synopsis "Convert strings to English program identifiers")
     (description "This module provides a utility method, \"to_identifier\" for
 converting an arbitrary string into a readable representation using the ASCII
 subset of \"\\w\" for use as an identifier in a computer program.  The intent
@@ -395,6 +395,6 @@ string can be easily inferred by a human just by reading the identifier.")
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Text-German")
     (synopsis "German grundform reduction")
-    (description "This module is a rather incomplete implementaion of work
+    (description "This module is a rather incomplete implementation of work
 done by Gudrun Putze-Meier.")
     (license (package-license perl))))

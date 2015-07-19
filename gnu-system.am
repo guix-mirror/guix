@@ -193,6 +193,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
   gnu/packages/lua.scm				\
+  gnu/packages/lxde.scm				\
   gnu/packages/lxqt.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
@@ -410,6 +411,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-fix-symlink-bad-length-test.patch	\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
+  gnu/packages/patches/crda-optional-gcrypt.patch		\
   gnu/packages/patches/crossmap-allow-system-pysam.patch	\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \

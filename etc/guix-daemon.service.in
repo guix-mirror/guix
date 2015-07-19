@@ -1,0 +1,15 @@
+# This is a "service unit file" for the systemd init system to launch
+# 'guix-daemon'.  Drop it in /etc/systemd/system or similar to have
+# 'guix-daemon' automatically started.
+
+[Unit]
+Description=Build daemon for GNU Guix
+
+[Service]
+ExecStart=@bindir@/guix-daemon --build-users-group=guixbuild
+RemainAfterExit=yes
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

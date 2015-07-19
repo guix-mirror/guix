@@ -37,6 +37,7 @@
             file-system-options
             file-system-check?
             file-system-create-mount-point?
+            file-system-dependencies
 
             file-system->spec
             string->uuid
@@ -97,7 +98,10 @@
   (check?           file-system-check?            ; Boolean
                     (default #t))
   (create-mount-point? file-system-create-mount-point? ; Boolean
-                       (default #f)))
+                       (default #f))
+  (dependencies     file-system-dependencies      ; list of strings (mount
+                                                  ; points depended on)
+                    (default '())))
 
 (define-inlinable (file-system-needed-for-boot? fs)
   "Return true if FS has the 'needed-for-boot?' flag set, or if it's the root
@@ -153,8 +157,10 @@ UUID representation."
       ((_ str)
        (string? (syntax->datum #'str))
        ;; A literal string: do the conversion at expansion time.
-       (with-syntax ((bv (string->uuid (syntax->datum #'str))))
-         #''bv))
+       (let ((bv (string->uuid (syntax->datum #'str))))
+         (unless bv
+           (syntax-violation 'uuid "invalid UUID" s))
+         (datum->syntax #'str bv)))
       ((_ str)
        #'(string->uuid str)))))
 
@@ -231,21 +237,26 @@ UUID representation."
     (flags '(read-only bind-mount))))
 
 (define %control-groups
-  (cons (file-system
-          (device "cgroup")
-          (mount-point "/sys/fs/cgroup")
-          (type "tmpfs")
-          (check? #f))
-        (map (lambda (subsystem)
-               (file-system
-                 (device "cgroup")
-                 (mount-point (string-append "/sys/fs/cgroup/" subsystem))
-                 (type "cgroup")
-                 (check? #f)
-                 (options subsystem)
-                 (create-mount-point? #t)))
-             '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
-               "blkio" "perf_event" "hugetlb"))))
+  (let ((parent (file-system
+                  (device "cgroup")
+                  (mount-point "/sys/fs/cgroup")
+                  (type "tmpfs")
+                  (check? #f))))
+    (cons parent
+          (map (lambda (subsystem)
+                 (file-system
+                   (device "cgroup")
+                   (mount-point (string-append "/sys/fs/cgroup/" subsystem))
+                   (type "cgroup")
+                   (check? #f)
+                   (options subsystem)
+                   (create-mount-point? #t)
+
+                   ;; This must be mounted after, and unmounted before the
+                   ;; parent directory.
+                   (dependencies (list parent))))
+               '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
+                 "blkio" "perf_event" "hugetlb")))))
 
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are

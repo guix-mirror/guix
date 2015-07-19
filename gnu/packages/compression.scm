@@ -264,7 +264,7 @@ than gzip and 15 % smaller output than bzip2.")
     (arguments '(#:configure-flags '("--enable-shared")))
     (home-page "http://www.oberhumer.com/opensource/lzo")
     (synopsis
-     "Data compresion library suitable for real-time data de-/compression")
+     "Data compression library suitable for real-time data de-/compression")
     (description
      "LZO is a data compression library which is suitable for data
 de-/compression in real-time.  This means it favours speed over
@@ -348,7 +348,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (description
      "GNU sharutils is a package for creating and manipulating shell
 archives that can be readily emailed.  A shell archive is a file that can be
-processed by a Bourne-type shell to unpack the original collection of files. 
+processed by a Bourne-type shell to unpack the original collection of files.
 This package is mostly for compatibility and historical interest.")
     (license license:gpl3+)))
 

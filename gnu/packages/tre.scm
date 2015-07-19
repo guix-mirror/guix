@@ -31,7 +31,7 @@
     (source
       (origin
         (method url-fetch)
-        (uri       
+        (uri
           (string-append "http://laurikari.net/tre/" name "-" version
                          ".tar.bz2"))
         (sha256
@@ -52,6 +52,6 @@
     (synopsis "Approximate regex matching library and agrep utility")
     (description "Superset of the POSIX regex API, enabling approximate
 matching.  Also ships a version of the agrep utility which behaves similar to
-grep but features ineaxct matching.")
+grep but features inexact matching.")
     (home-page "http://laurikari.net/tre")
     (license bsd-2)))

@@ -153,5 +153,5 @@ and probably others.")
 for creating secure point-to-point or site-to-site connections in routed or
 bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
-traversing network address translators (NATs) and firewalls. ")
+traversing network address translators (NATs) and firewalls.")
     (license license:gpl2)))

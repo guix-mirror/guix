@@ -193,7 +193,7 @@ differences.")
    (description
     "GNU Diffutils is a package containing tools for finding the
 differences between files.  The \"diff\" command is used to show how two files
-differ, while \"cmp\" shows the offsets and line numbers where they differ. 
+differ, while \"cmp\" shows the offsets and line numbers where they differ.
 \"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an
 interactive means to merge two files.")
    (license gpl3+)

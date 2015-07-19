@@ -3,6 +3,7 @@
 # all of them should be listed here.)  Strings of the tools are in 'po/guix'.
 gnu/packages/abiword.scm
 gnu/packages/aspell.scm
+gnu/packages/audio.scm
 gnu/packages/backup.scm
 gnu/packages/base.scm
 gnu/packages/bittorrent.scm
@@ -16,6 +17,8 @@ gnu/packages/games.scm
 gnu/packages/gcc.scm
 gnu/packages/geeqie.scm
 gnu/packages/gettext.scm
+gnu/packages/gimp.scm
+gnu/packages/gnome.scm
 gnu/packages/gnuzilla.scm
 gnu/packages/gtk.scm
 gnu/packages/guile.scm
@@ -26,6 +29,7 @@ gnu/packages/jemalloc.scm
 gnu/packages/key-mon.scm
 gnu/packages/less.scm
 gnu/packages/lesstif.scm
+gnu/packages/libreoffice.scm
 gnu/packages/linux.scm
 gnu/packages/lout.scm
 gnu/packages/messaging.scm

@@ -25,6 +25,7 @@ EXTRA_DIST +=					\
   doc/images/bootstrap-graph.dot		\
   doc/images/bootstrap-graph.eps		\
   doc/images/bootstrap-graph.pdf		\
+  doc/images/coreutils-size-map.eps		\
   doc/environment-gdb.scm
 
 OS_CONFIG_EXAMPLES_TEXI =			\
@@ -63,27 +64,35 @@ DOT_OPTIONS =					\
 	$(DOT) -Teps $(DOT_OPTIONS) < "$<" > "$@.tmp"
 	mv "$@.tmp" "$@"
 
+.png.eps:
+	convert "$<" "$@-tmp.eps"
+	mv "$@-tmp.eps" "$@"
+
 # We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)
 # Extending").  Using the `-local' rules is imperfect, because they may be
 # triggered after the main rule.  Oh, well.
 pdf-local: $(top_srcdir)/doc/images/bootstrap-graph.pdf
 info-local: $(top_srcdir)/doc/images/bootstrap-graph.png
-ps-local: $(top_srcdir)/doc/images/bootstrap-graph.eps
+ps-local: $(top_srcdir)/doc/images/bootstrap-graph.eps		\
+	  $(top_srcdir)/doc/images/coreutils-size-map.eps
+dvi-local: ps-local
 
 
 # Manual pages.
 
-doc/guix.1: scripts/guix
+doc/guix.1: $(SUBCOMMANDS:%=guix/scripts/%.scm)
 	-LANGUAGE= $(top_builddir)/pre-inst-env	\
 	  $(HELP2MAN) --output="$@" guix
 
-doc/guix-daemon.1: guix-daemon
+# Note: Do not depend on 'guix-daemon' since that would trigger a rebuild even
+# for people building from a tarball.
+doc/guix-daemon.1: nix/nix-daemon/guix-daemon.cc
 	-LANGUAGE= $(top_builddir)/pre-inst-env	\
 	  $(HELP2MAN) --output="$@" guix-daemon
 
 define subcommand-manual-target
 
-doc/guix-$(1).1: scripts/guix guix/scripts/$(1).go
+doc/guix-$(1).1: guix/scripts/$(1).scm
 	-LANGUAGE= $(top_builddir)/pre-inst-env		\
 	  $(HELP2MAN) --output="$$@" "guix $(1)"
 

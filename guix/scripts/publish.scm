@@ -143,7 +143,7 @@ Publish ~a over HTTP.\n") %store-directory)
   "Generate a narinfo key/value string for STORE-PATH using the details in
 PATH-INFO.  The narinfo is signed with KEY."
   (let* ((url        (string-append "nar/" (basename store-path)))
-         (hash       (bytevector->base32-string
+         (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
          (references (string-join

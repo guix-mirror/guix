@@ -157,7 +157,7 @@ storage system.")
     (synopsis "Widgets library for Xfce")
     (description
      "Libxfce4ui is the replacement of the old libxfcegui4 library.  It is used
-to share commonly used Xfce widgets amoung the Xfce applications.")
+to share commonly used Xfce widgets among the Xfce applications.")
     (license lgpl2.0+)))
 
 (define-public exo
@@ -497,7 +497,7 @@ fast.")
      "Thunar-volman is an extension for the Thunar File Manager, which enables
 automatic management of removable drives and media.  For example, if
 thunar-volman is installed and configured properly, and you plug in your
-digitcal camera, it will automatically spawn your preferred photo application
+digital camera, it will automatically spawn your preferred photo application
 and import the new pictures from your camera.")
     (license gpl2+)))
 

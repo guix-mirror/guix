@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils))
+                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -739,11 +739,11 @@ item of @var{packages}."
                         (call-with-output-file
                             (string-append rules.d "/90-kvm.rules")
                           (lambda (port)
-                            ;; FIXME: As a workaround for
-                            ;; <http://bugs.gnu.org/18994>, make /dev/kvm 666
-                            ;; instead of 660.
+                            ;; Build users are part of the "kvm" group, so we
+                            ;; can fearlessly make /dev/kvm 660 (see
+                            ;; <http://bugs.gnu.org/18994>, for background.)
                             (display "\
-KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0666\"\n" port))))
+KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n" port))))
                     #:modules '((guix build utils))))
 
 (define* (udev-service #:key (udev eudev) (rules '()))
@@ -884,6 +884,6 @@ This is the GNU operating system, welcome!\n\n")))
           ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
           ;; used, so enable them by default.  The FUSE and ALSA rules are
           ;; less critical, but handy.
-          (udev-service #:rules (list lvm2 fuse alsa-utils)))))
+          (udev-service #:rules (list lvm2 fuse alsa-utils crda)))))
 
 ;;; base.scm ends here

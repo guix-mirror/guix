@@ -320,11 +320,19 @@ Make @code{root}'s profile available under @file{~/.guix-profile}:
 @end example
 
 @item
+Create the group and user accounts for build users as explained below
+(@pxref{Build Environment Setup}).
+
+@item
 Run the daemon:
 
 @example
 # ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
 @end example
+
+On hosts using the systemd init system, drop
+@file{~root/.guix-profile/lib/systemd/system/guix-daemon.service} in
+@file{/etc/systemd/system}.
 
 @item
 Make the @command{guix} command available to other users on the machine,
@@ -508,8 +516,12 @@ Bash syntax and the @code{shadow} commands):
 @noindent
 The number of build users determines how many build jobs may run in
 parallel, as specified by the @option{--max-jobs} option
-(@pxref{Invoking guix-daemon, @option{--max-jobs}}).
-The @code{guix-daemon} program may then be run as @code{root} with:
+(@pxref{Invoking guix-daemon, @option{--max-jobs}}).  The
+@code{guix-daemon} program may then be run as @code{root} with the
+following command@footnote{If your machine uses the systemd init system,
+dropping the @file{@var{prefix}/lib/systemd/system/guix-daemon.service}
+file in @file{/etc/systemd/system} will ensure that
+@command{guix-daemon} is automatically started.}:
 
 @example
 # guix-daemon --build-users-group=guixbuild
@@ -2446,7 +2458,8 @@ implements the RubyGems build procedure used by Ruby packages, which
 involves running @code{gem build} followed by @code{gem install}.
 
 Which Ruby package is used can be specified with the @code{#:ruby}
-parameter.
+parameter.  A list of additional flags to be passed to the @command{gem}
+command can be specified with the @code{#:gem-flags} parameter.
 @end defvr
 
 @defvr {Scheme Variable} waf-build-system
@@ -4813,6 +4826,10 @@ The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
+@item @code{kernel-arguments} (default: @code{'()})
+List of strings or gexps representing additional arguments to pass on
+the kernel's command-line---e.g., @code{("console=ttyS0")}.
+
 @item @code{bootloader}
 The system bootloader configuration object.  @xref{GRUB Configuration}.
 
@@ -5010,6 +5027,14 @@ errors before being mounted.
 
 @item @code{create-mount-point?} (default: @code{#f})
 When true, the mount point is created if it does not exist yet.
+
+@item @code{dependencies} (default: @code{'()})
+This is a list of @code{<file-system>} objects representing file systems
+that must be mounted before (and unmounted after) this one.
+
+As an example, consider a hierarchy of mounts: @file{/sys/fs/cgroup} is
+a dependency of @file{/sys/fs/cgroup/cpu} and
+@file{/sys/fs/cgroup/memory}.
 
 @end table
 @end deftp

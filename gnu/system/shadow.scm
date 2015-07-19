@@ -156,7 +156,7 @@ fi
 # Adjust the prompt depending on whether we're in 'guix environment'.
 if [ -n \"$GUIX_ENVIRONMENT\" ]
 then
-    export PS1='\\u@\\h \\w\\ [env]$ '
+    export PS1='\\u@\\h \\w [env]\\$ '
 else
     export PS1='\\u@\\h \\w\\$ '
 fi

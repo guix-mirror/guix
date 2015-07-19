@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,8 @@
   #:use-module (gnu packages glib)                ;intltool
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages libffi))
 
@@ -227,7 +230,7 @@ of a the system to know what users are logged in, and where.")
     (synopsis "Implementations of freedesktop.org standards in Python")
     (description
      "PyXDG is a collection of implementations of freedesktop.org standards in
-Python")
+Python.")
     (license license:lgpl2.0)))
 
 (define-public python2-pyxdg
@@ -265,3 +268,30 @@ display server running on Linux kernel modesetting and evdev input devices, an X
 application, or a wayland client itself.  The clients can be traditional
 applications, X servers (rootless or fullscreen) or other display servers.")
     (license license:x11)))
+
+(define-public exempi
+  (package
+    (name "exempi")
+    (version "2.2.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://libopenraw.freedesktop.org/download/"
+                   name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "01vcd1mfn2s0iiq2cjyzgvnxx6kcq9cwra1iipijhs0vwvjx0yhf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "--with-boost="
+                               (assoc-ref %build-inputs "boost")))))
+    (native-inputs
+     `(("boost" ,boost))) ; tests
+    (inputs
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (home-page "https://wiki.freedesktop.org/libopenraw/Exempi")
+    (synopsis "XMP metadata handling library")
+    (description "Exempi is an implementation of the Extensible Metadata
+Platform (XMP), which enables embedding metadata in PDF and image formats.")
+    (license license:bsd-3)))

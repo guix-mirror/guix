@@ -91,5 +91,5 @@ Features included: PNG and XFT support for alpha transparency and antialiased
 fonts, External themes support, Configurable runtime options: X server --
 login / shutdown / reboot commands, Single (GDM-like) or double (XDM-like)
 input control, Can load predefined user at startup, Configurable welcome /
-shutdown messages, Random theme selection")
+shutdown messages, Random theme selection.")
     (license l:gpl2)))

@@ -249,16 +249,19 @@ it atomically, and then run OS's activation script."
            (('boot-parameters ('version 0)
                               ('label label) ('root-device root)
                               ('kernel linux)
-                              _ ...)
+                              rest ...)
             (menu-entry
              (label (string-append label " (#"
                                    (number->string number) ", "
                                    (seconds->string time) ")"))
              (linux linux)
              (linux-arguments
-              (list (string-append "--root=" root)
-                    #~(string-append "--system=" #$system)
-                    #~(string-append "--load=" #$system "/boot")))
+              (cons* (string-append "--root=" root)
+                     #~(string-append "--system=" #$system)
+                     #~(string-append "--load=" #$system "/boot")
+                     (match (assq 'kernel-arguments rest)
+                       ((_ args) args)
+                       (#f       '()))))          ;old format
              (initrd #~(string-append #$system "/initrd"))))
            (_                                     ;unsupported format
             (warning (_ "unrecognized boot parameters for '~a'~%")

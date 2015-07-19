@@ -781,7 +781,7 @@ reference interpreter, using Glk API.")
     (synopsis "Z-machine interpreter")
     (description
      "Fizmo is a console-based Z-machine interpreter.  It is used to play
-interactive ficiton, also known as textadventures, which were implemented
+interactive fiction, also known as text adventures, which were implemented
 either by Infocom or created using the Inform compiler.")
     (license license:bsd-3)))
 
@@ -853,13 +853,14 @@ multi-system game/emulator system.")
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)))
     (synopsis "Play the game of Go")
-    (description "GNU Go is a program that plays the game of Go, in which
-players place stones on a grid to form territory or capture other stones.
-While it can be played directly from the terminal, rendered in ASCII
-characters, it is also possible to play GNU Go with 3rd party graphical
-interfaces or even in Emacs.  It supports the standard game storage format
-(SGF, Smart Game Format) and inter-process communication format (GMP, Go
-Modem Protocol).")
+    (description
+     "GNU Go is a program that plays the game of Go, in which players
+place stones on a grid to form territory or capture other stones.  While
+it can be played directly from the terminal, rendered in ASCII characters,
+it is also possible to play GNU Go with 3rd party graphical interfaces or
+even in Emacs.  It supports the standard game storage format (SGF, Smart
+Game Format) and inter-process communication format (GMP, Go Modem
+Protocol).")
     (home-page "http://www.gnu.org/software/gnugo/")
     (license license:gpl3+)))
 

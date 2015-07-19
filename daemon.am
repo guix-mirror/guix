@@ -21,7 +21,7 @@
 #
 
 BUILT_SOURCES += nix/libstore/schema.sql.hh
-CLEANFILES += $(BUILT_SOURCES)
+CLEANFILES += $(BUILT_SOURCES) etc/guix-daemon.service
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
@@ -93,7 +93,6 @@ libstore_headers =				\
   nix/libstore/references.hh			\
   nix/libstore/pathlocks.hh			\
   nix/libstore/globals.hh			\
-  nix/libstore/schema.sql.hh			\
   nix/libstore/worker-protocol.hh		\
   nix/libstore/remote-store.hh			\
   nix/libstore/derivations.hh			\
@@ -181,10 +180,22 @@ endif BUILD_DAEMON_OFFLOAD
 nodist_libexec_SCRIPTS =			\
   nix/scripts/guix-authenticate
 
+# The '.service' file for systemd.
+systemdservicedir = $(libdir)/systemd/system
+nodist_systemdservice_DATA = etc/guix-daemon.service
+
+etc/guix-daemon.service: etc/guix-daemon.service.in	\
+			 $(top_builddir)/config.status
+	$(MKDIR_P) "`dirname "$@"`"
+	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
+	       "$(srcdir)/etc/guix-daemon.service.in" > "$@.tmp"
+	mv "$@.tmp" "$@"
+
 EXTRA_DIST +=					\
   nix/libstore/schema.sql			\
   nix/AUTHORS					\
-  nix/COPYING
+  nix/COPYING					\
+  etc/guix-daemon.service.in
 
 AM_TESTS_ENVIRONMENT +=				\
   top_builddir="$(abs_top_builddir)"

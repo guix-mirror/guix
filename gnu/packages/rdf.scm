@@ -162,7 +162,7 @@ Java Lucene text search engine API to C++.")
      "LRDF is a library to make it easy to manipulate RDF files describing
 LADSPA plugins.  It can also be used for general RDF manipulation.  It can
 read RDF/XLM and N3 files and export N3 files, and it also has a light
-taxonomic inference capablility.")
+taxonomic inference capability.")
     (license gpl2)))
 
 (define-public rasqal

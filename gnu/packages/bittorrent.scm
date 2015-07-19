@@ -83,7 +83,7 @@
     (description
      "Transmission is a BitTorrent client that comes with graphical,
 textual, and Web user interfaces.  Transmission also has a daemon for
-unattended operationg.  It supports local peer discovery, full encryption,
+unattended operations.  It supports local peer discovery, full encryption,
 DHT, µTP, PEX and Magnet Links.")
 
     ;; COPYING reads:

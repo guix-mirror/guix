@@ -313,7 +313,18 @@ It has been modified to remove all non-free binary blobs.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
+(define-public linux-libre-4.0
+  (package
+    (inherit linux-libre)
+    (version "4.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (linux-libre-urls version))
+              (sha256
+               (base32
+                "1xg5ysbdpna78yaz760c1z08sczagqyy74svr3p2mv8iczqyxdca"))))))
 
+
 ;;;
 ;;; Pluggable authentication modules (PAM).
 ;;;
@@ -356,7 +367,7 @@ It has been modified to remove all non-free binary blobs.")
      "A *Free* project to implement OSF's RFC 86.0.
 Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
-at login.  Local and dynamic reconfiguration are its key features")
+at login.  Local and dynamic reconfiguration are its key features.")
     (license bsd-3)))
 
 
@@ -1713,6 +1724,113 @@ interface.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     (license gpl2+)))
 
+(define-public crda
+  (package
+    (name "crda")
+    (version "3.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/network/crda/"
+                                  "crda-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1gydiqgb08d9gbx4l6gv98zg3pljc984m50hmn3ysxcbkxkvkz23"))
+              (patches (list (search-patch "crda-optional-gcrypt.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before
+                   'build 'no-werror-no-ldconfig
+                   (lambda _
+                     (substitute* "Makefile"
+                       (("-Werror")  "")
+                       (("ldconfig") "true"))
+                     #t))
+                  (add-before
+                   'build 'set-regulator-db-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Tell CRDA where to find our database.
+                     (let ((regdb (assoc-ref inputs "wireless-regdb")))
+                       (substitute* "crda.c"
+                         (("\"/lib/crda/regulatory.bin\"")
+                          (string-append "\"" regdb
+                                         "/lib/crda/regulatory.bin\"")))
+                       #t))))
+       #:test-target "verify"
+       #:make-flags (let ((out   (assoc-ref %outputs "out"))
+                          (regdb (assoc-ref %build-inputs "wireless-regdb")))
+                      (list "CC=gcc" "V=1"
+
+                            ;; Disable signature-checking on 'regulatory.bin'.
+                            ;; The reason is that this simplifies maintenance
+                            ;; on our side (no need to manage a distro key
+                            ;; pair), and we can guarantee integrity of
+                            ;; 'regulatory.bin' by other means anyway, such as
+                            ;; 'guix gc --verify'.  See
+                            ;; <https://wireless.wiki.kernel.org/en/developers/regulatory/wireless-regdb>
+                            ;; for a discssion.
+                            "USE_OPENSSL=0"
+
+                            (string-append "PREFIX=" out)
+                            (string-append "SBINDIR=" out "/sbin/")
+                            (string-append "UDEV_RULE_DIR="
+                                           out "/lib/udev/rules.d")
+                            (string-append "LDFLAGS=-Wl,-rpath="
+                                           out "/lib -L.")
+                            (string-append "REG_BIN=" regdb
+                                           "/lib/crda/regulatory.bin")))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("python" ,python-2)
+                     ("wireless-regdb" ,wireless-regdb)))
+    (inputs `(("libnl" ,libnl)))
+    (home-page
+     "https://wireless.wiki.kernel.org/en/developers/Regulatory/CRDA")
+    (synopsis "Central regulatory domain agent (CRDA) for WiFi")
+    (description
+     "The Central Regulatory Domain Agent (CRDA) acts as the udev helper for
+communication between the kernel Linux and user space for regulatory
+compliance.")
+    (license copyleft-next)))
+
+(define-public wireless-regdb
+  (package
+    (name "wireless-regdb")
+    (version "2015.04.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/software/network/wireless-regdb/"
+                    "wireless-regdb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0czi83k311fp27z42hxjm8vi88fsbc23mhavv96lkb4pmari0jjc"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:tests? #f                                ;no tests
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "LSB_ID=GuixSD")
+                            (string-append "DISTRO_PUBKEY=/dev/null")
+                            (string-append "DISTRO_PRIVKEY=/dev/null")
+                            (string-append "REGDB_PUBKEY=/dev/null")
+
+                            ;; Leave that empty so that db2bin.py doesn't try
+                            ;; to sign 'regulatory.bin'.  This allows us to
+                            ;; avoid managing a key pair for the whole distro.
+                            (string-append "REGDB_PRIVKEY=")))))
+    (native-inputs `(("python" ,python-2)))
+    (home-page
+     "https://wireless.wiki.kernel.org/en/developers/regulatory/wireless-regdb")
+    (synopsis "Wireless regulatory database")
+    (description
+     "This package contains the wireless regulatory database Central
+Regulatory Database Agent (CRDA) daemon.  The database contains information on
+country-specific regulations for the wireless spectrum.")
+    (license isc)))
+
 (define-public lm-sensors
   (package
     (name "lm-sensors")
@@ -1949,10 +2067,10 @@ thanks to the use of namespaces.")
        #:phases (alist-delete 'configure %standard-phases)
        #:tests? #f))  ; no test suite
     (home-page "http://sourceforge.net/projects/hdparm/")
-    (synopsis "tune hard disk parameters for high performance")
+    (synopsis "Tune hard disk parameters for high performance")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
-is for enabling irq-unmasking and IDE multiplemode.")
+is for enabling irq-unmasking and IDE multiple-mode.")
     (license (non-copyleft "file://LICENSE.TXT"))))
 
 (define-public acpid
@@ -2048,7 +2166,7 @@ also contains the libsysfs library.")
     (home-page "https://www.kernel.org/pub/linux/utils/kernel/cpufreq/")
     (synopsis "Utilities to get and set CPU frequency on Linux")
     (description
-     "The cpufrequtils suite contains utilities to retreive CPU frequency
+     "The cpufrequtils suite contains utilities to retrieve CPU frequency
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
     (license gpl2)))

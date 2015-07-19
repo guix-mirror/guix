@@ -657,7 +657,7 @@ patterns, which are pre-processed by a perl script.")
     (synopsis "Thesaurus")
     (description "MyThes is a simple thesaurus that uses a structured text
 data file and an index file with binary search to look up words and phrases
-and to return information on pronunciations, meaningss and synonyms.")
+and to return information on pronunciations, meanings and synonyms.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING in the distribution."))))
 

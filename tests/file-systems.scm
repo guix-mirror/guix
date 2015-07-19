@@ -40,6 +40,16 @@
     (bytevector=? (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")
                   (string->uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb"))))
 
+(test-assert "uuid, syntax error"
+  (catch 'syntax-error
+    (lambda ()
+      (eval '(uuid "foobar") (current-module))
+      #f)
+    (lambda (key proc message location form . args)
+      (and (eq? proc 'uuid)
+           (string-contains message "invalid UUID")
+           (equal? form '(uuid "foobar"))))))
+
 (test-end)
 
 

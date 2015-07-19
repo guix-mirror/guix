@@ -279,6 +279,7 @@ EXTRA_DIST =						\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
   build-aux/make-binary-tarball.scm			\
+  build-aux/generate-authors.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
@@ -389,9 +390,12 @@ gen-ChangeLog:
 	fi
 
 gen-AUTHORS:
-	$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	  "$(top_srcdir)/build-aux/generate-authors.scm"	\
-	  "$(top_srcdir)" "$(distdir)/AUTHORS"
+	if test -d .git; then					\
+	  rm -f "$(distdir)/AUTHORS";				\
+	  $(top_builddir)/pre-inst-env "$(GUILE)"		\
+	    "$(top_srcdir)/build-aux/generate-authors.scm"	\
+	    "$(top_srcdir)" "$(distdir)/AUTHORS";		\
+	fi
 
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names:

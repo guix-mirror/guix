@@ -38,7 +38,7 @@
    (version "4.2.8p3")
    (source (origin
 	    (method url-fetch)
-	    (uri (string-append 
+	    (uri (string-append
                   "http://archive.ntp.org/ntp4/ntp-"
                   (version-major+minor version)
                   "/ntp-" version ".tar.gz"))
@@ -78,7 +78,7 @@
                        (("test-decodenetnum\\$\\(EXEEXT\\) ") ""))
                      #t)))))
    (build-system gnu-build-system)
-   (synopsis "Real time clock synchonization system")
+   (synopsis "Real time clock synchronization system")
    (description "NTP is a system designed to synchronize the clocks of
 computers over a network.")
    (license (l:x11-style

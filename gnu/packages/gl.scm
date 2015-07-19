@@ -130,7 +130,7 @@ the X-Consortium license.")
     (description
      "FTGL is a font rendering library for OpenGL applications.  Supported
 rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
-Polygon meshes, and Extruded polygon meshes")
+Polygon meshes, and Extruded polygon meshes.")
     (license l:x11)))
 
 (define-public s2tc
@@ -409,22 +409,27 @@ extension functionality is exposed in a single header file.")
               ("glu" ,glu)
               ("freeglut" ,freeglut)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'build 'patch-dynamic-link
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (define (dynamic-link-substitute file lib input)
-                     (substitute* file
-                       (("dynamic-link \"lib([a-zA-Z]+)\"" _ lib)
-                        (string-append "dynamic-link \""
-                                       (assoc-ref inputs input)
-                                       "/lib/lib" lib "\""))))
-                   ;; Replace dynamic-link calls for libGL, libGLU, and
-                   ;; libglut with absolute paths to the store.
-                   (dynamic-link-substitute "glx/runtime.scm" "GL" "mesa")
-                   (dynamic-link-substitute "glu/runtime.scm" "GLU" "glu")
-                   (dynamic-link-substitute "glut/runtime.scm" "glut"
-                                            "freeglut"))
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                 (add-after 'configure 'patch-makefile
+                   (lambda _
+                     ;; Install compiled Guile files in the expected place.
+                     (substitute* '("Makefile")
+                       (("^godir = .*$")
+                        "godir = $(moddir)\n"))))
+                 (add-before 'build 'patch-dynamic-link
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (define (dynamic-link-substitute file lib input)
+                       (substitute* file
+                         (("dynamic-link \"lib([a-zA-Z]+)\"" _ lib)
+                          (string-append "dynamic-link \""
+                                         (assoc-ref inputs input)
+                                         "/lib/lib" lib "\""))))
+                     ;; Replace dynamic-link calls for libGL, libGLU, and
+                     ;; libglut with absolute paths to the store.
+                     (dynamic-link-substitute "glx/runtime.scm" "GL" "mesa")
+                     (dynamic-link-substitute "glu/runtime.scm" "GLU" "glu")
+                     (dynamic-link-substitute "glut/runtime.scm" "glut"
+                                              "freeglut"))))))
     (home-page "http://gnu.org/s/guile-opengl")
     (synopsis "Guile binding for the OpenGL graphics API")
     (description
