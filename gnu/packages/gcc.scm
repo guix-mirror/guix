@@ -21,7 +21,7 @@
 
 (define-module (gnu packages gcc)
   #:use-module ((guix licenses)
-                #:select (gpl3+ gpl2+ lgpl2.1+ lgpl2.0+))
+                #:select (gpl3+ gpl2+ lgpl2.1+ lgpl2.0+ fdl1.3+))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
@@ -680,3 +680,53 @@ CLooG is designed to avoid control overhead and to produce a very
 effective code.")
     (license gpl2+)))
 
+(define-public gnu-c-manual
+  (package
+    (name "gnu-c-manual")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gnu-c-manual/gnu-c-manual-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0cf4503shr7hxkbrjfi9dky6q2lqk95bgbgbjmvj2s2x312kakd9"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("texinfo" ,texinfo)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'build
+                           (lambda _
+                             (zero? (system* "make"
+                                             "gnu-c-manual.info"
+                                             "gnu-c-manual.html"))))
+                  (replace 'install
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (let* ((out (assoc-ref outputs "out"))
+                                    (info (string-append out "/share/info"))
+                                    (html (string-append
+                                           out "/share/doc/gnu-c-manual")))
+                               (mkdir-p info)
+                               (mkdir-p html)
+
+                               (for-each (lambda (file)
+                                           (copy-file file
+                                                      (string-append info "/"
+                                                                     file)))
+                                         (find-files "." "\\.info(-[0-9])?$"))
+                               (for-each (lambda (file)
+                                           (copy-file file
+                                                      (string-append html "/"
+                                                                     file)))
+                                         (find-files "." "\\.html$"))
+                               #t))))))
+    (synopsis "Reference manual for the C programming language")
+    (description
+     "This is a reference manual for the C programming language, as
+implemented by the GNU C Compiler (gcc).  As a reference, it is not intended
+to be a tutorial of the language.  Rather, it outlines all of the constructs
+of the language.  Library functions are not included.")
+    (home-page "http://www.gnu.org/software/gnu-c-manual")
+    (license fdl1.3+)))
