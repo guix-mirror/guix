@@ -100,7 +100,9 @@ may be either a libc package or #f.)"
        ((#:configure-flags flags)
         `(append (list ,(string-append "--target=" target)
                        ,@(if libc
-                             '()
+                             `( ;; Disable libcilkrts because it is not
+                                ;; ported to GNU/Hurd. 
+                               "--disable-libcilkrts")
                              `( ;; Disable features not needed at this stage.
                                "--disable-shared" "--enable-static"
 
@@ -116,6 +118,7 @@ may be either a libc package or #f.)"
                                "--disable-libssp"
                                "--disable-libquadmath"
                                "--disable-decimal-float" ;would need libc
+                               "--disable-libcilkrts"
                                )))
 
                  ,(if libc
