@@ -4432,7 +4432,7 @@ System Distribution, or GuixSD.
 The distribution provides core GNU packages such as GNU libc, GCC, and
 Binutils, as well as many GNU and non-GNU applications.  The complete
 list of available packages can be browsed
-@url{http://www.gnu.org/software/guix/package-list.html,on-line} or by
+@url{http://www.gnu.org/software/guix/packages,on-line} or by
 running @command{guix package} (@pxref{Invoking guix package}):
 
 @example
@@ -4524,8 +4524,9 @@ requires familiarity with GNU/Linux (see the following subsections to
 get a feel of what that means.)
 
 @item
-The system does not yet provide GNOME and KDE; it provides Xfce, though,
-if graphical desktop environments are your thing.
+The system does not yet provide full GNOME and KDE desktops.  Xfce and
+Enlightenment are available though, if graphical desktop environments
+are your thing, as well as a number of X11 window managers.
 
 @item
 Support for the Logical Volume Manager (LVM) is missing.
@@ -4535,7 +4536,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-On the order of 1,900 packages are available, which means that you may
+More than 2,000 packages are available, but you may
 occasionally find that a useful package is missing.
 @end itemize
 
