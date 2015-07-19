@@ -34,6 +34,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -49,27 +50,27 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2014/texlive-20140525-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2015/texlive-20150523-extra.tar.xz")
     (sha256 (base32
-              "1zlnjysvxskcy05iva6jfklirwv12wqyn3ia119a7xnqlvhpqz33"))))
+              "1dkhhacga8h1v2m9xv1w02glbdda2m8lfp1la1y1zb9yjj8jsa6i"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2014/texlive-20140525-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2015/texlive-20150523-texmf.tar.xz")
     (sha256 (base32
-              "0qsr55ms1278dhmgixs5qqwd4fxhh369ihkki6wgh8xaqm8p48p0"))))
+              "1a3hpcg6x69ysqx432v6sk4alg0x34813cwk41frmvzprdajpyqy"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "2014")
+   (version "2015")
    (source
     (origin
      (method url-fetch)
-      (uri "ftp://tug.org/historic/systems/texlive/2014/texlive-20140525-source.tar.xz")
+      (uri "ftp://tug.org/historic/systems/texlive/2015/texlive-20150521-source.tar.xz")
       (sha256 (base32
-               "1glmaw2jv42grbsn05kay825j66scimjqqc32776bb1356q4xfq8"))))
+               "0sa6kmz4jwhv6lw702gxszhhjkvw071wba0ngk1c76g8vixwv6zd"))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -78,6 +79,7 @@
       ("fontforge" ,fontforge)
       ("freetype" ,freetype)
       ("gd" ,gd)
+      ("gmp" ,gmp)
       ("ghostscript" ,ghostscript)
       ("graphite2" ,graphite2)
       ("harfbuzz" ,harfbuzz)
@@ -86,6 +88,7 @@
       ("libpng" ,libpng)
       ("libxaw" ,libxaw)
       ("libxt" ,libxt)
+      ("mpfr" ,mpfr)
       ("perl" ,perl)
       ("pixman" ,pixman)
       ("poppler" ,poppler)
@@ -105,12 +108,14 @@
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
+         "--with-system-gmp"
          "--with-system-graphite2"
          "--with-system-harfbuzz"
          "--with-system-icu"
          "--with-system-libgs"
          "--with-system-libpaper"
          "--with-system-libpng"
+         "--with-system-mpfr"
          "--with-system-pixman"
          "--with-system-poppler"
          "--with-system-potrace"
@@ -162,7 +167,7 @@ This package contains the binaries.")
 (define-public texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2014")
+   (version "2015")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -189,12 +194,16 @@ This package contains the binaries.")
             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
                    (texmfroot (string-append share "/texmf-dist/web2c"))
                    (texmfcnf (string-append texmfroot "/texmf.cnf"))
-                   (texbin (string-append (assoc-ref inputs "texlive-bin")
-                            "/bin")))
+                   (texlive-bin (assoc-ref inputs "texlive-bin"))
+                   (texbin (string-append texlive-bin "/bin"))
+                   (tlpkg (string-append texlive-bin "/share/tlpkg")))
               ;; Register SHARE as TEXMFROOT in texmf.cnf.
               (substitute* texmfcnf
                 (("TEXMFROOT = \\$SELFAUTOPARENT")
                 (string-append "TEXMFROOT = " share)))
+              ;; Set path to TeXLive Perl modules
+              (setenv "PERL5LIB"
+                      (string-append (getenv "PERL5LIB") ":" tlpkg))
               ;; Configure the texmf-dist tree; inspired from
               ;; http://slackbuilds.org/repository/13.37/office/texlive/
               (setenv "PATH" (string-append (getenv "PATH") ":" texbin))
@@ -218,7 +227,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2014")
+   (version "2015")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
