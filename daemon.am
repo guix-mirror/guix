@@ -93,7 +93,6 @@ libstore_headers =				\
   nix/libstore/references.hh			\
   nix/libstore/pathlocks.hh			\
   nix/libstore/globals.hh			\
-  nix/libstore/schema.sql.hh			\
   nix/libstore/worker-protocol.hh		\
   nix/libstore/remote-store.hh			\
   nix/libstore/derivations.hh			\
