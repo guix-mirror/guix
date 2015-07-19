@@ -279,6 +279,7 @@ EXTRA_DIST =						\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/download.scm				\
   build-aux/make-binary-tarball.scm			\
+  build-aux/generate-authors.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
