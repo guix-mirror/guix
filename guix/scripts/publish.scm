@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,6 +228,36 @@ is invalid."
 example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
   (split-and-decode-uri-path (uri-path (request-uri request))))
 
+
+;;;
+;;; Server.
+;;;
+
+(define %http-write
+  (@@ (web server http) http-write))
+
+(define (http-write server client response body)
+  "Write RESPONSE and BODY to CLIENT, possibly in a separate thread to avoid
+blocking."
+  (match (response-content-type response)
+    (('application/x-nix-archive . _)
+     ;; Sending the the whole archive can take time so do it in a separate
+     ;; thread so that the main thread can keep working in the meantime.
+     (call-with-new-thread
+      (lambda ()
+        (%http-write server client response body))))
+    (_
+     ;; Handle other responses sequentially.
+     (%http-write server client response body))))
+
+(define-server-impl concurrent-http-server
+  ;; A variant of Guile's built-in HTTP server that offloads possibly long
+  ;; responses to a different thread.
+  (@@ (web server http) http-open)
+  (@@ (web server http) http-read)
+  http-write
+  (@@ (web server http) http-close))
+
 (define (make-request-handler store)
   (lambda (request body)
     (format #t "~a ~a~%"
@@ -248,7 +279,7 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 
 (define (run-publish-server socket store)
   (run-server (make-request-handler store)
-              'http
+              concurrent-http-server
               `(#:socket ,socket)))
 
 (define (open-server-socket address)
