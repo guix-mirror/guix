@@ -186,8 +186,9 @@ nodist_systemdservice_DATA = etc/guix-daemon.service
 
 etc/guix-daemon.service: etc/guix-daemon.service.in	\
 			 $(top_builddir)/config.status
-	$(SED) -e 's|@''bindir''@|$(bindir)|' <		\
-	       "etc/guix-daemon.service.in" > "$@.tmp"
+	$(MKDIR_P) "`dirname "$@"`"
+	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
+	       "$(srcdir)/etc/guix-daemon.service.in" > "$@.tmp"
 	mv "$@.tmp" "$@"
 
 EXTRA_DIST +=					\
