@@ -135,6 +135,48 @@
 enable professional yet simple and intuitive pattern-based drum programming.")
     (license license:gpl2+)))
 
+(define-public klick
+  (package
+    (name "klick")
+    (version "0.12.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://das.nasophon.de/download/klick-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hmcaywnwzjci3pp4xpvbijnnwvibz7gf9xzcdjbdca910y5728j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:phases
+       ;; TODO: Add scons-build-system and use it here.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (mkdir-p out)
+                      (zero? (system* "scons" (string-append "PREFIX=" out))))))
+         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+    (inputs
+     `(("boost" ,boost)
+       ("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("liblo" ,liblo)
+       ("rubberband" ,rubberband)))
+    (native-inputs
+     `(("scons" ,scons)
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://das.nasophon.de/klick/")
+    (synopsis "Metronome for JACK")
+    (description
+     "klick is an advanced command-line based metronome for JACK.  It allows
+you to define complex tempo maps for entire songs or performances.")
+    (license license:gpl2+)))
+
 (define-public lilypond
   (package
     (name "lilypond")
