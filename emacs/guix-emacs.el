@@ -69,7 +69,7 @@ Return nil if there are no emacs packages installed in PROFILE."
                                 (guix-emacs-subdirs elisp-pkgs-dir))))
                 (append root-autoloads pkgs-autoloads))
             root-autoloads))
-      (message "Directory '%s' does not exist." dir)
+      (message "Directory '%s' does not exist." elisp-root-dir)
       nil)))
 
 ;;;###autoload
