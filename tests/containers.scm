@@ -26,6 +26,10 @@
 (define (assert-exit x)
   (primitive-exit (if x 0 1)))
 
+;; Skip these tests unless user namespaces are available.
+(unless (file-exists? "/proc/self/ns/user")
+  (exit 77))
+
 (test-begin "containers")
 
 (test-assert "call-with-container, user namespace"
