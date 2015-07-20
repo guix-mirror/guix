@@ -10,6 +10,82 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.8.3 (since 0.8.2)
+
+** Package management
+
+*** New ‘guix edit’ and ‘guix size’ commands
+*** New ‘--manifest’ option for ‘guix package’, for declarative profiles
+*** Similarly, new ‘M-x guix-apply-manifest’ for the Emacs UI
+*** Emacs support now includes completion for ‘guix’ commands in shell-mode
+*** ‘guix package --search-paths’ now takes an optional argument
+*** ‘guix environment --ad-hoc’ creates a custom development environment
+*** New ‘--system’ option for ‘guix environment’
+*** ‘guix environment’ defines $GUIX_ENVIRONMENT, useful to adjust ‘PS1’
+*** New ‘--optimize’ and ‘--verify’ options to ‘guix gc’
+*** ‘guix build --with-source’ can now be passed a directory
+*** New ‘elpa’ importer for ‘guix import’
+*** ‘guix import pypi’ determines the list of dependencies
+*** New ‘--substitute-urls’ option for ‘guix build’ and other commands
+*** ‘guix substitute’ can now alternate between different substitute URLs
+*** New “Running Guix Before It Is Installed” section in the manual
+*** Basic manual pages for the ‘guix’ commands are now shipped
+*** Building the daemon now necessitates a C++11 compiler
+
+** Distribution
+
+*** New ‘%base-user-accounts’ variable, for common system accounts
+*** New ‘--on-error’ option for ‘guix system’
+*** New ‘plain-file’ construct, for use in ‘operating-system’ declarations
+*** ‘sudoers’ field of ‘operating-system’ renamed to ‘sudoers-file’
+*** ‘sudoers-file’ and ‘hosts-file’ fields now take file-like objects
+*** File systems under /sys/fs/cgroup are now mounted by default
+*** Default compiler is now GCC 4.9.3 (was 4.8.4)
+*** ARMv7 port now requires NEON
+*** The disk footprint of a dozen key packages has been reduced
+
+*** XXX new packages
+
+*** XXX package updates
+
+** Programming interfaces
+
+*** New “package Reference” and “origin Reference” sections in the manual
+*** monads: ‘foldm’, ‘mapm’, and ‘anym’ now take a list of regular values
+*** monads: Allow n-ary ‘>>=’ expressions
+*** New (guix cpio) module, used to produce Linux initrds deterministically
+*** New ‘clone’, ‘setns’, and ‘pivot_root’ bindings in (guix build syscalls)
+*** New ‘dependencies’ field in <file-system>
+*** New #:gem-flags parameter for ‘ruby-build-system’
+
+** Noteworthy bug fixes
+
+*** Binary installation tarball now has files root-owned, with zeroed mtime
+*** GRUB background image is always available (<http://bugs.gnu.org/20591>)
+*** ‘guix system’ catches references to non-existent user groups
+*** Ignore trailing components for ‘guix gc -d’ (<http://bugs.gnu.org/19757>)
+*** ‘guix lint’ warns only when all the URIs are unreachable
+*** ‘guix system init’ overwrites the items in the target store
+    (<http://bugs.gnu.org/20722>)
+*** ‘guix-register’ performs deduplication even when --prefix is passed
+    (<http://bugs.gnu.org/19044>)
+*** The ‘location’ of packages is no longer preserved by ‘inherit’
+*** GuixSD installation image has udev rules for device-mapper
+    (<http://bugs.gnu.org/20791>)
+*** Daemon distinguishes between “substitutable” and “offloadable” derivations
+    (<http://bugs.gnu.org/18747>)
+*** Avoid infinite loop in ‘guix substitute’
+*** ‘guix environment’ now returns the exit code of its command
+*** ‘file-system’ declarations can now really use UUIDs
+    (<http://bugs.gnu.org/19778>)
+*** Daemon preserves build user groups (<http://bugs.gnu.org/18994>)
+*** Fix quadratic behavior when building packages with many propagated inputs
+*** Tarballs for origins with patches/snippet are now build deterministically
+
+** Native language support
+
+*** Updated translations: da, eo
+
 * Changes in 0.8.2 (since 0.8.1)
 
 ** Package management
