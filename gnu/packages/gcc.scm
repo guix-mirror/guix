@@ -331,7 +331,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "0zmnm00d2a1hsd41g34bhvxzvxisa2l584q3p447bd91lfjv4ci3"))
               (patches (list (search-patch "gcc-libvtv-runpath.patch")))))))
 
-(define-public gcc-5.1
+(define-public gcc-5
   (package (inherit gcc-4.9)
     (version "5.1.0")
     (source (origin
@@ -604,8 +604,8 @@ using compilers other than GCC."
 (define-public libstdc++-doc-4.9
   (make-libstdc++-doc gcc-4.9))
 
-(define-public libstdc++-doc-5.1
-  (make-libstdc++-doc gcc-5.1))
+(define-public libstdc++-doc-5
+  (make-libstdc++-doc gcc-5))
 
 (define-public isl
   (package
