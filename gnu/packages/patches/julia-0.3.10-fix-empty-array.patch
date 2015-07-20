@@ -1,0 +1,13 @@
+See https://github.com/JuliaLang/julia/issues/11817
+
+--- a/src/codegen.cpp	2015-06-24 12:44:31.218674066 +0200
++++ b/src/codegen.cpp	2015-04-23 11:19:50.000000000 +0200
+@@ -4551,7 +4551,7 @@
+ #ifdef V128_BUG
+         "-avx",
+ #endif
+-    };
++    ""};
+     SmallVector<std::string, 4> MAttrs(mattr, mattr+sizeof(mattr)/sizeof(mattr[0]));
+     EngineBuilder eb = EngineBuilder(engine_module)
+         .setEngineKind(EngineKind::JIT)

@@ -41,15 +41,16 @@
 (define-public julia
   (package
     (name "julia")
-    (version "0.3.6")
+    (version "0.3.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/JuliaLang/julia/releases/download/v"
-                    version "/julia-" version "_0c24dca65c.tar.gz"))
+                    version "/julia-" version "_c8ceeefcc1.tar.gz"))
               (sha256
                (base32
-                "1hnbc2blzr9bc27m3vsr127fhg0h5imgqlrx00jakf0my0ccw8gr"))))
+                "0j6mw6wr35lxid10nh9gz7k6wck3a90ic92w99n1r052325gl9r7"))
+              (patches (list (search-patch "julia-0.3.10-fix-empty-array.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -91,6 +92,14 @@
                        ("openspecfun" "libopenspecfun" "libopenspecfun.so")
                        ("fftw"        "libfftw3"       "libfftw3.so")
                        ("fftwf"       "libfftw3f"      "libfftw3f.so"))))))
+            #t))
+         ;; This phase will no longer be necessary in 0.3.11; see
+         ;; https://github.com/JuliaLang/julia/issues/12028
+         (add-before
+          'build 'fix-building-with-mcjit-llvm
+          (lambda _
+            (substitute* "src/cgutils.cpp"
+              (("addComdat\\(gv\\);") ""))
             #t))
          (add-before
           'build 'patch-include-path

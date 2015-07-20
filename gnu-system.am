@@ -476,6 +476,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-libvpx-1.4.patch			\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
+  gnu/packages/patches/julia-0.3.10-fix-empty-array.patch	\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
   gnu/packages/patches/liba52-enable-pic.patch			\
