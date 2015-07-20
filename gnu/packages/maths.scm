@@ -1491,10 +1491,16 @@ constant parts of it.")
              ;; Unfortunately, this is not supported on non-x86 architectures,
              ;; where it leads to failed builds.
              ,@(let ((system (or (%current-target-system) (%current-system))))
-               (if (or (string-prefix? "x86_64" system)
+                 (cond
+                  ((or (string-prefix? "x86_64" system)
                        (string-prefix? "i686" system))
-                   '("DYNAMIC_ARCH=1")
-                   '())))
+                   '("DYNAMIC_ARCH=1"))
+                  ;; On MIPS we force the "SICORTEX" TARGET, as for the other
+                  ;; two available MIPS targets special extended instructions
+                  ;; for Loongson cores are used.
+                  ((string-prefix? "mips" system)
+                   '("TARGET=SICORTEX"))
+                  (else '()))))
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
