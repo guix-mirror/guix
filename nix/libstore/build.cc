@@ -84,6 +84,7 @@ struct HookInstance;
 
 /* A pointer to a goal. */
 class Goal;
+class DerivationGoal;
 typedef std::shared_ptr<Goal> GoalPtr;
 typedef std::weak_ptr<Goal> WeakGoalPtr;
 
@@ -174,10 +175,10 @@ public:
         return exitCode;
     }
 
-    /* Cancel the goal.  It should wake up its waiters, get rid of any
-       running child processes that are being monitored by the worker
-       (important!), etc. */
-    virtual void cancel(bool timeout) = 0;
+    /* Callback in case of a timeout.  It should wake up its waiters,
+       get rid of any running child processes that are being monitored
+       by the worker (important!), etc. */
+    virtual void timedOut() = 0;
 
     virtual string key() = 0;
 
@@ -799,11 +800,13 @@ private:
        result. */
     ValidPathInfos prevInfos;
 
+    BuildResult result;
+
 public:
     DerivationGoal(const Path & drvPath, const StringSet & wantedOutputs, Worker & worker, BuildMode buildMode = bmNormal);
     ~DerivationGoal();
 
-    void cancel(bool timeout);
+    void timedOut() override;
 
     string key()
     {
@@ -823,6 +826,8 @@ public:
 
     /* Add wanted outputs to an already existing derivation goal. */
     void addWantedOutputs(const StringSet & outputs);
+
+    BuildResult getResult() { return result; }
 
 private:
     /* The states. */
@@ -874,6 +879,8 @@ private:
     Path addHashRewrite(const Path & path);
 
     void repairClosure();
+
+    void done(BuildResult::Status status, const string & msg = "");
 };
 
 
@@ -933,12 +940,12 @@ void DerivationGoal::killChild()
 }
 
 
-void DerivationGoal::cancel(bool timeout)
+void DerivationGoal::timedOut()
 {
-    if (settings.printBuildTrace && timeout)
+    if (settings.printBuildTrace)
         printMsg(lvlError, format("@ build-failed %1% - timeout") % drvPath);
     killChild();
-    amDone(ecFailed);
+    done(BuildResult::TimedOut);
 }
 
 
@@ -991,8 +998,8 @@ void DerivationGoal::haveDerivation()
     trace("loading derivation");
 
     if (nrFailed != 0) {
-        printMsg(lvlError, format("cannot build missing derivation `%1%'") % drvPath);
-        amDone(ecFailed);
+        printMsg(lvlError, format("cannot build missing derivation ‘%1%’") % drvPath);
+        done(BuildResult::MiscFailure);
         return;
     }
 
@@ -1014,7 +1021,7 @@ void DerivationGoal::haveDerivation()
 
     /* If they are all valid, then we're done. */
     if (invalidOutputs.size() == 0 && buildMode == bmNormal) {
-        amDone(ecSuccess);
+        done(BuildResult::AlreadyValid);
         return;
     }
 
@@ -1059,7 +1066,7 @@ void DerivationGoal::outputsSubstituted()
 
     unsigned int nrInvalid = checkPathValidity(false, buildMode == bmRepair).size();
     if (buildMode == bmNormal && nrInvalid == 0) {
-        amDone(ecSuccess);
+        done(BuildResult::Substituted);
         return;
     }
     if (buildMode == bmRepair && nrInvalid == 0) {
@@ -1132,7 +1139,7 @@ void DerivationGoal::repairClosure()
     }
 
     if (waitees.empty()) {
-        amDone(ecSuccess);
+        done(BuildResult::AlreadyValid);
         return;
     }
 
@@ -1144,8 +1151,8 @@ void DerivationGoal::closureRepaired()
 {
     trace("closure repaired");
     if (nrFailed > 0)
-        throw Error(format("some paths in the output closure of derivation `%1%' could not be repaired") % drvPath);
-    amDone(ecSuccess);
+        throw Error(format("some paths in the output closure of derivation ‘%1%’ could not be repaired") % drvPath);
+    done(BuildResult::AlreadyValid);
 }
 
 
@@ -1157,7 +1164,7 @@ void DerivationGoal::inputsRealised()
         printMsg(lvlError,
             format("cannot build derivation `%1%': %2% dependencies couldn't be built")
             % drvPath % nrFailed);
-        amDone(ecFailed);
+        done(BuildResult::DependencyFailed);
         return;
     }
 
@@ -1286,7 +1293,7 @@ void DerivationGoal::tryToBuild()
     if (buildMode != bmCheck && validPaths.size() == drv.outputs.size()) {
         debug(format("skipping build of derivation `%1%', someone beat us to it") % drvPath);
         outputLocks.setDeletion(true);
-        amDone(ecSuccess);
+        done(BuildResult::AlreadyValid);
         return;
     }
 
@@ -1358,7 +1365,7 @@ void DerivationGoal::tryToBuild()
             printMsg(lvlError, format("@ build-failed %1% - %2% %3%")
                 % drvPath % 0 % e.msg());
         worker.permanentFailure = true;
-        amDone(ecFailed);
+        done(BuildResult::InputRejected, e.msg());
         return;
     }
 
@@ -1473,7 +1480,7 @@ void DerivationGoal::buildDone()
         registerOutputs();
 
         if (buildMode == bmCheck) {
-            amDone(ecSuccess);
+            done(BuildResult::Built);
             return;
         }
 
@@ -1508,10 +1515,12 @@ void DerivationGoal::buildDone()
         outputLocks.unlock();
         buildUser.release();
 
+        BuildResult::Status st = BuildResult::MiscFailure;
+
         if (hook && WIFEXITED(status) && WEXITSTATUS(status) == 101) {
             if (settings.printBuildTrace)
                 printMsg(lvlError, format("@ build-failed %1% - timeout") % drvPath);
-            worker.timedOut = true;
+            st = BuildResult::TimedOut;
         }
 
         else if (hook && (!WIFEXITED(status) || WEXITSTATUS(status) != 100)) {
@@ -1524,7 +1533,11 @@ void DerivationGoal::buildDone()
             if (settings.printBuildTrace)
                 printMsg(lvlError, format("@ build-failed %1% - %2% %3%")
                     % drvPath % 1 % e.msg());
-            worker.permanentFailure = !fixedOutput && !diskFull;
+
+            st =
+                statusOk(status) ? BuildResult::OutputRejected :
+                fixedOutput || diskFull ? BuildResult::TransientFailure :
+                BuildResult::PermanentFailure;
 
             /* Register the outputs of this build as "failed" so we
                won't try to build them again (negative caching).
@@ -1538,7 +1551,7 @@ void DerivationGoal::buildDone()
                     worker.store.registerFailedPath(i->second.path);
         }
 
-        amDone(ecFailed);
+        done(st, e.msg());
         return;
     }
 
@@ -1548,7 +1561,7 @@ void DerivationGoal::buildDone()
     if (settings.printBuildTrace)
         printMsg(lvlError, format("@ build-succeeded %1% -") % drvPath);
 
-    amDone(ecSuccess);
+    done(BuildResult::Built);
 }
 
 
@@ -2579,7 +2592,7 @@ void DerivationGoal::handleChildOutput(int fd, const string & data)
             printMsg(lvlError,
                 format("%1% killed after writing more than %2% bytes of log output")
                 % getName() % settings.maxLogSize);
-            cancel(true); // not really a timeout, but close enough
+            timedOut(); // not really a timeout, but close enough
             return;
         }
         if (verbosity >= settings.buildVerbosity)
@@ -2628,8 +2641,7 @@ bool DerivationGoal::pathFailed(const Path & path)
     if (settings.printBuildTrace)
         printMsg(lvlError, format("@ build-failed %1% - cached") % drvPath);
 
-    worker.permanentFailure = true;
-    amDone(ecFailed);
+    done(BuildResult::CachedFailure);
 
     return true;
 }
@@ -2646,6 +2658,18 @@ Path DerivationGoal::addHashRewrite(const Path & path)
     rewritesFromTmp[h2] = h1;
     redirectedOutputs[path] = p;
     return p;
+}
+
+
+void DerivationGoal::done(BuildResult::Status status, const string & msg)
+{
+    result.status = status;
+    result.errorMsg = msg;
+    amDone(result.success() ? ecSuccess : ecFailed);
+    if (result.status == BuildResult::TimedOut)
+        worker.timedOut = true;
+    if (result.status == BuildResult::PermanentFailure || result.status == BuildResult::CachedFailure)
+        worker.permanentFailure = true;
 }
 
 
@@ -2698,7 +2722,7 @@ public:
     SubstitutionGoal(const Path & storePath, Worker & worker, bool repair = false);
     ~SubstitutionGoal();
 
-    void cancel(bool timeout);
+    void timedOut();
 
     string key()
     {
@@ -2743,9 +2767,9 @@ SubstitutionGoal::~SubstitutionGoal()
 }
 
 
-void SubstitutionGoal::cancel(bool timeout)
+void SubstitutionGoal::timedOut()
 {
-    if (settings.printBuildTrace && timeout)
+    if (settings.printBuildTrace)
         printMsg(lvlError, format("@ substituter-failed %1% timeout") % storePath);
     if (pid != -1) {
         pid_t savedPid = pid;
@@ -3066,7 +3090,8 @@ Worker::~Worker()
 }
 
 
-GoalPtr Worker::makeDerivationGoal(const Path & path, const StringSet & wantedOutputs, BuildMode buildMode)
+GoalPtr Worker::makeDerivationGoal(const Path & path,
+    const StringSet & wantedOutputs, BuildMode buildMode)
 {
     GoalPtr goal = derivationGoals[path].lock();
     if (!goal) {
@@ -3323,7 +3348,7 @@ void Worker::waitForInput()
     /* Since goals may be canceled from inside the loop below (causing
        them go be erased from the `children' map), we have to be
        careful that we don't keep iterators alive across calls to
-       cancel(). */
+       timedOut(). */
     set<pid_t> pids;
     foreach (Children::iterator, i, children) pids.insert(i->first);
 
@@ -3365,8 +3390,7 @@ void Worker::waitForInput()
             printMsg(lvlError,
                 format("%1% timed out after %2% seconds of silence")
                 % goal->getName() % settings.maxSilentTime);
-            goal->cancel(true);
-            timedOut = true;
+            goal->timedOut();
         }
 
         else if (goal->getExitCode() == Goal::ecBusy &&
@@ -3377,8 +3401,7 @@ void Worker::waitForInput()
             printMsg(lvlError,
                 format("%1% timed out after %2% seconds")
                 % goal->getName() % settings.buildTimeout);
-            goal->cancel(true);
-            timedOut = true;
+            goal->timedOut();
         }
     }
 
