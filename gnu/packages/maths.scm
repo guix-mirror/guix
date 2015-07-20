@@ -215,7 +215,7 @@ LP/MIP solver is included in the package.")
 (define-public pspp
   (package
     (name "pspp")
-    (version "0.8.4")
+    (version "0.8.5")
     (source
      (origin
       (method url-fetch)
@@ -223,7 +223,7 @@ LP/MIP solver is included in the package.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0b65q45x05ps95pph6glbg7ymdr638nfb0rk9x5x9qm5k073pk5z"))))
+        "0c8326yykidi94xi7jn27j8iqxc38vc07d4wf5zyk0l8lpzx5vz7"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
@@ -239,6 +239,7 @@ LP/MIP solver is included in the package.")
     (native-inputs
      `(("glib" ,glib "bin")             ;for glib-genmarshal
        ("perl" ,perl)
+       ("texinfo" ,texinfo)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
