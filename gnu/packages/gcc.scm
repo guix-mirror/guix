@@ -333,17 +333,15 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-5
   (package (inherit gcc-4.9)
-    (version "5.1.0")
+    (version "5.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bd5vj4px3s8nlakbgrh38ynxq4s654m6nxz7lrj03mvkkwgvnmp"))
-              (patches (map search-patch
-                            '("gcc-arm-link-spec-fix.patch"
-                              "gcc-5.0-libvtv-runpath.patch")))))))
+                "1bccp8a106xwz3wkixn65ngxif112vn90qf95m6lzpgpnl25p0sz"))
+              (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")))))))
 
 (define-public gcc gcc-4.9)
 
