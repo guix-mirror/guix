@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'guix-profiles)
+(require 'cl-lib)
 
 (defcustom guix-emacs-activate-after-operation t
   "Activate Emacs packages after installing.
