@@ -118,9 +118,31 @@
          (equal? `(("a" ,a)) (package-transitive-inputs c))
          (equal? (package-propagated-inputs d)
                  (package-transitive-inputs d))
-         (equal? `(("b" ,b) ("b/a" ,a) ("c" ,c)
-                   ("d" ,d) ("d/x" "something.drv"))
+         (equal? `(("b" ,b) ("c" ,c) ("d" ,d)
+                   ("a" ,a) ("x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
+
+(test-assert "package-transitive-inputs, no duplicates"
+  (let* ((a (dummy-package "a"))
+         (b (dummy-package "b"
+              (inputs `(("a+" ,a)))
+              (native-inputs `(("a*" ,a)))
+              (propagated-inputs `(("a" ,a)))))
+         (c (dummy-package "c"
+              (propagated-inputs `(("b" ,b)))))
+         (d (dummy-package "d"
+              (inputs `(("a" ,a) ("c" ,c)))))
+         (e (dummy-package "e"
+              (inputs `(("b" ,b) ("c" ,c))))))
+    (and (null? (package-transitive-inputs a))
+         (equal? `(("a*" ,a) ("a+" ,a) ("a" ,a))   ;here duplicates are kept
+                 (package-transitive-inputs b))
+         (equal? `(("b" ,b) ("a" ,a))
+                 (package-transitive-inputs c))
+         (equal? `(("a" ,a) ("c" ,c) ("b" ,b))     ;duplicate A removed
+                 (package-transitive-inputs d))
+         (equal? `(("b" ,b) ("c" ,c) ("a" ,a))
+                 (package-transitive-inputs e))))) ;ditto
 
 (test-equal "package-transitive-supported-systems"
   '(("x" "y" "z")                                 ;a
@@ -573,8 +595,8 @@
          (dummy  (dummy-package "dummy"
                    (inputs `(("prop" ,prop)))))
          (inputs (bag-transitive-inputs (package->bag dummy #:graft? #f))))
-    (match (assoc "prop/dep" inputs)
-      (("prop/dep" package)
+    (match (assoc "dep" inputs)
+      (("dep" package)
        (eq? package dep)))))
 
 (test-assert "bag->derivation"

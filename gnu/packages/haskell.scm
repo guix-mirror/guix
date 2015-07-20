@@ -116,6 +116,11 @@
        ;; gremlin) doesn't support it yet, so skip this phase.
        #:validate-runpath? #f
 
+       ;; Don't pass --build=<triplet>, because the configure script
+       ;; auto-detects slightly different triplets for --host and --target and
+       ;; then complains that they don't match.
+       #:build #f
+
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build rpath)

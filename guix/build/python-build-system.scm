@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,10 +120,24 @@ installed with setuptools."
       (rename-file easy-install-pth new-pth))
     #t))
 
+(define* (ensure-no-mtimes-pre-1980 #:rest _)
+  "Ensure that there are no mtimes before 1980-01-02 in the source tree."
+  ;; Rationale: patch-and-repack creates tarballs with timestamps at the POSIX
+  ;; epoch, 1970-01-01 UTC.  This causes problems with Python packages,
+  ;; because Python eggs are ZIP files, and the ZIP format does not support
+  ;; timestamps before 1980.
+  (let ((early-1980 315619200))  ; 1980-01-02 UTC
+    (ftw "." (lambda (file stat flag)
+               (unless (<= early-1980 (stat:mtime stat))
+                 (utime file early-1980 early-1980))
+               #t))
+    #t))
+
 (define %standard-phases
   ;; 'configure' and 'build' phases are not needed.  Everything is done during
   ;; 'install'.
   (modify-phases gnu:%standard-phases
+    (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
     (delete 'configure)
     (replace 'install install)
     (replace 'check check)

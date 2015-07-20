@@ -45,6 +45,9 @@
                           "--enable-pcregrep-libz"
                           "--enable-pcregrep-libbz2"
                           "--enable-pcretest-libreadline"
+                          "--enable-unicode-properties"
+                          "--enable-pcre16"
+                          "--enable-pcre32"
                           "--enable-jit")))
    (synopsis "Perl Compatible Regular Expressions")
    (description

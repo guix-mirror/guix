@@ -24,6 +24,7 @@
   #:use-module (guix gexp)
   #:use-module (guix tests)
   #:use-module (guix scripts size)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -54,9 +55,15 @@
       (built-derivations (list file2))
       (mlet %store-monad ((profiles (store-profile
                                      (derivation->output-path file2)))
+                          (bash     (interned-file
+                                     (search-bootstrap-binary
+                                      "bash" (%current-system)) "bash"
+                                      #:recursive? #t))
                           (guile    (package->derivation %bootstrap-guile)))
-        (define (lookup-profile drv)
-          (find (matching-profile (derivation->output-path drv))
+        (define (lookup-profile item)
+          (find (matching-profile (if (derivation? item)
+                                      (derivation->output-path item)
+                                      item))
                 profiles))
 
         (letrec-syntax ((match* (syntax-rules (=>)
@@ -67,15 +74,17 @@
                                   ((_ () body)
                                    body))))
           ;; Make sure we get all three profiles with sensible values.
-          (return (and (= (length profiles) 3)
+          (return (and (= (length profiles) 4)
                        (match* ((file1 => profile1)
                                 (file2 => profile2)
-                                (guile => profile3))
+                                (guile => profile3)
+                                (bash  => profile4)) ;dependency of GUILE
                          (and (> (profile-closure-size profile2) 0)
                               (= (profile-closure-size profile2)
                                  (+ (profile-self-size profile1)
                                     (profile-self-size profile2)
-                                    (profile-self-size profile3))))))))))))
+                                    (profile-self-size profile3)
+                                    (profile-self-size profile4))))))))))))
 
 (test-end "size")
 

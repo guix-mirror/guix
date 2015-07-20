@@ -197,6 +197,33 @@ successful, or false to signal an error."
                             "guile-2.0.11.tar.xz")
                            (_
                             "guile-2.0.9.tar.xz"))))
+         ;; The following code, run by the bootstrap guile after it is
+         ;; unpacked, creates a wrapper for itself to set its load path.
+         ;; This replaces the previous non-portable method based on
+         ;; reading the /proc/self/exe symlink.
+         (make-guile-wrapper
+          '(begin
+             (use-modules (ice-9 match))
+             (match (command-line)
+               ((_ out bash)
+                (let ((bin-dir    (string-append out "/bin"))
+                      (guile      (string-append out "/bin/guile"))
+                      (guile-real (string-append out "/bin/.guile-real"))
+                      ;; We must avoid using a bare dollar sign in this code,
+                      ;; because it would be interpreted by the shell.
+                      (dollar     (string (integer->char 36))))
+                  (chmod bin-dir #o755)
+                  (rename-file guile guile-real)
+                  (call-with-output-file guile
+                    (lambda (p)
+                      (format p "\
+#!~a
+export GUILE_SYSTEM_PATH=~a/share/guile/2.0
+export GUILE_SYSTEM_COMPILED_PATH=~a/lib/guile/2.0/ccache
+exec -a \"~a0\" ~a \"~a@\"\n"
+                              bash out out dollar guile-real dollar)))
+                  (chmod guile   #o555)
+                  (chmod bin-dir #o555))))))
          (builder
           (add-text-to-store store
                              "build-bootstrap-guile.sh"
@@ -206,10 +233,17 @@ echo \"unpacking bootstrap Guile to '$out'...\"
 cd $out
 ~a -dc < ~a | ~a xv
 
+# Use the bootstrap guile to create its own wrapper to set the load path.
+GUILE_SYSTEM_PATH=$out/share/guile/2.0 \
+GUILE_SYSTEM_COMPILED_PATH=$out/lib/guile/2.0/ccache \
+$out/bin/guile -c ~s $out ~a
+
 # Sanity check.
 $out/bin/guile --version~%"
-                                     mkdir xz guile tar)
-                             (list mkdir xz guile tar))))
+                                     mkdir xz guile tar
+                                     (format #f "~s" make-guile-wrapper)
+                                     bash)
+                             (list mkdir xz guile tar bash))))
     (derivation store name
                 bash `(,builder)
                 #:system system

@@ -156,24 +156,40 @@
                 "-L" zlib "/lib "
                 "-Wl,-rpath=" out "/lib")))
 
+        #:modules ((ice-9 ftw)
+                   ,@%gnu-build-system-modules)
         #:phases
-        (alist-cons-before
-         'configure 'patch-lib-shells
-         (lambda _
-           ;; Filter for existing files, since some may not exist in all
-           ;; versions of python that are built with this recipe.
-           (substitute* (filter file-exists?
-                                '("Lib/subprocess.py"
-                                  "Lib/popen2.py"
-                                  "Lib/distutils/tests/test_spawn.py"
-                                  "Lib/test/test_subprocess.py"))
-             (("/bin/sh") (which "sh"))))
-         (alist-cons-before
-          'check 'pre-check
-          (lambda _
-            ;; 'Lib/test/test_site.py' needs a valid $HOME
-            (setenv "HOME" (getcwd)))
-          %standard-phases))))
+        (modify-phases %standard-phases
+          (add-before
+           'configure 'patch-lib-shells
+           (lambda _
+             ;; Filter for existing files, since some may not exist in all
+             ;; versions of python that are built with this recipe.
+             (substitute* (filter file-exists?
+                                  '("Lib/subprocess.py"
+                                    "Lib/popen2.py"
+                                    "Lib/distutils/tests/test_spawn.py"
+                                    "Lib/test/test_subprocess.py"))
+               (("/bin/sh") (which "sh")))
+             #t))
+          (add-before
+           'check 'pre-check
+           (lambda _
+             ;; 'Lib/test/test_site.py' needs a valid $HOME
+             (setenv "HOME" (getcwd))
+             #t))
+          (add-after
+           'unpack 'set-source-file-times-to-1980
+           ;; XXX One of the tests uses a ZIP library to pack up some of the
+           ;; source tree, and fails with "ZIP does not support timestamps
+           ;; before 1980".  Work around this by setting the file times in the
+           ;; source tree to sometime in early 1980.
+           (lambda _
+             (let ((circa-1980 (* 10 366 24 60 60)))
+               (ftw "." (lambda (file stat flag)
+                          (utime file circa-1980 circa-1980)
+                          #t))
+               #t))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)

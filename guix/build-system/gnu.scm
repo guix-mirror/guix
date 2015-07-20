@@ -289,6 +289,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (phases '%standard-phases)
                     (locale "en_US.UTF-8")
                     (system (%current-system))
+                    (build (nix-system->gnu-triplet system))
                     (imported-modules %gnu-build-system-modules)
                     (modules %default-modules)
                     (substitutable? #t)
@@ -333,6 +334,7 @@ are allowed to refer to."
                               (source
                                source))
                   #:system ,system
+                  #:build ,build
                   #:outputs %outputs
                   #:inputs %build-inputs
                   #:search-paths ',(map search-path-specification->sexp
@@ -422,6 +424,7 @@ is one of `host' or `target'."
                           (phases '%standard-phases)
                           (locale "en_US.UTF-8")
                           (system (%current-system))
+                          (build (nix-system->gnu-triplet system))
                           (imported-modules %gnu-build-system-modules)
                           (modules %default-modules)
                           (substitutable? #t)
@@ -472,6 +475,7 @@ platform."
                                 (source
                                  source))
                     #:system ,system
+                    #:build ,build
                     #:target ,target
                     #:outputs %outputs
                     #:inputs %build-target-inputs

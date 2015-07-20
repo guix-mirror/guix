@@ -47,15 +47,7 @@
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
                   "--enable-fat"
-                  "--enable-cxx"
-
-                  ;; FIXME: gmp-6.0.0a's config.guess fails on
-                  ;; multi-core armhf systems.
-                  ,@(if (%current-target-system)
-                        '()
-                        (let ((triplet
-                               (nix-system->gnu-triplet (%current-system))))
-                          (list (string-append "--build=" triplet)))))))
+                  "--enable-cxx")))
    (synopsis "Multiple-precision arithmetic library")
    (description
     "GMP is a library for arbitrary precision arithmetic, operating on
@@ -69,13 +61,13 @@ cryptography and computational algebra.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "3.1.2")
+   (version "3.1.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "0fs501qi8l523gs3cpy4jjcnvwxggyfbklcys80wq236xx3hz79r"))))
+                     "05jaa5z78lvrayld09nyr0v27c1m5dm9l7kr85v2bj4jv65s0db8"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>

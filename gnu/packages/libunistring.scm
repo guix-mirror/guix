@@ -26,7 +26,7 @@
 (define-public libunistring
   (package
    (name "libunistring")
-   (version "0.9.5")
+   (version "0.9.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -34,7 +34,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "05va4x47ik006nd13grwm276gfxb8igsj63k37vvwl3q8rr0g30s"))))
+              "0ixxmgpgh2v8ifm6hbwsjxl023myk3dfnj7wnvmqjivza31fw9cn"))))
    (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
    (build-system gnu-build-system)
    (arguments

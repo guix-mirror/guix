@@ -447,13 +447,6 @@ transparent text on your screen.")
     (inputs
      `(("libx11" ,libx11)
        ("guile" ,guile-2.0)))
-    (arguments `(#:configure-flags
-                 '(;; FIXME: xbindkeys-1.8.6's config.guess fails on mips64el.
-                   ,@(if (%current-target-system)
-                         '()
-                         (let ((triplet
-                                (nix-system->gnu-triplet (%current-system))))
-                           (list (string-append "--build=" triplet)))))))
     (home-page "http://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description

@@ -428,17 +428,26 @@ providing the system administrator with some help in common tasks.")
                                (string-append "--with-bashcompletiondir="
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out"))
-                         (net (assoc-ref inputs "net-base")))
-                     ;; Change the test to refer to the right file.
-                     (substitute* "tests/ts/misc/mcookie"
-                       (("/etc/services")
-                        (string-append net "/etc/services")))
-                     #t))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'build 'set-umount-file-name
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Tell 'eject' the right file name of 'umount'.
+                     (let ((out (assoc-ref outputs "out")))
+                       (substitute* "sys-utils/eject.c"
+                         (("\"/bin/umount\"")
+                          (string-append "\"" out "/bin/umount\"")))
+                       #t)))
+                  (add-before
+                   'check 'pre-check
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out"))
+                           (net (assoc-ref inputs "net-base")))
+                       ;; Change the test to refer to the right file.
+                       (substitute* "tests/ts/misc/mcookie"
+                         (("/etc/services")
+                          (string-append net "/etc/services")))
+                       #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)))
     (native-inputs
@@ -2132,13 +2141,6 @@ also contains the libsysfs library.")
            (substitute* "configure"
              (("includedir='(\\$\\{prefix\\}/include)'" all orig)
               (string-append "includedir='" orig "/sysfs'")))))))
-    ;; XXX sysfsutils-1.3.0's config.guess fails on mips64el
-    (arguments `(#:configure-flags
-                 '(,@(if (%current-target-system)
-                         '()
-                         (let ((triplet
-                                (nix-system->gnu-triplet (%current-system))))
-                           (list (string-append "--build=" triplet)))))))
     (synopsis "System utilities based on Linux sysfs (version 1.x)")))
 
 (define-public cpufrequtils

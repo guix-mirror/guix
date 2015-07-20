@@ -165,8 +165,7 @@ may be either a libc package or #f.)"
                   ;; Add the cross Linux headers to CROSS_CPATH, and remove them
                   ;; from CPATH.
                   (let ((libc  (assoc-ref inputs "libc"))
-                        (linux (assoc-ref inputs
-                                          "libc/linux-headers")))
+                        (linux (assoc-ref inputs "xlinux-headers")))
                     (define (cross? x)
                       ;; Return #t if X is a cross-libc or cross Linux.
                       (or (string-prefix? libc x)
@@ -245,6 +244,9 @@ GCC that does not target a libc; otherwise, target that libc."
                                (alist-delete "libc" %final-inputs))))
            (if libc
                `(("libc" ,libc)
+                 ("xlinux-headers"                ;the target headers
+                  ,@(assoc-ref (package-propagated-inputs libc)
+                               "linux-headers"))
                  ,@inputs)
                inputs))))
 
@@ -314,7 +316,7 @@ XBINUTILS and the cross tool chain."
               #t))
           ,phases))))
 
-    ;; Shadow the native "linux-headers" because glibc's recipe expect the
+    ;; Shadow the native "linux-headers" because glibc's recipe expects the
     ;; "linux-headers" input to point to the right thing.
     (propagated-inputs `(("linux-headers" ,xlinux-headers)))
 

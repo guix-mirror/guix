@@ -262,7 +262,7 @@ libssh library.")
      '(#:phases
        (alist-replace
         'configure
-        (lambda* (#:key outputs inputs system target
+        (lambda* (#:key outputs inputs system build target
                         #:allow-other-keys #:rest args)
           (let* ((configure (assoc-ref %standard-phases 'configure))
                  (prefix (assoc-ref outputs "out"))
@@ -270,9 +270,8 @@ libssh library.")
                  ;; Set --build and --host flags as the provided config.guess
                  ;; is not able to detect them
                  (flags `(,(string-append "--prefix=" prefix)
-                          ,(string-append "--build=" system)
-                          ,(string-append "--host="
-                                          (or target system)))))
+                          ,(string-append "--build=" build)
+                          ,(string-append "--host=" (or target build)))))
             (setenv "CONFIG_SHELL" bash)
             (zero? (apply system* bash
                           (string-append "." "/configure")

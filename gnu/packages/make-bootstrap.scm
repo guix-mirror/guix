@@ -629,7 +629,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                               ,(or (%current-target-system)
                                                    (%current-system))
                                               ".tar.xz")
-                               "."))))))))))
+                               "."
+                               ;; avoid non-determinism in the archive
+                               "--mtime=@0" "--owner=root:0" "--group=root:0"))))))))))
 
 (define %bootstrap-binaries-tarball
   ;; A tarball with the statically-linked bootstrap binaries.

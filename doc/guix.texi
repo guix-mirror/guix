@@ -4455,7 +4455,7 @@ Intel/AMD @code{x86_64} architecture, Linux-Libre kernel;
 Intel 32-bit architecture (IA32), Linux-Libre kernel;
 
 @item armhf-linux
-ARMv7-A architecture with hard float, Thumb-2 and VFP3D16 coprocessor,
+ARMv7-A architecture with hard float, Thumb-2 and NEON,
 using the EABI hard-float ABI, and Linux-Libre kernel.
 
 @item mips64el-linux

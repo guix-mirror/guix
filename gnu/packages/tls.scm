@@ -190,7 +190,7 @@ required structures.")
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
-    '(#:parallel-build? #f
+    `(#:parallel-build? #f
       #:parallel-tests? #f
       #:test-target "test"
       #:phases
@@ -202,7 +202,13 @@ required structures.")
             (system* "./config"
                      "shared"                   ; build shared libraries
                      "--libdir=lib"
-                     (string-append "--prefix=" out)))))
+                     (string-append "--prefix=" out)
+                     ;; XXX FIXME: Work around a code generation bug in GCC
+                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.
+                     ,@(if (and (not (%current-target-system))
+                                (string-prefix? "armhf" (%current-system)))
+                           '("-mfpu=vfpv3")
+                           '())))))
        (alist-cons-before
         'patch-source-shebangs 'patch-tests
         (lambda* (#:key inputs native-inputs #:allow-other-keys)
@@ -276,18 +282,30 @@ security, and applying best practice development processes.")
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))
-              (patches
-               ;; XXX Try removing this patch for perl-net-ssleay > 1.68
-               (list (search-patch "perl-net-ssleay-disable-ede-test.patch")))))
+                "1m2wwzhjwsg0drlhp9w12fl6bsgj69v8gdz72jqrqll3qr7f408p"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("patch" ,patch)
+       ("patch/disable-ede-test"
+        ,(search-patch "perl-net-ssleay-disable-ede-test.patch"))))
     (inputs `(("openssl" ,openssl)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'set-ssl-prefix
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (setenv "OPENSSL_PREFIX" (assoc-ref inputs "openssl")))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'apply-patch
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; XXX We apply this patch here instead of in the 'origin' because
+            ;; this package's build system fails badly when the source file
+            ;; times are zeroed.
+            ;; XXX Try removing this patch for perl-net-ssleay > 1.68
+            (zero? (system* "patch" "--force" "-p1" "-i"
+                            (assoc-ref inputs "patch/disable-ede-test")))))
+         (add-before
+          'configure 'set-ssl-prefix
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "OPENSSL_PREFIX" (assoc-ref inputs "openssl"))
+            #t)))))
     (synopsis "Perl extension for using OpenSSL")
     (description
      "This module offers some high level convenience functions for accessing

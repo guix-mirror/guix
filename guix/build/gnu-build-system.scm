@@ -184,7 +184,7 @@ makefiles."
   ;; Patch `SHELL' in generated makefiles.
   (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
 
-(define* (configure #:key target native-inputs inputs outputs
+(define* (configure #:key build target native-inputs inputs outputs
                     (configure-flags '()) out-of-source?
                     #:allow-other-keys)
   (define (package-name)
@@ -233,6 +233,9 @@ makefiles."
                        ,@(if docdir
                              (list (string-append "--docdir=" docdir
                                                   "/share/doc/" (package-name)))
+                             '())
+                       ,@(if build
+                             (list (string-append "--build=" build))
                              '())
                        ,@(if target               ; cross building
                              (list (string-append "--host=" target))

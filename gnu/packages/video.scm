@@ -139,14 +139,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (arguments `(#:configure-flags
-                 '("--enable-shared"
-                   ;; FIXME: liba52-0.7.4's config.guess fails on mips64el.
-                   ,@(if (%current-target-system)
-                         '()
-                         (let ((triplet
-                                (nix-system->gnu-triplet (%current-system))))
-                           (list (string-append "--build=" triplet)))))
+    (arguments `(#:configure-flags '("--enable-shared")
                  #:phases
                  (modify-phases %standard-phases
                    ;; XXX We need to run ./bootstrap because of the build
@@ -665,7 +658,6 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-neon"
                       "--disable-iwmmxt"))))
           %standard-phases)))
     (home-page "http://www.mplayerhq.hu/design7/news.html")
@@ -905,23 +897,6 @@ projects while introducing many more.")
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
-                                     ,@(if (and (not (%current-target-system))
-                                                (string-prefix?
-                                                 "armhf-"
-                                                 (%current-system)))
-                                           ;; When building on ARMv7, libvpx
-                                           ;; assumes that NEON will be
-                                           ;; available.  On Guix, armhf
-                                           ;; does not require NEON, so we
-                                           ;; build for ARMv6 and -marm (since
-                                           ;; no thumb2 on ARMv6) to ensure
-                                           ;; compatibility with all ARMv7
-                                           ;; cores we support.  Based on
-                                           ;; the Debian libvpx package.
-                                           '("--target=armv6-linux-gcc"
-                                             "--extra-cflags=-marm"
-                                             "--enable-small")
-                                           '())
                                      (string-append "--prefix=" out)))))
                  %standard-phases)
        #:tests? #f)) ; no check target
@@ -1157,7 +1132,9 @@ for use with HTML5 video.")
            (with-directory-excursion "avidemux_core/ffmpeg_package"
              (substitute* "ffmpeg-1.2.1/configure"
                (("#! /bin/sh") (string-append "#!" (which "bash"))))
-             (system* "tar" "cjf" "ffmpeg-1.2.1.tar.bz2" "ffmpeg-1.2.1")
+             (system* "tar" "cjf" "ffmpeg-1.2.1.tar.bz2" "ffmpeg-1.2.1"
+                      ;; avoid non-determinism in the archive
+                      "--mtime=@0" "--owner=root:0" "--group=root:0")
              (delete-file-recursively "ffmpeg-1.2.1")))
          (alist-replace 'configure
           (lambda _

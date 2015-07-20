@@ -40,13 +40,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.5.5")
+   (version "2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "1fdgl7js99xv1yy5zx1ravmqd0jxlnqpv7zcl954h4hbg15wqyrq"))))
+                     "0zilx15fwcpa8hmcxpc423jwb8ijw4qpq968kh18akvn4j0znsc4"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases

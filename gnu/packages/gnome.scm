@@ -1110,8 +1110,7 @@ to access local and remote files with a single consistent API.")
           (substitute* "libgnome/Makefile.in"
             (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
         %standard-phases)))
-    (inputs `(("popt" ,popt)
-              ("libxml2" ,libxml2)))
+    (inputs `(("libxml2" ,libxml2)))
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
        ("intltool" ,intltool)
@@ -1124,7 +1123,8 @@ to access local and remote files with a single consistent API.")
      `(("libcanberra" ,libcanberra)
        ("libbonobo" ,libbonobo)
        ("gconf" ,gconf)
-       ("gnome-vfs" ,gnome-vfs)))
+       ("gnome-vfs" ,gnome-vfs)
+       ("popt" ,popt)))                       ;gnome-program.h includes popt.h
     (home-page "https://developer.gnome.org/libgnome/")
     (synopsis "Useful routines for building applications")
     (description  "The libgnome library provides a number of useful routines

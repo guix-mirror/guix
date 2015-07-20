@@ -59,9 +59,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          '("--with-arch=armv7-a"
            "--with-float=hard"
            "--with-mode=thumb"
-
-           ;; See <https://wiki.debian.org/ArmHardFloatPort/VfpComparison#FPU>
-           "--with-fpu=vfpv3-d16"))
+           "--with-fpu=neon"))
 
         (else
          ;; TODO: Add `arm.*-gnueabi', etc.
@@ -323,17 +321,15 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-4.9
   (package (inherit gcc-4.8)
-    (version "4.9.2")
+    (version "4.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1pbjp4blk2ycaa6r3jmw4ky5f1s9ji3klbqgv8zs2sl5jn1cj810"))
-              (patches (map search-patch
-                            '("gcc-arm-link-spec-fix.patch"
-                              "gcc-libvtv-runpath.patch")))))))
+                "0zmnm00d2a1hsd41g34bhvxzvxisa2l584q3p447bd91lfjv4ci3"))
+              (patches (list (search-patch "gcc-libvtv-runpath.patch")))))))
 
 (define-public gcc-5.1
   (package (inherit gcc-4.9)

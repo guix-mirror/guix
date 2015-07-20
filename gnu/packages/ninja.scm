@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,38 +37,41 @@
               (sha256
                (base32
                 "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))
-              (patches (list (search-patch "ninja-tests.patch")))))
+              (patches (map search-patch
+                            '("ninja-zero-mtime.patch" "ninja-tests.patch")))))
     (build-system gnu-build-system)
+    (native-inputs `(("python" ,python-2)))
     (arguments
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda _
-          (substitute* "src/subprocess-posix.cc"
-            (("/bin/sh") (which "sh"))))
-        (alist-replace
-         'build
-         (lambda _
-           (zero? (system* "./configure.py" "--bootstrap")))
-         (alist-replace
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda _
+            (substitute* "src/subprocess-posix.cc"
+              (("/bin/sh") (which "sh")))
+            #t))
+         (replace
+          'build
+          (lambda _
+            (zero? (system* "./configure.py" "--bootstrap"))))
+         (replace
           'check
           (lambda _
             (and (zero? (system* "./configure.py"))
                  (zero? (system* "./ninja" "ninja_test"))
-                 (zero? (system* "./ninja_test"))))
-          (alist-replace
-           'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin"))
-                    (doc (string-append out "/share/doc/ninja")))
-               (mkdir-p bin)
-               (copy-file "ninja" (string-append bin "/ninja"))
-               (mkdir-p doc)
-               (copy-file "doc/manual.asciidoc"
-                          (string-append doc "/manual.asciidoc"))))
-           %standard-phases))))))
-    (native-inputs `(("python" ,python-2)))
+                 (zero? (system* "./ninja_test")))))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin"))
+                   (doc (string-append out "/share/doc/ninja")))
+              (mkdir-p bin)
+              (copy-file "ninja" (string-append bin "/ninja"))
+              (mkdir-p doc)
+              (copy-file "doc/manual.asciidoc"
+                         (string-append doc "/manual.asciidoc"))
+              #t))))))
     (home-page "http://martine.github.io/ninja/")
     (synopsis "Small build system")
     (description
