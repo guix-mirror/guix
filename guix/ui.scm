@@ -1184,7 +1184,8 @@ optionally contain a version number and an output name, as in these examples:
 
 (define (show-guix-help)
   (define (internal? command)
-    (member command '("substitute" "authenticate" "offload")))
+    (member command '("substitute" "authenticate" "offload"
+                      "perform-download")))
 
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))

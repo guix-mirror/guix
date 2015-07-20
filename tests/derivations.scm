@@ -16,6 +16,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
+(unsetenv "http_proxy")
+
 (define-module (test-derivations)
   #:use-module (guix derivations)
   #:use-module (guix grafts)
@@ -24,6 +26,7 @@
   #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix tests)
+  #:use-module (guix tests http)
   #:use-module ((guix packages) #:select (package-derivation base32))
   #:use-module ((guix build utils) #:select (executable-file?))
   #:use-module ((gnu packages) #:select (search-bootstrap-binary))
@@ -74,6 +77,9 @@
                           dir)
         (lambda (e1 e2)
           (string<? (car e1) (car e2)))))
+
+;; Avoid collisions with other tests.
+(%http-server-port 10500)
 
 
 (test-begin "derivations")
@@ -204,6 +210,70 @@
                           "hello, world\n")
                 (= (stat:ino (lstat file1))
                    (stat:ino (lstat file2))))))))
+
+(test-assert "unknown built-in builder"
+  (let ((drv (derivation %store "ohoh" "builtin:does-not-exist" '())))
+    (guard (c ((nix-protocol-error? c)
+               (string-contains (nix-protocol-error-message c) "failed")))
+      (build-derivations %store (list drv))
+      #f)))
+
+(unless (force %http-server-socket)
+  (test-skip 1))
+(test-assert "'download' built-in builder"
+  (let ((text (random-text)))
+    (with-http-server 200 text
+      (let* ((drv (derivation %store "world"
+                              "builtin:download" '()
+                              #:env-vars `(("url"
+                                            . ,(object->string (%local-url))))
+                              #:hash-algo 'sha256
+                              #:hash (sha256 (string->utf8 text)))))
+        (and (build-derivations %store (list drv))
+             (string=? (call-with-input-file (derivation->output-path drv)
+                         get-string-all)
+                       text))))))
+
+(unless (force %http-server-socket)
+  (test-skip 1))
+(test-assert "'download' built-in builder, invalid hash"
+  (with-http-server 200 "hello, world!"
+    (let* ((drv (derivation %store "world"
+                            "builtin:download" '()
+                            #:env-vars `(("url"
+                                          . ,(object->string (%local-url))))
+                            #:hash-algo 'sha256
+                            #:hash (sha256 (random-bytevector 100))))) ;wrong
+      (guard (c ((nix-protocol-error? c)
+                 (string-contains (nix-protocol-error-message c) "failed")))
+        (build-derivations %store (list drv))
+        #f))))
+
+(unless (force %http-server-socket)
+  (test-skip 1))
+(test-assert "'download' built-in builder, not found"
+  (with-http-server 404 "not found"
+    (let* ((drv (derivation %store "will-never-be-found"
+                            "builtin:download" '()
+                            #:env-vars `(("url"
+                                          . ,(object->string (%local-url))))
+                            #:hash-algo 'sha256
+                            #:hash (sha256 (random-bytevector 100)))))
+      (guard (c ((nix-protocol-error? c)
+                 (string-contains (nix-protocol-error-message (pk c)) "failed")))
+        (build-derivations %store (list drv))
+        #f))))
+
+(test-assert "'download' built-in builder, not fixed-output"
+  (let* ((source (add-text-to-store %store "hello" "hi!"))
+         (url    (string-append "file://" source))
+         (drv    (derivation %store "world"
+                             "builtin:download" '()
+                             #:env-vars `(("url" . ,(object->string url))))))
+    (guard (c ((nix-protocol-error? c)
+               (string-contains (nix-protocol-error-message c) "failed")))
+      (build-derivations %store (list drv))
+      #f)))
 
 (test-equal "derivation-name"
   "foo-0.0"

@@ -123,6 +123,7 @@ MODULES =					\
   guix/import/elpa.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
+  guix/scripts/perform-download.scm		\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
   guix/scripts/import.scm			\
