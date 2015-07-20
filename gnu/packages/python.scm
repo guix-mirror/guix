@@ -3015,14 +3015,27 @@ services for your Python modules and applications.")
      `(;; Used at runtime for pkg_resources
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'install 'check-installed
-                 (lambda _
-                   (begin
-                     (setenv "HOME" (getcwd))
-                     (and (zero? (system* "python" "selftest.py" "--installed"))
-                          (zero? (system* "python" "test-installed.py")))))
-                 (alist-delete 'check %standard-phases))))
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'install 'disable-egg-compression
+                   (lambda _
+                     ;; Leave the .egg uncompressed since compressing it would
+                     ;; prevent the GC from identifying run-time dependencies.
+                     ;; See <http://bugs.gnu.org/20765>.
+                     (let ((port (open-file "setup.cfg" "a")))
+                       (display "\n[easy_install]\nzip_ok = 0\n"
+                                port)
+                       (close-port port)
+                       #t)))
+                  (add-after
+                   'install 'check-installed
+                   (lambda _
+                     (begin
+                       (setenv "HOME" (getcwd))
+                       (and (zero? (system* "python" "selftest.py"
+                                            "--installed"))
+                            (zero? (system* "python" "test-installed.py"))))))
+                 (delete 'check))))
     (home-page "https://pypi.python.org/pypi/Pillow")
     (synopsis "Fork of the Python Imaging Library")
     (description
