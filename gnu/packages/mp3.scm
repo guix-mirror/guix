@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,10 @@
             (sha256
              (base32
               "14460zhacxhswnzb36qfpd1f2wbk10qvksvm6wyq5hpvdgnw7ymv"))
-            (patches (list (search-patch "libmad-mips-newgcc.patch")))))
+            (patches (map search-patch '("libmad-armv7-thumb-pt1.patch"
+                                         "libmad-armv7-thumb-pt2.patch"
+                                         "libmad-frame-length.patch"
+                                         "libmad-mips-newgcc.patch")))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases

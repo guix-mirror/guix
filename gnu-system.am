@@ -489,6 +489,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
+  gnu/packages/patches/libmad-armv7-thumb-pt1.patch		\
+  gnu/packages/patches/libmad-armv7-thumb-pt2.patch		\
+  gnu/packages/patches/libmad-frame-length.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtiff-CVE-2012-4564.patch		\
