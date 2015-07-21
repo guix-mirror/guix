@@ -419,7 +419,7 @@ http:://json.org specification.  These are the main features:
          (let* ((out (assoc-ref %outputs "out"))
                 (module-dir (string-append out "/share/guile/site/2.0"))
                 (source (assoc-ref %build-inputs "source"))
-                (doc (string-append out "/share/doc"))
+                (doc (string-append out "/share/doc/guile-minikanren"))
                 (scm-files '("minikanren.scm"
                              "minikanren/mkextraforms.scm"
                              "minikanren/mkprelude.scm"
