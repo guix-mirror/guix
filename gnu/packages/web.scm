@@ -381,7 +381,8 @@ UTS#46.")
                     (revision "2009-12-23")))
               (sha256
                (base32
-                "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))))
+                "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))
+              (patches (list (search-patch "tidy-CVE-2015-5522+5523.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
