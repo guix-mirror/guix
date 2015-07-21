@@ -54,6 +54,54 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip))
 
+(define-public aragorn
+  (package
+    (name "aragorn")
+    (version "1.2.36")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mbio-serv2.mbioekol.lu.se/ARAGORN/Downloads/aragorn"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "1dg7jlz1qpqy88igjxd6ncs11ccsirb36qv1z01a0np4i4jh61mb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+                  (lambda _
+                    (zero? (system* "gcc"
+                                    "-O3"
+                                    "-ffast-math"
+                                    "-finline-functions"
+                                    "-o"
+                                    "aragorn"
+                                    (string-append "aragorn" ,version ".c")))))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin"))
+                           (man (string-append out "/share/man/man1")))
+                      (mkdir-p bin)
+                      (copy-file "aragorn"
+                                 (string-append bin "/aragorn"))
+                      (mkdir-p man)
+                      (copy-file "aragorn.1"
+                                 (string-append man "/aragorn.1")))
+                    #t)))))
+    (home-page "http://mbio-serv2.mbioekol.lu.se/ARAGORN")
+    (synopsis "Detect tRNA, mtRNA and tmRNA genes in nucleotide sequences")
+    (description
+     "Aragorn identifies transfer RNA, mitochondrial RNA and
+transfer-messenger RNA from nucleotide sequences, based on homology to known
+tRNA consensus sequences and RNA structure.  It also outputs the secondary
+structure of the predicted RNA.")
+    (license license:gpl2)))
+
 (define-public bamtools
   (package
     (name "bamtools")
