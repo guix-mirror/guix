@@ -1375,7 +1375,13 @@ analysis plugins or audio feature extraction plugins.")
     (build-system gnu-build-system)
     (native-inputs `(("automake" ,automake)))
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       ;; Disable the use of SSE unless on x86_64.
+       ,(if (not (string-prefix? "x86_64" (or (%current-target-system)
+                                              (%current-system))))
+            ''("--disable-sse")
+            ''())
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'fix-ar-lib-path
