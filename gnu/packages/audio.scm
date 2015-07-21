@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1375,16 +1376,16 @@ analysis plugins or audio feature extraction plugins.")
     (native-inputs `(("automake" ,automake)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'fix-ar-lib-path
-        (lambda* (#:key inputs #:allow-other-keys)
-          ;; Originally a symlink to '/usr/local/share/automake-1.12/ar-lib'.
-          (delete-file "ar-lib")
-          (symlink
-           (string-append (assoc-ref inputs "automake") "/share/automake-"
-                          ,(package-version automake) "/ar-lib")
-           "ar-lib"))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'fix-ar-lib-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Originally a symlink to '/usr/local/share/automake-1.12/ar-lib'.
+            (delete-file "ar-lib")
+            (symlink
+             (string-append (assoc-ref inputs "automake") "/share/automake-"
+                            ,(package-version automake) "/ar-lib")
+             "ar-lib"))))))
     (home-page "http://sbsms.sourceforge.net/")
     (synopsis "Library for time stretching and pitch scaling of audio")
     (description
