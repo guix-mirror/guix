@@ -26,7 +26,8 @@
              (gnu packages emacs)
              (gnu packages make-bootstrap)
              (srfi srfi-1)
-             (srfi srfi-26))
+             (srfi srfi-26)
+             (ice-9 format))
 
 (with-store store
   (parameterize ((%graft? #f))
@@ -38,19 +39,15 @@
                              %bootstrap-tarballs <>)
                         '("mips64el-linux-gnuabi64")))
            (total  (append native cross)))
-      (define (warn item system)
-        (format (current-error-port) "~a (~a) is not substitutable~%"
-                item system)
-        #f)
 
       (set-build-options store #:use-substitutes? #t)
-      (let* ((substitutable? (substitution-oracle store total))
-             (result         (every (lambda (drv)
-                                      (let ((out (derivation->output-path drv)))
-                                        (or (substitutable? out)
-                                            (warn out (derivation-system drv)))))
-                                    total)))
-        (when result
-          (format (current-error-port) "~a packages found substitutable~%"
-                  (length total)))
-        (exit result)))))
+      (let* ((total     (map derivation->output-path total))
+             (available (substitutable-paths store total))
+             (missing   (lset-difference string=? total available)))
+        (if (null? missing)
+            (format (current-error-port) "~a packages found substitutable~%"
+                    (length total))
+            (format (current-error-port)
+                    "~a packages are not substitutable:~%~{  ~a~%~}~%"
+                    (length missing) missing))
+        (exit (null? missing))))))
