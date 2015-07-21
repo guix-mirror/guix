@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,8 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages linux))
 
 (define-public libpipeline
   (package
@@ -82,14 +84,16 @@ a flexible and convenient way.")
        (let ((groff (assoc-ref %build-inputs "groff"))
              (less  (assoc-ref %build-inputs "less"))
              (gzip  (assoc-ref %build-inputs "gzip"))
-             (bzip2  (assoc-ref %build-inputs "bzip2"))
-             (xz  (assoc-ref %build-inputs "xz")))
+             (bzip2 (assoc-ref %build-inputs "bzip2"))
+             (xz    (assoc-ref %build-inputs "xz"))
+             (util  (assoc-ref %build-inputs "util-linux")))
          ;; Invoke groff, less, gzip, bzip2, and xz directly from the store.
          (append (list "--disable-setuid" ;; Disable setuid man user.
                        (string-append "--with-pager=" less "/bin/less")
                        (string-append "--with-gzip=" gzip "/bin/gzip")
                        (string-append "--with-bzip2=" bzip2 "/bin/gzip")
-                       (string-append "--with-xz=" xz "/bin/xz"))
+                       (string-append "--with-xz=" xz "/bin/xz")
+                       (string-append "--with-col=" util "/bin/col"))
                  (map (lambda (prog)
                         (string-append "--with-" prog "=" groff "/bin/" prog))
                       '("nroff" "eqn" "neqn" "tbl" "refer" "pic"))))
@@ -103,7 +107,8 @@ a flexible and convenient way.")
        ("gdbm" ,gdbm)
        ("groff" ,groff)
        ("less" ,less)
-       ("libpipeline" ,libpipeline)))
+       ("libpipeline" ,libpipeline)
+       ("util-linux" ,util-linux)))
     (native-search-paths
      (list (search-path-specification
             (variable "MANPATH")
