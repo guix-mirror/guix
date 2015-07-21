@@ -38,14 +38,8 @@
                "0mmmkfayqgh6k39kbi3pq68mg03x35aiygy3zypxzvwx9y8b53ky"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'build 'fix-makefile
-                              (lambda* (#:key outputs #:allow-other-keys)
-                                (setenv "CC" "gcc")
-                                (substitute* '("Makefile")
-                                  (("/usr/local")
-                                   (assoc-ref outputs "out")))
-                                #t))
+     '(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
                   (delete 'configure)) ; no configure script
        #:test-target "test"))
     (native-inputs
