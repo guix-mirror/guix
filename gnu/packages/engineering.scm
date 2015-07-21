@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,10 @@
 (define-module (gnu packages engineering)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix monads)
+  #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
@@ -27,9 +31,11 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -41,6 +47,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages texlive)
   #:use-module (srfi srfi-1))
 
 (define-public librecad
@@ -196,3 +203,114 @@ layouts.  It features a rats-nest implementation, schematic/netlist import,
 and design rule checking.  It also includes an autorouter and a trace
 optimizer; and it can produce photorealistic and design review images.")
     (license license:gpl2+)))
+
+(define* (broken-tarball-fetch url hash-algo hash
+                               #:optional name
+                               #:key (system (%current-system))
+                               (guile (default-guile)))
+  (mlet %store-monad ((drv (url-fetch url hash-algo hash
+                                      (string-append "tarbomb-" name)
+                                      #:system system
+                                      #:guile guile)))
+    ;; Take the tar bomb, and simply unpack it as a directory.
+    (gexp->derivation name
+                      #~(begin
+                          (mkdir #$output)
+                          (setenv "PATH"
+                                  (string-append #$gzip "/bin"))
+                          (chdir #$output)
+                          (zero? (system* (string-append #$tar "/bin/tar")
+                                          "xf" #$drv))))))
+
+
+(define-public fastcap
+  (package
+    (name "fastcap")
+    (version "2.0-18Sep92")
+    (source (origin
+              (method broken-tarball-fetch)
+              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "http://www.rle.mit.edu/cpg/codes/"
+                                  name "-" version ".tgz"))
+              (sha256
+               (base32
+                "0x37vfp6k0d2z3gnig0hbicvi0jp8v267xjnn3z8jdllpiaa6p3k"))
+              (modules '((guix build utils)
+                         (guix build download)
+                         (guix ftp-client)))
+              (patches (list (search-patch "fastcap-mulSetup.patch")
+                             (search-patch "fastcap-mulGlobal.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("texlive" ,texlive)
+       ("ghostscript" ,ghostscript)))
+    (arguments
+     `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
+       #:parallel-build? #f
+       #:tests? #f ;; no tests-suite
+       #:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'make-doc
+                    (lambda _
+                      (zero? (system* "make" "CC=gcc" "RM=rm" "SHELL=sh"
+                                      "manual"))))
+         (add-before 'make-doc 'fix-doc
+                     (lambda _
+                       (substitute* "doc/Makefile" (("/bin/rm") (which "rm")))
+                       (substitute* (find-files "doc" "\\.tex")
+                         (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
+                           all file scale)
+                          (string-append "\\includegraphics[scale=" scale "]{"
+                                         file "}")))
+                       (substitute* '("doc/mtt.tex" "doc/tcad.tex")
+                         (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
+                           all options class)
+                          (string-append "\\documentclass[" options "]{"
+                                         class "}\n"
+                                         "\\usepackage{graphicx}\n"
+                                         "\\usepackage{robinspace}"))
+                         (("\\\\setlength\\{\\\\footheight\\}\\{.*\\}" all)
+                          (string-append "%" all))
+                         (("\\\\setstretch\\{.*\\}" all)
+                          (string-append "%" all)))
+                       #t))
+         (delete 'configure)
+         (add-before 'install 'clean-bin
+                     (lambda _
+                       (delete-file (string-append (getcwd) "/bin/README"))
+                       #t))
+         (add-before 'install 'make-pdf
+                     (lambda _
+                       (with-directory-excursion "doc"
+                         (and
+                          (every (lambda (file)
+                                   (zero? (system* "dvips" file "-o")))
+                                 (find-files "." "\\.dvi"))
+                          (every (lambda (file)
+                                   (zero? (system* "ps2pdf" file)))
+                                 '("mtt.ps" "ug.ps" "tcad.ps"))
+                          (zero? (system* "make" "clean"))))))
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (data (string-append out "/share"))
+                           (bin (string-append out "/bin"))
+                           (doc (string-append data "/doc/" ,name "-" ,version))
+                           (examples (string-append doc "/examples")))
+                      (with-directory-excursion "bin"
+                        (mkdir-p bin)
+                        (for-each
+                         (lambda (f)
+                           (copy-file f (string-append bin "/" (basename f))))
+                         (find-files "." ".*")))
+                      (copy-recursively "doc" doc)
+                      (copy-recursively "examples" examples)
+                      #t))))))
+    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (synopsis "Multipole-accelerated capacitance extraction program")
+    (description
+     "Fastcap is a capacitance extraction program based on a
+multipole-accelerated algorithm.")
+    (license (license:non-copyleft #f "See fastcap.c."))))
