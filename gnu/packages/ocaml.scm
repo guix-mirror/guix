@@ -192,6 +192,48 @@ Git-friendly development workflow.")
     ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
     (license lgpl3)))
 
+(define-public camlp4
+  (package
+    (name "camlp4")
+    (version "4.02.0+1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ocaml/camlp4/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0055f4jiz82rgn581xhq3mr4qgq2qgdxqppmp8i2x1xnsim4h9pn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("ocaml" ,ocaml)
+                     ("which" ,which)))
+    (inputs `(("ocaml" ,ocaml)))
+    (arguments
+     '(#:tests? #f                                ;no documented test target
+       #:phases (modify-phases %standard-phases
+                  (replace
+                   'configure
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; This is a home-made 'configure' script.
+                     (let ((out (assoc-ref outputs "out")))
+                       (zero? (system* "./configure"
+                                       (string-append "--libdir=" out "/lib")
+                                       (string-append "--bindir=" out "/bin")
+                                       (string-append "--pkgdir=" out)))))))))
+    (home-page "https://github.com/ocaml/camlp4")
+    (synopsis "Write parsers in OCaml")
+    (description
+     "Camlp4 is a software system for writing extensible parsers for
+programming languages.  It provides a set of OCaml libraries that are used to
+define grammars as well as loadable syntax extensions of such grammars.
+Camlp4 stands for Caml Preprocessor and Pretty-Printer and one of its most
+important applications is the definition of domain-specific extensions of the
+syntax of OCaml.")
+
+    ;; This is LGPLv2 with an exception that allows packages statically-linked
+    ;; against the library to be released under any terms.
+    (license lgpl2.0)))
+
 (define-public camlp5
   (package
     (name "camlp5")
