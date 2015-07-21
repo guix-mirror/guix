@@ -510,7 +510,7 @@ control to Git repositories.")
     (version "3.2.4")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://mercurial.selenic.com/release/mercurial-"
+             (uri (string-append "https://mercurial.selenic.com/release/mercurial-"
                                  version ".tar.gz"))
              (sha256
               (base32
