@@ -164,7 +164,8 @@ cannot determine package dependencies"))
                   (delete-file req-file)
                   (rmdir dirname)))
               (begin
-                (warning (_ "tar xf failed with exit code ~a") exit-code)
+                (warning (_ "'tar xf' failed with exit code ~a\n")
+                         exit-code)
                 '())))
         '())))
 
