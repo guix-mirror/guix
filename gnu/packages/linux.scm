@@ -210,7 +210,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.1.2")
+  (let* ((version "4.1.3")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -283,7 +283,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0clgjpcw1xzqa7jpm6k5fafg3wnc28mzyar3xgr4vbm6zb61fl7k"))))
+               "05v7qlhacs2lr5jr6wn9visn011n1a1335lgjn3ii214saglff8c"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -316,13 +316,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.0
   (package
     (inherit linux-libre)
-    (version "4.0.8")
+    (version "4.0.9")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "1xg5ysbdpna78yaz760c1z08sczagqyy74svr3p2mv8iczqyxdca"))))))
+                "1xk57pk5skj6qjmzs5c5gs8nkfjb8dbyqqz7fqk0kf68svqiwrwq"))))))
 
 
 ;;;
