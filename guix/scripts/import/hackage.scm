@@ -125,8 +125,8 @@ version.\n"))
           (()
            (run-importer "stdin" opts
                          (lambda ()
-                           (leave (_ "failed to import cabal file from '~a'~%"))
-                           package-name)))
+                           (leave (_ "failed to import cabal file \
+from standard input~%")))))
           ((many ...)
            (leave (_ "too many arguments~%"))))
         (match args
