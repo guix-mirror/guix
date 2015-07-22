@@ -264,16 +264,16 @@ substituter many times."
                 (derivation-prerequisites drv valid-input?)))
 
   (let* ((paths (delete-duplicates
-                 (fold (lambda (drv result)
-                         (let ((self (match (derivation->output-paths drv)
-                                       (((names . paths) ...)
-                                        paths))))
-                           (if (every valid? self)
-                               result
-                               (append (append self (dependencies drv))
-                                       result))))
-                       '()
-                       drv)))
+                 (concatenate
+                  (fold (lambda (drv result)
+                          (let ((self (match (derivation->output-paths drv)
+                                        (((names . paths) ...)
+                                         paths))))
+                            (if (every valid? self)
+                                result
+                                (cons* self (dependencies drv) result))))
+                        '()
+                        drv))))
          (subst (list->set (substitutable-paths store paths))))
     (cut set-contains? subst <>)))
 
