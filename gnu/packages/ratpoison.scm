@@ -70,6 +70,7 @@
        ("libXtst" ,libxtst)
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
+       ("libxinerama" ,libxinerama)
        ("libXft" ,libxft)
        ("libXpm" ,libxpm)
        ("libXt" ,libxt)
