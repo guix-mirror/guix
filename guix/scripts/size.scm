@@ -219,7 +219,7 @@ the name of a PNG file."
   ;; TRANSLATORS: This is the title of a graph, meaning that the graph
   ;; represents a profile of the store (the "store" being the place where
   ;; packages are stored.)
-  (make-page-map (_ "store profile") (pk data)
+  (make-page-map (_ "store profile") data
                  #:write-to-png file))
 
 
