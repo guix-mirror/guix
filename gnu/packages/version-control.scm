@@ -98,24 +98,6 @@ changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
     (license gpl2+)))
 
-(define (package-transitive-propagated-labels* package)
-  "Return a list of the input labels of PACKAGE and its transitive inputs."
-  (let ((name (package-name package)))
-    `(,name
-      ,@(map (match-lambda
-               ((label (? package? _) . _)
-                label))
-             (package-transitive-propagated-inputs package)))))
-
-(define (package-propagated-input-refs inputs packages)
-  "Return a list of (assoc-ref INPUTS <package-name>) for each package in
-PACKAGES and their propagated inputs."
-  (map (lambda (l)
-         `(assoc-ref ,inputs ,l))
-       (delete-duplicates                  ;XXX: efficiency
-        (append-map package-transitive-propagated-labels*
-                    packages))))
-
 (define-public git
   ;; Keep in sync with 'git-manpages'!
   (package
@@ -238,11 +220,13 @@ PACKAGES and their propagated inputs."
                 `("PERL5LIB" ":" prefix
                   ,(map (lambda (o) (string-append o "/lib/perl5/site_perl"))
                         (list
-                         ,@(package-propagated-input-refs
+                         ,@(transitive-input-references
                             'inputs
-                            (list perl-authen-sasl
-                                  perl-net-smtp-ssl
-                                  perl-io-socket-ssl))))))
+                            (map (lambda (l)
+                                   (assoc l (inputs)))
+                                 '("perl-authen-sasl"
+                                   "perl-net-smtp-ssl"
+                                   "perl-io-socket-ssl")))))))
 
               ;; Tell 'git-submodule' where Perl is.
               (wrap-program git-sm
