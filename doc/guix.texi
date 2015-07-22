@@ -4672,9 +4672,14 @@ This will copy all the necessary files, and install GRUB on
 more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
-Once that command has completed---and hopefully succeeded!---you can
-run @command{reboot} and boot into the new system.  Cross fingers, and
-join us on @code{#guix} on the Freenode IRC network or on
+Once that command has completed---and hopefully succeeded!---you can run
+@command{reboot} and boot into the new system.  The @code{root} password
+in the new system is initially empty; other users' passwords need to be
+initialized by running the @command{passwd} command as @code{root},
+unless your configuration specifies otherwise
+(@pxref{user-account-password, user account passwords}).
+
+Join us on @code{#guix} on the Freenode IRC network or on
 @file{guix-devel@@gnu.org} to share your experience---good or not so
 good.
 
@@ -5217,6 +5222,7 @@ This Boolean value indicates whether the account is a ``system''
 account.  System accounts are sometimes treated specially; for instance,
 graphical login managers do not list them.
 
+@anchor{user-account-password}
 @item @code{password} (default: @code{#f})
 You would normally leave this field to @code{#f}, initialize user
 passwords as @code{root} with the @command{passwd} command, and then let
