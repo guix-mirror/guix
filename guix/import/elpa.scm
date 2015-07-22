@@ -52,7 +52,7 @@ past were distributed separately from Emacs."
 (define (filter-dependencies names)
   "Remove the package names included with Emacs from the list of
 NAMES (strings)."
-  (filter emacs-standard-library? names))
+  (filter (compose not emacs-standard-library?) names))
 
 (define (elpa-name->package-name name)
   "Given the NAME of an Emacs package, return the corresponding Guix name."
@@ -77,14 +77,17 @@ NAMES (strings)."
         (call-with-downloaded-file url read)
         (leave (_ "~A: currently not supported~%") repo))))
 
-(define (call-with-downloaded-file url proc)
+(define* (call-with-downloaded-file url proc #:optional (error-thunk #f))
   "Fetch URL, store the content in a temporary file and call PROC with that
-file.  Returns the value returned by PROC."
+file.  Returns the value returned by PROC.  On error call ERROR-THUNK and
+return its value or leave if it's false."
   (call-with-temporary-output-file
    (lambda (temp port)
      (or (and (url-fetch url temp)
               (call-with-input-file temp proc))
-         (error "download failed" url)))))
+         (if error-thunk
+             (error-thunk)
+             (leave (_ "~A: download failed~%") url))))))
 
 (define (is-elpa-package? name elpa-pkg-spec)
   "Return true if the string NAME corresponds to the name of the package
@@ -158,8 +161,9 @@ include VERSION."
 
 (define (fetch-package-description kind name repo)
   "Fetch the description of package NAME of type KIND from REPO."
-  (let ((url (full-url repo name "-readme.txt")))
-    (call-with-downloaded-file url read-string)))
+  (let ((url (full-url repo name "-readme.txt"))
+        (error-thunk (lambda () "No description available.")))
+    (call-with-downloaded-file url read-string error-thunk)))
 
 (define* (fetch-elpa-package name #:optional (repo 'gnu))
   "Fetch package NAME from REPO."
