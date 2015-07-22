@@ -231,9 +231,12 @@ the name of a PNG file."
   (display (_ "Usage: guix size [OPTION]... PACKAGE
 Report the size of PACKAGE and its dependencies.\n"))
   (display (_ "
-  -m, --map-file=FILE    write to FILE a graphical map of disk usage"))
+      --substitute-urls=URLS
+                         fetch substitute from URLS if they are authorized"))
   (display (_ "
   -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""))
+  (display (_ "
+  -m, --map-file=FILE    write to FILE a graphical map of disk usage"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -248,6 +251,13 @@ Report the size of PACKAGE and its dependencies.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'system arg
                               (alist-delete 'system result eq?))))
+        (option '("substitute-urls") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'substitute-urls
+                                     (string-tokenize arg)
+                                     (alist-delete 'substitute-urls result))
+                         rest)))
         (option '(#\m "map-file") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'map-file arg result)))
@@ -260,7 +270,8 @@ Report the size of PACKAGE and its dependencies.\n"))
                   (show-version-and-exit "guix size")))))
 
 (define %default-options
-  `((system . ,(%current-system))))
+  `((system . ,(%current-system))
+    (substitute-urls . ,%default-substitute-urls)))
 
 
 ;;;
@@ -275,13 +286,18 @@ Report the size of PACKAGE and its dependencies.\n"))
                                    (_ #f))
                                  opts))
            (map-file (assoc-ref opts 'map-file))
-           (system   (assoc-ref opts 'system)))
+           (system   (assoc-ref opts 'system))
+           (urls     (assoc-ref opts 'substitute-urls)))
       (match files
         (()
          (leave (_ "missing store item argument\n")))
         ((file)
          (leave-on-EPIPE
           (with-store store
+            (set-build-options store
+                               #:use-substitutes? #t
+                               #:substitute-urls urls)
+
             (run-with-store store
               (mlet* %store-monad ((item    (ensure-store-item file))
                                    (profile (store-profile item)))

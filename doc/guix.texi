@@ -4184,6 +4184,10 @@ The available options are:
 
 @table @option
 
+@item --substitute-urls=@var{urls}
+Use substitute information from @var{urls}.
+@xref{client-substitute-urls, the same option for @code{guix build}}.
+
 @item --map-file=@var{file}
 Write to @var{file} a graphical map of disk usage as a PNG file.
 
