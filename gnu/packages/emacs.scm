@@ -272,6 +272,7 @@ when typing parentheses directly or commenting out code line by line.")
               (uri (string-append
                     "https://github.com/magit/git-modes/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1biiss75bswx4alk85k3g9p0a3q3sc9i74h4mnrxc2rsk2iwhws0"))))
