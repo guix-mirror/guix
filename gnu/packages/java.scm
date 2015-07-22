@@ -588,7 +588,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     (license license:gpl2+)))
 
 (define-public icedtea7
-  (let* ((version "2.5.5")
+  (let* ((version "2.6.1")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -606,7 +606,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "1irxk2ndwsfk4c1zbzb5h3rpwv2bc9bhfjvz6p4dws5476vsxrq9"))
+                  "0s107vi1530a5dyxacysc4m64zshgg2d3xpndsc0ws99wz0zmr6c"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -630,7 +630,11 @@ build process and its dependencies, whereas Make uses Makefile format.")
          #:locale "C"
          ,@(substitute-keyword-arguments (package-arguments icedtea6)
              ((#:configure-flags flags)
-              `(delete "--with-openjdk-src-dir=./openjdk" ,flags))
+              `(delete "--with-openjdk-src-dir=./openjdk"
+                       ;; TODO: package pcsc and sctp, and add to inputs
+                       (append '("--disable-system-pcsc"
+                                 "--disable-system-sctp")
+                               ,flags)))
              ((#:phases phases)
               `(modify-phases ,phases
                  (replace
@@ -737,24 +741,24 @@ build process and its dependencies, whereas Make uses Makefile format.")
        `(("ant" ,ant)
          ("openjdk-drop"
           ,(drop "openjdk"
-                 "03gxqn17cxwl1nspnwigacaqd28p02d45f396j5f4kkbzfnbl0ak"))
+                 "0gs6vbj5c09516r460r68i7vm652sb25h973kq9hfx749qbs0s01"))
          ("corba-drop"
           ,(drop "corba"
-                 "0ldcckknn2f92jv1144cnn0z3wmvxln28wc00rc6xxblnjcnamzh"))
+                 "1y7nf6hqry1az28i3b6ln5cs82cww1jj4r61jk54ab8s2xydj0yd"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0mnjdziffcnyqlyvf8dw1hrl4kiiwmh8ia0ym417wgvnjpaihci9"))
+                 "1szs2w0p496k1qi3yl1fymj0g10lgq31am35zlalcz7pi4l4q360"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "1gkmypnhygx2mxhca3ngy620k993wi2cc1wysc0np06y1rkx1mkn"))
+                 "17xfy9q2zdpap7m2prbf937x55jm3pwrqpp1fdlridraqrfzjprd"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "10x43mqjfn43jlckic0nyf7apyyjyr910cdmmvy41kvw8ljhvg61"))
+                 "0qskhwr4nml49zhbppnq8ldj0x001bl37mrcpxslbnsdw5skw258"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0q5nqc14r6vmhxgikw3wgdcc0r9symp830v13isnv8qdjgm6kcki"))
+                 "0hyxrrb0zrx1pq1s90bmim94hwfligr0ajzs1874da4gclbbvfbd"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "1yqxfd2jwbm5y41wscyfx8h0fr3h8ny2g2mda5iwd8sikxsaj96p"))
+                 "1cv8df2s89mnjzg4rja4i89d4fr8n0c3v5y2cqbww1ma1463n100"))
          ,@(fold alist-delete (package-native-inputs icedtea6)
                  '("openjdk6-src" "ant-bootstrap")))))))
