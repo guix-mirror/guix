@@ -242,8 +242,10 @@ result is the set of prerequisites of DRV not already in valid."
 (define* (substitution-oracle store drv)
   "Return a one-argument procedure that, when passed a store file name,
 returns #t if it's substitutable and #f otherwise.  The returned procedure
-knows about all substitutes for all the derivations listed in DRV; it also
-knows about their prerequisites, unless they are themselves substitutable.
+knows about all substitutes for all the derivations listed in DRV, *except*
+those that are already valid (that is, it won't bother checking whether an
+item is substitutable if it's already on disk); it also knows about their
+prerequisites, unless they are themselves substitutable.
 
 Creating a single oracle (thus making a single 'substitutable-paths' call) and
 reusing it is much more efficient than calling 'has-substitutes?' or similar
