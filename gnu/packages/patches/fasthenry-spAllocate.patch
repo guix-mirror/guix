@@ -1,0 +1,15 @@
+Add forward declarations.
+
+--- fasthenry-3.0/src/fasthenry/sparse/spAllocate.c.orig	2015-07-22 09:45:28.864758891 +0200
++++ fasthenry-3.0/src/fasthenry/sparse/spAllocate.c	2015-07-22 13:04:17.579742206 +0200
+@@ -107,7 +107,9 @@
+ #include "spDefs.h"
+ 
+ 
+-
++static InitializeElementBlocks( MatrixPtr, int, int );
++static RecordAllocation( MatrixPtr, char* );
++static AllocateBlockOfAllocationList( MatrixPtr );
+ 
+ 
+ 

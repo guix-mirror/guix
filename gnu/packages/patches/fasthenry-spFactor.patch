@@ -1,0 +1,35 @@
+Add forward declarations.
+
+--- fasthenry-3.0/src/fasthenry/sparse/spFactor.c.orig	2015-07-22 10:37:04.934043468 +0200
++++ fasthenry-3.0/src/fasthenry/sparse/spFactor.c	2015-07-22 12:52:55.515636802 +0200
+@@ -105,7 +105,29 @@
+ #include "spDefs.h"
+ 
+ 
+-
++static int FactorComplexMatrix( MatrixPtr );
++static CreateInternalVectors( MatrixPtr );
++static CountMarkowitz( MatrixPtr, register RealVector, int );
++static MarkowitzProducts( MatrixPtr, int );
++static ElementPtr SearchForPivot( MatrixPtr, int, int );
++static ElementPtr SearchForSingleton( MatrixPtr, int );
++static ElementPtr QuicklySearchDiagonal( MatrixPtr, int );
++static ElementPtr SearchDiagonal( MatrixPtr, register int );
++static ElementPtr SearchEntireMatrix( MatrixPtr, int );
++static RealNumber FindLargestInCol( register  ElementPtr );
++static RealNumber FindBiggestInColExclude( MatrixPtr, register  ElementPtr,
++                                           register  int );
++static ExchangeRowsAndCols( MatrixPtr, ElementPtr, register int );
++static ExchangeColElements( MatrixPtr, int, register  ElementPtr,
++                            int, register  ElementPtr, int );
++static ExchangeRowElements( MatrixPtr, int, register ElementPtr,
++                            int, register ElementPtr, int );
++static RealRowColElimination( MatrixPtr, register  ElementPtr );
++static ComplexRowColElimination( MatrixPtr, register  ElementPtr );
++static UpdateMarkowitzNumbers( MatrixPtr, ElementPtr );
++static ElementPtr CreateFillin( MatrixPtr, register int, int );
++static int MatrixIsSingular( MatrixPtr, int );
++static int ZeroPivot( MatrixPtr, int );
+ 
+ 
+ 

@@ -435,6 +435,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/expat-CVE-2015-1283.patch		\
   gnu/packages/patches/fastcap-mulGlobal.patch			\
   gnu/packages/patches/fastcap-mulSetup.patch			\
+  gnu/packages/patches/fasthenry-spAllocate.patch		\
+  gnu/packages/patches/fasthenry-spBuild.patch			\
+  gnu/packages/patches/fasthenry-spUtils.patch			\
+  gnu/packages/patches/fasthenry-spSolve.patch			\
+  gnu/packages/patches/fasthenry-spFactor.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/findutils-localstatedir.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\

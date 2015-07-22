@@ -1,0 +1,12 @@
+Add forward declarations.
+
+--- fasthenry-3.0/src/fasthenry/sparse/spUtils.c.orig	2015-07-22 12:12:52.579370846 +0200
++++ fasthenry-3.0/src/fasthenry/sparse/spUtils.c	2015-07-22 12:14:09.636275633 +0200
+@@ -107,6 +107,7 @@
+ #include "spDefs.h"
+ 
+ 
++static RealNumber ComplexCondition( MatrixPtr, RealNumber, int* );
+ 
+ 
+ 

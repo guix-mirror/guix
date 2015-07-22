@@ -314,3 +314,53 @@ optimizer; and it can produce photorealistic and design review images.")
      "Fastcap is a capacitance extraction program based on a
 multipole-accelerated algorithm.")
     (license (license:non-copyleft #f "See fastcap.c."))))
+
+(define-public fasthenry
+  (package
+    (name "fasthenry")
+    (version "3.0-12Nov96")
+    (source (origin
+              (method url-fetch)
+              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append
+                    "http://www.rle.mit.edu/cpg/codes/" name
+                    "-" version ".tar.z"))
+              (sha256
+               (base32 "1a06xyyd40zhknrkz17xppl2zd5ig4w9g1grc8qrs0zqqcl5hpzi"))
+              (patches (list (search-patch "fasthenry-spAllocate.patch")
+                             (search-patch "fasthenry-spBuild.patch")
+                             (search-patch "fasthenry-spUtils.patch")
+                             (search-patch "fasthenry-spSolve.patch")
+                             (search-patch "fasthenry-spFactor.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
+       #:parallel-build? #f
+       #:tests? #f ;; no tests-suite
+       #:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (data (string-append out "/share"))
+                           (bin (string-append out "/bin"))
+                           (doc (string-append data "/doc/" ,name "-" ,version))
+                           (examples (string-append doc "/examples")))
+                      (with-directory-excursion "bin"
+                        (mkdir-p bin)
+                        (for-each
+                         (lambda (f)
+                           (copy-file f (string-append bin "/" (basename f))))
+                         (find-files "." ".*")))
+                      (copy-recursively "doc" doc)
+                      (copy-recursively "examples" examples)
+                      #t))))))
+    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (synopsis "Multipole-accelerated inductance analysis program")
+    (description
+     "Fasthenry is an inductance extraction program based on a
+multipole-accelerated algorithm.")
+    (license (license:non-copyleft #f "See induct.c."))))

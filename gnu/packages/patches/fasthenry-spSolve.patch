@@ -1,0 +1,12 @@
+Add forward declarations.
+
+--- fasthenry-3.0/src/fasthenry/sparse/spSolve.c.orig	2015-07-22 12:06:20.502771958 +0200
++++ fasthenry-3.0/src/fasthenry/sparse/spSolve.c	2015-07-22 12:12:03.822798513 +0200
+@@ -95,6 +95,7 @@
+ #include "spDefs.h"
+ 
+ 
++static void SolveComplexMatrix( MatrixPtr, RealVector, RealVector );
+ 
+ 
+ 

@@ -1,0 +1,13 @@
+Add forward declarations.
+
+--- fasthenry-3.0/src/fasthenry/sparse/spBuild.c.orig	2015-07-22 10:13:30.884638176 +0200
++++ fasthenry-3.0/src/fasthenry/sparse/spBuild.c	2015-07-22 13:08:48.862973419 +0200
+@@ -106,6 +106,8 @@
+ #include "spDefs.h"
+ 
+ 
++static void Translate( MatrixPtr, int*, int* );
++static ExpandTranslationArrays( MatrixPtr, register int );
+ 
+ 
+ 
