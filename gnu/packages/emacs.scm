@@ -909,3 +909,28 @@ e.g. ghostscript and stored in the file-system, but rather created on-demand
 and stored in memory.")
     (home-page "https://github.com/politza/pdf-tools")
     (license license:gpl3+)))
+
+(define-public emacs-dash
+  (package
+    (name "emacs-dash")
+    (version "2.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magnars/dash.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1piwcwilkxcbjxx832mhb7q3pz1fgwp203r581bpqcw6kd5x726q"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+                     (lambda _
+                       (zero? (system* "./run-tests.sh")))))))
+    (home-page "https://github.com/magnars/dash.el")
+    (synopsis "Modern list library for Emacs")
+    (description "This package provides a modern list API library for Emacs.")
+    (license license:gpl3+)))
