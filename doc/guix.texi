@@ -300,7 +300,8 @@ As @code{root}, run:
 
 @example
 # cd /tmp
-# tar xf guix-binary-@value{VERSION}.@var{system}.tar.xz
+# tar --warning=no-timestamp -xf \
+     guix-binary-@value{VERSION}.@var{system}.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
@@ -308,14 +309,16 @@ This creates @file{/gnu/store} (@pxref{The Store}) and @file{/var/guix}.
 The latter contains a ready-to-use profile for @code{root} (see next
 step.)
 
-Some versions of GNU@tie{}tar raise a warning about ``implausibly old
-time stamps''.  This is because all the files in the archive have their
-modification time set to zero (which means January 1st, 1970.)  This is
-done on purpose to make sure the archive content is independent of its
-creation time, thus making it reproducible.
-
 Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
+
+The @code{--warning=no-timestamp} option makes sure GNU@tie{}tar does
+not emit warnings about ``implausibly old time stamps''.  These
+warnings, sometimes enabled by default, stem from the fact that all the
+files in the archive have their modification time set to zero (which
+means January 1st, 1970.)  This is done on purpose to make sure the
+archive content is independent of its creation time, thus making it
+reproducible.
 
 @item
 Make @code{root}'s profile available under @file{~/.guix-profile}:
