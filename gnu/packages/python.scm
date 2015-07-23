@@ -4571,3 +4571,36 @@ Python.")
 
 (define-public python2-mistune
   (package-with-python2 python-mistune))
+
+(define-public python-ptyprocess
+  (package
+    (name "python-ptyprocess")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/ptyprocess/ptyprocess-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0nggns5kikn32yyda2zrj1xdmh49pi3v0drggcdwljbv36r8zdyw"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose" ,python-nose)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "nosetests")))))))
+    (home-page "https://github.com/pexpect/ptyprocess")
+    (synopsis "Run a subprocess in a pseudo terminal")
+    (description
+     "This package provides a Python library used to launch a subprocess in a
+pseudo terminal (pty), and interact with both the process and its pty.")
+    (license isc)))
+
+(define-public python2-ptyprocess
+  (package-with-python2 python-ptyprocess))
