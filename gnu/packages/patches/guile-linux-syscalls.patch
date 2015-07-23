@@ -5,7 +5,7 @@ a statically-linked Guile in an initrd that doesn't have libc.so around.
 
 --- guile-2.0.11/libguile/posix.c.orig	2014-02-28 15:01:27.000000000 -0500
 +++ guile-2.0.11/libguile/posix.c	2015-06-21 14:28:23.624251038 -0400
-@@ -2245,6 +2245,269 @@
+@@ -2245,6 +2245,295 @@
  }
  #endif
  
@@ -47,6 +47,32 @@ a statically-linked Guile in an initrd that doesn't have libc.so around.
 +
 +  if (c_data != NULL)
 +    free (c_data);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++SCM_DEFINE (scm_umount, "umount", 1, 0, 0,
++	    (SCM target),
++	    "Unmount the file system on @var{target}.")
++#define FUNC_NAME s_scm_umount
++{
++  int err;
++  char *c_target;
++
++  c_target = scm_to_locale_string (target);
++
++  err = umount (c_target);
++  if (err != 0)
++    err = errno;
++
++  free (c_target);
 +
 +  if (err != 0)
 +    {
