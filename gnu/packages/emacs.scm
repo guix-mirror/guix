@@ -960,3 +960,26 @@ and stored in memory.")
     (description "This package provides an Emacs library for manipulating
 strings.")
     (license license:gpl3+)))
+
+(define-public emacs-f
+  (package
+    (name "emacs-f")
+    (version "0.17.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rejeep/f.el/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n5gcldf43wmkr7jxgs519v21zavwr0yn8048iv6gvgfwicnyjlx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "http://github.com/rejeep/f.el")
+    (synopsis "Emacs API for working with files and directories")
+    (description "This package provides an Emacs library for working with
+files and directories.")
+    (license license:gpl3+)))
