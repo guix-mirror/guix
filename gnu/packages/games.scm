@@ -788,15 +788,15 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.0.0.3-beta")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/libretro/RetroArch/archive/"
+       (uri (string-append "https://github.com/libretro/RetroArch/archive/v"
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1iqcrb076xiih20sk8n1w79xsp4fb8pj4vkmdc1xn562h56y4nxx"))))
+        (base32 "1bxr8yhk3ad4df544qljsfjfhxa8zy1grq7rn1s02yfvdmgzf4qi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
