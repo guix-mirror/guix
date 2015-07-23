@@ -5931,8 +5931,8 @@ passed to @command{lircd}.
 @cindex setuid programs
 Some programs need to run with ``root'' privileges, even when they are
 launched by unprivileged users.  A notorious example is the
-@command{passwd} programs, which can users can run to change their
-password, and which requires write access to the @file{/etc/passwd} and
+@command{passwd} program, which users can run to change their
+password, and which needs to access the @file{/etc/passwd} and
 @file{/etc/shadow} files---something normally restricted to root, for
 obvious security reasons.  To address that, these executables are
 @dfn{setuid-root}, meaning that they always run with root privileges
