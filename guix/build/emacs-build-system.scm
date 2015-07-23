@@ -59,7 +59,7 @@ store in '.el' files."
          (el-dir (string-append out %install-suffix "/" elpa-name-ver))
          (substitute-cmd (lambda ()
                            (substitute* (find-files "." "\\.el$")
-                             (("\"/bin/(.*)\"" _ cmd)
+                             (("\"/bin/([^.].*)\"" _ cmd)
                               (string-append "\"" (which cmd) "\""))))))
     (with-directory-excursion el-dir
       ;; Some old '.el' files (e.g., tex-buf.el in AUCTeX) are still encoded
@@ -114,7 +114,7 @@ store in '.el' files."
 (define (emacs-inputs inputs)
   "Retrieve the list of Emacs packages from INPUTS."
   (filter (match-lambda
-            ((label directory)
+            ((label . directory)
              (emacs-package? ((compose package-name->name+version
                                        store-directory->name-version)
                               directory)))
