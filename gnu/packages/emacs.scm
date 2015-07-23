@@ -983,3 +983,24 @@ strings.")
     (description "This package provides an Emacs library for working with
 files and directories.")
     (license license:gpl3+)))
+
+(define-public emacs-ob-ipython
+  (package
+    (name "emacs-ob-ipython")
+    (version "20150704.8807064693")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (commit "8807064693")
+                    (url "https://github.com/gregsexton/ob-ipython.git")))
+              (sha256
+               (base32
+                "1scf25snbds9ymagpny30ijbsg479r3nm0ih01dy4m9d0g7qryb7"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)))
+    (home-page "http://www.gregsexton.org")
+    (synopsis "Org-Babel functions for IPython evaluation")
+    (description "This package adds support to Org-Babel for evaluating Python
+source code using IPython.")
+    (license license:gpl3+)))
