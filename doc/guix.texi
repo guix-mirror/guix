@@ -313,8 +313,10 @@ Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
 
 The @code{--warning=no-timestamp} option makes sure GNU@tie{}tar does
-not emit warnings about ``implausibly old time stamps''.  These
-warnings, sometimes enabled by default, stem from the fact that all the
+not emit warnings about ``implausibly old time stamps'' (such
+warnings were triggered by GNU@tie{}tar 1.26 and older; recent
+versions are fine.)
+They stem from the fact that all the
 files in the archive have their modification time set to zero (which
 means January 1st, 1970.)  This is done on purpose to make sure the
 archive content is independent of its creation time, thus making it
