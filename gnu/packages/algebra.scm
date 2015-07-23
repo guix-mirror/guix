@@ -209,15 +209,16 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.3.0")
+   (version "2.7.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fredrik-johansson/arb/archive/"
                   version ".tar.gz"))
             (file-name (string-append name "-" version ".tar.gz"))
-            (sha256 (base32
-                     "0yvabxyyj1g0d8b5mfgzrxq6qya8cmq97vz60ss6aajzm3nwrabk"))))
+            (sha256
+              (base32
+                "1rwkffs57v8mry63rq8l2dyw69zfs9rg5fpbfllqp3nkjnkp1fly"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h
