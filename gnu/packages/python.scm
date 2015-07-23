@@ -4604,3 +4604,45 @@ pseudo terminal (pty), and interact with both the process and its pty.")
 
 (define-public python2-ptyprocess
   (package-with-python2 python-ptyprocess))
+
+(define-public python-terminado
+  (package
+    (name "python-terminado")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/terminado/terminado-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1dkmp1n8dj5v1jl9mfrq8lwyc7dsfrvcmz2bgkpg315sy7pr7s33"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-tornado" ,python-tornado)
+       ("python-ptyprocess" ,python-ptyprocess)))
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose" ,python-nose)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "nosetests")))))))
+    (home-page "https://github.com/takluyver/terminado")
+    (synopsis "Terminals served to term.js using Tornado websockets")
+    (description "This package provides a Tornado websocket backend for the
+term.js Javascript terminal emulator library.")
+    (license bsd-2)))
+
+(define-public python2-terminado
+  (let ((terminado (package-with-python2 python-terminado)))
+    (package (inherit terminado)
+             (propagated-inputs
+              `(("python2-tornado" ,python2-tornado)
+                ("python2-backport-ssl-match-hostname"
+                 ,python2-backport-ssl-match-hostname)
+                ,@(alist-delete "python-tornado"
+                                (package-propagated-inputs terminado)))))))
