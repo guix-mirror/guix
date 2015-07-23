@@ -122,7 +122,7 @@ spying and/or modification by the server.")
     (home-page "http://archive.miek.nl/projects/hdup/index.html")
     (synopsis "Simple incremental backup tool")
     (description
-     "Hdup2 is a backup utilty, its aim is to make backup really simple.  The
+     "Hdup2 is a backup utility, its aim is to make backup really simple.  The
 backup scheduling is done by means of a cron job.  It supports an
 include/exclude mechanism, remote backups, encrypted backups and split
 backups (called chunks) to allow easy burning to CD/DVD.")

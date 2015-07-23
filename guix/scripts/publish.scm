@@ -333,7 +333,7 @@ blocking."
                                 (lambda (opt name arg result)
                                   (leave (_ "~A: unrecognized option~%") name))
                                 (lambda (arg result)
-                                  (leave (_ "~A: extraneuous argument~%") arg))
+                                  (leave (_ "~A: extraneous argument~%") arg))
                                 %default-options))
            (user    (assoc-ref opts 'user))
            (port    (assoc-ref opts 'port))

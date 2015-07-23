@@ -577,7 +577,7 @@ Run a set of checkers on the specified package; if none is specified,
 run the checkers on all packages.\n"))
   (display (_ "
   -c, --checkers=CHECKER1,CHECKER2...
-                         only run the specificed checkers"))
+                         only run the specified checkers"))
   (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "

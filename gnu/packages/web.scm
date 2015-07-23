@@ -1175,7 +1175,7 @@ memory interprocess cache.  It is based on Cache::FastMmap.")
     (home-page "http://search.cpan.org/dist/Catalyst-Plugin-StackTrace")
     (synopsis "Stack trace on the Catalyst debug screen")
     (description "This plugin enhances the standard Catalyst debug screen by
-including a stack trace of your appliation up to the point where the error
+including a stack trace of your application up to the point where the error
 occurred.  Each stack frame is displayed along with the package name, line
 number, file name, and code context surrounding the line number.")
     (license (package-license perl))))

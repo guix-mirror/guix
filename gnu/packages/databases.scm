@@ -725,5 +725,5 @@ Driver.")
 self-contained, serverless, zero-configuration, transactional NoSQL
 database engine.  UnQLite is a document store database similar to
 MongoDB, Redis, CouchDB, etc. as well as a standard Key/Value store
-similar to BerkelyDB, LevelDB, etc.")
+similar to BerkeleyDB, LevelDB, etc.")
     (license bsd-2)))

@@ -5618,9 +5618,9 @@ the system epoch.")
          "11lf54akr9nbivqkjrhvkmfdgkbhw85sq0q4mak56n6bf542bgbm"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/TimeDate")
-    (synopsis "Date parsing/formating subroutines")
+    (synopsis "Date parsing/formatting subroutines")
     (description "This module provides routines for parsing date string into
-time values and formating dates into ASCII strings.")
+time values and formatting dates into ASCII strings.")
     (license (package-license perl))))
 
 (define-public perl-time-mock

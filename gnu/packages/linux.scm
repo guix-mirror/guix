@@ -1113,7 +1113,7 @@ transparently through a bridge.")
     (synopsis "NetLink protocol library suite")
     (description
      "The libnl suite is a collection of libraries providing APIs to netlink
-protocol based Linux kernel interfaces.  Netlink is an IPC mechanism primarly
+protocol based Linux kernel interfaces.  Netlink is an IPC mechanism primarily
 between the kernel and user space processes.  It was designed to be a more
 flexible successor to ioctl to provide mainly networking related kernel
 configuration and monitoring interfaces.")
@@ -2112,7 +2112,7 @@ specified in /etc/acpi/events and execute the rules that match the event.")
     (home-page "http://linux-diag.sourceforge.net/Sysfsutils.html")
     (synopsis "System utilities based on Linux sysfs")
     (description
-     "These are a set of utilites built upon sysfs, a virtual filesystem in
+     "These are a set of utilities built upon sysfs, a virtual filesystem in
 Linux kernel versions 2.5+ that exposes a system's device tree.  The package
 also contains the libsysfs library.")
     ;; The library is under lgpl2.1+ (all files say "or any later version").
@@ -2214,7 +2214,7 @@ protocol in question.")
     (synopsis "AV/C protocol library for IEEE 1394")
     (description
      "Libavc1394 is a programming interface to the AV/C specification from
-the 1394 Trade Assocation.  AV/C stands for Audio/Video Control.")
+the 1394 Trade Association.  AV/C stands for Audio/Video Control.")
     (license lgpl2.1+)))
 
 (define-public libiec61883
