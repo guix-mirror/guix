@@ -299,19 +299,6 @@ it atomically, and then run OS's activation script."
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
-(define* (maybe-build drvs
-                      #:key dry-run? use-substitutes?)
-  "Show what will/would be built, and actually build DRVS, unless DRY-RUN? is
-true."
-  (with-monad %store-monad
-    (>>= (show-what-to-build* drvs
-                              #:dry-run? dry-run?
-                              #:use-substitutes? use-substitutes?)
-         (lambda (_)
-           (if dry-run?
-               (return #f)
-               (built-derivations drvs))))))
-
 (define* (perform-action action os
                          #:key grub? dry-run?
                          use-substitutes? device target

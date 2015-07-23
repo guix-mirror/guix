@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,11 +21,17 @@
 (define-module (guix scripts)
   #:use-module (guix utils)
   #:use-module (guix ui)
+  #:use-module (guix store)
+  #:use-module (guix monads)
+  #:use-module (guix packages)
+  #:use-module (guix derivations)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (args-fold*
-            parse-command-line))
+            parse-command-line
+            maybe-build
+            build-package))
 
 ;;; Commentary:
 ;;;
@@ -77,5 +84,35 @@ parameter of 'args-fold'."
     (lambda seeds
       ;; ARGS take precedence over what the environment variable specifies.
       (parse-options-from args seeds))))
+
+(define* (maybe-build drvs
+                      #:key dry-run? use-substitutes?)
+  "Show what will/would be built, and actually build DRVS, unless DRY-RUN? is
+true."
+  (with-monad %store-monad
+    (>>= (show-what-to-build* drvs
+                              #:dry-run? dry-run?
+                              #:use-substitutes? use-substitutes?)
+         (lambda (_)
+           (if dry-run?
+               (return #f)
+               (built-derivations drvs))))))
+
+(define* (build-package package
+                        #:key dry-run? (use-substitutes? #t)
+                        #:allow-other-keys
+                        #:rest build-options)
+  "Build PACKAGE using BUILD-OPTIONS acceptable by 'set-build-options'.
+Show what and how will/would be built."
+  (mbegin %store-monad
+    (apply set-build-options*
+           #:use-substitutes? use-substitutes?
+           (strip-keyword-arguments '(#:dry-run?) build-options))
+    (mlet %store-monad ((derivation (package->derivation package)))
+      (mbegin %store-monad
+        (maybe-build (list derivation)
+                     #:use-substitutes? use-substitutes?
+                     #:dry-run? dry-run?)
+        (return (show-derivation-outputs derivation))))))
 
 ;;; scripts.scm ends here
