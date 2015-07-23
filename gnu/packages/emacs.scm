@@ -934,3 +934,29 @@ and stored in memory.")
     (synopsis "Modern list library for Emacs")
     (description "This package provides a modern list API library for Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-s
+  (package
+    (name "emacs-s")
+    (version "1.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magnars/s.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gah2k577gvnmxlpw7zrz0jr571vghzhdv2hbgchlgah07czd091"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+                     (lambda _
+                       (zero? (system* "./run-tests.sh")))))))
+    (home-page "https://github.com/magnars/s.el")
+    (synopsis "Emacs string manipulation library.")
+    (description "This package provides an Emacs library for manipulating
+strings.")
+    (license license:gpl3+)))
