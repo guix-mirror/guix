@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,7 +172,7 @@ volume name."
                                   (string-append "/xchg/" closure)))
               closures)
     (unless copy-closures?
-      (system* "umount" target-store)))
+      (umount target-store)))
 
   ;; Add the non-store directories and files.
   (display "populating...\n")
@@ -236,6 +236,6 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
   (unless register-closures?
     (reset-timestamps target-directory))
 
-  (zero? (system* "umount" target-directory)))
+  (umount target-directory))
 
 ;;; vm.scm ends here

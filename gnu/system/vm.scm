@@ -212,7 +212,7 @@ the image."
                     (guix build utils))
 
        (let ((inputs
-              '#$(append (list qemu parted grub e2fsprogs util-linux)
+              '#$(append (list qemu parted grub e2fsprogs)
                          (map canonical-package
                               (list sed grep coreutils findutils gawk))
                          (if register-closures? (list guix) '())))
