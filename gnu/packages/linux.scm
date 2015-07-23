@@ -675,6 +675,26 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
     (home-page (package-home-page e2fsprogs))
     (license (package-license e2fsprogs))))
 
+(define-public extundelete
+  (package
+    (name "extundelete")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/extundelete/"
+                                  version "/extundelete-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))))
+    (build-system gnu-build-system)
+    (inputs `(("e2fsprogs" ,e2fsprogs)))
+    (home-page "http://extundelete.sourceforge.net/")
+    (synopsis "Recover deleted files from ext2/3/4 partitions")
+    (description
+     "Extundelete is a set of tools that can recover deleted files from an
+ext3 or ext4 partition.")
+    (license gpl2)))
+
 (define-public zerofree
   (package
     (name "zerofree")
