@@ -30,6 +30,7 @@
 (require 'cl-lib)
 (require 'guix-profiles)
 (require 'guix-backend)
+(require 'guix-guile)
 (require 'guix-utils)
 (require 'guix-history)
 (require 'guix-messages)

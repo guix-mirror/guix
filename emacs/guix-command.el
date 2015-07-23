@@ -65,6 +65,7 @@
 (require 'guix-help-vars)
 (require 'guix-read)
 (require 'guix-base)
+(require 'guix-guile)
 (require 'guix-external)
 
 (defgroup guix-commands nil

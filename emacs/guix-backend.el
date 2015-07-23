@@ -305,24 +305,6 @@ additional internal REPL if it exists."
 (defvar guix-operation-buffer nil
   "Buffer from which the latest Guix operation was performed.")
 
-(defun guix-make-guile-expression (fun &rest args)
-  "Return string containing a guile expression for calling FUN with ARGS."
-  (format "(%S %s)" fun
-          (mapconcat
-           (lambda (arg)
-             (cond
-              ((null arg) "'()")
-              ((or (eq arg t)
-                   ;; An ugly hack to separate 'false' from nil
-                   (equal arg 'f)
-                   (keywordp arg))
-               (concat "#" (prin1-to-string arg t)))
-              ((or (symbolp arg) (listp arg))
-               (concat "'" (prin1-to-string arg)))
-              (t (prin1-to-string arg))))
-           args
-           " ")))
-
 (defun guix-eval (str &optional wrap)
   "Evaluate guile expression STR.
 If WRAP is non-nil, wrap STR into (begin ...) form.
