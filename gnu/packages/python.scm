@@ -4543,3 +4543,31 @@ complexity of Python source code.")
 
 (define-public python2-flake8
   (package-with-python2 python-flake8))
+
+(define-public python-mistune
+  (package
+    (name "python-mistune")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/m/mistune/mistune-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17zqjp9m4d1w3jf2rbbq5xshcw24q1vlcv24gkgfqqyyymajxahx"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose" ,python-nose)
+       ("python-cython" ,python-cython)))
+    (home-page "https://github.com/lepture/mistune")
+    (synopsis "Markdown parser in pure Python")
+    (description "This package provides a fast markdown parser in pure
+Python.")
+    (license bsd-3)))
+
+(define-public python2-mistune
+  (package-with-python2 python-mistune))
