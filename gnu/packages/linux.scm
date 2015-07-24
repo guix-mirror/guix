@@ -558,14 +558,16 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.42.12")
+    (version "1.42.13")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/e2fsprogs/e2fsprogs-"
-                                 version ".tar.gz"))
+             (uri (string-append
+                   "mirror://kernel.org/linux/kernel/people/tytso/"
+                   name "/v" version "/"
+                   name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0v0qcfyls0dlrjy8gx9m3s2wbkp5z3lbsr5hb7x8kp8f3bclcy71"))
+               "1ix0b83zgw5n0p2grh2961c6796m92yr2jqc2sbr23x3lfsp8r71"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "MCONFIG.in"
