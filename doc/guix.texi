@@ -364,7 +364,8 @@ authorize them:
 @end example
 @end enumerate
 
-And that's it!
+And that's it!  For additional tips and tricks, @pxref{Application
+Setup}.
 
 The @code{guix} package must remain available in @code{root}'s
 profile, or it would become subject to garbage collection---in which
