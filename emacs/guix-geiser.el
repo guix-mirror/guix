@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'geiser-mode)
+(require 'guix-guile)
 
 (defun guix-geiser-repl ()
   "Return the current Geiser REPL."
@@ -78,6 +79,18 @@ If NO-DISPLAY is non-nil, do not switch to the REPL buffer."
       (guix-repl-send str (not no-history)))
     (unless no-display
       (geiser-repl--switch-to-buffer repl))))
+
+(defun guix-geiser-call (proc &rest args)
+  "Call (PROC ARGS ...) synchronously using the current Geiser REPL.
+PROC and ARGS should be strings."
+  (guix-geiser-eval
+   (apply #'guix-guile-make-call-expression proc args)))
+
+(defun guix-geiser-call-in-repl (proc &rest args)
+  "Call (PROC ARGS ...) in the current Geiser REPL.
+PROC and ARGS should be strings."
+  (guix-geiser-eval-in-repl
+   (apply #'guix-guile-make-call-expression proc args)))
 
 (provide 'guix-geiser)
 

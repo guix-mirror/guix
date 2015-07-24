@@ -24,6 +24,13 @@
 
 ;;; Code:
 
+(defun guix-guile-make-call-expression (proc &rest args)
+  "Return \"(PROC ARGS ...)\" string.
+PROC and ARGS should be strings."
+  (format "(%s %s)"
+          proc
+          (mapconcat #'identity args " ")))
+
 (defun guix-make-guile-expression (fun &rest args)
   "Return string containing a guile expression for calling FUN with ARGS."
   (format "(%S %s)" fun
