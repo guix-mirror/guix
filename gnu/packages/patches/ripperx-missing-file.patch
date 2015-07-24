@@ -1,0 +1,46 @@
+This patch adds a header file that is present in the ripperx git and needed
+for inclusion, but missing in the distribution tarball.
+
+diff -u -r -N ripperx-2.8.0.orig/src/gtk_cpp_workaround.h ripperx-2.8.0/src/gtk_cpp_workaround.h
+--- ripperx-2.8.0.orig/src/gtk_cpp_workaround.h	1970-01-01 01:00:00.000000000 +0100
++++ ripperx-2.8.0/src/gtk_cpp_workaround.h	2015-07-24 21:09:16.548476337 +0200
+@@ -0,0 +1,39 @@
++#ifndef gtk_cpp_workaround_h
++#define gtk_cpp_workaround_h
++#ifdef __cplusplus
++//proto is wrong, override here for C++
++namespace 
++{
++  
++inline void gtk_table_attach (GtkTable *table,
++		       GtkWidget *child,
++		       guint left_attach,
++		       guint right_attach,
++		       guint top_attach,
++		       guint bottom_attach,
++		       //GtkAttachOptions xoptions,
++		       //GtkAttachOptions yoptions,
++		       guint xoptions, guint yoptions,
++		       guint xpadding,
++		       guint ypadding
++		       ) 
++{
++  gtk_table_attach(table,
++		   child,
++		   left_attach,
++		   right_attach,
++		   top_attach,
++		   bottom_attach,
++		   (GtkAttachOptions)xoptions, 
++		   (GtkAttachOptions)yoptions,
++		   xpadding,
++		   ypadding
++		   );
++  
++    };
++
++
++}
++
++#endif
++#endif

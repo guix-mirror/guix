@@ -355,18 +355,17 @@ use with CD-recording software).")
 (define-public ripperx
   (package
    (name "ripperx")
-   (version "2.7.3")
+   (version "2.8.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/ripperx/ripperx/"
-                                version "/ripperX-"
-                                version ".tar.gz"))
+                                version "/ripperx-"
+                                version ".tar.bz2"))
             (sha256
              (base32
-              "130rsb2ly0l6hz728m9qr605ir4073xfl2acvf83id63kxfzjn3x"))
+              "1ss3c1a5hx6c99q1cryxg0jhbnbdj6ga9xyz0dzlz9qhzg5qswfs"))
             (patches
-             ;; see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=713684
-             (list (search-patch "ripperx-libm.patch")))))
+             (list (search-patch "ripperx-missing-file.patch")))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gs-fonts" ,gs-fonts)
@@ -377,7 +376,8 @@ use with CD-recording software).")
    (inputs
     `(("glib" ,glib)
       ("gtk+" ,gtk+-2)
-      ("id3lib" ,id3lib)))
+      ("id3lib" ,id3lib)
+      ("taglib" ,taglib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (synopsis "GTK program to rip and encode CD audio tracks")
