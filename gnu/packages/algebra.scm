@@ -25,7 +25,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -58,7 +58,7 @@ on the rounding.  For the time being, only the few functions needed to
 implement the floating point approach to complex multiplication are
 implemented.  On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT.")
-   (license lgpl2.1+)
+   (license license:lgpl2.1+)
    (home-page "http://mpfrcx.multiprecision.org/")))
 
 (define-public fplll
@@ -79,7 +79,7 @@ multiplication routines such as Toom–Cook and the FFT.")
    (description
     "fplll LLL-reduces euclidean lattices.  Since version 3, it can also
 solve the shortest vector problem.")
-   (license lgpl2.1+)
+   (license license:lgpl2.1+)
    (home-page "http://perso.ens-lyon.fr/damien.stehle/fplll/")))
 
 (define-public pari-gp
@@ -120,7 +120,7 @@ functions to compute with mathematical entities such as matrices,
 polynomials, power series, algebraic numbers, etc., and a lot of
 transcendental functions.
 PARI is also available as a C library to allow for faster computations.")
-   (license gpl2+)
+   (license license:gpl2+)
    (home-page "http://pari.math.u-bordeaux.fr/")))
 
 (define-public gp2c
@@ -154,7 +154,7 @@ transcendental functions.
 PARI is also available as a C library to allow for faster computations.
 
 GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
-   (license gpl2)
+   (license license:gpl2)
    (home-page "http://pari.math.u-bordeaux.fr/")))
 
 (define-public flint
@@ -205,7 +205,7 @@ Operations that can be performed include conversions, arithmetic,
 GCDs, factoring, solving linear systems, and evaluating special
 functions.  In addition, FLINT provides various low-level routines for
 fast arithmetic.")
-   (license gpl2+)
+   (license license:gpl2+)
    (home-page "http://flintlib.org/")))
 
 (define-public arb
@@ -251,7 +251,7 @@ fast arithmetic.")
 arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
-   (license gpl2+)
+   (license license:gpl2+)
    (home-page "http://fredrikj.net/arb/")))
 
 (define-public bc
@@ -292,7 +292,7 @@ real and complex numbers, with automatic, rigorous error control.")
 an interactive environment for evaluating mathematical statements.  Its
 syntax is similar to that of C, so basic usage is familiar.  It also includes
 \"dc\", a reverse-polish calculator.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public fftw
   (package
@@ -326,7 +326,7 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
 transform (DFT) in one or more dimensions, of arbitrary input size, and of
 both real and complex data (as well as of even/odd data---i.e. the discrete
 cosine/ sine transforms or DCT/DST).")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public fftwf
   (package (inherit fftw)
@@ -405,4 +405,4 @@ features, and more.")
 
     ;; Most of the code is MPLv2, with a few files under LGPLv2.1+ or BSD-3.
     ;; See 'COPYING.README' for details.
-    (license mpl2.0)))
+    (license license:mpl2.0)))
