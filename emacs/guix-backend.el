@@ -1,6 +1,6 @@
-;;; guix-backend.el --- Communication with Geiser
+;;; guix-backend.el --- Making and using Guix REPL
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -19,9 +19,10 @@
 
 ;;; Commentary:
 
-;; This file provides the code for interacting with Guile using Geiser.
+;; This file provides the code for interacting with Guile using Guix REPL
+;; (Geiser REPL with some guix-specific additions).
 
-;; By default (if `guix-use-guile-server' is non-nil) 2 Geiser REPLs are
+;; By default (if `guix-use-guile-server' is non-nil) 2 Guix REPLs are
 ;; started.  The main one (with "guile --listen" process) is used for
 ;; "interacting" with a user - for showing a progress of
 ;; installing/deleting Guix packages.  The second (internal) REPL is
@@ -52,6 +53,8 @@
 ;;; Code:
 
 (require 'geiser-mode)
+(require 'geiser-guile)
+(require 'guix-geiser)
 (require 'guix-config)
 (require 'guix-emacs)
 
@@ -305,28 +308,15 @@ additional internal REPL if it exists."
 (defvar guix-operation-buffer nil
   "Buffer from which the latest Guix operation was performed.")
 
-(defun guix-eval (str &optional wrap)
-  "Evaluate guile expression STR.
-If WRAP is non-nil, wrap STR into (begin ...) form.
-Return a list of strings with result values of evaluation."
-  (with-current-buffer (guix-get-repl-buffer 'internal)
-    (let* ((wrapped (if wrap (geiser-debug--wrap-region str) str))
-           (code `(:eval (:scm ,wrapped)))
-           (ret (geiser-eval--send/wait code)))
-      (if (geiser-eval--retort-error ret)
-          (error "Error in evaluating guile expression: %s"
-                 (geiser-eval--retort-output ret))
-        (cdr (assq 'result ret))))))
+(defun guix-eval (str)
+  "Evaluate STR with guile expression using Guix REPL.
+See `guix-geiser-eval' for details."
+  (guix-geiser-eval str (guix-get-repl-buffer 'internal)))
 
-(defun guix-eval-read (str &optional wrap)
-  "Evaluate guile expression STR.
-For the meaning of WRAP, see `guix-eval'.
-Return elisp expression of the first result value of evaluation."
-  ;; Parsing scheme code with elisp `read' is probably not the best idea.
-  (read (replace-regexp-in-string
-         "#f\\|#<unspecified>" "nil"
-         (replace-regexp-in-string
-          "#t" "t" (car (guix-eval str wrap))))))
+(defun guix-eval-read (str)
+  "Evaluate STR with guile expression using Guix REPL.
+See `guix-geiser-eval-read' for details."
+  (guix-geiser-eval-read str (guix-get-repl-buffer 'internal)))
 
 (defun guix-eval-in-repl (str &optional operation-buffer operation-type)
   "Switch to Guix REPL and evaluate STR with guile expression there.
@@ -340,10 +330,7 @@ successful executing of the current operation,
   (setq guix-repl-operation-p t
         guix-repl-operation-type operation-type
         guix-operation-buffer operation-buffer)
-  (let ((repl (guix-get-repl-buffer)))
-    (with-current-buffer repl
-      (geiser-repl--send str))
-    (geiser-repl--switch-to-buffer repl)))
+  (guix-geiser-eval-in-repl str (guix-get-repl-buffer)))
 
 (provide 'guix-backend)
 
