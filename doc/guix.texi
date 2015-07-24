@@ -3939,6 +3939,21 @@ Perl module:
 guix import cpan Acme::Boolean
 @end example
 
+@item cran
+@cindex CRAN
+Import meta-data from @uref{http://cran.r-project.org/, CRAN}, the
+central repository for the @uref{http://r-project.org, GNU@tie{}R
+statistical and graphical environment}.
+
+Information is extracted from the HTML package description.
+
+The command command below imports meta-data for the @code{Cairo}
+R package:
+
+@example
+guix import cran Cairo
+@end example
+
 @item nix
 Import meta-data from a local copy of the source of the
 @uref{http://nixos.org/nixpkgs/, Nixpkgs distribution}@footnote{This
