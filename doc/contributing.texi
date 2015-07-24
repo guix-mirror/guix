@@ -121,6 +121,9 @@ facilities to directly operate on the syntax tree, such as raising an
 s-expression or wrapping it, swallowing or rejecting the following
 s-expression, etc.
 
+GNU Guix also comes with a minor mode that provides some additional
+functionality for Scheme buffers (@pxref{Emacs Development}).
+
 
 @node Coding Style
 @section Coding Style

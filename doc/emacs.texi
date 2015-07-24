@@ -12,7 +12,8 @@ Guix convenient and fun.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
-* Completions: Emacs Completions.       Completing @command{guix} shell command.
+* Completions: Emacs Completions.	Completing @command{guix} shell command.
+* Development: Emacs Development.	Tools for Guix developers.
 @end menu
 
 
@@ -637,3 +638,25 @@ something:
 @item @code{guix lint --checkers=synopsis,des}@key{TAB}
 
 @end itemize
+
+
+@node Emacs Development
+@section Development
+
+By default, when you open a Scheme file, @code{guix-devel-mode} will be
+activated (if you don't want it, set @code{guix-devel-activate-mode} to
+nil).  This minor mode provides the following key bindings:
+
+@table @kbd
+
+@item C-c . k
+Copy the name of the current Guile module into kill ring
+(@code{guix-devel-copy-module-as-kill}).
+
+@item C-c . u
+Use the current Guile module.  Often after opening a Scheme file, you
+want to use a module it defines, so you switch to the Geiser REPL and
+write @code{,use (some module)} there.  You may just use this command
+instead (@code{guix-devel-use-module}).
+
+@end table

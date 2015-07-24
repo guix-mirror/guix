@@ -23,6 +23,7 @@ ELFILES =					\
   emacs/guix-base.el				\
   emacs/guix-build-log.el			\
   emacs/guix-command.el				\
+  emacs/guix-devel.el				\
   emacs/guix-emacs.el				\
   emacs/guix-external.el			\
   emacs/guix-geiser.el				\

@@ -24,6 +24,19 @@
 
 ;;; Code:
 
+(require 'geiser-guile)
+
+(defun guix-guile-current-module ()
+  "Return a string with the current guile module.
+Return nil, if current buffer does not define a module."
+  ;; Modified version of `geiser-guile--get-module'.
+  (save-excursion
+    (geiser-syntax--pop-to-top)
+    (when (or (re-search-backward geiser-guile--module-re nil t)
+              (looking-at geiser-guile--library-re)
+              (re-search-forward geiser-guile--module-re nil t))
+      (match-string-no-properties 1))))
+
 (defun guix-guile-make-call-expression (proc &rest args)
   "Return \"(PROC ARGS ...)\" string.
 PROC and ARGS should be strings."
