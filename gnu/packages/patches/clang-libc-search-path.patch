@@ -2,15 +2,62 @@ Clang attempts to guess file names based on the OS and distro (yes!),
 but unfortunately, that doesn't work for us.
 
 This patch makes it easy to insert libc's $libdir so that Clang passes the
-correct absolute file name of crt1.o etc. to 'ld'.
+correct absolute file name of crt1.o etc. to 'ld'.  It also disables all
+the distro-specific stuff and removes the hard-coded FHS directory names
+to make sure Clang also works on non-GuixSD systems.
 
 --- cfe-3.6.0.src/lib/Driver/ToolChains.cpp	2015-02-18 22:03:07.000000000 +0100
 +++ cfe-3.6.0.src/lib/Driver/ToolChains.cpp	2015-06-19 16:37:20.459701044 +0200
-@@ -3085,6 +3085,10 @@ Linux::Linux(const Driver &D, const llvm
+@@ -2931,6 +2931,9 @@ Linux::Linux(const Driver &D, const llvm
  
-   addPathIfExists(SysRoot + "/lib", Paths);
-   addPathIfExists(SysRoot + "/usr/lib", Paths);
-+
+   Linker = GetLinkerPath();
+ 
++  // Comment out the distro-specific tweaks so that they don't bite when
++  // using Guix on a foreign distro.
++#if 0
+   Distro Distro = DetectDistro(Arch);
+ 
+   if (IsOpenSUSE(Distro) || IsUbuntu(Distro)) {
+@@ -2973,6 +2976,7 @@ Linux::Linux(const Driver &D, const llvm
+ 
+   if (IsOpenSUSE(Distro))
+     ExtraOpts.push_back("--enable-new-dtags");
++#endif
+ 
+   // The selection of paths to try here is designed to match the patterns which
+   // the GCC driver itself uses, as this is part of the GCC-compatible driver.
+@@ -3043,14 +3047,12 @@ Linux::Linux(const Driver &D, const llvm
+     addPathIfExists(D.Dir + "/../" + OSLibDir, Paths);
+   }
+ 
+-  addPathIfExists(SysRoot + "/lib/" + MultiarchTriple, Paths);
+-  addPathIfExists(SysRoot + "/lib/../" + OSLibDir, Paths);
+-  addPathIfExists(SysRoot + "/usr/lib/" + MultiarchTriple, Paths);
+-  addPathIfExists(SysRoot + "/usr/lib/../" + OSLibDir, Paths);
+-
+   // Try walking via the GCC triple path in case of biarch or multiarch GCC
+   // installations with strange symlinks.
+   if (GCCInstallation.isValid()) {
++    // The following code would end up adding things like
++    // "/usr/lib/x86_64-unknown-linux-gnu/../../lib64" to the search path.
++#if 0
+     addPathIfExists(SysRoot + "/usr/lib/" + GCCInstallation.getTriple().str() +
+                     "/../../" + OSLibDir, Paths);
+ 
+@@ -3060,6 +3062,7 @@ Linux::Linux(const Driver &D, const llvm
+       addPathIfExists(GCCInstallation.getInstallPath() +
+                       BiarchSibling.gccSuffix(), Paths);
+     }
++#endif
+ 
+     // See comments above on the multilib variant for details of why this is
+     // included even from outside the sysroot.
+@@ -3083,8 +3086,9 @@ Linux::Linux(const Driver &D, const llvm
+   if (StringRef(D.Dir).startswith(SysRoot))
+     addPathIfExists(D.Dir + "/../lib", Paths);
+ 
+-  addPathIfExists(SysRoot + "/lib", Paths);
+-  addPathIfExists(SysRoot + "/usr/lib", Paths);
 +  // Add libc's lib/ directory to the search path, so that crt1.o, crti.o,
 +  // and friends can be found.
 +  addPathIfExists("@GLIBC_LIBDIR@", Paths);
