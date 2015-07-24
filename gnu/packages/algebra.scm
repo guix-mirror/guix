@@ -46,9 +46,10 @@
              (base32
               "0grw66b255r574lvll1bqccm5myj2m8ajzsjaygcyq9zjnnbnhhy"))))
    (build-system gnu-build-system)
-   (inputs `(("gmp" ,gmp)
-             ("mpfr" ,mpfr)
-             ("mpc"  ,mpc)))
+   (propagated-inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("mpc"  ,mpc))) ; Header files are included by mpfrcx.h.
    (synopsis "Arithmetic of polynomials over arbitrary precision numbers")
    (description
     "Mpfrcx is a library for the arithmetic of univariate polynomials over
