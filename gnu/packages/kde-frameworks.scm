@@ -1,0 +1,50 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (gnu packages kde-frameworks)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils))
+
+(define kde-frameworks-version "5.12.0")
+
+(define-public extra-cmake-modules
+  (package
+    (name "extra-cmake-modules")
+    (version kde-frameworks-version)
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://download.kde.org/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+          (base32 "14n77sn493m8kzr42wv13mdgxpnbx7x64bvw37ircrx8wmf4002i"))))
+    ;; The package looks for Qt5LinguistTools provided by Qt, but apparently
+    ;; compiles without it; it might be needed for building the
+    ;; documentation, which requires the additional Sphinx package.
+    ;; To save space, we do not add these inputs.
+    (build-system cmake-build-system)
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "CMake module files for common software used by KDE")
+    (description "The Extra CMake Modules package, or ECM, adds to the
+modules provided by CMake to find common software.  In addition, it provides
+common build settings used in software produced by the KDE community.")
+    (license license:bsd-3)))

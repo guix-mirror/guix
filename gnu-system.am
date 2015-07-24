@@ -163,6 +163,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/jrnl.scm				\
   gnu/packages/julia.scm			\
   gnu/packages/kde.scm				\
+  gnu/packages/kde-frameworks.scm		\
   gnu/packages/key-mon.scm			\
   gnu/packages/language.scm			\
   gnu/packages/less.scm				\
