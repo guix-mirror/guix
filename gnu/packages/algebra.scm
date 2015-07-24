@@ -20,6 +20,7 @@
 
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
@@ -60,6 +61,34 @@ implemented.  On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT.")
    (license license:lgpl2.1+)
    (home-page "http://mpfrcx.multiprecision.org/")))
+
+(define-public cm
+  (package
+   (name "cm")
+   (version "0.2.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://www.multiprecision.org/cm/download/cm-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "1r5dx5qy0ka2sq26n9jll9iy4sjqg0jp5r3jnbjhpgxvmj8jbhq8"))))
+   (build-system gnu-build-system)
+   (propagated-inputs
+     `(("mpfrcx" ,mpfrcx)
+       ("zlib" ,zlib))) ; Header files included from cm_common.h.
+   (inputs
+     `(("pari-gp"  ,pari-gp)))
+   (synopsis "CM constructions for elliptic curves")
+   (description
+    "The CM software implements the construction of ring class fields of
+imaginary quadratic number fields and of elliptic curves with complex
+multiplication via floating point approximations.  It consists of libraries
+that can be called from within a C program and of executable command
+line applications.")
+   (license license:gpl2+)
+   (home-page "http://cm.multiprecision.org/")))
 
 (define-public fplll
   (package
