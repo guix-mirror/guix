@@ -196,7 +196,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.22.0")
+    (version "2.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
@@ -204,7 +204,7 @@ computational cluster.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16aq0w3dmbd0853j32xk9jin4vb6v6fgakfyvrsmsjizzbn3fpfl"))))
+                "0lnxrjvs3nnmb4bmskag1wg3h2hd80przz5q3xd0bvs7vyxrvpbl"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (inputs `(("samtools" ,samtools)
