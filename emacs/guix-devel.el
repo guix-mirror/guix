@@ -27,6 +27,7 @@
 (require 'guix-guile)
 (require 'guix-geiser)
 (require 'guix-utils)
+(require 'guix-base)
 
 (defgroup guix-devel nil
   "Settings for Guix development utils."
@@ -55,8 +56,47 @@ Interactively, use the module defined by the current scheme file."
   (interactive)
   (guix-copy-as-kill (guix-guile-current-module)))
 
+(defun guix-devel-setup-repl (&optional repl)
+  "Setup REPL for using `guix-devel-...' commands."
+  (guix-devel-use-modules "(guix monad-repl)"
+                          "(guix scripts)"
+                          "(guix store)")
+  ;; Without this workaround, the build output disappears.  See
+  ;; <https://github.com/jaor/geiser/issues/83> for details.
+  (guix-geiser-eval-in-repl
+   "(current-build-output-port (current-error-port))"
+   repl 'no-history 'no-display))
+
+(defvar guix-devel-repl-processes nil
+  "List of REPL processes configured by `guix-devel-setup-repl'.")
+
+(defun guix-devel-setup-repl-maybe (&optional repl)
+  "Setup (if needed) REPL for using `guix-devel-...' commands."
+  (let ((process (get-buffer-process (or repl (guix-geiser-repl)))))
+    (when (and process
+               (not (memq process guix-devel-repl-processes)))
+      (guix-devel-setup-repl repl)
+      (push process guix-devel-repl-processes))))
+
+(defun guix-devel-build-package-definition ()
+  "Build a package defined by the current top-level variable definition."
+  (interactive)
+  (let ((def (guix-guile-current-definition)))
+    (guix-devel-setup-repl-maybe)
+    (guix-devel-use-modules (guix-guile-current-module))
+    (when (or (not guix-operation-confirm)
+              (guix-operation-prompt (format "Build '%s'?" def)))
+      (guix-geiser-eval-in-repl
+       (concat ",run-in-store "
+               (guix-guile-make-call-expression
+                "build-package" def
+                "#:use-substitutes?" (guix-guile-boolean
+                                      guix-use-substitutes)
+                "#:dry-run?" (guix-guile-boolean guix-dry-run)))))))
+
 (defvar guix-devel-keys-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "b") 'guix-devel-build-package-definition)
     (define-key map (kbd "k") 'guix-devel-copy-module-as-kill)
     (define-key map (kbd "u") 'guix-devel-use-module)
     map)

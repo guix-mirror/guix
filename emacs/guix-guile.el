@@ -26,6 +26,23 @@
 
 (require 'geiser-guile)
 
+(defvar guix-guile-definition-regexp
+  (rx bol "(define"
+      (zero-or-one "*")
+      (zero-or-one "-public")
+      (one-or-more space)
+      (zero-or-one "(")
+      (group (one-or-more (or word (syntax symbol)))))
+  "Regexp used to find the guile definition.")
+
+(defun guix-guile-current-definition ()
+  "Return string with name of the current top-level guile definition."
+  (save-excursion
+    (beginning-of-defun)
+    (if (looking-at guix-guile-definition-regexp)
+        (match-string-no-properties 1)
+      (error "Couldn't find the current definition"))))
+
 (defun guix-guile-current-module ()
   "Return a string with the current guile module.
 Return nil, if current buffer does not define a module."
@@ -36,6 +53,11 @@ Return nil, if current buffer does not define a module."
               (looking-at geiser-guile--library-re)
               (re-search-forward geiser-guile--module-re nil t))
       (match-string-no-properties 1))))
+
+(defun guix-guile-boolean (arg)
+  "Return a string with guile boolean value.
+Transform elisp ARG (nil or non-nil) to the guile boolean (#f or #t)."
+  (concat "#" (prin1-to-string (if arg 't 'f))))
 
 (defun guix-guile-make-call-expression (proc &rest args)
   "Return \"(PROC ARGS ...)\" string.

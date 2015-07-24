@@ -659,4 +659,28 @@ want to use a module it defines, so you switch to the Geiser REPL and
 write @code{,use (some module)} there.  You may just use this command
 instead (@code{guix-devel-use-module}).
 
+@item C-c . b
+Build a package defined by the current variable definition.  The
+building process is run in the current Geiser REPL.  If you modified the
+current package definition, don't forget to reevaluate it before calling
+this command---for example, with @kbd{C-M-x} (@pxref{To eval or not to
+eval,,, geiser, Geiser User Manual})
+(@code{guix-devel-build-package-definition}).
+
 @end table
+
+Unluckily, there is a limitation related to long-running REPL commands.
+When there is a running process in a Geiser REPL, you are not supposed
+to evaluate anything in a scheme buffer, because this will ``freeze''
+the REPL: it will stop producing any output (however, the evaluating
+process will continue---you will just not see any progress anymore).  Be
+aware: even moving the point in a scheme buffer may ``break'' the REPL
+if Autodoc (@pxref{Autodoc and friends,,, geiser, Geiser User Manual})
+is enabled (which is the default).
+
+So you have to postpone editing your scheme buffers until the running
+evaluation will be finished in the REPL.
+
+Alternatively, to avoid this limitation, you may just run another Geiser
+REPL, and while something is being evaluated in the previous REPL, you
+can continue editing a scheme file with the help of the current one.
