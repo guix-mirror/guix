@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt))
 
@@ -55,4 +56,33 @@
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
     (description "Libqtxdg implements the freedesktop.org xdg specifications
 in Qt.")
+    (license lgpl2.1+)))
+
+(define-public liblxqt
+  (package
+    (name "liblxqt")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+         (string-append "https://github.com/lxde/" name "/releases/download/"
+                        version "/" name "-" version ".tar.xz"))
+       (uri
+         (string-append "https://github.com/lxde/" name "/archive/"
+                        version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))       (sha256
+        (base32
+         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("libqtxdg" ,libqtxdg)))
+    (home-page "http://lxqt.org/")
+    (synopsis "Core utility library for all LXQt components")
+    (description "liblxqt provides the basic libraries shared by the
+components of the LxQt desktop environment.")
     (license lgpl2.1+)))
