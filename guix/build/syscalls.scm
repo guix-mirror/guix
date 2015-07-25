@@ -363,6 +363,26 @@ system to PUT-OLD."
                            (_ val))))))
        v))))
 
+(define-syntax alignof*
+  ;; XXX: This duplicates 'compile-time-value'.
+  (syntax-rules (int128)
+    ((_ int128)
+     16)
+    ((_ type)
+     (let-syntax ((v (lambda (s)
+                       (let ((val (alignof type)))
+                         (syntax-case s ()
+                           (_ val))))))
+       v))))
+
+(define-syntax align                             ;as found in (system foreign)
+  (syntax-rules (~)
+    "Add to OFFSET whatever it takes to get proper alignment for TYPE."
+    ((_ offset (type ~ endianness))
+     (align offset type))
+    ((_ offset type)
+     (1+ (logior (1- offset) (1- (alignof* type)))))))
+
 (define-syntax type-size
   (syntax-rules (~)
     ((_ (type ~ order))
@@ -385,8 +405,9 @@ system to PUT-OLD."
      #t)
     ((_ bv offset (type0 types ...) (field0 fields ...))
      (begin
-       (write-type bv offset type0 field0)
-       (write-types bv (+ offset (type-size type0))
+       (write-type bv (align offset type0) type0 field0)
+       (write-types bv
+                    (+ (align offset type0) (type-size type0))
                     (types ...) (fields ...))))))
 
 (define-syntax read-type
@@ -408,8 +429,12 @@ system to PUT-OLD."
      (return values ...))
     ((_ return bv offset (type0 types ...) (values ...))
      (read-types return
-                 bv (+ offset (type-size type0)) (types ...)
-                 (values ... (read-type bv offset type0))))))
+                 bv
+                 (+ (align offset type0) (type-size type0))
+                 (types ...)
+                 (values ... (read-type bv
+                                        (align offset type0)
+                                        type0))))))
 
 (define-syntax define-c-struct
   (syntax-rules ()
