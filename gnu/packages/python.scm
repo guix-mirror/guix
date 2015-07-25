@@ -298,6 +298,47 @@ pidof, tty, taskset, pmap.")
 (define-public python2-psutil
   (package-with-python2 python-psutil))
 
+(define-public python-passlib
+  (package
+    (name "python-passlib")
+    (version "1.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/passlib/passlib-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0b9rd161b3mmiwd7nx1v599yh9sp07mlfwac65sjy9qn1l0gd1z9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-py-bcrypt" ,python-py-bcrypt)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'check 'set-PYTHON_EGG_CACHE
+        ;; some tests require access to "$HOME/.cython"
+        (lambda* _ (setenv "PYTHON_EGG_CACHE" "/tmp"))
+         %standard-phases)))
+    (home-page "https://bitbucket.org/ecollins/passlib")
+    (synopsis
+     "Comprehensive password hashing framework")
+    (description
+     "Passlib is a password hashing library for Python 2 & 3, which provides
+cross-platform implementations of over 30 password hashing algorithms, as well
+as a framework for managing existing password hashes.  It's designed to be
+useful for a wide range of tasks, from verifying a hash found in /etc/shadow,
+to providing full-strength password hashing for multi-user application.")
+    (license bsd-3)))
+
+(define-public python2-passlib
+  (package-with-python2 python-passlib))
+
 (define-public python-py-bcrypt
   (package
     (name "python-py-bcrypt")
