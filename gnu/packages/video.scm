@@ -520,7 +520,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -528,7 +528,7 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "05smn9hqdp7iscc1dj4cxp1mrlad7b50lhlnlqisfzf493i2f2jy"))))
+               "1jqzrzrpw6932lbkf863xk8cfmn4z2ngbxz7w8ggmh4f6xz9sgal"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
