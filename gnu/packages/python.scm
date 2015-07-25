@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -537,6 +538,9 @@ Python 3 support.")
 and RIPEMD160), and various encryption algorithms (AES, DES, RSA, ElGamal,
 etc.).  The package is structured to make adding new modules easy.")
     (license public-domain)))
+
+(define-public python2-pycrypto
+  (package-with-python2 python-pycrypto))
 
 (define-public python-keyring
   (package
