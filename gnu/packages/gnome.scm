@@ -2181,11 +2181,14 @@ keyboard shortcuts.")
        ("gobject-introspection" ,gobject-introspection)
        ("libtool" ,libtool)
        ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; colord.pc refers to all these.
+     `(("glib" ,glib)
+       ("udev" ,eudev)
+       ("lcms" ,lcms)))
     (inputs
-     `(("eudev" ,eudev)
-       ("dbus-glib" ,dbus-glib)
+     `(("dbus-glib" ,dbus-glib)
        ("libusb" ,libusb)
-       ("lcms" ,lcms)
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
        ("sane-backends" ,sane-backends)))
