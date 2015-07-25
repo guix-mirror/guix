@@ -57,6 +57,8 @@
             clone
             setns
 
+            PF_PACKET
+            AF_PACKET
             IFF_UP
             IFF_BROADCAST
             IFF_LOOPBACK
@@ -506,7 +508,10 @@ bytevector BV at INDEX."
           (else
            (error "unsupported socket address" sockaddr)))))
 
-(define (read-socket-address bv index)
+(define PF_PACKET 17)                             ;<bits/socket.h>
+(define AF_PACKET PF_PACKET)
+
+(define* (read-socket-address bv #:optional (index 0))
   "Read a socket address from bytevector BV at INDEX."
   (let ((family (bytevector-u16-native-ref bv index)))
     (cond ((= family AF_INET)
@@ -514,7 +519,9 @@ bytevector BV at INDEX."
           ((= family AF_INET6)
            (read-sockaddr-in6 bv index))
           (else
-           "unsupported socket address family" family))))
+           ;; XXX: Unsupported address family, such as AF_PACKET.  Return a
+           ;; vector such that the vector can at least call 'sockaddr:fam'.
+           (vector family)))))
 
 (define %ioctl
   ;; The most terrible interface, live from Scheme.
