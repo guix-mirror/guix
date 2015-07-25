@@ -641,6 +641,7 @@ use 'plain-file' instead~%")
     (list #~(string-append #$shadow "/bin/passwd")
           #~(string-append #$shadow "/bin/su")
           #~(string-append #$inetutils "/bin/ping")
+          #~(string-append #$inetutils "/bin/ping6")
           #~(string-append #$sudo "/bin/sudo")
           #~(string-append #$fuse "/bin/fusermount"))))
 
