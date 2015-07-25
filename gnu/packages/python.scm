@@ -298,6 +298,38 @@ pidof, tty, taskset, pmap.")
 (define-public python2-psutil
   (package-with-python2 python-psutil))
 
+(define-public python-paramiko
+  (package
+    (name "python-paramiko")
+    (version "1.15.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/paramiko/paramiko-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0mbfzm9zlrz6mla9xakrm8wkll3x035f9rj3c5pbgjzfldqscmjg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-ecdsa" ,python-ecdsa)
+       ("python-pycrypto" ,python-pycrypto)))
+    (home-page "http://www.paramiko.org/")
+    (synopsis "SSHv2 protocol library")
+    (description "Paramiko is a python implementation of the SSHv2 protocol,
+providing both client and server functionality.  While it leverages a Python C
+extension for low level cryptography (PyCrypto), Paramiko itself is a pure
+Python interface around SSH networking concepts.")
+    (license lgpl2.1+)))
+
+(define-public python2-paramiko
+  (package-with-python2 python-paramiko))
+
+
 (define-public python-httplib2
   (package
     (name "python-httplib2")
