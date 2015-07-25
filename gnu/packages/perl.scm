@@ -1156,7 +1156,7 @@ The maths behind this is unfortunately fiddly, hence this module.")
     (synopsis "Structured tags datastructures")
     (description
      "This module is for manipulating data as hierarchical tag/value
-pairs (Structured TAGs or Simple Tree AGgreggates).  These datastructures can
+pairs (Structured TAGs or Simple Tree AGgregates).  These datastructures can
 be represented as nested arrays, which have the advantage of being native to
 Perl.")
     (license (package-license perl))))
