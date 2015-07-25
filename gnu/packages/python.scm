@@ -30,7 +30,7 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
-                          psfl public-domain x11-style))
+                          isc psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -297,6 +297,44 @@ pidof, tty, taskset, pmap.")
 
 (define-public python2-psutil
   (package-with-python2 python-psutil))
+
+(define-public python-py-bcrypt
+  (package
+    (name "python-py-bcrypt")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/py-bcrypt/py-bcrypt-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0y6smdggwi5s72v6p1nn53dg6w05hna3d264cq6kas0lap73p8az"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://code.google.com/p/py-bcrypt")
+    (synopsis
+     "Bcrypt password hashing and key derivation")
+    (description
+     "A python wrapper of OpenBSD's Blowfish password hashing code.  This
+system hashes passwords using a version of Bruce Schneier's Blowfish block
+cipher with modifications designed to raise the cost of off-line password
+cracking and frustrate fast hardware implementation.  The computation cost of
+the algorithm is parametised, so it can be increased as computers get faster.
+The intent is to make a compromise of a password database less likely to
+result in an attacker gaining knowledge of the plaintext passwords (e.g. using
+John the Ripper).")
+    ;; "sha2.c" is under BSD-3;
+    ;; "blowfish.c" and "bcrypt.c" are under BSD-4;
+    ;; the rest is under ISC.
+    (license (list isc bsd-3 bsd-4))))
+
+(define-public python2-py-bcrypt
+  (package-with-python2 python-py-bcrypt))
+
 
 (define-public python-paramiko
   (package
