@@ -1,9 +1,11 @@
 Allow the use of DT_RUNPATH.  This fixes a bug whereby libQt5WebEngineCore.so
 ends up having an empty RUNPATH.
 
---- qt-everywhere-opensource-src-5.4.1/qtwebengine/src/3rdparty/chromium/build/common.gypi	2015-04-14 10:21:09.330925545 +0200
-+++ qt-everywhere-opensource-src-5.4.1/qtwebengine/src/3rdparty/chromium/build/common.gypi	2015-04-14 10:21:38.735106097 +0200
-@@ -4142,19 +4142,6 @@
+
+diff -u -r qt-everywhere-opensource-src-5.5.0.orig/qtwebengine/src/3rdparty/chromium/build/common.gypi qt-everywhere-opensource-src-5.5.0/qtwebengine/src/3rdparty/chromium/build/common.gypi
+--- qt-everywhere-opensource-src-5.5.0.orig/qtwebengine/src/3rdparty/chromium/build/common.gypi	2015-06-29 22:09:36.000000000 +0200
++++ qt-everywhere-opensource-src-5.5.0/qtwebengine/src/3rdparty/chromium/build/common.gypi	2015-07-25 15:32:57.999411191 +0200
+@@ -4448,19 +4448,6 @@
                '-B<!(cd <(DEPTH) && pwd -P)/<(binutils_dir)',
              ],
            }],
@@ -19,7 +21,7 @@ ends up having an empty RUNPATH.
 -            'ldflags': [
 -              '-Wl,--disable-new-dtags',
 -            ],
--          }]
-         ],
-       },
-     }],
+-          }],
+           ['gcc_version>=47 and clang==0', {
+             'target_conditions': [
+               ['_toolset=="target"', {

@@ -603,7 +603,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/qemu-CVE-2015-4106-pt8.patch		\
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/qt4-tests.patch				\
-  gnu/packages/patches/qt5-conflicting-typedefs.patch		\
   gnu/packages/patches/qt5-runpath.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\

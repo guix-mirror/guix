@@ -37,11 +37,11 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages ninja)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -95,26 +95,20 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.4.2")
+    (version "5.5.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.qt-project.org/official_releases/qt/"
-                                 (string-copy version 0 (string-rindex version #\.))
-                                 "/" version
-                                 "/single/qt-everywhere-opensource-src-"
-                                 version ".tar.xz"))
+             (uri
+               (string-append
+                 "http://download.qt.io/official_releases/qt/"
+                 (version-major+minor version)
+                 "/" version
+                 "/single/qt-everywhere-opensource-src-"
+                 version ".tar.xz"))
              (sha256
-              (base32
-               "09gay5cimfdb0apy60v7z4r4zkl2vjysdppzihpla8dp2c30fvcc"))
-             (patches (list (search-patch "qt5-conflicting-typedefs.patch")
-                            (search-patch "qt5-runpath.patch")))
-             (snippet
-              '(begin
-                 ;; Remove broken symlinks.
-                 (delete-file "qtwebengine/src/3rdparty/chromium/third_party/\
-mesa/src/src/gallium/state_trackers/d3d1x/w32api")
-                 (delete-file "qtwebengine/src/3rdparty/chromium/third_party/\
-webrtc/tools/e2e_quality/audio/perf")))))
+               (base32
+                 "1by2l8wxbqwvs7anb5ggmqhn2cfmhyw3a23bp1yyd240rdpa38ky"))
+             (patches (list (search-patch "qt5-runpath.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -126,6 +120,7 @@ webrtc/tools/e2e_quality/audio/perf")))))
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
+       ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)
        ("libmng" ,libmng)
@@ -163,7 +158,8 @@ webrtc/tools/e2e_quality/audio/perf")))))
      `(("bison" ,bison)
        ("flex" ,flex)
        ("gperf" ,gperf)
-       ("ninja" ,ninja)
+       ;; Ninja is only needed for the disabled qtwebengine
+;;        ("ninja" ,ninja)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
@@ -179,12 +175,14 @@ webrtc/tools/e2e_quality/audio/perf")))))
                 (("/bin/pwd") (which "pwd")))
               (substitute* "qtbase/src/corelib/global/global.pri"
                 (("/bin/ls") (which "ls")))
-              (substitute* "qtwebengine/src/3rdparty/chromium/build/common.gypi"
-                (("/bin/echo") (which "echo")))
-              (substitute* "qtwebengine/src/3rdparty/chromium/third_party/\
-WebKit/Source/build/scripts/scripts.gypi"
-                (("/usr/bin/gcc") (which "gcc")))
-              (setenv "NINJA_PATH" (which "ninja"))
+              ;; commented out since qtwebengine is not built, but left in
+              ;; for reference
+;;               (substitute* "qtwebengine/src/3rdparty/chromium/build/common.gypi"
+;;                 (("/bin/echo") (which "echo")))
+;;               (substitute* "qtwebengine/src/3rdparty/chromium/third_party/\
+;; WebKit/Source/build/scripts/scripts.gypi"
+;;                 (("/usr/bin/gcc") (which "gcc")))
+;;               (setenv "NINJA_PATH" (which "ninja"))
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
               (zero? (system*
@@ -198,6 +196,12 @@ WebKit/Source/build/scripts/scripts.gypi"
                       "-openssl-linked"
                       ;; explicitly link with dbus instead of dlopening it
                       "-dbus-linked"
+                      ;; drop chromium module (qtwebengine); it fails
+                      ;; compilation in qt 5.5:
+                      ;; 3rdparty/chromium/ui/gfx/codec/jpeg_codec.cc:362:10:
+                      ;; error: cannot convert ‘bool’ to ‘boolean’ in return
+                      ;; and might pose security problems.
+                      "-skip" "qtwebengine"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
@@ -240,7 +244,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
              (patches (map search-patch
                            '("qt4-ldflags.patch" "qt4-tests.patch")))))
-    (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
+    (inputs `(,@(alist-delete "harfbuzz"
+                              (alist-delete "libjpeg" (package-inputs qt)))
               ("libjepg" ,libjpeg-8)
               ("libsm" ,libsm)))
 
