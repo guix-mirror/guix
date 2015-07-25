@@ -388,7 +388,11 @@ system to PUT-OLD."
                     (types ...) (fields ...))))))
 
 (define-syntax read-type
-  (syntax-rules (~)
+  (syntax-rules (~ quote *)
+    ((_ bv offset '*)
+     (make-pointer (bytevector-uint-ref bv offset
+                                        (native-endianness)
+                                        (sizeof* '*))))
     ((_ bv offset (type ~ order))
      (bytevector-uint-ref bv offset
                           (endianness order) (sizeof* type)))
