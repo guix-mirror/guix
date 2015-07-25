@@ -3077,3 +3077,30 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
    (description "Eye of GNOME is the GNOME image viewer.  It
 supports image conversion, rotation, and slideshows.")
    (license license:gpl2+)))
+
+(define-public libgudev
+  (package
+    (name "libgudev")
+    (version "230")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "063w6j35n0i0ssmv58kivc1mw4070z6fzb83hi4xfrhcxnn7zrx2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by gudev-1.0.pc
+    (inputs
+     `(("udev" ,eudev)))
+    (home-page "https://wiki.gnome.org/Projects/libgudev")
+    (synopsis "GObject bindings for libudev")
+    (description
+     "This library provides GObject bindings for libudev.  It was originally
+part of udev-extras, then udev, then systemd.  It's now a project on its own.")
+    (license license:lgpl2.1+)))
