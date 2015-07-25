@@ -298,6 +298,35 @@ pidof, tty, taskset, pmap.")
 (define-public python2-psutil
   (package-with-python2 python-psutil))
 
+(define-public python-ccm
+  (package
+    (name "python-ccm")
+    (version "2.0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/ccm/ccm-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "199jw221albs2iv6xczczq88fxnh0aw8hzmys8qkbzkd99dssng9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/pcmanus/ccm")
+    (synopsis "Cassandra Cluster Manager")
+    (description "A script/library to create, launch and remove an Apache
+Cassandra cluster on localhost.")
+    (license asl2.0)))
+
+(define-public python2-ccm
+  (package-with-python2 python-ccm))
+
 (define-public python-pytz
   (package
     (name "python-pytz")
