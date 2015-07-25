@@ -298,6 +298,40 @@ pidof, tty, taskset, pmap.")
 (define-public python2-psutil
   (package-with-python2 python-psutil))
 
+(define-public python-ecdsa
+  (package
+    (name "python-ecdsa")
+    (version "0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/e/ecdsa/ecdsa-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1yj31j0asmrx4an9xvsaj2icdmzy6pw0glfpqrrkrphwdpi1xkv4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page
+     "http://github.com/warner/python-ecdsa")
+    (synopsis
+     "ECDSA cryptographic signature library (pure python)")
+    (description
+     "This is an easy-to-use implementation of ECDSA cryptography (Elliptic
+Curve Digital Signature Algorithm), implemented purely in Python.  With this
+library, you can quickly create keypairs (signing key and verifying key), sign
+messages, and verify the signatures.  The keys and signatures are very short,
+making them easy to handle and incorporate into other protocols.")
+    (license license:expat)))
+
+(define-public python2-ecdsa
+  (package-with-python2 python-ecdsa))
+
 (define-public python-ccm
   (package
     (name "python-ccm")
