@@ -173,7 +173,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                         (define valid?
                           (negate loopback-network-interface?))
                         (define ifaces
-                          (filter valid? (all-network-interfaces)))
+                          (filter valid? (all-network-interface-names)))
 
                         ;; XXX: Make sure the interfaces are up so that
                         ;; 'dhclient' can actually send/receive over them.

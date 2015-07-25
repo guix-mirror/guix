@@ -152,15 +152,15 @@
                          (status:exit-val status))))
                (eq? #t result))))))))
 
-(test-assert "all-network-interfaces"
-  (match (all-network-interfaces)
+(test-assert "all-network-interface-names"
+  (match (all-network-interface-names)
     (((? string? names) ..1)
      (member "lo" names))))
 
-(test-assert "network-interfaces"
-  (match (network-interfaces)
+(test-assert "network-interface-names"
+  (match (network-interface-names)
     (((? string? names) ..1)
-     (lset<= string=? names (all-network-interfaces)))))
+     (lset<= string=? names (all-network-interface-names)))))
 
 (test-assert "network-interface-flags"
   (let* ((sock  (socket AF_INET SOCK_STREAM 0))

@@ -60,8 +60,8 @@
             IFF_UP
             IFF_BROADCAST
             IFF_LOOPBACK
-            all-network-interfaces
-            network-interfaces
+            all-network-interface-names
+            network-interface-names
             network-interface-flags
             loopback-network-interface?
             network-interface-address
@@ -533,8 +533,8 @@ most LEN bytes from BV."
                                       (take-while (negate zero?) bytes)))
                    result))))))
 
-(define* (network-interfaces #:optional sock)
-  "Return the list of existing network interfaces.  This is typically limited
+(define* (network-interface-names #:optional sock)
+  "Return the names of existing network interfaces.  This is typically limited
 to interfaces that are currently up."
   (let* ((close? (not sock))
          (sock   (or sock (socket SOCK_STREAM AF_INET 0)))
@@ -559,9 +559,9 @@ to interfaces that are currently up."
   ;; Regexp matching an interface line in Linux's /proc/net/dev.
   (make-regexp "^[[:blank:]]*([[:alnum:]]+):.*$"))
 
-(define (all-network-interfaces)
-  "Return all the registered network interfaces, including those that are not
-up."
+(define (all-network-interface-names)
+  "Return all the names of the registered network interfaces, including those
+that are not up."
   (call-with-input-file "/proc/net/dev"           ;XXX: Linux-specific
     (lambda (port)
       (let loop ((interfaces '()))
