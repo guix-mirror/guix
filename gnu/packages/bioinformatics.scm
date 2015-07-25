@@ -204,7 +204,8 @@ computational cluster.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lnxrjvs3nnmb4bmskag1wg3h2hd80przz5q3xd0bvs7vyxrvpbl"))))
+                "0lnxrjvs3nnmb4bmskag1wg3h2hd80przz5q3xd0bvs7vyxrvpbl"))
+              (patches (list (search-patch "bedtools-32bit-compilation.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (inputs `(("samtools" ,samtools)
