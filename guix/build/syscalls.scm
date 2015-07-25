@@ -21,6 +21,8 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -70,7 +72,15 @@
             set-network-interface-flags
             set-network-interface-address
             set-network-interface-up
-            configure-network-interface))
+            configure-network-interface
+
+            interface?
+            interface-name
+            interface-flags
+            interface-address
+            interface-netmask
+            interface-broadcast-address
+            network-interfaces))
 
 ;;; Commentary:
 ;;;
@@ -712,5 +722,109 @@ the same type as that returned by 'make-socket-address'."
                                        (logior flags IFF_UP))))
       (lambda ()
         (close-port sock)))))
+
+
+;;;
+;;; Details about network interfaces---aka. 'getifaddrs'.
+;;;
+
+;; Network interfaces.  XXX: We would call it <network-interface> but that
+;; would collide with the ioctl wrappers above.
+(define-record-type <interface>
+  (make-interface name flags address netmask broadcast-address)
+  interface?
+  (name              interface-name)               ;string
+  (flags             interface-flags)              ;or'd IFF_* values
+  (address           interface-address)            ;sockaddr | #f
+  (netmask           interface-netmask)            ;sockaddr | #f
+  (broadcast-address interface-broadcast-address)) ;sockaddr | #f
+
+(define (write-interface interface port)
+  (match interface
+    (($ <interface> name flags address)
+     (format port "#<interface ~s " name)
+     (unless (zero? (logand IFF_UP flags))
+       (display "up " port))
+     (if (member (sockaddr:fam address) (list AF_INET AF_INET6))
+         (format port "~a " (inet-ntop (sockaddr:fam address)
+                                       (sockaddr:addr address)))
+         (format port "family:~a " (sockaddr:fam address)))
+     (format port "~a>" (number->string (object-address interface) 16)))))
+
+(set-record-type-printer! <interface> write-interface)
+
+(define (values->interface next name flags address netmask
+                           broadcast-address data)
+  "Given the raw field values passed as arguments, return a pair whose car is
+an <interface> object, and whose cdr is the pointer NEXT."
+  (define (maybe-socket-address pointer)
+    (if (null-pointer? pointer)
+        #f
+        (read-socket-address (pointer->bytevector pointer 50)))) ;XXX: size
+
+  (cons (make-interface (if (null-pointer? name)
+                            #f
+                            (pointer->string name))
+                        flags
+                        (maybe-socket-address address)
+                        (maybe-socket-address netmask)
+                        (maybe-socket-address broadcast-address)
+                        ;; Ignore DATA.
+                        )
+        next))
+
+(define-c-struct ifaddrs                          ;<ifaddrs.h>
+  values->interface
+  read-ifaddrs
+  write-ifaddrs!
+  (next          '*)
+  (name          '*)
+  (flags         unsigned-int)
+  (addr          '*)
+  (netmask       '*)
+  (broadcastaddr '*)
+  (data          '*))
+
+(define-syntax %struct-ifaddrs-type
+  (identifier-syntax
+   `(* * ,unsigned-int * * * *)))
+
+(define-syntax %sizeof-ifaddrs
+  (identifier-syntax
+   (sizeof* %struct-ifaddrs-type)))
+
+(define (unfold-interface-list ptr)
+  "Call 'read-ifaddrs' on PTR and all its 'next' fields, recursively, and
+return the list of resulting <interface> objects."
+  (let loop ((ptr    ptr)
+             (result '()))
+    (if (null-pointer? ptr)
+        (reverse result)
+        (match (read-ifaddrs (pointer->bytevector ptr %sizeof-ifaddrs)
+                             0)
+          ((ifaddr . ptr)
+           (loop ptr (cons ifaddr result)))))))
+
+(define network-interfaces
+  (let* ((ptr  (dynamic-func "getifaddrs" (dynamic-link)))
+         (proc (pointer->procedure int ptr (list '*))))
+    (lambda ()
+      "Return a list of <interface> objects, each denoting a configured
+network interface.  This is implemented using the 'getifaddrs' libc function."
+      (let* ((ptr (bytevector->pointer (make-bytevector (sizeof* '*))))
+             (ret (proc ptr))
+             (err (errno)))
+        (if (zero? ret)
+            (let* ((ptr    (dereference-pointer ptr))
+                   (result (unfold-interface-list ptr)))
+              (free-ifaddrs ptr)
+              result)
+            (throw 'system-error "network-interfaces" "~A"
+                   (list (strerror err))
+                   (list err)))))))
+
+(define free-ifaddrs
+  (let ((ptr (dynamic-func "freeifaddrs" (dynamic-link))))
+    (pointer->procedure void ptr '(*))))
 
 ;;; syscalls.scm ends here

@@ -211,6 +211,29 @@
         ;; We get EPERM with Linux 3.18ish and EACCES with 2.6.32.
         (memv (system-error-errno args) (list EPERM EACCES))))))
 
+(test-equal "network-interfaces returns one or more interfaces"
+  '(#t #t #t)
+  (match (network-interfaces)
+    ((interfaces ..1)
+     (list (every interface? interfaces)
+           (every string? (map interface-name interfaces))
+           (every vector? (map interface-address interfaces))))))
+
+(test-equal "network-interfaces returns \"lo\""
+  (list #t (make-socket-address AF_INET (inet-pton AF_INET "127.0.0.1") 0))
+  (match (filter (lambda (interface)
+                   (string=? "lo" (interface-name interface)))
+                 (network-interfaces))
+    ((loopbacks ..1)
+     (list (every (lambda (lo)
+                    (not (zero? (logand IFF_LOOPBACK (interface-flags lo)))))
+                  loopbacks)
+           (match (find (lambda (lo)
+                          (= AF_INET (sockaddr:fam (interface-address lo))))
+                        loopbacks)
+             (#f #f)
+             (lo (interface-address lo)))))))
+
 (test-end)
 
 
