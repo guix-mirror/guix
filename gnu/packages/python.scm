@@ -298,6 +298,34 @@ pidof, tty, taskset, pmap.")
 (define-public python2-psutil
   (package-with-python2 python-psutil))
 
+(define-public python-httplib2
+  (package
+    (name "python-httplib2")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/h/httplib2/httplib2-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1xc3clbrf77r0600kja71j7hk1218sjiq0gfmb8vjdajka8kjqxw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page
+     "https://github.com/jcgregorio/httplib2")
+    (synopsis "Comprehensive HTTP client library")
+    (description
+     "A comprehensive HTTP client library supporting many features left out of
+other HTTP libraries.")
+    (license license:expat)))
+
+(define-public python2-httplib2
+  (package-with-python2 python-httplib2))
+
 (define-public python-ecdsa
   (package
     (name "python-ecdsa")
