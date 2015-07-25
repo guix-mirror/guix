@@ -21,13 +21,26 @@
   #:use-module (guix build store-copy)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
+  #:use-module (guix records)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:export (qemu-command
             load-in-linux-vm
             format-partition
-            initialize-root-partition
+
+            partition
+            partition?
+            partition-device
+            partition-size
+            partition-file-system
+            partition-label
+            partition-bootable?
+            partition-initializer
+
+            root-partition-initializer
             initialize-partition-table
             initialize-hard-disk))
 
@@ -110,24 +123,84 @@ the #:references-graphs parameter of 'derivation'."
         (mkdir output)
         (copy-recursively "xchg" output))))
 
-(define* (initialize-partition-table device partition-size
+
+;;;
+;;; Partitions.
+;;;
+
+(define-record-type* <partition> partition make-partition
+  partition?
+  (device      partition-device (default #f))
+  (size        partition-size)
+  (file-system partition-file-system (default "ext4"))
+  (label       partition-label (default #f))
+  (bootable?   partition-bootable? (default #f))
+  (initializer partition-initializer (default (const #t))))
+
+(define (fold2 proc seed1 seed2 lst)              ;TODO: factorize
+  "Like `fold', but with a single list and two seeds."
+  (let loop ((result1 seed1)
+             (result2 seed2)
+             (lst     lst))
+    (if (null? lst)
+        (values result1 result2)
+        (call-with-values
+            (lambda () (proc (car lst) result1 result2))
+          (lambda (result1 result2)
+            (loop result1 result2 (cdr lst)))))))
+
+(define* (initialize-partition-table device partitions
                                      #:key
-                                     bootable?
                                      (label-type "msdos")
                                      (offset (expt 2 20)))
-  "Create on DEVICE a partition table of type LABEL-TYPE, with a single
-partition of PARTITION-SIZE bytes starting at OFFSET bytes.  When BOOTABLE? is
-true, set the bootable flag on the partition.  Return #t on success."
-  (format #t "creating partition table with a ~a B partition...\n"
-          partition-size)
-  (unless (zero? (apply system* "parted" device "mklabel" label-type
-                        "mkpart" "primary" "ext2"
-                        (format #f "~aB" offset)
-                        (format #f "~aB" partition-size)
-                        (if bootable?
-                            '("set" "1" "boot" "on")
-                            '())))
-    (error "failed to create partition table")))
+  "Create on DEVICE a partition table of type LABEL-TYPE, containing the given
+PARTITIONS (a list of <partition> objects), starting at OFFSET bytes.  On
+success, return PARTITIONS with their 'device' field changed to reflect their
+actual /dev name based on DEVICE."
+  (define (partition-options part offset index)
+    (cons* "mkpart" "primary" "ext2"
+           (format #f "~aB" offset)
+           (format #f "~aB" (+ offset (partition-size part)))
+           (if (partition-bootable? part)
+               `("set" ,(number->string index) "boot" "on")
+               '())))
+
+  (define (options partitions offset)
+    (let loop ((partitions partitions)
+               (offset     offset)
+               (index      1)
+               (result     '()))
+      (match partitions
+        (()
+         (concatenate (reverse result)))
+        ((head tail ...)
+         (loop tail
+               ;; Leave one sector (512B) between partitions to placate
+               ;; Parted.
+               (+ offset 512 (partition-size head))
+               (+ 1 index)
+               (cons (partition-options head offset index)
+                     result))))))
+
+  (format #t "creating partition table with ~a partitions...\n"
+          (length partitions))
+  (unless (zero? (apply system* "parted" "--script"
+                        device "mklabel" label-type
+                        (options partitions offset)))
+    (error "failed to create partition table"))
+
+  ;; Set the 'device' field of each partition.
+  (reverse
+   (fold2 (lambda (part result index)
+            (values (cons  (partition
+                            (inherit part)
+                            (device (string-append device
+                                                   (number->string index))))
+                           result)
+                    (+ 1 index)))
+          '()
+          1
+          partitions)))
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
@@ -143,40 +216,67 @@ volume name."
                             '())))
     (error "failed to create partition")))
 
-(define* (initialize-root-partition target-directory
-                                    #:key copy-closures? register-closures?
-                                    closures system-directory)
-  "Initialize the root partition mounted at TARGET-DIRECTORY."
-  (define target-store
-    (string-append target-directory (%store-directory)))
+(define (initialize-partition partition)
+  "Format PARTITION, a <partition> object with a non-#f 'device' field, mount
+it, run its initializer, and unmount it."
+  (let ((target "/fs"))
+   (format-partition (partition-device partition)
+                     (partition-file-system partition)
+                     #:label (partition-label partition))
+   (mkdir-p target)
+   (mount (partition-device partition) target
+          (partition-file-system partition))
 
-  (when copy-closures?
-    ;; Populate the store.
-    (populate-store (map (cut string-append "/xchg/" <>) closures)
-                    target-directory))
+   ((partition-initializer partition) target)
 
-  ;; Populate /dev.
-  (make-essential-device-nodes #:root target-directory)
+   (umount target)
+   partition))
 
-  ;; Optionally, register the inputs in the image's store.
-  (when register-closures?
-    (unless copy-closures?
-      ;; XXX: 'guix-register' wants to palpate the things it registers, so
-      ;; bind-mount the store on the target.
-      (mkdir-p target-store)
-      (mount (%store-directory) target-store "" MS_BIND))
+(define* (root-partition-initializer #:key (closures '())
+                                     copy-closures?
+                                     (register-closures? #t)
+                                     system-directory)
+  "Return a procedure to initialize a root partition.
 
-    (display "registering closures...\n")
-    (for-each (lambda (closure)
-                (register-closure target-directory
-                                  (string-append "/xchg/" closure)))
-              closures)
-    (unless copy-closures?
-      (umount target-store)))
+If REGISTER-CLOSURES? is true, register all of CLOSURES is the partition's
+store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
+SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
+  (lambda (target)
+    (define target-store
+      (string-append target (%store-directory)))
 
-  ;; Add the non-store directories and files.
-  (display "populating...\n")
-  (populate-root-file-system system-directory target-directory))
+    (when copy-closures?
+      ;; Populate the store.
+      (populate-store (map (cut string-append "/xchg/" <>) closures)
+                      target))
+
+    ;; Populate /dev.
+    (make-essential-device-nodes #:root target)
+
+    ;; Optionally, register the inputs in the image's store.
+    (when register-closures?
+      (unless copy-closures?
+        ;; XXX: 'guix-register' wants to palpate the things it registers, so
+        ;; bind-mount the store on the target.
+        (mkdir-p target-store)
+        (mount (%store-directory) target-store "" MS_BIND))
+
+      (display "registering closures...\n")
+      (for-each (lambda (closure)
+                  (register-closure target
+                                    (string-append "/xchg/" closure)))
+                closures)
+      (unless copy-closures?
+        (umount target-store)))
+
+    ;; Add the non-store directories and files.
+    (display "populating...\n")
+    (populate-root-file-system system-directory target)
+
+    ;; 'guix-register' resets timestamps and everything, so no need to do it
+    ;; once more in that case.
+    (unless register-closures?
+      (reset-timestamps target))))
 
 (define (register-grub.cfg-root target grub.cfg)
   "On file system TARGET, register GRUB.CFG as a GC root."
@@ -186,56 +286,29 @@ volume name."
 
 (define* (initialize-hard-disk device
                                #:key
-                               system-directory
                                grub.cfg
-                               disk-image-size
-                               (file-system-type "ext4")
-                               file-system-label
-                               (closures '())
-                               copy-closures?
-                               (bootable? #t)
-                               (register-closures? #t))
-  "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a FILE-SYSTEM-TYPE
-partition with (optionally) FILE-SYSTEM-LABEL as its volume name, and with
-GRUB installed.  When BOOTABLE? is true, set the bootable flag on that
-partition.
+                               (partitions '()))
+  "Initialize DEVICE as a disk containing all the <partition> objects listed
+in PARTITIONS, and using GRUB.CFG as its bootloader configuration file.
 
-If REGISTER-CLOSURES? is true, register all of CLOSURES is the partition's
-store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
-SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
-  (define target-directory
-    "/fs")
+Each partition is initialized by calling its 'initializer' procedure,
+passing it a directory name where it is mounted."
+  (let* ((partitions (initialize-partition-table device partitions))
+         (root       (find partition-bootable? partitions))
+         (target     "/fs"))
+    (unless root
+      (error "no bootable partition specified" partitions))
 
-  (define partition
-    (string-append device "1"))
+    (for-each initialize-partition partitions)
 
-  (initialize-partition-table device
-                              (- disk-image-size (* 5 (expt 2 20)))
-                              #:bootable? bootable?)
+    (display "mounting root partition...\n")
+    (mkdir-p target)
+    (mount (partition-device root) target (partition-file-system root))
+    (install-grub grub.cfg device target)
 
-  (format-partition partition file-system-type
-                    #:label file-system-label)
+    ;; Register GRUB.CFG as a GC root.
+    (register-grub.cfg-root target grub.cfg)
 
-  (display "mounting partition...\n")
-  (mkdir target-directory)
-  (mount partition target-directory file-system-type)
-
-  (initialize-root-partition target-directory
-                             #:system-directory system-directory
-                             #:copy-closures? copy-closures?
-                             #:register-closures? register-closures?
-                             #:closures closures)
-
-  (install-grub grub.cfg device target-directory)
-
-  ;; Register GRUB.CFG as a GC root.
-  (register-grub.cfg-root target-directory grub.cfg)
-
-  ;; 'guix-register' resets timestamps and everything, so no need to do it
-  ;; once more in that case.
-  (unless register-closures?
-    (reset-timestamps target-directory))
-
-  (umount target-directory))
+    (umount target)))
 
 ;;; vm.scm ends here
