@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -129,7 +129,8 @@ printing, and psresize, for adjusting page sizes.")
             (sha256
              (base32
               "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
-            (patches (list (search-patch "ghostscript-runpath.patch")))
+            (patches (map search-patch '("ghostscript-CVE-2015-3228.patch"
+                                         "ghostscript-runpath.patch")))
             (modules '((guix build utils)))
             (snippet
              ;; Honor --docdir.
