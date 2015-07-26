@@ -67,7 +67,8 @@ devices on various operating systems.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (inputs
+    (propagated-inputs
+     ;; libmtp.pc refers to all these.
      `(("libgcrypt" ,libgcrypt)
        ("libusb" ,libusb)))
     (arguments
