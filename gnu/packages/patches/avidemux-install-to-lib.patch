@@ -1,0 +1,24 @@
+Patch by Andreas Enge to force installation of libraries into lib
+independently of the architecture, instead of lib32 or lib64.
+On x86_64, the C library path coded in CMAKE_C_IMPLICIT_LINK_DIRECTORIES 
+contains a library (jack) installed into lib64, which forces lib64
+for avidemux with the original code.
+
+diff -u -r avidemux_2.6.8.orig/cmake/admInstallDir.cmake avidemux_2.6.8/cmake/admInstallDir.cmake
+--- avidemux_2.6.8.orig/cmake/admInstallDir.cmake	2014-03-12 07:15:23.000000000 +0100
++++ avidemux_2.6.8/cmake/admInstallDir.cmake	2015-07-26 14:31:10.418459984 +0200
+@@ -16,13 +16,7 @@
+                 MESSAGE(STATUS "No install dir provided, using /usr/local")
+         ENDIF(NOT AVIDEMUX_INSTALL_DIR )
+         SET(AVIDEMUX_BIN_DIR ${AVIDEMUX_INSTALL_DIR}/bin)
+-        IF(CMAKE_C_IMPLICIT_LINK_DIRECTORIES MATCHES "\\/lib64([; ]|$)")
+-                SET(AVIDEMUX_RELATIVE_LIB_DIR lib64)
+-        ELSEIF(CMAKE_C_IMPLICIT_LINK_DIRECTORIES MATCHES "\\/lib32([; ]|$)")
+-                SET(AVIDEMUX_RELATIVE_LIB_DIR lib32)
+-        ELSE(CMAKE_C_IMPLICIT_LINK_DIRECTORIES MATCHES "\\/lib64([; ]|$)")
+-                SET(AVIDEMUX_RELATIVE_LIB_DIR lib)
+-        ENDIF(CMAKE_C_IMPLICIT_LINK_DIRECTORIES MATCHES "\\/lib64([; ]|$)")
++        SET(AVIDEMUX_RELATIVE_LIB_DIR lib)
+         SET(AVIDEMUX_LIB_DIR ${AVIDEMUX_INSTALL_DIR}/${AVIDEMUX_RELATIVE_LIB_DIR})
+ ENDIF(WIN32)
+ SET(AVIDEMUX_INCLUDE_DIR ${AVIDEMUX_INSTALL_DIR}/include)

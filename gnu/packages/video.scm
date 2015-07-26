@@ -1090,7 +1090,8 @@ for use with HTML5 video.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "10p60wjkzf1bxqcb6i7bx4hbqy3vqg598p3l9lc4v2c9b8iqr682"))))
+               "10p60wjkzf1bxqcb6i7bx4hbqy3vqg598p3l9lc4v2c9b8iqr682"))
+             (patches (map search-patch '("avidemux-install-to-lib.patch")))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1145,7 +1146,7 @@ for use with HTML5 video.")
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let*
                 ((out (assoc-ref outputs "out"))
-                 (lib (string-append out "/lib64"))
+                 (lib (string-append out "/lib"))
                  (top (getcwd))
                  (sdl (assoc-ref inputs "sdl"))
                  (build_component
