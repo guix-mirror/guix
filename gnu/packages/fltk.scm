@@ -19,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages fltk)
-  #:use-module ((guix licenses) #:select (lgpl2.0))
+  #:use-module ((guix licenses) #:select (lgpl2.0 lgpl2.0+))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
