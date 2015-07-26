@@ -43,7 +43,9 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
-  #:use-module (gnu packages libffi))
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages acl)
+  #:use-module (gnu packages polkit))
 
 (define-public xdg-utils
   (package
@@ -318,3 +320,55 @@ Platform (XMP), which enables embedding metadata in PDF and image formats.")
      "This library supports a subset of the ATA S.M.A.R.T. (Self-Monitoring,
 Analysis and Reporting Technology) functionality.")
     (license license:lgpl2.1+)))
+
+(define-public udisks
+  (package
+    (name "udisks")
+    (version "2.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://udisks.freedesktop.org/releases/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0spl155k0g2l2hvqf8xyjv08i68gfyhzpjva6cwlzxx0bz4gbify"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by udisks2.pc
+    (inputs
+     `(("acl" ,acl)
+       ("libatasmart" ,libatasmart)
+       ("libgudev" ,libgudev)
+       ("polkit" ,polkit)))
+    (arguments
+     `(#:tests? #f ; requiring system message dbus
+       #:configure-flags
+       (list "--disable-man"
+             "--localstatedir=/var"
+             (string-append "--with-udevdir=" %output "/lib/udev"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'fix-girdir
+          (lambda _
+            ;; Install introspection data to its own output.
+            (substitute* "udisks/Makefile.in"
+              (("girdir = .*")
+               "girdir = $(datadir)/gir-1.0\n")
+              (("typelibsdir = .*")
+               "typelibsdir = $(libdir)/girepository-1.0\n")))))))
+    (home-page "http://www.freedesktop.org/wiki/Software/udisks/")
+    (synopsis "Disk manager service")
+    (description
+     "UDisks provides interfaces to enumerate and perform operations on disks
+and storage devices.  Any application (including unprivileged ones) can access
+the udisksd(8) daemon via the name org.freedesktop.UDisks2 on the system
+message bus.")
+    ;; The dynamic library are under LGPLv2+, others are GPLv2+.
+    (license (list license:gpl2+ license:lgpl2.0+))))
