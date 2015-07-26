@@ -311,7 +311,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public magit
   (package
     (name "magit")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -319,7 +319,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0bbvz6cma5vj6qxx9v2m60zqkjwgwjrdf9kp04iacybvrcm8vcg7"))))
+               "1g3bxvgabiis2y338jziycx4b61vrim4lzmqnzv78094s8azzb52"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
