@@ -295,3 +295,26 @@ applications, X servers (rootless or fullscreen) or other display servers.")
     (description "Exempi is an implementation of the Extensible Metadata
 Platform (XMP), which enables embedding metadata in PDF and image formats.")
     (license license:bsd-3)))
+
+(define-public libatasmart
+  (package
+    (name "libatasmart")
+    (version "0.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://0pointer.de/public/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "138gvgdwk6h4ljrjsr09pxk1nrki4b155hqdzyr8mlk3bwsfmw31"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("udev" ,eudev)))
+    (home-page "http://0pointer.de/blog/projects/being-smart.html")
+    (synopsis "ATA S.M.A.R.T. reading and parsing library")
+    (description
+     "This library supports a subset of the ATA S.M.A.R.T. (Self-Monitoring,
+Analysis and Reporting Technology) functionality.")
+    (license license:lgpl2.1+)))
