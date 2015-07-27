@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt))
@@ -67,9 +68,11 @@ in Qt.")
        (uri
          (string-append "https://github.com/lxde/" name "/archive/"
                         version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))       (sha256
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
         (base32
-         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))))
+         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))
+       (patches (map search-patch '("liblxqt-include.patch")))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))
