@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,16 +48,57 @@
              (patches (list (search-patch "polkit-drop-test.patch")))))
     (build-system gnu-build-system)
     (inputs
-      `(("expat" ,expat)
-        ("glib:bin" ,glib "bin") ; for glib-mkenums
-        ("intltool" ,intltool)
-        ("linux-pam" ,linux-pam)
-        ("mozjs" ,mozjs)
-        ("nspr" ,nspr)))
+     `(("expat" ,expat)
+       ("linux-pam" ,linux-pam)
+       ("mozjs" ,mozjs)
+       ("nspr" ,nspr)))
     (propagated-inputs
-      `(("glib" ,glib))) ; required by polkit-gobject-1.pc
+     `(("glib" ,glib))) ; required by polkit-gobject-1.pc
     (native-inputs
-      `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
+    (arguments
+     `(#:configure-flags '("--sysconfdir=/etc"
+                           "--enable-man-pages")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-file-names
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "src/polkitagent/polkitagentsession.c"
+              (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
+               "\"/run/setuid-programs/polkit-agent-helper-1\""))
+            (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
+              (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
+               "\"/run/current-system/profile/share/polkit-1/actions\""))
+            (substitute* "src/polkitbackend/polkitbackendjsauthority.c"
+              (("PACKAGE_DATA_DIR \"/polkit-1/rules.d\"")
+               "\"/run/current-system/profile/share/polkit-1/rules.d\""))
+            #t))
+         (add-after
+          'unpack 'fix-introspection-install-dir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* (find-files "." "Makefile.in")
+                (("@INTROSPECTION_GIRDIR@")
+                 (string-append out "/share/gir-1.0/"))
+                (("@INTROSPECTION_TYPELIBDIR@")
+                 (string-append out "/lib/girepository-1.0/"))))))
+         (replace
+          'install
+          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
+            ;; Override sysconfdir during "make install", to avoid attempting
+            ;; to install in /etc, and to instead install the skeletons in the
+            ;; output directory.
+            (let ((out (assoc-ref outputs "out")))
+             (zero? (apply system*
+                           "make" "install"
+                           (string-append "sysconfdir=" out "/etc")
+                           (string-append "polkit_actiondir="
+                                          out "/share/polkit-1/actions")
+                           make-flags))))))))
     (home-page "http://www.freedesktop.org/wiki/Software/polkit/")
     (synopsis "Authorization API for privilege management")
     (description "Polkit is an application-level toolkit for defining and
