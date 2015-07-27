@@ -65,7 +65,9 @@
                             `((includedir
                                ,(string-append dir "/etc/dbus-1/system.d"))
                               (servicedir         ;for '.service' files
-                               ,(string-append dir "/share/dbus-1/services"))))
+                               ,(string-append dir "/share/dbus-1/services"))
+                              (servicedir         ;for '.service' files
+                               ,(string-append dir "/share/dbus-1/system-services"))))
                           services)))
 
         (mkdir #$output)
