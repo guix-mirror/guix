@@ -1,6 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,11 +23,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages python))
 
 (define-public recode
   (package
@@ -159,47 +155,3 @@ encoding, supporting Unicode version 7.0.")
      "libgtextutils is a text utilities library used by the fastx toolkit from
 the Hannon Lab.")
     (license license:agpl3+)))
-
-(define-public markdown
-  (package
-    (name "markdown")
-    (version "1.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://daringfireball.net/projects/downloads/"
-             (string-capitalize name) "_" version ".zip"))
-       (sha256
-        (base32 "0dq1pj91pvlwkv0jwcgdfpv6gvnxzrk3s8mnh7imamcclnvfj835"))))
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((source (assoc-ref %build-inputs "source"))
-               (out    (assoc-ref %outputs "out"))
-               (perlbd (string-append (assoc-ref %build-inputs "perl") "/bin"))
-               (unzip  (string-append (assoc-ref %build-inputs "unzip")
-                                      "/bin/unzip")))
-           (mkdir-p out)
-           (with-directory-excursion out
-             (system* unzip source)
-             (mkdir "bin")
-             (mkdir-p "share/doc")
-             (rename-file "Markdown_1.0.1/Markdown.pl" "bin/markdown")
-             (rename-file "Markdown_1.0.1/Markdown Readme.text"
-                          "share/doc/README")
-             (patch-shebang "bin/markdown" (list perlbd))
-             (delete-file-recursively "Markdown_1.0.1"))))))
-    (native-inputs `(("unzip" ,unzip)))
-    (inputs `(("perl" ,perl)))
-    (home-page "http://daringfireball.net/projects/markdown")
-    (synopsis "Text-to-HTML conversion tool")
-    (description
-     "Markdown is a text-to-HTML conversion tool for web writers.  It allows
-you to write using an easy-to-read, easy-to-write plain text format, then
-convert it to structurally valid XHTML (or HTML).")
-    (license (license:non-copyleft "file://License.text"
-                                   "See License.text in the distribution."))))
