@@ -42,6 +42,8 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages firmware)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages polkit)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
@@ -637,13 +639,18 @@ use 'plain-file' instead~%")
 
 (define %setuid-programs
   ;; Default set of setuid-root programs.
-  (let ((shadow (@ (gnu packages admin) shadow)))
+  (let ((shadow (@ (gnu packages admin) shadow))
+        ;; XXX Remove this hack when the main 'dbus' package is fixed.
+        (dbus (@@ (gnu packages glib) dbus-fixed)))
     (list #~(string-append #$shadow "/bin/passwd")
           #~(string-append #$shadow "/bin/su")
           #~(string-append #$inetutils "/bin/ping")
           #~(string-append #$inetutils "/bin/ping6")
           #~(string-append #$sudo "/bin/sudo")
-          #~(string-append #$fuse "/bin/fusermount"))))
+          #~(string-append #$fuse "/bin/fusermount")
+          #~(string-append #$dbus "/libexec/dbus-daemon-launch-helper")  ; XXX should be group "messagebus" and mode 4550
+          #~(string-append #$polkit "/bin/pkexec")
+          #~(string-append #$polkit "/lib/polkit-1/polkit-agent-helper-1"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
