@@ -116,6 +116,24 @@ or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
 
+;; XXX This fixed version is needed only for 'dbus-daemon-launch-helper'.
+;; FIXME: Integrate this change into the main 'dbus' package in the next
+;; core-updates cycle.
+(define dbus-fixed
+  (package
+    (inherit dbus)
+    (arguments
+     (substitute-keyword-arguments (package-arguments dbus)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after
+            'unpack 'add-standard-system-service-dir
+            (lambda _
+              (substitute* "dbus/dbus-sysdeps-util-unix.c"
+                (("standard_search_path\\[\\] =" all)
+                 (format #f "~a ~s" all "/run/current-system/profile/share:")))
+              #t))))))))
+
 (define glib
   (package
    (name "glib")
