@@ -30,7 +30,7 @@
 (define-public libqtxdg
   (package
     (name "libqtxdg")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -39,15 +39,11 @@
                         version "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "00j0zzb8zn714lv77fawahlalxjznvh06nlhlz47qf0krngri42w"))))
+         "1ncqs0lcll5nx69hxfg33m3jfkryjqrjhr2kdci0b8pyaqdv1jc8"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; handled by configure flag instead
-       #:configure-flags '(;; FIXME: Currently, the tests fail; this is a
-                           ;; known issue, see
-                           ;; https://github.com/lxde/libqtxdg/issues/42
-                           ;; Enable in new release.
-                           "-DBUILD_TESTS=OFF")))
+     `(#:tests? #f ; test fails with message "Exception"
+       #:configure-flags '("-DBUILD_TESTS=ON")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
