@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages tls))
 
 (define-public miredo
@@ -146,3 +147,40 @@ receiving NDP messages.")
 auto-negotiation and checksum offload on many network devices, especially
 Ethernet devices.")
     (license license:gpl2)))
+
+(define-public ppp
+  (package
+    (name "ppp")
+    (version "2.4.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.samba.org/pub/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c7vrjxl52pdwi4ckrvfjr08b31lfpgwf3pp0cqy76a77vfs7q02"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (arguments
+     `(#:tests? #f  ; no test suite
+       #:make-flags '("CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'patch-pppd-makefile
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "pppd/Makefile.linux"
+                       (("/usr/include/crypt.h")
+                        (string-append (assoc-ref inputs "libc")
+                                       "/include/crypt.h")))
+                     #t)))))
+    (home-page "https://ppp.samba.org/")
+    (synopsis "Point-to-Point Protocol (PPP)")
+    (description
+     "The Point-to-Point Protocol provides a standard way to transmit
+datagrams over a serial link, as well as a standard way for the machines at
+either end of the link to negotiate various optional characteristics of the
+link.")
+    ;; XXX TODO Document all of the licenses.
+    (license (license:non-copyleft
+              "http://metadata.ftp-master.debian.org/changelogs//main/p/ppp/ppp_2.4.6-3.1_copyright"))))
