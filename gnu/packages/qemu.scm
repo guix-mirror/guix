@@ -65,7 +65,11 @@
                                           "qemu-CVE-2015-4106-pt5.patch"
                                           "qemu-CVE-2015-4106-pt6.patch"
                                           "qemu-CVE-2015-4106-pt7.patch"
-                                          "qemu-CVE-2015-4106-pt8.patch")))))
+                                          "qemu-CVE-2015-4106-pt8.patch"
+                                          "qemu-CVE-2015-5154-pt1.patch"
+                                          "qemu-CVE-2015-5154-pt2.patch"
+                                          "qemu-CVE-2015-5154-pt3.patch"
+                                          "qemu-CVE-2015-5158.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
