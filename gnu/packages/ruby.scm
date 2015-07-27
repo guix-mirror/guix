@@ -154,13 +154,11 @@ a focus on simplicity and productivity.")
     (name "ruby-hoe")
     (version "3.13.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/seattlerb/hoe.git")
-                    (commit "0c11836"))) ; no release tags :(
+              (method url-fetch)
+              (uri (rubygems-uri "hoe" version))
               (sha256
                (base32
-                "0i8dimf8kxcjgqj9x65bbi3l6hc9p9gbfbb1vmrz42764a4jjbz9"))) )
+                "1mac13krdrasn9819dd65xj27kklfy0xdbj3p6s2ij4vlcb46h8q"))) )
     (build-system ruby-build-system)
     (synopsis "Ruby project management helper")
     (description
@@ -178,22 +176,13 @@ announcement.")
     (version "0.9.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rake-compiler/rake-compiler/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "rake-compiler" version))
               (sha256
                (base32
-                "07lk1vl0jqcaqwjjhmg0qshqwcxdyr5kscc9xxm13m03835xgpf3"))))
+                "1k8im2vzj849xdgjk6wafspkiwwapqwm738majchb4dnhnsk64cx"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f ; needs cucumber
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'remove-cucumber-rake-task
-                    (lambda _
-                      ;; Remove cucumber test file because the
-                      ;; dependencies are not available right now.
-                      (delete-file "tasks/cucumber.rake"))))))
+     '(#:tests? #f)) ; needs cucumber
     (synopsis "Building and packaging helper for Ruby native extensions")
     (description "Rake-compiler provides a framework for building and
 packaging native C and Java extensions in Ruby.")
@@ -206,12 +195,10 @@ packaging native C and Java extensions in Ruby.")
     (version "0.6.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/svenfuchs/i18n/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "i18n" version))
               (sha256
                (base32
-                "1fdhnhh1p5g8vibv44d770z8nq208zrms3m2nswdvr54072y1m6k"))))
+                "0fwjlgmgry2blf8zlxn9c555cf4a16p287l599kz5104ncjxlzdk"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; requires bundler
@@ -234,13 +221,10 @@ an extensible architecture with a swappable backend.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rspec/rspec-support/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "rspec-support" version))
               (sha256
                (base32
-                "1pvzfrqgy0z0gwmdgjp9f2vz1d9c0cajyzfqj9z8i2ssxnzmj4bv"))))
+                "194zry5195ls2hni7r9824vqb5d3qfg4jb15fgj8glfy0rvw3zxl"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -255,13 +239,10 @@ an extensible architecture with a swappable backend.")
     (version "3.2.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rspec/rspec-core/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "rspec-core" version))
               (sha256
                (base32
-                "1clsa4lkh5c9c7xc3xa336ym00ycr67pchpg1bv4y3fz5hvzw8ki"))))
+                "0k2471iw30gc2cvv67damrx666pmsvx8l0ahk3hm20dhfnmcmpvv"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -279,13 +260,10 @@ groups.")
     (version "1.2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/halostatue/diff-lcs/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "diff-lcs" version))
               (sha256
                (base32
-                "0kmfz2qdwbfjf97rx27hh9fm39mv3z9avjmvsajqnb5wxj2l5l4s"))))
+                "1vf9civd41bnqi6brr5d9jifdw73j9khc6fkhfl1f8r9cpkdvlx1"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -303,13 +281,10 @@ standard diff-like tool.")
     (version "3.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rspec/rspec-expectations/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "rspec-expectations" version))
               (sha256
                (base32
-                "0h0rpprbh6h59gmksiyi1b8w6cvcai4wdbkikajwx3w1asxi6f7x"))))
+                "01kmchabgpdcaqdsqg8r0g5gy385xhp1k1jsds3w264ypin17n14"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -328,13 +303,10 @@ outcomes of a code example.")
     (version "3.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rspec/rspec-mocks/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "rspec-mocks" version))
               (sha256
                (base32
-                "1xzxsg0idxkg7czmjgqq10lcd821ibw1hjzn404sk9j6rw0fbx2g"))))
+                "09yig1lwgxl8fsns71z3xhv7wkg7zvagydh37pvaqpw92dz55jv2"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -353,13 +325,10 @@ support for stubbing and mocking.")
     (version "3.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rspec/rspec/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "rspec" version))
               (sha256
                (base32
-                "1jg38dbaknsdhiav5vnrwfccg524fwcg6sq1715441vx1xl6p54q"))))
+                "0lkz01j4yxcwb3g5w6r1l9khnyw3sxib4rrh4npd2pxh390fcc4f"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -382,12 +351,10 @@ expectations and mocks frameworks.")
     (version "1.9.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/bundler/bundler/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "08flx3n9hb3yz8mm5k16cdz0sb7g774f6vxn6gc3wfh5la83vfyx"))))
+                "12qk1569pswa9mmid6lsqy2napn9fmkbmv0k7xkl52nyfh8rsy4d"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -403,19 +370,13 @@ specified in a \"Gemfile\", as well as their dependencies.")
     (version "0.13.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/gshutler/useragent/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "useragent" version))
               (sha256
                (base32
-                "1hj00fw06i0y3rwxxhxmnrqxhpnffv4zfqx2sqqpc5qc4fdvd2x9"))))
+                "0kz7yyz7528bv4a2kfymvkcm8whqcddhmgaw1ksw1d90n30hhkpc"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:test-target "spec"))
-    (native-inputs
-     `(("ruby-rspec" ,ruby-rspec)
-       ("bundler" ,bundler)))
+     '(#:tests? #f)) ; no test suite
     (synopsis "HTTP user agent parser for Ruby")
     (description "UserAgent is a Ruby library that parses and compares HTTP
 User Agents.")
@@ -425,26 +386,14 @@ User Agents.")
 (define-public ruby-bacon
   (package
     (name "ruby-bacon")
-    (version "1.2")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/chneukirchen/bacon/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "bacon" version))
               (sha256
                (base32
-                "0g03fxilrrx17dijww68n1lq5d8s69hrxgpga8c1i2k35bzcw5jc"))))
+                "1f06gdj77bmwzc1k5iragl1595hbn67yc7sqvs56ca8plrr2vmai"))))
     (build-system ruby-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'build 'generate-docs
-                    (lambda _
-                      ;; This rake task also tries to generate a ChangeLog
-                      ;; file from the Git log, which we don't have.  It fails
-                      ;; but creates an empty file, allowing the rest of the
-                      ;; build to succeed.
-                      (zero? (system* "rake" "predist")))))))
     (synopsis "Small RSpec clone")
     (description "Bacon is a small RSpec clone providing all essential
 features.")
@@ -457,16 +406,13 @@ features.")
     (version "6.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rails/arel/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "arel" version))
               (sha256
                (base32
-                "0fldwp2hmrmddx22xf7hdmybngzv97qnv5rvz3qw61m94ddd6w4n"))))
+                "18wnfnzr2i5p3fygsddjbi1cimws6823nbk8drxidmnj8jz7h0ar"))))
     (build-system ruby-build-system)
-    (native-inputs
-     `(("bundler" ,bundler)))
+    (arguments
+     '(#:tests? #f)) ; no test suite
     (synopsis "SQL AST manager for Ruby")
     (description "Arel is a SQL AST manager for Ruby.  It simplifies the
 generation of complex SQL queries and adapts to various relational database
@@ -480,13 +426,10 @@ implementations.")
     (version "2.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mperham/connection_pool/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "connection_pool" version))
               (sha256
                (base32
-                "02s5rwhmgy8qqns7a5y1daa0yaw38x6lzpwyvmy46h1yrj9mc6zf"))))
+                "1b2bb3k39ni5mzcnqlv9y4yjkbin20s7dkwzp0jw2jf1rmzcgrmy"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -502,13 +445,10 @@ interface for Ruby programs.")
     (version "2.9.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/drbrain/net-http-persistent/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "net-http-persistent" version))
               (sha256
                (base32
-                "1q18vji31w8gfr6ajziqkqs8n5lzkw0bl00dm2a8s05zhavzw9j9"))))
+                "1y9fhaax0d9kkslyiqi1zys6cvpaqx9a0y0cywp24rpygwh4s9r4"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-connection-pool" ,ruby-connection-pool)
@@ -524,16 +464,11 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
     (name "ruby-minitest")
     (version "5.7.0")
     (source (origin
-              (method git-fetch)
-              ;; No release tarballs nor git tags.  This is the commit
-              ;; corresponding to the addition of the release notes to
-              ;; History.rdoc.
-              (uri (git-reference
-                    (url "https://github.com/seattlerb/minitest.git")
-                    (commit "e975248")))
+              (method url-fetch)
+              (uri (rubygems-uri "minitest" version))
               (sha256
                (base32
-                "09xjiahk7q8hid1i39ahrmghaslpj9n36zna72i3ah7kf1bh2l01"))))
+                "0rxqfakp629mp3vwda7zpgb57lcns5znkskikbfd0kriwv8i1vq8"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -548,14 +483,11 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
     (name "ruby-minitest-sprint")
     (version "1.1.0")
     (source (origin
-              (method git-fetch)
-              ;; Same story as ruby-minitest.
-              (uri (git-reference
-                    (url "https://github.com/seattlerb/minitest-sprint.git")
-                    (commit "49c02bc")))
+              (method url-fetch)
+              (uri (rubygems-uri "minitest-sprint" version))
               (sha256
                (base32
-                "0rbmxz94lqg5vjz60p8v2bzq8adwvmx501amvk0l124sfwmw94ms"))))
+                "179d6pj56l9xzm46fqsqj10mzjkr1f9fv4cxa8wvchs97hqz33w1"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
@@ -571,14 +503,11 @@ easier to re-run individual failing tests.")
     (name "ruby-minitest-bacon")
     (version "1.0.2")
     (source (origin
-              (method git-fetch)
-              ;; Same story as ruby-minitest.
-              (uri (git-reference
-                    (url "https://github.com/seattlerb/minitest-bacon.git")
-                    (commit "38551d5")))
+              (method url-fetch)
+              (uri (rubygems-uri "minitest-bacon" version))
               (sha256
                (base32
-                "19r9fm41i0mm1xncqls8frbj1i9nr3sq1cx2mh878r6kdl02d70h"))))
+                "0cm7r68422743i3b6fm4rrm0r6cnnjmglq5gcmmgl1f0rk5hnf6r"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -596,13 +525,10 @@ functionality, making it easier to migrate test suites from bacon to minitest.")
     (version "1.2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/thuehlinger/daemons/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "daemons" version))
               (sha256
                (base32
-                "1v5bpdvpvhk240pc7fkn44vfclppl44pp6wd42ipi5sd5lkk7zfd"))))
+                "121c7vkimg3baxga69xvdkwxiq8wkmxqvdbyqi5i82vhih5d3cn3"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no test suite
@@ -618,41 +544,27 @@ run as a daemon and to be controlled by simple start/stop/restart commands.")
     (version "1.2.9.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/schacon/ruby-git/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "git" version))
               (sha256
                (base32
-                "08zg20zc7f7yy34ix2qdd8jbiz7xhjc8alk370869sq3h75hs9jc"))))
+                "1sqfj8lmhl7c5zamcckkpik4izfph2zkv6krw0i8mzj5pdws5acs"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'build 'patch-git-binary
-                    (lambda* (#:key inputs #:allow-other-keys)
+     `(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'patch-git-binary
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Make the default git binary an absolute path to the
                       ;; store.
-                      (let ((git (string-append (assoc-ref inputs "git")
-                                                "/bin/git")))
-                        (substitute* '("lib/git/config.rb")
+                      (let ((git    (string-append (assoc-ref inputs "git")
+                                                   "/bin/git"))
+                            (config (string-append (getenv "GEM_HOME")
+                                                   "/gems/git-" ,version
+                                                   "/lib/git/config.rb")))
+                        (substitute* (list config)
                           (("'git'")
                            (string-append "'" git "'")))
-                        ;; Fix a test that expects the binary to be simply
-                        ;; 'git'.
-                        (substitute* '("tests/units/test_logger.rb")
-                          (("def test_logger")
-                           (string-append
-                            "def test_logger\n"
-                            "Git::Base.config.binary_path = 'git'")))
-                        #t)))
-                  (add-before 'check 'create-fake-home
-                    (lambda _
-                      ;; The test suite runs 'git config --global' commands,
-                      ;; so a fake home directory is needed for them to
-                      ;; succeed.
-                      (let ((fake-home (string-append (getcwd) "/fake-home")))
-                        (mkdir fake-home)
-                        (setenv "HOME" fake-home)))))))
+                        #t))))))
     (inputs
      `(("git" ,git)))
     (synopsis "Ruby wrappers for Git")
@@ -667,13 +579,10 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
     (version "4.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/leejarvis/slop/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "slop" version))
               (sha256
                (base32
-                "0cqs50a0b99kjd19xpln8jpnki07cjyp3l7wxbfr44ycasr6nznh"))))
+                "0dj0ps6v1mqd02k84mgwd7hp578n2bzl7c51h3grdhxfl3jkfsj5"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-minitest" ,ruby-minitest)))
@@ -689,13 +598,10 @@ options and parsing command line flags.")
     (version "2.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/nicksieger/multipart-post/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (rubygems-uri "multipart-post" version))
               (sha256
                (base32
-                "03n271i3knfx4j9aingxzz2bajd379dw9nswsllviqc177lq1anm"))))
+                "09k0b3cybqilk1gwrwwain95rdypixb2q9w65gd44gfzsd84xi1x"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))

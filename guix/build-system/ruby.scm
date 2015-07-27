@@ -26,9 +26,15 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
-  #:export (%ruby-build-system-modules
+  #:export (rubygems-uri
+            %ruby-build-system-modules
             ruby-build
             ruby-build-system))
+
+(define (rubygems-uri name version)
+  "Return a URI string for the gem archive for the release corresponding to
+NAME and VERSION."
+  (string-append "https://rubygems.org/downloads/" name "-" version ".gem"))
 
 (define %ruby-build-system-modules
   ;; Build-side modules imported by default.
@@ -50,24 +56,22 @@
   (define private-keywords
     '(#:source #:target #:ruby #:inputs #:native-inputs))
 
-  (let ((version-control (resolve-interface '(gnu packages version-control))))
-    (and (not target)                    ;XXX: no cross-compilation
-         (bag
-           (name name)
-           (system system)
-           (host-inputs `(,@(if source
-                                `(("source" ,source))
-                                '())
-                          ,@inputs
+  (and (not target)                    ;XXX: no cross-compilation
+       (bag
+         (name name)
+         (system system)
+         (host-inputs `(,@(if source
+                              `(("source" ,source))
+                              '())
+                        ,@inputs
 
-                          ;; Keep the standard inputs of 'gnu-build-system'.
-                          ,@(standard-packages)))
-           (build-inputs `(("ruby" ,ruby)
-                           ("git" ,(module-ref version-control 'git))
-                           ,@native-inputs))
-           (outputs outputs)
-           (build ruby-build)
-           (arguments (strip-keyword-arguments private-keywords arguments))))))
+                        ;; Keep the standard inputs of 'gnu-build-system'.
+                        ,@(standard-packages)))
+         (build-inputs `(("ruby" ,ruby)
+                         ,@native-inputs))
+         (outputs outputs)
+         (build ruby-build)
+         (arguments (strip-keyword-arguments private-keywords arguments)))))
 
 (define* (ruby-build store name inputs
                      #:key

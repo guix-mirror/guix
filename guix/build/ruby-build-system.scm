@@ -21,6 +21,7 @@
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 popen)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -40,41 +41,72 @@ directory."
     ((file-name . _) file-name)
     (() (error "No files matching pattern: " pattern))))
 
-;; Most gemspecs assume that builds are taking place within a git repository
-;; by include calls to 'git ls-files'.  In order for these gemspecs to work
-;; as-is, every file in the source tree is added to the staging area.
-(define gitify
-  (lambda _
-    (and (zero? (system* "git" "init"))
-         (zero? (system* "git" "add" ".")))))
+(define* (unpack #:key source #:allow-other-keys)
+  "Unpack the gem SOURCE and enter the resulting directory."
+  (and (zero? (system* "gem" "unpack" source))
+       (begin
+         ;; The unpacked gem directory is named the same as the archive, sans
+         ;; the ".gem" extension.
+         (chdir (match:substring (string-match "^(.*)\\.gem$"
+                                               (basename source))
+                                 1))
+         #t)))
 
-(define build
-  (lambda _
-    (match (find-files "." "\\.gemspec$")
-      ;; No gemspec, try 'rake gem' instead.
-      (()
-       (zero? (system* "rake" "gem")))
-      ;; Build the first matching gemspec.
-      ((gemspec . _)
-       (zero? (system* "gem" "build" gemspec))))))
+(define* (build #:key source #:allow-other-keys)
+  "Build a new gem using the gemspec from the SOURCE gem."
+
+  ;; Remove the original gemspec, if present, and replace it with a new one.
+  ;; This avoids issues with upstream gemspecs requiring tools such as git to
+  ;; generate the files list.
+  (let ((gemspec (or (false-if-exception
+                      (first-matching-file "\\.gemspec$"))
+                     ;; Make new gemspec if one wasn't shipped.
+                     ".gemspec")))
+
+    (when (file-exists? gemspec) (delete-file gemspec))
+
+    ;; Extract gemspec from source gem.
+    (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
+      (dynamic-wind
+        (const #t)
+        (lambda ()
+          (call-with-output-file gemspec
+            (lambda (out)
+              ;; 'gem spec' writes to stdout, but 'gem build' only reads
+              ;; gemspecs from a file, so we redirect the output to a file.
+              (while (not (eof-object? (peek-char pipe)))
+                (write-char (read-char pipe) out))))
+          #t)
+        (lambda ()
+          (close-pipe pipe))))
+
+    ;; Build a new gem from the current working directory.  This also allows any
+    ;; dynamic patching done in previous phases to be present in the installed
+    ;; gem.
+    (zero? (system* "gem" "build" gemspec))))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
+  "Run the gem's test suite rake task TEST-TARGET.  Skip the tests if TESTS?
+is #f."
   (if tests?
       (zero? (system* "rake" test-target))
       #t))
 
-(define* (install #:key source inputs outputs (gem-flags '())
+(define* (install #:key inputs outputs (gem-flags '())
                   #:allow-other-keys)
+  "Install the gem archive SOURCE to the output store item.  Additional
+GEM-FLAGS are passed to the 'gem' invokation, if present."
   (let* ((ruby-version
           (match:substring (string-match "ruby-(.*)\\.[0-9]$"
                                          (assoc-ref inputs "ruby"))
                            1))
          (out (assoc-ref outputs "out"))
          (gem-home (string-append out "/lib/ruby/gems/" ruby-version ".0")))
+
     (setenv "GEM_HOME" gem-home)
     (mkdir-p gem-home)
-    (zero? (apply system* "gem" "install" "--local"
-                  (first-matching-file "\\.gem$")
+    (zero? (apply system* "gem" "install" (first-matching-file "\\.gem$")
+                  "--local" "--ignore-dependencies"
                   ;; Executables should go into /bin, not /lib/ruby/gems.
                   "--bindir" (string-append out "/bin")
                   gem-flags))))
@@ -82,8 +114,8 @@ directory."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'configure)
-    (add-after 'unpack 'gitify gitify)
     (replace 'build build)
+    (replace 'unpack unpack)
     (replace 'install install)
     (replace 'check check)))
 

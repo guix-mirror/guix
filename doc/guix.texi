@@ -2469,6 +2469,13 @@ This variable is exported by @code{(guix build-system ruby)}.  It
 implements the RubyGems build procedure used by Ruby packages, which
 involves running @code{gem build} followed by @code{gem install}.
 
+The @code{source} field of a package that uses this build system is
+expected to reference a gem archive instead of a traditional tarball,
+since this is the format that all Ruby developers use when releasing
+their software.  The build system unpacks the gem archive, potentially
+patches the source, runs the test suite, repackages the gem, and
+installs it.
+
 Which Ruby package is used can be specified with the @code{#:ruby}
 parameter.  A list of additional flags to be passed to the @command{gem}
 command can be specified with the @code{#:gem-flags} parameter.
