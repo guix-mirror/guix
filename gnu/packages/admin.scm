@@ -790,25 +790,34 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
     (arguments
      (substitute-keyword-arguments (package-arguments wpa-supplicant-light)
        ((#:phases phases)
-        `(alist-cons-after
-          'configure 'configure-for-dbus
-          (lambda _
-            (let ((port (open-file ".config" "al")))
-              (display "
+        `(modify-phases ,phases
+           (add-after
+            'configure 'configure-for-dbus
+            (lambda _
+              (let ((port (open-file ".config" "al")))
+                (display "
       CONFIG_CTRL_IFACE_DBUS=y
       CONFIG_CTRL_IFACE_DBUS_NEW=y
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
-              (close-port port))
-            #t)
-          (alist-cons-after
-           'install-man-pages 'install-dbus-conf
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (dir (string-append out "/etc/dbus-1/system.d")))
-               (mkdir-p dir)
-               (copy-file "dbus/dbus-wpa_supplicant.conf"
-                          (string-append dir "/wpa_supplicant.conf"))))
-           ,phases)))))))
+                (close-port port))
+              #t))
+           (add-after
+            'install-man-pages 'install-dbus-conf
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (conf-dir (string-append out "/etc/dbus-1/system.d"))
+                     (service-dir
+                      (string-append out "/share/dbus-1/system-services")))
+                (mkdir-p conf-dir)
+                (copy-file "dbus/dbus-wpa_supplicant.conf"
+                           (string-append conf-dir "/wpa_supplicant.conf"))
+                (mkdir-p service-dir)
+                (for-each (lambda (file)
+                            (copy-file
+                             file
+                             (string-append service-dir "/" (basename file))))
+                          (find-files "dbus" "\\.service$"))
+                #t)))))))))
 
 (define-public wakelan
   (package
