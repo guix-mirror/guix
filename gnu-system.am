@@ -432,6 +432,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
   gnu/packages/patches/eudev-rules-directory.patch		\
+  gnu/packages/patches/expat-CVE-2015-1283.patch		\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/findutils-localstatedir.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\

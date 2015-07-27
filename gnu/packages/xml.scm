@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,8 @@
                                  version "/expat-" version ".tar.gz"))
              (sha256
               (base32
-               "11pblz61zyxh68s5pdcbhc30ha1b2vfjd83aiwfg4vc15x3hadw2"))))
+               "11pblz61zyxh68s5pdcbhc30ha1b2vfjd83aiwfg4vc15x3hadw2"))
+             (patches (list (search-patch "expat-CVE-2015-1283.patch")))))
     (build-system gnu-build-system)
     (home-page "http://www.libexpat.org/")
     (synopsis "Stream-oriented XML parser library written in C")
