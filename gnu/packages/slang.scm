@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pcre))
@@ -69,3 +72,42 @@ extensible.  While the emphasis has always been on the embedded nature of the
 interpreter, it may also be used in a stand-alone fashion through the use of
 slsh, which is part of the S-Lang distribution.")
     (license license:gpl2+)))
+
+(define-public newt
+  (package
+    (name "newt")
+    (version "0.52.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://fedorahosted.org/releases/n/e/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07n9f2mqsjfj35wx5ldhvl9sqcjqpcl0g4fdd9mawmny9rihw6vp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("slang" ,slang)
+       ("popt" ,popt)
+       ("fribidi" ,fribidi)))
+    (arguments
+     `(#:tests? #f    ; no test suite
+       #:configure-flags
+       ;; Set the correct RUNPATH in binaries.
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-/usr/bin/install
+          (lambda _
+            (substitute* "po/Makefile"
+              (("/usr/bin/install") "install"))
+            #t)))))
+    (home-page "https://fedorahosted.org/newt/")
+    (synopsis "Not Erik's Windowing Toolkit - text mode windowing with slang")
+    (description
+     "Newt is a windowing toolkit for text mode built from the slang library.
+It allows color text mode applications to easily use stackable windows, push
+buttons, check boxes, radio buttons, lists, entry fields, labels, and
+displayable text.  Scrollbars are supported, and forms may be nested to
+provide extra functionality.")
+    (license license:lgpl2.0)))
