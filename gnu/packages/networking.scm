@@ -126,3 +126,23 @@ more.")
 Discovery Protocol.  It also provides a tool named ndptool for sending and
 receiving NDP messages.")
     (license license:lgpl2.1+)))
+
+(define-public ethtool
+  (package
+    (name "ethtool")
+    (version "4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/network/"
+                                  name "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1zzcwn6pk8qfasalqkxg8vrhacksfa50xsq4xifw7yfjqyn8fj4h"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.kernel.org/pub/software/network/ethtool/")
+    (synopsis "Display or change Ethernet device settings")
+    (description
+     "ethtool can be used to query and change settings such as speed,
+auto-negotiation and checksum offload on many network devices, especially
+Ethernet devices.")
+    (license license:gpl2)))
