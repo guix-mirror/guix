@@ -55,9 +55,7 @@
 (require 'guix-config)
 (require 'guix-emacs)
 
-(defvar guix-load-path
-  (file-name-directory (or load-file-name
-                           (locate-library "guix")))
+(defvar guix-load-path guix-emacs-interface-directory
   "Directory with scheme files for \"guix.el\" package.")
 
 (defvar guix-helper-file

@@ -1,8 +1,4 @@
-(require 'guix-config)
 (require 'guix-autoloads)
-
-(defvar guix-load-path guix-emacs-interface-directory
-  "Directory with scheme files for \"guix.el\" package.")
 
 (defcustom guix-package-enable-at-startup t
   "If non-nil, activate Emacs packages installed in a user profile.
