@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
@@ -55,6 +55,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages qt)
@@ -999,3 +1000,50 @@ advantages and disadvantages against different types of attacks.  Units gain
 experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
+
+(define-public gamine
+  (package
+    (name "gamine")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gamine-game/"
+                                  "gamine-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1iny959i1kl2ab6z5xi4s66mrvrwcarxyvjfp2k1sx532s8knk8h"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base) ;playbin plugin
+       ("gst-plugins-good" ,gst-plugins-good) ;for wav playback
+       ("gtk+" ,gtk+)))
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "SYSCONFDIR=" out "/etc")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after
+          'install 'wrap-gamine
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out             (assoc-ref outputs "out"))
+                  (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+              (wrap-program (string-append out "/bin/gamine")
+                `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+            #t)))))
+    (home-page "http://gamine-game.sourceforge.net/")
+    (synopsis "Mouse and keyboard discovery for children")
+    (description
+     "Gamine is a game designed for young children who are learning to use the
+mouse and keyboard.  The child uses the mouse to draw colored dots and lines
+on the screen and keyboard to display letters.")
+    ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
+    (license license:gpl3)))
+
