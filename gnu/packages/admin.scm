@@ -29,6 +29,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -1130,3 +1131,43 @@ degradation and failure.")
      "fdupes is a program for identifying duplicate files residing within
 specified directories.")
     (license license:expat)))
+
+(define-public graphios
+  (package
+   (name "graphios")
+   (version "2.0.3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://pypi.python.org/packages/source/g/graphios/graphios-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1h87hvc315wg6lklbf4l7csd3n5pgljwrfli1p3nasdi0izgn66i"))))
+   (build-system python-build-system)
+   (arguments
+    ;; Be warned: Building with Python 3 succeeds, but the build process
+    ;; throws a syntax error that is ignored.
+    `(#:python ,python-2
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'build 'fix-setup.py
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Fix hardcoded, unprefixed file names.
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* '("setup.py")
+                (("/etc") (string-append out "/etc"))
+                (("/usr") out)
+                (("distro_ver = .*") "distro_ver = ''"))
+              #t))))))
+   (inputs
+    `(("python-setuptools" ,python2-setuptools)))
+   (home-page "https://github.com/shawn-sterling/graphios")
+   (synopsis "Emit Nagios metrics to Graphite, Statsd, and Librato")
+   (description
+    "Graphios is a script to emit nagios perfdata to various upstream metrics
+processing and time-series systems.  It's currently compatible with Graphite,
+Statsd, Librato and InfluxDB.  Graphios can emit Nagios metrics to any number
+of supported upstream metrics systems simultaneously.")
+   (license license:gpl2+)))
