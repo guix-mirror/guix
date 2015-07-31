@@ -298,46 +298,6 @@ pidof, tty, taskset, pmap.")
 (define-public python2-psutil
   (package-with-python2 python-psutil))
 
-(define-public python2-ansible
-  (package
-    (name "python2-ansible")
-    (version "1.9.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/a/ansible/ansible-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "007fzgsqaahb0y4gjdxxmir9kcni7wph2z14jhqgpz88idrz8pn2"))))
-    (build-system python-build-system)
-    (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)
-       ("python2-pycrypto" ,python2-pycrypto)
-       ("python2-httplib2" ,python2-httplib2)
-       ("python2-passlib" ,python2-passlib)
-       ("python2-nose" ,python2-nose)
-       ("python2-mock" ,python2-mock)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-paramiko" ,python2-paramiko)))
-    (inputs
-     `(("python2-pycrypto" ,python2-pycrypto)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-paramiko" ,python2-paramiko)))
-    (arguments
-     `(#:python ,python-2)) ; incompatible with Python 3
-    (home-page "http://ansible.com/")
-    (synopsis "Radically simple IT automation")
-    (description "Ansible is a radically simple IT automation system.  It
-handles configuration-management, application deployment, cloud provisioning,
-ad-hoc task-execution, and multinode orchestration - including trivializing
-things like zero downtime rolling updates with load balancers.")
-    (license gpl3+)))
-
 (define-public python-passlib
   (package
     (name "python-passlib")
