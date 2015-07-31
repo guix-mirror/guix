@@ -2491,6 +2491,16 @@ passes flags specified by the @code{#:make-maker-flags} or
 Which Perl package is used can be specified with @code{#:perl}.
 @end defvr
 
+@defvr {Scheme Variable} r-build-system
+This variable is exported by @code{(guix build-system r)}.  It
+implements the build procedure used by @uref{http://r-project.org, R}
+packages, which essentially is little more than running @code{R CMD
+INSTALL --library=/gnu/store/@dots{}} in an environment where
+@code{R_LIBS_SITE} contains the paths to all R package inputs.  Tests
+are run after installation using the R function
+@code{tools::testInstalledPackage}.
+@end defvr
+
 @defvr {Scheme Variable} ruby-build-system
 This variable is exported by @code{(guix build-system ruby)}.  It
 implements the RubyGems build procedure used by Ruby packages, which
