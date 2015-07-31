@@ -37,7 +37,8 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages sdl)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xiph))
 
 (define-public bullet
   (package
@@ -101,14 +102,14 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.2")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://mirror0.sfml-dev.org/files/SFML-"
                                   version "-sources.zip"))
               (sha256
                (base32
-                "1xhkvgyfbhqsjdmfbxvk729kdrzh7kdyagxa3bvpzi6z43mh1frd"))))
+                "0mjpkgfnz6ka4p0ir219pcqsbdy7gwcjydk7xxmjjfm2k5sw2qys"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
@@ -117,7 +118,10 @@ clone.")
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
+       ("flac" ,flac)
+       ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
+       ("xcb-util-image" ,xcb-util-image)
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
        ("freetype" ,freetype)
