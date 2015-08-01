@@ -55,6 +55,9 @@ to ROOT, then make ROOT the new root directory for the process."
   (define (scope dir)
     (string-append root dir))
 
+  (define (touch file-name)
+    (call-with-output-file file-name (const #t)))
+
   (define (bind-mount src dest)
     (mount src dest "none" MS_BIND))
 
@@ -89,8 +92,7 @@ to ROOT, then make ROOT the new root directory for the process."
   (for-each (lambda (device)
               (when (file-exists? device)
                 ;; Create the mount point file.
-                (call-with-output-file (scope device)
-                  (const #t))
+                (touch (scope device))
                 (bind-mount device (scope device))))
             '("/dev/null"
               "/dev/zero"
@@ -100,6 +102,15 @@ to ROOT, then make ROOT the new root directory for the process."
               "/dev/tty"
               "/dev/ptmx"
               "/dev/fuse"))
+
+  ;; Setup the container's /dev/console by bind mounting the pseudo-terminal
+  ;; associated with standard input.
+  (let ((in      (current-input-port))
+        (console (scope "/dev/console")))
+    (when (isatty? in)
+      (touch console)
+      (chmod console #o600)
+      (bind-mount (ttyname in) console)))
 
   ;; Setup standard input/output/error.
   (symlink "/proc/self/fd"   (scope "/dev/fd"))
