@@ -323,6 +323,10 @@ corresponds to the symbols listed in FLAGS."
       (()
        0))))
 
+(define (regular-file? file-name)
+  "Return #t if FILE-NAME is a regular file."
+  (eq? (stat:type (stat file-name)) 'regular))
+
 (define* (mount-file-system spec #:key (root "/root"))
   "Mount the file system described by SPEC under ROOT.  SPEC must have the
 form:
@@ -339,7 +343,16 @@ run a file system check."
            (flags       (mount-flags->bit-mask flags)))
        (when check?
          (check-file-system source type))
-       (mkdir-p mount-point)
+
+       ;; Create the mount point.  Most of the time this is a directory, but
+       ;; in the case of a bind mount, a regular file may be needed.
+       (if (and (= MS_BIND (logand flags MS_BIND))
+                (regular-file? source))
+           (begin
+             (mkdir-p (dirname mount-point))
+             (call-with-output-file mount-point (const #t)))
+           (mkdir-p mount-point))
+
        (mount source mount-point type flags options)
 
        ;; For read-only bind mounts, an extra remount is needed, as per
