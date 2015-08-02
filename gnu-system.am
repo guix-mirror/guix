@@ -486,6 +486,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-enable-acceleration-and-webgl.patch \
   gnu/packages/patches/icecat-freetype-2.6.patch		\
   gnu/packages/patches/icecat-libvpx-1.4.patch			\
+  gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/julia-0.3.10-fix-empty-array.patch	\
