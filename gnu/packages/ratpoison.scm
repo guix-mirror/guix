@@ -31,7 +31,7 @@
 (define ratpoison.desktop
   (origin
     (method url-fetch)
-    (uri (string-append "http://sources.gentoo.org/cgi-bin/viewvc.cgi/"
+    (uri (string-append "https://sources.gentoo.org/cgi-bin/viewvc.cgi/"
                         "gentoo-x86/x11-wm/ratpoison/files/ratpoison.desktop"
                         "?revision=1.1"))
     (file-name "ratpoison.desktop")
