@@ -102,7 +102,7 @@
                    (readlink (string-append "/proc/" pid "/ns/" ns)))
                  '("user" "ipc" "uts" "net" "pid" "mnt"))))
 
-        (let* ((pid (run-container root '() %namespaces container))
+        (let* ((pid (run-container root '() %namespaces 1 container))
                (container-namespaces (namespaces pid))
                (result
                 (begin

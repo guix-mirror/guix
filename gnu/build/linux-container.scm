@@ -120,23 +120,17 @@ to ROOT, then make ROOT the new root directory for the process."
     (umount "real-root" MNT_DETACH)
     (rmdir "real-root")))
 
-(define (initialize-user-namespace pid)
-  "Configure the user namespace for PID."
+(define (initialize-user-namespace pid host-uids)
+  "Configure the user namespace for PID.  HOST-UIDS specifies the number of
+host user identifiers to map into the user namespace."
   (define proc-dir
     (string-append "/proc/" (number->string pid)))
 
   (define (scope file)
     (string-append proc-dir file))
 
-  ;; Only root can map more than a single uid/gid.  A range of 65536 uid/gids
-  ;; is used to cover 16 bits worth of users and groups, which is sufficient
-  ;; for most cases.
-  ;;
-  ;; See also: http://www.freedesktop.org/software/systemd/man/systemd-nspawn.html#--private-users=
-  (let* ((uid       (getuid))
-         (gid       (getgid))
-         (uid-range (if (zero? uid) 65536 1))
-         (gid-range (if (zero? gid) 65536 1)))
+  (let ((uid (getuid))
+        (gid (getgid)))
 
     ;; Only root can write to the gid map without first disabling the
     ;; setgroups syscall.
@@ -149,10 +143,10 @@ to ROOT, then make ROOT the new root directory for the process."
     ;; within the container.
     (call-with-output-file (scope "/uid_map")
       (lambda (port)
-        (format port "0 ~d ~d" uid uid-range)))
+        (format port "0 ~d ~d" uid host-uids)))
     (call-with-output-file (scope "/gid_map")
       (lambda (port)
-        (format port "0 ~d ~d" gid gid-range)))))
+        (format port "0 ~d ~d" gid host-uids)))))
 
 (define (namespaces->bit-mask namespaces)
   "Return the number suitable for the 'flags' argument of 'clone' that
@@ -167,12 +161,13 @@ corresponds to the symbols in NAMESPACES."
                ('net  CLONE_NEWNET))
               namespaces)))
 
-(define (run-container root mounts namespaces thunk)
+(define (run-container root mounts namespaces host-uids thunk)
   "Run THUNK in a new container process and return its PID.  ROOT specifies
 the root directory for the container.  MOUNTS is a list of file system specs
 that specify the mapping of host file systems into the container.  NAMESPACES
 is a list of symbols that correspond to the possible Linux namespaces: mnt,
-ipc, uts, user, and net."
+ipc, uts, user, and net.  HOST-UIDS specifies the number of
+host user identifiers to map into the user namespace."
   ;; The parent process must initialize the user namespace for the child
   ;; before it can boot.  To negotiate this, a pipe is used such that the
   ;; child process blocks until the parent writes to it.
@@ -196,26 +191,31 @@ ipc, uts, user, and net."
              (thunk))))
          (pid
           (when (memq 'user namespaces)
-            (initialize-user-namespace pid))
+            (initialize-user-namespace pid host-uids))
           ;; TODO: Initialize cgroups.
           (close in)
           (write 'ready out)
           (close out)
           pid))))))
 
-(define* (call-with-container mounts thunk #:key (namespaces %namespaces))
+(define* (call-with-container mounts thunk #:key (namespaces %namespaces)
+                              (host-uids 1))
   "Run THUNK in a new container process and return its exit status.
 MOUNTS is a list of file system specs that specify the mapping of host file
 systems into the container.  NAMESPACES is a list of symbols corresponding to
 the identifiers for Linux namespaces: mnt, ipc, uts, pid, user, and net.  By
-default, all namespaces are used.
+default, all namespaces are used.  HOST-UIDS is the number of host user
+identifiers to map into the container's user namespace, if there is one.  By
+default, only a single uid/gid, that of the current user, is mapped into the
+container.  The host user that creates the container is the root user (uid/gid
+0) within the container.  Only root can map more than a single uid/gid.
 
 Note that if THUNK needs to load any additional Guile modules, the relevant
 module files must be present in one of the mappings in MOUNTS and the Guile
 load path must be adjusted as needed."
   (call-with-temporary-directory
    (lambda (root)
-     (let ((pid (run-container root mounts namespaces thunk)))
+     (let ((pid (run-container root mounts namespaces host-uids thunk)))
        ;; Catch SIGINT and kill the container process.
        (sigaction SIGINT
          (lambda (signum)
