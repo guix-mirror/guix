@@ -861,7 +861,7 @@ Disable automatic file ``deduplication'' in the store.
 By default, files added to the store are automatically ``deduplicated'':
 if a newly added file is identical to another one found in the store,
 the daemon makes the new file a hard link to the other file.  This can
-noticeably reduce disk usage, at the expense of slightly increasde
+noticeably reduce disk usage, at the expense of slightly increased
 input/output load at the end of a build process.  This option disables
 this optimization.
 
@@ -942,7 +942,7 @@ limited to a few UTF-8 locales.
 
 @subsection X11 Fonts
 
-The majority of graphical applications uses Fontconfig to locate and
+The majority of graphical applications use Fontconfig to locate and
 load fonts and perform X11-client-side rendering.  Guix's
 @code{fontconfig} package looks for fonts in @file{$HOME/.guix-profile}
 by default.  Thus, to allow graphical applications installed with Guix
@@ -2541,7 +2541,7 @@ with @code{build-expression->derivation} (@pxref{Derivations,
 Conceptually, the @dfn{store} is where derivations that have been
 successfully built are stored---by default, under @file{/gnu/store}.
 Sub-directories in the store are referred to as @dfn{store paths}.  The
-store has an associated database that contains information such has the
+store has an associated database that contains information such as the
 store paths referred to by each store path, and the list of @emph{valid}
 store paths---paths that result from a successful build.
 
