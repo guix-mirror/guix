@@ -55,6 +55,7 @@
             ruby
             sgifreeb2.0
             silofl1.1
+            sleepycat
             vim
             x11 x11-style
             zlib
@@ -335,6 +336,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "SIL OFL 1.1"
            "http://scripts.sil.org/OFL_web"
            "https://www.gnu.org/licenses/license-list#SILOFL"))
+
+(define sleepycat
+  (license "Sleepycat"
+           "http://directory.fsf.org/wiki/License:Sleepycat"
+           "https://www.gnu.org/licenses/license-list#BerkeleyDB"))
 
 (define vim
   (license "Vim"
