@@ -5592,6 +5592,7 @@ declaration.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
+* Web Services::                Web servers.
 * Various Services::            Other services.
 @end menu
 
@@ -6109,6 +6110,26 @@ server.
 The PostgreSQL daemon loads its runtime configuration from
 @var{config-file} and stores the database cluster in
 @var{data-directory}.
+@end deffn
+
+@node Web Services
+@subsubsection Web Services
+
+The @code{(gnu services web)} module provides the following service:
+
+@deffn {Monadic Procedure} nginx-service [#:nginx nginx] @
+       [#:log-directory ``/var/log/nginx''] @
+       [#:run-directory ``/var/run/nginx''] @
+       [#:config-file]
+
+Return a service that runs @var{nginx}, the nginx web server.
+
+The nginx daemon loads its runtime configuration from @var{config-file}.
+Log files are written to @var{log-directory} and temporary runtime data
+files are written to @var{run-directory}.  For proper operation, these
+arguments should match what is in @var{config-file} to ensure that the
+directories are created when the service is activated.
+
 @end deffn
 
 @node Various Services
