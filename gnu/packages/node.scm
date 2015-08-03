@@ -34,14 +34,14 @@
 (define-public node
   (package
     (name "node")
-    (version "0.12.2")
+    (version "0.12.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0bbp58p3iwsp35c37brkkh6bmjjhwsw2nlr8srz3wqryx6nphzmc"))))
+                "17gk29zbw58l0sjjfw86acp39pkiblnq0gsq1jdrd70w0pgn8gdj"))))
     (native-inputs `(("python" ,python-2)
                      ("perl" ,perl)
                      ("gcc" ,gcc-4.9)
@@ -69,7 +69,7 @@
                                          "/bin/python")
                           "./configure" flags))))
         %standard-phases)))
-    (synopsis "Evented I/O for V8 javascript")
+    (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime
 for easily building fast, scalable network applications.  Node.js uses an
 event-driven, non-blocking I/O model that makes it lightweight and efficient,
