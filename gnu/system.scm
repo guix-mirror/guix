@@ -103,7 +103,7 @@
   make-operating-system
   operating-system?
   (kernel operating-system-kernel                 ; package
-          (default linux-libre-4.0))
+          (default linux-libre))
   (kernel-arguments operating-system-kernel-arguments
                     (default '()))                ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <grub-configuration>
