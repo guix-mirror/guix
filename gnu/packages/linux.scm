@@ -313,17 +313,6 @@ It has been modified to remove all non-free binary blobs.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
-(define-public linux-libre-4.0
-  (package
-    (inherit linux-libre)
-    (version "4.0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (linux-libre-urls version))
-              (sha256
-               (base32
-                "1xk57pk5skj6qjmzs5c5gs8nkfjb8dbyqqz7fqk0kf68svqiwrwq"))))))
-
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
