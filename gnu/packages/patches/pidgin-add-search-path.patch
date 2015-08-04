@@ -1,0 +1,25 @@
+Support the PURPLE_PLUGIN_PATH environment variable.  This patch is based on
+one from Nixpkgs, but properly handles the case where that variable is unset.
+
+--- pidgin-2.10.11/libpurple/plugin.c.orig	2014-11-23 11:41:25.000000000 -0500
++++ pidgin-2.10.11/libpurple/plugin.c	2015-08-04 14:31:02.257366144 -0400
+@@ -1178,8 +1178,19 @@
+ void
+ purple_plugins_init(void) {
+ 	void *handle = purple_plugins_get_handle();
++	const gchar *purple_plugin_path;
+ 
+ 	purple_plugins_add_search_path(LIBDIR);
++	purple_plugin_path = g_getenv("PURPLE_PLUGIN_PATH");
++	if (purple_plugin_path && *purple_plugin_path) {
++		gchar **paths = g_strsplit(purple_plugin_path, ":", -1);
++		if (paths) {
++			gchar **p;
++			for (p = paths; *p; ++p)
++				if (**p) purple_plugins_add_search_path(*p);
++		}
++		g_strfreev(paths);
++	}
+ 
+ 	purple_signal_register(handle, "plugin-load",
+ 						 purple_marshal_VOID__POINTER,

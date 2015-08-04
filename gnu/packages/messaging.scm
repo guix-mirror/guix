@@ -21,17 +21,29 @@
 
 (define-module (gnu packages messaging)
   #:use-module ((guix licenses)
-                #:select (gpl2+ gpl2 lgpl2.1 bsd-2))
+                #:select (gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft))
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages python)
@@ -223,5 +235,88 @@ dictionaries.  HexChat can be extended with multiple addons.")
 networks.  It is easy to configure, can cope with dynamic IP addresses, and
 supports IPv6, SSL-protected connections as well as PAM for authentication.")
     (license gpl2+)))
+
+(define-public pidgin
+  (package
+    (name "pidgin")
+    (version "2.10.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/pidgin/Pidgin/"
+                           version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "01s0q30qrjlzj7kkz6f8lvrwsdd55a9yjh2xjjwyyxzw849j3bpj"))
+       (patches (list (search-patch "pidgin-add-search-path.patch")))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("check" ,check)
+       ("intltool" ,intltool)
+       ("gconf" ,gconf)
+       ("python" ,python-2)
+       ("doxygen" ,doxygen)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("libgcrypt" ,libgcrypt)
+       ("gnutls" ,gnutls)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("dbus" ,dbus)
+       ("dbus-glib" ,dbus-glib)
+       ("python2-dbus" ,python2-dbus)
+       ("libidn" ,libidn)
+       ("libltdl" ,libltdl)
+       ("libxml2" ,libxml2)
+       ;; TODO: gstreamer: patches needed to support gstreamer-1.0 or later
+       ;; TODO: farstream
+       ;; TODO: meanwhile
+       ;; TODO: network-manager
+       ;; TODO: gtkspell
+       ;; TODO: libxephyr
+       ;; TODO: libgadu
+       ("libxslt" ,libxslt)
+       ("avahi" ,avahi)
+       ("ncurses" ,ncurses)
+       ("sqlite" ,sqlite)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("startup-notification" ,startup-notification)))
+    (arguments
+     `(#:configure-flags
+       (list "--disable-gtkspell"
+             "--disable-tcl"
+             "--disable-meanwhile"
+             "--disable-nm"  ; XXX remove when we have network-manager
+             "--disable-vv"  ; XXX remove when we have farstream and gstreamer
+             "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
+             "--enable-cyrus-sasl"
+             (string-append "--with-ncurses-headers="
+                            (assoc-ref %build-inputs "ncurses")
+                            "/include"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PURPLE_PLUGIN_PATH")
+            (files (list (string-append "lib/purple-"
+                                        (version-prefix version 1))
+                         "lib/pidgin")))))
+    (home-page "http://www.pidgin.im/")
+    (synopsis "Graphical multi-protocol instant messaging client")
+    (description
+     "Pidgin is a modular instant messaging client that supports many popular
+chat protocols.")
+    (license
+     (list
+      gpl2+    ; Most of the code
+      lgpl2.1  ; GG protocol plugin (libpurple/protocols/gg/lib)
+      lgpl2.0+ ; OSCAR protocol plugin (libpurple/protocols/oscar)
+      ;; The following licenses cover the zephyr protocol plugin:
+      (non-copyleft
+       "file://libpurple/protocols/zephyr/mit-copyright.h"
+       "See libpurple/protocols/zephyr/mit-copyright.h in the distribution.")
+      (non-copyleft
+       "file://libpurple/protocols/zephyr/mit-sipb-copyright.h"
+       "See libpurple/protocols/zephyr/mit-sipb-copyright.h in the distribution.")))))
 
 ;;; messaging.scm ends here
