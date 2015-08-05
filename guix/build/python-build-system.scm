@@ -55,7 +55,10 @@
     #t))
 
 (define (get-python-version python)
-  (string-take (string-take-right python 5) 3))
+  (let* ((version     (last (string-split python #\-)))
+         (components  (string-split version #\.))
+         (major+minor (take components 2)))
+    (string-join major+minor ".")))
 
 (define* (install #:key outputs inputs (configure-flags '())
                   #:allow-other-keys)
