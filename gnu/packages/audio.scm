@@ -1332,11 +1332,11 @@ disks as various audio file formats.")
               (method url-fetch)
               (uri (string-append
                     "https://code.soundsoftware.ac.uk"
-                    "/attachments/download/1514/vamp-plugin-sdk-"
+                    "/attachments/download/1520/vamp-plugin-sdk-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1s986w0mfh1m0870qd7i50hdzayls8kc3shfqf9651jzwdk34lxa"))))
+                "0pzq0yy2kdl3jgfc2aqmh5m55nk1ild0hq8mydiiw35c6y0mglyh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
