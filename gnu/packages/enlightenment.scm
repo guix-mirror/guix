@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
+;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -235,6 +236,31 @@ The only supported now is VLC.")
 based on Enlightenment Foundation Libraries.  It supports multiple tabs, UTF-8,
 URL and local path detection, themes, popup based content viewer for non-text
 contents and more.")
+    (license license:bsd-2)))
+
+(define-public rage
+  (package
+    (name "rage")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://download.enlightenment.org/rel/apps/rage/rage-"
+                version ".tar.gz"))
+              (sha256
+               (base32 "10j3n8crk16jzqz2hn5djx6vms5f6x83qyiaphhqx94h9dgv2mgg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)
+       ("elementary" ,elementary)))
+    (home-page "https://www.enlightenment.org/about-rage")
+    (synopsis "Video and audio player based on EFL")
+    (description
+     "Rage is a video and audio player written with Enlightenment Foundation
+Libraries with some extra bells and whistles.")
     (license license:bsd-2)))
 
 (define-public enlightenment
