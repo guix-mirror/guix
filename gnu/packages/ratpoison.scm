@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,14 +43,14 @@
 (define-public ratpoison
   (package
     (name "ratpoison")
-    (version "1.4.6")
+    (version "1.4.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/ratpoison/ratpoison-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0v4mh8d3vsh5xbbycfdl3g8zfygi1rkslh1x7k5hi1d05bfq3cdr"))
+               "1w502z55vv7zs45l80nsllqh9fvfwjfdfi11xy1qikhzdmirains"))
              (patches (list (search-patch "ratpoison-shell.patch")))))
     (build-system gnu-build-system)
     (arguments

@@ -2,17 +2,9 @@ Use $SHELL instead of hardcoding /bin/sh in ratpoison.
 
 Patch by Mark H Weaver <mhw@netris.org>.
 
---- ratpoison/src/actions.c.orig	2013-04-06 21:37:43.000000000 -0400
-+++ ratpoison/src/actions.c	2014-02-13 00:34:10.992553710 -0500
-@@ -19,6 +19,7 @@
-  */
- 
- #include <unistd.h>
-+#include <stdlib.h>
- #include <ctype.h>		/* for isspace */
- #include <sys/wait.h>
- #include <X11/keysym.h>
-@@ -223,12 +223,12 @@
+--- ratpoison/src/actions.c.orig	2014-09-14 16:46:08.000000000 +0200
++++ ratpoison/src/actions.c	2015-08-06 15:00:54.951575260 +0200
+@@ -228,12 +228,12 @@
    add_command ("escape",        cmd_escape,     1, 1, 1,
                 "Key: ", arg_KEY);
    add_command ("exec",          cmd_exec,       1, 1, 1,
@@ -28,7 +20,7 @@ Patch by Mark H Weaver <mhw@netris.org>.
    add_command ("fdump",         cmd_fdump,      1, 0, 0,
                 "", arg_NUMBER);
    add_command ("focus",         cmd_next_frame, 0, 0, 0);
-@@ -359,7 +359,7 @@
+@@ -367,7 +367,7 @@
    add_command ("unsetenv",      cmd_unsetenv,   1, 1, 1,
                 "Variable: ", arg_STRING);
    add_command ("verbexec",      cmd_verbexec,   1, 1, 1,
@@ -37,7 +29,7 @@ Patch by Mark H Weaver <mhw@netris.org>.
    add_command ("version",       cmd_version,    0, 0, 0);
    add_command ("vsplit",        cmd_v_split,    1, 0, 0,
                 "Split: ", arg_STRING);
-@@ -2627,6 +2627,9 @@
+@@ -2671,6 +2671,9 @@
    pid = fork();
    if (pid == 0)
      {
@@ -47,11 +39,11 @@ Patch by Mark H Weaver <mhw@netris.org>.
        /* Some process setup to make sure the spawned process runs
           in its own session. */
        putenv(current_screen()->display_string);
-@@ -2641,7 +2644,18 @@
+@@ -2700,7 +2703,18 @@
        /* raw means don't run it through sh.  */
        if (raw)
-         execl (cmd, cmd, NULL);
--      execl("/bin/sh", "sh", "-c", cmd, NULL);
+         execl (cmd, cmd, (char *)NULL);
+-      execl("/bin/sh", "sh", "-c", cmd, (char *)NULL);
 +
 +      shell_path = getenv ("SHELL");
 +      if (shell_path == NULL)
@@ -63,13 +55,13 @@ Patch by Mark H Weaver <mhw@netris.org>.
 +      else
 +        shell_name++;
 +
-+      execl(shell_path, shell_name, "-c", cmd, NULL);
++      execl(shell_path, shell_name, "-c", cmd, (char *)NULL);
        _exit(EXIT_FAILURE);
      }
  
---- ratpoison/src/events.c.orig	2013-04-06 20:05:48.000000000 -0400
-+++ ratpoison/src/events.c	2014-02-13 00:34:39.327758789 -0500
-@@ -920,7 +920,7 @@
+--- ratpoison/src/events.c.orig	2014-09-14 16:46:23.000000000 +0200
++++ ratpoison/src/events.c	2015-08-06 15:02:17.287578780 +0200
+@@ -919,7 +919,7 @@
              {
                /* Report any child that didn't return 0. */
                if (cur->status != 0)
@@ -78,9 +70,9 @@ Patch by Mark H Weaver <mhw@netris.org>.
                                         cur->cmd, cur->status);
                list_del  (&cur->node);
                free (cur->cmd);
---- ratpoison/src/messages.h.orig	2012-07-20 20:25:33.000000000 -0400
-+++ ratpoison/src/messages.h	2014-02-13 00:34:28.608398437 -0500
-@@ -41,7 +41,7 @@
+--- ratpoison/src/messages.h.orig	2014-04-09 01:22:08.000000000 +0200
++++ ratpoison/src/messages.h	2015-08-06 15:04:14.759583801 +0200
+@@ -39,7 +39,7 @@
  
  #define MESSAGE_PROMPT_SWITCH_TO_WINDOW "Switch to window: "
  #define MESSAGE_PROMPT_NEW_WINDOW_NAME  "Set window's title to: "
