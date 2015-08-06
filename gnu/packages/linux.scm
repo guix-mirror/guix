@@ -220,6 +220,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (let ((arch (car (string-split system #\-))))
                (setenv "ARCH"
                        (cond ((string=? arch "i686") "i386")
+                             ((string=? arch "mips64el") "mips")
                              (else arch)))
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
 
