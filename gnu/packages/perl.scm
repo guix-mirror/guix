@@ -1705,7 +1705,7 @@ particular command is available.")
     (home-page "http://search.cpan.org/dist/Devel-GlobalDestruction")
     (synopsis "Provides equivalent of ${^GLOBAL_PHASE} eq 'DESTRUCT' for older perls")
     (description "Devel::GlobalDestruction provides a function returning the
-equivalent of \"${^GLOBAL_PHASE} eq 'DESTRUCT'\" for older perls.")
+equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
     (license (package-license perl))))
 
 (define-public perl-devel-lexalias
@@ -1949,7 +1949,7 @@ constructors, which speeds code up at runtime by a significant amount.  String
 eval is not without its issues however - it's difficult to control the scope
 it's used in (which determines which variables are in scope inside the eval),
 and it's easy to miss compilation errors, since eval catches them and sticks
-them in $@ instead.  This module attempts to solve these problems.  It
+them in $@@ instead.  This module attempts to solve these problems.  It
 provides an eval_closure function, which evals a string in a clean
 environment, other than a fixed list of specified variables.  Compilation
 errors are rethrown automatically.")
@@ -1993,7 +1993,7 @@ in your modules in a \"Java-esque\" manner.")
     (description
      "Exporter::Lite is an alternative to Exporter, intended to provide a
 lightweight subset of the most commonly-used functionality.  It supports
-import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
+import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
     (home-page (string-append "http://search.cpan.org/~neilb/"
                               "Exporter-Lite-" version))
     (license (package-license perl))))

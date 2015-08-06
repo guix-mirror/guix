@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,6 +46,9 @@
   #:use-module (ice-9 regex)
   #:autoload   (system repl repl)  (start-repl)
   #:autoload   (system repl debug) (make-debug stack->vector)
+  #:use-module (texinfo)
+  #:use-module (texinfo plain-text)
+  #:use-module (texinfo string-utils)
   #:export (_
             N_
             P_
@@ -69,6 +73,7 @@
             switch-symlinks
             config-directory
             fill-paragraph
+            package-description-string
             string->recutils
             package->recutils
             package-specification->name+version+output
@@ -775,6 +780,28 @@ converted to a space; sequences of more than one line break are preserved."
 ;;; Packages.
 ;;;
 
+(define %text-width
+  (make-parameter (or (and=> (getenv "WIDTH") string->number)
+                      80)))
+
+(set! (@@ (texinfo plain-text) wrap*)
+      ;; XXX: Monkey patch this private procedure to let 'package->recutils'
+      ;; parameterize the fill of description field correctly.
+      (lambda strings
+        (let ((indent (fluid-ref (@@ (texinfo plain-text) *indent*))))
+          (fill-string (string-concatenate strings)
+                       #:line-width (%text-width) #:initial-indent indent
+                       #:subsequent-indent indent))))
+
+(define (texi->plain-text str)
+  "Return a plain-text representation of texinfo fragment STR."
+  (stexi->plain-text (texi-fragment->stexi str)))
+
+(define (package-description-string package)
+  "Return a plain-text representation of PACKAGE description field."
+  (and=> (package-description package)
+         (compose texi->plain-text P_)))
+
 (define (string->recutils str)
   "Return a version of STR where newlines have been replaced by newlines
 followed by \"+ \", which makes for a valid multi-line field value in the
@@ -787,18 +814,9 @@ followed by \"+ \", which makes for a valid multi-line field value in the
                       '()
                       str)))
 
-(define* (package->recutils p port
-                            #:optional (width (or (and=> (getenv "WIDTH")
-                                                         string->number)
-                                                  80)))
+(define* (package->recutils p port #:optional (width (%text-width)))
   "Write to PORT a `recutils' record of package P, arranging to fit within
 WIDTH columns."
-  (define (description->recutils str)
-    (let ((str (P_ str)))
-      (string->recutils
-       (fill-paragraph str width
-                       (string-length "description: ")))))
-
   (define (dependencies->recutils packages)
     (let ((list (string-join (map package-full-name
                                   (sort packages package<?)) " ")))
@@ -842,9 +860,15 @@ WIDTH columns."
                        (chr       chr))
                       (or (and=> (package-synopsis p) P_)
                           "")))
-  (format port "description: ~a~%"
-          (and=> (package-description p) description->recutils))
-  (newline port))
+  (format port "~a~2%"
+          (string->recutils
+           (string-trim-right
+            (parameterize ((%text-width width))
+              (texi->plain-text
+               (string-append "description: "
+                              (or (and=> (package-description p) P_)
+                                  ""))))
+            #\newline))))
 
 (define (string->generations str)
   "Return the list of generations matching a pattern in STR.  This function

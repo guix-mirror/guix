@@ -293,7 +293,7 @@ Example:
     (license           . ,package-license-names)
     (source            . ,package-source-names)
     (synopsis          . ,package-synopsis)
-    (description       . ,package-description)
+    (description       . ,package-description-string)
     (home-url          . ,package-home-page)
     (outputs           . ,package-outputs)
     (non-unique        . ,(negate package-unique?))
