@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages libusb)
   #:use-module ((guix licenses)
                 #:prefix licence:))
 
@@ -36,8 +39,23 @@
               (base32
                "0ba68m6bzni54axjk15i51rya7hfsdliwvqyan5msl7iaid0iir7"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb-compat" ,libusb-compat)))
     (arguments
-      `(#:tests? #f)) 
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'install-udev-rules
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir-p (string-append out "/lib/udev/rules.d"))
+              (copy-file "tools/udev/libsane.rules"
+                         (string-append out
+                                        "/lib/udev/rules.d/"
+                                        "60-libsane.rules"))))))))
     ;; It would seem that tests are not maintained - fails with
     ;; the following:
     ;;
