@@ -44,8 +44,8 @@
   (package
     (name "ratpoison")
     (version "1.4.8")
-    (source (origin
-             (method url-fetch)
+    (source
+     (origin (method url-fetch)
              (uri (string-append "mirror://savannah/ratpoison/ratpoison-"
                                  version ".tar.xz"))
              (sha256
@@ -55,32 +55,32 @@
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-cons-after
-        'install 'install-xsession
-        (lambda _
-          (let* ((file      (assoc-ref %build-inputs "ratpoison.desktop"))
-                 (xsessions (string-append %output "/share/xsessions"))
-                 (target    (string-append xsessions "/ratpoison.desktop")))
-            (mkdir-p xsessions)
-            (copy-file file target)))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'install-xsession
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((rpd "ratpoison.desktop")
+                            (dst (string-append (assoc-ref outputs "out")
+                                                "/share/xsessions/")))
+                        (mkdir-p dst)
+                        (copy-file (assoc-ref inputs rpd)
+                                   (string-append dst rpd))))))))
     (inputs
-     `(("libXi" ,libxi)
-       ("readline" ,readline)
-       ("xextproto" ,xextproto)
-       ("libXtst" ,libxtst)
-       ("freetype" ,freetype)
+     `(("inputproto" ,inputproto)
        ("fontconfig" ,fontconfig)
-       ("libxinerama" ,libxinerama)
+       ("freetype" ,freetype)
        ("libXft" ,libxft)
+       ("libXi" ,libxi)
+       ("libxinerama" ,libxinerama)
        ("libXpm" ,libxpm)
        ("libXt" ,libxt)
-       ("inputproto" ,inputproto)
+       ("libXtst" ,libxtst)
        ("libX11" ,libx11)
-       ("ratpoison.desktop" ,ratpoison.desktop)))
+       ("readline" ,readline)
+       ("xextproto" ,xextproto)))
     (native-inputs
-      `(("perl" ,perl)
-        ("pkg-config" ,pkg-config)))
+     `(("perl",perl)
+       ("pkg-config" ,pkg-config)
+       ("ratpoison.desktop" ,ratpoison.desktop)))
     (home-page "http://www.nongnu.org/ratpoison/")
     (synopsis "Simple mouse-free tiling window manager")
     (description
