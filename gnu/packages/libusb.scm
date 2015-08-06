@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (gnu packages)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages gnupg)
@@ -51,6 +53,32 @@
     (description
      "Libusb is a library that gives applications easy access to USB
 devices on various operating systems.")
+    (license lgpl2.1+)))
+
+(define-public libusb-compat
+  (package
+    (name "libusb-compat")
+    (version "0.1.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/libusb/"
+                          name "-" (version-major+minor version) "/"
+                          name "-" version "/"
+                          name "-" version ".tar.bz2"))
+      (sha256
+       (base32
+        "0nn5icrfm9lkhzw1xjvaks9bq3w6mjg86ggv3fn7kgi4nfvg8kj0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)))
+    (home-page "http://www.libusb.org")
+    (synopsis "Compatibility shim for libusb")
+    (description
+     "Libusb-compat provides a shim allowing applications based on older
+version of libusb to run with newer libusb.")
     (license lgpl2.1+)))
 
 (define-public libmtp
