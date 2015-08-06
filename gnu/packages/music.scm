@@ -27,6 +27,7 @@
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base) ;libbdf
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
@@ -60,12 +61,14 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xiph)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages zip)
+  #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public hydrogen
   (package
@@ -590,3 +593,57 @@ management, bend/slide/vibrato/hammer-on/pull-off effects, support for
 tuplets, time signature management, tempo management, gp3/gp4/gp5 import and
 export.")
     (license license:lgpl2.1+)))
+
+(define-public pd
+  (package
+    (name "pd")
+    (version "0.45.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/pure-data/pure-data/"
+                              version "/pd-" (version-major+minor version)
+                              "-" (last (string-split version #\.))
+                              ".src.tar.gz"))
+              (sha256
+               (base32
+                "1ls2ap5yi2zxvmr247621g4jx0hhfds4j5704a050bn2n3l0va2p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'fix-wish-path
+          (lambda _
+            (substitute* "src/s_inter.c"
+              (("  wish ") (string-append "  " (which "wish8.6") " ")))
+            (substitute* "tcl/pd-gui.tcl"
+              (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
+            #t))
+         (add-after
+          'unpack 'autoconf
+          (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("tk" ,tk)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)))
+    (home-page "http://puredata.info")
+    (synopsis "Visual programming language for artistic performances")
+    (description
+     "Pure Data (aka Pd) is a visual programming language.  Pd enables
+musicians, visual artists, performers, researchers, and developers to create
+software graphically, without writing lines of code.  Pd is used to process
+and generate sound, video, 2D/3D graphics, and interface sensors, input
+devices, and MIDI.  Pd can easily work over local and remote networks to
+integrate wearable technology, motor systems, lighting rigs, and other
+equipment.  Pd is suitable for learning basic multimedia processing and visual
+programming methods as well as for realizing complex systems for large-scale
+projects.")
+    (license license:bsd-3)))
