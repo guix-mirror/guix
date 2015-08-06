@@ -3207,3 +3207,41 @@ asynchronous control, bulk and interrupt transfers with proper cancellation
 and integration into a mainloop.  This makes it easy to integrate low level
 USB transfers with your high-level application or system daemon.")
     (license license:lgpl2.1+)))
+
+(define-public simple-scan
+  (package
+    (name "simple-scan")
+    (version "3.17.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/simple-scan/"
+                                  (version-major+minor version) "/"
+                                  version "/+download/simple-scan-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1pslbv45g01g039zj2b01k08f763kkhzqw8wwz7yh27m7bjllnx6"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("gtk" ,gtk+)
+       ("zlib" ,zlib)
+       ("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gusb" ,gusb)
+       ("libgudev" ,libgudev)
+       ("libsane" ,sane-backends)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("colord" ,colord)
+       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://launchpad.net/simple-scan")
+    (synopsis "Document and image scanner")
+    (description "Simple Scan is an easy-to-use application, designed to let
+users connect their scanner and quickly have the image/document in an
+appropriate format.  Simple Scan is basically a frontend for SANE - which is
+the same backend as XSANE uses. This means that all existing scanners will
+work and the interface is well tested.")
+    (license license:gpl3+)))
