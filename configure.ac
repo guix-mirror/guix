@@ -205,8 +205,7 @@ AM_CONDITIONAL([HAVE_EMACS], [test "x$EMACS" != "xno"])
 
 emacsuidir="${guilemoduledir}/guix/emacs"
 AC_SUBST([emacsuidir])
-AC_CONFIG_FILES([emacs/guix-init.el
-                 emacs/guix-profiles.el
+AC_CONFIG_FILES([emacs/guix-config.el
                  emacs/guix-helper.scm])
 
 AC_OUTPUT

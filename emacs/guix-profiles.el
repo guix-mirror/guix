@@ -19,12 +19,14 @@
 
 ;;; Code:
 
+(require 'guix-config)
+
 (defvar guix-user-profile
   (expand-file-name "~/.guix-profile")
   "User profile.")
 
 (defvar guix-default-profile
-  (concat (or (getenv "NIX_STATE_DIR") "@guix_localstatedir@/guix")
+  (concat guix-state-directory
           "/profiles/per-user/"
           (getenv "USER")
           "/guix-profile")
