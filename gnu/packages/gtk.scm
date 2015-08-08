@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,10 +32,12 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages gettext)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -44,6 +47,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages cups)
@@ -892,3 +896,44 @@ application, an input bar that is used to execute commands of the
 application and the status bar which provides the user with current
 information.")
     (license license:zlib)))
+
+(define-public gtk-doc
+  (package
+    (name "gtk-doc")
+    (version "1.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "12xmmcnq4138dlbhmqa45wqza8dky4lf856sp80h6xjwl2g7a85l"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xml-catalog="
+                            (assoc-ref %build-inputs "docbook-xml")
+                            "/xml/dtd/docbook/catalog.xml"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("itstool" ,itstool)
+       ("libxml" ,libxml2)
+       ("gettext" ,gnu-gettext)
+       ("bc" ,bc)))
+    (inputs
+     `(("perl" ,perl)
+       ("python" ,python)
+       ("xsltproc" ,libxslt)
+       ("dblatex" ,dblatex)
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("docbook-xsl" ,docbook-xsl)
+       ("source-highlight" ,source-highlight)
+       ("glib" ,glib)))
+    (home-page "http://www.gtk.org/gtk-doc/")
+    (synopsis "Documentation generator from C source code")
+    (description
+     "GTK-Doc generates API documentation from comments added to C code. It is
+typically used to document the public API of GTK+ and GNOME libraries, but it
+can also be used to document application code.")
+    (license license:gpl2+)))
