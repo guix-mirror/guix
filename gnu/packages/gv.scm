@@ -28,13 +28,6 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
-(define-public ghostscript/x
-  (package (inherit ghostscript)
-    (name (string-append (package-name ghostscript) "-with-x"))
-    (inputs `(("libxext" ,libxext)
-              ("libxt" ,libxt)
-              ,@(package-inputs ghostscript)))))
-
 (define-public gv
   (package
    (name "gv")

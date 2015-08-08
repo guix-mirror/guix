@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -182,6 +183,13 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
    (license license:agpl3+)
    (home-page "http://www.gnu.org/software/ghostscript/")))
+
+(define-public ghostscript/x
+  (package (inherit ghostscript)
+    (name (string-append (package-name ghostscript) "-with-x"))
+    (inputs `(("libxext" ,libxext)
+              ("libxt" ,libxt)
+              ,@(package-inputs ghostscript)))))
 
 (define-public ijs
   (package
