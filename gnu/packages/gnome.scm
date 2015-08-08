@@ -3162,3 +3162,48 @@ mounts to non-GIO applications using FUSE.
 GVFS comes with a set of backends, including trash support, SFTP, SMB, HTTP,
 DAV, and others.")
     (license license:lgpl2.0+)))
+
+(define-public gusb
+  (package
+    (name "gusb")
+    (version "0.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/hughsie/libgusb/archive/"
+                                  "gusb_"
+                                  (string-join (string-split version #\.)
+                                               "_")
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0h9dzaza81b0mx5jfh5cnc31xdynl0jsxgwvl6vqyhy8mnwfi5nr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin")         ; for glib-genmarshal, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gtk-doc" ,gtk-doc)))
+    (propagated-inputs
+     ;; Both of these are required by gusb.pc.
+     `(("glib" ,glib)
+       ("libusb" ,libusb)))
+    (arguments
+     `(#:tests? #f  ; libusb fails to initialize.  Wonder what that is.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+                    (lambda _
+                      (and (zero? (system* "gtkdocize"))
+                           (zero? (system* "autoreconf" "-vif"))))))))
+    (home-page "https://github/hughsie/libgusb")
+    (synopsis "A GLib binding for libusb1")
+    (description
+     "GUsb is a GObject wrapper for libusb1 that makes it easy to do
+asynchronous control, bulk and interrupt transfers with proper cancellation
+and integration into a mainloop.  This makes it easy to integrate low level
+USB transfers with your high-level application or system daemon.")
+    (license license:lgpl2.1+)))
