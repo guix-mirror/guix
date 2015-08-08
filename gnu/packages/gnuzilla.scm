@@ -240,6 +240,10 @@ standards.")
       (sha256
        (base32
         "11wx29mb5pcg4mgk07a6vjwh52ca90k0x4m9wv0v3y5dmp88f01p"))
+      (patches (map search-patch '("icecat-CVE-2015-4495.patch"
+                                   "icecat-enable-acceleration-and-webgl.patch"
+                                   "icecat-freetype-2.6.patch"
+                                   "icecat-libvpx-1.4.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -277,10 +281,7 @@ standards.")
                       "gfx/cairo"
                       "js/src/ctypes/libffi"
                       "db/sqlite3"))
-          #t))
-      (patches (map search-patch '("icecat-enable-acceleration-and-webgl.patch"
-                                   "icecat-freetype-2.6.patch"
-                                   "icecat-libvpx-1.4.patch")))))
+          #t))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

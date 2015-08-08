@@ -483,6 +483,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/hwloc-gather-topology-lstopo.patch	\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4495.patch		\
   gnu/packages/patches/icecat-enable-acceleration-and-webgl.patch \
   gnu/packages/patches/icecat-freetype-2.6.patch		\
   gnu/packages/patches/icecat-libvpx-1.4.patch			\
