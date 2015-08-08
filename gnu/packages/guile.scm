@@ -535,4 +535,25 @@ See http://minikanren.org/ for more on miniKanren generally.")
 Guile's foreign function interface.")
     (license gpl3+)))
 
+(define-public haunt
+  (package
+    (name "haunt")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://files.dthompson.us/haunt/haunt-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15q1qwjnay7k90ppqrzqsmikvwyj61mjvf1zahyd9gm4vi2fgb3x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "Functional static site generator")
+    (description "Haunt is a static site generator written in Guile
+Scheme.  Haunt features a functional build system and an extensible
+interface for reading articles in any format.")
+    (home-page "http://haunt.dthompson.us")
+    (license gpl3+)))
+
 ;;; guile.scm ends here
