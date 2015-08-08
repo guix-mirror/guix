@@ -97,7 +97,7 @@
      '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (lambda* (#:key build inputs outputs #:allow-other-keys)
                     ;; This old `configure' script doesn't support
                     ;; variables passed as arguments.
                     (let ((out     (assoc-ref outputs "out"))
@@ -105,6 +105,7 @@
                       (setenv "CONFIG_SHELL" (which "bash"))
                       (zero? (system* "./configure"
                                       (string-append "--prefix=" out)
+                                      (string-append "--build=" build)
                                       (string-append "--with-ncurses="
                                                      ncurses)))))))))
     (home-page "http://aa-project.sourceforge.net/aalib/")
