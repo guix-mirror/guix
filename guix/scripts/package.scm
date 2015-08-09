@@ -381,6 +381,10 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   -e, --install-from-expression=EXP
                          install the package EXP evaluates to"))
   (display (_ "
+  -f, --install-from-file=FILE
+                         install the package that the code within FILE
+                         evaluates to"))
+  (display (_ "
   -r, --remove PACKAGE ...
                          remove PACKAGEs"))
   (display (_ "
@@ -452,6 +456,12 @@ Install, remove, or upgrade packages in a single transaction.\n"))
          (option '(#\e "install-from-expression") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'install (read/eval-package-expression arg)
+                                       result)
+                           #f)))
+         (option '(#\f "install-from-file") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'install
+                                       (load* arg (make-user-module '()))
                                        result)
                            #f)))
          (option '(#\r "remove") #f #t

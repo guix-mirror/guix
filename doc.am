@@ -26,7 +26,8 @@ EXTRA_DIST +=					\
   doc/images/bootstrap-graph.eps		\
   doc/images/bootstrap-graph.pdf		\
   doc/images/coreutils-size-map.eps		\
-  doc/environment-gdb.scm
+  doc/environment-gdb.scm			\
+  doc/package-hello.scm
 
 OS_CONFIG_EXAMPLES_TEXI =			\
   doc/os-config-bare-bones.texi			\

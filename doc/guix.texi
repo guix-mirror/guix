@@ -1167,6 +1167,22 @@ Note that this option installs the first output of the specified
 package, which may be insufficient when needing a specific output of a
 multiple-output package.
 
+@item --install-from-file=@var{file}
+@itemx -f @var{file}
+Install the package that the code within @var{file} evaluates to.
+
+As an example, @var{file} might contain a definition like this
+(@pxref{Defining Packages}):
+
+@example
+@verbatiminclude package-hello.scm
+@end example
+
+Developers may find it useful to include such a @file{package.scm} file
+in the root of their project's source tree that can be used to test
+development snapshots and create reproducible development environments
+(@pxref{Invoking guix environment}).
+
 @item --remove=@var{package} @dots{}
 @itemx -r @var{package} @dots{}
 Remove the specified @var{package}s.

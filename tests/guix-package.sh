@@ -225,6 +225,15 @@ cat > "$module_dir/foo.scm"<<EOF
 EOF
 guix package -i emacs-foo-bar-patched -n
 
+# Make sure installing from a file works.
+cat > "$module_dir/package.scm"<<EOF
+(use-modules (gnu))
+(use-package-modules bootstrap)
+
+%bootstrap-guile
+EOF
+guix package --bootstrap --install-from-file="$module_dir/package.scm"
+
 # This one should not show up in searches since it's no supported on the
 # current system.
 test "`guix package -A super-non-portable-emacs`" = ""
