@@ -30,6 +30,7 @@
   #:autoload   (gnu packages imagemagick) (imagemagick)
   #:autoload   (gnu packages compression) (gzip)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:export (grub-image
             grub-image?
@@ -152,10 +153,26 @@ WIDTH/HEIGHT, or #f if none was found."
         (with-monad %store-monad
           (return #f)))))
 
-(define (eye-candy config port)
+(define (eye-candy config system port)
   "Return in %STORE-MONAD a gexp that writes to PORT (a port-valued gexp) the
 'grub.cfg' part concerned with graphics mode, background images, colors, and
 all that."
+  (define setup-gfxterm-body
+    ;; Intel systems need to be switched into graphics mode, whereas most
+    ;; other modern architectures have no other mode and therefore don't need
+    ;; to be switched.
+    (if (string-match "^(x86_64|i[3-6]86)-" system)
+        "
+  set gfxmode=640x480
+  insmod vbe
+  insmod vga
+  insmod video_bochs
+  insmod video_cirrus
+  insmod gfxterm
+  terminal_output gfxterm
+"
+        ""))
+
   (define (theme-colors type)
     (let* ((theme  (grub-configuration-theme config))
            (colors (type theme)))
@@ -163,22 +180,15 @@ all that."
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (mlet* %store-monad ((image (grub-background-image config)))
-    (return (and image #~(format #$port "
-function load_video {
-  insmod vbe
-  insmod vga
-  insmod video_bochs
-  insmod video_cirrus
-}
+    (return (and image
+                 #~(format #$port "
+function setup_gfxterm {~a}
 
 # Set 'root' to the partition that contains /gnu/store.
 search --file --set ~a/share/grub/unicode.pf2
 
 if loadfont ~a/share/grub/unicode.pf2; then
-  set gfxmode=640x480
-  load_video
-  insmod gfxterm
-  terminal_output gfxterm
+  setup_gfxterm
 fi
 
 insmod png
@@ -189,10 +199,11 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                        #$grub #$grub
-                        #$image
-                        #$(theme-colors grub-theme-color-normal)
-                        #$(theme-colors grub-theme-color-highlight))))))
+                           #$setup-gfxterm-body
+                           #$grub #$grub
+                           #$image
+                           #$(theme-colors grub-theme-color-normal)
+                           #$(theme-colors grub-theme-color-highlight))))))
 
 
 ;;;
@@ -229,7 +240,7 @@ entries corresponding to old generations of the system."
                 #$linux #$linux-image-name (string-join (list #$@arguments))
                 #$initrd))))
 
-  (mlet %store-monad ((sugar (eye-candy config #~port)))
+  (mlet %store-monad ((sugar (eye-candy config system #~port)))
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)
