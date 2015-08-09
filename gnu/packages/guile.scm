@@ -556,4 +556,33 @@ interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license gpl3+)))
 
+(define-public guile-redis
+  (package
+    (name "guile-redis")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-redis/guile-redis-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0vx6if6b4r3kwx64vzbs6vpc0cpcr85x11w9vkzq27gw8n7isv56"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure everything goes under .../site/2.0, like Guile's
+               ;; search paths expects.
+               '(substitute* '("Makefile.in"
+                               "redis/Makefile.in"
+                               "redis/commands/Makefile.in")
+                  (("moddir =.*/share/guile/site" all)
+                   (string-append all "/2.0"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("guile" ,guile-2.0)))
+    (home-page "http://savannah.nongnu.org/projects/guile-redis/")
+    (synopsis "Redis client library for Guile")
+    (description "Guile-redis provides a Scheme interface to the Redis
+key-value cache and store.")
+    (license lgpl3+)))
+
 ;;; guile.scm ends here
