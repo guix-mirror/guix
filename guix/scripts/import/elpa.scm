@@ -34,7 +34,7 @@
 ;;;
 
 (define %default-options
-  '((repo . 'gnu)))
+  '((repo . gnu)))
 
 (define (show-help)
   (display (_ "Usage: guix import elpa PACKAGE-NAME
