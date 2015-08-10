@@ -447,7 +447,7 @@ contain over 620 classes.")
 (define-public python-pyqt-4
   (package (inherit python-pyqt)
     (name "python-pyqt")
-    (version "4.11.3")
+    (version "4.11.4")
     (source
       (origin
         (method url-fetch)
@@ -457,7 +457,7 @@ contain over 620 classes.")
                          version ".tar.gz"))
         (sha256
          (base32
-          "11jnfjw79s0b0qdd9s6kd69w87vf16dhagbhbmwbmrp2vgf80dw5"))))
+          "01zlviy5lq8g6db84wnvvpsrfnip9lbcpxagsyqa6as3jmsff7zw"))))
     (native-inputs
      `(("python-sip" ,python-sip)
        ("qt" ,qt-4)))
