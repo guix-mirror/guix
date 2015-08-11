@@ -3245,3 +3245,48 @@ appropriate format.  Simple Scan is basically a frontend for SANE - which is
 the same backend as XSANE uses. This means that all existing scanners will
 work and the interface is well tested.")
     (license license:gpl3+)))
+
+(define-public epiphany
+  (package
+    (name "epiphany")
+    (version "3.16.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1cch4c7gh6lq1i4g0gs39qa2csl4i8a3pcdfapcj5v3r0xvz29ym"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     ;; FIXME: tests run under Xvfb, but fail with:
+     ;;   /src/bookmarks/ephy-bookmarks/create:
+     ;;   ** (test-ephy-bookmarks:19591): WARNING **: Unable to start Zeroconf
+     ;;      subsystem
+     ;;   FAIL
+     '(#:tests? #f))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("gcr" ,gcr)
+       ("glib-networking" ,glib-networking)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("iso-codes" ,iso-codes)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("libwnck" ,libwnck)
+       ("libxslt" ,libxslt)
+       ("nss" ,nss)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://wiki.gnome.org/Apps/Web")
+    (synopsis "GNOME web browser")
+    (description
+     "Epiphany is a GNOME web browser targeted at non-technical users.  Its
+principles are simplicity and standards compliance.")
+    (license license:gpl2+)))
