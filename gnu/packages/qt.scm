@@ -339,6 +339,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("python" ,python-wrapper)))
     (arguments
      `(#:tests? #f ; no check target
+       #:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
        #:phases
          (alist-replace
           'configure
@@ -346,12 +348,15 @@ developers using C++ or QML, a CSS & JavaScript like language.")
             (let* ((out (assoc-ref outputs "out"))
                    (bin (string-append out "/bin"))
                    (include (string-append out "/include"))
+                   (python (assoc-ref inputs "python"))
                    (python-version
-                     (string-take
-                       (string-take-right (assoc-ref inputs "python") 5)
-                       3))
+                     (last (string-split python #\-)))
+                   (python-major+minor
+                     (string-join
+                       (take (string-split python-version #\.) 2)
+                       "."))
                    (lib (string-append out "/lib/python"
-                                       python-version
+                                       python-major+minor
                                        "/site-packages")))
               (zero?
                 (system* "python" "configure.py"
@@ -402,7 +407,9 @@ module provides support functions to the automatically generated code.")
     (inputs
      `(("python" ,python-wrapper)))
     (arguments
-     `(#:phases
+     `(#:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:phases
          (alist-replace
          'configure
          (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -412,12 +419,15 @@ module provides support functions to the automatically generated code.")
                   (plugins (string-append out "/plugins"))
                   (designer (string-append plugins "/designer"))
                   (qml (string-append plugins "/PyQt5"))
+                  (python (assoc-ref inputs "python"))
                   (python-version
-                    (string-take
-                      (string-take-right (assoc-ref inputs "python") 5)
-                      3))
+                    (last (string-split python #\-)))
+                  (python-major+minor
+                    (string-join
+                      (take (string-split python-version #\.) 2)
+                      "."))
                   (lib (string-append out "/lib/python"
-                                      python-version
+                                      python-major+minor
                                       "/site-packages")))
              (zero? (system* "python" "configure.py"
                              "--confirm-license"
@@ -463,6 +473,8 @@ contain over 620 classes.")
        ("qt" ,qt-4)))
     (arguments
      `(#:tests? #f ; no check target
+       #:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
        #:phases
          (alist-replace
          'configure
@@ -470,12 +482,15 @@ contain over 620 classes.")
            (let* ((out (assoc-ref outputs "out"))
                   (bin (string-append out "/bin"))
                   (sip (string-append out "/share/sip"))
+                  (python (assoc-ref inputs "python"))
                   (python-version
-                    (string-take
-                      (string-take-right (assoc-ref inputs "python") 5)
-                      3))
+                    (last (string-split python #\-)))
+                  (python-major+minor
+                    (string-join
+                      (take (string-split python-version #\.) 2)
+                      "."))
                   (lib (string-append out "/lib/python"
-                                      python-version
+                                      python-major+minor
                                       "/site-packages")))
              (zero? (system* "python" "configure.py"
                              "--confirm-license"
