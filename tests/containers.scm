@@ -26,8 +26,10 @@
 (define (assert-exit x)
   (primitive-exit (if x 0 1)))
 
-;; Skip these tests unless user namespaces are available.
-(unless (file-exists? "/proc/self/ns/user")
+;; Skip these tests unless user namespaces are available and the setgroups
+;; file (introduced in Linux 3.19 to address a security issue) exists.
+(unless (and (file-exists? "/proc/self/ns/user")
+             (file-exists? "/proc/self/setgroups"))
   (exit 77))
 
 (test-begin "containers")
