@@ -122,7 +122,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "6.9p1")
+   (version "7.0p1")
    (source (origin
             (method url-fetch)
             (uri (let ((tail (string-append name "-" version ".tar.gz")))
@@ -133,7 +133,7 @@ a server that supports the SSH-2 protocol.")
                          (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
             (sha256 (base32
-                     "1zkci5nbpb4frmzj2vr3kv9j47x2h72kvybcpr0d8mzk73sls1vf"))))
+                     "1rc52jyc5v5b8j9kvasrnz9vnj9b0i7fw4nqac8wix0r794k4ngx"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
