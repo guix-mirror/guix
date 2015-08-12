@@ -1083,7 +1083,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.6.8")
+    (version "2.6.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1091,7 +1091,7 @@ for use with HTML5 video.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "10p60wjkzf1bxqcb6i7bx4hbqy3vqg598p3l9lc4v2c9b8iqr682"))
+               "1vas43bwb15q2wv3dpp7fgp8dc6szinmwl7i0ziq2vv5l2128v0p"))
              (patches (map search-patch '("avidemux-install-to-lib.patch")))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1103,7 +1103,6 @@ for use with HTML5 video.")
        ("freetype" ,freetype)
        ("fribidi" ,fribidi)
        ("glu" ,glu)
-       ("gtk+" ,gtk+)
        ("jack" ,jack-1)
        ("lame" ,lame)
        ("libvorbis" ,libvorbis)
@@ -1126,18 +1125,18 @@ for use with HTML5 video.")
         'patch-source-shebangs 'unpack-ffmpeg
         (lambda _
           (with-directory-excursion "avidemux_core/ffmpeg_package"
-            (system* "tar" "xf" "ffmpeg-1.2.1.tar.bz2")
-            (delete-file "ffmpeg-1.2.1.tar.bz2")))
+            (system* "tar" "xf" "ffmpeg-2.6.1.tar.bz2")
+            (delete-file "ffmpeg-2.6.1.tar.bz2")))
         (alist-cons-after
          'patch-source-shebangs 'repack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-1.2.1/configure"
+             (substitute* "ffmpeg-2.6.1/configure"
                (("#! /bin/sh") (string-append "#!" (which "bash"))))
-             (system* "tar" "cjf" "ffmpeg-1.2.1.tar.bz2" "ffmpeg-1.2.1"
+             (system* "tar" "cjf" "ffmpeg-2.6.1.tar.bz2" "ffmpeg-2.6.1"
                       ;; avoid non-determinism in the archive
                       "--mtime=@0" "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-1.2.1")))
+             (delete-file-recursively "ffmpeg-2.6.1")))
          (alist-replace 'configure
           (lambda _
             ;; Copy-paste settings from the cmake build system.
@@ -1174,15 +1173,12 @@ for use with HTML5 video.")
                 (and (build_component "core" "avidemux_core")
                      (build_component "cli" "avidemux/cli")
                      (build_component "qt4" "avidemux/qt4")
-                     (build_component "gtk" "avidemux/gtk")
                      (build_component "plugins_common" "avidemux_plugins"
                                      '("-DPLUGIN_UI=COMMON"))
                      (build_component "plugins_cli" "avidemux_plugins"
                                      '("-DPLUGIN_UI=CLI"))
                      (build_component "plugins_qt4" "avidemux_plugins"
                                      '("-DPLUGIN_UI=QT4"))
-                     (build_component "plugins_gtk" "avidemux_plugins"
-                                     '("-DPLUGIN_UI=GTK"))
                      (build_component "plugins_settings" "avidemux_plugins"
                                      '("-DPLUGIN_UI=SETTINGS")))
                 ;; Remove .exe and .dll file.
