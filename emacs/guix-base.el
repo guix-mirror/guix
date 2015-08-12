@@ -1,6 +1,6 @@
 ;;; guix-base.el --- Common definitions   -*- lexical-binding: t -*-
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -179,6 +179,13 @@ If PATH is relative, it is considered to be relative to
     (if loc
         (guix-find-location loc)
       (message "Couldn't find package location."))))
+
+
+;;; Receivable lists of packages, lint checkers, etc.
+
+(guix-memoized-defun guix-lint-checker-names ()
+  "Return a list of names of available lint checkers."
+  (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))
 
 
 ;;; Buffers and auto updating.

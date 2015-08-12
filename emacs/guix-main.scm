@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +57,7 @@
  (guix licenses)
  (guix utils)
  (guix ui)
+ (guix scripts lint)
  (guix scripts package)
  (guix scripts pull)
  (gnu packages))
@@ -927,3 +928,12 @@ GENERATIONS is a list of generation numbers."
           (build-derivations store derivations))
         (format #t "The source store path: ~a~%"
                 (package-source-derivation->store-path derivation))))))
+
+
+;;; Lists of packages, lint checkers, etc.
+
+(define (lint-checker-names)
+  "Return a list of names of available lint checkers."
+  (map (lambda (checker)
+         (symbol->string (lint-checker-name checker)))
+       %checkers))
