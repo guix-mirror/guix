@@ -56,7 +56,14 @@
             check-derivation
             check-home-page
             check-source
-            check-formatting))
+            check-formatting
+
+            %checkers
+            lint-checker
+            lint-checker?
+            lint-checker-name
+            lint-checker-description
+            lint-checker-check))
 
 
 ;;;
