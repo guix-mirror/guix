@@ -240,7 +240,13 @@ standards.")
       (sha256
        (base32
         "11wx29mb5pcg4mgk07a6vjwh52ca90k0x4m9wv0v3y5dmp88f01p"))
-      (patches (map search-patch '("icecat-CVE-2015-4495.patch"
+      (patches (map search-patch '("icecat-CVE-2015-4473-partial.patch"
+                                   "icecat-CVE-2015-4482.patch"
+                                   "icecat-CVE-2015-4488.patch"
+                                   "icecat-CVE-2015-4489.patch"
+                                   "icecat-CVE-2015-4491.patch"
+                                   "icecat-CVE-2015-4492.patch"
+                                   "icecat-CVE-2015-4495.patch"
                                    "icecat-enable-acceleration-and-webgl.patch"
                                    "icecat-freetype-2.6.patch"
                                    "icecat-libvpx-1.4.patch")))
