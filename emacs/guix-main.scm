@@ -942,3 +942,14 @@ GENERATIONS is a list of generation numbers."
   (map (lambda (checker)
          (symbol->string (lint-checker-name checker)))
        %checkers))
+
+(define (package-names)
+  "Return a list of names of available packages."
+  (delete-duplicates
+   (fold-packages (lambda (pkg res)
+                    (cons (package-name pkg) res))
+                  '())))
+
+;; See the comment to 'guix-package-names' function in "guix-popup.el".
+(define (package-names-lists)
+  (map list (package-names)))
