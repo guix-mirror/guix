@@ -913,7 +913,7 @@ ENTRIES is a list of package entries to get info about packages."
                  (concat (guix-get-full-name entry)
                          (when outputs
                            (concat ":"
-                                   (mapconcat #'identity outputs ",")))
+                                   (guix-concat-strings outputs ",")))
                          (when location
                            (concat "\t(" location ")")))))))
          specs)))

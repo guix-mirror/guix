@@ -147,7 +147,7 @@ subcommands, actions, etc. for this guix COMMAND."
   "Return a string with available short options for guix COMMAND."
   guix-pcomplete-parse-short-option-regexp
   (lambda (list)
-    (mapconcat #'identity list "")))
+    (guix-concat-strings list "")))
 
 (guix-memoized-defun guix-pcomplete-all-packages ()
   "Return a list of all available Guix packages."

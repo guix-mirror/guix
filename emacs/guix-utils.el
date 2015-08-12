@@ -128,6 +128,22 @@ split it into several short lines."
       (fill-region (point-min) (point-max)))
     (buffer-string)))
 
+(defun guix-concat-strings (strings separator &optional location)
+  "Return new string by concatenating STRINGS with SEPARATOR.
+If LOCATION is a symbol `head', add another SEPARATOR to the
+beginning of the returned string; if `tail' - add SEPARATOR to
+the end of the string; if nil, do not add SEPARATOR; otherwise
+add both to the end and to the beginning."
+  (let ((str (mapconcat #'identity strings separator)))
+    (cond ((null location)
+           str)
+          ((eq location 'head)
+           (concat separator str))
+          ((eq location 'tail)
+           (concat str separator))
+          (t
+           (concat separator str separator)))))
+
 (defun guix-completing-read-multiple (prompt table &optional predicate
                                       require-match initial-input
                                       hist def inherit-input-method)
