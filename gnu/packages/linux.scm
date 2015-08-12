@@ -2084,6 +2084,33 @@ thanks to the use of namespaces.")
 is for enabling irq-unmasking and IDE multiple-mode.")
     (license (non-copyleft "file://LICENSE.TXT"))))
 
+(define-public rfkill
+  (package
+    (name "rfkill")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/software/network/"
+                                  name "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0snqj5h0y991lszbigbyyqb8swj0hxajc1vfqg2scfay44231bp0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:tests? #f))
+    (home-page "https://wireless.wiki.kernel.org/en/users/Documentation/rfkill")
+    (synopsis "Tool for enabling and disabling wireless devices")
+    (description
+     "rfkill is a simple tool for accessing the rfkill device interface,
+which is used to enable and disable wireless networking devices, typically
+WLAN, Bluetooth and mobile broadband.")
+    (license (non-copyleft "file://COPYING"
+                           "See COPYING in the distribution."))))
+
 (define-public acpid
   (package
     (name "acpid")
