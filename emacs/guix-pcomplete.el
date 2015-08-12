@@ -105,9 +105,8 @@ Return a list of strings matching REGEXP.
 GROUP specifies a parenthesized expression used in REGEXP."
   (with-temp-buffer
     (apply #'guix-pcomplete-run-guix args)
-    (goto-char (point-min))
     (let (result)
-      (while (re-search-forward regexp nil t)
+      (guix-while-search regexp
         (push (match-string-no-properties group) result))
       (nreverse result))))
 

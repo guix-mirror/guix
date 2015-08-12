@@ -160,6 +160,14 @@ accessed with KEYS."
       (find-file file)
     (message "File '%s' does not exist." file)))
 
+(defmacro guix-while-search (regexp &rest body)
+  "Evaluate BODY after each search for REGEXP in the current buffer."
+  (declare (indent 1) (debug t))
+  `(save-excursion
+     (goto-char (point-min))
+     (while (re-search-forward ,regexp nil t)
+       ,@body)))
+
 
 ;;; Diff
 
