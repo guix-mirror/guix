@@ -659,6 +659,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
   gnu/packages/patches/weex-vacopy.patch			\
+  gnu/packages/patches/wicd-bitrate-none-fix.patch		\
+  gnu/packages/patches/wicd-get-selected-profile-fix.patch	\
   gnu/packages/patches/wicd-template-instantiation.patch	\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\

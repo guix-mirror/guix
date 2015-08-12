@@ -46,7 +46,9 @@
        (sha256
         (base32 "00c4rq753bhg64rv1v9yl834ssq7igyy7cz3swp287b5n5bqiqwi"))
        (patches (map search-patch
-                     '("wicd-urwid-1.3.patch"
+                     '("wicd-bitrate-none-fix.patch"
+                       "wicd-get-selected-profile-fix.patch"
+                       "wicd-urwid-1.3.patch"
                        "wicd-template-instantiation.patch")))))
     (build-system python-build-system)
     (native-inputs `(("gettext" ,gnu-gettext)))

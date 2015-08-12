@@ -1,0 +1,24 @@
+Fix copied from https://bugs.launchpad.net/wicd/+bug/1432423/comments/1
+
+--- wicd-1.7.3/curses/netentry_curses.py	1969-12-31 19:00:00.000000000 -0500
++++ wicd-1.7.3/curses/netentry_curses.py	2015-08-11 23:26:19.999999649 -0400
+@@ -538,11 +538,16 @@
+         self.bitrates = wireless.GetAvailableBitrates()
+         self.bitrates.append('auto')
+         self.bitrate_combo.set_list(self.bitrates)
++
++        # bitrate property is sometimes None
++        chosen_bitrate = wireless.GetWirelessProperty(networkID, 'bitrate')
++        if chosen_bitrate not in self.bitrates:
++            chosen_bitrate = 'auto'
++
+         self.bitrate_combo.set_focus(
+-            self.bitrates.index(
+-                wireless.GetWirelessProperty(networkID, 'bitrate')
+-            )
++            self.bitrates.index(chosen_bitrate)
+         )
++
+         self.allow_lower_bitrates_chkbox.set_state(
+             to_bool(self.format_entry(networkID, 'allow_lower_bitrates'))
+         )
