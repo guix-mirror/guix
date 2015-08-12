@@ -29,6 +29,7 @@ ELFILES =					\
   emacs/guix-messages.el			\
   emacs/guix-pcomplete.el			\
   emacs/guix-prettify.el			\
+  emacs/guix-read.el				\
   emacs/guix-utils.el				\
   emacs/guix.el
 
