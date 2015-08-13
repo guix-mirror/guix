@@ -28,6 +28,7 @@ ELFILES =					\
   emacs/guix-list.el				\
   emacs/guix-messages.el			\
   emacs/guix-pcomplete.el			\
+  emacs/guix-popup.el				\
   emacs/guix-prettify.el			\
   emacs/guix-read.el				\
   emacs/guix-utils.el				\
