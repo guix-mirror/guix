@@ -21,7 +21,8 @@
 
 (define-module (gnu packages messaging)
   #:use-module ((guix licenses)
-                #:select (gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft))
+                #:select (gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft
+                          asl2.0))
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -53,7 +54,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages icu4c))
 
 (define-public libotr
   (package
@@ -356,5 +358,39 @@ messages he sees are authentic and unmodified.  (4) Perfect forward secrecy:
 If you lose control of your private keys, no previous conversation is
 compromised.")
     (license gpl2)))
+
+(define-public znc
+  (package
+    (name "znc")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://znc.in/releases/znc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0h61nv5kx9k8prmhsffxhlprf7gjcq8vqhjjmqr6v3glcirkjjds"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; tries to download GoogleTest with wget
+       #:configure-flags '("--enable-python"
+                           "--enable-perl"
+                           "--enable-cyrus")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("python" ,python)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("zlib" ,zlib)
+       ("icu4c" ,icu4c)
+       ("cyrus-sasl" ,cyrus-sasl)))
+    (home-page "http://znc.in")
+    (synopsis "IRC network bouncer")
+    (description "ZNC is an IRC network bouncer or BNC.  It can detach the
+client from the actual IRC server, and also from selected channels.  Multiple
+clients from different locations can connect to a single ZNC account
+simultaneously and therefore appear under the same nickname on IRC.")
+    (license asl2.0)))
 
 ;;; messaging.scm ends here
