@@ -68,6 +68,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages fribidi)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -951,3 +952,50 @@ platform to platform to avoid falling, while the platforms drop at faster rates
 the higher you go.  The game features multiplayer, unlimited FPS, smooth floor
 falling, themeable graphics and sounds, and replays.")
     (license license:gpl3+)))
+
+(define-public wesnoth
+  (package
+    (name "wesnoth")
+    (version "1.12.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/wesnoth/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "19qyylylaljhk45lk2ja0xp7cx9iy4hx07l65zkg20a2v9h50lmz"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:configure-flags
+       ;; XXX: Failed to compile with '-Werror=old-style-cast'.
+       ;;   boost/mpl/assert.hpp:313:58: error:
+       ;;     use of old-style cast [-Werror=old-style-cast]
+       ;;   [...]
+       ;;   cc1plus: all warnings being treated as errors
+       '("-DENABLE_STRICT_COMPILATION=OFF")))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("dbus" ,dbus)
+       ("fribidi" ,fribidi)
+       ("libvorbis" ,libvorbis)
+       ("pango" ,pango)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)
+       ("sdl-net" ,sdl-net)
+       ("sdl-ttf" ,sdl-ttf)))
+    (home-page "http://www.wesnoth.org/")
+    (synopsis "Turn-based strategy game")
+    (description
+     "The Battle for Wesnoth is a fantasy, turn based tactical strategy game,
+with several single player campaigns, and multiplayer games (both networked and
+local).
+
+Battle for control on a range of maps, using variety of units which have
+advantages and disadvantages against different types of attacks.  Units gain
+experience and advance levels, and are carried over from one scenario to the
+next campaign.")
+    (license license:gpl2+)))
