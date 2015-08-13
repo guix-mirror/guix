@@ -1085,6 +1085,27 @@ FILE.  With a prefix argument, also prompt for PROFILE."
      operation-buffer)))
 
 
+;;; Executing guix commands
+
+(defun guix-run-command-in-repl (args)
+  "Execute 'guix ARGS ...' command in Guix REPL."
+  (guix-eval-in-repl
+   (apply #'guix-make-guile-expression
+          'guix-command args)))
+
+(defun guix-command-output (args)
+  "Return string with 'guix ARGS ...' output."
+  (guix-eval-read
+   (apply #'guix-make-guile-expression
+          'guix-command-output args)))
+
+(defun guix-help-string (&optional commands)
+  "Return string with 'guix COMMANDS ... --help' output."
+  (guix-eval-read
+   (apply #'guix-make-guile-expression
+          'help-string commands)))
+
+
 ;;; Pull
 
 (defcustom guix-update-after-pull t

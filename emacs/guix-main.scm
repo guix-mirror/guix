@@ -931,6 +931,24 @@ GENERATIONS is a list of generation numbers."
                 (package-source-derivation->store-path derivation))))))
 
 
+;;; Executing guix commands
+
+(define (guix-command . args)
+  "Run 'guix ARGS ...' command."
+  (catch 'quit
+    (lambda () (apply run-guix args))
+    (const #t)))
+
+(define (guix-command-output . args)
+  "Return string with 'guix ARGS ...' output."
+  (with-output-to-string
+    (lambda () (apply guix-command args))))
+
+(define (help-string . commands)
+  "Return string with 'guix COMMANDS ... --help' output."
+  (apply guix-command-output `(,@commands "--help")))
+
+
 ;;; Lists of packages, lint checkers, etc.
 
 (define (graph-type-names)
