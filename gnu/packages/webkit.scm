@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,14 +52,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.8.3")
+    (version "2.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05igg61lflgwy83cmxgyzmvf2bkhplmp8710ssrlpmbfcz461pmk"))))
+                "082dw0d8jxvsapx30ypmy5h2srzfzi42c3zr9pbkzx1m959hq7rx"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -67,7 +68,22 @@
                           "-DPORT=GTK"
                           (string-append ; uses lib64 by default
                            "-DLIB_INSTALL_DIR="
-                           (assoc-ref %outputs "out") "/lib"))))
+                           (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'set-paths 'add-gst-plugins-base-include-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; XXX Work around a problem in the build system, which neglects
+            ;; to add -I for gst-plugins-base when compiling
+            ;; Source/WebKit2/UIProcess/WebPageProxy.cpp, apparently assuming
+            ;; that it will be in the same directory as gstreamer's header
+            ;; files.
+            (setenv "CPATH"
+                    (string-append (getenv "CPATH")
+                                   ":"
+                                   (assoc-ref inputs "gst-plugins-base")
+                                   "/include/gstreamer-1.0")))))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gnu-gettext)
