@@ -141,7 +141,7 @@ HTML/CSS applications to full-fledged web browsers.")
 ;; Last GTK+2 port, required by GnuCash.
 (define-public webkitgtk/gtk+-2
   (package (inherit webkitgtk-2.4)
-    (name "webkitgtk")
+    (name "webkitgtk-gtk2")
     (arguments
      `(#:configure-flags
        '("--enable-webkit2=no"
