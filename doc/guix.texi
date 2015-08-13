@@ -70,6 +70,7 @@ package management tool written for the GNU system.
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
 * Package Management::          Package installation, upgrade, etc.
+* Emacs Interface::             Using Guix from Emacs.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
 * GNU Distribution::            Software for your friendly GNU system.
@@ -101,12 +102,18 @@ Package Management
 
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
-* Emacs Interface::             Package management from Emacs.
 * Substitutes::                 Downloading pre-built binaries.
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Invoking guix archive::       Exporting and importing store files.
+
+Emacs Interface
+
+* Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
+* Package Management: Emacs Package Management.	Managing packages and generations.
+* Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
+* Completions: Emacs Completions.       Completing @command{guix} shell command.
 
 Programming Interface
 
@@ -964,14 +971,13 @@ features.
 
 This chapter describes the main features of Guix, as well as the package
 management tools it provides.  Two user interfaces are provided for
-routine package management tasks: a command-line interface
-(@pxref{Invoking guix package, @code{guix package}}), and a visual user
-interface in Emacs (@pxref{Emacs Interface}).
+routine package management tasks: A command-line interface described below
+(@pxref{Invoking guix package, @code{guix package}}), as well as a visual user
+interface in Emacs described in a subsequent chapter (@pxref{Emacs Interface}).
 
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
-* Emacs Interface::             Package management from Emacs.
 * Substitutes::                 Downloading pre-built binaries.
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
@@ -1455,8 +1461,6 @@ Finally, since @command{guix package} may actually start build
 processes, it supports all the common build options that @command{guix
 build} supports (@pxref{Invoking guix build, common build options}).
 
-@include emacs.texi
-
 @node Substitutes
 @section Substitutes
 
@@ -1898,6 +1902,8 @@ automatically builds them.  The build process may be controlled with the
 same options that can be passed to the @command{guix build} command
 (@pxref{Invoking guix build, common build options}).
 
+@c *********************************************************************
+@include emacs.texi
 
 @c *********************************************************************
 @node Programming Interface

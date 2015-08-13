@@ -1,29 +1,21 @@
 @node Emacs Interface
-@section Emacs Interface
+@chapter Emacs Interface
 
 @cindex Emacs
-GNU Guix comes with a visual user interface for GNU@tie{}Emacs, known
-as ``guix.el''.  It can be used for routine package management tasks,
-pretty much like the @command{guix package} command (@pxref{Invoking
-guix package}).  Specifically, ``guix.el'' makes it easy to:
-
-@itemize
-@item browse and display packages and generations;
-@item search, install, upgrade and remove packages;
-@item display packages from previous generations;
-@item do some other useful things.
-@end itemize
+GNU Guix comes with several useful modules (known as ``guix.el'') for
+GNU@tie{}Emacs which are intended to make an Emacs user interaction with
+Guix convenient and fun.
 
 @menu
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
-* Usage: Emacs Usage.			Using the interface.
-* Configuration: Emacs Configuration.	Configuring the interface.
+* Package Management: Emacs Package Management.	Managing packages and generations.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Completions: Emacs Completions.       Completing @command{guix} shell command.
 @end menu
 
+
 @node Emacs Initial Setup
-@subsection Initial Setup
+@section Initial Setup
 
 On the Guix System Distribution (@pxref{GNU Distribution}), ``guix.el''
 is ready to use, provided Guix is installed system-wide, which is the
@@ -105,22 +97,32 @@ emacs, The GNU Emacs Manual}).
 You can activate Emacs packages installed in your profile whenever you
 want using @kbd{M-x@tie{}guix-emacs-load-autoloads}.
 
-@node Emacs Usage
-@subsection Usage
+
+@node Emacs Package Management
+@section Package Management
 
 Once ``guix.el'' has been successfully configured, you should be able to
-use commands for displaying packages and generations.  This information
-can be displayed in a ``list'' or ``info'' buffer.
+use a visual interface for routine package management tasks, pretty much
+like the @command{guix package} command (@pxref{Invoking guix package}).
+Specifically, it makes it easy to:
+
+@itemize
+@item browse and display packages and generations;
+@item search, install, upgrade and remove packages;
+@item display packages from previous generations;
+@item do some other useful things.
+@end itemize
 
 @menu
 * Commands: Emacs Commands.			@kbd{M-x guix-@dots{}}
 * General information: Emacs General info.	Common for both interfaces.
 * ``List'' buffer: Emacs List buffer.		List-like interface.
 * ``Info'' buffer: Emacs Info buffer.		Help-like interface.
+* Configuration: Emacs Configuration.		Configuring the interface.
 @end menu
 
 @node Emacs Commands
-@subsubsection Commands
+@subsection Commands
 
 All commands for displaying packages and generations use the current
 profile, which can be changed with
@@ -191,7 +193,7 @@ Once @command{guix pull} has succeeded, the Guix REPL is restared.  This
 allows you to keep using the Emacs interface with the updated Guix.
 
 @node Emacs General info
-@subsubsection General information
+@subsection General information
 
 The following keys are available for both ``list'' and ``info'' types of
 buffers:
@@ -235,7 +237,7 @@ was restarted, you may want to revert ``list'' buffer (by pressing
 @kbd{g}).
 
 @node Emacs List buffer
-@subsubsection ``List'' buffer
+@subsection ``List'' buffer
 
 An interface of a ``list'' buffer is similar to the interface provided
 by ``package.el'' (@pxref{Package Menu,,, emacs, The GNU Emacs Manual}).
@@ -310,7 +312,7 @@ with another marked generation.
 @end table
 
 @node Emacs Info buffer
-@subsubsection ``Info'' buffer
+@subsection ``Info'' buffer
 
 The interface of an ``info'' buffer is similar to the interface of
 @code{help-mode} (@pxref{Help Mode,,, emacs, The GNU Emacs Manual}).
@@ -485,11 +487,11 @@ Various settings for ``info'' buffers.
 
 
 @node Emacs Prettify
-@subsection Guix Prettify Mode
+@section Guix Prettify Mode
 
-Along with ``guix.el'', GNU@tie{}Guix comes with ``guix-prettify.el''.
-It provides a minor mode for abbreviating store file names by replacing
-hash sequences of symbols with ``@dots{}'':
+GNU@tie{}Guix also comes with ``guix-prettify.el''.  It provides a minor
+mode for abbreviating store file names by replacing hash sequences of
+symbols with ``@dots{}'':
 
 @example
 /gnu/store/72f54nfp6g1hz873w8z3gfcah0h4nl9p-foo-0.1
@@ -526,7 +528,7 @@ mode hooks (@pxref{Hooks,,, emacs, The GNU Emacs Manual}), for example:
 
 
 @node Emacs Completions
-@subsection Shell Completions
+@section Shell Completions
 
 Another feature that becomes available after configuring Emacs interface
 (@pxref{Emacs Initial Setup}) is completing of @command{guix}
