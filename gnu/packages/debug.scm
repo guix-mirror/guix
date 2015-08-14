@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,7 +81,7 @@ program to exhibit a bug.")
 (define-public c-reduce
   (package
     (name "c-reduce")
-    (version "2.2.1")
+    (version "2.3.0")
     (source
      (origin
       (method url-fetch)
@@ -90,7 +90,7 @@ program to exhibit a bug.")
                            "creduce-" version ".tar.gz")))
       (sha256
        (base32
-        "0wh0fkyg2l41d2wkndrgdiai9g2qiav7jik7cys21vmgzq01pyy2"))
+        "0r9lvnifjcnsrkrk8k4mha1kmmb93jya7alm523ck59y3173bpi0"))
       (modules '((guix build utils)))
       (snippet
        '(substitute* "clang_delta/TransformationManager.cpp"
@@ -99,8 +99,8 @@ program to exhibit a bug.")
     (inputs
      `(("astyle"          ,astyle)
        ("delta"           ,delta)
-       ("llvm"            ,llvm-3.5)
-       ("clang"           ,clang-3.5)
+       ("llvm"            ,llvm)
+       ("clang"           ,clang)
        ("flex"            ,flex)
        ("indent"          ,indent)
        ("perl"            ,perl)
