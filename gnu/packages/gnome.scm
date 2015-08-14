@@ -1876,7 +1876,8 @@ library.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       '("--with-ca-certificates=/etc/ssl/certs/ca-certificates.crt")
+       ;; FIXME: ca-certificates.crt is not available in the build environment.
+       '("--with-ca-certificates=no")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-giomoduledir
@@ -1885,16 +1886,7 @@ library.")
                        (substitute* "configure"
                          (("GIO_MODULE_DIR=.*")
                           (string-append "GIO_MODULE_DIR=" %output
-                                         "/lib/gio/modules\n")))))
-         (add-before 'check 'disable-failing-tls-tests
-                     ;; The tests 'file-database' and 'connection' fail due to
-                     ;; missing ca-certificates.crt in the build environment.
-                     (lambda _
-                       (substitute* "tls/tests/Makefile"
-                         (("TESTS = \\$\\(am__EXEEXT_3\\)")
-                          (string-append
-                           "TESTS = certificate$(EXEEXT) "
-                           "$(am__EXEEXT_1) $(am__EXEEXT_2)"))))))))
+                                         "/lib/gio/modules\n"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
