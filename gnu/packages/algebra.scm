@@ -189,14 +189,15 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.4.5")
+   (version "2.5.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://flintlib.org/flint-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "1qq11sxliy499a9g656dgk47ffb951q4gl6ddjbq838gy16kb2g4"))))
+                     "11syazv1a8rrnac3wj3hnyhhflpqcmq02q8pqk2m6g2k6h0gxwfb"))
+            (patches (map search-patch '("flint-ldconfig.patch")))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gmp" ,gmp)
@@ -209,11 +210,6 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
              (let ((out (assoc-ref outputs "out"))
                    (gmp (assoc-ref inputs "gmp"))
                    (mpfr (assoc-ref inputs "mpfr")))
-               ;; Drop test failing with gmp-6 due to changed invertibility
-               ;; of 0 in Z/1 Z, which according to the flint authors has no
-               ;; impact on flint.
-               ;; FIXME: Drop with later version.
-               (delete-file "fmpz/test/t-invmod.c")
                ;; do not pass "--enable-fast-install", which makes the
                ;; homebrew configure process fail
                (zero? (system*
