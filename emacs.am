@@ -21,6 +21,7 @@ AUTOLOADS = emacs/guix-autoloads.el
 ELFILES =					\
   emacs/guix-backend.el				\
   emacs/guix-base.el				\
+  emacs/guix-command.el				\
   emacs/guix-emacs.el				\
   emacs/guix-help-vars.el			\
   emacs/guix-history.el				\

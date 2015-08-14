@@ -112,6 +112,7 @@ Emacs Interface
 
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Package Management: Emacs Package Management.	Managing packages and generations.
+* Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Completions: Emacs Completions.       Completing @command{guix} shell command.
 

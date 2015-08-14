@@ -9,6 +9,7 @@ Guix convenient and fun.
 @menu
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Package Management: Emacs Package Management.	Managing packages and generations.
+* Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Completions: Emacs Completions.       Completing @command{guix} shell command.
 @end menu
@@ -34,6 +35,12 @@ later;
 @item
 @uref{http://nongnu.org/geiser/, Geiser}, version 0.3 or later: it is
 used for interacting with the Guile process.
+
+@item
+@uref{https://github.com/magit/magit/, magit-popup library}.  You
+already have this library if you use Magit 2.1.0 or later.  This library
+is an optional dependency---it is required only for @kbd{M-x@tie{}guix}
+command (@pxref{Emacs Popup Interface}).
 
 @end itemize
 
@@ -484,6 +491,43 @@ buffers.
 Various settings for ``info'' buffers.
 
 @end table
+
+
+@node Emacs Popup Interface
+@section Popup Interface
+
+If you ever used Magit, you know what ``popup interface'' is
+(@pxref{Top,,, magit-popup, Magit-Popup User Manual}).  Even if you are
+not acquainted with Magit, there should be no worries as it is very
+intuitive.
+
+So @kbd{M-x@tie{}guix} command provides a top-level popup interface for
+all available guix commands.  When you select an option, you'll be
+prompted for a value in the minibuffer.  Many values have completions,
+so don't hesitate to press @key{TAB} key.  Multiple values (for example,
+packages or lint checkers) should be separated by commas.
+
+After specifying all options and switches for a command, you may choose
+one of the available actions.  The following default actions are
+available for all commands:
+
+@itemize
+
+@item
+Run the command in the Guix REPL.  It is faster than running
+@code{guix@tie{}@dots{}} command directly in shell, as there is no
+need to run another guile process and to load required modules there.
+
+@item
+Run the command in a shell buffer.  You can set
+@code{guix-run-in-shell-function} variable to fine tune the shell buffer
+you want to use.
+
+@item
+Add the command line to the kill ring (@pxref{Kill Ring,,, emacs, The
+GNU Emacs Manual}).
+
+@end itemize
 
 
 @node Emacs Prettify
