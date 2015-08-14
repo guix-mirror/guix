@@ -1872,12 +1872,13 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ij33bhvn7y5gagx4sbrw906dsjjjs9dllxn73pzv6x97c6k92lg"))))
+                "0ij33bhvn7y5gagx4sbrw906dsjjjs9dllxn73pzv6x97c6k92lg"))
+              (patches
+               (list (search-patch "glib-networking-ssl-cert-file.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       ;; FIXME: ca-certificates.crt is not available in the build environment.
-       '("--with-ca-certificates=no")
+       '("--with-ca-certificates=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-giomoduledir
@@ -1886,7 +1887,13 @@ library.")
                        (substitute* "configure"
                          (("GIO_MODULE_DIR=.*")
                           (string-append "GIO_MODULE_DIR=" %output
-                                         "/lib/gio/modules\n"))))))))
+                                         "/lib/gio/modules\n")))))
+         (add-before 'check 'use-empty-ssl-cert-file
+                     (lambda _
+                       ;; The ca-certificates.crt is not available in the build
+                       ;; environment.
+                       (setenv "SSL_CERT_FILE" "/dev/null")
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -1968,11 +1975,14 @@ libxml to ease remote use of the RESTful API.")
                        (substitute* "tests/socket-test.c"
                          ((".*/sockets/unconnected.*") ""))
                        #t))
-         (add-before 'check 'unset-LC_ALL
-                     ;; The 'check-local' target runs 'env LANG=C sort -u',
-                     ;; unset 'LC_ALL' to make 'LANG' working.
+         (add-before 'check 'pre-check
                      (lambda _
+                       ;; The 'check-local' target runs 'env LANG=C sort -u',
+                       ;; unset 'LC_ALL' to make 'LANG' working.
                        (unsetenv "LC_ALL")
+                       ;; The ca-certificates.crt is not available in the build
+                       ;; environment.
+                       (setenv "SSL_CERT_FILE" "/dev/null")
                        #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums

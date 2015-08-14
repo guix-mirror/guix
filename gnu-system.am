@@ -456,6 +456,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
+  gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
