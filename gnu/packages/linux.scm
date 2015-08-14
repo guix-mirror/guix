@@ -1712,19 +1712,22 @@ mapper.  Kernel components are part of Linux-libre.")
               (sha256
                (base32
                 "0qscyd44jmhs4k32ggp107hlym1pcyjzihiai48xs7xzib4wbndb"))
-              (modules '((guix build utils)))
               (snippet
-               ;; Install the manual pages in the right place.
-               '(substitute* "Makefile"
-                  (("INSTALL_MAN= .*")
-                   "INSTALL_MAN= $(PREFIX)/share/man")))))
+               '(begin
+                  ;; Remove the older header files that are not free software.
+                  (for-each (lambda (n)
+                              (delete-file (format #f "wireless.~a.h" n)))
+                            '(10 11 12 13 14 15 16 17 18 19 20))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (setenv "PREFIX" (assoc-ref outputs "out")))
-                 %standard-phases)
+     `(#:make-flags
+       (list (string-append "PREFIX=" %output)
+             (string-append "INSTALL_MAN=" %output "/share/man")
+             (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
+             "BUILD_STATIC=")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
        #:tests? #f))
     (synopsis "Tools for manipulating Linux Wireless Extensions")
     (description "Wireless Tools are used to manipulate the now-deprecated
@@ -1733,7 +1736,9 @@ Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
-    (license gpl2+)))
+    ;; wireless.21.h and wireless.22.h are distributed under lgpl2.1+, the
+    ;; other files are distributed under gpl2.
+    (license (list gpl2 lgpl2.1+))))
 
 (define-public crda
   (package
