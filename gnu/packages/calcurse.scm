@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +27,7 @@
 (define-public calcurse
   (package
     (name "calcurse")
-    (version "3.2.1")
+    (version "4.0.0")
     (source
      (origin
       (method url-fetch)
@@ -35,9 +35,14 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0g92c4x02iv2wi3c1sm3nz1ay96bi2m7klxq3qyyx3pr11l53m85"))))
+        "0d33cpkbhyidvm3xx6iw9ljqdvl6477c2kcwix3bs63nj0ch06v2"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
+    (arguments
+     ;; The ical tests all want to create a ".calcurse" directory, and may
+     ;; fail with "cannot create directory '.calcurse': File exists" if run
+     ;; concurently.
+     '(#:parallel-tests? #f))
     (home-page "http://www.calcurse.org")
     (synopsis "Text-based calendar and scheduling")
     (description
