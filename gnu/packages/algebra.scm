@@ -203,7 +203,8 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
     `(("gmp" ,gmp)
       ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
    (arguments
-    `(#:phases
+    `(#:parallel-tests? #f ; seems to be necessary on arm
+      #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
