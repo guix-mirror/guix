@@ -3276,6 +3276,8 @@ work and the interface is well tested.")
      ;;      subsystem
      ;;   FAIL
      '(#:tests? #f))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
