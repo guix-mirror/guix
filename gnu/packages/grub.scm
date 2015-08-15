@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,25 +85,28 @@
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-werror")
-       #:phases (alist-cons-before
-                 'patch-source-shebangs 'patch-stuff
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "grub-core/Makefile.in"
-                     (("/bin/sh") (which "sh")))
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'patch-stuff
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "grub-core/Makefile.in"
+                       (("/bin/sh") (which "sh")))
 
-                   ;; Make the font visible.
-                   (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
-                   (system* "gunzip" "unifont.bdf.gz")
+                     ;; Make the font visible.
+                     (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
+                     (system* "gunzip" "unifont.bdf.gz")
 
-                   ;; TODO: Re-enable this test when we have Parted.
-                   (substitute* "tests/partmap_test.in"
-                     (("set -e") "exit 77")))
-                 %standard-phases)))
+                     ;; TODO: Re-enable this test when we have Parted.
+                     (substitute* "tests/partmap_test.in"
+                       (("set -e") "exit 77"))
+
+                     #t)))))
     (inputs
      `(;; ("lvm2" ,lvm2)
        ("gettext" ,gnu-gettext)
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
+       ;; ("fuse" ,fuse)
        ("ncurses" ,ncurses)))
     (native-inputs
      `(("unifont" ,unifont)
