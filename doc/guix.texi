@@ -5867,9 +5867,10 @@ adds or adjust services for a typical ``desktop'' setup.
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{slim-service}}), a network management tool (@pxref{Networking
 Services, @code{wicd-service}}), energy and color management services,
-an NTP client (@pxref{Networking Services}), the Avahi
-daemon, and has the name service switch service configured to be able to
-use @code{nss-mdns} (@pxref{Name Service Switch, mDNS}).
+the GeoClue location service, an NTP client (@pxref{Networking
+Services}), the Avahi daemon, and has the name service switch service
+configured to be able to use @code{nss-mdns} (@pxref{Name Service
+Switch, mDNS}).
 @end defvr
 
 The @var{%desktop-services} variable can be used as the @code{services}
@@ -5919,6 +5920,41 @@ interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
 tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
 site} for more information.
+@end deffn
+
+@deffn {Scheme Procedure} geoclue-application name [#:allowed? #t] [#:system? #f] [#:users '()]
+Return an configuration allowing an application to access GeoClue
+location data.  @var{name} is the Desktop ID of the application, without
+the @code{.desktop} part.  If @var{allowed?} is true, the application
+will have access to location information by default.  The boolean
+@var{system?}  value indicates that an application is a system component
+or not.  Finally @var{users} is a list of UIDs of all users for which
+this application is allowed location info access.  An empty users list
+means that all users are allowed.
+@end deffn
+
+@defvr {Scheme Variable} %standard-geoclue-applications
+The standard list of well-known GeoClue application configurations,
+granting authority to GNOME's date-and-time utility to ask for the
+current location in order to set the time zone, and allowing the Firefox
+(IceCat) and Epiphany web browsers to request location information.
+Firefox and Epiphany both query the user before allowing a web page to
+know the user's location.
+@end defvr
+
+@deffn {Monadic Procedure} geoclue-service [#:colord @var{colord}] @
+                         [#:whitelist '()] @
+                         [#:wifi-geolocation-url "https://location.services.mozilla.com/v1/geolocate?key=geoclue"] @
+                         [#:submit-data? #f]
+                         [#:wifi-submission-url "https://location.services.mozilla.com/v1/submit?key=geoclue"] @
+                         [#:submission-nick "geoclue"] @
+                         [#:applications %standard-geoclue-applications]
+Return a service that runs the GeoClue location service.  This service
+provides a D-Bus interface to allow applications to request access to a
+user's physical location, and optionally to add information to online
+location databases.  See
+@uref{https://wiki.freedesktop.org/www/Software/GeoClue/, the GeoClue
+web site} for more information.
 @end deffn
 
 @node Database Services

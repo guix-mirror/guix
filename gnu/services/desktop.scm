@@ -36,6 +36,9 @@
   #:export (dbus-service
             upower-service
             colord-service
+            geoclue-application
+            %standard-geoclue-applications
+            geoclue-service
             %desktop-services))
 
 ;;; Commentary:
@@ -43,6 +46,14 @@
 ;;; This module contains service definitions for a "desktop" environment.
 ;;;
 ;;; Code:
+
+
+;;;
+;;; Helpers.
+;;;
+
+(define (bool value)
+  (if value "true\n" "false\n"))
 
 
 ;;;
@@ -154,9 +165,6 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
                                     time-critical time-action
                                     critical-power-action)
   "Return an upower-daemon configuration file."
-  (define (bool value)
-    (if value "true\n" "false\n"))
-
   (text-file "UPower.conf"
              (string-append
               "[UPower]\n"
@@ -274,6 +282,100 @@ site} for more information."
                             (shell
                              #~(string-append #$shadow "/sbin/nologin")))))))))
 
+
+;;;
+;;; GeoClue D-Bus service.
+;;;
+
+(define* (geoclue-application name #:key (allowed? #t) system? (users '()))
+  "Configure default GeoClue access permissions for an application.  NAME is
+the Desktop ID of the application, without the .desktop part.  If ALLOWED? is
+true, the application will have access to location information by default.
+The boolean SYSTEM? value indicates that an application is a system component
+or not.  Finally USERS is a list of UIDs of all users for which this
+application is allowed location info access.  An empty users list means all
+users are allowed."
+  (string-append
+   "[" name "]\n"
+   "allowed=" (bool allowed?)
+   "system=" (bool system?)
+   "users=" (string-join users ";") "\n"))
+
+(define %standard-geoclue-applications
+  (list (geoclue-application "gnome-datetime-panel" #:system? #t)
+        (geoclue-application "epiphany" #:system? #f)
+        (geoclue-application "firefox" #:system? #f)))
+
+(define* (geoclue-configuration-file #:key whitelist wifi-geolocation-url
+                                     submit-data?
+                                     wifi-submission-url submission-nick
+                                     applications)
+  "Return a geoclue configuration file."
+  (text-file "geoclue.conf"
+             (string-append
+              "[agent]\n"
+              "whitelist=" (string-join whitelist ";") "\n"
+              "[wifi]\n"
+              "url=" wifi-geolocation-url "\n"
+              "submit-data=" (bool submit-data?)
+              "submission-url=" wifi-submission-url "\n"
+              "submission-nick=" submission-nick "\n"
+              (string-join applications "\n"))))
+
+(define* (geoclue-service #:key (geoclue geoclue)
+                          (whitelist '())
+                          (wifi-geolocation-url
+                           ;; Mozilla geolocation service:
+                           "https://location.services.mozilla.com/v1/geolocate?key=geoclue")
+                          (submit-data? #f)
+                          (wifi-submission-url
+                           "https://location.services.mozilla.com/v1/submit?key=geoclue")
+                          (submission-nick "geoclue")
+                          (applications %standard-geoclue-applications))
+  "Return a service that runs the @command{geoclue} location service.  This
+service provides a D-Bus interface to allow applications to request access to
+a user's physical location, and optionally to add information to online
+location databases.  By default, only the GNOME date-time panel and the Icecat
+and Epiphany web browsers are able to ask for the user's location, and in the
+case of Icecat and Epiphany, both will ask the user for permission first.  See
+@uref{https://wiki.freedesktop.org/www/Software/GeoClue/, the geoclue web
+site} for more information."
+  (mlet %store-monad ((config (geoclue-configuration-file
+                               #:whitelist whitelist
+                               #:wifi-geolocation-url wifi-geolocation-url
+                               #:submit-data? submit-data?
+                               #:wifi-submission-url wifi-submission-url
+                               #:submission-nick submission-nick
+                               #:applications applications)))
+    (return
+     (service
+      (documentation "Run the GeoClue location service.")
+      (provision '(geoclue-daemon))
+      (requirement '(dbus-system))
+
+      (start #~(make-forkexec-constructor
+                (list (string-append #$geoclue "/libexec/geoclue"))
+                #:user "geoclue"
+                #:environment-variables
+                (list (string-append "GEOCLUE_CONFIG_FILE=" #$config))))
+      (stop #~(make-kill-destructor))
+
+      (user-groups (list (user-group
+                          (name "geoclue")
+                          (system? #t))))
+      (user-accounts (list (user-account
+                            (name "geoclue")
+                            (group "geoclue")
+                            (system? #t)
+                            (comment "GeoClue daemon user")
+                            (home-directory "/var/empty")
+                            (shell
+                             "/run/current-system/profile/sbin/nologin"))))))))
+
+
+;;;
+;;; The default set of desktop services.
+;;;
 (define %desktop-services
   ;; List of services typically useful for a "desktop" use case.
   (cons* (slim-service)
@@ -281,8 +383,13 @@ site} for more information."
          (avahi-service)
          (wicd-service)
          (upower-service)
+         ;; FIXME: The colord and geoclue services could all be bus-activated
+         ;; by default, so they don't run at program startup.  However, user
+         ;; creation and /var/lib.colord creation happen at service activation
+         ;; time, so we currently add them to the set of default services.
          (colord-service)
-         (dbus-service (list avahi wicd upower colord))
+         (geoclue-service)
+         (dbus-service (list avahi wicd upower colord geoclue))
 
          (ntp-service)
 
