@@ -1947,7 +1947,8 @@ package looks like this:
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (gnu packages gawk))
 
 (define-public hello
   (package
