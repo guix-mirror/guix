@@ -4652,3 +4652,31 @@ or create documents in LilyPond format.  A command line program ly is also
 provided that can be used to do various manipulations with LilyPond files.")
     (home-page "https://pypi.python.org/pypi/python-ly")
     (license gpl2+)))
+
+(define-public python-appdirs
+  (package
+    (name "python-appdirs")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/a/appdirs/appdirs-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1iddva7v3fq0aqzsahkazxr7vpw28mqcrsy818z4wyiqnkplbhlg"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/ActiveState/appdirs")
+    (synopsis
+      "Determine platform-specific dirs, e.g. a \"user data dir\"")
+    (description
+      "This module provides a portable way of finding out where user data
+should be stored on various operating systems.")
+    (license license:expat)))
+
+(define-public python2-appdirs
+  (package-with-python2 python-appdirs))
