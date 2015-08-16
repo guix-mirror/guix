@@ -138,3 +138,42 @@ and sensible default behaviors into your setuptools run.")
 
 (define-public python2-pbr
   (package-with-python2 python-pbr))
+
+;; Packages from the Oslo library
+(define-public python-oslotest
+  (package
+    (name "python-oslotest")
+    (version "1.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/o/oslotest/oslotest-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "175dln2zxjvvh4b23f2hln6zwfy2v5f1blg7mxbwl4r3130zvs2k"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-fixtures" ,python-fixtures)
+        ("python-mock" ,python-mock)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-mox3" ,python-mox3)
+        ("python-os-client-config" ,python-os-client-config)
+        ("python-setuptools" ,python-setuptools)
+        ("python-subunit" ,python-subunit)
+        ("python-testrepository" ,python-testrepository)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)))
+    (home-page "http://launchpad.net/oslo")
+    (synopsis "Oslo test framework")
+    (description
+      "The Oslo Test framework provides common fixtures, support for debugging,
+and better support for mocking results.")
+    (license asl2.0)))
+
+(define-public python2-oslotest
+  (package-with-python2 python-oslotest))
