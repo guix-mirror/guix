@@ -365,36 +365,31 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.19")
+    (version "0.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1szf6c44g209pcjq5nvfhlp3nzcm3lrcwv4spsxmwy13hiaccvrr"))))
+                "1v5dcnlg4km5hfaq0i0qywq5fn66fi0rq4aaibyqkwxz8mis4hgp"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; FIXME: Test suite hangs and times out.
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (setenv "CC" "gcc")
-                   (setenv "CONFIG_SHELL" (which "sh"))
+     '(#:tests? #f ;; FIXME: 637 tests; 70 fail and 98 are skipped
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (setenv "CC" "gcc")
+                      (setenv "CONFIG_SHELL" (which "sh"))
 
-                   ;; XXX Should python-docutils make a symlink
-                   ;; for "rst2man" and other similar programs?
-                   (substitute* '("configure" "doc/prerst2man.py")
-                     ((" rst2man ") " rst2man.py "))
-
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)))
+                      (let ((out (assoc-ref outputs "out")))
+                        (zero? (system* "./configure"
+                                        (string-append "--prefix=" out)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python-2)
-       ("python2-docutils" ,python2-docutils)
+       ("python-docutils" ,python2-docutils)
+       ("python-sphinx" ,python2-sphinx)
        ("bash-completion" ,bash-completion)))
     (inputs
      `(("emacs" ,emacs)
