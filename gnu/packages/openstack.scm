@@ -55,6 +55,45 @@ with mox as possible, but small enhancements have been made. The library was
 tested on Python version 3.2, 2.7 and 2.6.")
     (license asl2.0)))
 
+(define-public python-os-client-config
+  (package
+    (name "python-os-client-config")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/o/os-client-config/os-client-config-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "14png6ml3zbbilh8bihav24f8vig9lyijwynnjcvazdxxrzvwq9j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Circular dependency with python-oslotest
+    (inputs
+      `(("python-appdirs" ,python-appdirs)
+        ("python-fixtures" ,python-fixtures)
+        ("python-mimeparse" ,python-mimeparse)
+        ("python-pbr" ,python-pbr)
+        ("python-pyyaml" ,python-pyyaml)
+        ("python-testrepository" ,python-testrepository)
+        ("python-setuptools" ,python-setuptools)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)))
+    (home-page "http://www.openstack.org/")
+    (synopsis
+      "OpenStack Client Configuration Library")
+    (description
+      "The OpenStack Client Configuration Library is a library for collecting
+  client configuration for using an OpenStack cloud in a consistent and
+  comprehensive manner.")
+    (license asl2.0)))
+
+(define-public python2-os-client-config
+  (package-with-python2 python-os-client-config))
+
 (define-public python2-mox3
   (package-with-python2 python-mox3))
 
