@@ -239,6 +239,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openbox.scm			\
   gnu/packages/openldap.scm			\
+  gnu/packages/openstack.scm			\
   gnu/packages/orpheus.scm			\
   gnu/packages/ots.scm				\
   gnu/packages/package-management.scm		\
