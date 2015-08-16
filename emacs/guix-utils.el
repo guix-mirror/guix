@@ -144,6 +144,25 @@ add both to the end and to the beginning."
           (t
            (concat separator str separator)))))
 
+(defun guix-shell-quote-argument (argument)
+  "Quote shell command ARGUMENT.
+This function is similar to `shell-quote-argument', but less strict."
+  (if (equal argument "")
+      "''"
+    (replace-regexp-in-string
+     "\n" "'\n'"
+     (replace-regexp-in-string
+      (rx (not (any alnum "-=,./\n"))) "\\\\\\&" argument))))
+
+(defun guix-command-symbol (&optional args)
+  "Return symbol by concatenating 'guix' and ARGS (strings)."
+  (intern (guix-concat-strings (cons "guix" args) "-")))
+
+(defun guix-command-string (&optional args)
+  "Return 'guix ARGS ...' string with quoted shell arguments."
+  (let ((args (mapcar #'guix-shell-quote-argument args)))
+    (guix-concat-strings (cons "guix" args) " ")))
+
 (defun guix-completing-read-multiple (prompt table &optional predicate
                                       require-match initial-input
                                       hist def inherit-input-method)
