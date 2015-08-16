@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -77,6 +77,7 @@
             args-fold*
             parse-command-line
             run-guix-command
+            run-guix
             program-name
             guix-warning-port
             warning
@@ -1032,31 +1033,37 @@ found."
     (parameterize ((program-name command))
       (apply command-main args))))
 
+(define (run-guix . args)
+  "Run the 'guix' command defined by command line ARGS.
+Unlike 'guix-main', this procedure assumes that locale, i18n support,
+and signal handling has already been set up."
+  (define option? (cut string-prefix? "-" <>))
+
+  (match args
+    (()
+     (format (current-error-port)
+             (_ "guix: missing command name~%"))
+     (show-guix-usage))
+    ((or ("-h") ("--help"))
+     (show-guix-help))
+    (("--version")
+     (show-version-and-exit "guix"))
+    (((? option? o) args ...)
+     (format (current-error-port)
+             (_ "guix: unrecognized option '~a'~%") o)
+     (show-guix-usage))
+    (("help" args ...)
+     (show-guix-help))
+    ((command args ...)
+     (apply run-guix-command
+            (string->symbol command)
+            args))))
+
 (define guix-warning-port
   (make-parameter (current-warning-port)))
 
 (define (guix-main arg0 . args)
   (initialize-guix)
-  (let ()
-    (define (option? str) (string-prefix? "-" str))
-    (match args
-      (()
-       (format (current-error-port)
-               (_ "guix: missing command name~%"))
-       (show-guix-usage))
-      ((or ("-h") ("--help"))
-       (show-guix-help))
-      (("--version")
-       (show-version-and-exit "guix"))
-      (((? option? o) args ...)
-       (format (current-error-port)
-               (_ "guix: unrecognized option '~a'~%") o)
-       (show-guix-usage))
-      (("help" args ...)
-       (show-guix-help))
-      ((command args ...)
-       (apply run-guix-command
-              (string->symbol command)
-              args)))))
+  (apply run-guix args))
 
 ;;; ui.scm ends here
