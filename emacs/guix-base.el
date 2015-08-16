@@ -1087,6 +1087,42 @@ FILE.  With a prefix argument, also prompt for PROFILE."
 
 ;;; Executing guix commands
 
+(defcustom guix-run-in-shell-function #'guix-run-in-shell
+  "Function used to run guix command.
+The function is called with a single argument - a command line string."
+  :type '(choice (function-item guix-run-in-shell)
+                 (function-item guix-run-in-eshell)
+                 (function :tag "Other function"))
+  :group 'guix)
+
+(defcustom guix-shell-buffer-name "*shell*"
+  "Default name of a shell buffer used for running guix commands."
+  :type 'string
+  :group 'guix)
+
+(declare-function comint-send-input "comint" t)
+
+(defun guix-run-in-shell (string)
+  "Run command line STRING in `guix-shell-buffer-name' buffer."
+  (shell guix-shell-buffer-name)
+  (goto-char (point-max))
+  (insert string)
+  (comint-send-input))
+
+(declare-function eshell-send-input "esh-mode" t)
+
+(defun guix-run-in-eshell (string)
+  "Run command line STRING in eshell buffer."
+  (eshell)
+  (goto-char (point-max))
+  (insert string)
+  (eshell-send-input))
+
+(defun guix-run-command-in-shell (args)
+  "Execute 'guix ARGS ...' command in a shell buffer."
+  (funcall guix-run-in-shell-function
+           (guix-command-string args)))
+
 (defun guix-run-command-in-repl (args)
   "Execute 'guix ARGS ...' command in Guix REPL."
   (guix-eval-in-repl
