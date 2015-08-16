@@ -89,8 +89,8 @@ Each element of the list has a form:
 
 (defun guix-get-param-title (entry-type param)
   "Return title of an ENTRY-TYPE entry parameter PARAM."
-  (or (guix-get-key-val guix-param-titles
-                        entry-type param)
+  (or (guix-assq-value guix-param-titles
+                       entry-type param)
       (prog1 (symbol-name param)
         (message "Couldn't find title for '%S %S'."
                  entry-type param))))
@@ -102,15 +102,15 @@ Each element of the list has a form:
 
 (defun guix-get-full-name (entry &optional output)
   "Return name specification of the package ENTRY and OUTPUT."
-  (guix-get-name-spec (guix-get-key-val entry 'name)
-                      (guix-get-key-val entry 'version)
+  (guix-get-name-spec (guix-assq-value entry 'name)
+                      (guix-assq-value entry 'version)
                       output))
 
 (defun guix-entry-to-specification (entry)
   "Return name specification by the package or output ENTRY."
-  (guix-get-name-spec (guix-get-key-val entry 'name)
-                      (guix-get-key-val entry 'version)
-                      (guix-get-key-val entry 'output)))
+  (guix-get-name-spec (guix-assq-value entry 'name)
+                      (guix-assq-value entry 'version)
+                      (guix-assq-value entry 'output)))
 
 (defun guix-entries-to-specifications (entries)
   "Return name specifications by the package or output ENTRIES."
@@ -120,13 +120,13 @@ Each element of the list has a form:
 (defun guix-get-installed-outputs (entry)
   "Return list of installed outputs for the package ENTRY."
   (mapcar (lambda (installed-entry)
-            (guix-get-key-val installed-entry 'output))
-          (guix-get-key-val entry 'installed)))
+            (guix-assq-value installed-entry 'output))
+          (guix-assq-value entry 'installed)))
 
 (defun guix-get-entry-by-id (id entries)
   "Return entry from ENTRIES by entry ID."
   (cl-find-if (lambda (entry)
-                (equal id (guix-get-key-val entry 'id)))
+                (equal id (guix-assq-value entry 'id)))
               entries))
 
 (defun guix-get-package-id-and-output-by-output-id (oid)
@@ -934,7 +934,7 @@ ENTRIES is a list of package entries to get info about packages."
                   (outputs (cdr spec))
                   (entry (guix-get-entry-by-id id entries)))
              (when entry
-               (let ((location (guix-get-key-val entry 'location)))
+               (let ((location (guix-assq-value entry 'location)))
                  (concat (guix-get-full-name entry)
                          (when outputs
                            (concat ":"

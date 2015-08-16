@@ -193,14 +193,6 @@ Return time value."
   (require 'org)
   (org-read-date nil t nil prompt))
 
-(defun guix-get-key-val (alist &rest keys)
-  "Return value from ALIST by KEYS.
-ALIST is alist of alists of alists ... which can be consecutively
-accessed with KEYS."
-  (let ((val alist))
-    (dolist (key keys val)
-      (setq val (cdr (assq key val))))))
-
 (defun guix-find-file (file)
   "Find FILE if it exists."
   (if (file-exists-p file)
@@ -222,6 +214,25 @@ Return nil otherwise."
   (when lst
     (or (funcall pred (car lst))
         (guix-any pred (cdr lst)))))
+
+
+;;; Alist accessors
+
+(defmacro guix-define-alist-accessor (name assoc-fun)
+  "Define NAME function to access alist values using ASSOC-FUN."
+  `(defun ,name (alist &rest keys)
+     ,(format "Return value from ALIST by KEYS using `%s'.
+ALIST is alist of alists of alists ... which can be consecutively
+accessed with KEYS."
+              assoc-fun)
+     (if (or (null alist) (null keys))
+         alist
+       (apply #',name
+              (cdr (,assoc-fun (car keys) alist))
+              (cdr keys)))))
+
+(guix-define-alist-accessor guix-assq-value assq)
+(guix-define-alist-accessor guix-assoc-value assoc)
 
 
 ;;; Diff
