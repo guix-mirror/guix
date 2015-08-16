@@ -74,7 +74,8 @@
     (arguments
      '(#:phases (alist-replace
                  'configure
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (lambda* (#:key inputs outputs (configure-flags '())
+                           #:allow-other-keys)
                    ;; The `configure' script doesn't understand some of the
                    ;; GNU options.  Thus, add a new phase that's compatible.
                    (let ((out (assoc-ref outputs "out")))
@@ -87,11 +88,13 @@
                      ;; The binaries need to be linked against -lrt.
                      (setenv "LDFLAGS" "-lrt")
                      (zero?
-                      (system* "./configure"
-                               (string-append "--cc=" (which "gcc"))
+                      (apply system*
+                             `("./configure"
+                               ,(string-append "--cc=" (which "gcc"))
                                "--disable-debug-info" ; save build space
                                "--enable-virtfs"      ; just to be sure
-                               (string-append "--prefix=" out)))))
+                               ,(string-append "--prefix=" out)
+                               ,@configure-flags)))))
                  (alist-cons-after
                   'install 'install-info
                   (lambda* (#:key inputs outputs #:allow-other-keys)
