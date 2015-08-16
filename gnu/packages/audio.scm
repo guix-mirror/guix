@@ -232,13 +232,12 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public ardour
   (package (inherit ardour-3)
     (name "ardour")
-    ;; We pick the commit after 4.1 because it fixes a build problem.
-    (version "4.1-5aa834e")
+    (version "4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "git://git.ardour.org/ardour/ardour.git")
-                    (commit (cadr (string-split version #\-)))))
+                    (commit version)))
               (snippet
                ;; Ardour expects this file to exist at build time.  It can be
                ;; created from a git checkout with:
@@ -247,10 +246,10 @@ engineers, musicians, soundtrack editors and composers.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"4.1\" ; }"))))
+namespace ARDOUR { const char* revision = \"4.2\" ; }"))))
               (sha256
                (base32
-                "0pfmxlscnwyqmgc89cdwrsk1769lr89dirfnpjbxj9zgcns6zqgb"))
+                "1j8zw0bvh16qwyy8qrqynpak9nghl9j3qhjjcdl7wh9raafjqc00"))
               (file-name (string-append name "-" version))))
     (arguments
      (substitute-keyword-arguments (package-arguments ardour-3)
