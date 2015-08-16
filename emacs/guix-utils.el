@@ -163,6 +163,18 @@ This function is similar to `shell-quote-argument', but less strict."
   (let ((args (mapcar #'guix-shell-quote-argument args)))
     (guix-concat-strings (cons "guix" args) " ")))
 
+(defun guix-copy-as-kill (string &optional no-message?)
+  "Put STRING into `kill-ring'.
+If NO-MESSAGE? is non-nil, do not display a message about it."
+  (kill-new string)
+  (unless no-message?
+    (message "'%s' has been added to kill ring." string)))
+
+(defun guix-copy-command-as-kill (args &optional no-message?)
+  "Put 'guix ARGS ...' string into `kill-ring'.
+See also `guix-copy-as-kill'."
+  (guix-copy-as-kill (guix-command-string args) no-message?))
+
 (defun guix-completing-read-multiple (prompt table &optional predicate
                                       require-match initial-input
                                       hist def inherit-input-method)
