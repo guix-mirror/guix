@@ -262,6 +262,27 @@ See `defun' for the meaning of arguments."
               (mapconcat #'symbol-name arglist " ")
               docstring)))
 
+(defmacro guix-memoized-defalias (symbol definition &optional docstring)
+  "Set SYMBOL's function definition to memoized version of DEFINITION."
+  (declare (doc-string 3) (indent 1))
+  `(defalias ',symbol
+     (guix-memoize #',definition)
+     ,(or docstring
+          (format "Memoized version of `%S'." definition))))
+
+(defvar guix-memoized-font-lock-keywords
+  (eval-when-compile
+    `((,(rx "("
+            (group "guix-memoized-" (or "defun" "defalias"))
+            symbol-end
+            (zero-or-more blank)
+            (zero-or-one
+             (group (one-or-more (or (syntax word) (syntax symbol))))))
+       (1 font-lock-keyword-face)
+       (2 font-lock-function-name-face nil t)))))
+
+(font-lock-add-keywords 'emacs-lisp-mode guix-memoized-font-lock-keywords)
+
 (provide 'guix-utils)
 
 ;;; guix-utils.el ends here
