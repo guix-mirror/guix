@@ -25,6 +25,39 @@
                 #:select (asl2.0))
   #:use-module (guix packages))
 
+(define-public python-mox3
+  (package
+    (name "python-mox3")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/m/mox3/mox3-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1dwj9lkifdqvrcympqa47bj55l0n0j9jhzv2gj03h0dpzg6mgfkj"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-fixtures" ,python-fixtures)
+        ("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ("python-six" ,python-six)
+        ("python-testtools" ,python-testtools)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "Mock object framework for Python")
+    (description
+      "Mox3 is an unofficial port of the Google mox framework
+(http://code.google.com/p/pymox/) to Python 3. It was meant to be as compatible
+with mox as possible, but small enhancements have been made. The library was
+tested on Python version 3.2, 2.7 and 2.6.")
+    (license asl2.0)))
+
+(define-public python2-mox3
+  (package-with-python2 python-mox3))
+
 (define-public python-pbr
   (package
     (name "python-pbr")
