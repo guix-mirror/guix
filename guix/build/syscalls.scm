@@ -328,19 +328,22 @@ are shared between the parent and child processes."
       (proc syscall-id flags %null-pointer))))
 
 (define setns
-  (let* ((ptr  (dynamic-func "setns" (dynamic-link)))
-         (proc (pointer->procedure int ptr (list int int))))
-    (lambda (fdes nstype)
-      "Reassociate the current process with the namespace specified by FDES, a
+  ;; Some systems may be using an old (pre-2.14) version of glibc where there
+  ;; is no 'setns' function available.
+  (false-if-exception
+   (let* ((ptr  (dynamic-func "setns" (dynamic-link)))
+          (proc (pointer->procedure int ptr (list int int))))
+     (lambda (fdes nstype)
+       "Reassociate the current process with the namespace specified by FDES, a
 file descriptor obtained by opening a /proc/PID/ns/* file.  NSTYPE specifies
 which type of namespace the current process may be reassociated with, or 0 if
 there is no such limitation."
-      (let ((ret (proc fdes nstype))
-            (err (errno)))
-        (unless (zero? ret)
-          (throw 'system-error "setns" "~d ~d: ~A"
-                 (list fdes nstype (strerror err))
-                 (list err)))))))
+       (let ((ret (proc fdes nstype))
+             (err (errno)))
+         (unless (zero? ret)
+           (throw 'system-error "setns" "~d ~d: ~A"
+                  (list fdes nstype (strerror err))
+                  (list err))))))))
 
 (define pivot-root
   (let* ((ptr  (dynamic-func "pivot_root" (dynamic-link)))
