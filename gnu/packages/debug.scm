@@ -27,7 +27,10 @@
   #:use-module (gnu packages indent)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages pretty-print))
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages qemu)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 (define-public delta
   (package
@@ -137,3 +140,99 @@ produces a much smaller C/C++ program that has the same property.  It is
 intended for use by people who discover and report bugs in compilers and other
 tools that process C/C++ code.")
     (license ncsa)))
+
+(define-public american-fuzzy-lop
+  (let ((machine (match (or (%current-target-system)
+                            (%current-system))
+                   ("x86_64-linux"   "x86_64")
+                   ("i686-linux"     "i386")
+                   ;; Prevent errors when querying this package on unsupported
+                   ;; platforms, e.g. when running "guix package --search="
+                   (_                "UNSUPPORTED"))))
+    (package
+      (name "american-fuzzy-lop")
+      (version "1.86b")             ;It seems all releases have the 'b' suffix
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "http://lcamtuf.coredump.cx/afl/releases/"
+                             "afl-" version ".tgz"))
+         (sha256
+          (base32
+           "1by9ncf6lgcyibzqwyla34jv64sd66mn8zhgjz2pcgsds51qwn0r"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("custom-qemu"
+          ;; The afl-qemu tool builds qemu 2.3.0 with a few patches applied.
+          ,(package (inherit qemu-headless)
+             (name "afl-qemu")
+             (inputs
+              `(("afl-src" ,source)
+                ,@(package-inputs qemu-headless)))
+             ;; afl only supports using a single afl-qemu-trace executable, so
+             ;; we only build qemu for the native target.
+             (arguments
+              `(#:configure-flags
+                (list (string-append "--target-list=" ,machine "-linux-user"))
+                #:modules ((srfi srfi-1)
+                           ,@%gnu-build-system-modules)
+                ,@(substitute-keyword-arguments (package-arguments qemu-headless)
+                    ((#:phases qemu-phases)
+                     `(modify-phases ,qemu-phases
+                        (add-after
+                         'unpack 'apply-afl-patches
+                         (lambda* (#:key inputs #:allow-other-keys)
+                           (let* ((afl-dir (string-append "afl-" ,version))
+                                  (patch-dir
+                                   (string-append afl-dir
+                                                  "/qemu_mode/patches")))
+                             (unless (zero?
+                                      (system* "tar" "xf"
+                                               (assoc-ref inputs "afl-src")))
+                               (error "tar failed to unpack afl-src"))
+                             (copy-file (string-append patch-dir
+                                                       "/afl-qemu-cpu-inl.h")
+                                        "./afl-qemu-cpu-inl.h")
+                             (copy-file (string-append afl-dir "/config.h")
+                                        "./afl-config.h")
+                             (copy-file (string-append afl-dir "/types.h")
+                                        "./types.h")
+                             (substitute* "afl-qemu-cpu-inl.h"
+                               (("\\.\\./\\.\\./config.h") "afl-config.h"))
+                             (substitute* (string-append patch-dir
+                                                         "/cpu-exec.diff")
+                               (("\\.\\./patches/") ""))
+                             (every (lambda (patch-file)
+                                      (zero? (system* "patch" "--force" "-p1"
+                                                      "--input" patch-file)))
+                                    (find-files patch-dir
+                                                "\\.diff$"))))))))))))))
+      (arguments
+       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                            "CC=gcc")
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure)
+                    (add-after
+                     ;; TODO: Build and install the afl-llvm tool.
+                     'install 'install-qemu
+                     (lambda* (#:key inputs outputs #:allow-other-keys)
+                       (let ((qemu (assoc-ref inputs "custom-qemu"))
+                             (out  (assoc-ref outputs "out")))
+                         (copy-file (string-append qemu "/bin/qemu-" ,machine)
+                                    (string-append out "/bin/afl-qemu-trace"))
+                         #t)))
+                    (delete 'check))))
+      (supported-systems (fold delete
+                               %supported-systems
+                               '("armhf-linux" "mips64el-linux")))
+      (home-page "http://lcamtuf.coredump.cx/afl")
+      (synopsis "Security-oriented fuzzer")
+      (description
+       "American fuzzy lop is a security-oriented fuzzer that employs a novel
+type of compile-time instrumentation and genetic algorithms to automatically
+discover clean, interesting test cases that trigger new internal states in the
+targeted binary.  This substantially improves the functional coverage for the
+fuzzed code.  The compact synthesized corpora produced by the tool are also
+useful for seeding other, more labor- or resource-intensive testing regimes
+down the road.")
+      (license asl2.0))))
