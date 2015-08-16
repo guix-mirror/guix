@@ -34,6 +34,34 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config))
 
+(define-public font-incosolata
+  (package
+    (name "font-inconsolata")
+    (version "0.80")
+    (source (origin
+              (method url-fetch)
+              (uri "http://www.levien.com/type/myfonts/Inconsolata.otf")
+              (sha256
+               (base32
+                "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((font-dir (string-append %output
+                                                  "/share/fonts/opentype"))
+                         (source (assoc-ref %build-inputs "source")))
+                     (mkdir-p font-dir)
+                     (copy-file source
+                                (string-append font-dir "/" "inconsolata.otf"))))))
+    (native-inputs `(("source" ,source)))
+    (home-page "http://levien.com/type/myfonts/inconsolata.html")
+    (synopsis "Monospace font")
+    (description "A monospace font, designed for code listings and the like,
+in print.  With attention to detail for high resolution rendering.")
+    (license license:silofl1.1)))
+
 (define-public font-ubuntu
   (package
     (name "font-ubuntu")
