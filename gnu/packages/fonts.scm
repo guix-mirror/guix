@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,9 +29,61 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages zip)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config))
+
+(define-public font-ubuntu
+  (package
+    (name "font-ubuntu")
+    (version "0.80")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://font.ubuntu.com/download/ubuntu-font-family-"
+                                  version ".zip"))
+              (sha256
+               (base32
+                "0k4f548riq23gmw4zhn30qqkcpaj4g2ab5rbc3lflfxwkc4p0w8h"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH     (string-append (assoc-ref %build-inputs
+                                                             "unzip")
+                                                  "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype"))
+                         (doc-dir  (string-append %output "/share/doc/"
+                                                  ,name "-" ,version)))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (mkdir-p doc-dir)
+                     (chdir (string-append "ubuntu-font-family-" ,version))
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/" ttf)))
+                               (find-files "." "\\.ttf$"))
+                     (for-each (lambda (doc)
+                                 (copy-file doc
+                                            (string-append doc-dir "/" doc)))
+                               (find-files "." "\\.txt$"))))))
+    (native-inputs `(("source" ,source)
+                     ("unzip" ,unzip)))
+    (home-page "http://font.ubuntu.com/")
+    (synopsis "The Ubuntu Font Family")
+    (description "The Ubuntu Font Family is a unique, custom designed font
+that has a very distinctive look and feel.  This package provides the
+TrueType (TTF) files.")
+    (license
+     (license:non-copyleft
+      "http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt"
+      "Ubuntu Font License v1.0"))))
 
 (define-public font-dejavu
   (package
