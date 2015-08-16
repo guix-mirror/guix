@@ -558,7 +558,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.32.3")
+    (version "0.33.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -566,16 +566,13 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1ybc5jk7fj6n8qh9ajzl1f6fzdmzab4nwjrh4fsylm94dn1jv0if"))))
+               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
        #:python ,python-2
        #:configure-flags
        (list
-        ;; FIXME: dsp2cc fails for src/faust/tonestack_engl.dsp, so we use the
-        ;; generated C++ files rather than compiling them from Faust sources.
-        "--no-faust"
         ;; Add the output lib directory to the RUNPATH.
         (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
     (inputs
@@ -595,7 +592,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("zita-convolver" ,zita-convolver)))
     (native-inputs
      `(("gperf" ,gperf)
-       ;;("faust" ,faust) ; dsp2cc fails for src/faust/tonestack_engl.dsp
+       ("faust" ,faust)
        ("intltool" ,intltool)
        ("gettext" ,gnu-gettext)
        ("pkg-config" ,pkg-config)))
