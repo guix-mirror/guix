@@ -188,7 +188,7 @@ sound server.")
 (define-public pavucontrol
   (package
     (name "pavucontrol")
-    (version "2.0")
+    (version "3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -197,8 +197,7 @@ sound server.")
                    ".tar.xz"))
              (sha256
               (base32
-               "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))
-             (patches (list (search-patch "pavucontrol-sigsegv.patch")))))
+               "14486c6lmmirkhscbfygz114f6yzf97h35n3h3pdr27w4mdfmlmk"))))
     (build-system gnu-build-system)
     (inputs
      `(("libcanberra" ,libcanberra)
