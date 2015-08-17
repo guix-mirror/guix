@@ -49,24 +49,8 @@
      `(("python" ,python-wrapper)
        ("perl"   ,perl)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'build 'link-lib-for-build-exec
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; This is a hacky fix that will allow binaries to run
-                   ;; before being installed.  -DCMAKE_SKIP_BUILD_RPATH=FALSE
-                   ;; seems to not help.  Nixpkgs does the same.
-                   (let* ((out       (assoc-ref outputs "out"))
-                          (out-lib   (string-append out "/lib"))
-                          (build-lib (string-append (getcwd) "/lib")))
-                     (mkdir-p out)
-                     (symlink build-lib out-lib)))
-                 (alist-cons-after
-                  'build 'cleanup-out
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Cleanup the symlink that was created previously.  Let
-                    ;; the install phase repopulate out.
-                    (delete-file-recursively (assoc-ref outputs "out")))
-                  %standard-phases))))
+     `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
+                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE")))
     (home-page "http://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
