@@ -96,6 +96,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/enlightenment.scm		\
   gnu/packages/fcitx.scm			\
   gnu/packages/feh.scm                          \
+  gnu/packages/figlet.scm			\
   gnu/packages/file.scm				\
   gnu/packages/firmware.scm			\
   gnu/packages/fish.scm				\
