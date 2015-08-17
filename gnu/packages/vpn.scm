@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,3 +156,25 @@ bridged configurations and remote access facilities.  It uses a custom
 security protocol that utilizes SSL/TLS for key exchange.  It is capable of
 traversing network address translators (NATs) and firewalls.")
     (license license:gpl2)))
+
+(define-public tinc
+  (package
+    (name "tinc")
+    (version "1.0.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://tinc-vpn.org/packages/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08ds8s32cjslms1q227ihd6jz35583v378ij4pknfa5xngfijhrb"))))
+    (build-system gnu-build-system)
+    (inputs `(("zlib" ,zlib)
+              ("lzo" ,lzo)
+              ("openssl" ,openssl)))
+    (home-page "http://tinc-vpn.org")
+    (synopsis "Virtual Private Network (VPN) daemon")
+    (description
+     "Tinc is a VPN that uses tunnelling and encryption to create a secure
+private network between hosts on the internet.")
+    (license license:gpl2+)))
