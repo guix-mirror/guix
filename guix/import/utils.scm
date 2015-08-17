@@ -21,6 +21,8 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (guix hash)
+  #:use-module (guix base32)
+  #:use-module (guix licenses)
   #:use-module (guix utils)
   #:use-module ((guix build download) #:prefix build:)
   #:export (factorize-uri
@@ -29,7 +31,13 @@
             flatten
             assoc-ref*
 
-            url-fetch))
+            url-fetch
+            guix-hash-url
+
+            string->license
+            license->symbol
+
+            snake-case))
 
 (define (factorize-uri uri version)
   "Factorize URI, a package tarball URI as a string, such that any occurrences
@@ -95,3 +103,36 @@ recursively apply the procedure to the sub-list."
   "Save the contents of URL to FILE-NAME.  Return #f on failure."
   (parameterize ((current-output-port (current-error-port)))
     (build:url-fetch url file-name)))
+
+(define (guix-hash-url filename)
+  "Return the hash of FILENAME in nix-base32 format."
+  (bytevector->nix-base32-string (file-sha256 filename)))
+
+(define (string->license str)
+  "Convert the string STR into a license object."
+  (match str
+    ("GNU LGPL" lgpl2.0)
+    ("GPL" gpl3)
+    ((or "BSD" "BSD License") bsd-3)
+    ((or "MIT" "MIT license" "Expat license") expat)
+    ("Public domain" public-domain)
+    ((or "Apache License, Version 2.0" "Apache 2.0") asl2.0)
+    (_ #f)))
+
+(define (license->symbol license)
+  "Convert license to a symbol representing the variable the object is bound
+to in the (guix licenses) module, or #f if there is no such known license."
+  ;; TODO: Traverse list public variables in (guix licenses) instead so we
+  ;; don't have to maintain a list manualy.
+  (assoc-ref `((,lgpl2.0 . lgpl2.0)
+               (,gpl3 . gpl3)
+               (,bsd-3 . bsd-3)
+               (,expat . expat)
+               (,public-domain . public-domain)
+               (,asl2.0 . asl2.0))
+             license))
+
+(define (snake-case str)
+  "Return a downcased version of the string STR where underscores are replaced
+with dashes."
+  (string-join (string-split (string-downcase str) #\_) "-"))

@@ -31,8 +31,6 @@
   #:use-module (guix utils)
   #:use-module (guix import utils)
   #:use-module (guix import json)
-  #:use-module (guix base32)
-  #:use-module (guix hash)
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix build-system python)
@@ -49,16 +47,6 @@ DELIMETER."
     ((elem . rest)
      (cons* elem delimiter (join rest delimiter)))))
 
-(define string->license
-  (match-lambda
-   ("GNU LGPL" lgpl2.0)
-   ("GPL" gpl3)
-   ((or "BSD" "BSD License") bsd-3)
-   ((or "MIT" "MIT license" "Expat license") expat)
-   ("Public domain" public-domain)
-   ("Apache License, Version 2.0" asl2.0)
-   (_ #f)))
-
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
 or #f on failure."
@@ -74,15 +62,6 @@ or #f on failure."
         (error "No source release found for pypi package: "
                (assoc-ref* pypi-package "info" "name")
                (assoc-ref* pypi-package "info" "version")))))
-
-(define (snake-case str)
-  "Return a downcased version of the string STR where underscores are replaced
-with dashes."
-  (string-join (string-split (string-downcase str) #\_) "-"))
-
-(define (guix-hash-url filename)
-  "Return the hash of FILENAME in nix-base32 format."
-  (bytevector->nix-base32-string  (file-sha256 filename)))
 
 (define (python->package-name name)
   "Given the NAME of a package on PyPI, return a Guix-compliant name for the
@@ -205,13 +184,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
              (home-page ,home-page)
              (synopsis ,synopsis)
              (description ,description)
-             (license ,(assoc-ref `((,lgpl2.0 . lgpl2.0)
-                                    (,gpl3 . gpl3)
-                                    (,bsd-3 . bsd-3)
-                                    (,expat . expat)
-                                    (,public-domain . public-domain)
-                                    (,asl2.0 . asl2.0))
-                                  license)))))))
+             (license ,(license->symbol license)))))))
 
 (define (pypi->guix-package package-name)
   "Fetch the metadata for PACKAGE-NAME from pypi.python.org, and return the
