@@ -3894,6 +3894,25 @@ package:
 guix import pypi itsdangerous
 @end example
 
+@item gem
+@cindex gem
+Import meta-data from @uref{https://rubygems.org/,
+RubyGems}@footnote{This functionality requires Guile-JSON to be
+installed.  @xref{Requirements}.}.  Information is taken from the
+JSON-formatted description available at @code{rubygems.org} and includes
+most relevant information, including runtime dependencies.  There are
+some caveats, however.  The meta-data doesn't distinguish between
+synopses and descriptions, so the same string is used for both fields.
+Additionally, the details of non-Ruby dependencies required to build
+native extensions is unavailable and left as an exercise to the
+packager.
+
+The command below imports meta-data for the @code{rails} Ruby package:
+
+@example
+guix import gem rails
+@end example
+
 @item cpan
 @cindex CPAN
 Import meta-data from @uref{https://www.metacpan.org/, MetaCPAN}.

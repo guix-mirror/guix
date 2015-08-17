@@ -221,7 +221,8 @@ MODULES +=					\
   guix/import/pypi.scm				\
   guix/scripts/import/pypi.scm			\
   guix/import/cpan.scm				\
-  guix/scripts/import/cpan.scm
+  guix/scripts/import/gem.scm			\
+  guix/import/gem.scm
 
 SCM_TESTS += 					\
   tests/pypi.scm				\
