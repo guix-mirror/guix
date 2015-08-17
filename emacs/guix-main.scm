@@ -889,9 +889,10 @@ GENERATIONS is a list of generation numbers."
   (with-store store
     (delete-generations store profile generations)))
 
-(define (package-location-string package-id)
-  "Return a location string of a package PACKAGE-ID."
-  (and-let* ((package  (package-by-id package-id))
+(define (package-location-string id-or-name)
+  "Return a location string of a package with ID-OR-NAME."
+  (and-let* ((package  (or (package-by-id id-or-name)
+                           (first (packages-by-name id-or-name))))
              (location (package-location package)))
     (location->string location)))
 

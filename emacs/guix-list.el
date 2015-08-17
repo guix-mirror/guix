@@ -472,7 +472,7 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
 (defun guix-list-edit-package ()
   "Go to the location of the current package."
   (interactive)
-  (guix-edit-package (guix-list-current-package-id)))
+  (guix-edit (guix-list-current-package-id)))
 
 
 ;;; Displaying packages

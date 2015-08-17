@@ -1,6 +1,6 @@
 ;;; guix.el --- Interface for GNU Guix package manager
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; Package-Requires: ((geiser "0.3"))
 ;; Keywords: tools
@@ -32,6 +32,7 @@
 (require 'guix-list)
 (require 'guix-info)
 (require 'guix-utils)
+(require 'guix-read)
 
 (defgroup guix nil
   "Interface for Guix package manager."
@@ -192,6 +193,15 @@ Interactively with prefix, prompt for PROFILE."
   (guix-get-show-generations profile 'time
                              (float-time from)
                              (float-time to)))
+
+;;;###autoload
+(defun guix-edit (id-or-name)
+  "Edit (go to location of) package with ID-OR-NAME."
+  (interactive (list (guix-read-package-name)))
+  (let ((loc (guix-package-location id-or-name)))
+    (if loc
+        (guix-find-location loc)
+      (message "Couldn't find package location."))))
 
 (provide 'guix)
 

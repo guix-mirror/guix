@@ -172,13 +172,11 @@ If PATH is relative, it is considered to be relative to
       (move-to-column col)
       (recenter 1))))
 
-(defun guix-edit-package (id)
-  "Edit (go to location of) package with ID."
-  (let ((loc (guix-eval-read (guix-make-guile-expression
-                              'package-location-string id))))
-    (if loc
-        (guix-find-location loc)
-      (message "Couldn't find package location."))))
+(defun guix-package-location (id-or-name)
+  "Return location of a package with ID-OR-NAME.
+For the meaning of location, see `guix-find-location'."
+  (guix-eval-read (guix-make-guile-expression
+                   'package-location-string id-or-name)))
 
 
 ;;; Receivable lists of packages, lint checkers, etc.

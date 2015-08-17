@@ -627,6 +627,8 @@ EXECUTOR function is called with the current command line arguments."
 ;;;###autoload (autoload 'guix "guix-command" "Popup window for 'guix'." t)
 (guix-command-define-popup-action guix)
 
+(defalias 'guix-edit-action #'guix-edit)
+
 
 (defvar guix-command-font-lock-keywords
   (eval-when-compile
