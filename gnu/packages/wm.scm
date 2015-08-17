@@ -39,6 +39,27 @@
   #:use-module (guix download)
   #:use-module (guix git-download))
 
+(define-public libconfuse
+  (package
+    (name "libconfuse")
+    (version "2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://savannah.nongnu.org/download/confuse/"
+                                  "confuse-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y47r2ashz44wvnxdb18ivpmj8nxhw3y9bf7v9w0g5byhgyp89g3"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.nongnu.org/confuse/")
+    (synopsis "Configuration file parser library")
+    (description "libconfuse is a configuration file parser library.  It
+supports sections and (lists of) values (strings, integers, floats, booleans
+or other sections), as well as some other features (such as
+single/double-quoted strings, environment variable expansion, functions and
+nested include statements).")
+    (license isc)))
+
 (define-public i3-wm
   (package
     (name "i3-wm")
