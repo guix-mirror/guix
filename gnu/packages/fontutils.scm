@@ -71,14 +71,14 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.11.92")
+   (version "2.11.94")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "http://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "18r45dcnaj93izwfr082qiwg8ka7ll6j0c9yf1slblm542d5pmd9"))))
+                     "1psrl4b4gi4wmbvwwh43lk491wsl8lgvqj146prlcha3vwjc0qyp"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("expat" ,expat)
                         ("freetype" ,freetype)))
@@ -86,13 +86,24 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (native-inputs
       `(("pkg-config" ,pkg-config)))
    (arguments
-     `(#:configure-flags
-               ;; point to user profile instead of /usr/share/fonts in /etc/fonts.conf
-        (list "--with-default-fonts=~/.guix-profile/share/fonts"
-              ;; register gs-fonts
-              (string-append "--with-add-fonts="
-                             (assoc-ref %build-inputs "gs-fonts")
-                             "/share/fonts"))))
+    `(#:configure-flags
+      (list "--with-cache-dir=/var/cache/fontconfig"
+            ;; register gs-fonts as default fonts
+            (string-append "--with-default-fonts="
+                           (assoc-ref %build-inputs "gs-fonts")
+                           "/share/fonts")
+            ;; register fonts from user profile
+            "--with-add-fonts=~/.guix-profile/share/fonts"
+            ;; python is not actually needed
+            "PYTHON=false")
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'install
+                 (lambda _
+                   ;; Don't try to create /var/cache/fontconfig.
+                   (zero? (system* "make" "install"
+                                   "fc_cachedir=$(TMPDIR)"
+                                   "RUN_FC_CACHE_TEST=false")))))))
    (synopsis "Library for configuring and customizing font access")
    (description
     "Fontconfig can discover new fonts when installed automatically;
