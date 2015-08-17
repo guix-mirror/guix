@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,30 @@ network servers.  An application just needs to call event_dispatch() and
 then add or remove events dynamically without having to change the event
 loop.")
     (license bsd-3)))
+
+(define-public libev
+  (package
+    (name "libev")
+    (version "4.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dist.schmorp.de/libev/libev-"
+                                  version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "17j47pbkr65a18mfvy2861p5k7w4pxmdgiw723ryfqd9gx636w7q"))))
+    (build-system gnu-build-system)
+    (home-page "http://software.schmorp.de/pkg/libev.html")
+    (synopsis "Event loop loosely modelled after libevent")
+    (description
+     "libev is a full-featured and high-performance event loop that
+is loosely modelled after libevent, but without its limitations and
+bugs.  It is used in GNU Virtual Private Ethernet, rxvt-unicode,
+auditd, the Deliantra MORPG Server and Client, and many other
+programs.")
+    (license
+     (list bsd-2 gpl2+))))
 
 (define-public libuv
   (package
