@@ -323,6 +323,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wget.scm				\
   gnu/packages/wicd.scm				\
   gnu/packages/wine.scm				\
+  gnu/packages/wm.scm				\
   gnu/packages/wordnet.scm			\
   gnu/packages/wv.scm				\
   gnu/packages/wxwidgets.scm			\
