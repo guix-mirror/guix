@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5090,6 +5091,35 @@ The XCB util module provides the following libraries:
 
 - event: Some utilities that have little to do with events any more.")
     (license license:x11)))
+
+
+(define-public xcb-util-cursor
+  (package
+    (name "xcb-util-cursor")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://xcb.freedesktop.org/dist/"
+                                  "xcb-util-cursor-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bm0mp99abdfb6v4v60hq3msvk67b2x9ml3kbx5y2g18xdhm3rdr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("xcb-util-renderutil" ,xcb-util-renderutil)
+       ("xcb-util-image" ,xcb-util-image)))
+    (home-page "http://cgit.freedesktop.org/xcb/util-cursor/")
+    (synopsis "Port of libxcursor")
+    (description "XCB-util-cursor is a port of libxcursor.")
+    (license
+     ; expat license  with added clause regarding advertising
+     (license:non-copyleft
+      "file://COPYING"
+      "See COPYING in the distribution."))))
 
 
 (define-public xcb-util-image
