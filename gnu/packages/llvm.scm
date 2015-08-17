@@ -62,7 +62,34 @@ languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license ncsa)))
 
-(define (clang-from-llvm llvm hash)
+(define (clang-runtime-from-llvm llvm hash)
+  (package
+    (name "clang-runtime")
+    (version (package-version llvm))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://llvm.org/releases/"
+                           version "/compiler-rt-" version ".src.tar.xz"))
+       (sha256 (base32 hash))))
+    (build-system cmake-build-system)
+    (native-inputs (package-native-inputs llvm))
+    (inputs
+     `(("llvm" ,llvm)))
+    (arguments
+     `(;; Don't use '-g' during the build to save space.
+       #:build-type "Release"))
+
+    (home-page "http://compiler-rt.llvm.org")
+    (synopsis "Runtime library for Clang/LLVM")
+    (description
+     "The \"clang-runtime\" library provides the implementations of run-time
+functions for C and C++ programs.  It also provides header files that allow C
+and C++ source code to interface with the \"sanitization\" passes of the clang
+compiler.  In LLVM this library is called \"compiler-rt\".")
+    (license ncsa)))
+
+(define (clang-from-llvm llvm clang-runtime hash)
   (package
     (name "clang")
     (version (package-version llvm))
@@ -83,7 +110,8 @@ of programming tools as well as libraries with equivalent functionality.")
        ("gcc-lib" ,gcc "lib")
        ,@(package-inputs llvm)))
     (propagated-inputs
-     `(("llvm" ,llvm)))
+     `(("llvm" ,llvm)
+       ("clang-runtime" ,clang-runtime)))
     (arguments
      `(#:configure-flags
        (list "-DCLANG_INCLUDE_TESTS=True"
@@ -104,13 +132,18 @@ of programming tools as well as libraries with equivalent functionality.")
                   (add-after
                    'unpack 'set-glibc-file-names
                    (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((libc (assoc-ref inputs "libc")))
-                       ;; Patch the 'getLinuxDynamicLinker' function to that
-                       ;; it uses the right dynamic linker file name.
+                     (let ((libc (assoc-ref inputs "libc"))
+                           (compiler-rt (assoc-ref inputs "clang-runtime")))
                        (substitute* "lib/Driver/Tools.cpp"
+                         ;; Patch the 'getLinuxDynamicLinker' function to that
+                         ;; it uses the right dynamic linker file name.
                          (("/lib64/ld-linux-x86-64.so.2")
                           (string-append libc
-                                         ,(glibc-dynamic-linker))))
+                                         ,(glibc-dynamic-linker)))
+
+                         ;; Link to libclang_rt files from clang-runtime.
+                         (("TC\\.getDriver\\(\\)\\.ResourceDir")
+                          (string-append "\"" compiler-rt "\"")))
 
                        ;; Same for libc's libdir, to allow crt1.o & co. to be
                        ;; found.
@@ -136,8 +169,13 @@ project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
     (license ncsa)))
 
+(define-public clang-runtime
+  (clang-runtime-from-llvm
+   llvm
+   "04bbn946jninynkrjyp337xqs8ihn4fkz5xgvmywxkddwmwznjbz"))
+
 (define-public clang
-  (clang-from-llvm llvm
+  (clang-from-llvm llvm clang-runtime
                    "0b8825mvdhfk5r9gwcwp1j2dl9kw5glgyk7pybq2dzhrh4vnj3my"))
 
 (define-public llvm-3.5
@@ -152,6 +190,11 @@ code analysis tools.")
         (base32
          "00swb43mzlvda8306arlg2jw7g6k3acwfccgf1k4c2pgd3rrkq98"))))))
 
+(define-public clang-runtime-3.5
+  (clang-runtime-from-llvm
+   llvm-3.5
+   "0dl1kbrhz96djsxqr61iw5h788s7ncfpfb7aayixky1bhdaydcx4"))
+
 (define-public clang-3.5
-  (clang-from-llvm llvm-3.5
+  (clang-from-llvm llvm-3.5 clang-runtime-3.5
                    "12yv3jwdjcbkrx7zjm8wh4jrvb59v8fdw4mnmz3zc1jb00p9k07w"))
