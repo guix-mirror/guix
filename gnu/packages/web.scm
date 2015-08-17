@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -286,6 +287,26 @@ parse JSON formatted strings back into the C representation of JSON objects.")
      "RapidJSON is a fast JSON parser/generator for C++ with both SAX/DOM
 style API.")
     (license l:expat)))
+
+(define-public libyajl
+  (package
+    (name "libyajl")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/lloyd/yajl/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nmcqpaiq4pv7dymyg3n3jsd57yhp5npxl26a1hzw3m3lmj37drz"))))
+    (build-system cmake-build-system)
+    (home-page "https://lloyd.github.io/yajl/")
+    (synopsis "C library for parsing JSON")
+    (description
+     "Yet Another JSON Library (YAJL) is a small event-driven (SAX-style) JSON
+parser written in ANSI C and a small validating JSON generator.")
+    (license l:isc)))
 
 (define-public libwebsockets
   (package
