@@ -610,3 +610,21 @@ options and parsing command line flags.")
 net/http library.")
     (home-page "https://github.com/nicksieger/multipart-post")
     (license license:expat)))
+
+(define-public ruby-arel
+  (package
+    (name "ruby-arel")
+    (version "6.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "arel" version))
+              (sha256
+               (base32
+                "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (home-page "https://github.com/rails/arel")
+    (synopsis "SQL AST manager for Ruby")
+    (description "Arel is a SQL AST manager for Ruby.  It simplifies the
+generation of complex SQL queries and is compatible with various RDBMSes.")
+    (license license:expat)))
