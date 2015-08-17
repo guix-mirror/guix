@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3939,6 +3940,25 @@ directory specifications in a cross-platform manner.")
     (synopsis "Check for comprehensive documentation of a module")
     (description "This module provides a mechanism for determining if the pod
 for a given module is comprehensive.")
+    (license (package-license perl))))
+
+(define-public perl-pod-simple
+  (package
+    (name "perl-pod-simple")
+    (version "3.31")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARCGREEN/"
+                                  "Pod-Simple-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04705pcs31s71vpmnpfdy8ds0q700q4cs2dlyssyrdjbvx3ymq3l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Pod-Simple/")
+    (synopsis "Parsing library for text in Pod format")
+    (description "Pod::Simple is a Perl library for parsing text in
+the Pod (plain old documentation) markup language that is typically
+used for writing documentation for Perl and for Perl modules.")
     (license (package-license perl))))
 
 (define-public perl-posix-strftime-compiler
