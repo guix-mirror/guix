@@ -105,6 +105,10 @@
        ("pcre" ,pcre)
        ("readline" ,readline)
        ("zlib" ,zlib)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "R_LIBS_SITE")
+            (files (list "site-library/")))))
     (home-page "http://www.r-project.org/")
     (synopsis "Environment for statistical computing and graphics")
     (description
