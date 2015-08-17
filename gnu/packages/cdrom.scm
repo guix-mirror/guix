@@ -264,7 +264,7 @@ from an audio CD.")
 (define-public abcde
   (package
     (name "abcde")
-    (version "2.6")
+    (version "2.7")
     (home-page "http://abcde.einval.com/")
     (source (origin
               (method url-fetch)
@@ -272,7 +272,7 @@ from an audio CD.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0y2cg233n2hixs0ji76dggpzgf52v4c4mnpwiai889ql2piafgk8"))
+                "0ikpffzvacadh6vj9qlary8126j1zrd2knp9gvivmp7y1656jj01"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
