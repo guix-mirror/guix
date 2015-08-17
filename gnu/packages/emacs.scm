@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -311,7 +311,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public magit
   (package
     (name "magit")
-    (version "1.4.2")
+    (version "2.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -319,13 +319,12 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1g3bxvgabiis2y338jziycx4b61vrim4lzmqnzv78094s8azzb52"))))
+               "0bjdj4468i5w3j2i945b6psb6n04z34vhjaqr0iz4xgixk3wiqmh"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
-    (inputs `(("git" ,git)
-              ("git:gui" ,git "gui")))
-    (propagated-inputs `(("git-modes" ,git-modes)))
+    (inputs `(("git" ,git)))
+    (propagated-inputs `(("dash" ,emacs-dash)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -334,45 +333,27 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                            (guix build emacs-utils))
 
        #:test-target "test"
-       #:tests? #f                          ;'tests/magit-tests.el' is missing
+       #:tests? #f               ; tests are not included in the release
 
-       #:make-flags (list
-                     ;; Don't put .el files in a sub-directory.
-                     (string-append "lispdir=" (assoc-ref %outputs "out")
-                                    "/share/emacs/site-lisp"))
+       #:make-flags
+       (list (string-append "PREFIX=" %output)
+             ;; Don't put .el files in a sub-directory.
+             (string-append "lispdir=" %output "/share/emacs/site-lisp")
+             (string-append "DASH_DIR="
+                            (assoc-ref %build-inputs "dash")
+                            "/share/emacs/site-lisp/guix.d/dash-"
+                            ,(package-version emacs-dash)))
 
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* "Makefile"
-                (("/usr/local") out)
-                (("/etc") (string-append out "/etc"))))))
+         (delete 'configure)
          (add-before
           'build 'patch-exec-paths
           (lambda* (#:key inputs #:allow-other-keys)
-            (let ((git (assoc-ref inputs "git"))
-                  (git:gui (assoc-ref inputs "git:gui")))
-              (emacs-substitute-variables "magit.el"
-                ("magit-git-executable" (string-append git "/bin/git"))
-                ("magit-gitk-executable" (string-append git:gui
-                                                        "/bin/gitk"))))))
-         (add-before
-          'build 'augment-load-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; Allow git-commit-mode.el & co. to be found.
-            (let ((git-modes (assoc-ref inputs "git-modes")))
-              (setenv "EMACSLOADPATH"
-                      (string-append ":" git-modes "/share/emacs/site-lisp"))
-              #t)))
-         (add-after
-          'install 'post-install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (emacs-generate-autoloads
-             ,name (string-append (assoc-ref outputs "out")
-                                  "/share/emacs/site-lisp/")))))))
+            (let ((git (assoc-ref inputs "git")))
+              (emacs-substitute-variables "lisp/magit-git.el"
+                ("magit-git-executable" (string-append git "/bin/git")))
+              #t))))))
     (home-page "http://magit.github.io/")
     (synopsis "Emacs interface for the Git version control system")
     (description
