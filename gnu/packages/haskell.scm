@@ -280,6 +280,28 @@ interactive environment for the functional language Haskell.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-data-default-instances-containers
+  (package
+    (name "ghc-data-default-instances-containers")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/"
+             "data-default-instances-containers/"
+             "data-default-instances-containers-" version ".tar.gz"))
+       (sha256
+        (base32 "06h8xka031w752a7cjlzghvr8adqbl95xj9z5zc1b62w02phfpm5"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-data-default-class" ,ghc-data-default-class)))
+    (home-page "http://hackage.haskell.org/package/data-default-instances-containers")
+    (synopsis "Default instances for types in containers")
+    (description "Provides default instances for types from the containers
+package.")
+    (license bsd-3)))
+
 (define-public ghc-mtl
   (package
     (name "ghc-mtl")
