@@ -348,6 +348,26 @@ particularly useful for efficient logging and pretty printing (e.g. with the
 Writer monad), where list append quickly becomes too expensive.")
     (license bsd-3)))
 
+(define-public ghc-extensible-exceptions
+  (package
+    (name "ghc-extensible-exceptions")
+    (version "0.1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/"
+                           "extensible-exceptions/extensible-exceptions-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1273nqws9ij1rp1bsq5jc7k2jxpqa0svawdbim05lf302y0firbc"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/extensible-exceptions")
+    (synopsis "Extensible exceptions for Haskell")
+    (description
+     "This package provides extensible exceptions for both new and old
+versions of GHC (i.e., < 6.10).")
+    (license bsd-3)))
+
 (define-public ghc-mtl
   (package
     (name "ghc-mtl")
