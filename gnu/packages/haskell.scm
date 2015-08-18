@@ -325,6 +325,29 @@ package.")
   package.")
     (license bsd-3)))
 
+(define-public ghc-dlist
+  (package
+    (name "ghc-dlist")
+    (version "0.7.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/dlist/dlist-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "1zayvxvkan2s2ixajdr3f5rn1gzhprzv6cww4cbpwjhzw0l7zc08"))))
+    (arguments `(#:tests? #f))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/spl/dlist")
+    (synopsis "Difference lists")
+    (description
+     "Difference lists are a list-like type supporting O(1) append.  This is
+particularly useful for efficient logging and pretty printing (e.g. with the
+Writer monad), where list append quickly becomes too expensive.")
+    (license bsd-3)))
+
 (define-public ghc-mtl
   (package
     (name "ghc-mtl")
