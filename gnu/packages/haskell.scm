@@ -238,6 +238,39 @@
 interactive environment for the functional language Haskell.")
     (license bsd-3)))
 
+(define-public ghc-data-default
+  (package
+    (name "ghc-data-default")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/data-default/data-default-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "0d1hm0l9kim3kszshr4msmgzizrzha48gz2kb7b61p7n3gs70m7c"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-data-default-class"
+        ,ghc-data-default-class)
+       ("ghc-data-default-instances-base"
+        ,ghc-data-default-instances-base)
+       ("ghc-data-default-instances-containers"
+        ,ghc-data-default-instances-containers)
+       ("ghc-data-default-instances-dlist"
+        ,ghc-data-default-instances-dlist)
+       ("ghc-data-default-instances-old-locale"
+        ,ghc-data-default-instances-old-locale)))
+    (home-page "http://hackage.haskell.org/package/data-default")
+    (synopsis "Types with default values")
+    (description
+     "This package defines a class for types with a default value, and
+provides instances for types from the base, containers, dlist and old-locale
+packages.")
+    (license bsd-3)))
+
 (define-public ghc-data-default-class
   (package
     (name "ghc-data-default-class")
