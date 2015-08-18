@@ -26,10 +26,12 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages wicd)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
@@ -39,6 +41,8 @@
             geoclue-application
             %standard-geoclue-applications
             geoclue-service
+            elogind-configuration
+            elogind-service
             %desktop-services))
 
 ;;; Commentary:
@@ -374,6 +378,159 @@ site} for more information."
 
 
 ;;;
+;;; Elogind login and seat management service.
+;;;
+
+(define-record-type* <elogind-configuration> elogind-configuration
+  make-elogind-configuration
+  elogind-configuration
+  (kill-user-processes?            elogind-kill-user-processes?
+                                   (default #f))
+  (kill-only-users                 elogind-kill-only-users
+                                   (default '()))
+  (kill-exclude-users              elogind-kill-exclude-users
+                                   (default '("root")))
+  (inhibit-delay-max-seconds       elogind-inhibit-delay-max-seconds
+                                   (default 5))
+  (handle-power-key                elogind-handle-power-key
+                                   (default 'poweroff))
+  (handle-suspend-key              elogind-handle-suspend-key
+                                   (default 'suspend))
+  (handle-hibernate-key            elogind-handle-hibernate-key
+                                   (default 'hibernate))
+  (handle-lid-switch               elogind-handle-lid-switch
+                                   (default 'suspend))
+  (handle-lid-switch-docked        elogind-handle-lid-switch-docked
+                                   (default 'ignore))
+  (power-key-ignore-inhibited?     elogind-power-key-ignore-inhibited?
+                                   (default #f))
+  (suspend-key-ignore-inhibited?   elogind-suspend-key-ignore-inhibited?
+                                   (default #f))
+  (hibernate-key-ignore-inhibited? elogind-hibernate-key-ignore-inhibited?
+                                   (default #f))
+  (lid-switch-ignore-inhibited?    elogind-lid-switch-ignore-inhibited?
+                                   (default #t))
+  (holdoff-timeout-seconds         elogind-holdoff-timeout-seconds
+                                   (default 30))
+  (idle-action                     elogind-idle-action
+                                   (default 'ignore))
+  (idle-action-seconds             elogind-idle-action-seconds
+                                   (default (* 30 60)))
+  (runtime-directory-size-percent  elogind-runtime-directory-size-percent
+                                   (default 10))
+  (runtime-directory-size          elogind-runtime-directory-size
+                                   (default #f))
+  (remove-ipc?                     elogind-remove-ipc?
+                                   (default #t))
+
+  (suspend-state                   elogind-suspend-state
+                                   (default '("mem" "standby" "freeze")))
+  (suspend-mode                    elogind-suspend-mode
+                                   (default '()))
+  (hibernate-state                 elogind-hibernate-state
+                                   (default '("disk")))
+  (hibernate-mode                  elogind-hibernate-mode
+                                   (default '("platform" "shutdown")))
+  (hybrid-sleep-state              elogind-hybrid-sleep-state
+                                   (default '("disk")))
+  (hybrid-sleep-mode               elogind-hybrid-sleep-mode
+                                   (default
+                                     '("suspend" "platform" "shutdown"))))
+
+(define (elogind-configuration-file config)
+  (define (yesno x)
+    (match x
+      (#t "yes")
+      (#f "no")
+      (_ (error "expected #t or #f, instead got:" x))))
+  (define char-set:user-name
+    (string->char-set "abcdefghijklmnopqrstuvwxyz0123456789_-"))
+  (define (valid-list? l pred)
+    (and-map (lambda (x) (string-every pred x)) l))
+  (define (user-name-list users)
+    (unless (valid-list? users char-set:user-name)
+      (error "invalid user list" users))
+    (string-join users " "))
+  (define (enum val allowed)
+    (unless (memq val allowed)
+      (error "invalid value" val allowed))
+    (symbol->string val))
+  (define (non-negative-integer x)
+    (unless (exact-integer? x) (error "not an integer" x))
+    (when (negative? x) (error "negative number not allowed" x))
+    (number->string x))
+  (define handle-actions
+    '(ignore poweroff reboot halt kexec suspend hibernate hybrid-sleep lock))
+  (define (handle-action x)
+    (enum x handle-actions))
+  (define (sleep-list tokens)
+    (unless (valid-list? tokens char-set:user-name)
+      (error "invalid sleep list" tokens))
+    (string-join tokens " "))
+  (define-syntax ini-file-clause
+    (syntax-rules ()
+      ((_ config (prop (parser getter)))
+       (string-append prop "=" (parser (getter config)) "\n"))
+      ((_ config str)
+       (string-append str "\n"))))
+  (define-syntax-rule (ini-file config file clause ...)
+    (text-file file (string-append (ini-file-clause config clause) ...)))
+  (ini-file
+   config "logind.conf"
+   "[Login]"
+   ("KillUserProcesses" (yesno elogind-kill-user-processes?))
+   ("KillOnlyUsers" (user-name-list elogind-kill-only-users))
+   ("KillExcludeUsers" (user-name-list elogind-kill-exclude-users))
+   ("InhibitDelayMaxSecs" (non-negative-integer elogind-inhibit-delay-max-seconds))
+   ("HandlePowerKey" (handle-action elogind-handle-power-key))
+   ("HandleSuspendKey" (handle-action elogind-handle-suspend-key))
+   ("HandleHibernateKey" (handle-action elogind-handle-hibernate-key))
+   ("HandleLidSwitch" (handle-action elogind-handle-lid-switch))
+   ("HandleLidSwitchDocked" (handle-action elogind-handle-lid-switch-docked))
+   ("PowerKeyIgnoreInhibited" (yesno elogind-power-key-ignore-inhibited?))
+   ("SuspendKeyIgnoreInhibited" (yesno elogind-suspend-key-ignore-inhibited?))
+   ("HibernateKeyIgnoreInhibited" (yesno elogind-hibernate-key-ignore-inhibited?))
+   ("LidSwitchIgnoreInhibited" (yesno elogind-lid-switch-ignore-inhibited?))
+   ("HoldoffTimeoutSecs" (non-negative-integer elogind-holdoff-timeout-seconds))
+   ("IdleAction" (handle-action elogind-idle-action))
+   ("IdleActionSeconds" (non-negative-integer elogind-idle-action-seconds))
+   ("RuntimeDirectorySize"
+    (identity
+     (lambda (config)
+       (match (elogind-runtime-directory-size-percent config)
+         (#f (non-negative-integer (elogind-runtime-directory-size config)))
+         (percent (string-append (non-negative-integer percent) "%"))))))
+   ("RemoveIpc" (yesno elogind-remove-ipc?))
+   "[Sleep]"
+   ("SuspendState" (sleep-list elogind-suspend-state))
+   ("SuspendMode" (sleep-list elogind-suspend-mode))
+   ("HibernateState" (sleep-list elogind-hibernate-state))
+   ("HibernateMode" (sleep-list elogind-hibernate-mode))
+   ("HybridSleepState" (sleep-list elogind-hybrid-sleep-state))
+   ("HybridSleepMode" (sleep-list elogind-hybrid-sleep-mode))))
+
+(define* (elogind-service #:key (elogind elogind)
+                          (config (elogind-configuration)))
+  "Return a service that runs the @command{elogind} login and seat management
+service.  The @command{elogind} service integrates with PAM to allow other
+system components to know the set of logged-in users as well as their session
+types (graphical, console, remote, etc.).  It can also clean up after users
+when they log out."
+  (mlet %store-monad ((config-file (elogind-configuration-file config)))
+    (return
+     (service
+      (documentation "Run the elogind login and seat management service.")
+      (provision '(elogind))
+      (requirement '(dbus-system))
+
+      (start #~(make-forkexec-constructor
+                (list (string-append #$elogind "/libexec/elogind/elogind"))
+                #:environment-variables
+                (list (string-append "ELOGIND_CONF_FILE=" #$config-file))))
+      (stop #~(make-kill-destructor))))))
+
+
+;;;
 ;;; The default set of desktop services.
 ;;;
 (define %desktop-services
@@ -389,7 +546,8 @@ site} for more information."
          ;; time, so we currently add them to the set of default services.
          (colord-service)
          (geoclue-service)
-         (dbus-service (list avahi wicd upower colord geoclue))
+         (elogind-service)
+         (dbus-service (list avahi wicd upower colord geoclue elogind))
 
          (ntp-service)
 
