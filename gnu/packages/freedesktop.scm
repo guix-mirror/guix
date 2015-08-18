@@ -41,6 +41,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages libffi)
@@ -130,65 +131,56 @@ the freedesktop.org XDG Base Directory specification.")
     (license license:expat)))
 
 (define-public elogind
-  (let ((commit "14405a9"))
-    (package
-      (name "elogind")
-      (version (string-append "219." commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "http://git.elephly.net/software/elogind.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1wz5lxj95qg64x2q5hf4zcb35hpxlw3wfswx6sb2srvsg50y3y72"))
-                (file-name (string-append name "-checkout-" commit))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    (use-modules (guix build utils))
-                    (substitute* "Makefile.am"
-                      ;; Avoid validation against DTD because the DTDs for
-                      ;; both doctype 4.2 and 4.5 are needed.
-                      (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:configure-flags
-         (list
-          ;; pam_elogind fails because of bus-error.c hackery
-          "--disable-pam"
-          (string-append "--with-rootprefix=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-                      (lambda _
-                        (and (zero? (system* "intltoolize" "--force" "--automake"))
-                             (zero? (system* "autoreconf" "-vif"))))))))
-      (native-inputs
-       `(("intltool" ,intltool)
-         ("gettext" ,gnu-gettext)
-         ("docbook-xsl" ,docbook-xsl)
-         ("docbook-xml" ,docbook-xml)
-         ("xsltproc" ,libxslt)
-         ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
-         ("pkg-config", pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("gperf" ,gperf)))
-      (inputs
-       `(("linux-pam" ,linux-pam)
-         ("linux-libre-headers" ,linux-libre-headers)
-         ("libcap" ,libcap)
-         ("dbus" ,dbus)
-         ("eudev" ,eudev)))
-      (home-page "https://github.com/andywingo/elogind")
-      (synopsis "User, seat, and session management service")
-      (description "Elogind is the systemd project's \"logind\" service,
+  (package
+    (name "elogind")
+    (version "219.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wingolog.org/pub/" name "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "13qc4f0dl7ynnfp1y565z2k0jjizly5w3dqhiqkdk7v6jr4pksb7"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (use-modules (guix build utils))
+                  (substitute* "Makefile.am"
+                    ;; Avoid validation against DTD because the DTDs for
+                    ;; both doctype 4.2 and 4.5 are needed.
+                    (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-libcap="
+                            (assoc-ref %build-inputs "libcap"))
+             (string-append "--with-udevrulesdir="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d"))
+       #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("gettext" ,gnu-gettext)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml)
+       ("xsltproc" ,libxslt)
+       ("m4" ,m4)
+       ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
+       ("pkg-config", pkg-config)
+       ("gperf" ,gperf)))
+    (inputs
+     `(("linux-pam" ,linux-pam)
+       ("linux-libre-headers" ,linux-libre-headers)
+       ("libcap" ,libcap)
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)))
+    (home-page "https://github.com/andywingo/elogind")
+    (synopsis "User, seat, and session management service")
+    (description "Elogind is the systemd project's \"logind\" service,
 extracted out as a separate project.  Elogind integrates with PAM to provide
 the org.freedesktop.login1 interface over the system bus, allowing other parts
 of a the system to know what users are logged in, and where.")
-      (license license:lgpl2.1+))))
+    (license license:lgpl2.1+)))
 
 (define-public python-pyxdg
   (package
