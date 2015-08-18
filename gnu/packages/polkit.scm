@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages linux)
@@ -44,11 +46,28 @@
              (sha256
               (base32
                "109w86kfqrgz83g9ivggplmgc77rz8kx8646izvm2jb57h4rbh71"))
-             (patches (list (search-patch "polkit-drop-test.patch")))))
+             (patches (list (search-patch "polkit-drop-test.patch")))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 (use-modules (guix build utils))
+                 (substitute* "configure"
+                   ;; Replace libsystemd-login with libelogind.
+                   (("libsystemd-login") "libelogind")
+                   ;; Skip the sanity check that the current system runs
+                   ;; systemd.
+                   (("test ! -d /sys/fs/cgroup/systemd/") "false"))
+                 (substitute* "src/polkit/polkitunixsession-systemd.c"
+                   (("systemd") "elogind"))
+                 (substitute* "src/polkitbackend/polkitbackendsessionmonitor-systemd.c"
+                   (("systemd") "elogind"))
+                 (substitute* "src/polkitbackend/polkitbackendjsauthority.c"
+                   (("systemd") "elogind"))))))
     (build-system gnu-build-system)
     (inputs
       `(("expat" ,expat)
         ("glib:bin" ,glib "bin") ; for glib-mkenums
+        ("elogind" ,elogind)
         ("intltool" ,intltool)
         ("linux-pam" ,linux-pam)
         ("mozjs" ,mozjs)
