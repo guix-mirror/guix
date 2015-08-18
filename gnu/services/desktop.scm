@@ -24,12 +24,14 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system linux) ; unix-pam-service
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages wicd)
+  #:use-module (gnu packages polkit)
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -41,6 +43,7 @@
             geoclue-application
             %standard-geoclue-applications
             geoclue-service
+            polkit-service
             elogind-configuration
             elogind-service
             %desktop-services))
@@ -378,6 +381,42 @@ site} for more information."
 
 
 ;;;
+;;; Polkit privilege management service.
+;;;
+
+(define* (polkit-service #:key (polkit polkit))
+  "Return a service that runs the @command{polkit} privilege management
+service.  By querying the @command{polkit} service, a privileged system
+component can know when it should grant additional capabilities to ordinary
+users.  For example, an ordinary user can be granted the capability to suspend
+the system if the user is logged in locally."
+  (with-monad %store-monad
+    (return
+     (service
+      (documentation "Run the polkit privilege management service.")
+      (provision '(polkit-daemon))
+      (requirement '(dbus-system))
+
+      (start #~(make-forkexec-constructor
+                (list (string-append #$polkit "/lib/polkit-1/polkitd"))))
+      (stop #~(make-kill-destructor))
+
+      (user-groups (list (user-group
+                          (name "polkitd")
+                          (system? #t))))
+      (user-accounts (list (user-account
+                            (name "polkitd")
+                            (group "polkitd")
+                            (system? #t)
+                            (comment "Polkit daemon user")
+                            (home-directory "/var/empty")
+                            (shell
+                             "/run/current-system/profile/sbin/nologin"))))
+
+      (pam-services (list (unix-pam-service "polkit-1")))))))
+
+
+;;;
 ;;; Elogind login and seat management service.
 ;;;
 
@@ -540,14 +579,16 @@ when they log out."
          (avahi-service)
          (wicd-service)
          (upower-service)
-         ;; FIXME: The colord and geoclue services could all be bus-activated
-         ;; by default, so they don't run at program startup.  However, user
-         ;; creation and /var/lib.colord creation happen at service activation
-         ;; time, so we currently add them to the set of default services.
+         ;; FIXME: The colord, geoclue, and polkit services could all be
+         ;; bus-activated by default, so they don't run at program startup.
+         ;; However, user creation and /var/lib/colord creation happen at
+         ;; service activation time, so we currently add them to the set of
+         ;; default services.
          (colord-service)
          (geoclue-service)
+         (polkit-service)
          (elogind-service)
-         (dbus-service (list avahi wicd upower colord geoclue elogind))
+         (dbus-service (list avahi wicd upower colord geoclue polkit elogind))
 
          (ntp-service)
 
