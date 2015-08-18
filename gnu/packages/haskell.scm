@@ -18,12 +18,13 @@
 
 (define-module (gnu packages haskell)
   #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:select (bsd-3))
+  #:use-module ((guix licenses) #:select (bsd-3 lgpl2.1))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
@@ -528,6 +529,34 @@ UTF8 without truncation.")
      "This package provides Haskell bindings to the X11 graphics library.  The
 bindings are a direct translation of the C bindings.")
     (license bsd-3)))
+
+(define-public ghc-x11-xft
+  (package
+    (name "ghc-x11-xft")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/X11-xft/"
+                           "X11-xft-" version ".tar.gz"))
+       (sha256
+        (base32 "1lgqb0s2qfwwgbvwxhjbi23rbwamzdi0l0slfr20c3jpcbp3zfjf"))))
+    (propagated-inputs
+     `(("ghc-x11" ,ghc-x11)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("xproto" ,xproto)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/X11-xft")
+    (synopsis "Bindings to Xft")
+    (description
+     "Bindings to the Xft, X Free Type interface library, and some Xrender
+parts.")
+    (license lgpl2.1)))
 
 (define-public ghc-zlib
   (package
