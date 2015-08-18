@@ -33,7 +33,8 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xorg))
 
 (define ghc-bootstrap-x86_64-7.8.4
   (origin
@@ -494,6 +495,38 @@ http://web.cecs.pdx.edu/~mpj/pubs/springschool.html.")
      "A UTF8 layer for Strings. The utf8-string package provides operations
 for encoding UTF8 strings to Word8 lists and back, and for reading and writing
 UTF8 without truncation.")
+    (license bsd-3)))
+
+(define-public ghc-x11
+  (package
+    (name "ghc-x11")
+    (version "1.6.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/X11/"
+                           "X11-" version ".tar.gz"))
+       (sha256
+        (base32 "1kzjcynm3rr83ihqx2y2d852jc49da4p18gv6jzm7g87z22x85jj"))))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-sh
+                              (lambda _
+                                (setenv "CONFIG_SHELL" "sh")
+                                #t)))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("libxinerama" ,libxinerama)
+       ("libxscrnsaver" ,libxscrnsaver)))
+    (propagated-inputs
+     `(("ghc-data-default" ,ghc-data-default)))
+    (home-page "https://github.com/haskell-pkg-janitors/X11")
+    (synopsis "Bindings to the X11 graphics library")
+    (description
+     "This package provides Haskell bindings to the X11 graphics library.  The
+bindings are a direct translation of the C bindings.")
     (license bsd-3)))
 
 (define-public ghc-zlib
