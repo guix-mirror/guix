@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -425,6 +426,37 @@ Writer monad), where list append quickly becomes too expensive.")
      "This package provides extensible exceptions for both new and old
 versions of GHC (i.e., < 6.10).")
     (license bsd-3)))
+
+(define-public cabal-install
+ (package
+  (name "cabal-install")
+   (version "1.18.1.0")
+   (source
+    (origin
+     (method url-fetch)
+      (uri (string-append
+            "http://hackage.haskell.org/package/cabal-install/cabal-install-"
+            version
+            ".tar.gz"))
+      (sha256
+       (base32 "1r1shhvnpgxf91rmbv3wa1rkd24plbgr6bpz3aj80ir0z3zbdayn"))))
+   (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+   (build-system haskell-build-system)
+   (propagated-inputs
+    `(("ghc-http" ,ghc-http)
+      ("ghc-mtl" ,ghc-mtl)
+      ("ghc-network-uri" ,ghc-network-uri)
+      ("ghc-network" ,ghc-network)
+      ("ghc-random" ,ghc-random)
+      ("ghc-stm" ,ghc-stm)
+      ("ghc-zlib" ,ghc-zlib)))
+   (home-page "http://www.haskell.org/cabal/")
+   (synopsis "Command-line interface for Cabal and Hackage")
+   (description
+    "The cabal command-line program simplifies the process of managing
+Haskell software by automating the fetching, configuration, compilation and
+installation of Haskell libraries and programs.")
+   (license bsd-3)))
 
 (define-public ghc-mtl
   (package
