@@ -302,6 +302,29 @@ package.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-data-default-instances-old-locale
+  (package
+    (name "ghc-data-default-instances-old-locale")
+    (version "0.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+              "http://hackage.haskell.org/package/"
+              "data-default-instances-old-locale/"
+              "data-default-instances-old-locale-" version ".tar.gz"))
+        (sha256
+          (base32 "00h81i5phib741yj517p8mbnc48myvfj8axzsw44k34m48lv1lv0"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+      `(("ghc-data-default-class" ,ghc-data-default-class)))
+    (home-page
+      "http://hackage.haskell.org/package/data-default-instances-old-locale")
+    (synopsis "Default instances for types in old-locale")
+    (description "Provides Default instances for types from the old-locale
+  package.")
+    (license bsd-3)))
+
 (define-public ghc-mtl
   (package
     (name "ghc-mtl")
