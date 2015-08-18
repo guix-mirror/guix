@@ -302,6 +302,29 @@ package.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-data-default-instances-dlist
+  (package
+    (name "ghc-data-default-instances-dlist")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/"
+             "data-default-instances-dlist/"
+             "data-default-instances-dlist-" version ".tar.gz"))
+       (sha256
+        (base32 "0narkdqiprhgayjiawrr4390h4rq4pl2pb6mvixbv2phrc8kfs3x"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-dlist" ,ghc-dlist)))
+    (home-page "http://hackage.haskell.org/package/data-default-instances-dlist")
+    (synopsis "Default instances for types in dlist")
+    (description "Provides default instances for types from the dlist
+package.")
+    (license bsd-3)))
+
 (define-public ghc-data-default-instances-old-locale
   (package
     (name "ghc-data-default-instances-old-locale")
