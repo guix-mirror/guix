@@ -4117,6 +4117,10 @@ Identify inputs that should most likely be native inputs.
 @itemx home-page
 Probe @code{home-page} and @code{source} URLs and report those that are
 invalid.
+
+@item formatting
+Warn about obvious source code formatting issues: trailing white space,
+use of tabulations, etc.
 @end table
 
 The general syntax is:

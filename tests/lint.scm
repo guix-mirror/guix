@@ -420,6 +420,32 @@ requests."
           (check-source pkg))))
     "not reachable: 404")))
 
+(test-assert "formatting: tabulation"
+  (string-contains
+   (with-warnings
+     (check-formatting (dummy-package "leave the tab here:	")))
+   "tabulation"))
+
+(test-assert "formatting: trailing white space"
+  (string-contains
+   (with-warnings
+     ;; Leave the trailing white space on the next line!
+     (check-formatting (dummy-package "x")))            
+   "trailing white space"))
+
+(test-assert "formatting: long line"
+  (string-contains
+   (with-warnings
+     (check-formatting
+      (dummy-package "x"                          ;here is a stupid comment just to make a long line
+                     )))
+   "too long"))
+
+(test-assert "formatting: alright"
+  (string-null?
+   (with-warnings
+     (check-formatting (dummy-package "x")))))
+
 (test-end "lint")
 
 

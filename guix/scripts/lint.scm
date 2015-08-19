@@ -47,6 +47,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
+  #:use-module (ice-9 rdelim)
   #:export (guix-lint
             check-description-style
             check-inputs-should-be-native
@@ -54,7 +55,8 @@
             check-synopsis-style
             check-derivation
             check-home-page
-            check-source))
+            check-source
+            check-formatting))
 
 
 ;;;
@@ -509,6 +511,79 @@ descriptions maintained upstream."
                     (format #f (_ "failed to create derivation: ~s~%")
                             args)))))
 
+
+;;;
+;;; Source code formatting.
+;;;
+
+(define (report-tabulations package line line-number)
+  "Warn about tabulations found in LINE."
+  (match (string-index line #\tab)
+    (#f #t)
+    (index
+     (emit-warning package
+                   (format #f (_ "tabulation on line ~a, column ~a")
+                           line-number index)))))
+
+(define (report-trailing-white-space package line line-number)
+  "Warn about trailing white space in LINE."
+  (unless (or (string=? line (string-trim-right line))
+              (string=? line (string #\page)))
+    (emit-warning package
+                  (format #f
+                          (_ "trailing white space on line ~a")
+                          line-number))))
+
+(define (report-long-line package line line-number)
+  "Emit a warning if LINE is too long."
+  ;; Note: We don't warn at 80 characters because sometimes hashes and URLs
+  ;; make it hard to fit within that limit and we want to avoid making too
+  ;; much noise.
+  (when (> (string-length line) 90)
+    (emit-warning package
+                  (format #f (_ "line ~a is way too long (~a characters)")
+                          line-number (string-length line)))))
+
+(define %formatting-reporters
+  ;; List of procedures that report formatting issues.  These are not separate
+  ;; checkers because they would need to re-read the file.
+  (list report-tabulations
+        report-trailing-white-space
+        report-long-line))
+
+(define* (report-formatting-issues package file starting-line
+                                   #:key (reporters %formatting-reporters))
+  "Report white-space issues in FILE starting from STARTING-LINE, and report
+them for PACKAGE."
+  (define last-line
+    ;; Number of the presumed last line.
+    ;; XXX: Ideally we'd stop at the boundaries of the surrounding sexp, but
+    ;; for now just use this simple heuristic.
+    (+ starting-line 60))
+
+  (call-with-input-file file
+    (lambda (port)
+      (let loop ((line-number 1))
+        (let ((line (read-line port)))
+          (or (eof-object? line)
+              (> line-number last-line)
+              (begin
+                (unless (< line-number starting-line)
+                  (for-each (lambda (report)
+                              (report package line line-number))
+                            reporters))
+                (loop (+ 1 line-number)))))))))
+
+(define (check-formatting package)
+  "Check the formatting of the source code of PACKAGE."
+  (let ((location (package-location package)))
+    (when location
+      (and=> (search-path %load-path (location-file location))
+             (lambda (file)
+               ;; Report issues starting from the line before the 'package'
+               ;; form, which usually contains the 'define' form.
+               (report-formatting-issues package file
+                                         (- (location-line location) 1)))))))
 
 
 ;;;
@@ -548,7 +623,11 @@ descriptions maintained upstream."
    (lint-checker
      (name        'synopsis)
      (description "Validate package synopses")
-     (check       check-synopsis-style))))
+     (check       check-synopsis-style))
+   (lint-checker
+     (name        'formatting)
+     (description "Look for formatting issues in the source")
+     (check       check-formatting))))
 
 (define (run-checkers package checkers)
   ;; Run the given CHECKERS on PACKAGE.
