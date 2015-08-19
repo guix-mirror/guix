@@ -154,8 +154,9 @@ X11 GUIs.")
 
        ;; The tests require a running X server, so we just skip them.
        #:tests? #f))
-    (inputs `(("tcl" ,tcl)))
-
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libxft" ,libxft)
+              ("tcl" ,tcl)))
     ;; tk.h refers to X11 headers, hence the propagation.
     (propagated-inputs `(("libx11" ,libx11)
                          ("libxext" ,libxext)))
