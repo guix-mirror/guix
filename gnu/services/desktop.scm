@@ -61,7 +61,6 @@
         (define (services->sxml services)
           ;; Return the SXML 'includedir' clauses for DIRS.
           `(busconfig
-            (servicehelper "/run/setuid-programs/dbus-daemon-launch-helper")
             ,@(append-map (lambda (dir)
                             `((includedir
                                ,(string-append dir "/etc/dbus-1/system.d"))
