@@ -284,6 +284,14 @@ functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/coreutils/")))
 
+(define-public coreutils-light
+  ;; Coreutils without its optional dependencies.
+  (package
+    (inherit coreutils)
+    (name "coreutils-light")
+    (outputs '("out"))
+    (inputs '())))
+
 (define-public gnu-make
   (package
    (name "make")
@@ -438,14 +446,14 @@ store.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.21")
+   (version "2.22")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
+              "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -471,7 +479,7 @@ store.")
       #:parallel-build? #f
 
       ;; The libraries have an empty RUNPATH, but some, such as the versioned
-      ;; libraries (libdl-2.21.so, etc.) have ld.so marked as NEEDED.  Since
+      ;; libraries (libdl-2.22.so, etc.) have ld.so marked as NEEDED.  Since
       ;; these libraries are always going to be found anyway, just skip
       ;; RUNPATH checks.
       #:validate-runpath? #f

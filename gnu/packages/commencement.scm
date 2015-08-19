@@ -660,10 +660,90 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                               (current-source-location)
                                               #:guile %bootstrap-guile))))))
 
+(define (locale-proof-package p)
+  "Return a new package based on P that ignores 'LOCPATH'.  The result is a
+\"locale-proof\" package in the sense that it cannot end up loading locale
+data that is not in the format its libc expects.  This is useful because the
+locale binary format may change incompatibly between libc versions."
+  (package
+    (inherit p)
+    (name (string-append (package-name p) "-lp"))
+    (build-system trivial-build-system)
+    (inputs `(("original" ,p)
+              ("bash" ,bash-final)))
+    (outputs '("out"))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let* ((out      (assoc-ref %outputs "out"))
+                (bin      (string-append out "/bin"))
+                (bash     (assoc-ref %build-inputs "bash"))
+                (binaries (assoc-ref %build-inputs "original"))
+                (programs (find-files (string-append binaries "/bin"))))
+           (define (wrap-program program)
+             (let ((base (basename program)))
+               (call-with-output-file base
+                 (lambda (port)
+                   (format port "#!~a/bin/sh
+# Unset 'LOCPATH' so that the program does not end up loading incompatible
+# locale data.
+unset LOCPATH
+exec \"~a\" \"$@\"\n"
+                           bash program)))
+               (chmod base #o755)))
+
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (for-each wrap-program programs)
+             #t)))))))
+
+(define-public ld-wrapper
+  ;; The final 'ld' wrapper, which uses the final Guile and Binutils.
+  (package (inherit ld-wrapper-boot3)
+    (name "ld-wrapper")
+    (inputs `(("guile" ,guile-final)
+              ("bash"  ,bash-final)
+              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
+                      '("guile" "bash"))))))
+
 (define %boot5-inputs
-  ;; Now with UTF-8 locale.
-  `(("locales" ,glibc-utf8-locales-final)
-    ,@%boot4-inputs))
+  ;; Now with UTF-8 locales.  Since the locale binary format differs between
+  ;; libc versions, we have to rebuild some of the packages so that they use
+  ;; the new libc, which allows them to load locale data from
+  ;; GLIBC-UTF8-LOCALES-FINAL (remember that the bootstrap binaries were built
+  ;; with an older libc, which cannot load the new locale format.)  See
+  ;; <https://lists.gnu.org/archive/html/guix-devel/2015-08/msg00737.html>.
+  (let ((new-libc-package (compose package-with-bootstrap-guile
+                                   (cut package-with-explicit-inputs <>
+                                        %boot4-inputs
+                                        (current-source-location)
+                                        #:guile %bootstrap-guile))))
+    `(("locales" ,glibc-utf8-locales-final)
+      ("ld-wrapper" ,ld-wrapper)
+      ("binutils" ,binutils-final)
+      ("bash" ,bash-final)
+      ("make" ,(new-libc-package gnu-make))
+
+      ;; Some test suites (grep, Gnulib) use 'diff' to compare files in locale
+      ;; encoding, so we need support this.
+      ("diffutils" ,(new-libc-package diffutils))
+      ("findutils" ,(new-libc-package findutils))
+
+      ;; Grep's test suite uses 'timeout' from Coreutils to execute command,
+      ;; and yet these commands need to see the valid 'LOCPATH'.
+      ("coreutils" ,(new-libc-package coreutils-light))
+
+      ;; We just wrap the remaining binaries (tar, gzip, xz, etc.)  so that
+      ;; they ignore 'LOCPATH' (if they did not, they would be hit by an
+      ;; assertion failure in loadlocale.c.)
+      ("coreutils&co" ,(locale-proof-package %bootstrap-coreutils&co))
+
+      ,@(fold alist-delete %boot4-inputs
+              '("coreutils&co" "findutils" "diffutils" "make"
+                "bash" "binutils-cross" "ld-wrapper")))))
 
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
@@ -672,15 +752,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                  `(("guile" ,guile-final)
                                    ,@%boot5-inputs)
                                  (current-source-location))))
-
-(define-public ld-wrapper
-  ;; The final `ld' wrapper, which uses the final Guile.
-  (package (inherit ld-wrapper-boot3)
-    (name "ld-wrapper")
-    (inputs `(("guile" ,guile-final)
-              ("bash"  ,bash-final)
-              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
-                      '("guile" "bash"))))))
 
 (define coreutils-final
   ;; The final Coreutils.  Treat them specially because some packages, such as
