@@ -39,7 +39,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.2.2")
+    (version "2.2.3")
     (source
      (origin
        (method url-fetch)
@@ -48,7 +48,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0qj48a8ji8qj1sllsrhb6y65frwr77bvr08xikj86w5mib8baczh"))))
+         "19x8gs67klgc3ag815jpin83jn2nv1akgjcgayd6v3h1xplr1v66"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
