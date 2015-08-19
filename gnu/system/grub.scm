@@ -206,6 +206,11 @@ fi~%"
   "Return the GRUB configuration file corresponding to CONFIG, a
 <grub-configuration> object.  OLD-ENTRIES is taken to be a list of menu
 entries corresponding to old generations of the system."
+  (define linux-image-name
+    (if (string-prefix? "mips" system)
+        "vmlinuz"
+        "bzImage"))
+
   (define all-entries
     (append entries (grub-configuration-menu-entries config)))
 
@@ -214,13 +219,14 @@ entries corresponding to old generations of the system."
      (($ <menu-entry> label linux arguments initrd)
       #~(format port "menuentry ~s {
   # Set 'root' to the partition that contains the kernel.
-  search --file --set ~a/bzImage~%
+  search --file --set ~a/~a~%
 
-  linux ~a/bzImage ~a
+  linux ~a/~a ~a
   initrd ~a
 }~%"
                 #$label
-                #$linux #$linux (string-join (list #$@arguments))
+                #$linux #$linux-image-name
+                #$linux #$linux-image-name (string-join (list #$@arguments))
                 #$initrd))))
 
   (mlet %store-monad ((sugar (eye-candy config #~port)))
