@@ -607,7 +607,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qemu-CVE-2015-3209.patch			\
-  gnu/packages/patches/qemu-CVE-2015-3456.patch			\
   gnu/packages/patches/qemu-CVE-2015-4037.patch			\
   gnu/packages/patches/qemu-CVE-2015-4103.patch			\
   gnu/packages/patches/qemu-CVE-2015-4104.patch			\
@@ -620,10 +619,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/qemu-CVE-2015-4106-pt6.patch		\
   gnu/packages/patches/qemu-CVE-2015-4106-pt7.patch		\
   gnu/packages/patches/qemu-CVE-2015-4106-pt8.patch		\
-  gnu/packages/patches/qemu-CVE-2015-5154-pt1.patch		\
-  gnu/packages/patches/qemu-CVE-2015-5154-pt2.patch		\
-  gnu/packages/patches/qemu-CVE-2015-5154-pt3.patch		\
-  gnu/packages/patches/qemu-CVE-2015-5158.patch			\
+  gnu/packages/patches/qemu-CVE-2015-5745.patch			\
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/qt4-tests.patch				\
   gnu/packages/patches/qt5-runpath.patch			\
