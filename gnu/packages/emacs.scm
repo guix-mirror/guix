@@ -265,7 +265,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "git-modes")
-    (version "1.0.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -274,7 +274,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1biiss75bswx4alk85k3g9p0a3q3sc9i74h4mnrxc2rsk2iwhws0"))))
+                "09dv7ikbj2bi4y3lmvjfzqpdmx2f9bd4w7jkp10bkap62d05iqhk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -290,7 +290,7 @@ when typing parentheses directly or commenting out code line by line.")
                           (string-append "LISPDIR="
                                          (assoc-ref %outputs "out")
                                          "/share/emacs/site-lisp"))
-       #:test-target "test"
+       #:tests? #f  ; no check target
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-after 'install 'emacs-autoloads
