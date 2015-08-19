@@ -38,14 +38,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.43.0")
+   (version "7.44.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1ykpfsm5ildpcj3vw5m1xh49jk3yfpna6zj7r0fgi1bxki6xif72"))))
+              "0gjnaav9vmwwwza451na1643br7i0kxgd4002pwqh3xk5ywvdap7"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
