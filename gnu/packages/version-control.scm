@@ -120,14 +120,14 @@ PACKAGES and their propagated inputs."
   ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
-   (version "2.4.3")
+   (version "2.5.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "056qh112f2afnbc4sjzkf8idzhi9bp7ggpci83cc6a7gs6lhfl7h"))))
+              "0p747j94kynrx71qaamc9i0dkq5vqpv66a47b68pmin1qsxb2nfc"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
