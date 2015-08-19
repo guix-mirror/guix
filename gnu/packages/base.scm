@@ -517,7 +517,11 @@ store.")
                 (lambda* (#:key inputs native-inputs outputs
                           #:allow-other-keys)
                   (let* ((out  (assoc-ref outputs "out"))
-                         (bin  (string-append out "/bin")))
+                         (bin  (string-append out "/bin"))
+                         ;; FIXME: Normally we would look it up only in INPUTS
+                         ;; but cross-base uses it as a native input.
+                         (bash (or (assoc-ref inputs "static-bash")
+                                   (assoc-ref native-inputs "static-bash"))))
                     ;; Use `pwd', not `/bin/pwd'.
                     (substitute* "configure"
                       (("/bin/pwd") "pwd"))
@@ -537,34 +541,16 @@ store.")
                       ;; 4.7.1.
                       ((" -lgcc_s") ""))
 
-                    ;; Copy a statically-linked Bash in the output, with
-                    ;; no references to other store paths.
-                    ;; FIXME: Normally we would look it up only in INPUTS but
-                    ;; cross-base uses it as a native input.
-                    (mkdir-p bin)
-                    (copy-file (string-append (or (assoc-ref inputs
-                                                             "static-bash")
-                                                  (assoc-ref native-inputs
-                                                             "static-bash"))
-                                              "/bin/bash")
-                               (string-append bin "/bash"))
-                    (remove-store-references (string-append bin "/bash"))
-                    (chmod (string-append bin "/bash") #o555)
-
-                    ;; Keep a symlink, for `patch-shebang' resolution.
-                    (with-directory-excursion bin
-                      (symlink "bash" "sh"))
-
                     ;; Have `system' use that Bash.
                     (substitute* "sysdeps/posix/system.c"
                       (("#define[[:blank:]]+SHELL_PATH.*$")
                        (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
-                               out)))
+                               bash)))
 
                     ;; Same for `popen'.
                     (substitute* "libio/iopopen.c"
                       (("/bin/sh")
-                       (string-append out "/bin/bash")))
+                       (string-append bash "/bin/bash")))
 
                     ;; Make sure we don't retain a reference to the
                     ;; bootstrap Perl.
@@ -577,7 +563,7 @@ store.")
                        "exec perl"))))
                 %standard-phases)))
 
-   (inputs `(("static-bash" ,(static-package bash-light))))
+   (inputs `(("static-bash" ,static-bash)))
 
    ;; To build the manual, we need Texinfo and Perl.  Gettext is needed to
    ;; install the message catalogs, with 'msgfmt'.

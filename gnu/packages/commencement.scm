@@ -419,18 +419,17 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                   #:guile %bootstrap-guile))))
 
 (define static-bash-for-glibc
-  ;; A statically-linked Bash to be embedded in GLIBC-FINAL, for use by
-  ;; system(3) & co.
+  ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
   (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
                                   glibc-final-with-bootstrap-bash
                                   (car (assoc-ref %boot1-inputs "bash"))))
-         (bash (package (inherit bash-light)
+         (bash (package (inherit static-bash)
                  (native-inputs `(("bison" ,bison-boot1)))
                  (arguments
                   `(#:guile ,%bootstrap-guile
-                    ,@(package-arguments bash-light))))))
+                    ,@(package-arguments static-bash))))))
     (package-with-bootstrap-guile
-     (package-with-explicit-inputs (static-package bash)
+     (package-with-explicit-inputs bash
                                    `(("gcc" ,gcc)
                                      ("libc" ,glibc-final-with-bootstrap-bash)
                                      ,@(fold alist-delete %boot1-inputs
@@ -490,6 +489,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (arguments
      `(#:allowed-references
        ,(cons* `(,gcc-boot0 "lib") (linux-libre-headers-boot0)
+               static-bash-for-glibc
                (package-outputs glibc-final-with-bootstrap-bash))
 
        ,@(package-arguments glibc-final-with-bootstrap-bash)))))
@@ -562,7 +562,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
 
-       #:allowed-references ("out" "lib" ,glibc-final)
+       #:allowed-references ("out" "lib"
+                             ,glibc-final ,static-bash-for-glibc)
 
        ;; Things like libasan.so and libstdc++.so NEED ld.so for some
        ;; reason, but it is not in their RUNPATH.  This is a false
@@ -596,8 +597,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
-    ;; This time we want Texinfo, so we get the manual.
+    ;; This time we want Texinfo, so we get the manual.  Add
+    ;; STATIC-BASH-FOR-GLIBC so that it's used in the final shebangs of
+    ;; scripts such as 'mkheaders' and 'fixinc.sh' (XXX: who cares about these
+    ;; scripts?).
     (native-inputs `(("texinfo" ,texinfo-boot0)
+                     ("static-bash" ,static-bash-for-glibc)
                      ,@(package-native-inputs gcc-boot0)))
 
     (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp)))
