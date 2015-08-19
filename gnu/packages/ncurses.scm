@@ -90,14 +90,7 @@
           ;; Make sure programs like 'tic', 'reset', and 'clear' have a
           ;; correct RUNPATH.
           ,(string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
-                          "/lib")
-
-          ;; C++ bindings fail to build on
-          ;; `i386-pc-solaris2.11' with GCC 3.4.3:
-          ;; <http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191>.
-          ,,@(if (string=? (%current-system) "i686-solaris")
-                 '("--without-cxx-binding")
-                 '()))
+                          "/lib"))
         #:tests? #f                               ; no "check" target
         #:phases (modify-phases %standard-phases
                    (add-after 'install 'post-install
