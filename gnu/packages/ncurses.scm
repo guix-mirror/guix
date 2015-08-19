@@ -56,9 +56,9 @@
                             (define lib.a
                               (string-append "lib" lib ".a"))
                             (define libw.so.x
-                              (string-append "lib" lib "w.so.5"))
+                              (string-append "lib" lib "w.so.6"))
                             (define lib.so.x
-                              (string-append "lib" lib ".so.5"))
+                              (string-append "lib" lib ".so.6"))
                             (define lib.so
                               (string-append "lib" lib ".so"))
 
@@ -73,14 +73,14 @@
                           '("curses" "ncurses" "form" "panel" "menu")))))))
     (package
      (name "ncurses")
-     (version "5.9")
+     (version "6.0")
      (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fsn7xis81za62afan0vvm38bvgzg5wfmv1m86flqcj0nj7jjilh"))))
+                "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
      (build-system gnu-build-system)
      (arguments
       `(#:configure-flags
