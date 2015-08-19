@@ -28,21 +28,17 @@
          '(lambda _
             (for-each patch-makefile-SHELL
                       (find-files "." "Makefile.in"))))
-        (configure-phase
-         '(lambda* (#:key inputs outputs configure-flags
-                    #:allow-other-keys)
-            ;; The `ncursesw5-config' has a #!/bin/sh.  We want to patch
-            ;; it to point to libc's embedded Bash, to avoid retaining a
-            ;; reference to the bootstrap Bash.
-            (let* ((libc (assoc-ref inputs "libc"))
-                   (bash (string-append libc "/bin/bash"))
-                   (out  (assoc-ref outputs "out")))
-              (format #t "configure flags: ~s~%" configure-flags)
-              (zero? (apply system* bash "./configure"
-                            (string-append "SHELL=" bash)
-                            (string-append "CONFIG_SHELL=" bash)
-                            (string-append "--prefix=" out)
-                            configure-flags)))))
+        (remove-shebang-phase
+         '(lambda _
+            ;; To avoid retaining a reference to the bootstrap Bash via the
+            ;; shebang of the 'ncursesw5-config' script, simply remove that
+            ;; shebang: it'll work just as well without it.
+            (substitute* "misc/ncurses-config.in"
+              (("#!@SHELL@")
+               "# No shebang here, use /bin/sh!\n")
+              (("@SHELL@ \\$0")
+               "$0"))
+            #t))
         (post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -103,24 +99,13 @@
                  '("--without-cxx-binding")
                  '()))
         #:tests? #f                               ; no "check" target
-        #:phases ,(if (%current-target-system)
-
-                      `(alist-cons-before         ; cross build
-                        'configure 'patch-makefile-SHELL
-                        ,patch-makefile-phase
-                        (alist-cons-after
-                         'install 'post-install ,post-install-phase
-                         %standard-phases))
-
-                      `(alist-cons-after          ; native build
-                        'install 'post-install ,post-install-phase
-                        (alist-cons-before
-                         'configure 'patch-makefile-SHELL
-                         ,patch-makefile-phase
-                         (alist-replace
-                          'configure
-                          ,configure-phase
-                          %standard-phases))))))
+        #:phases (modify-phases %standard-phases
+                   (add-after 'install 'post-install
+                              ,post-install-phase)
+                   (add-before 'configure 'patch-makefile-SHELL
+                               ,patch-makefile-phase)
+                   (add-after 'unpack 'remove-unneeded-shebang
+                              ,remove-shebang-phase))))
      (self-native-input? #t)                      ; for `tic'
      (synopsis "Terminal emulation (termcap, terminfo) library")
      (description
