@@ -239,6 +239,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ots.scm				\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
+  gnu/packages/password-utils.scm		\
   gnu/packages/patchutils.scm			\
   gnu/packages/pciutils.scm			\
   gnu/packages/pcre.scm				\
