@@ -29,6 +29,8 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages qemu)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages cdrom)
   #:use-module (srfi srfi-1))
@@ -112,6 +114,8 @@
      `(("unifont" ,unifont)
        ("bison" ,bison)
        ("flex" ,flex)
+       ("texinfo" ,texinfo)
+       ("help2man" ,help2man)
 
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
