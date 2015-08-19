@@ -29,7 +29,6 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
-  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (profile?
@@ -48,42 +47,24 @@
   (self-size     profile-self-size)            ;size in bytes
   (closure-size  profile-closure-size))        ;size of dependencies in bytes
 
-(define (file-size file)
-  "Return the size of bytes of FILE, entering it if FILE is a directory."
-  (file-system-fold (const #t)
-                    (lambda (file stat result)    ;leaf
-                      (+ (stat:size stat) result))
-                    (lambda (directory stat result) ;down
-                      (+ (stat:size stat) result))
-                    (lambda (directory stat result) ;up
-                      result)
-                    (lambda (file stat result)    ;skip
-                      result)
-                    (lambda (file stat errno result)
-                      (format (current-error-port)
-                              "file-size: ~a: ~a~%" file
-                              (strerror errno))
-                      result)
-                    0
-                    file
-                    lstat))
-
 (define substitutable-path-info*
   (store-lift substitutable-path-info))
 
-(define (store-item-exists? item)
-  "Return #t if ITEM is in the store, and protect it from GC.  Otherwise
-return #f."
+(define (query-path-info* item)
+  "Monadic version of 'query-path-info' that returns #f when ITEM is not in
+the store."
   (lambda (store)
-    (add-temp-root store item)
-    (values (valid-path? store item) store)))
+    (guard (c ((nix-protocol-error? c)
+               ;; ITEM is not in the store; return #f.
+               (values #f store)))
+      (values (query-path-info store item) store))))
 
-(define (file-size* item)
-  "Like 'file-size', but resort to information from substitutes if ITEM is not
-in the store."
-  (mlet %store-monad ((exists? (store-item-exists? item)))
-    (if exists?
-        (return (file-size item))
+(define (file-size item)
+  "Return the size in bytes of ITEM, resorting to information from substitutes
+if ITEM is not in the store."
+  (mlet %store-monad ((info (query-path-info* item)))
+    (if info
+        (return (path-info-nar-size info))
         (mlet %store-monad ((info (substitutable-path-info* (list item))))
           (match info
             ((info)
@@ -149,7 +130,7 @@ profile of ITEM and its requisites."
                                               (cons item refs))))))
                        (sizes (mapm %store-monad
                                     (lambda (item)
-                                      (>>= (file-size* item)
+                                      (>>= (file-size item)
                                            (lambda (size)
                                              (return (cons item size)))))
                                     refs)))
