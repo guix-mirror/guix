@@ -105,7 +105,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.1")
+    (version "3.4.4.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -116,7 +116,8 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0bmih0zyiplr4v8798w0v9g3215zmganq18n8935cizkxj5zbdg9"))))
+               "1xf354xafavqhi207ll1m1isd4l5b31lic2sz9lw0j0r0fcxfnsj"))
+             (patches (list (search-patch "gnutls-doc-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -140,12 +141,19 @@ living in the same process.")
 
        #:phases (modify-phases %standard-phases
                   (add-after
+                   'unpack 'delete-prebuilt-unfixed-info-file
+                   (lambda _
+                     ;; XXX Delete the prebuilt info file, so that it will be
+                     ;; rebuilt with the fixes in gnutls-doc-fix.patch.
+                     (delete-file "doc/gnutls.info")
+                     #t))
+                  (add-after
                    'install 'move-doc
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Copy the 4.1 MiB of section 3 man pages to "doc".
                      (let* ((out    (assoc-ref outputs "out"))
                             (doc    (assoc-ref outputs "doc"))
-                            (mandir (string-append doc "/share/man"))
+                            (mandir (string-append doc "/share/man/man3"))
                             (oldman (string-append out "/share/man/man3")))
                        (mkdir-p mandir)
                        (copy-recursively oldman mandir)
@@ -156,6 +164,7 @@ living in the same process.")
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo) ; XXX needed only to replace prebuilt, unfixed docs.
        ("which" ,which)))
     (inputs
      `(("guile" ,guile-2.0)

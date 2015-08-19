@@ -1,0 +1,546 @@
+diff -ru gnutls-3.4.4/doc/invoke-certtool.texi gnutls-3.4.4.1/doc/invoke-certtool.texi
+--- gnutls-3.4.4.1/doc/invoke-certtool.texi	2015-08-10 13:43:52.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-certtool.texi	2015-07-31 15:44:21.000000000 -0400
+@@ -41,7 +41,97 @@
+ 
+ @exampleindent 0
+ @example
+-certtool is unavailable - no --help
++certtool - GnuTLS certificate tool
++Usage:  certtool [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]...
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++   -V, --verbose              More verbose output
++                                - may appear multiple times
++       --infile=file          Input file
++                                - file must pre-exist
++       --outfile=str          Output file
++   -s, --generate-self-signed  Generate a self-signed certificate
++   -c, --generate-certificate  Generate a signed certificate
++       --generate-proxy       Generates a proxy certificate
++       --generate-crl         Generate a CRL
++   -u, --update-certificate   Update a signed certificate
++   -p, --generate-privkey     Generate a private key
++   -q, --generate-request     Generate a PKCS #10 certificate request
++                                - prohibits the option 'infile'
++   -e, --verify-chain         Verify a PEM encoded certificate chain
++       --verify               Verify a PEM encoded certificate chain using a trusted list
++       --verify-crl           Verify a CRL using a trusted list
++                                - requires the option 'load-ca-certificate'
++       --generate-dh-params   Generate PKCS #3 encoded Diffie-Hellman parameters
++       --get-dh-params        Get the included PKCS #3 encoded Diffie-Hellman parameters
++       --dh-info              Print information PKCS #3 encoded Diffie-Hellman parameters
++       --load-privkey=str     Loads a private key file
++       --load-pubkey=str      Loads a public key file
++       --load-request=str     Loads a certificate request file
++       --load-certificate=str Loads a certificate file
++       --load-ca-privkey=str  Loads the certificate authority's private key file
++       --load-ca-certificate=str Loads the certificate authority's certificate file
++       --password=str         Password to use
++       --null-password        Enforce a NULL password
++       --empty-password       Enforce an empty password
++       --hex-numbers          Print big number in an easier format to parse
++       --cprint               In certain operations it prints the information in C-friendly format
++   -i, --certificate-info     Print information on the given certificate
++       --certificate-pubkey   Print certificate's public key
++       --pgp-certificate-info  Print information on the given OpenPGP certificate
++       --pgp-ring-info        Print information on the given OpenPGP keyring structure
++   -l, --crl-info             Print information on the given CRL structure
++       --crq-info             Print information on the given certificate request
++       --no-crq-extensions    Do not use extensions in certificate requests
++       --p12-info             Print information on a PKCS #12 structure
++       --p12-name=str         The PKCS #12 friendly name to use
++       --p7-info              Print information on a PKCS #7 structure
++       --smime-to-p7          Convert S/MIME to PKCS #7 structure
++   -k, --key-info             Print information on a private key
++       --pgp-key-info         Print information on an OpenPGP private key
++       --pubkey-info          Print information on a public key
++       --v1                   Generate an X.509 version 1 certificate (with no extensions)
++   -!, --to-p12               Generate a PKCS #12 structure
++                                - requires the option 'load-certificate'
++   -", --to-p8                Generate a PKCS #8 structure
++   -8, --pkcs8                Use PKCS #8 format for private keys
++   -#, --rsa                  Generate RSA key
++   -$, --dsa                  Generate DSA key
++   -%, --ecc                  Generate ECC (ECDSA) key
++   -&, --ecdsa                an alias for the 'ecc' option
++   -', --hash=str             Hash algorithm to use for signing
++   -(, --inder                Use DER format for input certificates, private keys, and DH parameters
++                                - disabled as '--no-inder'
++   -), --inraw                an alias for the 'inder' option
++   -*, --outder               Use DER format for output certificates, private keys, and DH parameters
++                                - disabled as '--no-outder'
++   -+, --outraw               an alias for the 'outder' option
++   -,, --bits=num             Specify the number of bits for key generate
++   --, --curve=str            Specify the curve used for EC key generation
++   -., --sec-param=str        Specify the security level [low, legacy, medium, high, ultra]
++   -/, --disable-quick-random  No effect
++   -0, --template=str         Template file to use for non-interactive operation
++   -1, --stdout-info          Print information to stdout instead of stderr
++   -2, --ask-pass             Enable interaction for entering password when in batch mode.
++   -3, --pkcs-cipher=str      Cipher to use for PKCS #8 and #12 operations
++   -4, --provider=str         Specify the PKCS #11 provider library
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++
++Tool to parse and generate X.509 certificates, requests and private keys.
++It can be used interactively or non interactively by specifying the
++template command line option.
++
++The tool accepts files or URLs supported by GnuTLS.  In case PIN is
++required for the URL access you can provide it using the environment
++variables GNUTLS_PIN and GNUTLS_SO_PIN.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-gnutls-cli-debug.texi gnutls-3.4.4.1/doc/invoke-gnutls-cli-debug.texi
+--- gnutls-3.4.4.1/doc/invoke-gnutls-cli-debug.texi	2015-08-10 13:43:50.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-gnutls-cli-debug.texi	2015-07-31 15:44:18.000000000 -0400
+@@ -40,7 +40,34 @@
+ 
+ @exampleindent 0
+ @example
+-gnutls-cli-debug is unavailable - no --help
++gnutls-cli-debug - GnuTLS debug client
++Usage:  gnutls-cli-debug [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]... 
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++   -V, --verbose              More verbose output
++                                - may appear multiple times
++   -p, --port=num             The port to connect to
++                                - it must be in the range:
++                                  0 to 65536
++       --app-proto=str        The application protocol to be used to obtain the server's certificate
++(https, ftp, smtp, imap)
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++Operands and options may be intermixed.  They will be reordered.
++
++TLS debug client.  It sets up multiple TLS connections to a server and
++queries its capabilities.  It was created to assist in debugging GnuTLS,
++but it might be useful to extract a TLS server's capabilities.  It connects
++to a TLS server, performs tests and print the server's capabilities.  If
++called with the `-v' parameter more checks will be performed.  Can be used
++to check for servers with special needs or bugs.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-gnutls-cli.texi gnutls-3.4.4.1/doc/invoke-gnutls-cli.texi
+--- gnutls-3.4.4.1/doc/invoke-gnutls-cli.texi	2015-08-10 13:43:49.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-gnutls-cli.texi	2015-07-31 15:44:17.000000000 -0400
+@@ -36,7 +36,95 @@
+ 
+ @exampleindent 0
+ @example
+-gnutls-cli is unavailable - no --help
++gnutls-cli - GnuTLS client
++Usage:  gnutls-cli [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]... [hostname]
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++   -V, --verbose              More verbose output
++                                - may appear multiple times
++       --tofu                 Enable trust on first use authentication
++                                - disabled as '--no-tofu'
++       --strict-tofu          Fail to connect if a known certificate has changed
++                                - disabled as '--no-strict-tofu'
++       --dane                 Enable DANE certificate verification (DNSSEC)
++                                - disabled as '--no-dane'
++       --local-dns            Use the local DNS server for DNSSEC resolving
++                                - disabled as '--no-local-dns'
++       --ca-verification      Disable CA certificate verification
++                                - disabled as '--no-ca-verification'
++                                - enabled by default
++       --ocsp                 Enable OCSP certificate verification
++                                - disabled as '--no-ocsp'
++   -r, --resume               Establish a session and resume
++   -e, --rehandshake          Establish a session and rehandshake
++   -s, --starttls             Connect, establish a plain session and start TLS
++       --app-proto=str        an alias for the 'starttls-proto' option
++       --starttls-proto=str   The application protocol to be used to obtain the server's certificate
++(https, ftp, smtp, imap)
++                                - prohibits the option 'starttls'
++   -u, --udp                  Use DTLS (datagram TLS) over UDP
++       --mtu=num              Set MTU for datagram TLS
++                                - it must be in the range:
++                                  0 to 17000
++       --crlf                 Send CR LF instead of LF
++       --x509fmtder           Use DER format for certificates to read from
++   -f, --fingerprint          Send the openpgp fingerprint, instead of the key
++       --print-cert           Print peer's certificate in PEM format
++       --dh-bits=num          The minimum number of bits allowed for DH
++       --priority=str         Priorities string
++       --x509cafile=str       Certificate file or PKCS #11 URL to use
++       --x509crlfile=file     CRL file to use
++                                - file must pre-exist
++       --pgpkeyfile=file      PGP Key file to use
++                                - file must pre-exist
++       --pgpkeyring=file      PGP Key ring file to use
++                                - file must pre-exist
++       --pgpcertfile=file     PGP Public Key (certificate) file to use
++                                - file must pre-exist
++       --x509keyfile=str      X.509 key file or PKCS #11 URL to use
++       --x509certfile=str     X.509 Certificate file or PKCS #11 URL to use
++       --pgpsubkey=str        PGP subkey to use (hex or auto)
++       --srpusername=str      SRP username to use
++       --srppasswd=str        SRP password to use
++       --pskusername=str      PSK username to use
++       --pskkey=str           PSK key (in hex) to use
++   -p, --port=str             The port or service to connect to
++       --insecure             Don't abort program if server certificate can't be validated
++       --ranges               Use length-hiding padding to prevent traffic analysis
++       --benchmark-ciphers    Benchmark individual ciphers
++       --benchmark-tls-kx     Benchmark TLS key exchange methods
++       --benchmark-tls-ciphers  Benchmark TLS ciphers
++   -l, --list                 Print a list of the supported algorithms and modes
++                                - prohibits the option 'port'
++       --noticket             Don't allow session tickets
++   -!, --srtp-profiles=str    Offer SRTP profiles
++   -", --alpn=str             Application layer protocol
++                                - may appear multiple times
++   -b, --heartbeat            Activate heartbeat support
++   -#, --recordsize=num       The maximum record size to advertize
++                                - it must be in the range:
++                                  0 to 4096
++   -$, --disable-sni          Do not send a Server Name Indication (SNI)
++   -%, --disable-extensions   Disable all the TLS extensions
++   -&, --inline-commands      Inline commands of the form ^<cmd>^
++   -', --inline-commands-prefix=str Change the default delimiter for inline commands.
++   -(, --provider=file        Specify the PKCS #11 provider library
++                                - file must pre-exist
++   -), --fips140-mode         Reports the status of the FIPS140-2 mode in gnutls library
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++Operands and options may be intermixed.  They will be reordered.
++
++Simple client program to set up a TLS connection to some other computer.  It
++sets up a TLS connection and forwards data from the standard input to the
++secured socket and vice versa.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-gnutls-serv.texi gnutls-3.4.4.1/doc/invoke-gnutls-serv.texi
+--- gnutls-3.4.4.1/doc/invoke-gnutls-serv.texi	2015-08-10 13:43:51.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-gnutls-serv.texi	2015-07-31 15:44:20.000000000 -0400
+@@ -35,7 +35,69 @@
+ 
+ @exampleindent 0
+ @example
+-gnutls-serv is unavailable - no --help
++gnutls-serv - GnuTLS server
++Usage:  gnutls-serv [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]...
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++       --noticket             Don't accept session tickets
++   -g, --generate             Generate Diffie-Hellman and RSA-export parameters
++   -q, --quiet                Suppress some messages
++       --nodb                 Do not use a resumption database
++       --http                 Act as an HTTP server
++       --echo                 Act as an Echo server
++   -u, --udp                  Use DTLS (datagram TLS) over UDP
++       --mtu=num              Set MTU for datagram TLS
++                                - it must be in the range:
++                                  0 to 17000
++       --srtp-profiles=str    Offer SRTP profiles
++   -a, --disable-client-cert  Do not request a client certificate
++   -r, --require-client-cert  Require a client certificate
++       --verify-client-cert   If a client certificate is sent then verify it.
++   -b, --heartbeat            Activate heartbeat support
++       --x509fmtder           Use DER format for certificates to read from
++       --priority=str         Priorities string
++       --dhparams=file        DH params file to use
++                                - file must pre-exist
++       --x509cafile=str       Certificate file or PKCS #11 URL to use
++       --x509crlfile=file     CRL file to use
++                                - file must pre-exist
++       --pgpkeyfile=file      PGP Key file to use
++                                - file must pre-exist
++       --pgpkeyring=file      PGP Key ring file to use
++                                - file must pre-exist
++       --pgpcertfile=file     PGP Public Key (certificate) file to use
++                                - file must pre-exist
++       --x509keyfile=str      X.509 key file or PKCS #11 URL to use
++       --x509certfile=str     X.509 Certificate file or PKCS #11 URL to use
++       --x509dsakeyfile=str   Alternative X.509 key file or PKCS #11 URL to use
++       --x509dsacertfile=str  Alternative X.509 Certificate file or PKCS #11 URL to use
++       --x509ecckeyfile=str   Alternative X.509 key file or PKCS #11 URL to use
++       --x509ecccertfile=str  Alternative X.509 Certificate file or PKCS #11 URL to use
++       --pgpsubkey=str        PGP subkey to use (hex or auto)
++       --srppasswd=file       SRP password file to use
++                                - file must pre-exist
++       --srppasswdconf=file   SRP password configuration file to use
++                                - file must pre-exist
++       --pskpasswd=file       PSK password file to use
++                                - file must pre-exist
++       --pskhint=str          PSK identity hint to use
++       --ocsp-response=file   The OCSP response to send to client
++                                - file must pre-exist
++   -p, --port=num             The port to connect to
++   -l, --list                 Print a list of the supported algorithms and modes
++       --provider=file        Specify the PKCS #11 provider library
++                                - file must pre-exist
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++
++Server program that listens to incoming TLS connections.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-ocsptool.texi gnutls-3.4.4.1/doc/invoke-ocsptool.texi
+--- gnutls-3.4.4.1/doc/invoke-ocsptool.texi	2015-08-10 13:43:53.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-ocsptool.texi	2015-07-31 15:44:22.000000000 -0400
+@@ -37,7 +37,53 @@
+ 
+ @exampleindent 0
+ @example
+-ocsptool is unavailable - no --help
++ocsptool - GnuTLS OCSP tool
++Usage:  ocsptool [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]...
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++   -V, --verbose              More verbose output
++                                - may appear multiple times
++       --infile=file          Input file
++                                - file must pre-exist
++       --outfile=str          Output file
++       --ask[=arg]            Ask an OCSP/HTTP server on a certificate validity
++                                - requires these options:
++                                load-cert
++                                load-issuer
++   -e, --verify-response      Verify response
++   -i, --request-info         Print information on a OCSP request
++   -j, --response-info        Print information on a OCSP response
++   -q, --generate-request     Generate an OCSP request
++       --nonce                Use (or not) a nonce to OCSP request
++                                - disabled as '--no-nonce'
++       --load-issuer=file     Read issuer certificate from file
++                                - file must pre-exist
++       --load-cert=file       Read certificate to check from file
++                                - file must pre-exist
++       --load-trust=file      Read OCSP trust anchors from file
++                                - prohibits the option 'load-signer'
++                                - file must pre-exist
++       --load-signer=file     Read OCSP response signer from file
++                                - prohibits the option 'load-trust'
++                                - file must pre-exist
++       --inder                Use DER format for input certificates and private keys
++                                - disabled as '--no-inder'
++   -Q, --load-request=file    Read DER encoded OCSP request from file
++                                - file must pre-exist
++   -S, --load-response=file   Read DER encoded OCSP response from file
++                                - file must pre-exist
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++
++Ocsptool is a program that can parse and print information about OCSP
++requests/responses, generate requests and verify responses.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-p11tool.texi gnutls-3.4.4.1/doc/invoke-p11tool.texi
+--- gnutls-3.4.4.1/doc/invoke-p11tool.texi	2015-08-10 13:43:58.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-p11tool.texi	2015-07-31 15:44:26.000000000 -0400
+@@ -45,7 +45,97 @@
+ 
+ @exampleindent 0
+ @example
+-p11tool is unavailable - no --help
++p11tool - GnuTLS PKCS #11 tool
++Usage:  p11tool [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]... [url]
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++       --outfile=str          Output file
++       --list-tokens          List all available tokens
++       --export               Export the object specified by the URL
++       --export-chain         Export the certificate specified by the URL and its chain of trust
++       --list-mechanisms      List all available mechanisms in a token
++       --info                 List information on an available object in a token
++       --list-all             List all available objects in a token
++       --list-all-certs       List all available certificates in a token
++       --list-certs           List all certificates that have an associated private key
++       --list-all-privkeys    List all available private keys in a token
++       --list-privkeys        an alias for the 'list-all-privkeys' option
++       --list-keys            an alias for the 'list-all-privkeys' option
++       --list-all-trusted     List all available certificates marked as trusted
++       --write                Writes the loaded objects to a PKCS #11 token
++       --delete               Deletes the objects matching the PKCS #11 URL
++       --generate-random=num  Generate random data
++       --generate-rsa         Generate an RSA private-public key pair
++       --generate-dsa         Generate an RSA private-public key pair
++       --generate-ecc         Generate an RSA private-public key pair
++       --export-pubkey        Export the public key for a private key
++       --label=str            Sets a label for the write operation
++       --mark-wrap            Marks the generated key to be a wrapping key
++                                - disabled as '--no-mark-wrap'
++       --mark-trusted         Marks the object to be written as trusted
++                                - disabled as '--no-mark-trusted'
++       --mark-ca              Marks the object to be written as a CA
++                                - disabled as '--no-mark-ca'
++       --mark-private         Marks the object to be written as private
++                                - disabled as '--no-mark-private'
++                                - enabled by default
++       --trusted              an alias for the 'mark-trusted' option
++       --ca                   an alias for the 'mark-ca' option
++       --private              an alias for the 'mark-private' option
++                                - enabled by default
++       --login                Force (user) login to token
++                                - disabled as '--no-login'
++       --so-login             Force security officer login to token
++                                - disabled as '--no-so-login'
++       --admin-login          an alias for the 'so-login' option
++       --detailed-url         Print detailed URLs
++                                - disabled as '--no-detailed-url'
++   -!, --secret-key=str       Provide a hex encoded secret key
++   -", --load-privkey=file    Private key file to use
++                                - file must pre-exist
++   -#, --load-pubkey=file     Public key file to use
++                                - file must pre-exist
++   -$, --load-certificate=file Certificate file to use
++                                - file must pre-exist
++   -8, --pkcs8                Use PKCS #8 format for private keys
++   -%, --bits=num             Specify the number of bits for key generate
++   -&, --curve=str            Specify the curve used for EC key generation
++   -', --sec-param=str        Specify the security level
++   -(, --inder                Use DER/RAW format for input
++                                - disabled as '--no-inder'
++   -), --inraw                an alias for the 'inder' option
++   -*, --outder               Use DER format for output certificates, private keys, and DH parameters
++                                - disabled as '--no-outder'
++   -+, --outraw               an alias for the 'outder' option
++   -,, --initialize           Initializes a PKCS #11 token
++   --, --set-pin=str          Specify the PIN to use on token initialization
++   -., --set-so-pin=str       Specify the Security Officer's PIN to use on token initialization
++   -/, --provider=file        Specify the PKCS #11 provider library
++                                - file must pre-exist
++   -0, --batch                Disable all interaction with the tool.  All parameters need to be
++specified on command line.
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++Operands and options may be intermixed.  They will be reordered.
++
++Program that allows operations on PKCS #11 smart cards and security
++modules.
++
++To use PKCS #11 tokens with GnuTLS the p11-kit configuration files need to
++be setup.  That is create a .module file in /etc/pkcs11/modules with the
++contents 'module: /path/to/pkcs11.so'.  Alternatively the configuration
++file /etc/gnutls/pkcs11.conf has to exist and contain a number of lines of
++the form 'load=/usr/lib/opensc-pkcs11.so'.
++
++You can provide the PIN to be used for the PKCS #11 operations with the
++environment variables GNUTLS_PIN and GNUTLS_SO_PIN.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-psktool.texi gnutls-3.4.4.1/doc/invoke-psktool.texi
+--- gnutls-3.4.4.1/doc/invoke-psktool.texi	2015-08-10 13:43:57.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-psktool.texi	2015-07-31 15:44:25.000000000 -0400
+@@ -36,7 +36,27 @@
+ 
+ @exampleindent 0
+ @example
+-psktool is unavailable - no --help
++psktool - GnuTLS PSK tool
++Usage:  psktool [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]...
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++   -s, --keysize=num          specify the key size in bytes
++                                - it must be in the range:
++                                  0 to 512
++   -u, --username=str         specify a username
++   -p, --passwd=str           specify a password file
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++
++Program that generates random keys for use with TLS-PSK.  The keys are
++stored in hexadecimal format in a key file.
++
+ @end example
+ @exampleindent 4
+ 
+diff -ru gnutls-3.4.4/doc/invoke-srptool.texi gnutls-3.4.4.1/doc/invoke-srptool.texi
+--- gnutls-3.4.4.1/doc/invoke-srptool.texi	2015-08-10 13:43:56.000000000 -0400
++++ gnutls-3.4.4/doc/invoke-srptool.texi	2015-07-31 15:44:24.000000000 -0400
+@@ -41,7 +41,34 @@
+ 
+ @exampleindent 0
+ @example
+-srptool is unavailable - no --help
++srptool - GnuTLS SRP tool
++Usage:  srptool [ -<flag> [<val>] | --<name>[@{=| @}<val>] ]...
++
++   -d, --debug=num            Enable debugging
++                                - it must be in the range:
++                                  0 to 9999
++   -i, --index=num            specify the index of the group parameters in tpasswd.conf to use
++   -u, --username=str         specify a username
++   -p, --passwd=str           specify a password file
++   -s, --salt=num             specify salt size
++       --verify               just verify the password.
++   -v, --passwd-conf=str      specify a password conf file.
++       --create-conf=str      Generate a password configuration file.
++   -v, --version[=arg]        output version information and exit
++   -h, --help                 display extended usage information and exit
++   -!, --more-help            extended usage information passed thru pager
++
++Options are specified by doubled hyphens and their name or by a single
++hyphen and the flag character.
++
++Simple program that emulates the programs in the Stanford SRP (Secure
++Remote Password) libraries using GnuTLS.  It is intended for use in places
++where you don't expect SRP authentication to be the used for system users.
++
++In brief, to use SRP you need to create two files.  These are the password
++file that holds the users and the verifiers associated with them and the
++configuration file to hold the group parameters (called tpasswd.conf).
++
+ @end example
+ @exampleindent 4
+ 
