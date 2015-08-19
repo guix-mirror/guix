@@ -239,6 +239,28 @@ without modification.")
                        '("bash_cv_job_control_missing=no")
                        '()))))))))
 
+(define-public static-bash
+  ;; Statically-linked Bash that contains nothing but the 'bash' binary and
+  ;; 'sh' symlink, without any reference.
+  (let ((bash (static-package bash-light)))
+    (package
+      (inherit bash)
+      (name "bash-static")
+      (arguments
+       (substitute-keyword-arguments
+           `(#:allowed-references ("out") ,@(package-arguments bash))
+         ((#:phases phases)
+          `(alist-cons-after
+            'strip 'remove-everything-but-the-binary
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin")))
+                (remove-store-references (string-append bin "/bash"))
+                (delete-file (string-append bin "/bashbug"))
+                (delete-file-recursively (string-append out "/share"))
+                #t))
+            ,phases)))))))
+
 (define-public bash-completion
   (package
     (name "bash-completion")
