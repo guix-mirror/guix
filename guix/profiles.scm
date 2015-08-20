@@ -702,7 +702,8 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
     (define builder
       #~(begin
           (use-modules (guix build profiles)
-                       (guix search-paths))
+                       (guix search-paths)
+                       (srfi srfi-1))
 
           (setvbuf (current-output-port) _IOLBF)
           (setvbuf (current-error-port) _IOLBF)
@@ -711,9 +712,10 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
             ;; Search paths of MANIFEST's packages, converted back to their
             ;; record form.
             (map sexp->search-path-specification
-                 '#$(map search-path-specification->sexp
-                         (append-map manifest-entry-search-paths
-                                     (manifest-entries manifest)))))
+                 (delete-duplicates
+                  '#$(map search-path-specification->sexp
+                          (append-map manifest-entry-search-paths
+                                      (manifest-entries manifest))))))
 
           (build-profile #$output '#$inputs
                          #:manifest '#$(manifest->gexp manifest)
