@@ -3302,3 +3302,59 @@ work and the interface is well tested.")
      "Epiphany is a GNOME web browser targeted at non-technical users.  Its
 principles are simplicity and standards compliance.")
     (license license:gpl2+)))
+
+(define-public d-feet
+  (package
+    (name "d-feet")
+    (version "0.3.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0nb31bvwnj7pcpm85g8bvgjc6s5kbqy8g4qp7pzqf8w6rdgxzw48"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:out-of-source? #f ; tests need to run in the source directory.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; The test suite requires a running X server.
+            (system "Xvfb :1 &")
+            (setenv "DISPLAY" ":1")
+            ;; Don't fail on missing '/etc/machine-id'.
+            (setenv "DBUS_FATAL_WARNINGS" "0")
+            ;; tests.py and window.py don't meet E402:
+            ;;   E402 module level import not at top of file
+            (substitute* "src/tests/Makefile"
+              (("--ignore=E123") "--ignore=E123,E402"))))
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/d-feet")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("python-pep8" ,python-pep8)
+       ("xmllint" ,libxml2)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("python" ,python-wrapper)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "https://wiki.gnome.org/Apps/DFeet")
+    (synopsis "D-Bus debugger")
+    (description
+     "D-Feet is a D-Bus debugger, which can be used to inspect D-Bus interfaces
+of running programs and invoke methods on those interfaces.")
+    (license license:gpl2+)))
