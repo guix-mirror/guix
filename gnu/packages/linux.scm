@@ -2392,3 +2392,61 @@ applications.")
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
     (license gpl2+)))
+
+(define-public fuse-exfat
+  (package
+    (name "fuse-exfat")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri "https://docs.google.com/uc?export=download&\
+id=0B7CLI-REKbE3VTdaa0EzTkhYdU0")
+              (sha256
+               (base32
+                "0glmgwrf0nv09am54i6s35ksbvrywrwc51w6q32mv5by8475530r"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("scons" ,scons)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)))
+    (arguments
+     '(#:tests? #f                                ;no test suite
+
+       ;; XXX: Factorize with 'exfat-utils'.
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'scons-propagate-environment
+                             (lambda _
+                               ;; Modify the SConstruct file to arrange for
+                               ;; environment variables to be propagated.
+                               (substitute* "SConstruct"
+                                 (("^env = Environment\\(")
+                                  "env = Environment(ENV=os.environ, "))))
+                  (replace 'build
+                           (lambda _
+                             (zero? (system* "scons"))))
+                  (replace 'install
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (let* ((out  (assoc-ref outputs "out"))
+                                    (bin  (string-append out "/bin"))
+                                    (man8 (string-append out
+                                                         "/share/man/man8")))
+                               (mkdir-p bin)
+                               (mkdir-p man8)
+                               (for-each (lambda (file)
+                                           (copy-file
+                                            file
+                                            (string-append man8 "/"
+                                                           (basename file))))
+                                         (find-files "." "\\.8$"))
+                               (zero? (system* "scons" "install"
+                                               (string-append "DESTDIR="
+                                                              bin)))))))))
+    (home-page "http://code.google.com/p/exfat/")
+    (synopsis "Mount exFAT file systems")
+    (description
+     "This package provides a FUSE-based file system that provides read and
+write access to exFAT devices.")
+    (license gpl2+)))
