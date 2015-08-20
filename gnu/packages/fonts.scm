@@ -34,7 +34,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config))
 
-(define-public font-incosolata
+(define-public font-inconsolata
   (package
     (name "font-inconsolata")
     (version "0.80")
