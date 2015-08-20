@@ -18,15 +18,24 @@
 
 # Bash completion for Guix commands.
 
+declare _guix_available_packages
+
 _guix_complete_available_package ()
 {
     local prefix="$1"
-    local packages="$(${COMP_WORDS[0]} package -A "^$prefix" | cut -f1)"
-    COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
+    if [ -z "$_guix_available_packages" ]
+    then
+	# Cache the complete list because it rarely changes and makes
+	# completion much faster.
+	_guix_available_packages="$(${COMP_WORDS[0]} package -A | cut -f1)"
+    fi
+    COMPREPLY=($(compgen -W "$_guix_available_packages" -- "$prefix"))
 }
 
 _guix_complete_installed_package ()
 {
+    # Here we do not cache the list of installed packages because that
+    # may change over time and the list is relatively small anyway.
     local prefix="$1"
     local packages="$(${COMP_WORDS[0]} package -I "^$prefix" | cut -f1)"
     COMPREPLY=($(compgen -W "$packages" -- "$prefix"))
@@ -88,6 +97,8 @@ _guix_complete_file ()
     COMPREPLY=()
 }
 
+declare _guix_subcommands
+
 _guix_complete ()
 {
     local word_count=${#COMP_WORDS[*]}
@@ -105,8 +116,12 @@ _guix_complete ()
 
     case $COMP_CWORD in
 	1)
-	    local subcommands="$(guix --help | grep '^  ' | cut -c 2-)"
-	    COMPREPLY=($(compgen -W "$subcommands" -- "$word_at_point"))
+	    if [ -z "$_guix_subcommands" ]
+	    then
+		# Cache the list of subcommands to speed things up.
+		_guix_subcommands="$(guix --help | grep '^  ' | cut -c 2-)"
+	    fi
+	    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
 	    ;;
 	*)
 	    if _guix_is_command "package"
