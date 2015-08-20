@@ -315,10 +315,20 @@ The intltool collection can be used to do these things:
               (base32
                "0fh34wi52i0qikgvlmrcpf1vx6gc1xqdad4539l4d9hikfsrz45z"))))
     (build-system gnu-build-system)
-    (propagated-inputs
+    (inputs
      `(("libxml2" ,libxml2)
        ("python2-libxml2" ,python2-libxml2)
        ("python-2" ,python-2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/itstool")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))))))))
     (home-page "http://www.itstool.org")
     (synopsis "Tool to translate XML documents with PO files")
     (description
