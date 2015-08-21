@@ -84,14 +84,14 @@ version of libusb to run with newer libusb.")
 (define-public libmtp
   (package
     (name "libmtp")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libmtp/" version
                                  "/libmtp-" version ".tar.gz"))
              (sha256
                (base32
-                "10i2vnj8r6hyd61xgyhmxbsissq971g50fhm1h6mc3m4d99qg7iz"))))
+                "12dinqic0ljnhrwx3rc61jc7q24ybr0mckc2ya5kh1s1np0d7w93"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
