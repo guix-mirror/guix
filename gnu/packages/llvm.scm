@@ -35,7 +35,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "3.6.0")
+    (version "3.6.2")
     (source
      (origin
       (method url-fetch)
@@ -43,7 +43,7 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "1kmr5vlnz1419nnvyc7lsrcfx09n65ravjbmzxrqz7ml07jnk6mk"))))
+        "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-wrapper)
@@ -172,11 +172,11 @@ code analysis tools.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "04bbn946jninynkrjyp337xqs8ihn4fkz5xgvmywxkddwmwznjbz"))
+   "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
-                   "0b8825mvdhfk5r9gwcwp1j2dl9kw5glgyk7pybq2dzhrh4vnj3my"))
+                   "1wwr8s6lzr324hv4s1k6na4j5zv6n9kdhi14s4kb9b13d93814df"))
 
 (define-public llvm-3.5
   (package (inherit llvm)
