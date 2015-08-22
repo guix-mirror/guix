@@ -3322,7 +3322,7 @@ principles are simplicity and standards compliance.")
        (modify-phases %standard-phases
          (add-before
           'check 'pre-check
-          (lambda* (#:key inputs #:allow-other-keys)
+          (lambda _
             ;; The test suite requires a running X server.
             (system "Xvfb :1 &")
             (setenv "DISPLAY" ":1")
@@ -3331,7 +3331,8 @@ principles are simplicity and standards compliance.")
             ;; tests.py and window.py don't meet E402:
             ;;   E402 module level import not at top of file
             (substitute* "src/tests/Makefile"
-              (("--ignore=E123") "--ignore=E123,E402"))))
+              (("--ignore=E123") "--ignore=E123,E402"))
+            #t))
          (add-after
           'install 'wrap-program
           (lambda* (#:key outputs #:allow-other-keys)
@@ -3339,7 +3340,8 @@ principles are simplicity and standards compliance.")
                                        "/bin/d-feet")))
               (wrap-program prog
                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
-                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))))))))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
