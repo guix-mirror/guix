@@ -4627,3 +4627,34 @@ term.js Javascript terminal emulator library.")
                  ,python2-backport-ssl-match-hostname)
                 ,@(alist-delete "python-tornado"
                                 (package-propagated-inputs terminado)))))))
+
+(define-public python-fonttools
+  (package
+    (name "python-fonttools")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/F/FontTools/"
+                    "fonttools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08ay3x4ijarwhl60gqx2i9jzq6pxs20p4snc2d1q5jagh4rn39lb"))))
+    (build-system python-build-system)
+    (arguments '(#:test-target "check"))
+    (propagated-inputs
+     ;; XXX: module not found if setuptools is not available.
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/behdad/fonttools")
+    (synopsis "Tools to manipulate font files")
+    (description
+     "FontTools/TTX is a library to manipulate font files from Python.  It
+supports reading and writinfg of TrueType/OpenType fonts, reading and writing
+of AFM files, reading (and partially writing) of PS Type 1 fonts.  The package
+also contains a tool called “TTX” which converts TrueType/OpenType fonts to and
+from an XML-based format.")
+    (license (non-copyleft "file://LICENSE.txt"
+                           "See LICENSE.txt in the distribution."))))
+
+(define-public python2-fonttools
+  (package-with-python2 python-fonttools))
