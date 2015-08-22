@@ -372,3 +372,42 @@ the udisksd(8) daemon via the name org.freedesktop.UDisks2 on the system
 message bus.")
     ;; The dynamic library are under LGPLv2+, others are GPLv2+.
     (license (list license:gpl2+ license:lgpl2.0+))))
+
+(define-public accountsservice
+  (package
+    (name "accountsservice")
+    (version "0.6.40")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.freedesktop.org/software/"
+                                  name "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0ayb3y3l25dmwxlh9g071h02mphjfbkvi2k5f635bayb01k7akzh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; XXX: tests require DocBook 4.1.2
+       #:configure-flags
+       '("--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            ;; Don't try to create /var/lib/AccoutsService.
+            (substitute* "src/Makefile.in"
+              (("\\$\\(MKDIR_P\\).*/lib/AccountsService.*") "true")))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("polkit" ,polkit)))
+    (home-page "http://www.freedesktop.org/wiki/Software/AccountsService/")
+    (synopsis "D-Bus interface for user account query and manipulation")
+    (description
+     "The AccountService project provides a set of D-Bus interfaces for querying
+and manipulating user account information and an implementation of these
+interfaces, based on the useradd, usermod and userdel commands.")
+    (license license:gpl3+)))
