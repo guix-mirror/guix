@@ -191,17 +191,15 @@ client and server, a telnet client and server, and an rsh client and server.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.1.5.1")
+    (version "4.2.1")
     (source (origin
-             ;; Shadow has no real upstream, and not even tarballs.
-             ;; See <https://lists.gnu.org/archive/html/guix-devel/2014-03/msg00233.html>.
-             (method git-fetch)
-             (uri (git-reference
-                   (url "git://git.debian.org/git/pkg-shadow/shadow")
-                   (commit (string-append "upstream/" version))))
-             (sha256
-              (base32
-               "1xx85d83kmacmjzqbamgydcjkwsqd5fi1s2wgwx6myq5wa39qx0n"))))
+              (method url-fetch)
+              (uri (string-append
+                    "http://pkg-shadow.alioth.debian.org/releases/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h9x1zdbq0pqmygmc1x459jraiqw4gqz8849v268crk78z8r621v"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -222,7 +220,7 @@ client and server, a telnet client and server, and an rsh client and server.")
                     ;; Remove `groups', which is already provided by Coreutils.
                     (let* ((out (assoc-ref outputs "out"))
                            (bin (string-append out "/bin"))
-                           (man (string-append out "/share/man/man1")))
+                           (man (string-append out "/share/man")))
                       (delete-file (string-append bin "/groups"))
                       (for-each delete-file (find-files man "^groups\\."))
                       #t))
