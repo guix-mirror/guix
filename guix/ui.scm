@@ -803,6 +803,7 @@ WIDTH columns."
   ;; Note: Don't i18n field names so that people can post-process it.
   (format port "name: ~a~%" (package-name p))
   (format port "version: ~a~%" (package-version p))
+  (format port "outputs: ~a~%" (string-join (package-outputs p)))
   (format port "systems: ~a~%"
           (string-join (package-transitive-supported-systems p)))
   (format port "dependencies: ~a~%"
