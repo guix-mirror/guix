@@ -292,7 +292,7 @@ everything from small to very large projects with speed and efficiency.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1k24p33v9hvmpkx4l818x1vbdv090kfgwqshhyyl3h9m9b5skqci"))))
+                "1spnqxzl53ic7bv1x7c6lwscdh581scqm5zh98wfp4qn1ciafvhs"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
