@@ -148,7 +148,11 @@ should be the name of a file used as the message-of-the-day."
                           (module "pam_unix.so")
                           (arguments '("nullok")))
                          unix)))
-         (password (list unix))
+         (password (list (pam-entry
+                          (control "required")
+                          (module "pam_unix.so")
+                          ;; Store SHA-512 encrypted passwords in /etc/shadow.
+                          (arguments '("sha512" "shadow")))))
          (session (if motd
                       (list unix
                             (pam-entry
