@@ -203,7 +203,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.2.4")
+   (version "1.3.1")
    (source
      (origin
        (method url-fetch)
@@ -212,12 +212,13 @@ applications should be.")
               version ".tgz"))
        (sha256
          (base32
-           "00xhv1mp640fr3wmdzwn4yz0g56jd4r9fb7b02mc1g19h0bdbhsb"))))
+           "0xvhmlyyxg2qmbwyl8k2f9w7mrbjyl59823pnjd8xmxpyl6976d5"))))
    (build-system cmake-build-system)
+   (native-inputs
+    `(("python" ,python-2) ; because of "import imap" in tests
+      ("python-fonttools" ,python2-fonttools)))
    (inputs
-    `(("freetype" ,freetype)
-      ("perl" ,perl)
-      ("python" ,python-2))) ; because of "import imap" in tests
+    `(("freetype" ,freetype)))
    (synopsis "Reimplementation of the SIL Graphite text processing engine")
    (description
     "Graphite2 is a reimplementation of the SIL Graphite text processing
