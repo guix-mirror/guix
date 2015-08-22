@@ -87,6 +87,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/docbook.scm			\
   gnu/packages/doxygen.scm			\
   gnu/packages/dunst.scm			\
+  gnu/packages/dvtm.scm				\
   gnu/packages/ebook.scm			\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
