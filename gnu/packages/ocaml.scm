@@ -41,7 +41,7 @@
 (define-public ocaml
   (package
     (name "ocaml")
-    (version "4.02.1")
+    (version "4.02.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -50,7 +50,7 @@
                     "/ocaml-" version ".tar.xz"))
               (sha256
                (base32
-                "1p7lqvh64xpykh99014mz21q8fs3qyjym2qazhhbq8scwldv1i38"))))
+                "1qwwvy8nzd87hk8rd9sm667nppakiapnx4ypdwcrlnav2dz6kil3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
