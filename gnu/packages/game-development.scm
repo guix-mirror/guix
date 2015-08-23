@@ -66,7 +66,7 @@ is used in some video games and movies.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "0.11.0")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -74,7 +74,7 @@ is used in some video games and movies.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03a15vbzjfwc8dpifbjvd0gnr208mzmdkgs2nlc8zq6z0a4h4jqd"))))
+                "1cfdhjwwwnc5fsq53axxyf6vmyy1grkk9ghi58dir68pwf6rlr3n"))))
     (build-system gnu-build-system)
     (inputs `(("qt" ,qt)
               ("zlib" ,zlib)))
