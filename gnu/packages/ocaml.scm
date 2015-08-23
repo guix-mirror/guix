@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -428,3 +429,46 @@ It is developed using Objective Caml and Camlp5.")
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
     (license gpl2+)))
+
+(define-public unison
+  (package
+    (name "unison")
+    (version "2.48.3")
+    (source
+      (origin
+        (method url-fetch)
+          (uri (string-append "https://www.seas.upenn.edu/~bcpierce/unison/"
+                              "download/releases/stable/unison-" version
+                              ".tar.gz"))
+          (sha256
+            (base32
+              "10sln52rnnsj213jy3166m0q97qpwnrwl6mm529xfy10x3xkq3gl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ocaml" ,ocaml)))
+    (arguments
+     `(#:parallel-build? #f
+       #:parallel-tests? #f
+       #:test-target "selftest"
+       #:tests? #f ; Tests require writing to $HOME.
+                   ; If some $HOME is provided, they fail with the message
+                   ; "Fatal error: Skipping some tests -- remove me!"
+       #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'install 'prepare-install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (setenv "HOME" out) ; forces correct INSTALLDIR in Makefile
+                 #t))))))
+    (home-page "https://www.cis.upenn.edu/~bcpierce/unison/")
+    (synopsis "File synchronizer")
+    (description
+     "Unison is a file-synchronization tool.  It allows two replicas of
+a collection of files and directories to be stored on different hosts
+(or different disks on the same host), modified separately, and then
+brought up to date by propagating the changes in each replica
+to the other.")
+    (license gpl3+)))
