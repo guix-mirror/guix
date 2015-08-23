@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -57,8 +57,10 @@
        ("cairo" ,cairo)
        ("ncurses" ,ncurses)
        ("numactl" ,numactl)
-       ("libpciaccess" ,libpciaccess)
        ("expat" ,expat)))
+    (propagated-inputs
+     ;; hwloc.pc lists it in 'Requires.private'.
+     `(("libpciaccess" ,libpciaccess)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
@@ -72,7 +74,8 @@
                   (numa (assoc-ref inputs "numactl")))
               (substitute* (map (lambda (f) (string-append out "/" f))
                                 '("lib/pkgconfig/hwloc.pc" "lib/libhwloc.la"))
-                (("-lnuma" lib) (string-append "-L" numa "/lib " lib)))))))))
+                (("-lnuma" lib)
+                 (string-append "-L" numa "/lib " lib)))))))))
     (home-page "http://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
     (description
