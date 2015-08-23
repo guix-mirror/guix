@@ -1257,9 +1257,10 @@ ported to GTK+.")
                 "1v2x2s04jry4gpabws92i0wq2ghd47yr5n9nhgnkd7c38xv1wdk4"))))
     (build-system gnu-build-system)
     (inputs
+     `(("python" ,python))) ;; needed for the optional libglade-convert program
+    (propagated-inputs
      `(("gtk+-2" ,gtk+-2)
-       ("libxml2" ,libxml2)
-       ("python" ,python))) ;; needed for the optional libglade-convert program
+       ("libxml2" ,libxml2))) ; required by libglade-2.0.pc
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libglade")
