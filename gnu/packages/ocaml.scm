@@ -26,6 +26,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages base)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
@@ -429,6 +431,58 @@ It is developed using Objective Caml and Camlp5.")
 assistant to write formal mathematical proofs using a variety of theorem
 provers.")
     (license gpl2+)))
+
+(define-public lablgtk
+  (package
+    (name "lablgtk")
+    (version "2.18.3")
+    (source
+      (origin
+        (method url-fetch)
+          (uri (string-append "https://forge.ocamlcore.org/frs/download.php/"
+                              "1479/lablgtk-2.18.3.tar.gz"))
+          (sha256
+            (base32
+              "1bybn3jafxf4cx25zvn8h2xj9agn1xjbn7j3ywxxqx6az7rfnnwp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("ocaml" ,ocaml)
+       ("pkg-config" ,pkg-config)))
+    ;; FIXME: Add inputs gtkgl-2.0, libpanelapplet-2.0, gtkspell-2.0,
+    ;; and gtk+-quartz-2.0 once available.
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("gtksourceview" ,gtksourceview)
+       ("libgnomecanvas" ,libgnomecanvas)
+       ("libgnomeui" ,libgnomeui)
+       ("libglade" ,libglade)
+       ("librsvg" ,librsvg)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+         (modify-phases %standard-phases
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (ocaml (assoc-ref inputs "ocaml")))
+                 ;; Install into the output and not the ocaml directory.
+                 (substitute* "config.make"
+                   ((ocaml) out))
+                 (system* "make" "old-install")
+                 #t))))))
+    (home-page "http://lablgtk.forge.ocamlcore.org/")
+    (synopsis "GTK+ bindings for OCaml")
+    (description
+     "LablGtk is an OCaml interface to GTK+ 1.2 and 2.x.  It provides
+a strongly-typed object-oriented interface that is compatible with the
+dynamic typing of GTK+.  Most widgets and methods are available.  LablGtk
+also provides bindings to
+gdk-pixbuf, the GLArea widget (in combination with LablGL), gnomecanvas,
+gnomeui, gtksourceview, gtkspell,
+libglade (and it an generate OCaml code from .glade files),
+libpanel, librsvg and quartz.")
+    (license lgpl2.1)))
 
 (define-public unison
   (package
