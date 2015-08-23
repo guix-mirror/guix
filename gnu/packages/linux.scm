@@ -285,6 +285,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
               (base32
                "13ar9sghm2g5w2km9x2d07q3lh81rz286d6slklv56qanm24chzx"))))
     (build-system gnu-build-system)
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
                      ("module-init-tools" ,module-init-tools)
