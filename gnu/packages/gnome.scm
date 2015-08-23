@@ -162,7 +162,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.16.0")
+    (version "3.16.2")
     (source
      (origin
       (method url-fetch)
@@ -171,7 +171,7 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "05lvik5cdh51xqd332qingph09zdhiaa1kqy9k2sk1simz4pvf8m"))))
+        "1l3v48i2w90i2cc056j4km9jb23axxgzpf5gl8xvv7gb8rmik3rs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("itstool" ,itstool)
@@ -1553,7 +1553,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0kyrbfrgl6g6wm6zpllldz36fclvl8vwmn1snwk18kf7f6ncpsac"))))
+         "17sbcpc9df1cnz84g3npvh1na65mkxaygqcdma6wvda4knjpkssr"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
