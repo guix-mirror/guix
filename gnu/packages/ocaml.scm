@@ -238,14 +238,14 @@ syntax of OCaml.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "6.12")
+    (version "6.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://camlp5.gforge.inria.fr/distrib/src/"
                                   name "-" version ".tgz"))
               (sha256
                (base32
-                "00jwgp6w4g64lfqjx77xziy532091fy00c42fsy0b4i892rch5mp"))))
+                "1ql04iyvclpyy9805kpddc4ndjb5d0qg4shhi2fc6bixi49fvy89"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
