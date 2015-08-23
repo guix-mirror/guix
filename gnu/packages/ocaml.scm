@@ -196,14 +196,14 @@ Git-friendly development workflow.")
 (define-public camlp4
   (package
     (name "camlp4")
-    (version "4.02.0+1")
+    (version "4.02+6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml/camlp4/archive/"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0055f4jiz82rgn581xhq3mr4qgq2qgdxqppmp8i2x1xnsim4h9pn"))
+                "0icdfzhsbgf89925gc8gl3fm8z2xzszzlib0v9dj5wyzkyv3a342"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("ocaml" ,ocaml)
