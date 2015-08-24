@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
        (base32
         "1if8zi9h52m80ck796an28rrqfljk2n8cn25m3fl0prwz155x2n8"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags (list "--enable-widec")))
     (inputs
      `(("ncurses" ,ncurses)))
     (home-page "http://thrysoee.dk/editline/")
