@@ -267,7 +267,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                (for-each (lambda (file)
                            (copy-file file
                                       (string-append out "/" (basename file))))
-                         (find-files "." "^(bzImage|System\\.map)$"))
+                         (find-files "." "^(bzImage|vmlinuz|System\\.map)$"))
                (copy-file ".config" (string-append out "/config"))
                (zero? (system* "make"
                                (string-append "DEPMOD=" mit "/sbin/depmod")
