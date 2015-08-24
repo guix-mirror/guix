@@ -302,6 +302,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/tcl.scm				\
   gnu/packages/tcsh.scm				\
   gnu/packages/telephony.scm			\
+  gnu/packages/terminals.scm			\
   gnu/packages/texinfo.scm			\
   gnu/packages/texlive.scm			\
   gnu/packages/textutils.scm			\
