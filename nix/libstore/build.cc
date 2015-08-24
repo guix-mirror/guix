@@ -882,6 +882,10 @@ DerivationGoal::DerivationGoal(const Path & drvPath, const StringSet & wantedOut
     state = &DerivationGoal::init;
     name = (format("building of `%1%'") % drvPath).str();
     trace("created");
+
+    /* Prevent the .chroot directory from being
+       garbage-collected. (See isActiveTempFile() in gc.cc.) */
+    worker.store.addTempRoot(drvPath);
 }
 
 
