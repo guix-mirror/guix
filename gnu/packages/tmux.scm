@@ -28,20 +28,20 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "1.9a")
+    (version "2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                    "mirror://sourceforge/tmux/tmux/tmux-"
+                    "https://github.com/tmux/tmux/releases/download/"
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "1x9k4wfd4l5jg6fh7xkr3yyilizha6ka8m5b1nr0kw8wj0mv5qy5"))))
+               "0qnkda8kb747vmbldjpb23ksv9pq3s65xhh1ja5rdsmh8r24npvr"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
        ("ncurses" ,ncurses)))
-    (home-page "http://tmux.sourceforge.net/")
+    (home-page "http://tmux.github.io/")
     (synopsis "Terminal multiplexer")
     (description
      "tmux is a terminal multiplexer: it enables a number of terminals (or
