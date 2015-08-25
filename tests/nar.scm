@@ -121,7 +121,7 @@
                     (lambda (name stat errno result)
                       (pk 'error name stat errno)
                       #f)
-                    (> (stat:nlink (stat output)) 2)
+                    #t                            ; result
                     input
                     lstat))
 
