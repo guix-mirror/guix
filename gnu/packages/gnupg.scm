@@ -36,7 +36,8 @@
   #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public libgpg-error
   (package
@@ -335,31 +336,21 @@ and every application benefits from this.")
                                 version ".tar.bz2"))
             (sha256 (base32
                      "0ry3kc3x1qjmvb581ja2z2v32r1rl1g8rhfj7iqvs8nzq4ca512i"))))
-   (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)
-             ("python" ,python-2)          ;uses the Python 2 'print' syntax
+   (build-system python-build-system)
+   (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
              ("gpg" ,gnupg-2.0)))          ;2.1 fails to talk to gpg-agent 2.0
    (arguments
     `(#:tests? #f
+      #:python ,python-2                     ;uses the Python 2 'print' syntax
       #:phases
-       (alist-delete
-        'configure
-       (alist-delete
-        'build
-       (alist-replace
-        'install
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let* ((out (assoc-ref outputs "out"))
-                 (gpg (string-append (assoc-ref inputs "gpg")
-                                     "/bin/gpg2")))
-            (mkdir out)
-            (mkdir (string-append out "/bin"))
-            (for-each (lambda (file)
-                        (substitute* file
-                          (("/usr/bin/gpg") gpg))
-                        (copy-file file (string-append out "/bin/" file)))
-                      '("pius" "pius-keyring-mgr" "pius-party-worksheet"))))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-before
+         'build 'set-gpg-file-name
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((gpg (string-append (assoc-ref inputs "gpg")
+                                      "/bin/gpg2")))
+             (substitute* "libpius/constants.py"
+               (("/usr/bin/gpg") gpg))))))))
    (synopsis "Programs to simplify GnuPG key signing")
    (description
     "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
