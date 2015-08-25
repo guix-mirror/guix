@@ -26,6 +26,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/artwork.scm				\
   gnu/packages.scm				\
   gnu/packages/aarddict.scm			\
+  gnu/packages/abduco.scm			\
   gnu/packages/abiword.scm			\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
