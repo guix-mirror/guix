@@ -45,13 +45,13 @@
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.0")
+    (version "1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://weechat.org/files/src/weechat-"
                                   version ".tar.gz"))
              (sha256
-              (base32 "1z17wyrl5fp697qp44srpmzk79w37f5hm1r0krffbmga6sbzdj3x"))))
+              (base32 "13b7dfs3sn71c51fi0bli5rzlsppil6gg1lzik3k8l43yhhqyv2w"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("pkg-config" ,pkg-config)
