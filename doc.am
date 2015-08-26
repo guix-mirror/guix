@@ -18,13 +18,22 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 info_TEXINFOS = doc/guix.texi
+
+DOT_FILES =					\
+  doc/images/bootstrap-graph.dot		\
+  doc/images/coreutils-graph.dot		\
+  doc/images/coreutils-bag-graph.dot
+
+DOT_VECTOR_GRAPHICS =				\
+  $(DOT_FILES:%.dot=%.eps)			\
+  $(DOT_FILES:%.dot=%.pdf)
+
 EXTRA_DIST +=					\
   doc/contributing.texi				\
   doc/emacs.texi				\
   doc/fdl-1.3.texi				\
-  doc/images/bootstrap-graph.dot		\
-  doc/images/bootstrap-graph.eps		\
-  doc/images/bootstrap-graph.pdf		\
+  $(DOT_FILES)					\
+  $(DOT_VECTOR_GRAPHICS)			\
   doc/images/coreutils-size-map.eps		\
   doc/environment-gdb.scm			\
   doc/package-hello.scm
@@ -44,7 +53,7 @@ doc/os-config-%.texi: gnu/system/examples/%.tmpl
 
 infoimagedir = $(infodir)/images
 dist_infoimage_DATA =				\
-  doc/images/bootstrap-graph.png		\
+  $(DOT_FILES:%.dot=%.png)			\
   doc/images/coreutils-size-map.png
 
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
@@ -72,9 +81,9 @@ DOT_OPTIONS =					\
 # We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)
 # Extending").  Using the `-local' rules is imperfect, because they may be
 # triggered after the main rule.  Oh, well.
-pdf-local: $(top_srcdir)/doc/images/bootstrap-graph.pdf
-info-local: $(top_srcdir)/doc/images/bootstrap-graph.png
-ps-local: $(top_srcdir)/doc/images/bootstrap-graph.eps		\
+pdf-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.pdf)
+info-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.png)
+ps-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.eps)		\
 	  $(top_srcdir)/doc/images/coreutils-size-map.eps
 dvi-local: ps-local
 

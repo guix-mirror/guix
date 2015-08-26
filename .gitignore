@@ -126,3 +126,7 @@ GTAGS
 /doc/os-config-desktop.texi
 /doc/*.1
 /etc/guix-daemon.service
+/doc/images/bootstrap-graph.pdf
+/doc/images/coreutils-bag-graph.png
+/doc/images/coreutils-graph.png
+/doc/images/coreutils-size-map.eps

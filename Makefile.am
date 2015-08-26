@@ -120,6 +120,7 @@ MODULES =					\
   guix/scripts/publish.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
+  guix/scripts/graph.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -209,6 +210,7 @@ SCM_TESTS =					\
   tests/lint.scm				\
   tests/publish.scm				\
   tests/size.scm				\
+  tests/graph.scm				\
   tests/file-systems.scm			\
   tests/containers.scm
 
@@ -238,6 +240,7 @@ SH_TESTS =					\
   tests/guix-archive.sh				\
   tests/guix-authenticate.sh			\
   tests/guix-environment.sh			\
+  tests/guix-graph.sh				\
   tests/guix-lint.sh
 
 if BUILD_DAEMON

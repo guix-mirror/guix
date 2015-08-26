@@ -132,6 +132,7 @@ Utilities
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
+* Invoking guix graph::         Visualizing the graph of packages.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 
@@ -1604,6 +1605,7 @@ libraries.  In this case, we leave the command-line tools in the default
 output, whereas the GUIs are in a separate output.  This allows users
 who do not need the GUIs to save space.  The @command{guix size} command
 can help find out about such situations (@pxref{Invoking guix size}).
+@command{guix graph} can also be helpful (@pxref{Invoking guix graph}).
 
 There are several such multiple-output packages in the GNU distribution.
 Other conventional output names include @code{lib} for libraries and
@@ -1690,7 +1692,8 @@ of these, recursively.  In other words, the returned list is the
 @dfn{transitive closure} of the store files.
 
 @xref{Invoking guix size}, for a tool to profile the size of an
-element's closure.
+element's closure.  @xref{Invoking guix graph}, for a tool to visualize
+the graph of references.
 
 @end table
 
@@ -3434,6 +3437,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
 * Invoking guix size::          Profiling disk usage.
+* Invoking guix graph::         Visualizing the graph of packages.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
 @end menu
@@ -4262,6 +4266,106 @@ the case, @command{guix size} fails as it tries to load it.
 Consider packages for @var{system}---e.g., @code{x86_64-linux}.
 
 @end table
+
+@node Invoking guix graph
+@section Invoking @command{guix graph}
+
+@cindex DAG
+Packages and their dependencies form a @dfn{graph}, specifically a
+directed acyclic graph (DAG).  It can quickly become difficult to have a
+mental model of the package DAG, so the @command{guix graph} command is
+here to provide a visual representation of the DAG.  @command{guix
+graph} emits a DAG representation in the input format of
+@uref{http://www.graphviz.org/, Graphviz}, so its output can be passed
+directly to Graphviz's @command{dot} command, for instance.  The general
+syntax is:
+
+@example
+guix graph @var{options} @var{package}@dots{}
+@end example
+
+For example, the following command generates a PDF file representing the
+package DAG for the GNU@tie{}Core Utilities, showing its build-time
+dependencies:
+
+@example
+guix graph coreutils | dot -Tpdf > dag.pdf
+@end example
+
+The output looks like this:
+
+@image{images/coreutils-graph,2in,,Dependency graph of the GNU Coreutils}
+
+Nice little graph, no?
+
+But there's more than one graph!  The one above is concise: it's the
+graph of package objects, omitting implicit inputs such as GCC, libc,
+grep, etc.  It's often useful to have such a concise graph, but
+sometimes you want to see more details.  @command{guix graph} supports
+several types of graphs, allowing you to choose the level of details:
+
+@table @code
+@item package
+This is the default type, the one we used above.  It shows the DAG of
+package objects, excluding implicit dependencies.  It is concise, but
+filters out many details.
+
+@item bag-emerged
+This is the package DAG, @emph{including} implicit inputs.
+
+For instance, the following command:
+
+@example
+guix graph --type=bag-emerged coreutils | dot -Tpdf > dag.pdf
+@end example
+
+... yields this bigger graph:
+
+@image{images/coreutils-bag-graph,,5in,Detailed dependency graph of the GNU Coreutils}
+
+At the bottom of the graph, we see all the implicit inputs of
+@var{gnu-build-system} (@pxref{Build Systems, @code{gnu-build-system}}).
+
+Now, note that the dependencies of those implicit inputs---that is, the
+@dfn{bootstrap dependencies} (@pxref{Bootstrapping})---are not shown
+here, for conciseness.
+
+@item bag
+Similar to @code{bag-emerged}, but this time including all the bootstrap
+dependencies.
+
+@item derivations
+This is the most detailed representation: It shows the DAG of
+derivations (@pxref{Derivations}) and plain store items.  Compared to
+the above representation, many additional nodes are visible, including
+builds scripts, patches, Guile modules, etc.
+
+@end table
+
+All the above types correspond to @emph{build-time dependencies}.  The
+following graph type represents the @emph{run-time dependencies}:
+
+@table @code
+@item references
+This is the graph of @dfn{references} of a package output, as returned
+by @command{guix gc --references} (@pxref{Invoking guix gc}).
+
+If the given package output is not available in the store, @command{guix
+graph} attempts to obtain dependency information from substitutes.
+@end table
+
+The available options are the following:
+
+@table @option
+@item --type=@var{type}
+@itemx -t @var{type}
+Produce a graph output of @var{type}, where @var{type} must be one of
+the values listed above.
+
+@item --list-types
+List the supported graph types.
+@end table
+
 
 @node Invoking guix environment
 @section Invoking @command{guix environment}
