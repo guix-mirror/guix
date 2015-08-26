@@ -36,6 +36,7 @@
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
@@ -102,6 +103,13 @@
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
    (home-page "http://poppler.freedesktop.org/")))
+
+(define-public poppler-qt4
+  (package (inherit poppler)
+   (name "poppler-qt4")
+   (inputs `(("qt-4" ,qt-4)
+             ,@(package-inputs poppler)))
+   (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
 
 (define-public xpdf
   (package
