@@ -4629,3 +4629,26 @@ term.js Javascript terminal emulator library.")
                  ,python2-backport-ssl-match-hostname)
                 ,@(alist-delete "python-tornado"
                                 (package-propagated-inputs terminado)))))))
+
+(define-public python-ly
+  (package
+    (name "python-ly")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-ly/python-ly-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1bsjg4q9ihr8bfdclrcmb8yjcg8xm9dznh58f3zsyrkrjzwbhcd2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (synopsis "Tool and library for manipulating LilyPond files")
+    (description "This package provides a Python library to parse, manipulate
+or create documents in LilyPond format.  A command line program ly is also
+provided that can be used to do various manipulations with LilyPond files.")
+    (home-page "https://pypi.python.org/pypi/python-ly")
+    (license gpl2+)))
