@@ -53,6 +53,7 @@
 
             define-gexp-compiler
             gexp-compiler?
+            lower-object
 
             lower-inputs))
 
@@ -125,6 +126,16 @@ procedure to lower it; otherwise return #f."
         (($ <gexp-compiler> predicate lower)
          (and (predicate object) lower)))
        %gexp-compilers))
+
+(define* (lower-object obj
+                       #:optional (system (%current-system))
+                       #:key target)
+  "Return as a value in %STORE-MONAD the derivation or store item
+corresponding to OBJ for SYSTEM, cross-compiling for TARGET if TARGET is true.
+OBJ must be an object that has an associated gexp compiler, such as a
+<package>."
+  (let ((lower (lookup-compiler obj)))
+    (lower obj system target)))
 
 (define-syntax-rule (define-gexp-compiler (name (param predicate)
                                                 system target)
@@ -258,8 +269,8 @@ the cross-compilation target triplet."
     (sequence %store-monad
               (map (match-lambda
                      (((? struct? thing) sub-drv ...)
-                      (mlet* %store-monad ((lower -> (lookup-compiler thing))
-                                           (drv (lower thing system target)))
+                      (mlet %store-monad ((drv (lower-object
+                                                thing system #:target target)))
                         (return `(,drv ,@sub-drv))))
                      (input
                       (return input)))
@@ -288,13 +299,13 @@ names and file names suitable for the #:allowed-references argument to
        ((? string? output)
         (return output))
        (($ <gexp-input> thing output native?)
-        (mlet* %store-monad ((lower -> (lookup-compiler thing))
-                             (drv      (lower thing system
-                                              (if native? #f target))))
+        (mlet %store-monad ((drv (lower-object thing system
+                                               #:target (if native?
+                                                            #f target))))
           (return (derivation->output-path drv output))))
        (thing
-        (mlet* %store-monad ((lower -> (lookup-compiler thing))
-                             (drv      (lower thing system target)))
+        (mlet %store-monad ((drv (lower-object thing system
+                                               #:target target)))
           (return (derivation->output-path drv))))))
 
     (sequence %store-monad (map lower lst))))
@@ -540,9 +551,9 @@ and in the current monad setting (system type, etc.)"
                            native?))
                         refs)))
         (($ <gexp-input> (? struct? thing) output n?)
-         (let ((lower  (lookup-compiler thing))
-               (target (if (or n? native?) #f target)))
-           (mlet %store-monad ((obj (lower thing system target)))
+         (let ((target (if (or n? native?) #f target)))
+           (mlet %store-monad ((obj (lower-object thing system
+                                                  #:target target)))
              ;; OBJ must be either a derivation or a store file name.
              (return (match obj
                        ((? derivation? drv)

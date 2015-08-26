@@ -654,6 +654,13 @@
     (parameterize ((%current-target-system "fooooo"))
       (derivation? (run-with-store %store mval)))))
 
+(test-assertm "lower-object"
+  (mlet %store-monad ((drv1 (lower-object %bootstrap-guile))
+                      (drv2 (lower-object (package-source coreutils)))
+                      (item (lower-object (plain-file "foo" "Hello!"))))
+    (return (and (derivation? drv1) (derivation? drv2)
+                 (store-path? item)))))
+
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
  \"/bin/uname\"\\) [[:xdigit:]]+>$"

@@ -3125,9 +3125,11 @@ and these dependencies are automatically added as inputs to the build
 processes that use them.
 @end itemize
 
+@cindex lowering, of high-level objects in gexps
 This mechanism is not limited to package and derivation
 objects: @dfn{compilers} able to ``lower'' other high-level objects to
-derivations can be defined, such that these objects can also be inserted
+derivations or files in the store can be defined,
+such that these objects can also be inserted
 into gexps.  For example, a useful type of high-level object that can be
 inserted in a gexp is ``file-like objects'', which make it easy to
 add files to the store and refer to them in
@@ -3399,6 +3401,20 @@ Of course, in addition to gexps embedded in ``host'' code, there are
 also modules containing build tools.  To make it clear that they are
 meant to be used in the build stratum, these modules are kept in the
 @code{(guix build @dots{})} name space.
+
+@cindex lowering, of high-level objects in gexps
+Internally, high-level objects are @dfn{lowered}, using their compiler,
+to either derivations or store items.  For instance, lowering a package
+yields a derivation, and lowering a @code{plain-file} yields a store
+item.  This is achieved using the @code{lower-object} monadic procedure.
+
+@deffn {Monadic Procedure} lower-object @var{obj} [@var{system}] @
+           [#:target #f]
+Return as a value in @var{%store-monad} the derivation or store item
+corresponding to @var{obj} for @var{system}, cross-compiling for
+@var{target} if @var{target} is true.  @var{obj} must be an object that
+has an associated gexp compiler, such as a @code{<package>}.
+@end deffn
 
 
 @c *********************************************************************
