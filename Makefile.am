@@ -88,7 +88,6 @@ MODULES =					\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
-  guix/build/syscalls.scm			\
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
@@ -123,6 +122,13 @@ MODULES =					\
   guix/scripts/size.scm				\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
+
+if BUILD_SYSCALLS_MODULE
+
+MODULES +=					\
+  guix/build/syscalls.scm
+
+endif
 
 if BUILD_DAEMON_OFFLOAD
 
@@ -297,6 +303,13 @@ EXTRA_DIST +=					\
   guix/scripts/offload.scm
 
 endif !BUILD_DAEMON_OFFLOAD
+
+if !BUILD_SYSCALLS_MODULE
+
+EXTRA_DIST +=					\
+  guix/build/syscalls.scm
+
+endif !BUILD_SYSCALLS_MODULE
 
 
 CLEANFILES =					\

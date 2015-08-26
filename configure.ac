@@ -85,6 +85,11 @@ dnl Check whether (srfi srfi-37) works, and provide our own if it doesn't.
 GUIX_CHECK_SRFI_37
 AM_CONDITIONAL([INSTALL_SRFI_37], [test "x$ac_cv_guix_srfi_37_broken" = xyes])
 
+dnl Check whether (guix build syscalls) can be built.
+GUIX_CHECK_LIBC_MOUNT
+AM_CONDITIONAL([BUILD_SYSCALLS_MODULE],
+  [test "x$guix_cv_libc_has_mount" = "xyes"])
+
 AC_ARG_WITH([nix-prefix],
   [AS_HELP_STRING([--with-nix-prefix=DIR],
     [search for Nix in DIR (for testing purposes and '--disable-daemon' builds)])],
