@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
@@ -54,6 +55,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio) ;libsndfile
@@ -647,3 +649,33 @@ equipment.  Pd is suitable for learning basic multimedia processing and visual
 programming methods as well as for realizing complex systems for large-scale
 projects.")
     (license license:bsd-3)))
+
+(define-public frescobaldi
+  (package
+    (name "frescobaldi")
+    (version "2.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wbsoft/frescobaldi/releases/download/v"
+                    version "/frescobaldi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hflc6gck6dn17czc2ldai5j0ynfg3df8lqcggdry06qxsdbnns7"))))
+    (build-system python-build-system)
+    (inputs
+     `(("lilypond" ,lilypond)
+       ("python-pyqt-4" ,python-pyqt-4)
+       ("python-ly" ,python-ly)
+       ("poppler" ,poppler)
+       ("python-poppler-qt4" ,python-poppler-qt4)
+       ("python-sip" ,python-sip)))
+    (home-page "http://www.frescobaldi.org/")
+    (synopsis "LilyPond sheet music text editor")
+    (description
+     "Frescobaldi is a LilyPond sheet music text editor with syntax
+highlighting and automatic completion.  Among other things, it can render
+scores next to the source, can capture input from MIDI or read MusicXML and
+ABC files, has a MIDI player for proof-listening, and includes a documentation
+browser.")
+    (license license:gpl2+)))
