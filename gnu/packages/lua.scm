@@ -36,7 +36,8 @@
              (uri (string-append "http://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))))
+              (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))
+             (patches (list (search-patch "lua-pkgconfig.patch")))))
     (build-system gnu-build-system)
     (inputs `(("readline", readline)))
     (arguments
