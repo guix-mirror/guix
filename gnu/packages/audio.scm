@@ -1694,7 +1694,7 @@ synthesizer written in C++.")
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-2)
+       ("jack" ,jack-1)
        ("ao" ,ao)
        ("libsamplerate" ,libsamplerate)
        ("openal" ,openal)
