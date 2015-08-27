@@ -57,6 +57,7 @@
  (guix licenses)
  (guix utils)
  (guix ui)
+ (guix scripts graph)
  (guix scripts lint)
  (guix scripts package)
  (guix scripts pull)
@@ -931,6 +932,10 @@ GENERATIONS is a list of generation numbers."
 
 
 ;;; Lists of packages, lint checkers, etc.
+
+(define (graph-type-names)
+  "Return a list of names of available graph node types."
+  (map node-type-name %node-types))
 
 (define (lint-checker-names)
   "Return a list of names of available lint checkers."

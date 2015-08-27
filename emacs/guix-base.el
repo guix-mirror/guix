@@ -183,6 +183,10 @@ If PATH is relative, it is considered to be relative to
 
 ;;; Receivable lists of packages, lint checkers, etc.
 
+(guix-memoized-defun guix-graph-type-names ()
+  "Return a list of names of available graph node types."
+  (guix-eval-read (guix-make-guile-expression 'graph-type-names)))
+
 (guix-memoized-defun guix-lint-checker-names ()
   "Return a list of names of available lint checkers."
   (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))
