@@ -1051,6 +1051,46 @@ contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
     (license (package-license perl))))
 
+(define-public perl-czplib
+  (package
+    (name "perl-czplib")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/czplib/czplib.v"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "12kln8l5h406r1ss6zbazgcshmys9nvabkrhvk2zwrrgl1saq1kf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove .git directory
+           (delete-file-recursively ".git")
+           #t))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (copy-recursively "."
+                              (string-append (assoc-ref outputs "out")
+                                             "/plib/perl5/site_perl/"
+                                             ,(package-version perl)
+                                             "/czplib/"))
+            #t)))))
+    (home-page "http://sourceforge.net/projects/czplib/")
+    (synopsis "Library for genomic analysis")
+    (description "Chaolin Zhang's Perl Library (czplib) contains assorted
+functions and data structures for processing and analysing genomic and
+bioinformatics data.")
+    (license gpl3+)))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
