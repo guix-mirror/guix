@@ -39,6 +39,16 @@
             %bag-emerged-node-type
             %derivation-node-type
             %reference-node-type
+            %node-types
+
+            node-type
+            node-type?
+            node-type-identifier
+            node-type-label
+            node-type-edges
+            node-type-convert
+            node-type-name
+            node-type-description
 
             %graphviz-backend
             graph-backend?
