@@ -392,7 +392,6 @@ following keywords are available:
          (prefix         (concat "guix-" entry-type-str "-" buf-type-str))
          (group          (intern prefix))
          (mode-map-str   (concat prefix "-mode-map"))
-         (mode-map       (intern mode-map-str))
          (parent-mode    (intern (concat "guix-" buf-type-str "-mode")))
          (mode           (intern (concat prefix "-mode")))
          (mode-init-fun  (intern (concat prefix "-mode-initialize")))
