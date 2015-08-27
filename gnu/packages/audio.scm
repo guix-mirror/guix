@@ -1689,6 +1689,7 @@ synthesizer written in C++.")
        (method url-fetch)
        (uri (string-append "https://github.com/Themaister/RSound/archive/v"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version))
        (sha256
         (base32 "1wzs40c0k5zpkmm5ffl6c17xmr399sxli7ys0fbb9ib0fd334knx"))))
     (build-system gnu-build-system)
