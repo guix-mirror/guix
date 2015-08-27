@@ -197,6 +197,7 @@
     (close-port sock)
     addr))
 
+(test-skip (if (zero? (getuid)) 1 0))
 (test-assert "set-network-interface-address"
   (let ((sock (socket AF_INET SOCK_STREAM 0)))
     (catch 'system-error
