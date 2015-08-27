@@ -54,9 +54,10 @@ guix subcommand, system action, importer, etc.")
       "-" (group (not (any "- "))))
   "Regexp used to find short options.")
 
-(defvar guix-pcomplete-parse-linter-regexp
-  (rx bol "- " (group (one-or-more (or wordchar "-"))))
-  "Regexp used to find 'lint' checkers.")
+(defvar guix-pcomplete-parse-list-regexp
+  (rx bol (zero-or-more blank) "- "
+      (group (one-or-more (or wordchar "-"))))
+  "Regexp used to find various lists (lint checkers, graph types).")
 
 (defvar guix-pcomplete-parse-regexp-group 1
   "Parenthesized expression of regexps used to find commands and
@@ -169,9 +170,16 @@ subcommands, actions, etc. for this guix COMMAND."
 (guix-memoized-defun guix-pcomplete-lint-checkers ()
   "Return a list of all available lint checkers."
   (guix-pcomplete-run-guix-and-search
-   guix-pcomplete-parse-linter-regexp
+   guix-pcomplete-parse-list-regexp
    guix-pcomplete-parse-regexp-group
    "lint" "--list-checkers"))
+
+(guix-memoized-defun guix-pcomplete-graph-types ()
+  "Return a list of all available graph types."
+  (guix-pcomplete-run-guix-and-search
+   guix-pcomplete-parse-list-regexp
+   guix-pcomplete-parse-regexp-group
+   "graph" "--list-types"))
 
 
 ;;; Completing
@@ -254,8 +262,8 @@ group - the argument.")
   "Complete argument for guix COMMAND."
   (cond
    ((member command
-            '("archive" "build" "edit" "environment" "lint" "refresh"
-              "size"))
+            '("archive" "build" "graph" "edit" "environment"
+              "lint" "refresh" "size"))
     (while t
       (pcomplete-here (guix-pcomplete-all-packages))))
    (t (pcomplete-here* (pcomplete-entries)))))
@@ -310,6 +318,10 @@ INPUT is the current partially completed string."
      ((and (command? "build")
            (option? "-r" "--root"))
       (complete* (pcomplete-entries)))
+
+     ((and (command? "graph")
+           (option? "-t" "--type"))
+      (complete* (guix-pcomplete-graph-types)))
 
      ((and (command? "environment")
            (option? "-l" "--load"))
