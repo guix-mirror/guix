@@ -482,6 +482,27 @@ Ruby.")
     (home-page "https://github.com/maik/xml-simple")
     (license license:ruby)))
 
+(define-public ruby-thor
+  (package
+    (name "ruby-thor")
+    (version "0.19.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "thor" version))
+              (sha256
+               (base32
+                "08p5gx18yrbnwc6xc0mxvsfaxzgy2y9i78xq7ds0qmdm67q39y4z"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Ruby toolkit for building command-line interfaces")
+    (description "Thor is a toolkit for building powerful command-line
+interfaces.")
+    (home-page "http://whatisthor.com/")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
