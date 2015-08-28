@@ -443,6 +443,26 @@ script.")
     (home-page "http://rubyforge.org/projects/antwrap/")
     (license license:expat)))
 
+(define-public ruby-orderedhash
+  (package
+    (name "ruby-orderedhash")
+    (version "0.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "orderedhash" version))
+              (sha256
+               (base32
+                "0fryy7f9jbpx33jq5m402yqj01zcg563k9fsxlqbhmq638p4bzd7"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (synopsis "Ruby library providing an order-preserving hash")
+    (description "Orderedhash is a Ruby library providing a hash
+implementation that preserves the order of items and features some array-like
+extensions.")
+    (home-page "http://codeforpeople.com/lib/ruby/orderedhash/")
+    (license license:public-domain)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
