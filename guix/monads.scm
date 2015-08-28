@@ -225,11 +225,24 @@ CONDITION is true, return *unspecified* in the current monad."
 (define-syntax define-lift
   (syntax-rules ()
     ((_ liftn (args ...))
-     (define (liftn proc monad)
-       "Lift PROC to MONAD---i.e., return a monadic function in MONAD."
-       (lambda (args ...)
-         (with-monad monad
-           (return (proc args ...))))))))
+     (define-syntax liftn
+       (lambda (s)
+         "Lift PROC to MONAD---i.e., return a monadic function in MONAD."
+         (syntax-case s ()
+           ((liftn proc monad)
+            ;; Inline the result of lifting PROC, such that 'return' can in
+            ;; turn be open-coded.
+            #'(lambda (args ...)
+                (with-monad monad
+                  (return (proc args ...)))))
+           (id
+            (identifier? #'id)
+            ;; Slow path: Return a closure-returning procedure (we don't
+            ;; guarantee (eq? LIFTN LIFTN), but that's fine.)
+            (lambda (liftn proc monad)
+              (lambda (args ...)
+                (with-monad monad
+                  (return (proc args ...))))))))))))
 
 (define-lift lift0 ())
 (define-lift lift1 (a))
