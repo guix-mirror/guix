@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,6 +363,32 @@ expectations and mocks frameworks.")
     (description "Bundler automatically downloads and installs a list of gems
 specified in a \"Gemfile\", as well as their dependencies.")
     (home-page "http://bundler.io/")
+    (license license:expat)))
+
+(define-public ruby-builder
+  (package
+    (name "ruby-builder")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "builder" version))
+              (sha256
+               (base32
+                "14fii7ab8qszrvsvhz6z2z3i4dw0h41a62fjr2h1j8m41vbrmyv2"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-rvm
+          (lambda _
+            (substitute* "rakelib/tags.rake"
+              (("RVM_GEMDIR = .*") "RVM_GEMDIR = 'no-rvm-please'\n"))
+            #t)))))
+    (synopsis "Ruby library to create structured data")
+    (description "Builder provides a number of builder objects that make it
+easy to create structured data.  Currently the following builder objects are
+supported: XML Markup and XML Events.")
+    (home-page "https://github.com/jimweirich/builder")
     (license license:expat)))
 
 (define-public ruby-useragent
