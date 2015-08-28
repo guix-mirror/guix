@@ -76,4 +76,4 @@
      "Conky is a lightweight system monitor for X that displays operating
 system statistics (CPU, disk, and memory usage, etc.) and more on the
 desktop.")
-    (license (list license:bsd-3 license:gpl3))))
+    (license license:gpl3+)))
