@@ -43,6 +43,7 @@
             ar-file?
             with-directory-excursion
             mkdir-p
+            install-file
             copy-recursively
             delete-file-recursively
             file-name-predicate
@@ -196,6 +197,12 @@ with the bytes in HEADER, a bytevector."
                  (loop tail path)
                  (apply throw args))))))
       (() #t))))
+
+(define (install-file file directory)
+  "Create DIRECTORY if it does not exist and copy FILE in there under the same
+name."
+  (mkdir-p directory)
+  (copy-file file (string-append directory "/" (basename file))))
 
 (define* (copy-recursively source destination
                            #:key
