@@ -419,6 +419,30 @@ Java Native Interface.")
     (home-page "http://www.artonx.org/collabo/backyard/?RubyJavaBridge")
     (license license:lgpl2.1+)))
 
+(define-public ruby-atoulme-antwrap
+  (package
+    (name "ruby-atoulme-antwrap")
+    (version "0.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "atoulme-Antwrap" version))
+              (sha256
+               (base32
+                "05s3iw44lqa81f8nfy5f0xjj808600h82zb9bsh46b9kcq2w2kmz"))))
+    (build-system ruby-build-system)
+    ;; Test data required for most of the tests are not included.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (inputs
+     `(("ruby-rjb" ,ruby-rjb)))
+    (synopsis "Ruby wrapper for the Ant build tool")
+    (description "Antwrap is a Ruby module that wraps the Apache Ant build
+tool.  Antwrap can be used to invoke Ant tasks from a Ruby or a JRuby
+script.")
+    (home-page "http://rubyforge.org/projects/antwrap/")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
