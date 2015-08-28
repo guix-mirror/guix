@@ -239,6 +239,10 @@ in the store."
         ((url ...)
          (any https? url)))))
 
+  (define mirror-file
+    ;; Copy the list of mirrors to a file to keep a single copy in the store.
+    (plain-file "mirrors" (object->string mirrors)))
+
   (define builder
     #~(begin
         #+(if need-gnutls?
@@ -253,8 +257,11 @@ in the store."
               #~#t)
 
         (use-modules (guix build download))
-        (url-fetch '#$url #$output
-                   #:mirrors '#$mirrors)))
+
+        (url-fetch (call-with-input-string (getenv "guix download url")
+                     read)
+                   #$output
+                   #:mirrors (call-with-input-file #$mirror-file read))))
 
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))
@@ -270,6 +277,13 @@ in the store."
                             #:modules '((guix build download)
                                         (guix build utils)
                                         (guix ftp-client))
+
+                            ;; Use environment variables and a fixed script
+                            ;; name so there's only one script in store for
+                            ;; all the downloads.
+                            #:script-name "download"
+                            #:env-vars
+                            `(("guix download url" . ,(object->string url)))
 
                             ;; Honor the user's proxy settings.
                             #:leaked-env-vars '("http_proxy" "https_proxy")
