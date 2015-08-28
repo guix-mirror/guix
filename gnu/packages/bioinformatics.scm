@@ -228,9 +228,8 @@ computational cluster.")
           'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-              (mkdir-p bin)
               (for-each (lambda (file)
-                          (copy-file file (string-append bin (basename file))))
+                          (install-file file bin))
                         (find-files "bin" ".*"))))
           %standard-phases)))))
     (home-page "https://github.com/arq5x/bedtools2")
@@ -554,9 +553,8 @@ confidence to have in an alignment.")
          'install
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (mkdir-p bin)
              (for-each (lambda (file)
-                         (copy-file file (string-append bin file)))
+                         (install-file file bin))
                        (find-files "." "bowtie2.*"))))
          (alist-replace
           'check
@@ -606,9 +604,9 @@ gapped, local, and paired-end alignment modes.")
             (mkdir-p bin)
             (mkdir-p doc)
             (mkdir-p man)
-            (copy-file "bwa" (string-append bin "/bwa"))
-            (copy-file "README.md" (string-append doc "/README.md"))
-            (copy-file "bwa.1" (string-append man "/bwa.1"))))
+            (install-file "bwa" bin)
+            (install-file "README.md" doc)
+            (install-file "bwa.1" man)))
         ;; no "configure" script
         (alist-delete 'configure %standard-phases))))
     (inputs `(("zlib" ,zlib)))
@@ -1264,14 +1262,12 @@ estimates transcript expression.")
         (alist-replace
          'install
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (mkdir-p bin)
-             (for-each
-              (lambda (file)
-                (copy-file file (string-append bin file)))
-              (find-files
-               "."
-               "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
+           (let ((bin (string-append (assoc-ref outputs "out") "/bi/")))
+             (for-each (lambda (file)
+                         (install-file file bin))
+                       (find-files
+                        "."
+                        "hisat(-(build|align|inspect)(-(s|l)(-debug)*)*)*$"))))
          (alist-delete 'configure %standard-phases)))))
     (native-inputs
      `(("unzip" ,unzip)))
@@ -1989,17 +1985,14 @@ distribution, coverage uniformity, strand specificity, etc.")
          'install 'install-library
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (mkdir-p lib)
-             (copy-file "libbam.a" (string-append lib "/libbam.a"))))
+             (install-file "libbam.a" lib)))
          (alist-cons-after
           'install 'install-headers
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((include (string-append (assoc-ref outputs "out")
                                           "/include/samtools/")))
-              (mkdir-p include)
               (for-each (lambda (file)
-                          (copy-file file (string-append include
-                                                         (basename file))))
+                          (install-file file include))
                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
               #t))
           (alist-delete 'configure %standard-phases))))))
@@ -2254,8 +2247,7 @@ accessed/downloaded on demand across HTTP.")
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((bin (string-append (assoc-ref outputs "out")
                                               "/bin/")))
-                      (mkdir-p bin)
-                      (copy-file "plink" (string-append bin "plink"))
+                      (install-file "plink" bin)
                       #t))))))
     (inputs
      `(("zlib" ,zlib)
@@ -2477,8 +2469,7 @@ bioinformatics file formats, sequence alignment, and more.")
          'install
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (mkdir-p bin)
-             (copy-file "STAR" (string-append bin "STAR"))))
+             (install-file "STAR" bin)))
          (alist-delete
           'configure %standard-phases)))))
     (native-inputs

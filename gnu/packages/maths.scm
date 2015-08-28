@@ -1828,21 +1828,17 @@ specifications.")
                           (string-append lib "/liblpsolve55.a"))
                (copy-file "lpsolve55/bin/ux64/liblpsolve55.so"
                           (string-append lib "/liblpsolve55.so"))
-               (mkdir-p bin)
-               (copy-file "lp_solve/bin/ux64/lp_solve"
-                          (string-append bin "/lp_solve"))
-               (mkdir-p include)
+               (install-file "lp_solve/bin/ux64/lp_solve" bin)
+
                ;; Install a subset of the header files as on Debian
                ;; (plus lp_bit.h, which matches the regular expression).
-               (for-each
-                 (lambda (name)
-                   (copy-file name (string-append include "/" name)))
-                 (find-files "." "lp_[HMSa-z].*\\.h$"))
+               (for-each (lambda (name)
+                           (install-file name include))
+                         (find-files "." "lp_[HMSa-z].*\\.h$"))
                (with-directory-excursion "shared"
-                 (for-each
-                   (lambda (name)
-                     (copy-file name (string-append include "/" name)))
-                   (find-files "." "\\.h$")))
+                 (for-each (lambda (name)
+                             (install-file name include))
+                           (find-files "." "\\.h$")))
                #t))))))
     (home-page "http://lpsolve.sourceforge.net/")
     (synopsis "Mixed integer linear programming (MILP) solver")

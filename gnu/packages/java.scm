@@ -102,8 +102,8 @@
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((java (string-append (assoc-ref outputs "out")
                                        "/share/java")))
-              (mkdir-p java)
-              (copy-file "swt.jar" (string-append java "/swt.jar"))) #t)
+              (install-file "swt.jar" java)
+              #t))
           (alist-delete 'configure %standard-phases))))))
     (inputs
      `(("xulrunner" ,icecat)

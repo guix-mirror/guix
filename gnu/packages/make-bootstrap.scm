@@ -253,10 +253,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
             ;; But of course, there are exceptions to this rule.
             (let ((grep (assoc-ref %build-inputs "grep")))
-              (copy-file (string-append grep "/bin/fgrep")
-                         (string-append bin "/fgrep"))
-              (copy-file (string-append grep "/bin/egrep")
-                         (string-append bin "/egrep")))
+              (install-file (string-append grep "/bin/fgrep") bin)
+              (install-file (string-append grep "/bin/egrep") bin))
 
             ;; Clear references to the store path.
             (for-each remove-store-references

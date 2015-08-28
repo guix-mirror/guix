@@ -2784,7 +2784,7 @@ association studies (GWAS) on extremely large data sets.")
                                          (tgt-dir (string-append html "/" dir)))
                                     (unless (equal? "." dir)
                                       (mkdir-p tgt-dir))
-                                    (copy-file file (string-append html "/" file))))
+                                    (install-file file html)))
                                 (find-files "." ".*"))))))
               ,phases)))))))
 
@@ -2828,7 +2828,7 @@ association studies (GWAS) on extremely large data sets.")
             (for-each
              (lambda (dir tgt)
                (map (lambda (file)
-                      (copy-file file (string-append tgt "/" (basename file))))
+                      (install-file file tgt))
                     (find-files dir ".*")))
              (list "docs" "htmldoc" "examples")
              (list doc html-doc examples))))
@@ -3140,9 +3140,7 @@ atlas_libs = openblas
                  (for-each (lambda (file)
                              (let* ((dir (dirname file))
                                     (tgt-dir (string-append html "/" dir)))
-                               (unless (equal? "." dir)
-                                 (mkdir-p tgt-dir))
-                               (copy-file file (string-append html "/" file))))
+                               (install-file file html)))
                            (find-files "." ".*"))))))
          ;; Tests can only be run after the library has been installed and not
          ;; within the source directory.

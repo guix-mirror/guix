@@ -79,8 +79,7 @@ view to show two terminals at once.")
                  'install
                  (lambda* (#:key outputs #:allow-other-keys)
                    (let ((out (assoc-ref outputs "out")))
-                     (mkdir-p (string-append out "/bin"))
-                     (copy-file "dtach" (string-append out "/bin/dtach"))))
+                     (install-file "dtach" (string-append out "/bin"))))
                  %standard-phases)
        ;; No check target.
        #:tests? #f))

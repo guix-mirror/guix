@@ -452,7 +452,7 @@ http:://json.org specification.  These are the main features:
                      scm-files)
 
            ;; Also copy over the README.
-           (copy-file "README.org" (string-append doc "/README.org"))
+           (install-file "README.org" doc)
            #t))))
     (inputs
      `(("guile" ,guile-2.0)))

@@ -136,10 +136,9 @@ supervised tests.")
                                                  ,version)))
                      (begin
                        (for-each mkdir-p (list incdir docdir))
-                       (copy-file (string-append source
+                       (install-file (string-append source
                                                  "/single_include/catch.hpp")
-                                  (string-append incdir
-                                                 "/catch.hpp"))
+                                     incdir)
                        (copy-recursively (string-append source "/docs")
                                          docdir))))))
     (home-page "http://catch-lib.net/")
