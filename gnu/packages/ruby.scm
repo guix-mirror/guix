@@ -26,6 +26,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages tls)
@@ -390,6 +391,33 @@ easy to create structured data.  Currently the following builder objects are
 supported: XML Markup and XML Events.")
     (home-page "https://github.com/jimweirich/builder")
     (license license:expat)))
+
+(define-public ruby-rjb
+  (package
+    (name "ruby-rjb")
+    (version "1.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rjb" version))
+              (sha256
+               (base32
+                "0gzs92dagk981s4vrymnqg0vll783b9k564j0cdgp167nc5a2zg4"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; no rakefile
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-java-home
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+            #t)))))
+    (native-inputs
+     `(("jdk" ,icedtea7 "jdk")))
+    (synopsis "Ruby-to-Java bridge using the Java Native Interface")
+    (description "RJB is a bridge program that connects Ruby and Java via the
+Java Native Interface.")
+    (home-page "http://www.artonx.org/collabo/backyard/?RubyJavaBridge")
+    (license license:lgpl2.1+)))
 
 (define-public ruby-useragent
   (package
