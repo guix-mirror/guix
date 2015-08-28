@@ -50,6 +50,7 @@
 (defgroup guix-prettify nil
   "Prettify Guix store file names."
   :prefix "guix-prettify-"
+  :group 'guix
   :group 'font-lock
   :group 'convenience)
 
