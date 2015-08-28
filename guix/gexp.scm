@@ -331,10 +331,12 @@ names and file names suitable for the #:allowed-references argument to
                            references-graphs
                            allowed-references
                            leaked-env-vars
-                           local-build? (substitutable? #t))
+                           local-build? (substitutable? #t)
+                           (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
-derivation) on SYSTEM.  When TARGET is true, it is used as the
-cross-compilation target triplet for packages referred to by EXP.
+derivation) on SYSTEM; EXP is stored in a file called SCRIPT-NAME.  When
+TARGET is true, it is used as the cross-compilation target triplet for
+packages referred to by EXP.
 
 Make MODULES available in the evaluation context of EXP; MODULES is a list of
 names of Guile modules searched in MODULE-PATH to be copied in the store,
@@ -397,7 +399,7 @@ The other arguments are as for 'derivation'."
                        (sexp     (gexp->sexp exp
                                              #:system system
                                              #:target target))
-                       (builder  (text-file (string-append name "-builder")
+                       (builder  (text-file script-name
                                             (object->string sexp)))
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules

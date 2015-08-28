@@ -3263,11 +3263,13 @@ information about monads.)
        [#:module-path @var{%load-path}] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:leaked-env-vars #f] @
+       [#:script-name (string-append @var{name} "-builder")] @
        [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
-@var{guile-for-build} (a derivation) on @var{system}.  When @var{target}
-is true, it is used as the cross-compilation target triplet for packages
-referred to by @var{exp}.
+@var{guile-for-build} (a derivation) on @var{system}; @var{exp} is
+stored in a file called @var{script-name}.  When @var{target} is true,
+it is used as the cross-compilation target triplet for packages referred
+to by @var{exp}.
 
 Make @var{modules} available in the evaluation context of @var{exp};
 @var{modules} is a list of names of Guile modules searched in
