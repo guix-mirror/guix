@@ -463,6 +463,25 @@ extensions.")
     (home-page "http://codeforpeople.com/lib/ruby/orderedhash/")
     (license license:public-domain)))
 
+(define-public ruby-xml-simple
+  (package
+    (name "ruby-xml-simple")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "xml-simple" version))
+              (sha256
+               (base32
+                "0xlqplda3fix5pcykzsyzwgnbamb3qrqkgbrhhfz2a2fxhrkvhw8"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (synopsis "Simple Ruby library for XML processing")
+    (description "This library provides a simple API for XML processing in
+Ruby.")
+    (home-page "https://github.com/maik/xml-simple")
+    (license license:ruby)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
