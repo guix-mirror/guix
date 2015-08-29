@@ -767,3 +767,24 @@ net/http library.")
     (description "Arel is a SQL AST manager for Ruby.  It simplifies the
 generation of complex SQL queries and is compatible with various RDBMSes.")
     (license license:expat)))
+
+(define-public ruby-minitar
+  (package
+    (name "ruby-minitar")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitar" version))
+       (sha256
+        (base32
+         "1vpdjfmdq1yc4i620frfp9af02ia435dnpj8ybsd7dc3rypkvbka"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; missing a gemspec
+    (synopsis "Ruby library and utility for handling tar archives")
+    (description
+     "Archive::Tar::Minitar is a pure-Ruby library and command-line utility
+that provides the ability to deal with POSIX tar archive files.")
+    (home-page "http://www.github.com/atoulme/minitar")
+    (license (list license:gpl2+ license:ruby))))
