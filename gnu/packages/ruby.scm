@@ -36,6 +36,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system ruby))
 
 (define-public ruby
@@ -808,4 +809,38 @@ that provides the ability to deal with POSIX tar archive files.")
 It provides a standard way to compile against specific versions of libraries
 to reproduce user environments.")
     (home-page "http://github.com/flavorjones/mini_portile")
+    (license license:expat)))
+
+(define-public ruby-nokogiri
+  (package
+    (name "ruby-nokogiri")
+    (version "1.6.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nokogiri" version))
+              (sha256
+               (base32
+                "1j4qv32qjh67dcrc1yy1h8sqjnny8siyy4s44awla8d6jk361h30"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests fail because Nokogiri can only test with an installed extension,
+     ;; and also because many test framework dependencies are missing.
+     '(#:tests? #f
+       #:gem-flags (list "--" "--use-system-libraries"
+                         (string-append "--with-xml2-include="
+                                        (assoc-ref %build-inputs "libxml2")
+                                        "/include/libxml2" ))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-rake-compiler", ruby-rake-compiler)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (propagated-inputs
+     `(("ruby-mini-portile" ,ruby-mini-portile)))
+    (synopsis "HTML, XML, SAX, and Reader parser for Ruby")
+    (description "Nokogiri (鋸) parses and searches XML/HTML, and features
+both CSS3 selector and XPath 1.0 support.")
+    (home-page "http://www.nokogiri.org/")
     (license license:expat)))
