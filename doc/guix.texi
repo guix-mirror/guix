@@ -5477,7 +5477,7 @@ special-case and is automatically added whether or not it is specified.
 A @dfn{locale} defines cultural conventions for a particular language
 and region of the world (@pxref{Locales,,, libc, The GNU C Library
 Reference Manual}).  Each locale has a name that typically has the form
-@code{@var{language}_@var{territory}.@var{charset}}---e.g.,
+@code{@var{language}_@var{territory}.@var{codeset}}---e.g.,
 @code{fr_LU.utf8} designates the locale for the French language, with
 cultural conventions from Luxembourg, and using the UTF-8 encoding.
 
@@ -5538,9 +5538,17 @@ IANA}.
 @end deftp
 
 @defvr {Scheme Variable} %default-locale-definitions
-An arbitrary list of commonly used locales, used as the default value of
-the @code{locale-definitions} field of @code{operating-system}
+An arbitrary list of commonly used UTF-8 locales, used as the default
+value of the @code{locale-definitions} field of @code{operating-system}
 declarations.
+
+@cindex locale name
+@cindex normalized codeset in locale names
+These locale definitions use the @dfn{normalized codeset} for the part
+that follows the dot in the name (@pxref{Using gettextized software,
+normalized codeset,, libc, The GNU C Library Reference Manual}).  So for
+instance it has @code{uk_UA.utf8} but @emph{not}, say,
+@code{uk_UA.UTF-8}.
 @end defvr
 
 @node Services

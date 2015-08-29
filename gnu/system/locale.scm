@@ -83,6 +83,8 @@
   (letrec-syntax ((utf8-locale (syntax-rules ()
                                  ((_ name*)
                                   (locale-definition
+                                   ;; Note: We choose "utf8", which is the
+                                   ;; "normalized codeset".
                                    (name (string-append name* ".utf8"))
                                    (source name*)
                                    (charset "UTF-8")))))
