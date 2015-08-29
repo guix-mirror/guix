@@ -3371,3 +3371,27 @@ principles are simplicity and standards compliance.")
      "D-Feet is a D-Bus debugger, which can be used to inspect D-Bus interfaces
 of running programs and invoke methods on those interfaces.")
     (license license:gpl2+)))
+
+(define-public yelp-xsl
+  (package
+    (name "yelp-xsl")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0jhpni4mmfvj3xf57rjm61nc8d0x66hz9gd1ywws5lh39g6fx59j"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)))
+    (home-page "https://wiki.gnome.org/Apps/Yelp")
+    (synopsis "XSL stylesheets for Yelp")
+    (description
+     "Yelp-xsl contains XSL stylesheets that are used by the yelp help browser
+to format Docbook and Mallard documents.")
+    (license license:gpl2+)))
