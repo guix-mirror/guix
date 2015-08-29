@@ -149,7 +149,7 @@ values: 'interactive' (default), 'always', and 'never'."
                           port-sha256)))
               (update-package-source package version hash)))
           (warning (_ "~a: version ~a could not be \
-downloaded and authenticated; not updating")
+downloaded and authenticated; not updating~%")
                    (package-name package) version)))))
 
 
