@@ -3395,3 +3395,38 @@ of running programs and invoke methods on those interfaces.")
      "Yelp-xsl contains XSL stylesheets that are used by the yelp help browser
 to format Docbook and Mallard documents.")
     (license license:gpl2+)))
+
+(define-public yelp
+  (package
+    (name "yelp")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1jk7aad1srykhgc3x0hd3q3dnlshmy1ak00alwjzaasxvy6hp0b0"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (inputs
+     `(("libxslt" ,libxslt)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk-2.4)
+       ("yelp-xsl" ,yelp-xsl)
+       ;; XXX: need by libwebkitgtk-3.0.la.
+       ("icu4c" ,(@ (gnu packages icu4c) icu4c))))
+    (home-page "https://wiki.gnome.org/Apps/Yelp")
+    (synopsis "GNOME help browser")
+    (description
+     "Yelp is the help viewer in Gnome.  It natively views Mallard, DocBook,
+man, info, and HTML documents.  It can locate documents according to the
+freedesktop.org help system specification.")
+    (license license:gpl2+)))
