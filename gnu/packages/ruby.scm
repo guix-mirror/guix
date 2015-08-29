@@ -788,3 +788,24 @@ generation of complex SQL queries and is compatible with various RDBMSes.")
 that provides the ability to deal with POSIX tar archive files.")
     (home-page "http://www.github.com/atoulme/minitar")
     (license (list license:gpl2+ license:ruby))))
+
+(define-public ruby-mini-portile
+  (package
+    (name "ruby-mini-portile")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mini_portile" version))
+       (sha256
+        (base32
+         "0h3xinmacscrnkczq44s6pnhrp4nqma7k056x5wv5xixvf2wsq2w"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests require network access
+    (synopsis "Ports system for Ruby developers")
+    (description "Mini-portile is a port/recipe system for Ruby developers.
+It provides a standard way to compile against specific versions of libraries
+to reproduce user environments.")
+    (home-page "http://github.com/flavorjones/mini_portile")
+    (license license:expat)))
