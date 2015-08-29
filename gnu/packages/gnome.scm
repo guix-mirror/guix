@@ -3430,3 +3430,34 @@ to format Docbook and Mallard documents.")
 man, info, and HTML documents.  It can locate documents according to the
 freedesktop.org help system specification.")
     (license license:gpl2+)))
+
+(define-public yelp-tools
+  (package
+    (name "yelp-tools")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "177qzvj5w019isdp41qxqcys2kc4sq2x6dqhqn6l9ipib8a6rxml"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; Needed by `yelp-build', `yelp-check' or 'yelp.m4'.
+     `(("itstool" ,itstool)
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("yelp-xsl" ,yelp-xsl)))
+    (home-page "https://wiki.gnome.org/Apps/Yelp/Tools")
+    (synopsis "Yelp documentation tools")
+    (description
+     "Yelp-tools is a collection of scripts and build utilities to help create,
+manage, and publish documentation for Yelp and the web.  Most of the heavy
+lifting is done by packages like yelp-xsl and itstool.  This package just
+wraps things up in a developer-friendly way.")
+    (license license:gpl2+)))
