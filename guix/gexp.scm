@@ -717,32 +717,11 @@ and in the current monad setting (system type, etc.)"
 ;;; Module handling.
 ;;;
 
-(define %mkdir-p-definition
-  ;; The code for 'mkdir-p' is copied from (guix build utils).  We use it in
-  ;; derivations that cannot use the #:modules argument of 'gexp->derivation'
-  ;; precisely because they implement that functionality.
-  (gexp
-   (define (mkdir-p dir)
-     (define absolute?
-       (string-prefix? "/" dir))
-
-     (define not-slash
-       (char-set-complement (char-set #\/)))
-
-     (let loop ((components (string-tokenize dir not-slash))
-                (root       (if absolute? "" ".")))
-       (match components
-         ((head tail ...)
-          (let ((path (string-append root "/" head)))
-            (catch 'system-error
-              (lambda ()
-                (mkdir path)
-                (loop tail path))
-              (lambda args
-                (if (= EEXIST (system-error-errno args))
-                    (loop tail path)
-                    (apply throw args))))))
-         (() #t))))))
+(define %utils-module
+  ;; This file provides 'mkdir-p', needed to implement 'imported-files' and
+  ;; other primitives below.
+  (local-file (search-path %load-path "guix/build/utils.scm")
+              "build-utils.scm"))
 
 (define* (imported-files files
                          #:key (name "file-import")
@@ -763,9 +742,8 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
     (define build
       (gexp
        (begin
+         (primitive-load (ungexp %utils-module))  ;for 'mkdir-p'
          (use-modules (ice-9 match))
-
-         (ungexp %mkdir-p-definition)
 
          (mkdir (ungexp output)) (chdir (ungexp output))
          (for-each (match-lambda
@@ -822,12 +800,11 @@ they can refer to each other."
     (define build
       (gexp
        (begin
+         (primitive-load (ungexp %utils-module))  ;for 'mkdir-p'
+
          (use-modules (ice-9 ftw)
-                      (ice-9 match)
                       (srfi srfi-26)
                       (system base compile))
-
-         (ungexp %mkdir-p-definition)
 
          (define (regular? file)
            (not (member file '("." ".."))))
