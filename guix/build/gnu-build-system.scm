@@ -25,6 +25,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:export (%standard-phases
@@ -576,6 +577,11 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
                     #:rest args)
   "Build from SOURCE to OUTPUTS, using INPUTS, and by running all of PHASES
 in order.  Return #t if all the PHASES succeeded, #f otherwise."
+  (define (elapsed-time end start)
+    (let ((diff (time-difference end start)))
+      (+ (time-second diff)
+         (/ (time-nanosecond diff) 1e9))))
+
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
@@ -586,12 +592,13 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
   ;; PHASES can pick the keyword arguments it's interested in.
   (every (match-lambda
           ((name . proc)
-           (let ((start (gettimeofday)))
+           (let ((start (current-time time-monotonic)))
              (format #t "starting phase `~a'~%" name)
              (let ((result (apply proc args))
-                   (end    (gettimeofday)))
-               (format #t "phase `~a' ~:[failed~;succeeded~] after ~a seconds~%"
-                       name result (- (car end) (car start)))
+                   (end    (current-time time-monotonic)))
+               (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                       name result
+                       (elapsed-time end start))
 
                ;; Dump the environment variables as a shell script, for handy debugging.
                (system "export > $NIX_BUILD_TOP/environment-variables")
