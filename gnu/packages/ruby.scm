@@ -921,3 +921,23 @@ Ruby.  It features syntax highlighting, a plugin architecture, runtime
 invocation, and source and documentation browsing.")
     (home-page "http://pryrepl.org")
     (license license:expat)))
+
+(define-public ruby-thread-safe
+  (package
+    (name "ruby-thread-safe")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "thread_safe" version))
+       (sha256
+        (base32
+         "1hq46wqsyylx5afkp6jmcihdpv4ynzzq9ygb6z2pb1cbz5js0gcr"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; needs simplecov, among others
+    (synopsis "Thread-safe utilities for Ruby")
+    (description "The thread_safe library provides thread-safe collections and
+utilities for Ruby.")
+    (home-page "https://github.com/ruby-concurrency/thread_safe")
+    (license license:asl2.0)))
