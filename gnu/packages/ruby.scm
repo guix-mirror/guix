@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
@@ -1030,3 +1031,29 @@ Nokogiri and other Ruby XML parsers for generic XML parsing and as an
 alternative to Marshal for Object serialization. ")
     (home-page "http://www.ohler.com/ox")
     (license license:expat)))
+
+(define-public ruby-pg
+  (package
+    (name "ruby-pg")
+    (version "0.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "pg" version))
+       (sha256
+        (base32
+         "1axxbf6ij1iqi3i1r3asvjc80b0py5bz0m2wy5kdi5xkrpr82kpf"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-hoe" ,ruby-hoe)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(("postgresql" ,postgresql)))
+    (synopsis "Ruby interface to PostgreSQL")
+    (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
+with PostgreSQL 8.4 and later.")
+    (home-page "https://bitbucket.org/ged/ruby-pg")
+    (license license:ruby)))
