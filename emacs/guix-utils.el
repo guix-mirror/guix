@@ -193,10 +193,19 @@ Return time value."
   (require 'org)
   (org-read-date nil t nil prompt))
 
+(defcustom guix-find-file-function #'find-file
+  "Function used to find a file.
+The function is called by `guix-find-file' with a file name as a
+single argument."
+  :type '(choice (function-item find-file)
+                 (function-item org-open-file)
+                 (function :tag "Other function"))
+  :group 'guix)
+
 (defun guix-find-file (file)
   "Find FILE if it exists."
   (if (file-exists-p file)
-      (find-file file)
+      (funcall guix-find-file-function file)
     (message "File '%s' does not exist." file)))
 
 (defmacro guix-while-search (regexp &rest body)
