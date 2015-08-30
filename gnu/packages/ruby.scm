@@ -941,3 +941,23 @@ invocation, and source and documentation browsing.")
 utilities for Ruby.")
     (home-page "https://github.com/ruby-concurrency/thread_safe")
     (license license:asl2.0)))
+
+(define-public ruby-tzinfo
+  (package
+    (name "ruby-tzinfo")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "tzinfo" version))
+       (sha256
+        (base32
+         "1c01p3kg6xvy1cgjnzdfq45fggbwish8krd0h864jvbpybyx7cgx"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-thread-safe" ,ruby-thread-safe)))
+    (synopsis "Time zone library for Ruby")
+    (description "TZInfo is a Ruby library that provides daylight savings
+aware transformations between times in different time zones.")
+    (home-page "http://tzinfo.github.io")
+    (license license:expat)))
