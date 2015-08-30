@@ -961,3 +961,22 @@ utilities for Ruby.")
 aware transformations between times in different time zones.")
     (home-page "http://tzinfo.github.io")
     (license license:expat)))
+
+(define-public ruby-json
+  (package
+    (name "ruby-json")
+    (version "1.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "json" version))
+       (sha256
+        (base32
+         "1nsby6ry8l9xg3yw4adlhk2pnc7i0h0rznvcss4vk3v74qg0k8lc"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f)) ; dependency cycle with sdoc
+    (synopsis "JSON library for Ruby")
+    (description "This Ruby library provides a JSON implementation written as
+a native C extension.")
+    (home-page "http://json-jruby.rubyforge.org/")
+    (license (list license:ruby license:gpl2)))) ; GPL2 only
