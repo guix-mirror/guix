@@ -83,7 +83,7 @@ store in '.el' files."
   (let* ((out (assoc-ref outputs "out"))
          (elpa-name-ver (store-directory->elpa-name-version out))
          (el-dir (string-append out %install-suffix "/" elpa-name-ver))
-         (name-ver (store-directory->name-version out))
+         (name-ver (strip-store-file-name out))
          (info-dir (string-append out "/share/info/" name-ver))
          (info-files (find-files el-dir "\\.info$")))
     (unless (null? info-files)
@@ -116,7 +116,7 @@ store in '.el' files."
   (filter (match-lambda
             ((label . directory)
              (emacs-package? ((compose package-name->name+version
-                                       store-directory->name-version)
+                                       strip-store-file-name)
                               directory)))
             (_ #f))
           inputs))
@@ -138,24 +138,17 @@ DIRS."
 (define (package-name-version->elpa-name-version name-ver)
   "Convert the Guix package NAME-VER to the corresponding ELPA name-version
 format.  Essnetially drop the prefix used in Guix."
-  (let ((name (store-directory->name-version name-ver)))
+  (let ((name (strip-store-file-name name-ver)))
     (if (emacs-package? name-ver)
-        (store-directory->name-version name-ver)
+        (strip-store-file-name name-ver)
         name-ver)))
 
 (define (store-directory->elpa-name-version store-dir)
   "Given a store directory STORE-DIR return the part of the basename after the
 second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
   ((compose package-name-version->elpa-name-version
-            store-directory->name-version)
+            strip-store-file-name)
    store-dir))
-
-(define (store-directory->name-version store-dir)
-  "Given a store directory STORE-DIR return the part of the basename
-after the first hyphen.  This corresponds to 'name-version' of the package."
-  (let* ((base (basename store-dir)))
-    (string-drop base
-                 (+ 1 (string-index base #\-)))))
 
 ;; from (guix utils).  Should we put it in (guix build utils)?
 (define (package-name->name+version name)

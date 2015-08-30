@@ -578,11 +578,7 @@ using compilers other than GCC."
                                     (("@XSL_STYLE_DIR@")
                                      (string-append
                                       docbook "/xml/xsl/"
-                                      (string-drop
-                                       docbook
-                                       (+ 34
-                                          (string-length
-                                           (%store-directory))))))))))
+                                      (strip-store-file-name docbook)))))))
                   (replace 'build
                            (lambda _
                              ;; XXX: There's also a 'doc-info' target, but it

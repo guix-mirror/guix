@@ -33,6 +33,7 @@
                alist-delete)
   #:export (%store-directory
             store-file-name?
+            strip-store-file-name
             parallel-job-count
 
             directory-exists?
@@ -86,6 +87,12 @@
 (define (store-file-name? file)
   "Return true if FILE is in the store."
   (string-prefix? (%store-directory) file))
+
+(define (strip-store-file-name file)
+  "Strip the '/gnu/store' and hash from FILE, a store file name.  The result
+is typically a \"PACKAGE-VERSION\" string."
+  (string-drop file
+               (+ 34 (string-length (%store-directory)))))
 
 (define parallel-job-count
   ;; Number of processes to be passed next to GNU Make's `-j' argument.
