@@ -2720,6 +2720,38 @@ implements the ClutterGstPlayer interface using playbin.  Clutter is an Open
 GL based interactive canvas library.")
     (license license:lgpl2.0+)))
 
+(define-public libchamplain
+  (package
+    (name "libchamplain")
+    (version "0.12.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/libchamplain/0.12/libchamplain-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "019b8scnx7d3wdylmpk9ihzh06w25b63x9cn8nhj6kjx82rcwlxz"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libsoup" ,libsoup)
+       ("sqlite" ,sqlite)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("glib:bin" ,glib "bin")                   ;glib-mkenums, etc.
+       ("cairo" ,cairo)
+       ("gtk+3" ,gtk+)
+       ("glib" ,glib)))
+    (home-page "http://projects.gnome.org/libchamplain/")
+    (synopsis "C library providing a ClutterActor to display maps")
+    (description
+     "libchamplain is a C library providing a ClutterActor to display maps.
+It also provides a Gtk+ widget to display maps in Gtk+ applications.  Python
+and Perl bindings are also available.  It supports numerous free map sources
+such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
+    (license license:lgpl2.1+)))
+
 (define-public gom
   (package
     (name "gom")
