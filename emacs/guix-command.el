@@ -65,6 +65,7 @@
 (require 'guix-help-vars)
 (require 'guix-read)
 (require 'guix-base)
+(require 'guix-external)
 
 (defgroup guix-commands nil
   "Settings for guix popup windows."
@@ -490,7 +491,9 @@ to be modified."
   "List of default 'execute' action arguments.")
 
 (defvar guix-command-additional-execute-arguments
-  nil
+  `((("graph")
+     ,(guix-command-make-argument
+       :name "view" :char ?v :doc "View graph")))
   "Alist of guix commands and additional 'execute' action arguments.")
 
 (defun guix-command-execute-arguments (commands)
@@ -508,7 +511,9 @@ to be modified."
   '((("environment")
      ("repl" . guix-run-environment-command-in-repl))
     (("pull")
-     ("repl" . guix-run-pull-command-in-repl)))
+     ("repl" . guix-run-pull-command-in-repl))
+    (("graph")
+     ("view" . guix-run-view-graph)))
   "Alist of guix commands and alists of special executers for them.
 See also `guix-command-default-executors'.")
 
@@ -544,6 +549,15 @@ Perform pull-specific actions after operation, see
   (guix-eval-in-repl
    (apply #'guix-make-guile-expression 'guix-command args)
    nil 'pull))
+
+(defun guix-run-view-graph (args)
+  "Run 'guix ARGS ...' graph command, make the image and open it."
+  (let* ((graph-file (guix-dot-file-name))
+         (dot-args   (guix-dot-arguments graph-file)))
+    (if (guix-eval-read (guix-make-guile-expression
+                         'pipe-guix-output args dot-args))
+        (guix-find-file graph-file)
+      (error "Couldn't create a graph"))))
 
 
 ;;; Generating popups, actions, etc.
