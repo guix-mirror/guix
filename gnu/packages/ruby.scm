@@ -254,7 +254,7 @@ groups.")
     (home-page "https://github.com/rspec/rspec-core")
     (license license:expat)))
 
-(define ruby-diff-lcs-for-rspec
+(define-public ruby-diff-lcs
   (package
     (name "ruby-diff-lcs")
     (version "1.2.5")
@@ -290,7 +290,7 @@ standard diff-like tool.")
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
      `(("ruby-rspec-support" ,ruby-rspec-support)
-       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+       ("ruby-diff-lcs" ,ruby-diff-lcs)))
     (synopsis "RSpec expectations library")
     (description "Rspec-expectations provides a simple API to express expected
 outcomes of a code example.")
@@ -312,7 +312,7 @@ outcomes of a code example.")
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
      `(("ruby-rspec-support" ,ruby-rspec-support)
-       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+       ("ruby-diff-lcs" ,ruby-diff-lcs)))
     (synopsis "RSpec stubbing and mocking library")
     (description "Rspec-mocks provides RSpec's \"test double\" framework, with
 support for stubbing and mocking.")
