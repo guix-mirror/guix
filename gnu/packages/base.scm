@@ -553,6 +553,13 @@ store.")
                         (("/bin/sh")
                          (string-append bash "/bin/bash")))
 
+                      ;; Same for the shell used by the 'exec' functions for
+                      ;; scripts that lack a shebang.
+                      (substitute* (find-files "." "^paths\\.h$")
+                        (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
+                         (string-append "#define _PATH_BSHELL \""
+                                        bash "/bin/bash\"\n")))
+
                       ;; Make sure we don't retain a reference to the
                       ;; bootstrap Perl.
                       (substitute* "malloc/mtrace.pl"
