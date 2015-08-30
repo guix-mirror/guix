@@ -896,3 +896,28 @@ extract comments.")
 for select languages.")
     (home-page "http://coderay.rubychan.de")
     (license license:expat)))
+
+(define-public ruby-pry
+  (package
+    (name "ruby-pry")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "pry" version))
+       (sha256
+        (base32
+         "1j0r5fm0wvdwzbh6d6apnp7c0n150hpm9zxpm5xvcgfqr36jaj8z"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (propagated-inputs
+     `(("ruby-coderay" ,ruby-coderay)
+       ("ruby-method-source" ,ruby-method-source)
+       ("ruby-slop" ,ruby-slop-3)))
+    (synopsis "Ruby REPL")
+    (description "Pry is an IRB alternative and runtime developer console for
+Ruby.  It features syntax highlighting, a plugin architecture, runtime
+invocation, and source and documentation browsing.")
+    (home-page "http://pryrepl.org")
+    (license license:expat)))
