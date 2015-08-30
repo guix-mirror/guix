@@ -268,6 +268,8 @@ management D-Bus specification.")
                 "1c4p3ckghvsad1sj5v8wmar5mh9cbhail9mmhad2f9pwwb10z4ih"))
               (patches (list (search-patch "xfce4-panel-plugins.patch")))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-gtk3")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
