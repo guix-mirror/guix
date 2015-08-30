@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
             expat
             freetype
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
+            gfl1.0
             fdl1.3+
             opl1.0+
             isc
@@ -210,6 +212,13 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "GPL 3+"
            "https://www.gnu.org/licenses/gpl.html"
            "https://www.gnu.org/licenses/license-list#GNUGPLv3"))
+
+;; The “GUST font license” is legally equivalent to LPPL v1.3c as it only
+;; extends the LPPL with an optional request.
+(define gfl1.0
+  (license "GUST font license 1.0"
+           "http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt"
+           "https://www.gnu.org/licenses/license-list#LPPL-1.3a"))
 
 (define fdl1.3+
   (license "FDL 1.3+"
