@@ -146,8 +146,9 @@ storage system.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs
-     ;; libxfce4kbd-private-2.pc refers to all these.
-     `(("gtk+" ,gtk+-2)
+     `(("gtk+-2" ,gtk+-2)  ; required by libxfce4ui-1.pc
+       ("gtk+-3" ,gtk+)    ; required by libxfce4ui-2.pc
+       ;; libxfce4kbd-private-2.pc refers to all these.
        ("libxfce4util" ,libxfce4util)
        ("xfconf" ,xfconf)))
     (inputs `(("libsm" ,libsm)
