@@ -150,28 +150,6 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
             strip-store-file-name)
    store-dir))
 
-;; from (guix utils).  Should we put it in (guix build utils)?
-(define (package-name->name+version name)
-  "Given NAME, a package name like \"foo-0.9.1b\", return two values:
-\"foo\" and \"0.9.1b\".  When the version part is unavailable, NAME and
-#f are returned.  The first hyphen followed by a digit is considered to
-introduce the version part."
-  ;; See also `DrvName' in Nix.
-
-  (define number?
-    (cut char-set-contains? char-set:digit <>))
-
-  (let loop ((chars   (string->list name))
-             (prefix '()))
-    (match chars
-      (()
-       (values name #f))
-      ((#\- (? number? n) rest ...)
-       (values (list->string (reverse prefix))
-               (list->string (cons n rest))))
-      ((head tail ...)
-       (loop tail (cons head prefix))))))
-
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'configure)

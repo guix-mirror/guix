@@ -21,6 +21,7 @@
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-60)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
@@ -34,6 +35,7 @@
   #:export (%store-directory
             store-file-name?
             strip-store-file-name
+            package-name->name+version
             parallel-job-count
 
             directory-exists?
@@ -93,6 +95,27 @@
 is typically a \"PACKAGE-VERSION\" string."
   (string-drop file
                (+ 34 (string-length (%store-directory)))))
+
+(define (package-name->name+version name)
+  "Given NAME, a package name like \"foo-0.9.1b\", return two values:
+\"foo\" and \"0.9.1b\".  When the version part is unavailable, NAME and
+#f are returned.  The first hyphen followed by a digit is considered to
+introduce the version part."
+  ;; See also `DrvName' in Nix.
+
+  (define number?
+    (cut char-set-contains? char-set:digit <>))
+
+  (let loop ((chars   (string->list name))
+             (prefix '()))
+    (match chars
+      (()
+       (values name #f))
+      ((#\- (? number? n) rest ...)
+       (values (list->string (reverse prefix))
+               (list->string (cons n rest))))
+      ((head tail ...)
+       (loop tail (cons head prefix))))))
 
 (define parallel-job-count
   ;; Number of processes to be passed next to GNU Make's `-j' argument.
