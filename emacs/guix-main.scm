@@ -45,6 +45,7 @@
 (use-modules
  (ice-9 vlist)
  (ice-9 match)
+ (ice-9 popen)
  (srfi srfi-1)
  (srfi srfi-2)
  (srfi srfi-11)
@@ -948,6 +949,15 @@ GENERATIONS is a list of generation numbers."
 (define (help-string . commands)
   "Return string with 'guix COMMANDS ... --help' output."
   (apply guix-command-output `(,@commands "--help")))
+
+(define (pipe-guix-output guix-args command-args)
+  "Run 'guix GUIX-ARGS ...' command and pipe its output to a shell command
+defined by COMMAND-ARGS.
+Return #t if the shell command was executed successfully."
+  (let ((pipe (apply open-pipe* OPEN_WRITE command-args)))
+    (with-output-to-port pipe
+      (lambda () (apply guix-command guix-args)))
+    (zero? (status:exit-val (close-pipe pipe)))))
 
 
 ;;; Lists of packages, lint checkers, etc.
