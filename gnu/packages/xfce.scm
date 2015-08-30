@@ -38,7 +38,8 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages photo)
-  #:use-module (gnu packages pcre))
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pulseaudio))
 
 (define-public gtk-xfce-engine
   (package
@@ -351,6 +352,37 @@ around while it is usually lost when you close an application.  It is able to
 handle text and images, and has a feature to execute actions on specific text by
 matching them against regular expressions.")
     (license (list gpl2+))))
+
+(define-public xfce4-pulseaudio-plugin
+  (package
+    (name "xfce4-pulseaudio-plugin")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0crvb2gyxbnlf46712arg3m2vqx81dixqhqdwss0bngpijy3ca78"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("exo" ,exo)
+       ("libnotify" ,libnotify)
+       ("libxfce4ui" ,libxfce4ui)
+       ("pulseaudio" ,pulseaudio)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page "http://git.xfce.org/panel-plugins/xfce4-pulseaudio-plugin/")
+    (synopsis "PulseAudio panel plugin for Xfce")
+    (description
+     "Xfce PulseAudio plugin is a plugin for the Xfce panel which provides a
+convenient way to adjust the audio volume of the PulseAudio sound system and
+to an auto mixer tool like pavucontrol.  It can optionally handle multimedia
+keys for controlling the audio volume.")
+    (license gpl2+)))
 
 (define-public xfce4-appfinder
   (package
