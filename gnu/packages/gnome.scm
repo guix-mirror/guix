@@ -2629,6 +2629,8 @@ without stepping on each others toes.")
         (base32
          "1b0ikh9q3c3qnny3kbvhqih35449q8ajcbh7zkm8k3kykwfx4scf"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;9 MiB of gtk-doc HTML pages
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
@@ -2649,7 +2651,12 @@ without stepping on each others toes.")
      `(("libxkbcommon" ,libxkbcommon)
        ("udev" ,eudev)))
     (arguments
-     `(#:configure-flags '("--enable-x11-backend=yes")
+     `(#:configure-flags (list "--enable-x11-backend=yes"
+
+                               ;; This produces share/doc/{clutter,cally}.
+                               (string-append "--with-html-dir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/doc"))
        ;; XXX FIXME: Get test suite working.  It would probably fail in the
        ;; same way the cogl tests fail, since clutter is based on cogl.
        #:tests? #f))
