@@ -866,3 +866,23 @@ Additionally, it can extract source code from Proc and Lambda objects or just
 extract comments.")
     (home-page "https://github.com/banister/method_source")
     (license license:expat)))
+
+(define-public ruby-coderay
+  (package
+    (name "ruby-coderay")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "coderay" version))
+       (sha256
+        (base32
+         "059wkzlap2jlkhg460pkwc1ay4v4clsmg1bp4vfzjzkgwdckr52s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; missing test files
+    (synopsis "Ruby syntax highlighting library")
+    (description "Coderay is a Ruby library that provides syntax highlighting
+for select languages.")
+    (home-page "http://coderay.rubychan.de")
+    (license license:expat)))
