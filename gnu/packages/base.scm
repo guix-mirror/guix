@@ -512,56 +512,56 @@ store.")
             "libc_cv_ssp=no")
 
       #:tests? #f                                 ; XXX
-      #:phases (alist-cons-before
-                'configure 'pre-configure
-                (lambda* (#:key inputs native-inputs outputs
-                          #:allow-other-keys)
-                  (let* ((out  (assoc-ref outputs "out"))
-                         (bin  (string-append out "/bin"))
-                         ;; FIXME: Normally we would look it up only in INPUTS
-                         ;; but cross-base uses it as a native input.
-                         (bash (or (assoc-ref inputs "static-bash")
-                                   (assoc-ref native-inputs "static-bash"))))
-                    ;; Use `pwd', not `/bin/pwd'.
-                    (substitute* "configure"
-                      (("/bin/pwd") "pwd"))
+      #:phases (modify-phases %standard-phases
+                 (add-before
+                  'configure 'pre-configure
+                  (lambda* (#:key inputs native-inputs outputs
+                                  #:allow-other-keys)
+                    (let* ((out  (assoc-ref outputs "out"))
+                           (bin  (string-append out "/bin"))
+                           ;; FIXME: Normally we would look it up only in INPUTS
+                           ;; but cross-base uses it as a native input.
+                           (bash (or (assoc-ref inputs "static-bash")
+                                     (assoc-ref native-inputs "static-bash"))))
+                      ;; Use `pwd', not `/bin/pwd'.
+                      (substitute* "configure"
+                        (("/bin/pwd") "pwd"))
 
-                    ;; Install the rpc data base file under `$out/etc/rpc'.
-                    ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
-                    (substitute* "sunrpc/Makefile"
-                      (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
-                       (string-append out "/etc/rpc" suffix "\n"))
-                      (("^install-others =.*$")
-                       (string-append "install-others = " out "/etc/rpc\n")))
+                      ;; Install the rpc data base file under `$out/etc/rpc'.
+                      ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
+                      (substitute* "sunrpc/Makefile"
+                        (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
+                         (string-append out "/etc/rpc" suffix "\n"))
+                        (("^install-others =.*$")
+                         (string-append "install-others = " out "/etc/rpc\n")))
 
-                    (substitute* "Makeconfig"
-                      ;; According to
-                      ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
-                      ;; linking against libgcc_s is not needed with GCC
-                      ;; 4.7.1.
-                      ((" -lgcc_s") ""))
+                      (substitute* "Makeconfig"
+                        ;; According to
+                        ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
+                        ;; linking against libgcc_s is not needed with GCC
+                        ;; 4.7.1.
+                        ((" -lgcc_s") ""))
 
-                    ;; Have `system' use that Bash.
-                    (substitute* "sysdeps/posix/system.c"
-                      (("#define[[:blank:]]+SHELL_PATH.*$")
-                       (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
-                               bash)))
+                      ;; Have `system' use that Bash.
+                      (substitute* "sysdeps/posix/system.c"
+                        (("#define[[:blank:]]+SHELL_PATH.*$")
+                         (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
+                                 bash)))
 
-                    ;; Same for `popen'.
-                    (substitute* "libio/iopopen.c"
-                      (("/bin/sh")
-                       (string-append bash "/bin/bash")))
+                      ;; Same for `popen'.
+                      (substitute* "libio/iopopen.c"
+                        (("/bin/sh")
+                         (string-append bash "/bin/bash")))
 
-                    ;; Make sure we don't retain a reference to the
-                    ;; bootstrap Perl.
-                    (substitute* "malloc/mtrace.pl"
-                      (("^#!.*")
-                       ;; The shebang can be omitted, because there's the
-                       ;; "bilingual" eval/exec magic at the top of the file.
-                       "")
-                      (("exec @PERL@")
-                       "exec perl"))))
-                %standard-phases)))
+                      ;; Make sure we don't retain a reference to the
+                      ;; bootstrap Perl.
+                      (substitute* "malloc/mtrace.pl"
+                        (("^#!.*")
+                         ;; The shebang can be omitted, because there's the
+                         ;; "bilingual" eval/exec magic at the top of the file.
+                         "")
+                        (("exec @PERL@")
+                         "exec perl"))))))))
 
    (inputs `(("static-bash" ,static-bash)))
 
