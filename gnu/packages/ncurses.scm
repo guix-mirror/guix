@@ -86,6 +86,7 @@
           ;; what users expect.
           ,(string-append "--includedir=" (assoc-ref %outputs "out")
                           "/include")
+          "--enable-overwrite"                    ;really honor --includedir
 
           ;; Make sure programs like 'tic', 'reset', and 'clear' have a
           ;; correct RUNPATH.
