@@ -980,3 +980,30 @@ aware transformations between times in different time zones.")
 a native C extension.")
     (home-page "http://json-jruby.rubyforge.org/")
     (license (list license:ruby license:gpl2)))) ; GPL2 only
+
+(define-public ruby-activesupport
+  (package
+    (name "ruby-activesupport")
+    (version "4.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "activesupport" version))
+       (sha256
+        (base32
+         "19n38rj6r1gyxgka18qvcxyla0fwan8a5p3ghq0pp8aj93sbmr6f"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (propagated-inputs
+     `(("ruby-i18n" ,ruby-i18n)
+       ("ruby-json" ,ruby-json)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-thread-safe" ,ruby-thread-safe)
+       ("ruby-tzinfo" ,ruby-tzinfo)))
+    (synopsis "Ruby on Rails utility library")
+    (description "ActiveSupport is a toolkit of support libraries and Ruby
+core extensions extracted from the Rails framework.  It includes support for
+multibyte strings, internationalization, time zones, and testing.")
+    (home-page "http://www.rubyonrails.org")
+    (license license:expat)))
