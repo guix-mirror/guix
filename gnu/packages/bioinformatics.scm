@@ -875,6 +875,45 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
 
+(define-public deeptools
+  (package
+    (name "deeptools")
+    (version "1.5.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/fidelram/deepTools/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kaagygcbvjs9sxd9cqmskd02wcfp9imvb735r087w7hwqpvz6fs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (propagated-inputs
+     `(("python-scipy" ,python2-scipy)
+       ("python-numpy" ,python2-numpy)
+       ("python-matplotlib" ,python2-matplotlib)
+       ("python-bx-python" ,python2-bx-python)
+       ("python-pysam" ,python2-pysam)))
+    (native-inputs
+     `(("python-mock" ,python2-mock) ;for tests
+       ("python-pytz" ,python2-pytz) ;for tests
+       ("python-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/fidelram/deepTools")
+    (synopsis "Tools for normalizing and visualizing deep-sequencing data")
+    (description
+     "DeepTools addresses the challenge of handling the large amounts of data
+that are now routinely generated from DNA sequencing centers.  To do so,
+deepTools contains useful modules to process the mapped reads data to create
+coverage files in standard bedGraph and bigWig file formats.  By doing so,
+deepTools allows the creation of normalized coverage files or the comparison
+between two files (for example, treatment and control).  Finally, using such
+normalized and standardized files, multiple visualizations can be created to
+identify enrichments with functional annotations of the genome.")
+    (license license:gpl3+)))
+
 (define-public diamond
   (package
     (name "diamond")
