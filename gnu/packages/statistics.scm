@@ -352,3 +352,32 @@ prototype-based, rather than class-based object oriented ideas.")
 designed by Cynthia Brewer as described at http://colorbrewer2.org")
     ;; Includes code licensed under bsd-4
     (license license:asl2.0)))
+
+(define-public r-stringi
+  (package
+    (name "r-stringi")
+    (version "0.5-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cran/src/contrib/stringi_"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "183wrrjhpgl1wbnn9lhghyvhz7l2mc64mpcmzplckal7y9j7pmhw"))))
+    (build-system r-build-system)
+    (inputs `(("icu4c" ,icu4c)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://stringi.rexamine.com/")
+    (synopsis "Character string processing facilities")
+    (description
+     "This package allows for fast, correct, consistent, portable, as well as
+convenient character string/text processing in every locale and any native
+encoding.  Owing to the use of the ICU library, the package provides R users
+with platform-independent functions known to Java, Perl, Python, PHP, and Ruby
+programmers.  Among available features there are: pattern searching
+ (e.g.  via regular expressions), random string generation, string collation,
+transliteration, concatenation, date-time formatting and parsing, etc.")
+    (license license:bsd-3)))
