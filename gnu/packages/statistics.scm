@@ -314,3 +314,21 @@ then put all the pieces back together.  For example, you might want to fit a
 model to each spatial location or time point in your study, summarise data by
 panels or collapse high-dimensional arrays to simpler summary statistics.")
     (license license:expat)))
+
+(define-public r-proto
+  (package
+    (name "r-proto")
+    (version "0.3-10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/proto_" version ".tar.gz"))
+       (sha256
+        (base32 "03mvzi529y6kjcp9bkpk7zlgpcakb3iz73hca6rpjy14pyzl3nfh"))))
+    (build-system r-build-system)
+    (home-page "http://r-proto.googlecode.com")
+    (synopsis "Prototype object-based programming")
+    (description
+     "Proto is an object oriented system using object-based, also called
+prototype-based, rather than class-based object oriented ideas.")
+    (license license:gpl2+)))
