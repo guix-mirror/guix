@@ -673,6 +673,54 @@ images onto Cairo surfaces.")
     (home-page "http://wingolog.org/projects/guile-rsvg/")
     (license license:lgpl2.1+)))
 
+(define-public guile-present
+  (package
+    (name "guile-present")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://wingolog.org/pub/guile-present/"
+                                  "guile-present-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qam447m05sxxv6x8dlzg7qnyfc4dh8apjw1idpfhpns671gfr6m"))
+              (patches (list (search-patch "guile-present-coding.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile.in"
+                  (("godir = .*$")
+                   "godir = $(moddir)\n")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let* ((out   (assoc-ref outputs "out"))
+                          (bin   (string-append out "/bin"))
+                          (guile (assoc-ref inputs "guile")))
+                     (substitute* (find-files bin ".*")
+                       (("guile")
+                        (string-append guile "/bin/guile -L "
+                                       out "/share/guile/site/2.0 -C "
+                                       out "/share/guile/site/2.0 ")))))
+                 %standard-phases)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0)))
+    (propagated-inputs
+     ;; These are used by the (present …) modules.
+     `(("guile-lib" ,guile-lib)
+       ("guile-cairo" ,guile-cairo)
+       ("guile-rsvg" ,guile-rsvg)))
+    (home-page "http://wingolog.org/software/guile-present/")
+    (synopsis "Create SVG or PDF presentations in Guile")
+    (description
+     "Guile-Present defines a declarative vocabulary for presentations,
+together with tools to render presentation documents as SVG or PDF.
+Guile-Present can be used to make presentations programmatically, but also
+includes a tools to generate PDF presentations out of Org mode and Texinfo
+documents.")
+    (license license:lgpl3+)))
+
 ;;;
 ;;; C++ bindings.
 ;;;
