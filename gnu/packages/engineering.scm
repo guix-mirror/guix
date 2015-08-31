@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -35,6 +36,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -364,3 +366,49 @@ multipole-accelerated algorithm.")
      "Fasthenry is an inductance extraction program based on a
 multipole-accelerated algorithm.")
     (license (license:non-copyleft #f "See induct.c."))))
+
+(define-public gerbv
+  (package
+    (name "gerbv")
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gerbv/gerbv/gerbv-"
+                                  version "/gerbv-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v6ry0mxi5qym4z0y0lpblxsw9dfjpgxs4c4v2ngg7yw4b3a59ks"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoconf
+          (lambda _
+            ;; Build rules contain references to Russian translation, but the
+            ;; needed files are missing; see
+            ;; http://sourceforge.net/p/gerbv/bugs/174/
+            (delete-file "po/LINGUAS")
+            (substitute* "man/Makefile.am"
+              (("PO_FILES= gerbv.ru.1.in.po") "")
+              (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
+            (zero? (system* "autoreconf" "-vfi")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gnu-gettext)
+       ("po4a" ,po4a)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gtk" ,gtk+-2)
+       ("desktop-file-utils" ,desktop-file-utils)))
+    (home-page "http://gerbv.geda-project.org/")
+    (synopsis "Gerber file viewer")
+    (description
+     "Gerbv is a viewer for files in the Gerber format (RS-274X only), which
+is commonly used to represent printed circuit board (PCB) layouts.  Gerbv lets
+you load several files on top of each other, do measurements on the displayed
+image, etc.  Besides viewing Gerbers, you may also view Excellon drill files
+as well as pick-place files.")
+    (license license:gpl2+)))
