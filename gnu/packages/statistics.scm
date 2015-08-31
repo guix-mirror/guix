@@ -381,3 +381,28 @@ programmers.  Among available features there are: pattern searching
  (e.g.  via regular expressions), random string generation, string collation,
 transliteration, concatenation, date-time formatting and parsing, etc.")
     (license license:bsd-3)))
+
+(define-public r-stringr
+  (package
+    (name "r-stringr")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/stringr_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0jnz6r9yqyf7dschr2fnn1slg4wn6b4ik5q00j4zrh43bfw7s9pq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-magrittr" ,r-magrittr)
+       ("r-stringi" ,r-stringi)))
+    (home-page "")
+    (synopsis "Simple, consistent wrappers for common string operations")
+    (description
+     "Stringr is a consistent, simple and easy to use set of wrappers around
+the fantastic 'stringi' package.  All function and argument names (and
+positions) are consistent, all functions deal with \"NA\"'s and zero length
+vectors in the same way, and the output from one function is easy to feed into
+the input of another.")
+    (license license:gpl2+)))
