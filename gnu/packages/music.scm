@@ -27,6 +27,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base) ;libbdf
@@ -68,6 +69,7 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip)
   #:use-module ((srfi srfi-1) #:select (last)))
@@ -679,3 +681,35 @@ scores next to the source, can capture input from MIDI or read MusicXML and
 ABC files, has a MIDI player for proof-listening, and includes a documentation
 browser.")
     (license license:gpl2+)))
+
+(define-public zynaddsubfx
+  (package
+    (name "zynaddsubfx")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/zynaddsubfx/zynaddsubfx/"
+                    version "/zynaddsubfx-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01c4v5lbzard6y00cjq3b6a50cafqwfwibzng9gdsajczhnbkqz2"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("liblo" ,liblo)
+       ("ntk" ,ntk)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("fftw" ,fftw)
+       ("minixml" ,minixml)
+       ("libxpm" ,libxpm)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://zynaddsubfx.sf.net/")
+    (synopsis "Software synthesizer")
+    (description
+     "ZynAddSubFX is a feature heavy realtime software synthesizer.  It offers
+three synthesizer engines, multitimbral and polyphonic synths, microtonal
+capabilities, custom envelopes, effects, etc.")
+    (license license:gpl2)))
