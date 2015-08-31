@@ -160,3 +160,29 @@ colors are provided.")
      "Dichromat collapses red-green or green-blue distinctions to simulate the
 effects of different types of color-blindness.")
     (license license:gpl2+)))
+
+(define-public r-digest
+  (package
+    (name "r-digest")
+    (version "0.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/digest_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0m9grqv67hhf51lz10whymhw0g0d98466ka694kya5x95hn44qih"))))
+    (build-system r-build-system)
+    (home-page "http://dirk.eddelbuettel.com/code/digest.html")
+    (synopsis "Create cryptographic hash digests of R objects")
+    (description
+     "This package contains an implementation of a function 'digest()' for the
+creation of hash digests of arbitrary R objects (using the md5, sha-1,
+sha-256, crc32, xxhash and murmurhash algorithms) permitting easy comparison
+of R language objects, as well as a function 'hmac()' to create hash-based
+message authentication code.
+
+Please note that this package is not meant to be deployed for cryptographic
+purposes for which more comprehensive (and widely tested) libraries such as
+OpenSSL should be used.")
+    (license license:gpl2+)))
