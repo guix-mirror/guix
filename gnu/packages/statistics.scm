@@ -332,3 +332,23 @@ panels or collapse high-dimensional arrays to simpler summary statistics.")
      "Proto is an object oriented system using object-based, also called
 prototype-based, rather than class-based object oriented ideas.")
     (license license:gpl2+)))
+
+(define-public r-rcolorbrewer
+  (package
+    (name "r-rcolorbrewer")
+    (version "1.1-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/RColorBrewer_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1pfcl8z1pnsssfaaz9dvdckyfnnc6rcq56dhislbf571hhg7isgk"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/RColorBrewer")
+    (synopsis "ColorBrewer palettes")
+    (description
+     "This package provides color schemes for maps (and other graphics)
+designed by Cynthia Brewer as described at http://colorbrewer2.org")
+    ;; Includes code licensed under bsd-4
+    (license license:asl2.0)))
