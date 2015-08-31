@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,11 +19,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gettext)
-  #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+))
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages docbook)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages xml))
 
 ;; Use that name to avoid clashes with Guile's 'gettext' procedure.
@@ -91,3 +96,59 @@ with the means to create message catalogs, as well as an Emacs mode to work
 with them, and a runtime library to load translated messages from the
 catalogs.  Nearly all GNU packages use Gettext.")
     (license gpl3+)))                             ;some files are under GPLv2+
+
+(define-public po4a
+  (package
+    (name "po4a")
+    (version "0.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://alioth.debian.org/frs/download.php"
+                                  "/file/4142/po4a-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01vm0750aq0h2lphrflv3wq9gz7y0py8frglfpacn58ivyvy242h"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; FIXME: One test fails as we don't have SGMLS.pm
+         (add-before 'check 'disable-sgml-test
+          (lambda _
+            (delete-file "t/20-sgml.t")
+            #t))
+         (add-after 'unpack 'fix-builder
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "Po4aBuilder.pm"
+              ;; By default it tries to install into perl's manpath.
+              (("my \\$mandir = .*$")
+               (string-append "my $mandir = \"" (assoc-ref outputs "out")
+                              "/share/man\";\n")))
+            #t))
+         (add-after 'install 'wrap-programs
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Make sure all executables in "bin" find the Perl modules
+            ;; provided by this package at runtime.
+            (let* ((out  (assoc-ref outputs "out"))
+                   (bin  (string-append out "/bin/"))
+                   (path (string-append out "/lib/perl5/site_perl")))
+              (for-each (lambda (file)
+                          (wrap-program file
+                            `("PERL5LIB" ":" prefix (,path))))
+                        (find-files bin "\\.*$"))
+              #t))))))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("perl-module-build" ,perl-module-build)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml) ;for tests
+       ("texlive-bin" ,texlive-bin) ;for tests
+       ("libxml2" ,libxml2)
+       ("xsltproc" ,libxslt)))
+    (home-page "http://po4a.alioth.debian.org/")
+    (synopsis "Scripts to ease maintenance of translations")
+    (description
+     "The po4a (PO for anything) project goal is to ease translations (and
+more interestingly, the maintenance of translations) using gettext tools on
+areas where they were not expected like documentation.")
+    (license gpl2+)))
