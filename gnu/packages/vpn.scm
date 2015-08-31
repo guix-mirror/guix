@@ -63,7 +63,7 @@ endpoints.")
    (version "0.5.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://www.unix-ag.uni-kl.de/~massar/vpnc/vpnc-"
+            (uri (string-append "https://www.unix-ag.uni-kl.de/~massar/vpnc/vpnc-"
                                 version ".tar.gz"))
             (sha256 (base32
                      "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))
