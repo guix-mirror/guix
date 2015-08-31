@@ -141,3 +141,22 @@ including RGB, HSV, HLS, CIEXYZ, CIELUV, HCL (polar CIELUV), CIELAB and polar
 CIELAB.  Qualitative, sequential, and diverging color palettes based on HCL
 colors are provided.")
     (license license:bsd-3)))
+
+(define-public r-dichromat
+  (package
+    (name "r-dichromat")
+    (version "2.0-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/dichromat_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1l8db1nk29ccqg3mkbafvfiw0775iq4gapysf88xq2zp6spiw59i"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/dichromat")
+    (synopsis "Color schemes for dichromats")
+    (description
+     "Dichromat collapses red-green or green-blue distinctions to simulate the
+effects of different types of color-blindness.")
+    (license license:gpl2+)))
