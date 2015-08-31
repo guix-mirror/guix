@@ -245,3 +245,24 @@ of an expression, into the next function call/expression.  There is flexible
 support for the type of right-hand side expressions.  For more information,
 see package vignette.  To quote Rene Magritte, \"Ceci n'est pas un pipe.\"")
     (license license:expat)))
+
+(define-public r-munsell
+  (package
+    (name "r-munsell")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/munsell_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1bi5yi0i80778bbzx2rm4f0glpc34kvh24pwwfhm4v32izsqgrw4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-colorspace" ,r-colorspace)))
+    (home-page "http://cran.r-project.org/web/packages/munsell")
+    (synopsis "Munsell colour system")
+    (description
+     "The Munsell package contains Functions for exploring and using the
+Munsell colour system.")
+    (license license:expat)))
