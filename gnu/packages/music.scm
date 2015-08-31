@@ -187,7 +187,7 @@ you to define complex tempo maps for entire songs or performances.")
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.18.2")
+    (version "2.19.27")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -196,14 +196,15 @@ you to define complex tempo maps for entire songs or performances.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01xs9x2wjj7w9appaaqdhk15r1xvvdbz9qwahzhppfmhclvp779j"))))
+                "11v4jr4qj1jpqvjw1ww7riv8pxfyasif8mf16l447f1xq1ifhkhs"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; Tests fail with this error:
-       ;; Undefined subroutine &main::get_index called at
-       ;; ./lilypond-2.18.2/Documentation/lilypond-texi2html.init line 2127.
-       #:tests? #f
+     `(#:tests? #f ; out-test/collated-files.html fails
        #:out-of-source? #t
+       #:configure-flags
+       (list (string-append "--with-texgyre-dir="
+                            (assoc-ref %build-inputs "font-tex-gyre")
+                            "/share/fonts/opentype/"))
        #:phases
        (alist-cons-before
         'configure 'prepare-configuration
@@ -216,6 +217,7 @@ you to define complex tempo maps for entire songs or performances.")
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
+       ("font-tex-gyre" ,font-tex-gyre)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("ghostscript" ,ghostscript)
