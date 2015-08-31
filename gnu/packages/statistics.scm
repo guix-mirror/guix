@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -119,3 +120,24 @@ and clustering.  It also provides robust support for producing
 publication-quality data plots.  A large amount of 3rd-party packages are
 available, greatly increasing its breadth and scope.")
     (license license:gpl3+)))
+
+(define-public r-colorspace
+  (package
+    (name "r-colorspace")
+    (version "1.2-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/colorspace_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0y8n4ljwhbdvkysdwgqzcnpv107pb3px1jip3k6svv86p72nacds"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/colorspace")
+    (synopsis "Color space manipulation")
+    (description
+     "This package carries out a mapping between assorted color spaces
+including RGB, HSV, HLS, CIEXYZ, CIELUV, HCL (polar CIELUV), CIELAB and polar
+CIELAB.  Qualitative, sequential, and diverging color palettes based on HCL
+colors are provided.")
+    (license license:bsd-3)))
