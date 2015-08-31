@@ -456,3 +456,33 @@ using just two functions: melt and dcast (or acast).")
 provides methods for automatically determining breaks and labels for axes and
 legends.")
     (license license:expat)))
+
+(define-public r-ggplot2
+  (package
+    (name "r-ggplot2")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/ggplot2_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0794kjqi3lrxb33lr1mykd58959hlgkhdn259vj8fxrh65mqw920"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-gtable" ,r-gtable)
+       ("r-plyr" ,r-plyr)
+       ("r-proto" ,r-proto)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)))
+    (home-page "http://ggplot2.org")
+    (synopsis "An implementation of the grammar of graphics")
+    (description
+     "Ggplot2 is an implementation of the grammar of graphics in R.  It
+combines the advantages of both base and lattice graphics: conditioning and
+shared axes are handled automatically, and you can still build up a plot step
+by step from multiple data sources.  It also implements a sophisticated
+multidimensional conditioning system and a consistent interface to map data to
+aesthetic attributes.")
+    (license license:gpl2+)))
