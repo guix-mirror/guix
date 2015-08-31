@@ -291,3 +291,26 @@ about Rcpp is provided by several vignettes included in this package, via the
 and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
     (license license:gpl2+)))
+
+(define-public r-plyr
+  (package
+    (name "r-plyr")
+    (version "1.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/plyr_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "06v4zxawpjz37rp2q2ii5q43g664z9s29j4ydn0cz3crn7lzl6pk"))))
+    (build-system r-build-system)
+    (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "http://had.co.nz/plyr")
+    (synopsis "Tools for Splitting, Applying and Combining Data")
+    (description
+     "Plyr is a set of tools that solves a common set of problems: you need to
+break a big problem down into manageable pieces, operate on each piece and
+then put all the pieces back together.  For example, you might want to fit a
+model to each spatial location or time point in your study, summarise data by
+panels or collapse high-dimensional arrays to simpler summary statistics.")
+    (license license:expat)))
