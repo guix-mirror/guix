@@ -429,3 +429,30 @@ the input of another.")
      "Reshape2 is an R library to flexibly restructure and aggregate data
 using just two functions: melt and dcast (or acast).")
     (license license:expat)))
+
+(define-public r-scales
+  (package
+    (name "r-scales")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/scales_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "12xrmn1vh64dl46bq7n7pa427aicb2ifjrby9in3m32nyvir0kac"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dichromat" ,r-dichromat)
+       ("r-labeling" ,r-labeling)
+       ("r-munsell" ,r-munsell)
+       ("r-plyr" ,r-plyr)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hadley/scales")
+    (synopsis "Scale functions for visualization")
+    (description
+     "This package provides graphical scales that map data to aesthetics, and
+provides methods for automatically determining breaks and labels for axes and
+legends.")
+    (license license:expat)))
