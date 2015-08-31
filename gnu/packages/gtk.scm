@@ -33,6 +33,8 @@
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
@@ -632,6 +634,44 @@ graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
 
+(define-public guile-rsvg
+  (package
+    (name "guile-rsvg")
+    (version "2.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://wingolog.org/pub/guile-rsvg/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "136f236iw3yrrz6pkkp1ma9c5mrs5icqha6pnawinqpk892r3jh7"))
+              (patches (list (search-patch "guile-rsvg-pkgconfig.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* (find-files "." "Makefile\\.am")
+                  (("/share/guile/site")
+                   "/share/guile/site/2.0")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'bootstrap
+                              (lambda _
+                                (zero? (system* "autoreconf" "-vfi")))))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)
+                     ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-2.0)
+              ("librsvg" ,librsvg)
+              ("guile-lib" ,guile-lib)))          ;for (unit-test)
+    (propagated-inputs `(("guile-cairo" ,guile-cairo)))
+    (synopsis "Render SVG images using Cairo from Guile")
+    (description
+     "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
+images onto Cairo surfaces.")
+    (home-page "http://wingolog.org/projects/guile-rsvg/")
+    (license license:lgpl2.1+)))
 
 ;;;
 ;;; C++ bindings.
