@@ -205,3 +205,21 @@ OpenSSL should be used.")
      "Gtable is a collection of tools to make it easier to work with
 \"tables\" of grobs.")
     (license license:gpl2+)))
+
+(define-public r-labeling
+  (package
+    (name "r-labeling")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/labeling_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "13sk7zrrrzry6ky1bp8mmnzcl9jhvkig8j4id9nny7z993mnk00d"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/labeling")
+    (synopsis "Axis labeling algorithms")
+    (description "The labeling package provides a range of axis labeling
+algorithms.")
+    (license license:expat)))
