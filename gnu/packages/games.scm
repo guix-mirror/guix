@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,11 +32,14 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -44,6 +48,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -572,6 +577,59 @@ management, character animation, particle and other special effects, support
 for common mesh file formats, and collision detection.")
     (home-page "http://irrlicht.sourceforge.net/")
     (license license:zlib)))
+
+(define-public mars
+  ;; The latest release on SourceForge relies on an unreleased version of SFML
+  ;; with a different API, so we take the latest version from the official
+  ;; repository on Github.
+  (let ((commit   "c855d04409")
+        (revision "1"))
+    (package
+      (name "mars")
+      (version (string-append "0.7.5." revision "." commit ))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/thelaui/M.A.R.S..git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "1r4c5gap1z2zsv4yjd34qriqkxaq4lb4rykapyzkkdf4g36lc3nh"))
+                (patches (list (search-patch "mars-sfml-2.3.patch")
+                               (search-patch "mars-install.patch")))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f        ; There are no tests
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-install-path
+            (lambda _
+              (substitute* "src/CMakeLists.txt"
+                (("\\$\\{CMAKE_INSTALL_PREFIX\\}/games")
+                 "${CMAKE_INSTALL_PREFIX}/bin"))
+              #t))
+           (add-after 'unpack 'fix-data-path
+            (lambda* (#:key outputs #:allow-other-keys)
+              (substitute* "src/System/settings.cpp"
+                (("C_dataPath = \"./data/\";")
+                 (string-append "C_dataPath = \""
+                                (assoc-ref outputs "out")
+                                "/share/games/marsshooter/\";")))
+              #t)))))
+      (inputs
+       `(("mesa" ,mesa)
+         ("fribidi" ,fribidi)
+         ("taglib" ,taglib)
+         ("sfml" ,sfml)))
+      (home-page "http://marsshooter.org")
+      (synopsis "2D space shooter")
+      (description
+       "M.A.R.S. is a 2D space shooter with pretty visual effects and
+attractive physics.  Players can battle each other or computer controlled
+enemies in different game modes such as space ball, death match, team death
+match, cannon keep, and grave-itation pit.")
+      (license license:gpl3+))))
 
 (define minetest-data
   (package

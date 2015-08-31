@@ -560,6 +560,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
+  gnu/packages/patches/mars-install.patch			\
+  gnu/packages/patches/mars-sfml-2.3.patch			\
   gnu/packages/patches/maxima-defsystem-mkdir.patch		\
   gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
