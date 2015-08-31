@@ -406,3 +406,26 @@ positions) are consistent, all functions deal with \"NA\"'s and zero length
 vectors in the same way, and the output from one function is easy to feed into
 the input of another.")
     (license license:gpl2+)))
+
+(define-public r-reshape2
+  (package
+    (name "r-reshape2")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/reshape2_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0hl082dyk3pk07nqprpn5dvnrkqhnf6zjnjig1ijddxhlmsrzm7v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/hadley/reshape")
+    (synopsis "Flexibly reshape data: a reboot of the \"reshape\" package")
+    (description
+     "Reshape2 is an R library to flexibly restructure and aggregate data
+using just two functions: melt and dcast (or acast).")
+    (license license:expat)))
