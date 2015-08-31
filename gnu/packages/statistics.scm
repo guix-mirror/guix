@@ -223,3 +223,25 @@ OpenSSL should be used.")
     (description "The labeling package provides a range of axis labeling
 algorithms.")
     (license license:expat)))
+
+(define-public r-magrittr
+  (package
+    (name "r-magrittr")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/magrittr_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1s1ar6rag8m277qcqmdp02gn4awn9bdj9ax0r8s32i59mm1mki05"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/magrittr/index.html")
+    (synopsis "A forward-pipe operator for R")
+    (description
+     "Magrittr provides a mechanism for chaining commands with a new
+forward-pipe operator, %>%.  This operator will forward a value, or the result
+of an expression, into the next function call/expression.  There is flexible
+support for the type of right-hand side expressions.  For more information,
+see package vignette.  To quote Rene Magritte, \"Ceci n'est pas un pipe.\"")
+    (license license:expat)))
