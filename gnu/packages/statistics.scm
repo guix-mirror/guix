@@ -186,3 +186,22 @@ Please note that this package is not meant to be deployed for cryptographic
 purposes for which more comprehensive (and widely tested) libraries such as
 OpenSSL should be used.")
     (license license:gpl2+)))
+
+(define-public r-gtable
+  (package
+    (name "r-gtable")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cran/src/contrib/gtable_"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0k9hfj6r5y238gqh92s3cbdn34biczx3zfh79ix5xq0c5vkai2xh"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/gtable")
+    (synopsis "R library to arrange grobs in tables")
+    (description
+     "Gtable is a collection of tools to make it easier to work with
+\"tables\" of grobs.")
+    (license license:gpl2+)))
