@@ -176,15 +176,17 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.7.2")
+    (version "0.8.0")
     (source (origin
+              ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
+              ;; exists, but the server appears to be too slow and unreliable.
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/libguile-ssh.git")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1wcv10xv7ayrhrg77zyng6flknnlkzhni24nf8x9nic00zha8znk"))))
+                "1ld2khzylaylhqfsfcvbxs95frvm8pkr7dq40ia1wwn9c349fcdv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -223,7 +225,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("which" ,which)))
     (inputs `(("guile" ,guile-2.0)
               ("libssh" ,libssh)
-              ("libgcrypt" ,libgcrypt-1.5)))
+              ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
     (description
      "Guile-SSH is a library that provides access to the SSH protocol for
