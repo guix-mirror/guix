@@ -487,6 +487,53 @@ support for Git-SVN.")
 programs.")
     (license license:gpl3+)))
 
+(define-public let-alist
+  (package
+    (name "emacs-let-alist")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/let-alist-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "07312bvvyz86lf64vdkxg2l1wgfjl25ljdjwlf1bdzj01c4hm88x"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build emacs-utils))
+
+       #:builder (begin
+                   (use-modules (guix build emacs-utils)
+                                (guix build utils))
+
+                   (let* ((out     (assoc-ref %outputs "out"))
+                          (lispdir (string-append out
+                                                  "/share/emacs/site-lisp/"
+                                                  "guix.d/let-alist-"
+                                                  ,version))
+                          (emacs   (assoc-ref %build-inputs "emacs")))
+
+                     (mkdir-p lispdir)
+                     (copy-file (assoc-ref %build-inputs "source")
+                                (string-append lispdir "/let-alist.el"))
+
+                     (setenv "PATH" (string-append emacs "/bin"))
+                     (emacs-byte-compile-directory lispdir)
+                     #t))))
+    (native-inputs `(("emacs" ,emacs-no-x)))
+    (home-page "http://elpa.gnu.org/packages/let-alist.html")
+    (synopsis "Easily let-bind values of an assoc-list by their names")
+    (description
+     "This package offers a single Emacs Lisp macro, @code{let-alist}.  This
+macro takes a first argument, whose value must be an alist (association list),
+and a body.
+
+The macro expands to a let form containing the body, where each dotted symbol
+inside body is let-bound to their cdrs in the alist.  Only those present in
+the body are let-bound and this search is done at compile time.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Web browsing.
