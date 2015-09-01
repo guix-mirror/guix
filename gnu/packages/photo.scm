@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,25 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base))
+
+(define-public libraw
+  (package
+    (name "libraw")
+    (version "0.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libraw.org/data/LibRaw-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "043kckxjqanw8dl3m9f6kvsf0l20ywxmgxd1xb0slj6m8l4w4hz6"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.libraw.org")
+    (synopsis "Raw image decoder")
+    (description
+     "LibRaw is a library for reading RAW files obtained from digital photo
+cameras (CRW/CR2, NEF, RAF, DNG, and others).")
+    (license lgpl2.1+)))
 
 (define-public libexif
   (package
