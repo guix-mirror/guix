@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
                           isc psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -45,6 +47,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
@@ -4680,3 +4683,33 @@ should be stored on various operating systems.")
 
 (define-public python2-appdirs
   (package-with-python2 python-appdirs))
+
+(define-public python-llfuse
+  (package
+    (name "python-llfuse")
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
+                    "llfuse-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0yzy8ixpmxk00kdq6lx5vvwbs0n6s59qnja5q0js2ahbqyxiz2hb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("fuse" ,fuse)
+       ("attr" ,attr)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-setuptools" ,python-setuptools)))
+    (synopsis "Python bindings for FUSE")
+    (description
+     "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
+    (home-page "https://bitbucket.org/nikratio/python-llfuse/")
+    ;; Python-LLFUSE includes underscore.js, which is MIT (expat) licensed.
+    ;; The rest of the package is licensed under LGPL2.0 or later.
+    (license (list license:expat lgpl2.0+))))
+
+(define-public python2-llfuse
+  (package-with-python2 python-llfuse))
