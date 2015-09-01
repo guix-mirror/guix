@@ -43,24 +43,15 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.6.3")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://red.libssh.org/attachments/download/87/libssh-"
-                                  version ".tar.xz"))
+              (uri (string-append
+                    "https://red.libssh.org/attachments/download/121/libssh-"
+                    version ".tar.xz"))
               (sha256
                (base32
-                "1jyaj9h1iglvn02hrvcchbx8ycjpj8b91h8mi459k7q5jp2xgd9b"))
-              (patches
-               ;; Apply the patch as discussed at
-               ;; <http://lists.gnu.org/archive/html/guix-devel/2014-10/msg00180.html>.
-               (list (origin
-                       (uri
-                        "http://git.libssh.org/projects/libssh.git/patch/?id=a033b93c616f4a81afc3fc6a017396d507d96c19")
-                       (method url-fetch)
-                       (sha256
-                        (base32
-                         "16fdkjcnhc6j7qxz9575fzr9044927ws5259yh0xb9yv1q14j0vh")))))))
+                "0b6wyx6bwbb8jpn8x4rhlrdiqwqrwrs0mxjmrnqykm9kw1ijgm8g"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
@@ -68,10 +59,7 @@
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f))
     (inputs `(("zlib" ,zlib)
-               ;; Link against an older gcrypt, because libssh tries to access
-               ;; fields of 'gcry_thread_cbs' that are now private:
-               ;; src/threads.c:72:26: error: 'struct gcry_thread_cbs' has no member named 'mutex_init'
-              ("libgcrypt", libgcrypt-1.5)))
+              ("libgcrypt", libgcrypt)))
     (synopsis "SSH client library")
     (description
      "libssh is a C library implementing the SSHv2 and SSHv1 protocol for
