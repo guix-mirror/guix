@@ -4713,3 +4713,28 @@ should be stored on various operating systems.")
 
 (define-public python2-llfuse
   (package-with-python2 python-llfuse))
+
+(define-public python-msgpack
+  (package
+    (name "python-msgpack")
+    (version "0.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/m/"
+                    "msgpack-python/msgpack-python-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1527c76b6fn4zzkgfq5xvhh7x9a9686g7fjiz717rw5vklf5ik5z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (synopsis "MessagePack (de)serializer")
+    (description "MessagePack is a fast, compact binary serialization format,
+suitable for similar data to JSON.  This package provides CPython bindings for
+reading and writing MessagePack data.")
+    (home-page "https://pypi.python.org/pypi/msgpack-python/")
+    (license asl2.0)))
+
+(define-public python2-msgpack
+  (package-with-python2 python-msgpack))
