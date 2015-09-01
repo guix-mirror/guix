@@ -534,6 +534,34 @@ inside body is let-bound to their cdrs in the alist.  Only those present in
 the body are let-bound and this search is done at compile time.")
     (license license:gpl3+)))
 
+(define-public flycheck
+  (package
+    (name "emacs-flycheck")
+    (version "20150831.1343")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://melpa.org/packages/flycheck-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0a0iyvki62rqi24dbrcdq3i1wdygdi350gcjsfrfr6fz8fasz42l"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-let-alist" ,let-alist)))
+    (home-page "https://www.flycheck.org")
+    (synopsis "On-the-fly syntax checking")
+    (description
+     "This package provides on-the-fly syntax checking for GNU Emacs.  It is a
+replacement for the older Flymake extension which is part of GNU Emacs, with
+many improvements and additional features.
+
+Flycheck provides fully-automatic, fail-safe, on-the-fly background syntax
+checking for over 30 programming and markup languages with more than 70
+different tools.  It highlights errors and warnings inline in the buffer, and
+provides an optional IDE-like error list.")
+    (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
+
 
 ;;;
 ;;; Web browsing.
