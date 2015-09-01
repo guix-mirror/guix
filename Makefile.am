@@ -231,7 +231,8 @@ MODULES +=					\
 
 SCM_TESTS += 					\
   tests/pypi.scm				\
-  tests/cpan.scm
+  tests/cpan.scm				\
+  tests/gem.scm
 
 endif
 

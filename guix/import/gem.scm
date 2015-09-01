@@ -105,8 +105,9 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
      (description ,description)
      (home-page ,home-page)
      (license ,(match licenses
+                 (() #f)
                  ((license) (license->symbol license))
-                 (_ (map license->symbol licenses))))))
+                 (_ `(list ,@(map license->symbol licenses)))))))
 
 (define* (gem->guix-package package-name #:optional version)
   "Fetch the metadata for PACKAGE-NAME from rubygems.org, and return the
