@@ -140,6 +140,43 @@ and sensible default behaviors into your setuptools run.")
   (package-with-python2 python-pbr))
 
 ;; Packages from the Oslo library
+(define-public python-oslo.i18n
+  (package
+    (name "python-oslo.i18n")
+    (version "2.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/o/oslo.i18n/oslo.i18n-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1kg72mqldlri3x0bhxai7j979czrd7mf8s3iflvvv0x9kn9ah4cw"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-babel" ,python-babel)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests
+        ("python-mock" ,python-mock)
+        ("python-mox3" ,python-mox3)
+        ("python-oslotest" ,python-oslotest)
+        ("python-testscenarios" ,python-testscenarios)))
+    (home-page "http://launchpad.net/oslo")
+    (synopsis "Oslo internationalization (i18n) library")
+    (description
+      "The oslo.i18n library contain utilities for working with
+internationalization (i18n) features, especially translation for text strings
+in an application or library.")
+    (license asl2.0)))
+
+(define-public python2-oslo.i18n
+  (package-with-python2 python-oslo.i18n))
+
 (define-public python-oslotest
   (package
     (name "python-oslotest")
