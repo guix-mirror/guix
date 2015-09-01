@@ -209,6 +209,10 @@ to be modified."
   '(("--type" :fun guix-read-graph-type)))
 
 (guix-command-define-argument-improver
+    guix-command-improve-import-argument
+  '(("cran" :char ?r)))
+
+(guix-command-define-argument-improver
     guix-command-improve-import-elpa-argument
   '(("--archive" :fun guix-read-elpa-archive)))
 
@@ -275,6 +279,8 @@ to be modified."
      guix-command-improve-gc-argument)
     (("graph")
      guix-command-improve-graph-argument)
+    (("import")
+     guix-command-improve-import-argument)
     (("import" "gnu")
      guix-command-improve-key-policy-argument)
     (("import" "elpa")
