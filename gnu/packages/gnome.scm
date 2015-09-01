@@ -69,6 +69,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages qt)  ; for libxkbcommon
   #:use-module (gnu packages compression)
@@ -3537,3 +3538,33 @@ wraps things up in a developer-friendly way.")
      "Libgee is a utility library providing GObject-based interfaces and
 classes for commonly used data structures.")
     (license license:lgpl2.1+)))
+
+(define-public gexiv2
+  (package
+    (name "gexiv2")
+    (version "0.10.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "121r5lv6l82pjr0ycdf2b01mdwy7sxwca2r068zrzylpc6bgn31r"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; Listed in "Requires" section of gexiv2.pc
+     `(("exiv2" ,exiv2)))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://wiki.gnome.org/Projects/gexiv2")
+    (synopsis "GObject wrapper around the Exiv2 photo metadata library")
+    (description
+     "Gexiv2 is a GObject wrapper around the Exiv2 photo metadata library.  It
+allows for GNOME applications to easily inspect and update EXIF, IPTC, and XMP
+metadata in photo and video files of various formats.")
+    (license license:gpl2+)))
