@@ -3500,3 +3500,40 @@ manage, and publish documentation for Yelp and the web.  Most of the heavy
 lifting is done by packages like yelp-xsl and itstool.  This package just
 wraps things up in a developer-friendly way.")
     (license license:gpl2+)))
+
+(define-public libgee
+  (package
+    (name "libgee")
+    (version "0.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "16a34js81w9m2bw4qd8csm4pcgr3zq5z87867j4b8wfh6zwrxnaa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-introspection-install-dir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "gee/Makefile.in"
+                (("@INTROSPECTION_GIRDIR@")
+                 (string-append out "/share/gir-1.0/"))
+                (("@INTROSPECTION_TYPELIBDIR@")
+                 (string-append out "/lib/girepository-1.0/")))))))))
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://wiki.gnome.org/Projects/Libgee")
+    (synopsis "GObject collection library")
+    (description
+     "Libgee is a utility library providing GObject-based interfaces and
+classes for commonly used data structures.")
+    (license license:lgpl2.1+)))
