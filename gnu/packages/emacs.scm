@@ -537,14 +537,15 @@ the body are let-bound and this search is done at compile time.")
 (define-public flycheck
   (package
     (name "emacs-flycheck")
-    (version "20150831.1343")
+    (version "0.23")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://melpa.org/packages/flycheck-"
-                                  version ".tar"))
+              (uri (string-append
+                    "https://github.com/flycheck/flycheck/releases/download/"
+                    version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "0a0iyvki62rqi24dbrcdq3i1wdygdi350gcjsfrfr6fz8fasz42l"))))
+                "1n2cifzsl5dbv42l82bi3y1vk6q33msi8dd4bj7b9nvnl9jfjj5b"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
