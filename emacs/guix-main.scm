@@ -71,7 +71,14 @@
 (define (list-maybe obj)
   (if (list? obj) obj (list obj)))
 
-(define full-name->name+version package-name->name+version)
+(define (full-name->name+version spec)
+  "Given package specification SPEC with or without output,
+return two values: name and version.  For example, for SPEC
+\"foo-0.9.1b:lib\", return \"foo\" and \"0.9.1b\"."
+  (let-values (((name version output)
+                (package-specification->name+version+output spec)))
+    (values name version)))
+
 (define (name+version->full-name name version)
   (string-append name "-" version))
 
@@ -247,6 +254,10 @@ Example:
   (filter-map (match-lambda
                ((_ (? package? package))
                 (package-full-name package))
+               ((_ (? package? package) output)
+                (make-package-specification (package-name package)
+                                            (package-version package)
+                                            output))
                (_ #f))
               inputs))
 
