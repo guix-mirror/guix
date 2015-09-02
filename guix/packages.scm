@@ -192,7 +192,7 @@ representation."
 
 (define %hydra-supported-systems
   ;; This is the list of system types for which build slaves are available.
-  (delete "armhf-linux" %supported-systems))
+  %supported-systems)
 
 
 ;; A package.
