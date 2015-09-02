@@ -1021,19 +1021,15 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.22")
+    (version "2.24")
     (source (origin
              (method url-fetch)
-
-             ;; Tarballs used to be available from
-             ;; <https://www.kernel.org/pub/linux/libs/security/linux-privs/>
-             ;; but they never came back after kernel.org was compromised.
              (uri (string-append
-                   "mirror://debian/pool/main/libc/libcap2/libcap2_"
-                   version ".orig.tar.gz"))
+                   "mirror://kernel.org/linux/libs/security/linux-privs/"
+                   "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "07vjhkznm82p8dm4w6j8mmg7h5c70lp5s9bwwfdmgwpbixfydjp1"))))
+               "0rbc9qbqs5bp9am9s9g83wxj5k4ixps2agy9dxr1v1fwg27mdr6f"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
