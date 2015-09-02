@@ -248,7 +248,8 @@ used to apply commands with arbitrarily long arguments.")
               "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
-             ("gmp"  ,gmp)))
+             ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
+             ("libcap" ,libcap)))    ;capability support is 'ls','dir', 'vdir'
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
     ;; copy of help2man.  However, don't pass it when cross-compiling since
