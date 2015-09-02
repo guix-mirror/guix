@@ -6049,6 +6049,7 @@ adds or adjust services for a typical ``desktop'' setup.
 In particular, it adds a graphical login manager (@pxref{X Window,
 @code{slim-service}}), a network management tool (@pxref{Networking
 Services, @code{wicd-service}}), energy and color management services,
+the @code{elogind} login and seat manager, the Polkit privilege service,
 the GeoClue location service, an NTP client (@pxref{Networking
 Services}), the Avahi daemon, and has the name service switch service
 configured to be able to use @code{nss-mdns} (@pxref{Name Service
@@ -6075,6 +6076,87 @@ and be notified of system-wide events.
 @file{etc/dbus-1/system.d} directory containing additional D-Bus configuration
 and policy files.  For example, to allow avahi-daemon to use the system bus,
 @var{services} must be equal to @code{(list avahi)}.
+@end deffn
+
+@deffn {Monadic Procedure} elogind-service @
+                         [#:elogind @var{elogind}] [#:config @var{config}]
+Return a service that runs the @code{elogind} login and
+seat management daemon.  @uref{https://github.com/andywingo/elogind,
+Elogind} exposes a D-Bus interface that can be used to know which users
+are logged in, know what kind of sessions they have open, suspend the
+system, inhibit system suspend, reboot the system, and other tasks.
+
+Elogind handles most system-level power events for a computer, for
+example suspending the system when a lid is closed, or shutting it down
+when the power button is pressed.
+
+The @var{config} keyword argument specifies the configuration for
+elogind, and should be the result of a @code{(elogind-configuration
+(@var{parameter} @var{value})...)} invocation.  Available parameters and
+their default values are:
+
+@table @code
+@item kill-user-processes?
+@code{#f}
+@item kill-only-users
+@code{()}
+@item kill-exclude-users
+@code{("root")}
+@item inhibit-delay-max-seconds
+@code{5}
+@item handle-power-key
+@code{poweroff}
+@item handle-suspend-key
+@code{suspend}
+@item handle-hibernate-key
+@code{hibernate}
+@item handle-lid-switch
+@code{suspend}
+@item handle-lid-switch-docked
+@code{ignore}
+@item power-key-ignore-inhibited?
+@code{#f}
+@item suspend-key-ignore-inhibited?
+@code{#f}
+@item hibernate-key-ignore-inhibited?
+@code{#f}
+@item lid-switch-ignore-inhibited?
+@code{#t}
+@item holdoff-timeout-seconds
+@code{30}
+@item idle-action
+@code{ignore}
+@item idle-action-seconds
+@code{(* 30 60)}
+@item runtime-directory-size-percent
+@code{10}
+@item runtime-directory-size
+@code{#f}
+@item remove-ipc?
+@code{#t}
+@item suspend-state
+@code{("mem" "standby" "freeze")}
+@item suspend-mode
+@code{()}
+@item hibernate-state
+@code{("disk")}
+@item hibernate-mode
+@code{("platform" "shutdown")}
+@item hybrid-sleep-state
+@code{("disk")}
+@item hybrid-sleep-mode
+@code{("suspend" "platform" "shutdown")}
+@end table
+@end deffn
+
+@deffn {Monadic Procedure} polkit-service @
+                         [#:polkit @var{polkit}]
+Return a service that runs the Polkit privilege manager.
+@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit} allows
+system administrators to grant access to privileged operations in a
+structured way.  For example, polkit rules can allow a logged-in user
+whose session is active to shut down the machine, if there are no other
+users active.
 @end deffn
 
 @deffn {Monadic Procedure} upower-service [#:upower @var{upower}] @
