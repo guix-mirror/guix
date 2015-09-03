@@ -44,6 +44,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
@@ -3568,3 +3570,58 @@ classes for commonly used data structures.")
 allows for GNOME applications to easily inspect and update EXIF, IPTC, and XMP
 metadata in photo and video files of various formats.")
     (license license:gpl2+)))
+
+(define-public shotwell
+  (package
+    (name "shotwell")
+    (version "0.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0cgqaaikrb10plhf6zxbgqy32zqpiwyi9dpx3g8yr261q72r5c81"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("CC=gcc")
+       #:configure-flags '("--disable-gsettings-convert-install")
+       #:out-of-source? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)
+       ("m4" ,m4)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("vala" ,vala)
+       ("which" ,which)
+       ("gnome-doc-utils" ,gnome-doc-utils)
+       ;; FIXME: I only added python2-libxml2 because xml2po needs it at
+       ;; runtime.  It should be propagated.
+       ("python2-libxml2" ,python2-libxml2)
+       ("python2" ,python-2)))
+    (inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("libgee" ,libgee)
+       ("gexiv2" ,gexiv2)
+       ("libraw" ,libraw)
+       ("json-glib" ,json-glib)
+       ("rest" ,rest)
+       ("webkitgtk" ,webkitgtk-2.4)
+       ("sqlite" ,sqlite)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
+       ("gtk+" ,gtk+)
+       ("libgudev" ,libgudev)
+       ("libgphoto2" ,libgphoto2)))
+    (home-page "https://wiki.gnome.org/Apps/Shotwell")
+    (synopsis "Photo manager for GNOME 3")
+    (description
+     "Shotwell is a digital photo manager designed for the GNOME desktop
+environment.  It allows you to import photos from disk or camera, organize
+them by keywords and events, view them in full-window or fullscreen mode, and
+share them with others via social networking and more.")
+    (license license:lgpl2.1+)))
