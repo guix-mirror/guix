@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -884,6 +885,9 @@ This is the GNU operating system, welcome!\n\n")))
           ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
           ;; used, so enable them by default.  The FUSE and ALSA rules are
           ;; less critical, but handy.
+          ;;
+          ;; XXX Keep this in sync with the 'udev-service' call in
+          ;; %desktop-services.
           (udev-service #:rules (list lvm2 fuse alsa-utils crda)))))
 
 ;;; base.scm ends here

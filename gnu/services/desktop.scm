@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,8 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages wicd)
   #:use-module (gnu packages polkit)
+  #:use-module ((gnu packages linux)
+                #:select (lvm2 fuse alsa-utils crda))
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix store)
@@ -593,12 +596,24 @@ when they log out."
          (ntp-service)
 
          (map (lambda (mservice)
-                ;; Provide an nscd ready to use nss-mdns.
                 (mlet %store-monad ((service mservice))
-                  (if (memq 'nscd (service-provision service))
-                      (nscd-service (nscd-configuration)
-                                    #:name-services (list nss-mdns))
-                      mservice)))
+                  (cond
+                   ;; Provide an nscd ready to use nss-mdns.
+                   ((memq 'nscd (service-provision service))
+                    (nscd-service (nscd-configuration)
+                                  #:name-services (list nss-mdns)))
+
+                   ;; Add more rules to udev-service.
+                   ;;
+                   ;; XXX Keep this in sync with the 'udev-service' call in
+                   ;; %base-services.  Here we intend only to add 'upower',
+                   ;; 'colord', and 'elogind'.
+                   ((memq 'udev (service-provision service))
+                    (udev-service #:rules
+                                  (list lvm2 fuse alsa-utils crda
+                                        upower colord elogind)))
+
+                   (else mservice))))
               %base-services)))
 
 ;;; desktop.scm ends here
