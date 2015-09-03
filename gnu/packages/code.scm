@@ -229,6 +229,29 @@ files, but compared to grep is much faster and respects files like .gitignore,
 .hgignore, etc.")
     (license license:asl2.0)))
 
+(define-public trio
+  (package
+    (name "trio")
+    (version "1.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ctrio/trio/trio-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02pwd5m5vq7hbrffgm2na1dfc249z50yyr5jv73vdw15bd7ygl44"))))
+    (build-system gnu-build-system)
+    (home-page "http://daniel.haxx.se/projects/trio/")
+    (synopsis "Portable and extendable printf and string functions")
+    (description
+     "Trio is a set of @code{printf} and string functions designed be used by
+applications with a focus on portability or with the need for additional
+features that are not supported by the standard @code{stdio} implementation.")
+    ;; This license is very similar to the ISC license, but the wording is
+    ;; slightly different.
+    (license (license:non-copyleft
+              "http://sourceforge.net/p/ctrio/git/ci/master/tree/README"))))
+
 (define-public withershins
   (package
     (name "withershins")
