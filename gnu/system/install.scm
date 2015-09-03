@@ -344,7 +344,7 @@ Use Alt-F2 for documentation.
                      parted ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
-                     wireless-tools iw wpa-supplicant-light iproute
+                     wireless-tools iw wpa-supplicant-minimal iproute
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
                      ;; space; furthermore util-linux's fdisk is already

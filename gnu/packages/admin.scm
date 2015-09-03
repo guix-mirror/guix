@@ -703,9 +703,9 @@ commands and their arguments.")
     ;; See <http://www.sudo.ws/sudo/license.html>.
     (license license:x11)))
 
-(define-public wpa-supplicant-light
+(define-public wpa-supplicant-minimal
   (package
-    (name "wpa-supplicant-light")
+    (name "wpa-supplicant-minimal")
     (version "2.4")
     (source (origin
               (method url-fetch)
@@ -795,12 +795,12 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
     (license license:bsd-3)))
 
 (define-public wpa-supplicant
-  (package (inherit wpa-supplicant-light)
+  (package (inherit wpa-supplicant-minimal)
     (name "wpa-supplicant")
     (inputs `(("dbus" ,dbus)
-              ,@(package-inputs wpa-supplicant-light)))
+              ,@(package-inputs wpa-supplicant-minimal)))
     (arguments
-     (substitute-keyword-arguments (package-arguments wpa-supplicant-light)
+     (substitute-keyword-arguments (package-arguments wpa-supplicant-minimal)
        ((#:phases phases)
         `(alist-cons-after
           'configure 'configure-for-dbus
