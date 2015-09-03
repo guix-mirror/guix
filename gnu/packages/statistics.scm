@@ -68,7 +68,11 @@
          (add-before
           'check 'set-timezone
           ;; Some tests require the timezone to be set.
-          (lambda _ (setenv "TZ" "UTC") #t)))
+          (lambda _ (setenv "TZ" "UTC") #t))
+         (add-after 'build 'make-info
+          (lambda _ (zero? (system* "make" "info"))))
+         (add-after 'build 'install-info
+          (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
        '("--with-blas=openblas"
          "--with-lapack"
