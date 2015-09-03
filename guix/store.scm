@@ -58,6 +58,7 @@
             close-connection
             with-store
             set-build-options
+            set-build-options*
             valid-path?
             query-path-hash
             hash-part->path
@@ -985,6 +986,9 @@ permission bits are kept."
 (define build
   ;; Monadic variant of 'build-things'.
   (store-lift build-things))
+
+(define set-build-options*
+  (store-lift set-build-options))
 
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,
