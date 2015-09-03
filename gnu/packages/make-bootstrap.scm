@@ -115,7 +115,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 #:native-inputs native-inputs))
 
 (define %bash-static
-  (static-package bash-light))
+  (static-package bash-minimal))
 
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.

@@ -214,10 +214,10 @@ without modification.")
      (license gpl3+)
      (home-page "http://www.gnu.org/software/bash/"))))
 
-(define-public bash-light
+(define-public bash-minimal
   ;; A stripped-down Bash for non-interactive use.
   (package (inherit bash)
-    (name "bash-light")
+    (name "bash-minimal")
     (inputs '())                                ; no readline, no curses
     (arguments
      (let ((args `(#:modules ((guix build gnu-build-system)
@@ -242,7 +242,7 @@ without modification.")
 (define-public static-bash
   ;; Statically-linked Bash that contains nothing but the 'bash' binary and
   ;; 'sh' symlink, without any reference.
-  (let ((bash (static-package bash-light)))
+  (let ((bash (static-package bash-minimal)))
     (package
       (inherit bash)
       (name "bash-static")
