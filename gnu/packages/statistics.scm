@@ -84,6 +84,16 @@
          "--with-system-pcre"
          "--with-system-tre"
          "--with-system-xz")))
+    ;; R has some support for Java.  When the JDK is available at configure
+    ;; time environment variables pointing to the JDK will be recorded under
+    ;; $R_HOME/etc and ./tools/getsp.java will be compiled which is used by "R
+    ;; CMD javareconf".  "R CMD javareconf" appears to only be used to update
+    ;; the recorded environment variables in $R_HOME/etc.  Refer to
+    ;; https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Java-support
+    ;; for additional information.
+
+    ;; As the JDK is a rather large input with only very limited effects on R,
+    ;; we decided to drop it.
     (native-inputs
      `(("bzip2" ,bzip2)
        ("perl" ,perl)
@@ -97,7 +107,6 @@
        ("cairo" ,cairo)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
-       ("icedtea6" ,icedtea6 "jdk")
        ("lapack" ,lapack)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
