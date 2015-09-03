@@ -102,7 +102,6 @@
      `(("bzip2" ,bzip2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("texlive" ,texlive) ; needed to make vignettes
        ("texinfo" ,texinfo) ; for building HTML manuals
        ("which" ,which) ; for tests/Examples/base-Ex.R
        ("xz" ,xz)))
