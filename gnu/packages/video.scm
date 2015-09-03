@@ -1015,7 +1015,8 @@ for use with HTML5 video.")
                (("#! /bin/sh") (string-append "#!" (which "bash"))))
              (system* "tar" "cjf" "ffmpeg-2.6.1.tar.bz2" "ffmpeg-2.6.1"
                       ;; avoid non-determinism in the archive
-                      "--mtime=@0" "--owner=root:0" "--group=root:0")
+                      "--sort=name" "--mtime=@0"
+                      "--owner=root:0" "--group=root:0")
              (delete-file-recursively "ffmpeg-2.6.1")))
          (alist-replace 'configure
           (lambda _

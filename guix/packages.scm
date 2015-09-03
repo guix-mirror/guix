@@ -482,6 +482,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                       (zero? (system* (string-append #+tar "/bin/tar")
                                       "cvfa" #$output directory
                                       ;; avoid non-determinism in the archive
+                                      "--sort=name"
                                       "--mtime=@0"
                                       "--owner=root:0"
                                       "--group=root:0")))))))
