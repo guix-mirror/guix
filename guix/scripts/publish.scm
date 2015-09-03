@@ -151,7 +151,7 @@ PATH-INFO.  The narinfo is signed with KEY."
          (references (string-join
                       (map basename (path-info-references path-info))
                       " "))
-         (deriver (path-info-deriver path-info))
+         (deriver    (path-info-deriver path-info))
          (base-info  (format #f
                              "StorePath: ~a
 URL: ~a
@@ -162,12 +162,21 @@ References: ~a~%"
                              store-path url hash size references))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
-         (info (if (string-null? deriver)
-                   base-info
-                   (let ((drv (load-derivation deriver)))
-                     (format #f "~aSystem: ~a~%Deriver: ~a~%"
-                             base-info (derivation-system drv)
-                             (basename deriver)))))
+         (info       (if (string-null? deriver)
+                         base-info
+                         (catch 'system-error
+                           (lambda ()
+                             (let ((drv (load-derivation deriver)))
+                               (format #f "~aSystem: ~a~%Deriver: ~a~%"
+                                       base-info (derivation-system drv)
+                                       (basename deriver))))
+                           (lambda args
+                             ;; DERIVER might be missing, but that's fine:
+                             ;; it's only used for <substitutable> where it's
+                             ;; optional.  'System' is currently unused.
+                             (if (= ENOENT (system-error-errno args))
+                                 base-info
+                                 (apply throw args))))))
          (signature  (base64-encode-string
                       (canonical-sexp->string (signed-string info)))))
     (format #f "~aSignature: 1;~a;~a~%" info (gethostname) signature)))

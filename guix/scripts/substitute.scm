@@ -703,7 +703,7 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
 ;;;
 
 (define (display-narinfo-data narinfo)
-  "Write to the current output port the contents of NARINFO is the format
+  "Write to the current output port the contents of NARINFO in the format
 expected by the daemon."
   (format #t "~a\n~a\n~a\n"
           (narinfo-path narinfo)
