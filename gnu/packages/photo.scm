@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages photo)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -48,7 +49,7 @@
     (description
      "LibRaw is a library for reading RAW files obtained from digital photo
 cameras (CRW/CR2, NEF, RAF, DNG, and others).")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libexif
   (package
@@ -67,7 +68,7 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
     (description
      "The libexif C library allows applications to read, edit, and save EXIF
 data as produced by digital cameras.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libgphoto2
   (package
@@ -97,7 +98,7 @@ MTP, and other vendor specific protocols for controlling and transferring data
 from digital cameras.")
 
     ;; 'COPYING' says LGPLv2.1+, but in practices files are under LGPLv2+.
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public gphoto2
   (package
@@ -140,7 +141,7 @@ number of different digital cameras.  Through libgphoto2, it supports PTP,
 MTP, and much more.")
 
     ;; Files are typically under LGPLv2+, but 'COPYING' says GPLv2+.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public perl-image-exiftool
   (package
