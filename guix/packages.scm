@@ -94,6 +94,7 @@
             package-grafts
 
             %supported-systems
+            %hurd-systems
             %hydra-supported-systems
             supported-package?
 
@@ -189,6 +190,10 @@ representation."
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
   '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux"))
+
+(define %hurd-systems
+  ;; The GNU/Hurd systems for which support is being developed.
+  '("i585-gnu" "i686-gnu"))
 
 (define %hydra-supported-systems
   ;; This is the list of system types for which build slaves are available.
