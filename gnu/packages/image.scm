@@ -106,32 +106,13 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.0.3")
+   (version "4.0.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.remotesensing.org/pub/libtiff/tiff-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0wj8d1iwk9vnpax2h29xqc2hwknxg3s0ay2d5pxkg59ihbifn6pa"))
-            (patches (map search-patch '("libtiff-CVE-2012-4564.patch"
-                                         "libtiff-CVE-2013-1960.patch"
-                                         "libtiff-CVE-2013-1961.patch"
-                                         "libtiff-CVE-2013-4231.patch"
-                                         "libtiff-CVE-2013-4232.patch"
-                                         "libtiff-CVE-2013-4244.patch"
-                                         "libtiff-CVE-2013-4243.patch"
-                                         "libtiff-CVE-2014-9330.patch"
-                                         "libtiff-CVE-2014-8127-pt1.patch"
-                                         "libtiff-CVE-2014-8127-pt2.patch"
-                                         "libtiff-CVE-2014-8127-pt3.patch"
-                                         "libtiff-CVE-2014-8127-pt4.patch"
-                                         "libtiff-CVE-2014-8128-pt1.patch"
-                                         "libtiff-CVE-2014-8128-pt2.patch"
-                                         "libtiff-CVE-2014-8128-pt3.patch"
-                                         "libtiff-CVE-2014-8129.patch"
-                                         "libtiff-CVE-2014-9655.patch"
-                                         "libtiff-CVE-2014-8128-pt4.patch"
-                                         "libtiff-CVE-2014-8128-pt5.patch")))))
+                     "171hgy4mylwmvdm7gp6ffjva81m4j56v3fbqsbfl7avzxn1slpp2"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)
              ("libjpeg-8" ,libjpeg-8)))
