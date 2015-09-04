@@ -1007,3 +1007,26 @@ core extensions extracted from the Rails framework.  It includes support for
 multibyte strings, internationalization, time zones, and testing.")
     (home-page "http://www.rubyonrails.org")
     (license license:expat)))
+
+(define-public ruby-ox
+  (package
+    (name "ruby-ox")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ox" version))
+       (sha256
+        (base32
+         "00i11xd4ayh7349rhgskajfxn0qzkb74ab01217zix9qcapssxax"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (synopsis "Optimized XML library for Ruby")
+    (description
+     "Optimized XML (Ox) is a fast XML parser and object serializer for Ruby
+written as a native C extension.  It was designed to be an alternative to
+Nokogiri and other Ruby XML parsers for generic XML parsing and as an
+alternative to Marshal for Object serialization. ")
+    (home-page "http://www.ohler.com/ox")
+    (license license:expat)))
