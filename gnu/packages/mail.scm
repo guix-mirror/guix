@@ -405,6 +405,40 @@ attachments, create new maildirs, and so on.")
 ing, and tagging large collections of email messages.")
     (license gpl3+)))
 
+(define-public python2-notmuch
+  (package
+    (name "python2-notmuch")
+    (version "0.15.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/n/notmuch/notmuch-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "18g8701ibr153ngsz258kgcd42wqnbf9ifpqig1bijy6b0zx9xn5"))))
+    (build-system python-build-system)
+    (inputs `(("notmuch" ,notmuch)))
+    (arguments
+     `(#:python ,python-2
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'build 'set-libnotmuch-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((notmuch (assoc-ref inputs "notmuch")))
+                       (substitute* "notmuch/globals.py"
+                         (("libnotmuch\\.so\\.[0-9]")
+                          (string-append notmuch "/lib/libnotmuch.so.4")))
+                       #t))))
+       #:tests? #f))                              ;no "test" target
+    (home-page "http://notmuchmail.org/")
+    (synopsis "Python bindings of the Notmuch mail indexing library")
+    (description
+     "This package provides Python bindings to use the Notmuch mail indexing
+and search library.")
+    (license gpl3+)))
+
 (define-public getmail
   (package
     (name "getmail")
