@@ -58,11 +58,8 @@
     (inputs `(("attr" ,attr)))
     (native-inputs
      `(("gettext" ,gnu-gettext)
-       ("perl" ,perl)
-       ("sed" ,sed)))
-
-    (home-page
-     "http://savannah.nongnu.org/projects/acl")
+       ("perl" ,perl)))
+    (home-page "http://savannah.nongnu.org/projects/acl")
     (synopsis
      "Library and tools for manipulating access control lists")
     (description
