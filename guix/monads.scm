@@ -239,10 +239,10 @@ CONDITION is true, return *unspecified* in the current monad."
             (identifier? #'id)
             ;; Slow path: Return a closure-returning procedure (we don't
             ;; guarantee (eq? LIFTN LIFTN), but that's fine.)
-            (lambda (liftn proc monad)
-              (lambda (args ...)
-                (with-monad monad
-                  (return (proc args ...))))))))))))
+            #'(lambda (proc monad)
+                (lambda (args ...)
+                  (with-monad monad
+                    (return (proc args ...))))))))))))
 
 (define-lift lift0 ())
 (define-lift lift1 (a))
