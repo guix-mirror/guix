@@ -1080,3 +1080,47 @@ build on.  It provides breakpoint handling and bindings for stack frames among
 other things and it comes with a command line interface.")
     (home-page "http://github.com/deivid-rodriguez/byebug")
     (license license:bsd-2)))
+
+(define-public ruby-rack
+  (package
+    (name "ruby-rack")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rack" version))
+       (sha256
+        (base32
+         "09bs295yq6csjnkzj7ncj50i6chfxrhmzg1pk6p0vd2lb9ac8pj5"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             ;; A few of the tests use the length of a file on disk for
+             ;; Content-Length and Content-Range headers.  However, this file
+             ;; has a shebang in it which an earlier phase patches, growing
+             ;; the file size from 193 to 239 bytes when the store prefix is
+             ;; "/gnu/store".
+             (let ((size-diff (- (string-length (which "ruby"))
+                                 (string-length "/usr/bin/env ruby"))))
+               (substitute* '("test/spec_file.rb")
+                 (("193")
+                  (number->string (+ 193 size-diff)))
+                 (("bytes(.)22-33" all delimiter)
+                  (string-append "bytes"
+                                 delimiter
+                                 (number->string (+ 22 size-diff))
+                                 "-"
+                                 (number->string (+ 33 size-diff))))))
+             #t)))))
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Unified web application interface for Ruby")
+    (description "Rack provides a minimal, modular and adaptable interface for
+developing web applications in Ruby.  By wrapping HTTP requests and responses,
+it unifies the API for web servers, web frameworks, and software in between
+into a single method call.")
+    (home-page "http://rack.github.io/")
+    (license license:expat)))
