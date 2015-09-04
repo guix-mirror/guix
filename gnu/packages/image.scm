@@ -115,13 +115,7 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
                      "171hgy4mylwmvdm7gp6ffjva81m4j56v3fbqsbfl7avzxn1slpp2"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)
-             ("libjpeg-8" ,libjpeg-8)))
-             ;; currently does not compile with libjpeg version 9
-   (arguments
-    `(#:configure-flags
-      (list (string-append "--with-jpeg-include-dir="
-                           (assoc-ref %build-inputs "libjpeg-8")
-                           "/include"))))
+             ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
    (description
     "Libtiff provides support for the Tag Image File Format (TIFF), a format
