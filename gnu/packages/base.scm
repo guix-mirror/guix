@@ -293,11 +293,11 @@ functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/coreutils/")))
 
-(define-public coreutils-light
+(define-public coreutils-minimal
   ;; Coreutils without its optional dependencies.
   (package
     (inherit coreutils)
-    (name "coreutils-light")
+    (name "coreutils-minimal")
     (outputs '("out"))
     (inputs '())))
 

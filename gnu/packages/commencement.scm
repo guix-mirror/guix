@@ -734,7 +734,7 @@ exec \"~a\" \"$@\"\n"
 
       ;; Grep's test suite uses 'timeout' from Coreutils to execute command,
       ;; and yet these commands need to see the valid 'LOCPATH'.
-      ("coreutils" ,(new-libc-package coreutils-light))
+      ("coreutils" ,(new-libc-package coreutils-minimal))
 
       ;; We just wrap the remaining binaries (tar, gzip, xz, etc.)  so that
       ;; they ignore 'LOCPATH' (if they did not, they would be hit by an
