@@ -31,6 +31,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -525,9 +526,12 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("fftw" ,fftw)
       ("fftwf" ,fftwf)
       ("hdf5" ,hdf5)
+      ("ilmbase" ,ilmbase) ; propagated by openexr, but needed explicitly
+                           ; to create a configure-flag
       ("libjpeg" ,libjpeg)
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)
+      ("openexr" ,openexr)
       ("python" ,python-2) ; print syntax
       ("python2-numpy" ,python2-numpy)
       ("zlib" ,zlib)))
@@ -541,7 +545,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
               (string-append "-DVIGRANUMPY_INSTALL_DIR="
                              (assoc-ref %outputs "out")
-                             "/lib/python2.7/site-packages"))))
+                             "/lib/python2.7/site-packages")
+              ;; OpenEXR is not enabled by default.
+              "-DWITH_OPENEXR=1"
+              ;; The header files of ilmbase are not found when included
+              ;; by the header files of openexr, and an explicit flag
+              ;; needs to be set.
+              (string-append "-DCMAKE_CXX_FLAGS=-I"
+                             (assoc-ref %build-inputs "ilmbase")
+                             "/include/OpenEXR"))))
    (synopsis "Computer vision library")
    (description
     "VIGRA stands for Vision with Generic Algorithms.  It is an image
