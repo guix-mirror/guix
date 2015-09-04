@@ -19,18 +19,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages photo)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages libusb)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages popt)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages readline))
 
 (define-public libraw
   (package
