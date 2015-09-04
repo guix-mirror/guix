@@ -1057,3 +1057,26 @@ alternative to Marshal for Object serialization. ")
 with PostgreSQL 8.4 and later.")
     (home-page "https://bitbucket.org/ged/ruby-pg")
     (license license:ruby)))
+
+(define-public ruby-byebug
+  (package
+    (name "ruby-byebug")
+    (version "6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "byebug" version))
+       (sha256
+        (base32
+         "0537h9qbhr6csahmzyn4lk1g5b2lcligbzd21gfy93nx9lbfdnzc"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (synopsis "Debugger for Ruby 2")
+    (description "Byebug is a Ruby 2 debugger implemented using the Ruby 2
+TracePoint C API for execution control and the Debug Inspector C API for call
+stack navigation.  The core component provides support that front-ends can
+build on.  It provides breakpoint handling and bindings for stack frames among
+other things and it comes with a command line interface.")
+    (home-page "http://github.com/deivid-rodriguez/byebug")
+    (license license:bsd-2)))
