@@ -150,7 +150,7 @@ Included are a library, libtiff, for reading and writing TIFF and a small
 collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
-   (home-page "http://www.libtiff.org/")))
+   (home-page "http://www.remotesensing.org/libtiff/")))
 
 (define-public libwmf
   (package
