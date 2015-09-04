@@ -20,7 +20,9 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages base)
@@ -29,6 +31,8 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages less)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages xml))
 
 (define-public patchutils
@@ -170,3 +174,31 @@ refreshed, and more.")
      "Colordiff is Perl script wrapper on top of diff command which provides
 'syntax highlighting' for various patch formats.")
     (license gpl2+)))
+
+(define-public patches
+  (let ((commit "26d7dbc"))
+    (package
+      (name "patches")
+      (version (string-append "0.0." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/aliguori/patches")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1bah6y84nlii5yif189ns28dz1m9vmsyw66jyk2vr5yf0njf7mzh"))))
+      (build-system python-build-system)
+      (inputs `(("python-notmuch" ,python2-notmuch)))
+      (arguments
+       `(#:tests? #f                             ;no "test" target
+                  #:python ,python-2))           ;not compatible with Python 3
+      (home-page "https://github.com/aliguori/patches")
+      (synopsis "Patch tracking tool")
+      (description
+       "'Patches' is a patch-tracking tool initially written for the QEMU
+project.  It provides commands that build a database of patches from a mailing
+list, and commands that can search that database.  It allows users to track
+the status of a patch, apply patches, and search for patches---all that from
+the command-line or from Emacs via its Notmuch integration.")
+      (license gpl2+))))
