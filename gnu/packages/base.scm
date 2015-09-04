@@ -249,7 +249,12 @@ used to apply commands with arbitrarily long arguments.")
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
-             ("libcap" ,libcap)))    ;capability support is 'ls','dir', 'vdir'
+
+             ;; Drop the dependency on libcap when cross-compiling since it's
+             ;; not quite cross-compilable.
+             ,@(if (%current-target-system)
+                   '()
+                   `(("libcap" ,libcap)))))  ;capability support is 'ls', etc.
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
     ;; copy of help2man.  However, don't pass it when cross-compiling since
