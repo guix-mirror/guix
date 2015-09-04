@@ -1912,15 +1912,15 @@ library.")
 library.")
     (license license:lgpl2.0+)))
 
-(define-public librest
+(define-public rest
   (package
-    (name "librest")
+    (name "rest")
     (version "0.7.93")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/rest/"
-                                  (version-major+minor version)  "/"
-                                  "rest-" version ".tar.xz"))
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "05mj10hhiik23ai8w4wkk5vhsp7hcv24bih5q3fl82ilam268467"))))
