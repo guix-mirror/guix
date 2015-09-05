@@ -325,7 +325,13 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
       "Create a new child process by duplicating the current parent process.
 Unlike the fork system call, clone accepts FLAGS that specify which resources
 are shared between the parent and child processes."
-      (proc syscall-id flags %null-pointer))))
+      (let ((ret (proc syscall-id flags %null-pointer))
+            (err (errno)))
+        (if (= ret -1)
+            (throw 'system-error "clone" "~d: ~A"
+                   (list flags (strerror err))
+                   (list err))
+            ret)))))
 
 (define setns
   ;; Some systems may be using an old (pre-2.14) version of glibc where there
