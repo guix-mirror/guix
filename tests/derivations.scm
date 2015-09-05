@@ -199,7 +199,7 @@
   (and (substitutable-derivation? (derivation %store "foo" %bash '()))
        (substitutable-derivation?             ;see <http://bugs.gnu.org/18747>
         (derivation %store "foo" %bash '()
-                    #:local-build? #f))
+                    #:local-build? #t))
        (not (substitutable-derivation?
              (derivation %store "foo" %bash '()
                          #:substitutable? #f)))))
@@ -663,7 +663,7 @@
       (with-derivation-narinfo drv
         (let-values (((build download)
                       (derivation-prerequisites-to-build store drv)))
-          ;; #:local-build? is not be synonymous with #:substitutable?, so we
+          ;; #:local-build? is *not* synonymous with #:substitutable?, so we
           ;; must be able to substitute DRV's output.
           ;; See <http://bugs.gnu.org/18747>.
           (and (null? build)
