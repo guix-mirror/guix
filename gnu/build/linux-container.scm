@@ -162,7 +162,8 @@ host user identifiers to map into the user namespace."
 (define (namespaces->bit-mask namespaces)
   "Return the number suitable for the 'flags' argument of 'clone' that
 corresponds to the symbols in NAMESPACES."
-  (apply logior SIGCHLD
+  ;; Use the same flags as fork(3) in addition to the namespace flags.
+  (apply logior SIGCHLD CLONE_CHILD_CLEARTID CLONE_CHILD_SETTID
          (map (match-lambda
                ('mnt  CLONE_NEWNS)
                ('uts  CLONE_NEWUTS)
