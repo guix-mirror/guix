@@ -87,6 +87,10 @@
     `(("glib" ,glib "bin") ; for glib-genmarshal
       ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
       ("pkg-config" ,pkg-config)))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "IBUS_COMPONENT_PATH")
+           (files '("share/ibus/component")))))
    (synopsis "Input method framework")
    (description
     "IBus is an input framework providing a full-featured and user-friendly
