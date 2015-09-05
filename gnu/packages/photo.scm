@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages photo)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix download)
@@ -26,6 +27,8 @@
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -175,3 +178,29 @@ MTP, and much more.")
      "This package provides the 'exiftool' command and the 'Image::ExifTool'
 Perl library to manipulate EXIF tags of digital images.")
     (license (package-license perl))))
+
+(define-public libpano13
+  (package
+    (name "libpano13")
+    (version "2.9.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/panotools/libpano13/"
+                                  "libpano13-" version "/"
+                                  "libpano13-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1a4m3plmfcrrplqs9zfzhc5apibn10m5sajpizm1sd3q74w5fwq3"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (home-page "http://panotools.sourceforge.net/")
+    (synopsis "Library for panoramic images")
+    (description
+     "The libpano13 package contains the backend library written by the
+Panorama Tools project for building panoramic images from a set of
+overlapping images, as well as some command line tools.")
+    (license license:gpl2+)))
