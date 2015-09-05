@@ -288,12 +288,11 @@ in the store."
                             ;; Honor the user's proxy settings.
                             #:leaked-env-vars '("http_proxy" "https_proxy")
 
-                            ;; In general, offloading downloads is not a good idea.
-                            ;;#:local-build? #t
-                            ;; FIXME: The above would also disable use of
-                            ;; substitutes on old daemons, so comment it out;
-                            ;; see <https://bugs.gnu.org/18747>.
-                            )))))
+                            ;; In general, offloading downloads is not a good
+                            ;; idea.  Daemons before 0.8.3 would also
+                            ;; interpret this as "do not substitute" (see
+                            ;; <https://bugs.gnu.org/18747>.)
+                            #:local-build? #t)))))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)) recursive?)
