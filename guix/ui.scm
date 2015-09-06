@@ -99,7 +99,15 @@
 
 (define _ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
-(define P_ (cut gettext <> %package-text-domain))
+
+(define (P_ msgid)
+  "Return the translation of the package description or synopsis MSGID."
+  ;; Descriptions/synopses might occasionally be empty strings, even if that
+  ;; is something we try to avoid.  Since (gettext "") can return a non-empty
+  ;; string, explicitly check for that case.
+  (if (string-null? msgid)
+      msgid
+      (gettext msgid %package-text-domain)))
 
 (define-syntax-rule (define-diagnostic name prefix)
   "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
