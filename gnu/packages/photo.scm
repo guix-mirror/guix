@@ -25,15 +25,25 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
-  #:use-module (gnu packages readline))
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xfig)
+  #:use-module (gnu packages xml))
 
 (define-public libraw
   (package
@@ -203,4 +213,48 @@ Perl library to manipulate EXIF tags of digital images.")
      "The libpano13 package contains the backend library written by the
 Panorama Tools project for building panoramic images from a set of
 overlapping images, as well as some command line tools.")
+    (license license:gpl2+)))
+
+(define-public enblend-enfuse
+  (package
+    (name "enblend-enfuse")
+    (version "4.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/enblend/"
+                                  name "/"
+                                  name "-" (version-major+minor version) "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b7r1nnwaind0344ckwggy0ghl0ipbk9jzylsxcjfl05rnasw00w"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("perl-timedate" ,perl-timedate)
+       ;; for building the documentation
+       ("gnuplot" ,gnuplot)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)
+       ("tidy" ,tidy)
+       ("transfig" ,transfig)))
+    (inputs
+     `(("boost" ,boost)
+       ("gsl" ,gsl)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("openexr" ,openexr)
+       ("vigra" ,vigra)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags `("--enable-openmp")))
+    (home-page "http://enblend.sourceforge.net/")
+    (synopsis "Tools for combining and blending images")
+    (description
+     "Enblend blends away the seams in a panoramic image mosaic using a
+multi-resolution spline.  Enfuse merges different exposures of the same
+scene to produce an image that looks much like a tone-mapped image.")
     (license license:gpl2+)))
