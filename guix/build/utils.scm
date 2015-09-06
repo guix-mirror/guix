@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -316,13 +317,16 @@ name matches REGEXP."
       (regexp-exec file-rx (basename file)))))
 
 (define* (find-files dir #:optional (pred (const #t))
-                     #:key (stat lstat))
+                     #:key (stat lstat)
+                     directories?
+                     fail-on-error?)
   "Return the lexicographically sorted list of files under DIR for which PRED
 returns true.  PRED is passed two arguments: the absolute file name, and its
 stat buffer; the default predicate always returns true.  PRED can also be a
 regular expression, in which case it is equivalent to (file-name-predicate
 PRED).  STAT is used to obtain file information; using 'lstat' means that
-symlinks are not followed."
+symlinks are not followed.  If DIRECTORIES? is true, then directories will
+also be included.  If FAIL-ON-ERROR? is true, raise an exception upon error."
   (let ((pred (if (procedure? pred)
                   pred
                   (file-name-predicate pred))))
@@ -333,7 +337,10 @@ symlinks are not followed."
                                   (cons file result)
                                   result))
                             (lambda (dir stat result) ; down
-                              result)
+                              (if (and directories?
+                                       (pred dir stat))
+                                  (cons dir result)
+                                  result))
                             (lambda (dir stat result) ; up
                               result)
                             (lambda (file stat result) ; skip
@@ -341,6 +348,8 @@ symlinks are not followed."
                             (lambda (file stat errno result)
                               (format (current-error-port) "find-files: ~a: ~a~%"
                                       file (strerror errno))
+                              (when fail-on-error?
+                                (error "find-files failed"))
                               result)
                             '()
                             dir
