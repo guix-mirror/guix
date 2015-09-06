@@ -24,6 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix ftp-client)
   #:use-module (guix packages)
+  #:use-module (guix licenses)
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (guix utils)
@@ -56,6 +57,7 @@
             check-derivation
             check-home-page
             check-source
+            check-license
             check-formatting
 
             %checkers
@@ -518,6 +520,16 @@ descriptions maintained upstream."
                     (format #f (_ "failed to create derivation: ~s~%")
                             args)))))
 
+(define (check-license package)
+  "Warn about type errors of the 'license' field of PACKAGE."
+  (match (package-license package)
+    ((or (? license?)
+         ((? license?) ...))
+     #t)
+    (x
+     (emit-warning package (_ "invalid license field")
+                   'license))))
+
 
 ;;;
 ;;; Source code formatting.
@@ -619,6 +631,13 @@ them for PACKAGE."
      (name        'home-page)
      (description "Validate home-page URLs")
      (check       check-home-page))
+   (lint-checker
+     (name        'license)
+     ;; TRANSLATORS: <license> is the name of a data type and must not be
+     ;; translated.
+     (description "Make sure the 'license' field is a <license> \
+or a list thereof")
+     (check       check-license))
    (lint-checker
      (name        'source)
      (description "Validate source URLs")
