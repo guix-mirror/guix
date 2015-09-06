@@ -409,7 +409,7 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)
        ("r-stringi" ,r-stringi)))
-    (home-page "")
+    (home-page "https://github.com/hadley/stringr")
     (synopsis "Simple, consistent wrappers for common string operations")
     (description
      "Stringr is a consistent, simple and easy to use set of wrappers around
