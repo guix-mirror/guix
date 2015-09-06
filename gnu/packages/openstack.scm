@@ -100,7 +100,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-pbr
   (package
     (name "python-pbr")
-    (version "1.2.0")
+    (version "1.6.0")
     (source
       (origin
         (method url-fetch)
@@ -110,7 +110,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
                ".tar.gz"))
         (sha256
           (base32
-            "1l2mls8wnwpkqj6hxsphq7xibbbsf40gg37wc30nj4r600zgqhqm"))))
+            "1lg1klrczvzfan89y3bl9ykrknl3nb01vvai37fkww24apzyibjf"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Most tests seem to use the Internet.
