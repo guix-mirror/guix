@@ -18,7 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libcanberra)
-  #:use-module ((guix licenses) #:select (lgpl2.1+))
+  #:use-module ((guix licenses)
+                #:select (lgpl2.1+ gpl2 gpl2+ cc-by-sa4.0 cc-by3.0))
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -112,5 +113,8 @@ null) and is designed to be portable.")
     (description
      "This package provides audio samples that can be used by libcanberra as
 sounds for various system events.")
-    (license #f)
+
+    ;; The license of the various sounds is given in the 'CREDITS' file.
+    (license (list cc-by-sa4.0 cc-by3.0 gpl2 gpl2+))
+
     (home-page "http://www.freedesktop.org/wiki/Specifications/sound-theme-spec/")))
