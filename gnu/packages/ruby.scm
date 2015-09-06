@@ -732,6 +732,16 @@ options and parsing command line flags.")
     (home-page "https://github.com/leejarvis/slop")
     (license license:expat)))
 
+(define-public ruby-slop-3
+  (package (inherit ruby-slop)
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "slop" version))
+              (sha256
+               (base32
+                "00w8g3j7k7kl8ri2cf1m58ckxk8rn350gp4chfscmgv6pq1spk3n"))))))
+
 (define-public ruby-multipart-post
   (package
     (name "ruby-multipart-post")
