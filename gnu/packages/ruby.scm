@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
