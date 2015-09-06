@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,9 +26,13 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xiph))
 
 (define-public libusb
   (package
@@ -116,3 +121,37 @@ proposed for standardization.")
     ;; Foundation; either version 2 of the License, or (at your option) any
     ;; later version."
     (license lgpl2.1+)))
+
+(define-public gmtp
+  (package
+    (name "gmtp")
+    (version "1.3.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gmtp/" version
+                                  "/gmtp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bdxvi0jf3q870a39xzsaj4qrjwc9b5bgvc95plc7xb6vf2m7zsv"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:configure-flags
+       (let ((libid3tag (assoc-ref %build-inputs "libid3tag")))
+         (list
+          ;; libid3tag provides no .pc file, so pkg-config fails to find them.
+          (string-append "ID3TAG_CFLAGS=-I" libid3tag "/include")
+          (string-append "ID3TAG_LIBS=-L" libid3tag "/lib -lid3tag -lz")))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("flac" ,flac)
+       ("libvorbis" ,libvorbis)
+       ("libid3tag" ,libid3tag)
+       ("libmtp" ,libmtp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://gmtp.sourceforge.net/")
+    (synopsis "Simple graphical MTP client")
+    (description "gMTP is a simple graphical client for the Media Transfer Protocol
+  (MTP), which allows media files to be transferred to and from many portable
+devices.")
+    (license bsd-3)))
