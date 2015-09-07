@@ -5764,7 +5764,7 @@ automatically.  @var{login-pause?} can be set to @code{#t} in conjunction with
 @var{auto-login}, in which case the user will have to press a key before the
 login shell is launched.
 
-When true, @var{login-program} is a gexp or a monadic gexp denoting the name
+When true, @var{login-program} is a gexp denoting the name
 of the log-in program (the default is the @code{login} program from the Shadow
 tool suite.)
 

@@ -102,7 +102,7 @@ under /root/.guix-profile where GUIX is installed."
 (define (log-to-info)
   "Return a script that spawns the Info reader on the right section of the
 manual."
-  (gexp->script "log-to-info"
+  (program-file "log-to-info"
                 #~(begin
                     ;; 'gunzip' is needed to decompress the doc.
                     (setenv "PATH" (string-append #$gzip "/bin"))
@@ -234,7 +234,7 @@ configuration template file in the installation system."
 
 (define (installation-services)
   "Return the list services for the installation image."
-  (let ((motd (text-file "motd" "
+  (let ((motd (plain-file "motd" "
 Welcome to the installation of the Guix System Distribution!
 
 There is NO WARRANTY, to the extent permitted by law.  In particular, you may
