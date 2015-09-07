@@ -4739,3 +4739,31 @@ reading and writing MessagePack data.")
 
 (define-public python2-msgpack
   (package-with-python2 python-msgpack))
+
+(define-public python-netaddr
+  (package
+    (name "python-netaddr")
+    (version "0.7.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/n/netaddr/netaddr-"
+             version
+             ".tar.gz"))
+       (sha256
+         (base32
+          "06dxjlbcicq7q3vqy8agq11ra01kvvd47j4mk6dmghjsyzyckxd1"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ;; No tests.
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/drkjam/netaddr/")
+    (synopsis "Pythonic manipulation of  network addresses")
+    (description
+      "A Python library for representing and manipulating IPv4, IPv6, CIDR, EUI
+and MAC network addresses.")
+    (license bsd-3)))
+
+(define-public python2-netaddr
+  (package-with-python2 python-netaddr))
