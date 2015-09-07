@@ -139,6 +139,47 @@ and sensible default behaviors into your setuptools run.")
 (define-public python2-pbr
   (package-with-python2 python-pbr))
 
+(define-public python-stevedore
+  (package
+    (name "python-stevedore")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/stevedore/stevedore-"
+             version
+             ".tar.gz"))
+       (sha256
+         (base32
+          "149pjc0c3z6khjisn4yil3f94qjnzwafz093wc8rrzbw828qdkv8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-six" ,python-six)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests
+        ("python-docutils" ,python-docutils)
+        ("python-mock" ,python-mock)
+        ("python-oslotest" ,python-oslotest)
+        ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/dreamhost/stevedore")
+    (synopsis "Manage dynamic plugins for Python applications")
+    (description
+      "Python makes loading code dynamically easy, allowing you to configure
+and extend your application by discovering and loading extensions (“plugins”)
+at runtime.  Many applications implement their own library for doing this,
+using __import__ or importlib.  stevedore avoids creating yet another extension
+mechanism by building on top of setuptools entry points.  The code for managing
+entry points tends to be repetitive, though, so stevedore provides manager
+classes for implementing common patterns for using dynamically loaded
+extensions.")
+    (license asl2.0)))
+
+(define-public python2-stevedore
+  (package-with-python2 python-stevedore))
+
 ;; Packages from the Oslo library
 (define-public python-oslo.i18n
   (package
