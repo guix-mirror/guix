@@ -34,20 +34,24 @@
 (define-public ibus
   (package
    (name "ibus")
-   (version "1.5.5")
+   (version "1.5.11")
    (source (origin
              (method url-fetch)
-             (uri (string-append "https://ibus.googlecode.com/files/ibus-"
-                                 version ".tar.gz"))
+             (uri (string-append "https://github.com/ibus/ibus/"
+                                 "releases/download/"
+                                 version "/ibus-" version ".tar.gz"))
              (sha256
               (base32
-               "1v4a9xv2k26g6ggk4282ynfvh68j2r5hg1cdpvnryfa8c2pkdaq2"))))
+               "1g26llizd26h9sfz4xdq8krhz19hn08pirvfbkk3g89ri8lmm6a9"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:tests? #f  ; tests fail because there's no connection to dbus
       #:make-flags
       (list "CC=gcc"
             (string-append "pyoverridesdir="
+                           (assoc-ref %outputs "out")
+                           "/lib/python2.7/site-packages/gi/overrides/")
+            (string-append "py2overridesdir="
                            (assoc-ref %outputs "out")
                            "/lib/python2.7/site-packages/gi/overrides/"))
       #:phases
