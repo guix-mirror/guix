@@ -43,6 +43,13 @@
             plain-file-name
             plain-file-content
 
+            computed-file
+            computed-file?
+            computed-file-name
+            computed-file-gexp
+            computed-file-modules
+            computed-file-options
+
             gexp->derivation
             gexp->file
             gexp->script
@@ -213,6 +220,32 @@ This is the declarative counterpart of 'text-file'."
   (match file
     (($ <plain-file> name content references)
      (text-file name content references))))
+
+(define-record-type <computed-file>
+  (%computed-file name gexp modules options)
+  computed-file?
+  (name       computed-file-name)                 ;string
+  (gexp       computed-file-gexp)                 ;gexp
+  (modules    computed-file-modules)              ;list of module names
+  (options    computed-file-options))             ;list of arguments
+
+(define* (computed-file name gexp
+                        #:key (modules '()) (options '(#:local-build? #t)))
+  "Return an object representing the store item NAME, a file or directory
+computed by GEXP.  MODULES specifies the set of modules visible in the
+execution context of GEXP.  OPTIONS is a list of additional arguments to pass
+to 'gexp->derivation'.
+
+This is the declarative counterpart of 'gexp->derivation'."
+  (%computed-file name gexp modules options))
+
+(define-gexp-compiler (computed-file-compiler (file computed-file?)
+                                              system target)
+  ;; Compile FILE by returning a derivation whose build expression is its
+  ;; gexp.
+  (match file
+    (($ <computed-file> name gexp modules options)
+     (apply gexp->derivation name gexp #:modules modules options))))
 
 
 ;;;

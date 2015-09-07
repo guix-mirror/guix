@@ -661,6 +661,25 @@
     (return (and (derivation? drv1) (derivation? drv2)
                  (store-path? item)))))
 
+(test-assertm "lower-object, computed-file"
+  (let* ((text     (plain-file "foo" "Hello!"))
+         (exp      #~(begin
+                       (mkdir #$output)
+                       (symlink #$%bootstrap-guile
+                                (string-append #$output "/guile"))
+                       (symlink #$text (string-append #$output "/text"))))
+         (computed (computed-file "computed" exp)))
+    (mlet* %store-monad ((text      (lower-object text))
+                         (guile-drv (lower-object %bootstrap-guile))
+                         (comp-drv  (lower-object computed))
+                         (comp ->   (derivation->output-path comp-drv)))
+      (mbegin %store-monad
+        (built-derivations (list comp-drv))
+        (return (and (string=? (readlink (string-append comp "/guile"))
+                               (derivation->output-path guile-drv))
+                     (string=? (readlink (string-append comp "/text"))
+                               text)))))))
+
 (test-assert "printer"
   (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
  \"/bin/uname\"\\) [[:xdigit:]]+>$"

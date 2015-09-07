@@ -3345,9 +3345,10 @@ The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
 @cindex file-like objects
-The @code{local-file} and @code{plain-file} procedures below return
-@dfn{file-like objects}.  That is, when unquoted in a G-expression,
-these objects lead to a file in the store.  Consider this G-expression:
+The @code{local-file}, @code{plain-file}, and @code{computed-file}
+procedures below return @dfn{file-like objects}.  That is, when unquoted
+in a G-expression, these objects lead to a file in the store.  Consider
+this G-expression:
 
 @example
 #~(system* (string-append #$glibc "/sbin/nscd") "-f"
@@ -3381,6 +3382,16 @@ Return an object representing a text file called @var{name} with the given
 @var{content} (a string) to be added to the store.
 
 This is the declarative counterpart of @code{text-file}.
+@end deffn
+
+@deffn {Scheme Procedure} computed-file @var{name} @var{gexp} @
+          [#:modules '()] [#:options '(#:local-build? #t)]
+Return an object representing the store item @var{name}, a file or
+directory computed by @var{gexp}.  @var{modules} specifies the set of
+modules visible in the execution context of @var{gexp}.  @var{options}
+is a list of additional arguments to pass to @code{gexp->derivation}.
+
+This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
