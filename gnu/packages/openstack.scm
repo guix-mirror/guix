@@ -181,6 +181,43 @@ extensions.")
   (package-with-python2 python-stevedore))
 
 ;; Packages from the Oslo library
+(define-public python-oslo.config
+  (package
+    (name "python-oslo.config")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/o/oslo.config/oslo.config-"
+             version
+             ".tar.gz"))
+       (sha256
+         (base32
+          "13r778jfb0fhna37c2pd1f2xipnsbd7zli7qhn96acrzymrwj5k1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-netaddr" ,python-netaddr)
+        ("python-six" ,python-six)
+        ("python-stevedore" ,python-stevedore)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests
+        ("python-oslo.i18n" ,python-oslo.i18n)
+        ("python-mock" ,python-mock)
+        ("python-oslotest" ,python-oslotest)
+        ("python-testscenarios" ,python-testscenarios)))
+    (home-page "https://launchpad.net/oslo")
+    (synopsis "Oslo Configuration API")
+    (description
+      "The Oslo configuration API supports parsing command line arguments and
+.ini style configuration files.")
+    (license asl2.0)))
+
+(define-public python2-oslo.config
+  (package-with-python2 python-oslo.config))
+
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
