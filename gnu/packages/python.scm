@@ -4799,3 +4799,30 @@ and MAC network addresses.")
 
 (define-public python2-wrapt
   (package-with-python2 python-wrapt))
+
+(define-public python-iso8601
+  (package
+  (name "python-iso8601")
+  (version "0.1.10")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/source/i/iso8601/iso8601-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1qf01afxh7j4gja71vxv345if8avg6nnm0ry0zsk6j3030xgy4p7"))))
+  (build-system python-build-system)
+  (inputs
+    `(("python-setuptools" ,python-setuptools)))
+  (home-page "https://bitbucket.org/micktwomey/pyiso8601")
+  (synopsis "Module to parse ISO 8601 dates")
+  (description
+    "This module parses the most common forms of ISO 8601 date strings (e.g.
+@code{2007-01-14T20:34:22+00:00}) into @code{datetime} objects.")
+  (license license:expat)))
+
+(define-public python2-iso8601
+  (package-with-python2 python-iso8601))
