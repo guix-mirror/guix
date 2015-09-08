@@ -25,6 +25,41 @@
                 #:select (asl2.0))
   #:use-module (guix packages))
 
+(define-public python-debtcollector
+  (package
+    (name "python-debtcollector")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/d/debtcollector/"
+               "debtcollector-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0amlcg5f98lk2mfzdg44slh1nsi2y4ds123g5d57376fjk2b3njd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-wrapt" ,python-wrapt)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests.
+        ("python-oslotest" ,python-oslotest)))
+    (home-page "http://www.openstack.org/")
+    (synopsis
+      "Find deprecated patterns and strategies in Python code")
+    (description
+      "This package provides a collection of Python deprecation patterns and
+strategies that help you collect your technical debt in a non-destructive
+manner.")
+    (license asl2.0)))
+
+(define-public python2-debtcollector
+  (package-with-python2 python-debtcollector))
+
 (define-public python-mox3
   (package
     (name "python-mox3")
