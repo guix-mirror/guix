@@ -4826,3 +4826,30 @@ and MAC network addresses.")
 
 (define-public python2-iso8601
   (package-with-python2 python-iso8601))
+
+(define-public python-monotonic
+  (package
+    (name "python-monotonic")
+    (version "0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/m/monotonic/monotonic-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0yz0bcbwx8r2c01czzfpbrxddynxyk9k95jj8h6sgcb7xmfvl998"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/atdt/monotonic")
+    (synopsis "Implementation of time.monotonic() for Python 2 & < 3.3")
+    (description
+      "This module provides a monotonic() function which returns the value (in
+fractional seconds) of a clock which never goes backwards.")
+    (license asl2.0)))
+
+(define-public python2-monotonic
+  (package-with-python2 python-monotonic))
