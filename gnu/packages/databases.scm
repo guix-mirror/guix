@@ -322,8 +322,15 @@ types are supported, as is encryption.")
                                                  other-digits))
                                            6 #\0))))))
                    (string-append
-                    "mirror://sourceforge/sqlite.mirror/SQLite%20" version
-                    "/sqlite-autoconf-" numeric-version ".tar.gz")))
+                    "https://fossies.org/linux/misc/sqlite-autoconf-"
+                    numeric-version ".tar.gz")
+
+                   ;; XXX: As of 2015-09-08, SourceForge is squatting the URL
+                   ;; below, returning 200 and showing an advertising page.
+                   ;; (string-append
+                   ;;  "mirror://sourceforge/sqlite.mirror/SQLite%20" version
+                   ;;  "/sqlite-autoconf-" numeric-version ".tar.gz")
+                   ))
             (sha256
              (base32
               "09nnaqx50gl1vmfvdipirizr61q3s0ywlql50f9kr1bx9rdfb0l3"))))
