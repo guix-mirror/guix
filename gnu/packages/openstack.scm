@@ -180,7 +180,7 @@ in an application or library.")
 (define-public python-oslotest
   (package
     (name "python-oslotest")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
       (origin
         (method url-fetch)
@@ -190,7 +190,7 @@ in an application or library.")
                ".tar.gz"))
         (sha256
           (base32
-            "175dln2zxjvvh4b23f2hln6zwfy2v5f1blg7mxbwl4r3130zvs2k"))))
+            "0l3ny48ddz5xbf0v4r0jv1yhbdzinc2vy0lybhdkmx3xy0b886fs"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)
