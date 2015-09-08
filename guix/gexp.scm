@@ -50,6 +50,13 @@
             computed-file-modules
             computed-file-options
 
+            program-file
+            program-file?
+            program-file-name
+            program-file-gexp
+            program-file-modules
+            program-file-guile
+
             gexp->derivation
             gexp->file
             gexp->script
@@ -246,6 +253,32 @@ This is the declarative counterpart of 'gexp->derivation'."
   (match file
     (($ <computed-file> name gexp modules options)
      (apply gexp->derivation name gexp #:modules modules options))))
+
+(define-record-type <program-file>
+  (%program-file name gexp modules guile)
+  program-file?
+  (name       program-file-name)                  ;string
+  (gexp       program-file-gexp)                  ;gexp
+  (modules    program-file-modules)               ;list of module names
+  (guile      program-file-guile))                ;package
+
+(define* (program-file name gexp
+                       #:key (modules '()) (guile #f))
+  "Return an object representing the executable store item NAME that runs
+GEXP.  GUILE is the Guile package used to execute that script, and MODULES is
+the list of modules visible to that script.
+
+This is the declarative counterpart of 'gexp->script'."
+  (%program-file name gexp modules guile))
+
+(define-gexp-compiler (program-file-compiler (file program-file?)
+                                             system target)
+  ;; Compile FILE by returning a derivation that builds the script.
+  (match file
+    (($ <program-file> name gexp modules guile)
+     (gexp->script name gexp
+                   #:modules modules
+                   #:guile (or guile (default-guile))))))
 
 
 ;;;

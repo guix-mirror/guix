@@ -619,6 +619,23 @@
       (return (and (zero? (close-pipe pipe))
                    (= (expt n 2) (string->number str)))))))
 
+(test-assertm "program-file"
+  (let* ((n      (random (expt 2 50)))
+         (exp    (gexp (begin
+                         (use-modules (guix build utils))
+                         (display (ungexp n)))))
+         (file   (program-file "program" exp
+                               #:modules '((guix build utils))
+                               #:guile %bootstrap-guile)))
+    (mlet* %store-monad ((drv (lower-object file))
+                         (out -> (derivation->output-path drv)))
+      (mbegin %store-monad
+        (built-derivations (list drv))
+        (let* ((pipe  (open-input-pipe out))
+               (str   (get-string-all pipe)))
+          (return (and (zero? (close-pipe pipe))
+                       (= n (string->number str)))))))))
+
 (test-assert "text-file*"
   (let ((references (store-lift references)))
     (run-with-store %store

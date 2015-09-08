@@ -3345,10 +3345,10 @@ The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
 @cindex file-like objects
-The @code{local-file}, @code{plain-file}, and @code{computed-file}
-procedures below return @dfn{file-like objects}.  That is, when unquoted
-in a G-expression, these objects lead to a file in the store.  Consider
-this G-expression:
+The @code{local-file}, @code{plain-file}, @code{computed-file}, and
+@code{program-file} procedures below return @dfn{file-like objects}.
+That is, when unquoted in a G-expression, these objects lead to a file
+in the store.  Consider this G-expression:
 
 @example
 #~(system* (string-append #$glibc "/sbin/nscd") "-f"
@@ -3419,6 +3419,15 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 (execl (string-append "/gnu/store/@dots{}-coreutils-8.22"/bin/ls")
        "ls")
 @end example
+@end deffn
+
+@deffn {Scheme Procedure} program-file @var{name} @var{exp} @
+          [#:modules '()] [#:guile #f]
+Return an object representing the executable store item @var{name} that
+runs @var{gexp}.  @var{guile} is the Guile package used to execute that
+script, and @var{modules} is the list of modules visible to that script.
+
+This is the declarative counterpart of @code{gexp->script}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->file @var{name} @var{exp}
