@@ -327,3 +327,52 @@ and better support for mocking results.")
 
 (define-public python2-oslotest
   (package-with-python2 python-oslotest))
+
+(define-public python-oslo.utils
+  (package
+    (name "python-oslo.utils")
+    (version "2.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/o/oslo.utils/oslo.utils-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "11b073gblhzkxhi1j6sqk3apq2ll8xhi9h9g9kxzx9dycqdq0qp0"))
+        (snippet
+         '(begin
+            ;; FIXME: setuptools fails to import this file during the test
+            ;; phase.
+            (delete-file "oslo_utils/tests/test_netutils.py")))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-debtcollector" ,python-debtcollector)
+        ("python-oslo.i18n" ,python-oslo.i18n)
+        ("python-iso8601" ,python-iso8601)
+        ("python-monotonic" ,python-monotonic)
+        ("python-netaddr" ,python-netaddr)
+        ("python-netifaces" ,python-netifaces)
+        ("python-pytz" ,python-pytz)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests.
+        ("python-oslotest" ,python-oslotest)
+        ("python-mock" ,python-mock)
+        ("python-mox3" ,python-mox3)
+        ("python-testscenarios" ,python-testscenarios)))
+    (home-page "http://launchpad.net/oslo")
+    (synopsis "Oslo utility library")
+    (description
+      "The @code{oslo.utils} library provides support for common utility type
+functions, such as encoding, exception handling, string manipulation, and time
+handling.")
+    (license asl2.0)))
+
+(define-public python2-oslo.utils
+  (package-with-python2 python-oslo.utils))
