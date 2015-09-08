@@ -471,7 +471,9 @@ store.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (map search-patch
+                          '("glibc-ldd-x86_64.patch"
+                            "glibc-o-largefile.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
