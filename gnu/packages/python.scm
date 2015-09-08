@@ -4767,3 +4767,35 @@ and MAC network addresses.")
 
 (define-public python2-netaddr
   (package-with-python2 python-netaddr))
+
+(define-public python-wrapt
+  (package
+    (name "python-wrapt")
+    (version "1.10.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/w/wrapt/wrapt-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0cq8rlpzkxzk48b50yrfhzn1d1hrq4gjcdqlrgq4v5palgiv9jwr"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests are not included in the tarball, they are only available in the
+     ;; git repository.
+     `(#:tests? #f))
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/GrahamDumpleton/wrapt")
+    (synopsis "Module for decorators, wrappers and monkey patching")
+    (description
+      "The aim of the wrapt module is to provide a transparent object proxy for
+  Python, which can be used as the basis for the construction of function
+  wrappers and decorator functions.")
+    (license bsd-2)))
+
+(define-public python2-wrapt
+  (package-with-python2 python-wrapt))
