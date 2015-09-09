@@ -24,6 +24,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -98,3 +100,50 @@ input method user interface.  It comes with multilingual input support.  It
 may also simplify input method development.")
    (home-page "http://ibus.googlecode.com/")
    (license lgpl2.1+)))
+
+(define-public libpinyin
+  (package
+    (name "libpinyin")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libpinyin/libpinyin/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04didxd39vlry6nqy7xqynwc68ndajnhw334wahfmp7zjbbscs7p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+          (lambda _ (zero? (system* "autoreconf" "-vif"))))
+         (add-after 'unpack 'unpack-model
+          (lambda* (#:key inputs #:allow-other-keys)
+            (zero? (system* "tar" "-xvf"
+                            (assoc-ref inputs "model")
+                            "-C" "data")))))))
+    (inputs
+     `(("glib" ,glib)
+       ("bdb" ,bdb)
+       ("model"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "mirror://sourceforge/libpinyin/"
+                               "models/model10.text.tar.gz"))
+           (sha256
+            (base32
+             "0g489wqcfklxphhxpkh8i4qf9y8scmnmdbfrzdbrgf3rignbwyiw"))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Library to handle Chinese Pinyin")
+    (description
+     "The libpinyin C++ library provides algorithms needed for sentence-based
+Chinese pinyin input methods.")
+    (home-page "https://github.com/libpinyin/libpinyin")
+    (license gpl2+)))
