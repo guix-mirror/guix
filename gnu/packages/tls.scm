@@ -203,32 +203,33 @@ required structures.")
       #:parallel-tests? #f
       #:test-target "test"
       #:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (zero?
-            (system* "./config"
-                     "shared"                   ; build shared libraries
-                     "--libdir=lib"
-                     (string-append "--prefix=" out)
-                     ;; XXX FIXME: Work around a code generation bug in GCC
-                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                     ,@(if (and (not (%current-target-system))
-                                (string-prefix? "armhf" (%current-system)))
-                           '("-mfpu=vfpv3")
-                           '())))))
-       (alist-cons-before
-        'patch-source-shebangs 'patch-tests
-        (lambda* (#:key inputs native-inputs #:allow-other-keys)
-          (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
-            (substitute* (find-files "test" ".*")
-              (("/bin/sh")
-               (string-append bash "/bin/bash"))
-              (("/bin/rm")
-               "rm"))))
-        %standard-phases))))
+      (modify-phases %standard-phases
+        (replace
+         'configure
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (zero?
+              (system* "./config"
+                       "shared"                   ;build shared libraries
+                       "--libdir=lib"
+                       (string-append "--prefix=" out)
+
+                       ;; XXX FIXME: Work around a code generation bug in GCC
+                       ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                       ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                       ,@(if (and (not (%current-target-system))
+                                  (string-prefix? "armhf" (%current-system)))
+                             '("-mfpu=vfpv3")
+                             '()))))))
+        (add-before
+         'patch-source-shebangs 'patch-tests
+         (lambda* (#:key inputs native-inputs #:allow-other-keys)
+           (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
+             (substitute* (find-files "test" ".*")
+               (("/bin/sh")
+                (string-append bash "/bin/bash"))
+               (("/bin/rm")
+                "rm"))))))))
    (native-search-paths
     ;; FIXME: These two variables must designate a single file or directory
     ;; and are not actually "search paths."  In practice it works OK in user
