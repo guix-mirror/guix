@@ -204,6 +204,15 @@ required structures.")
       #:test-target "test"
       #:phases
       (modify-phases %standard-phases
+        (add-before
+         'configure 'fix-man-dir
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; The default MANDIR is some unusual place.  Fix that.
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* "Makefile.org"
+               (("^MANDIR[[:blank:]]*=.*$")
+                (string-append "MANDIR = " out "/share/man\n")))
+             #t)))
         (replace
          'configure
          (lambda* (#:key outputs #:allow-other-keys)
@@ -212,6 +221,13 @@ required structures.")
               (system* "./config"
                        "shared"                   ;build shared libraries
                        "--libdir=lib"
+
+                       ;; The default for this catch-all directory is
+                       ;; PREFIX/ssl.  Change that to something more
+                       ;; conventional.
+                       (string-append "--openssldir=" out
+                                      "/share/openssl-" ,version)
+
                        (string-append "--prefix=" out)
 
                        ;; XXX FIXME: Work around a code generation bug in GCC
