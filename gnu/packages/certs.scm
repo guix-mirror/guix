@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages tls))
 
 (define certdata2pem
@@ -76,7 +77,8 @@
     (outputs '("out"))
     (native-inputs
      `(("certdata2pem" ,certdata2pem)
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl)
+       ("perl" ,perl)))                           ;for OpenSSL's 'c_rehash'
     (inputs '())
     (propagated-inputs '())
     (arguments

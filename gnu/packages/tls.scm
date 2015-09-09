@@ -195,7 +195,9 @@ required structures.")
             (sha256
              (base32
               "1j58r7rdj9fz2lanir8ajbx4bspb5jnm5ikl6dq8lql5fx43c737"))
-            (patches (list (search-patch "openssl-runpath.patch")))))
+            (patches (map search-patch
+                          '("openssl-runpath.patch"
+                            "openssl-c-rehash.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
@@ -255,7 +257,16 @@ required structures.")
                (("/bin/sh")
                 (string-append bash "/bin/bash"))
                (("/bin/rm")
-                "rm"))))))))
+                "rm")))))
+        (add-after
+         'install 'remove-miscellany
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; The 'misc' directory contains random undocumented shell and Perl
+           ;; scripts.  Remove them to avoid retaining a reference on Perl.
+           (let ((out (assoc-ref outputs "out")))
+             (delete-file-recursively (string-append out "/share/openssl-"
+                                                     ,version "/misc"))
+             #t))))))
    (native-search-paths
     ;; FIXME: These two variables must designate a single file or directory
     ;; and are not actually "search paths."  In practice it works OK in user
