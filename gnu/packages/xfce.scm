@@ -452,7 +452,9 @@ allows you to shutdown the computer from Xfce.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "108za1cmjslwzkdl76x9kwxkq8z734kg9nz8rxk057f10pqwxgh4"))))
+                "108za1cmjslwzkdl76x9kwxkq8z734kg9nz8rxk057f10pqwxgh4"))
+              (patches
+               (list (search-patch "xfce4-settings-defaults.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
