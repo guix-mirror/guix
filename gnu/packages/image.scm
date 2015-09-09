@@ -114,6 +114,14 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
             (sha256 (base32
                      "171hgy4mylwmvdm7gp6ffjva81m4j56v3fbqsbfl7avzxn1slpp2"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "doc"))                           ;1.3 MiB of HTML documentation
+   (arguments
+    ;; Instead of using --docdir, this package has its own --with-docdir.
+    `(#:configure-flags (list (string-append "--with-docdir="
+                                             (assoc-ref %outputs "doc")
+                                             "/share/doc/"
+                                             ,name "-" ,version))))
    (inputs `(("zlib" ,zlib)
              ("libjpeg" ,libjpeg)))
    (synopsis "Library for handling TIFF files")
