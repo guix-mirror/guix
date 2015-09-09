@@ -237,6 +237,16 @@ required structures.")
                                   (string-prefix? "armhf" (%current-system)))
                              '("-mfpu=vfpv3")
                              '()))))))
+        (add-after
+         'install 'make-libraries-writable
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Make libraries writable so that 'strip' does its job.
+           (let ((out (assoc-ref outputs "out")))
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files (string-append out "/lib")
+                                   "\\.so"))
+             #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
          (lambda* (#:key inputs native-inputs #:allow-other-keys)
