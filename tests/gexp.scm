@@ -660,6 +660,21 @@
                                             file)))))
       #:guile-for-build (package-derivation %store %bootstrap-guile))))
 
+(test-assertm "mixed-text-file"
+  (mlet* %store-monad ((file ->   (mixed-text-file "mixed"
+                                                   "export PATH="
+                                                   %bootstrap-guile "/bin"))
+                       (drv       (lower-object file))
+                       (out ->    (derivation->output-path drv))
+                       (guile-drv (package->derivation %bootstrap-guile))
+                       (guile ->  (derivation->output-path guile-drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (mlet %store-monad ((refs ((store-lift references) out)))
+        (return (and (string=? (string-append "export PATH=" guile "/bin")
+                               (call-with-input-file out get-string-all))
+                     (equal? refs (list guile))))))))
+
 (test-assert "gexp->derivation vs. %current-target-system"
   (let ((mval (gexp->derivation "foo"
                                 #~(begin

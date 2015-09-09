@@ -61,6 +61,7 @@
             gexp->file
             gexp->script
             text-file*
+            mixed-text-file
             imported-files
             imported-modules
             compiled-modules
@@ -968,6 +969,21 @@ resulting store file holds references to all these."
               (display (string-append (ungexp-splicing text)) port)))))
 
   (gexp->derivation name builder))
+
+(define* (mixed-text-file name #:rest text)
+  "Return an object representing store file NAME containing TEXT.  TEXT is a
+sequence of strings and file-like objects, as in:
+
+  (mixed-text-file \"profile\"
+                   \"export PATH=\" coreutils \"/bin:\" grep \"/bin\")
+
+This is the declarative counterpart of 'text-file*'."
+  (define build
+    (gexp (call-with-output-file (ungexp output "out")
+            (lambda (port)
+              (display (string-append (ungexp-splicing text)) port)))))
+
+  (computed-file name build))
 
 
 ;;;

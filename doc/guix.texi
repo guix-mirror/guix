@@ -3463,6 +3463,19 @@ will references @var{coreutils}, @var{grep}, and @var{sed}, thereby
 preventing them from being garbage-collected during its lifetime.
 @end deffn
 
+@deffn {Scheme Procedure} mixed-text-file @var{name} @var{text} @dots{}
+Return an object representing store file @var{name} containing
+@var{text}.  @var{text} is a sequence of strings and file-like objects,
+as in:
+
+@example
+(mixed-text-file "profile"
+                 "export PATH=" coreutils "/bin:" grep "/bin")
+@end example
+
+This is the declarative counterpart of @code{text-file*}.
+@end deffn
+
 Of course, in addition to gexps embedded in ``host'' code, there are
 also modules containing build tools.  To make it clear that they are
 meant to be used in the build stratum, these modules are kept in the
