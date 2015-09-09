@@ -49,6 +49,11 @@
   ;; Size of the HTTP receive buffer.
   65536)
 
+(define (nearest-exact-integer x)
+  "Given a real number X, return the nearest exact integer, with ties going to
+the nearest exact even integer."
+  (inexact->exact (round x)))
+
 (define (duration->seconds duration)
   "Return the number of seconds represented by DURATION, a 'time-duration'
 object, as an inexact number."
@@ -60,7 +65,7 @@ object, as an inexact number."
 format."
   (if (not (number? duration))
       "00:00:00"
-      (let* ((total-seconds (inexact->exact (round duration)))
+      (let* ((total-seconds (nearest-exact-integer duration))
              (extra-seconds (modulo total-seconds 3600))
              (hours         (quotient total-seconds 3600))
              (mins          (quotient extra-seconds 60))
@@ -75,8 +80,8 @@ way."
         (GiB (expt 1024. 3))
         (TiB (expt 1024. 4)))
     (cond
-     ((< size KiB) (format #f "~dB" (inexact->exact size)))
-     ((< size MiB) (format #f "~dKiB" (inexact->exact (round (/ size KiB)))))
+     ((< size KiB) (format #f "~dB"     (nearest-exact-integer size)))
+     ((< size MiB) (format #f "~dKiB"   (nearest-exact-integer (/ size KiB))))
      ((< size GiB) (format #f "~,1fMiB" (/ size MiB)))
      ((< size TiB) (format #f "~,2fGiB" (/ size GiB)))
      (else         (format #f "~,3fTiB" (/ size TiB))))))
