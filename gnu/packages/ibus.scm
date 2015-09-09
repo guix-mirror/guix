@@ -26,6 +26,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -100,6 +102,59 @@ input method user interface.  It comes with multilingual input support.  It
 may also simplify input method development.")
    (home-page "http://ibus.googlecode.com/")
    (license lgpl2.1+)))
+
+(define-public ibus-libpinyin
+  (package
+   (name "ibus-libpinyin")
+   (version "1.7.2")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/libpinyin/"
+                                 "ibus-libpinyin/archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "080ixx5lih9lr78b061y67dqmiyc7ij87jl1sa26hhs1dr28ihka"))))
+   (build-system glib-or-gtk-build-system)
+   (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+          (lambda _ (and (zero? (system* "intltoolize"))
+                         (zero? (system* "autoreconf" "-vif")))))
+         (add-after 'wrap-program 'wrap-with-additional-paths
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'ibus-setup-libpinyin' runs with the correct
+            ;; PYTHONPATH and GI_TYPELIB_PATH.
+            (let ((out (assoc-ref outputs "out")))
+              (wrap-program (string-append out "/libexec/ibus-setup-libpinyin")
+                `("PYTHONPATH" ":" prefix
+                  (,(getenv "PYTHONPATH")
+                   ,(string-append (assoc-ref inputs "ibus")
+                                   "/lib/girepository-1.0")))
+                `("GI_TYPELIB_PATH" ":" prefix
+                  (,(string-append (assoc-ref inputs "ibus")
+                                   "/lib/girepository-1.0"))))
+              #t))))))
+   (inputs
+    `(("ibus" ,ibus)
+      ("libpinyin" ,libpinyin)
+      ("bdb" ,bdb)
+      ("sqlite" ,sqlite)
+      ("python" ,python-2)
+      ("pyxdg" ,python2-pyxdg)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("intltool" ,intltool)
+      ("autoconf" ,autoconf)
+      ("automake" ,automake)
+      ("libtool" ,libtool)))
+   (synopsis "Chinese Pinyin and ZhuYin input methods for IBus")
+   (description
+    "This package includes a Chinese Pinyin input method and a Chinese
+ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
+   (home-page "https://github.com/libpinyin/ibus-libpinyin")
+   (license gpl2+)))
 
 (define-public libpinyin
   (package
