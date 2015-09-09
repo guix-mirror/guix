@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,8 @@
              (base32
               "0gjnaav9vmwwwza451na1643br7i0kxgd4002pwqh3xk5ywvdap7"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "doc"))                             ;1.2 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
              ("libidn" ,libidn)
@@ -64,6 +67,16 @@
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases
+        (add-after
+         'install 'move-man3-pages
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Move section 3 man pages to "doc".
+           (let ((out (assoc-ref outputs "out"))
+                 (doc (assoc-ref outputs "doc")))
+             (mkdir-p (string-append doc "/share/man"))
+             (rename-file (string-append out "/share/man/man3")
+                          (string-append doc "/share/man/man3"))
+             #t)))
         (replace
          'check
          (lambda _
