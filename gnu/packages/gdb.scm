@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -47,22 +47,22 @@
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; FIXME "make check" fails on single-processor systems.
-       #:phases (alist-cons-after
-                 'configure 'post-configure
-                 (lambda _
-                   (for-each patch-makefile-SHELL
-                             (find-files "." "Makefile\\.in")))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Like Binutils, GDB installs libbfd and libopcodes.
-                    ;; However, this leads to collisions when both are
-                    ;; installed, and really is none of its business,
-                    ;; conceptually.  So remove them.
-                    (for-each delete-file
-                              (find-files (assoc-ref outputs "out")
-                                          "^lib(opcodes|bfd)\\.")))
-                  %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'configure 'post-configure
+                   (lambda _
+                     (for-each patch-makefile-SHELL
+                               (find-files "." "Makefile\\.in"))))
+                  (add-after
+                   'install 'post-install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Like Binutils, GDB installs libbfd and libopcodes.
+                     ;; However, this leads to collisions when both are
+                     ;; installed, and really is none of its business,
+                     ;; conceptually.  So remove them.
+                     (for-each delete-file
+                               (find-files (assoc-ref outputs "out")
+                                           "^lib(opcodes|bfd)\\.")))))))
     (inputs
      `(("expat" ,expat)
        ("mpfr" ,mpfr)
