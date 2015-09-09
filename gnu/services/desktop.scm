@@ -35,7 +35,6 @@
   #:use-module (gnu packages polkit)
   #:use-module ((gnu packages linux)
                 #:select (lvm2 fuse alsa-utils crda))
-  #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix gexp)
@@ -104,7 +103,7 @@
             (sxml->xml (services->sxml (list #$@services))
                        port)))))
 
-  (gexp->derivation "dbus-configuration" build))
+  (computed-file "dbus-configuration" build))
 
 (define* (dbus-service services #:key (dbus dbus))
   "Return a service that runs the \"system bus\", using @var{dbus}, with
@@ -118,50 +117,49 @@ be notified of system-wide events.
 @file{etc/dbus-1/system.d} directory containing additional D-Bus configuration
 and policy files.  For example, to allow avahi-daemon to use the system bus,
 @var{services} must be equal to @code{(list avahi)}."
-  (mlet %store-monad ((conf (dbus-configuration-directory dbus services)))
-    (return
-     (service
-      (documentation "Run the D-Bus system daemon.")
-      (provision '(dbus-system))
-      (requirement '(user-processes))
-      (start #~(make-forkexec-constructor
-                (list (string-append #$dbus "/bin/dbus-daemon")
-                      "--nofork"
-                      (string-append "--config-file=" #$conf "/system.conf"))))
-      (stop #~(make-kill-destructor))
-      (user-groups (list (user-group
-                          (name "messagebus")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "messagebus")
-                            (group "messagebus")
-                            (system? #t)
-                            (comment "D-Bus system bus user")
-                            (home-directory "/var/run/dbus")
-                            (shell
-                             #~(string-append #$shadow "/sbin/nologin")))))
-      (activate #~(begin
-                    (use-modules (guix build utils))
+  (let ((conf (dbus-configuration-directory dbus services)))
+    (service
+     (documentation "Run the D-Bus system daemon.")
+     (provision '(dbus-system))
+     (requirement '(user-processes))
+     (start #~(make-forkexec-constructor
+               (list (string-append #$dbus "/bin/dbus-daemon")
+                     "--nofork"
+                     (string-append "--config-file=" #$conf "/system.conf"))))
+     (stop #~(make-kill-destructor))
+     (user-groups (list (user-group
+                         (name "messagebus")
+                         (system? #t))))
+     (user-accounts (list (user-account
+                           (name "messagebus")
+                           (group "messagebus")
+                           (system? #t)
+                           (comment "D-Bus system bus user")
+                           (home-directory "/var/run/dbus")
+                           (shell
+                            #~(string-append #$shadow "/sbin/nologin")))))
+     (activate #~(begin
+                   (use-modules (guix build utils))
 
-                    (mkdir-p "/var/run/dbus")
+                   (mkdir-p "/var/run/dbus")
 
-                    (let ((user (getpwnam "messagebus")))
-                      (chown "/var/run/dbus"
-                             (passwd:uid user) (passwd:gid user)))
+                   (let ((user (getpwnam "messagebus")))
+                     (chown "/var/run/dbus"
+                            (passwd:uid user) (passwd:gid user)))
 
-                    (unless (file-exists? "/etc/machine-id")
-                      (format #t "creating /etc/machine-id...~%")
-                      (let ((prog (string-append #$dbus "/bin/dbus-uuidgen")))
-                        ;; XXX: We can't use 'system' because the initrd's
-                        ;; guile system(3) only works when 'sh' is in $PATH.
-                        (let ((pid (primitive-fork)))
-                          (if (zero? pid)
-                              (call-with-output-file "/etc/machine-id"
-                                (lambda (port)
-                                  (close-fdes 1)
-                                  (dup2 (port->fdes port) 1)
-                                  (execl prog)))
-                              (waitpid pid)))))))))))
+                   (unless (file-exists? "/etc/machine-id")
+                     (format #t "creating /etc/machine-id...~%")
+                     (let ((prog (string-append #$dbus "/bin/dbus-uuidgen")))
+                       ;; XXX: We can't use 'system' because the initrd's
+                       ;; guile system(3) only works when 'sh' is in $PATH.
+                       (let ((pid (primitive-fork)))
+                         (if (zero? pid)
+                             (call-with-output-file "/etc/machine-id"
+                               (lambda (port)
+                                 (close-fdes 1)
+                                 (dup2 (port->fdes port) 1)
+                                 (execl prog)))
+                             (waitpid pid))))))))))
 
 
 ;;;
@@ -175,24 +173,24 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
                                     time-critical time-action
                                     critical-power-action)
   "Return an upower-daemon configuration file."
-  (text-file "UPower.conf"
-             (string-append
-              "[UPower]\n"
-              "EnableWattsUpPro=" (bool watts-up-pro?)
-              "NoPollBatteries=" (bool (not poll-batteries?))
-              "IgnoreLid=" (bool ignore-lid?)
-              "UsePercentageForPolicy=" (bool use-percentage-for-policy?)
-              "PercentageLow=" (number->string percentage-low) "\n"
-              "PercentageCritical=" (number->string percentage-critical) "\n"
-              "PercentageAction=" (number->string percentage-action) "\n"
-              "TimeLow=" (number->string time-low) "\n"
-              "TimeCritical=" (number->string time-critical) "\n"
-              "TimeAction=" (number->string time-action) "\n"
-              "CriticalPowerAction=" (match critical-power-action
-                                       ('hybrid-sleep "HybridSleep")
-                                       ('hibernate "Hibernate")
-                                       ('power-off "PowerOff"))
-              "\n")))
+  (plain-file "UPower.conf"
+              (string-append
+               "[UPower]\n"
+               "EnableWattsUpPro=" (bool watts-up-pro?)
+               "NoPollBatteries=" (bool (not poll-batteries?))
+               "IgnoreLid=" (bool ignore-lid?)
+               "UsePercentageForPolicy=" (bool use-percentage-for-policy?)
+               "PercentageLow=" (number->string percentage-low) "\n"
+               "PercentageCritical=" (number->string percentage-critical) "\n"
+               "PercentageAction=" (number->string percentage-action) "\n"
+               "TimeLow=" (number->string time-low) "\n"
+               "TimeCritical=" (number->string time-critical) "\n"
+               "TimeAction=" (number->string time-action) "\n"
+               "CriticalPowerAction=" (match critical-power-action
+                                        ('hybrid-sleep "HybridSleep")
+                                        ('hibernate "Hibernate")
+                                        ('power-off "PowerOff"))
+               "\n")))
 
 (define* (upower-service #:key (upower upower)
                          (watts-up-pro? #f)
@@ -210,47 +208,46 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
 @command{upowerd}}, a system-wide monitor for power consumption and battery
 levels, with the given configuration settings.  It implements the
 @code{org.freedesktop.UPower} D-Bus interface, and is notably used by GNOME."
-  (mlet %store-monad ((config (upower-configuration-file
-                               #:watts-up-pro? watts-up-pro?
-                               #:poll-batteries? poll-batteries?
-                               #:ignore-lid? ignore-lid?
-                               #:use-percentage-for-policy? use-percentage-for-policy?
-                               #:percentage-low percentage-low
-                               #:percentage-critical percentage-critical
-                               #:percentage-action percentage-action
-                               #:time-low time-low
-                               #:time-critical time-critical
-                               #:time-action time-action
-                               #:critical-power-action critical-power-action)))
-    (return
-     (service
-      (documentation "Run the UPower power and battery monitor.")
-      (provision '(upower-daemon))
-      (requirement '(dbus-system udev))
+  (let ((config (upower-configuration-file
+                 #:watts-up-pro? watts-up-pro?
+                 #:poll-batteries? poll-batteries?
+                 #:ignore-lid? ignore-lid?
+                 #:use-percentage-for-policy? use-percentage-for-policy?
+                 #:percentage-low percentage-low
+                 #:percentage-critical percentage-critical
+                 #:percentage-action percentage-action
+                 #:time-low time-low
+                 #:time-critical time-critical
+                 #:time-action time-action
+                 #:critical-power-action critical-power-action)))
+    (service
+     (documentation "Run the UPower power and battery monitor.")
+     (provision '(upower-daemon))
+     (requirement '(dbus-system udev))
 
-      (start #~(make-forkexec-constructor
-                (list (string-append #$upower "/libexec/upowerd"))
-                #:environment-variables
-                (list (string-append "UPOWER_CONF_FILE_NAME=" #$config))))
-      (stop #~(make-kill-destructor))
-      (activate #~(begin
-                    (use-modules (guix build utils))
-                    (mkdir-p "/var/lib/upower")
-                    (let ((user (getpwnam "upower")))
-                      (chown "/var/lib/upower"
-                             (passwd:uid user) (passwd:gid user)))))
+     (start #~(make-forkexec-constructor
+               (list (string-append #$upower "/libexec/upowerd"))
+               #:environment-variables
+               (list (string-append "UPOWER_CONF_FILE_NAME=" #$config))))
+     (stop #~(make-kill-destructor))
+     (activate #~(begin
+                   (use-modules (guix build utils))
+                   (mkdir-p "/var/lib/upower")
+                   (let ((user (getpwnam "upower")))
+                     (chown "/var/lib/upower"
+                            (passwd:uid user) (passwd:gid user)))))
 
-      (user-groups (list (user-group
-                          (name "upower")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "upower")
-                            (group "upower")
-                            (system? #t)
-                            (comment "UPower daemon user")
-                            (home-directory "/var/empty")
-                            (shell
-                             #~(string-append #$shadow "/sbin/nologin")))))))))
+     (user-groups (list (user-group
+                         (name "upower")
+                         (system? #t))))
+     (user-accounts (list (user-account
+                           (name "upower")
+                           (group "upower")
+                           (system? #t)
+                           (comment "UPower daemon user")
+                           (home-directory "/var/empty")
+                           (shell
+                            #~(string-append #$shadow "/sbin/nologin"))))))))
 
 
 ;;;
@@ -263,34 +260,32 @@ interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
 tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
 site} for more information."
-  (with-monad %store-monad
-    (return
-     (service
-      (documentation "Run the colord color management service.")
-      (provision '(colord-daemon))
-      (requirement '(dbus-system udev))
+  (service
+   (documentation "Run the colord color management service.")
+   (provision '(colord-daemon))
+   (requirement '(dbus-system udev))
 
-      (start #~(make-forkexec-constructor
-                (list (string-append #$colord "/libexec/colord"))))
-      (stop #~(make-kill-destructor))
-      (activate #~(begin
-                    (use-modules (guix build utils))
-                    (mkdir-p "/var/lib/colord")
-                    (let ((user (getpwnam "colord")))
-                      (chown "/var/lib/colord"
-                             (passwd:uid user) (passwd:gid user)))))
+   (start #~(make-forkexec-constructor
+             (list (string-append #$colord "/libexec/colord"))))
+   (stop #~(make-kill-destructor))
+   (activate #~(begin
+                 (use-modules (guix build utils))
+                 (mkdir-p "/var/lib/colord")
+                 (let ((user (getpwnam "colord")))
+                   (chown "/var/lib/colord"
+                          (passwd:uid user) (passwd:gid user)))))
 
-      (user-groups (list (user-group
-                          (name "colord")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "colord")
-                            (group "colord")
-                            (system? #t)
-                            (comment "colord daemon user")
-                            (home-directory "/var/empty")
-                            (shell
-                             #~(string-append #$shadow "/sbin/nologin")))))))))
+   (user-groups (list (user-group
+                       (name "colord")
+                       (system? #t))))
+   (user-accounts (list (user-account
+                         (name "colord")
+                         (group "colord")
+                         (system? #t)
+                         (comment "colord daemon user")
+                         (home-directory "/var/empty")
+                         (shell
+                          #~(string-append #$shadow "/sbin/nologin")))))))
 
 
 ;;;
@@ -321,16 +316,16 @@ users are allowed."
                                      wifi-submission-url submission-nick
                                      applications)
   "Return a geoclue configuration file."
-  (text-file "geoclue.conf"
-             (string-append
-              "[agent]\n"
-              "whitelist=" (string-join whitelist ";") "\n"
-              "[wifi]\n"
-              "url=" wifi-geolocation-url "\n"
-              "submit-data=" (bool submit-data?)
-              "submission-url=" wifi-submission-url "\n"
-              "submission-nick=" submission-nick "\n"
-              (string-join applications "\n"))))
+  (plain-file "geoclue.conf"
+              (string-append
+               "[agent]\n"
+               "whitelist=" (string-join whitelist ";") "\n"
+               "[wifi]\n"
+               "url=" wifi-geolocation-url "\n"
+               "submit-data=" (bool submit-data?)
+               "submission-url=" wifi-submission-url "\n"
+               "submission-nick=" submission-nick "\n"
+               (string-join applications "\n"))))
 
 (define* (geoclue-service #:key (geoclue geoclue)
                           (whitelist '())
@@ -350,37 +345,36 @@ and Epiphany web browsers are able to ask for the user's location, and in the
 case of Icecat and Epiphany, both will ask the user for permission first.  See
 @uref{https://wiki.freedesktop.org/www/Software/GeoClue/, the geoclue web
 site} for more information."
-  (mlet %store-monad ((config (geoclue-configuration-file
-                               #:whitelist whitelist
-                               #:wifi-geolocation-url wifi-geolocation-url
-                               #:submit-data? submit-data?
-                               #:wifi-submission-url wifi-submission-url
-                               #:submission-nick submission-nick
-                               #:applications applications)))
-    (return
-     (service
-      (documentation "Run the GeoClue location service.")
-      (provision '(geoclue-daemon))
-      (requirement '(dbus-system))
+  (let ((config (geoclue-configuration-file
+                 #:whitelist whitelist
+                 #:wifi-geolocation-url wifi-geolocation-url
+                 #:submit-data? submit-data?
+                 #:wifi-submission-url wifi-submission-url
+                 #:submission-nick submission-nick
+                 #:applications applications)))
+    (service
+     (documentation "Run the GeoClue location service.")
+     (provision '(geoclue-daemon))
+     (requirement '(dbus-system))
 
-      (start #~(make-forkexec-constructor
-                (list (string-append #$geoclue "/libexec/geoclue"))
-                #:user "geoclue"
-                #:environment-variables
-                (list (string-append "GEOCLUE_CONFIG_FILE=" #$config))))
-      (stop #~(make-kill-destructor))
+     (start #~(make-forkexec-constructor
+               (list (string-append #$geoclue "/libexec/geoclue"))
+               #:user "geoclue"
+               #:environment-variables
+               (list (string-append "GEOCLUE_CONFIG_FILE=" #$config))))
+     (stop #~(make-kill-destructor))
 
-      (user-groups (list (user-group
-                          (name "geoclue")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "geoclue")
-                            (group "geoclue")
-                            (system? #t)
-                            (comment "GeoClue daemon user")
-                            (home-directory "/var/empty")
-                            (shell
-                             "/run/current-system/profile/sbin/nologin"))))))))
+     (user-groups (list (user-group
+                         (name "geoclue")
+                         (system? #t))))
+     (user-accounts (list (user-account
+                           (name "geoclue")
+                           (group "geoclue")
+                           (system? #t)
+                           (comment "GeoClue daemon user")
+                           (home-directory "/var/empty")
+                           (shell
+                            "/run/current-system/profile/sbin/nologin")))))))
 
 
 ;;;
@@ -393,30 +387,28 @@ service.  By querying the @command{polkit} service, a privileged system
 component can know when it should grant additional capabilities to ordinary
 users.  For example, an ordinary user can be granted the capability to suspend
 the system if the user is logged in locally."
-  (with-monad %store-monad
-    (return
-     (service
-      (documentation "Run the polkit privilege management service.")
-      (provision '(polkit-daemon))
-      (requirement '(dbus-system))
+  (service
+   (documentation "Run the polkit privilege management service.")
+   (provision '(polkit-daemon))
+   (requirement '(dbus-system))
 
-      (start #~(make-forkexec-constructor
-                (list (string-append #$polkit "/lib/polkit-1/polkitd"))))
-      (stop #~(make-kill-destructor))
+   (start #~(make-forkexec-constructor
+             (list (string-append #$polkit "/lib/polkit-1/polkitd"))))
+   (stop #~(make-kill-destructor))
 
-      (user-groups (list (user-group
-                          (name "polkitd")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "polkitd")
-                            (group "polkitd")
-                            (system? #t)
-                            (comment "Polkit daemon user")
-                            (home-directory "/var/empty")
-                            (shell
-                             "/run/current-system/profile/sbin/nologin"))))
+   (user-groups (list (user-group
+                       (name "polkitd")
+                       (system? #t))))
+   (user-accounts (list (user-account
+                         (name "polkitd")
+                         (group "polkitd")
+                         (system? #t)
+                         (comment "Polkit daemon user")
+                         (home-directory "/var/empty")
+                         (shell
+                          "/run/current-system/profile/sbin/nologin"))))
 
-      (pam-services (list (unix-pam-service "polkit-1")))))))
+   (pam-services (list (unix-pam-service "polkit-1")))))
 
 
 ;;;
@@ -520,7 +512,7 @@ the system if the user is logged in locally."
       ((_ config str)
        (string-append str "\n"))))
   (define-syntax-rule (ini-file config file clause ...)
-    (text-file file (string-append (ini-file-clause config clause) ...)))
+    (plain-file file (string-append (ini-file-clause config clause) ...)))
   (ini-file
    config "logind.conf"
    "[Login]"
@@ -562,18 +554,17 @@ service.  The @command{elogind} service integrates with PAM to allow other
 system components to know the set of logged-in users as well as their session
 types (graphical, console, remote, etc.).  It can also clean up after users
 when they log out."
-  (mlet %store-monad ((config-file (elogind-configuration-file config)))
-    (return
-     (service
-      (documentation "Run the elogind login and seat management service.")
-      (provision '(elogind))
-      (requirement '(dbus-system))
+  (let ((config-file (elogind-configuration-file config)))
+    (service
+     (documentation "Run the elogind login and seat management service.")
+     (provision '(elogind))
+     (requirement '(dbus-system))
 
-      (start #~(make-forkexec-constructor
-                (list (string-append #$elogind "/libexec/elogind/elogind"))
-                #:environment-variables
-                (list (string-append "ELOGIND_CONF_FILE=" #$config-file))))
-      (stop #~(make-kill-destructor))))))
+     (start #~(make-forkexec-constructor
+               (list (string-append #$elogind "/libexec/elogind/elogind"))
+               #:environment-variables
+               (list (string-append "ELOGIND_CONF_FILE=" #$config-file))))
+     (stop #~(make-kill-destructor)))))
 
 
 ;;;
@@ -599,25 +590,24 @@ when they log out."
 
          (ntp-service)
 
-         (map (lambda (mservice)
-                (mlet %store-monad ((service mservice))
-                  (cond
-                   ;; Provide an nscd ready to use nss-mdns.
-                   ((memq 'nscd (service-provision service))
-                    (nscd-service (nscd-configuration)
-                                  #:name-services (list nss-mdns)))
+         (map (lambda (service)
+                (cond
+                 ;; Provide an nscd ready to use nss-mdns.
+                 ((memq 'nscd (service-provision service))
+                  (nscd-service (nscd-configuration)
+                                #:name-services (list nss-mdns)))
 
-                   ;; Add more rules to udev-service.
-                   ;;
-                   ;; XXX Keep this in sync with the 'udev-service' call in
-                   ;; %base-services.  Here we intend only to add 'upower',
-                   ;; 'colord', and 'elogind'.
-                   ((memq 'udev (service-provision service))
-                    (udev-service #:rules
-                                  (list lvm2 fuse alsa-utils crda
-                                        upower colord elogind)))
+                 ;; Add more rules to udev-service.
+                 ;;
+                 ;; XXX Keep this in sync with the 'udev-service' call in
+                 ;; %base-services.  Here we intend only to add 'upower',
+                 ;; 'colord', and 'elogind'.
+                 ((memq 'udev (service-provision service))
+                  (udev-service #:rules
+                                (list lvm2 fuse alsa-utils crda
+                                      upower colord elogind)))
 
-                   (else mservice))))
+                 (else service)))
               %base-services)))
 
 ;;; desktop.scm ends here

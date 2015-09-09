@@ -163,32 +163,31 @@ current store is on a RAM disk."
   "Return a service that makes the store copy-on-write, such that writes go to
 the user's target storage device rather than on the RAM disk."
   ;; See <http://bugs.gnu.org/18061> for the initial report.
-  (with-monad %store-monad
-    (return (service
-             (requirement '(root-file-system user-processes))
-             (provision '(cow-store))
-             (documentation
-              "Make the store copy-on-write, with writes going to \
+  (service
+   (requirement '(root-file-system user-processes))
+   (provision '(cow-store))
+   (documentation
+    "Make the store copy-on-write, with writes going to \
 the given target.")
 
-             ;; This is meant to be explicitly started by the user.
-             (auto-start? #f)
+   ;; This is meant to be explicitly started by the user.
+   (auto-start? #f)
 
-             (start #~(case-lambda
-                        ((target)
-                         #$(make-cow-store #~target)
-                         target)
-                        (else
-                         ;; Do nothing, and mark the service as stopped.
-                         #f)))
-             (stop #~(lambda (target)
-                       ;; Delete the temporary directory, but leave everything
-                       ;; mounted as there may still be processes using it
-                       ;; since 'user-processes' doesn't depend on us.  The
-                       ;; 'user-unmount' service will unmount TARGET
-                       ;; eventually.
-                       (delete-file-recursively
-                        (string-append target #$%backing-directory))))))))
+   (start #~(case-lambda
+              ((target)
+               #$(make-cow-store #~target)
+               target)
+              (else
+               ;; Do nothing, and mark the service as stopped.
+               #f)))
+   (stop #~(lambda (target)
+             ;; Delete the temporary directory, but leave everything
+             ;; mounted as there may still be processes using it
+             ;; since 'user-processes' doesn't depend on us.  The
+             ;; 'user-unmount' service will unmount TARGET
+             ;; eventually.
+             (delete-file-recursively
+              (string-append target #$%backing-directory))))))
 
 (define (configuration-template-service)
   "Return a dummy service whose purpose is to install an operating system
@@ -204,25 +203,24 @@ configuration template file in the installation system."
          '(("gnu/system/examples/bare-bones.tmpl" -> "bare-bones.scm")
            ("gnu/system/examples/desktop.tmpl" -> "desktop.scm"))))
 
-  (with-monad %store-monad
-    (return (service
-             (requirement '(root-file-system))
-             (provision '(os-config-template))
-             (documentation
-              "This dummy service installs an OS configuration template.")
-             (start #~(const #t))
-             (stop  #~(const #f))
-             (activate
-              #~(begin
-                  (use-modules (ice-9 match)
-                               (guix build utils))
+  (service
+   (requirement '(root-file-system))
+   (provision '(os-config-template))
+   (documentation
+    "This dummy service installs an OS configuration template.")
+   (start #~(const #t))
+   (stop  #~(const #f))
+   (activate
+    #~(begin
+        (use-modules (ice-9 match)
+                     (guix build utils))
 
-                  (mkdir-p "/etc/configuration")
-                  (for-each (match-lambda
-                              ((file target)
-                               (unless (file-exists? target)
-                                 (copy-file file target))))
-                            '#$templates)))))))
+        (mkdir-p "/etc/configuration")
+        (for-each (match-lambda
+                    ((file target)
+                     (unless (file-exists? target)
+                       (copy-file file target))))
+                  '#$templates)))))
 
 (define %nscd-minimal-caches
   ;; Minimal in-memory caching policy for nscd.

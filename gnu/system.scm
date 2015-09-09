@@ -244,19 +244,18 @@ as 'needed-for-boot'."
                                   (string->symbol (mapped-device-target md))))
                  (device-mappings fs))))
 
-  (sequence %store-monad
-            (map (lambda (fs)
-                   (match fs
-                     (($ <file-system> device title target type flags opts
-                                       #f check? create?)
-                      (file-system-service device target type
-                                           #:title title
-                                           #:requirements (requirements fs)
-                                           #:check? check?
-                                           #:create-mount-point? create?
-                                           #:options opts
-                                           #:flags flags))))
-                 file-systems)))
+  (map (lambda (fs)
+         (match fs
+           (($ <file-system> device title target type flags opts
+                             #f check? create?)
+            (file-system-service device target type
+                                 #:title title
+                                 #:requirements (requirements fs)
+                                 #:check? check?
+                                 #:create-mount-point? create?
+                                 #:options opts
+                                 #:flags flags))))
+       file-systems))
 
 (define (mapped-device-user device file-systems)
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
@@ -287,23 +286,21 @@ from the initrd."
            devices)))
 
 (define (device-mapping-services os)
-  "Return the list of device-mapping services for OS as a monadic list."
-  (sequence %store-monad
-            (map (lambda (md)
-                   (let* ((source (mapped-device-source md))
-                          (target (mapped-device-target md))
-                          (type   (mapped-device-type md))
-                          (open   (mapped-device-kind-open type))
-                          (close  (mapped-device-kind-close type)))
-                     (device-mapping-service target
-                                             (open source target)
-                                             (close source target))))
-                 (operating-system-user-mapped-devices os))))
+  "Return the list of device-mapping services for OS as a list."
+  (map (lambda (md)
+         (let* ((source (mapped-device-source md))
+                (target (mapped-device-target md))
+                (type   (mapped-device-type md))
+                (open   (mapped-device-kind-open type))
+                (close  (mapped-device-kind-close type)))
+           (device-mapping-service target
+                                   (open source target)
+                                   (close source target))))
+       (operating-system-user-mapped-devices os)))
 
 (define (swap-services os)
-  "Return the list of swap services for OS as a monadic list."
-  (sequence %store-monad
-            (map swap-service (operating-system-swap-devices os))))
+  "Return the list of swap services for OS."
+  (map swap-service (operating-system-swap-devices os)))
 
 (define (essential-services os)
   "Return the list of essential services for OS.  These are special services
@@ -312,26 +309,23 @@ bookkeeping."
   (define known-fs
     (map file-system-mount-point (operating-system-file-systems os)))
 
-  (mlet* %store-monad ((mappings  (device-mapping-services os))
-                       (root-fs   (root-file-system-service))
-                       (other-fs  (other-file-system-services os))
-                       (unmount   (user-unmount-service known-fs))
-                       (swaps     (swap-services os))
-                       (procs     (user-processes-service
-                                   (map (compose first service-provision)
-                                        other-fs)))
-                       (host-name (host-name-service
-                                   (operating-system-host-name os))))
-    (return (cons* host-name procs root-fs unmount
-                   (append other-fs mappings swaps)))))
+  (let* ((mappings  (device-mapping-services os))
+         (root-fs   (root-file-system-service))
+         (other-fs  (other-file-system-services os))
+         (unmount   (user-unmount-service known-fs))
+         (swaps     (swap-services os))
+         (procs     (user-processes-service
+                     (map (compose first service-provision)
+                          other-fs)))
+         (host-name (host-name-service (operating-system-host-name os))))
+    (cons* host-name procs root-fs unmount
+           (append other-fs mappings swaps))))
 
 (define (operating-system-services os)
   "Return all the services of OS, including \"internal\" services that do not
 explicitly appear in OS."
-  (mlet %store-monad
-      ((user      (sequence %store-monad (operating-system-user-services os)))
-       (essential (essential-services os)))
-    (return (append essential user))))
+  (append (operating-system-user-services os)
+          (essential-services os)))
 
 
 ;;;
@@ -420,8 +414,7 @@ settings for 'guix.el' to work out-of-the-box."
 (define (user-shells os)
   "Return the list of all the shells used by the accounts of OS.  These may be
 gexps or strings."
-  (mlet %store-monad ((accounts (operating-system-accounts os)))
-    (return (map user-account-shell accounts))))
+  (map user-account-shell (operating-system-accounts os)))
 
 (define (shells-file shells)
   "Return a derivation that builds a shell list for use as /etc/shells based
@@ -577,9 +570,9 @@ fi\n"))
         (operating-system-users os)
         (cons %root-account (operating-system-users os))))
 
-  (mlet %store-monad ((services (operating-system-services os)))
-    (return (append users
-                    (append-map service-user-accounts services)))))
+  (append users
+          (append-map service-user-accounts
+                      (operating-system-services os))))
 
 (define (maybe-string->file file-name thing)
   "If THING is a string, return a <plain-file> with THING as its content.
@@ -615,7 +608,7 @@ use 'plain-file' instead~%")
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
   (mlet* %store-monad
-      ((services     (operating-system-services os))
+      ((services -> (operating-system-services os))
        (pam-services ->
                      ;; Services known to PAM.
                      (append (operating-system-pam-services os)
@@ -626,7 +619,7 @@ use 'plain-file' instead~%")
                      "hosts"
                      (or (operating-system-hosts-file os)
                          (default-/etc/hosts (operating-system-host-name os)))))
-       (shells      (user-shells os)))
+       (shells ->   (user-shells os)))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
                   #:issue (operating-system-issue os)
@@ -713,7 +706,7 @@ etc."
       (sequence %store-monad (map (cut gexp->file "activate-service.scm" <>)
                                   gexps))))
 
-  (mlet* %store-monad ((services (operating-system-services os))
+  (mlet* %store-monad ((services -> (operating-system-services os))
                        (actions  (service-activations services))
                        (etc      (operating-system-etc-directory os))
                        (modules  (imported-modules %modules))
@@ -721,7 +714,7 @@ etc."
                        (modprobe (modprobe-wrapper))
                        (firmware (directory-union
                                   "firmware" (operating-system-firmware os)))
-                       (accounts (operating-system-accounts os)))
+                       (accounts -> (operating-system-accounts os)))
     (define setuid-progs
       (operating-system-setuid-programs os))
 
@@ -789,9 +782,8 @@ etc."
   "Return the boot script for OS---i.e., the code started by the initrd once
 we're running in the final root.  When CONTAINER? is true, skip all
 hardware-related operations as necessary when booting a Linux container."
-  (mlet* %store-monad ((services (operating-system-services os))
-                       (activate (operating-system-activation-script
-                                  os #:container? container?))
+  (mlet* %store-monad ((services -> (operating-system-services os))
+                       (activate (operating-system-activation-script os))
                        (dmd-conf (dmd-configuration-file services)))
     (gexp->file "boot"
                 #~(begin

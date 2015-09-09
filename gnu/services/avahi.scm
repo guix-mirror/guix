@@ -21,7 +21,6 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages admin)
-  #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:export (avahi-service))
@@ -39,21 +38,21 @@
   (define (bool value)
     (if value "yes\n" "no\n"))
 
-  (text-file "avahi-daemon.conf"
-             (string-append
-              "[server]\n"
-              (if host-name
-                  (string-append "host-name=" host-name "\n")
-                  "")
+  (plain-file "avahi-daemon.conf"
+              (string-append
+               "[server]\n"
+               (if host-name
+                   (string-append "host-name=" host-name "\n")
+                   "")
 
-              "browse-domains=" (string-join domains-to-browse)
-              "\n"
-              "use-ipv4=" (bool ipv4?)
-              "use-ipv6=" (bool ipv6?)
-              "[wide-area]\n"
-              "enable-wide-area=" (bool wide-area?)
-              "[publish]\n"
-              "disable-publishing=" (bool (not publish?)))))
+               "browse-domains=" (string-join domains-to-browse)
+               "\n"
+               "use-ipv4=" (bool ipv4?)
+               "use-ipv6=" (bool ipv6?)
+               "[wide-area]\n"
+               "enable-wide-area=" (bool wide-area?)
+               "[publish]\n"
+               "disable-publishing=" (bool (not publish?)))))
 
 (define* (avahi-service #:key (avahi avahi)
                         host-name
@@ -76,37 +75,36 @@ When @var{wide-area?} is true, DNS-SD over unicast DNS is enabled.
 
 Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
 sockets."
-  (mlet %store-monad ((config (configuration-file #:host-name host-name
-                                                  #:publish? publish?
-                                                  #:ipv4? ipv4?
-                                                  #:ipv6? ipv6?
-                                                  #:wide-area? wide-area?
-                                                  #:domains-to-browse
-                                                  domains-to-browse)))
-    (return
-     (service
-      (documentation "Run the Avahi mDNS/DNS-SD responder.")
-      (provision '(avahi-daemon))
-      (requirement '(dbus-system networking))
+  (let ((config (configuration-file #:host-name host-name
+                                    #:publish? publish?
+                                    #:ipv4? ipv4?
+                                    #:ipv6? ipv6?
+                                    #:wide-area? wide-area?
+                                    #:domains-to-browse
+                                    domains-to-browse)))
+    (service
+     (documentation "Run the Avahi mDNS/DNS-SD responder.")
+     (provision '(avahi-daemon))
+     (requirement '(dbus-system networking))
 
-      (start #~(make-forkexec-constructor
-                (list (string-append #$avahi "/sbin/avahi-daemon")
-                      "--syslog" "-f" #$config)))
-      (stop #~(make-kill-destructor))
-      (activate #~(begin
-                    (use-modules (guix build utils))
-                    (mkdir-p "/var/run/avahi-daemon")))
+     (start #~(make-forkexec-constructor
+               (list (string-append #$avahi "/sbin/avahi-daemon")
+                     "--syslog" "-f" #$config)))
+     (stop #~(make-kill-destructor))
+     (activate #~(begin
+                   (use-modules (guix build utils))
+                   (mkdir-p "/var/run/avahi-daemon")))
 
-      (user-groups (list (user-group
-                          (name "avahi")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "avahi")
-                            (group "avahi")
-                            (system? #t)
-                            (comment "Avahi daemon user")
-                            (home-directory "/var/empty")
-                            (shell
-                             #~(string-append #$shadow "/sbin/nologin")))))))))
+     (user-groups (list (user-group
+                         (name "avahi")
+                         (system? #t))))
+     (user-accounts (list (user-account
+                           (name "avahi")
+                           (group "avahi")
+                           (system? #t)
+                           (comment "Avahi daemon user")
+                           (home-directory "/var/empty")
+                           (shell
+                            #~(string-append #$shadow "/sbin/nologin"))))))))
 
 ;;; avahi.scm ends here

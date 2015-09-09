@@ -31,7 +31,6 @@
   #:use-module (gnu packages bash)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
@@ -63,8 +62,8 @@ appropriate screen resolution; otherwise, it must be a list of
 resolutions---e.g., @code{((1024 768) (640 480))}.
 
 Last, @var{extra-config} is a list of strings or objects appended to the
-@code{text-file*} argument list.  It is used to pass extra text to be added
-verbatim to the configuration file."
+@code{mixed-text-file} argument list.  It is used to pass extra text to be
+added verbatim to the configuration file."
   (define (device-section driver)
     (string-append "
 Section \"Device\"
@@ -87,7 +86,7 @@ Section \"Screen\"
   EndSubSection
 EndSection"))
 
-  (apply text-file* "xserver.conf" "
+  (apply mixed-text-file "xserver.conf" "
 Section \"Files\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
@@ -128,7 +127,7 @@ EndSection
 
 (define* (xorg-start-command #:key
                              (guile (canonical-package guile-2.0))
-                             configuration-file
+                             (configuration-file (xorg-configuration-file))
                              (xorg-server xorg-server))
   "Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  @var{configuration-file} is the server configuration
@@ -136,27 +135,24 @@ file or a derivation that builds it; when omitted, the result of
 @code{xorg-configuration-file} is used.
 
 Usually the X server is started by a login manager."
-  (mlet %store-monad ((config (if configuration-file
-                                  (return configuration-file)
-                                  (xorg-configuration-file))))
-    (define script
-      ;; Write a small wrapper around the X server.
-      #~(begin
-          (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
-          (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
+  (define exp
+    ;; Write a small wrapper around the X server.
+    #~(begin
+        (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
+        (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
 
-          (apply execl (string-append #$xorg-server "/bin/X")
-                 (string-append #$xorg-server "/bin/X") ;argv[0]
-                 "-logverbose" "-verbose"
-                 "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
-                 "-config" #$config
-                 "-nolisten" "tcp" "-terminate"
+        (apply execl (string-append #$xorg-server "/bin/X")
+               (string-append #$xorg-server "/bin/X") ;argv[0]
+               "-logverbose" "-verbose"
+               "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
+               "-config" #$configuration-file
+               "-nolisten" "tcp" "-terminate"
 
-                 ;; Note: SLiM and other display managers add the
-                 ;; '-auth' flag by themselves.
-                 (cdr (command-line)))))
+               ;; Note: SLiM and other display managers add the
+               ;; '-auth' flag by themselves.
+               (cdr (command-line)))))
 
-    (gexp->script "start-xorg" script)))
+  (program-file "start-xorg" exp))
 
 (define* (xinitrc #:key
                   (guile (canonical-package guile-2.0))
@@ -200,7 +196,7 @@ which should be passed to this script as the first argument.  If not, the
               (exec-from-login-shell xsession-file session)
               ;; Otherwise, start the specified session.
               (exec-from-login-shell session)))))
-  (gexp->script "xinitrc" builder))
+  (program-file "xinitrc" builder))
 
 
 ;;;
@@ -224,7 +220,7 @@ which should be passed to this script as the first argument.  If not, the
                        (xauth xauth) (dmd dmd) (bash bash)
                        (auto-login-session #~(string-append #$windowmaker
                                                             "/bin/wmaker"))
-                       startx)
+                       (startx (xorg-start-command)))
   "Return a service that spawns the SLiM graphical login manager, which in
 turn starts the X display server with @var{startx}, a command as returned by
 @code{xorg-start-command}.
@@ -251,13 +247,9 @@ If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
 theme to use.  In that case, @var{theme-name} specifies the name of the
 theme."
 
-  (define (slim.cfg)
-    (mlet %store-monad ((startx  (if startx
-                                     (return startx)
-                                     (xorg-start-command)))
-                        (xinitrc (xinitrc #:fallback-session
-                                          auto-login-session)))
-      (text-file* "slim.cfg"  "
+  (define slim.cfg
+    (let ((xinitrc (xinitrc #:fallback-session auto-login-session)))
+      (mixed-text-file "slim.cfg"  "
 default_path /run/current-system/profile/bin
 default_xserver " startx "
 xserver_arguments :0 vt7
@@ -271,40 +263,37 @@ sessiondir /run/current-system/profile/share/xsessions
 session_msg session (F1 to change):
 
 halt_cmd " dmd "/sbin/halt
-reboot_cmd " dmd "/sbin/reboot
-"
-(if auto-login?
-    (string-append "auto_login yes\ndefault_user " default-user "\n")
-    "")
-(if theme-name
-    (string-append "current_theme " theme-name "\n")
-    ""))))
+reboot_cmd " dmd "/sbin/reboot\n"
+            (if auto-login?
+                (string-append "auto_login yes\ndefault_user " default-user "\n")
+                "")
+            (if theme-name
+                (string-append "current_theme " theme-name "\n")
+               ""))))
 
-  (mlet %store-monad ((slim.cfg (slim.cfg)))
-    (return
-     (service
-      (documentation "Xorg display server")
-      (provision '(xorg-server))
-      (requirement '(user-processes host-name udev))
-      (start
-       #~(lambda ()
-           ;; A stale lock file can prevent SLiM from starting, so remove it
-           ;; to be on the safe side.
-           (false-if-exception (delete-file "/var/run/slim.lock"))
+  (service
+   (documentation "Xorg display server")
+   (provision '(xorg-server))
+   (requirement '(user-processes host-name udev))
+   (start
+    #~(lambda ()
+        ;; A stale lock file can prevent SLiM from starting, so remove it
+        ;; to be on the safe side.
+        (false-if-exception (delete-file "/var/run/slim.lock"))
 
-           (fork+exec-command
-            (list (string-append #$slim "/bin/slim") "-nodaemon")
-            #:environment-variables
-            (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
-                  #$@(if theme
-                         (list #~(string-append "SLIM_THEMESDIR=" #$theme))
-                         #~())))))
-      (stop #~(make-kill-destructor))
-      (respawn? #t)
-      (pam-services
-       ;; Tell PAM about 'slim'.
-       (list (unix-pam-service
-              "slim"
-              #:allow-empty-passwords? allow-empty-passwords?)))))))
+        (fork+exec-command
+         (list (string-append #$slim "/bin/slim") "-nodaemon")
+         #:environment-variables
+         (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
+               #$@(if theme
+                      (list #~(string-append "SLIM_THEMESDIR=" #$theme))
+                      #~())))))
+   (stop #~(make-kill-destructor))
+   (respawn? #t)
+   (pam-services
+    ;; Tell PAM about 'slim'.
+    (list (unix-pam-service
+           "slim"
+           #:allow-empty-passwords? allow-empty-passwords?)))))
 
 ;;; xorg.scm ends here

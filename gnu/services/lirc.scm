@@ -19,7 +19,6 @@
 (define-module (gnu services lirc)
   #:use-module (gnu services)
   #:use-module (gnu packages lirc)
-  #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:export (lirc-service))
@@ -41,28 +40,26 @@ The daemon will use specified @var{device}, @var{driver} and
 
 Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{lircd}."
-  (with-monad %store-monad
-    (return
-     (service
-      (provision '(lircd))
-      (documentation "Run the LIRC daemon.")
-      (requirement '(user-processes))
-      (start #~(make-forkexec-constructor
-                (list (string-append #$lirc "/sbin/lircd")
-                      "--nodaemon"
-                      #$@(if device
-                             #~("--device" #$device)
-                             #~())
-                      #$@(if driver
-                             #~("--driver" #$driver)
-                             #~())
-                      #$@(if config-file
-                             #~(#$config-file)
-                             #~())
-                      #$@extra-options)))
-      (stop #~(make-kill-destructor))
-      (activate #~(begin
-                    (use-modules (guix build utils))
-                    (mkdir-p "/var/run/lirc")))))))
+  (service
+   (provision '(lircd))
+   (documentation "Run the LIRC daemon.")
+   (requirement '(user-processes))
+   (start #~(make-forkexec-constructor
+             (list (string-append #$lirc "/sbin/lircd")
+                   "--nodaemon"
+                   #$@(if device
+                          #~("--device" #$device)
+                          #~())
+                   #$@(if driver
+                          #~("--driver" #$driver)
+                          #~())
+                   #$@(if config-file
+                          #~(#$config-file)
+                          #~())
+                   #$@extra-options)))
+   (stop #~(make-kill-destructor))
+   (activate #~(begin
+                 (use-modules (guix build utils))
+                 (mkdir-p "/var/run/lirc")))))
 
 ;;; lirc.scm ends here

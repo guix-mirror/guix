@@ -5749,11 +5749,11 @@ this:
 @end example
 @end defvr
 
-@deffn {Monadic Procedure} host-name-service @var{name}
+@deffn {Scheme Procedure} host-name-service @var{name}
 Return a service that sets the host name to @var{name}.
 @end deffn
 
-@deffn {Monadic Procedure} mingetty-service @var{tty} [#:motd] @
+@deffn {Scheme Procedure} mingetty-service @var{tty} [#:motd] @
        [#:auto-login #f] [#:login-program] [#:login-pause? #f] @
        [#:allow-empty-passwords? #f]
 Return a service to run mingetty on @var{tty}.
@@ -5774,7 +5774,7 @@ the ``message of the day''.
 
 @cindex name service cache daemon
 @cindex nscd
-@deffn {Monadic Procedure} nscd-service [@var{config}] [#:glibc glibc] @
+@deffn {Scheme Procedure} nscd-service [@var{config}] [#:glibc glibc] @
                 [#:name-services '()]
 Return a service that runs libc's name service cache daemon (nscd) with
 the given @var{config}---an @code{<nscd-configuration>} object.
@@ -5861,13 +5861,13 @@ external name servers do not even need to be queried.
 @end defvr
 
 
-@deffn {Monadic Procedure} syslog-service [#:config-file #f]
+@deffn {Scheme Procedure} syslog-service [#:config-file #f]
 Return a service that runs @code{syslogd}.  If configuration file name
 @var{config-file} is not specified, use some reasonable default
 settings.
 @end deffn
 
-@deffn {Monadic Procedure} guix-service [#:guix guix] @
+@deffn {Scheme Procedure} guix-service [#:guix guix] @
        [#:builder-group "guixbuild"] [#:build-accounts 10] @
        [#:authorize-hydra-key? #t] [#:use-substitutes? #t] @
        [#:extra-options '()]
@@ -5886,11 +5886,11 @@ Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{guix-daemon}.
 @end deffn
 
-@deffn {Monadic Procedure} udev-service [#:udev udev]
+@deffn {Scheme Procedure} udev-service [#:udev udev]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
 
-@deffn {Monadic Procedure} console-keymap-service @var{file}
+@deffn {Scheme Procedure} console-keymap-service @var{file}
 Return a service to load console keymap from @var{file} using
 @command{loadkeys} command.
 @end deffn
@@ -5903,12 +5903,12 @@ The @code{(gnu services networking)} module provides services to configure
 the network interface.
 
 @cindex DHCP, networking service
-@deffn {Monadic Procedure} dhcp-client-service [#:dhcp @var{isc-dhcp}]
+@deffn {Scheme Procedure} dhcp-client-service [#:dhcp @var{isc-dhcp}]
 Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
-@deffn {Monadic Procedure} static-networking-service @var{interface} @var{ip} @
+@deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
        [#:gateway #f] [#:name-services @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{gateway} is true, it must be a string specifying the default network
@@ -5916,12 +5916,12 @@ gateway.
 @end deffn
 
 @cindex wicd
-@deffn {Monadic Procedure} wicd-service [#:wicd @var{wicd}]
+@deffn {Scheme Procedure} wicd-service [#:wicd @var{wicd}]
 Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a
 network manager that aims to simplify wired and wireless networking.
 @end deffn
 
-@deffn {Monadic Procedure} ntp-service [#:ntp @var{ntp}] @
+@deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
   [#:name-service @var{%ntp-servers}]
 Return a service that runs the daemon from @var{ntp}, the
 @uref{http://www.ntp.org, Network Time Protocol package}.  The daemon will
@@ -5932,14 +5932,14 @@ keep the system clock synchronized with that of @var{servers}.
 List of host names used as the default NTP servers.
 @end defvr
 
-@deffn {Monadic Procedure} tor-service [#:tor tor]
+@deffn {Scheme Procedure} tor-service [#:tor tor]
 Return a service to run the @uref{https://torproject.org,Tor} daemon.
 
 The daemon runs with the default settings (in particular the default exit
 policy) as the @code{tor} unprivileged user.
 @end deffn
 
-@deffn {Monadic Procedure} bitlbee-service [#:bitlbee bitlbee] @
+@deffn {Scheme Procedure} bitlbee-service [#:bitlbee bitlbee] @
          [#:interface "127.0.0.1"] [#:port 6667] @
          [#:extra-settings ""]
 Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
@@ -5956,7 +5956,7 @@ configuration file.
 
 Furthermore, @code{(gnu services ssh)} provides the following service.
 
-@deffn {Monadic Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
+@deffn {Scheme Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
        [#:daemonic? #t] [#:interfaces '()] [#:port-number 22] @
        [#:allow-empty-passwords? #f] [#:root-login? #f] @
        [#:syslog-output? #t] [#:x11-forwarding? #t] @
@@ -6023,7 +6023,7 @@ browsers, from accessing Facebook.
 
 The @code{(gnu services avahi)} provides the following definition.
 
-@deffn {Monadic Procedure} avahi-service [#:avahi @var{avahi}] @
+@deffn {Scheme Procedure} avahi-service [#:avahi @var{avahi}] @
           [#:host-name #f] [#:publish? #t] [#:ipv4? #t] @
           [#:ipv6? #t] [#:wide-area? #f] @
           [#:domains-to-browse '()]
@@ -6053,7 +6053,7 @@ Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
 started by the @dfn{login manager}, currently SLiM.
 
-@deffn {Monadic Procedure} slim-service [#:allow-empty-passwords? #f] @
+@deffn {Scheme Procedure} slim-service [#:allow-empty-passwords? #f] @
   [#:auto-login? #f] [#:default-user ""] [#:startx] @
   [#:theme @var{%default-slim-theme}] @
   [#:theme-name @var{%default-slim-theme-name}]
@@ -6089,7 +6089,7 @@ theme.
 The G-Expression denoting the default SLiM theme and its name.
 @end defvr
 
-@deffn {Monadic Procedure} xorg-start-command [#:guile] @
+@deffn {Scheme Procedure} xorg-start-command [#:guile] @
   [#:configuration-file #f] [#:xorg-server @var{xorg-server}]
 Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  @var{configuration-file} is the server configuration
@@ -6099,7 +6099,7 @@ file or a derivation that builds it; when omitted, the result of
 Usually the X server is started by a login manager.
 @end deffn
 
-@deffn {Monadic Procedure} xorg-configuration-file @
+@deffn {Scheme Procedure} xorg-configuration-file @
   [#:drivers '()] [#:resolutions '()] [#:extra-config '()]
 Return a configuration file for the Xorg server containing search paths for
 all the common drivers.
@@ -6150,7 +6150,7 @@ Reference, @code{services}}).
 The actual service definitions provided by @code{(gnu services desktop)}
 are described below.
 
-@deffn {Monadic Procedure} dbus-service @var{services} @
+@deffn {Scheme Procedure} dbus-service @var{services} @
                          [#:dbus @var{dbus}]
 Return a service that runs the ``system bus'', using @var{dbus}, with
 support for @var{services}.
@@ -6165,7 +6165,7 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
 @var{services} must be equal to @code{(list avahi)}.
 @end deffn
 
-@deffn {Monadic Procedure} elogind-service @
+@deffn {Scheme Procedure} elogind-service @
                          [#:elogind @var{elogind}] [#:config @var{config}]
 Return a service that runs the @code{elogind} login and
 seat management daemon.  @uref{https://github.com/andywingo/elogind,
@@ -6236,7 +6236,7 @@ their default values are:
 @end table
 @end deffn
 
-@deffn {Monadic Procedure} polkit-service @
+@deffn {Scheme Procedure} polkit-service @
                          [#:polkit @var{polkit}]
 Return a service that runs the Polkit privilege manager.
 @uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit} allows
@@ -6246,7 +6246,7 @@ whose session is active to shut down the machine, if there are no other
 users active.
 @end deffn
 
-@deffn {Monadic Procedure} upower-service [#:upower @var{upower}] @
+@deffn {Scheme Procedure} upower-service [#:upower @var{upower}] @
                          [#:watts-up-pro? #f] @
                          [#:poll-batteries? #t] @
                          [#:ignore-lid? #f] @
@@ -6265,7 +6265,7 @@ levels, with the given configuration settings.  It implements the
 GNOME.
 @end deffn
 
-@deffn {Monadic Procedure} colord-service [#:colord @var{colord}]
+@deffn {Scheme Procedure} colord-service [#:colord @var{colord}]
 Return a service that runs @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
@@ -6293,7 +6293,7 @@ Firefox and Epiphany both query the user before allowing a web page to
 know the user's location.
 @end defvr
 
-@deffn {Monadic Procedure} geoclue-service [#:colord @var{colord}] @
+@deffn {Scheme Procedure} geoclue-service [#:colord @var{colord}] @
                          [#:whitelist '()] @
                          [#:wifi-geolocation-url "https://location.services.mozilla.com/v1/geolocate?key=geoclue"] @
                          [#:submit-data? #f]
@@ -6313,7 +6313,7 @@ web site} for more information.
 
 The @code{(gnu services databases)} module provides the following service.
 
-@deffn {Monadic Procedure} postgresql-service [#:postgresql postgresql] @
+@deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data'']
 Return a service that runs @var{postgresql}, the PostgreSQL database
 server.
@@ -6328,7 +6328,7 @@ The PostgreSQL daemon loads its runtime configuration from
 
 The @code{(gnu services web)} module provides the following service:
 
-@deffn {Monadic Procedure} nginx-service [#:nginx nginx] @
+@deffn {Scheme Procedure} nginx-service [#:nginx nginx] @
        [#:log-directory ``/var/log/nginx''] @
        [#:run-directory ``/var/run/nginx''] @
        [#:config-file]
@@ -6348,7 +6348,7 @@ directories are created when the service is activated.
 
 The @code{(gnu services lirc)} module provides the following service.
 
-@deffn {Monadic Procedure} lirc-service [#:lirc lirc] @
+@deffn {Scheme Procedure} lirc-service [#:lirc lirc] @
        [#:device #f] [#:driver #f] [#:config-file #f] @
        [#:extra-options '()]
 Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
@@ -6521,13 +6521,11 @@ configuration file:
 (define %my-base-services
   ;; Replace the default nscd service with one that knows
   ;; about nss-mdns.
-  (map (lambda (mservice)
-         ;; "Bind" the MSERVICE monadic value to inspect it.
-         (mlet %store-monad ((service mservice))
-           (if (member 'nscd (service-provision service))
-               (nscd-service (nscd-configuration)
-                             #:name-services (list nss-mdns))
-               mservice)))
+  (map (lambda (service)
+         (if (member 'nscd (service-provision service))
+             (nscd-service (nscd-configuration)
+                           #:name-services (list nss-mdns))
+             service))
        %base-services))
 @end example
 

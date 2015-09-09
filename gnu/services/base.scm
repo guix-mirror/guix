@@ -35,7 +35,6 @@
   #:use-module ((gnu build file-systems)
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
-  #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -80,41 +79,39 @@ system upon shutdown (aka. cleanly \"umounting\" root.)
 
 This service must be the root of the service dependency graph so that its
 'stop' action is invoked when dmd is the only process left."
-  (with-monad %store-monad
-    (return
-     (service
-      (documentation "Take care of the root file system.")
-      (provision '(root-file-system))
-      (start #~(const #t))
-      (stop #~(lambda _
-                ;; Return #f if successfully stopped.
-                (sync)
+  (service
+   (documentation "Take care of the root file system.")
+   (provision '(root-file-system))
+   (start #~(const #t))
+   (stop #~(lambda _
+             ;; Return #f if successfully stopped.
+             (sync)
 
-                (call-with-blocked-asyncs
-                 (lambda ()
-                   (let ((null (%make-void-port "w")))
-                     ;; Close 'dmd.log'.
-                     (display "closing log\n")
-                     ;; XXX: Ideally we'd use 'stop-logging', but that one
-                     ;; doesn't actually close the port as of dmd 0.1.
-                     (close-port (@@ (dmd comm) log-output-port))
-                     (set! (@@ (dmd comm) log-output-port) null)
+             (call-with-blocked-asyncs
+              (lambda ()
+                (let ((null (%make-void-port "w")))
+                  ;; Close 'dmd.log'.
+                  (display "closing log\n")
+                  ;; XXX: Ideally we'd use 'stop-logging', but that one
+                  ;; doesn't actually close the port as of dmd 0.1.
+                  (close-port (@@ (dmd comm) log-output-port))
+                  (set! (@@ (dmd comm) log-output-port) null)
 
-                     ;; Redirect the default output ports..
-                     (set-current-output-port null)
-                     (set-current-error-port null)
+                  ;; Redirect the default output ports..
+                  (set-current-output-port null)
+                  (set-current-error-port null)
 
-                     ;; Close /dev/console.
-                     (for-each close-fdes '(0 1 2))
+                  ;; Close /dev/console.
+                  (for-each close-fdes '(0 1 2))
 
-                     ;; At this point, there are no open files left, so the
-                     ;; root file system can be re-mounted read-only.
-                     (mount #f "/" #f
-                            (logior MS_REMOUNT MS_RDONLY)
-                            #:update-mtab? #f)
+                  ;; At this point, there are no open files left, so the
+                  ;; root file system can be re-mounted read-only.
+                  (mount #f "/" #f
+                         (logior MS_REMOUNT MS_RDONLY)
+                         #:update-mtab? #f)
 
-                     #f)))))
-      (respawn? #f)))))
+                  #f)))))
+   (respawn? #f)))
 
 (define* (file-system-service device target type
                               #:key (flags '()) (check? #t)
@@ -127,79 +124,75 @@ true, check the file system before mounting it.  When CREATE-MOUNT-POINT? is
 true, create TARGET if it does not exist yet.  FLAGS is a list of symbols,
 such as 'read-only' etc.  Optionally, REQUIREMENTS may be a list of service
 names such as device-mapping services."
-  (with-monad %store-monad
-    (return
-     (service
-      (provision (list (symbol-append 'file-system- (string->symbol target))))
-      (requirement `(root-file-system ,@requirements))
-      (documentation "Check, mount, and unmount the given file system.")
-      (start #~(lambda args
-                 ;; FIXME: Use or factorize with 'mount-file-system'.
-                 (let ((device (canonicalize-device-spec #$device '#$title))
-                       (flags  #$(mount-flags->bit-mask flags)))
-                   #$(if create-mount-point?
-                         #~(mkdir-p #$target)
-                         #~#t)
-                   #$(if check?
-                         #~(begin
-                             ;; Make sure fsck.ext2 & co. can be found.
-                             (setenv "PATH"
-                                     (string-append
-                                      #$e2fsprogs "/sbin:"
-                                      "/run/current-system/profile/sbin:"
-                                      (getenv "PATH")))
-                             (check-file-system device #$type))
-                         #~#t)
+  (service
+   (provision (list (symbol-append 'file-system- (string->symbol target))))
+   (requirement `(root-file-system ,@requirements))
+   (documentation "Check, mount, and unmount the given file system.")
+   (start #~(lambda args
+              ;; FIXME: Use or factorize with 'mount-file-system'.
+              (let ((device (canonicalize-device-spec #$device '#$title))
+                    (flags  #$(mount-flags->bit-mask flags)))
+                #$(if create-mount-point?
+                      #~(mkdir-p #$target)
+                      #~#t)
+                #$(if check?
+                      #~(begin
+                          ;; Make sure fsck.ext2 & co. can be found.
+                          (setenv "PATH"
+                                  (string-append
+                                   #$e2fsprogs "/sbin:"
+                                   "/run/current-system/profile/sbin:"
+                                   (getenv "PATH")))
+                          (check-file-system device #$type))
+                      #~#t)
 
-                   (mount device #$target #$type flags #$options)
+                (mount device #$target #$type flags #$options)
 
-                   ;; For read-only bind mounts, an extra remount is needed,
-                   ;; as per <http://lwn.net/Articles/281157/>, which still
-                   ;; applies to Linux 4.0.
-                   (when (and (= MS_BIND (logand flags MS_BIND))
-                              (= MS_RDONLY (logand flags MS_RDONLY)))
-                     (mount device #$target #$type
-                            (logior MS_BIND MS_REMOUNT MS_RDONLY))))
-                 #t))
-      (stop #~(lambda args
-                ;; Normally there are no processes left at this point, so
-                ;; TARGET can be safely unmounted.
+                ;; For read-only bind mounts, an extra remount is needed,
+                ;; as per <http://lwn.net/Articles/281157/>, which still
+                ;; applies to Linux 4.0.
+                (when (and (= MS_BIND (logand flags MS_BIND))
+                           (= MS_RDONLY (logand flags MS_RDONLY)))
+                  (mount device #$target #$type
+                         (logior MS_BIND MS_REMOUNT MS_RDONLY))))
+              #t))
+   (stop #~(lambda args
+             ;; Normally there are no processes left at this point, so
+             ;; TARGET can be safely unmounted.
 
-                ;; Make sure PID 1 doesn't keep TARGET busy.
-                (chdir "/")
+             ;; Make sure PID 1 doesn't keep TARGET busy.
+             (chdir "/")
 
-                (umount #$target)
-                #f))))))
+             (umount #$target)
+             #f))))
 
 (define (user-unmount-service known-mount-points)
   "Return a service whose sole purpose is to unmount file systems not listed
 in KNOWN-MOUNT-POINTS when it is stopped."
-  (with-monad %store-monad
-    (return
-     (service
-      (documentation "Unmount manually-mounted file systems.")
-      (provision '(user-unmount))
-      (start #~(const #t))
-      (stop #~(lambda args
-                (define (known? mount-point)
-                  (member mount-point
-                          (cons* "/proc" "/sys"
-                                 '#$known-mount-points)))
+  (service
+   (documentation "Unmount manually-mounted file systems.")
+   (provision '(user-unmount))
+   (start #~(const #t))
+   (stop #~(lambda args
+             (define (known? mount-point)
+               (member mount-point
+                       (cons* "/proc" "/sys"
+                              '#$known-mount-points)))
 
-                ;; Make sure we don't keep the user's mount points busy.
-                (chdir "/")
+             ;; Make sure we don't keep the user's mount points busy.
+             (chdir "/")
 
-                (for-each (lambda (mount-point)
-                            (format #t "unmounting '~a'...~%" mount-point)
-                            (catch 'system-error
-                              (lambda ()
-                                (umount mount-point))
-                              (lambda args
-                                (let ((errno (system-error-errno args)))
-                                  (format #t "failed to unmount '~a': ~a~%"
-                                          mount-point (strerror errno))))))
-                          (filter (negate known?) (mount-points)))
-                #f))))))
+             (for-each (lambda (mount-point)
+                         (format #t "unmounting '~a'...~%" mount-point)
+                         (catch 'system-error
+                           (lambda ()
+                             (umount mount-point))
+                           (lambda args
+                             (let ((errno (system-error-errno args)))
+                               (format #t "failed to unmount '~a': ~a~%"
+                                       mount-point (strerror errno))))))
+                       (filter (negate known?) (mount-points)))
+             #f))))
 
 (define %do-not-kill-file
   ;; Name of the file listing PIDs of processes that must survive when halting
@@ -217,86 +210,84 @@ listed in REQUIREMENTS.
 
 All the services that spawn processes must depend on this one so that they are
 stopped before 'kill' is called."
-  (with-monad %store-monad
-    (return (service
-             (documentation "When stopped, terminate all user processes.")
-             (provision '(user-processes))
-             (requirement (cons 'root-file-system requirements))
-             (start #~(const #t))
-             (stop #~(lambda _
-                       (define (kill-except omit signal)
-                         ;; Kill all the processes with SIGNAL except those
-                         ;; listed in OMIT and the current process.
-                         (let ((omit (cons (getpid) omit)))
-                           (for-each (lambda (pid)
-                                       (unless (memv pid omit)
-                                         (false-if-exception
-                                          (kill pid signal))))
-                                     (processes))))
+  (service
+   (documentation "When stopped, terminate all user processes.")
+   (provision '(user-processes))
+   (requirement (cons 'root-file-system requirements))
+   (start #~(const #t))
+   (stop #~(lambda _
+             (define (kill-except omit signal)
+               ;; Kill all the processes with SIGNAL except those
+               ;; listed in OMIT and the current process.
+               (let ((omit (cons (getpid) omit)))
+                 (for-each (lambda (pid)
+                             (unless (memv pid omit)
+                               (false-if-exception
+                                (kill pid signal))))
+                           (processes))))
 
-                       (define omitted-pids
-                         ;; List of PIDs that must not be killed.
-                         (if (file-exists? #$%do-not-kill-file)
-                             (map string->number
-                                  (call-with-input-file #$%do-not-kill-file
-                                    (compose string-tokenize
-                                             (@ (ice-9 rdelim) read-string))))
-                             '()))
+             (define omitted-pids
+               ;; List of PIDs that must not be killed.
+               (if (file-exists? #$%do-not-kill-file)
+                   (map string->number
+                        (call-with-input-file #$%do-not-kill-file
+                          (compose string-tokenize
+                                   (@ (ice-9 rdelim) read-string))))
+                   '()))
 
-                       (define (now)
-                         (car (gettimeofday)))
+             (define (now)
+               (car (gettimeofday)))
 
-                       (define (sleep* n)
-                         ;; Really sleep N seconds.
-                         ;; Work around <http://bugs.gnu.org/19581>.
-                         (define start (now))
-                         (let loop ((elapsed 0))
-                           (when (> n elapsed)
-                             (sleep (- n elapsed))
-                             (loop (- (now) start)))))
+             (define (sleep* n)
+               ;; Really sleep N seconds.
+               ;; Work around <http://bugs.gnu.org/19581>.
+               (define start (now))
+               (let loop ((elapsed 0))
+                 (when (> n elapsed)
+                   (sleep (- n elapsed))
+                   (loop (- (now) start)))))
 
-                       (define lset= (@ (srfi srfi-1) lset=))
+             (define lset= (@ (srfi srfi-1) lset=))
 
-                       (display "sending all processes the TERM signal\n")
+             (display "sending all processes the TERM signal\n")
 
-                       (if (null? omitted-pids)
-                           (begin
-                             ;; Easy: terminate all of them.
-                             (kill -1 SIGTERM)
-                             (sleep* #$grace-delay)
-                             (kill -1 SIGKILL))
-                           (begin
-                             ;; Kill them all except OMITTED-PIDS.  XXX: We
-                             ;; would like to (kill -1 SIGSTOP) to get a fixed
-                             ;; list of processes, like 'killall5' does, but
-                             ;; that seems unreliable.
-                             (kill-except omitted-pids SIGTERM)
-                             (sleep* #$grace-delay)
-                             (kill-except omitted-pids SIGKILL)
-                             (delete-file #$%do-not-kill-file)))
+             (if (null? omitted-pids)
+                 (begin
+                   ;; Easy: terminate all of them.
+                   (kill -1 SIGTERM)
+                   (sleep* #$grace-delay)
+                   (kill -1 SIGKILL))
+                 (begin
+                   ;; Kill them all except OMITTED-PIDS.  XXX: We
+                   ;; would like to (kill -1 SIGSTOP) to get a fixed
+                   ;; list of processes, like 'killall5' does, but
+                   ;; that seems unreliable.
+                   (kill-except omitted-pids SIGTERM)
+                   (sleep* #$grace-delay)
+                   (kill-except omitted-pids SIGKILL)
+                   (delete-file #$%do-not-kill-file)))
 
-                       (let wait ()
-                         (let ((pids (processes)))
-                           (unless (lset= = pids (cons 1 omitted-pids))
-                             (format #t "waiting for process termination\
+             (let wait ()
+               (let ((pids (processes)))
+                 (unless (lset= = pids (cons 1 omitted-pids))
+                   (format #t "waiting for process termination\
  (processes left: ~s)~%"
-                                     pids)
-                             (sleep* 2)
-                             (wait))))
+                           pids)
+                   (sleep* 2)
+                   (wait))))
 
-                       (display "all processes have been terminated\n")
-                       #f))
-             (respawn? #f)))))
+             (display "all processes have been terminated\n")
+             #f))
+   (respawn? #f)))
 
 (define (host-name-service name)
   "Return a service that sets the host name to @var{name}."
-  (with-monad %store-monad
-    (return (service
-             (documentation "Initialize the machine's host name.")
-             (provision '(host-name))
-             (start #~(lambda _
-                        (sethostname #$name)))
-             (respawn? #f)))))
+  (service
+   (documentation "Initialize the machine's host name.")
+   (provision '(host-name))
+   (start #~(lambda _
+              (sethostname #$name)))
+   (respawn? #f)))
 
 (define (unicode-start tty)
   "Return a gexp to start Unicode support on @var{tty}."
@@ -318,16 +309,13 @@ stopped before 'kill' is called."
 
 (define (console-keymap-service file)
   "Return a service to load console keymap from @var{file}."
-  (with-monad %store-monad
-    (return
-     (service
-      (documentation
-       (string-append "Load console keymap (loadkeys)."))
-      (provision '(console-keymap))
-      (start #~(lambda _
-                 (zero? (system* (string-append #$kbd "/bin/loadkeys")
-                                 #$file))))
-      (respawn? #f)))))
+  (service
+   (documentation (string-append "Load console keymap (loadkeys)."))
+   (provision '(console-keymap))
+   (start #~(lambda _
+              (zero? (system* (string-append #$kbd "/bin/loadkeys")
+                              #$file))))
+   (respawn? #f)))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
   "Return a service that sets up Unicode support in @var{tty} and loads
@@ -336,24 +324,23 @@ stopped before 'kill' is called."
   ;; scripts as well as glyphs for em dash, quotation marks, and other Unicode
   ;; codepoints notably found in the UTF-8 manual.
   (let ((device (string-append "/dev/" tty)))
-    (with-monad %store-monad
-      (return (service
-               (documentation "Load a Unicode console font.")
-               (provision (list (symbol-append 'console-font-
-                                               (string->symbol tty))))
+    (service
+     (documentation "Load a Unicode console font.")
+     (provision (list (symbol-append 'console-font-
+                                     (string->symbol tty))))
 
-               ;; Start after mingetty has been started on TTY, otherwise the
-               ;; settings are ignored.
-               (requirement (list (symbol-append 'term-
-                                                 (string->symbol tty))))
+     ;; Start after mingetty has been started on TTY, otherwise the
+     ;; settings are ignored.
+     (requirement (list (symbol-append 'term-
+                                       (string->symbol tty))))
 
-               (start #~(lambda _
-                          (and #$(unicode-start device)
-                               (zero?
-                                (system* (string-append #$kbd "/bin/setfont")
-                                         "-C" #$device #$font)))))
-               (stop #~(const #t))
-               (respawn? #f))))))
+     (start #~(lambda _
+                (and #$(unicode-start device)
+                     (zero?
+                      (system* (string-append #$kbd "/bin/setfont")
+                               "-C" #$device #$font)))))
+     (stop #~(const #t))
+     (respawn? #f))))
 
 (define* (mingetty-service tty
                            #:key
@@ -379,38 +366,36 @@ of the log-in program (the default is the @code{login} program from the Shadow
 tool suite.)
 
 @var{motd} is a file-like object to use as the ``message of the day''."
-  (with-monad %store-monad
-    (return
-     (service
-      (documentation (string-append "Run mingetty on " tty "."))
-      (provision (list (symbol-append 'term- (string->symbol tty))))
+  (service
+   (documentation (string-append "Run mingetty on " tty "."))
+   (provision (list (symbol-append 'term- (string->symbol tty))))
 
-      ;; Since the login prompt shows the host name, wait for the 'host-name'
-      ;; service to be done.  Also wait for udev essentially so that the tty
-      ;; text is not lost in the middle of kernel messages (XXX).
-      (requirement '(user-processes host-name udev))
+   ;; Since the login prompt shows the host name, wait for the 'host-name'
+   ;; service to be done.  Also wait for udev essentially so that the tty
+   ;; text is not lost in the middle of kernel messages (XXX).
+   (requirement '(user-processes host-name udev))
 
-      (start  #~(make-forkexec-constructor
-                 (list (string-append #$mingetty "/sbin/mingetty")
-                       "--noclear" #$tty
-                       #$@(if auto-login
-                              #~("--autologin" #$auto-login)
-                              #~())
-                       #$@(if login-program
-                              #~("--loginprog" #$login-program)
-                              #~())
-                       #$@(if login-pause?
-                              #~("--loginpause")
-                              #~()))))
-      (stop   #~(make-kill-destructor))
+   (start  #~(make-forkexec-constructor
+              (list (string-append #$mingetty "/sbin/mingetty")
+                    "--noclear" #$tty
+                    #$@(if auto-login
+                           #~("--autologin" #$auto-login)
+                           #~())
+                    #$@(if login-program
+                           #~("--loginprog" #$login-program)
+                           #~())
+                    #$@(if login-pause?
+                           #~("--loginpause")
+                           #~()))))
+   (stop   #~(make-kill-destructor))
 
-      (pam-services
-       ;; Let 'login' be known to PAM.  All the mingetty services will have
-       ;; that PAM service, but that's fine because they're all identical and
-       ;; duplicates are removed.
-       (list (unix-pam-service "login"
-                               #:allow-empty-passwords? allow-empty-passwords?
-                               #:motd motd)))))))
+   (pam-services
+    ;; Let 'login' be known to PAM.  All the mingetty services will have
+    ;; that PAM service, but that's fine because they're all identical and
+    ;; duplicates are removed.
+    (list (unix-pam-service "login"
+                            #:allow-empty-passwords? allow-empty-passwords?
+                            #:motd motd)))))
 
 (define-record-type* <nscd-configuration> nscd-configuration
   make-nscd-configuration
@@ -472,44 +457,44 @@ tool suite.)
 @code{<nscd-configuration>} object."
   (define cache->config
     (match-lambda
-     (($ <nscd-cache> (= symbol->string database)
-                      positive-ttl negative-ttl size check-files?
-                      persistent? shared? max-size propagate?)
-      (string-append "\nenable-cache\t" database "\tyes\n"
+      (($ <nscd-cache> (= symbol->string database)
+                       positive-ttl negative-ttl size check-files?
+                       persistent? shared? max-size propagate?)
+       (string-append "\nenable-cache\t" database "\tyes\n"
 
-                     "positive-time-to-live\t" database "\t"
-                     (number->string positive-ttl) "\n"
-                     "negative-time-to-live\t" database "\t"
-                     (number->string negative-ttl) "\n"
-                     "suggested-size\t" database "\t"
-                     (number->string size) "\n"
-                     "check-files\t" database "\t"
-                     (if check-files? "yes\n" "no\n")
-                     "persistent\t" database "\t"
-                     (if persistent? "yes\n" "no\n")
-                     "shared\t" database "\t"
-                     (if shared? "yes\n" "no\n")
-                     "max-db-size\t" database "\t"
-                     (number->string max-size) "\n"
-                     "auto-propagate\t" database "\t"
-                     (if propagate? "yes\n" "no\n")))))
+                      "positive-time-to-live\t" database "\t"
+                      (number->string positive-ttl) "\n"
+                      "negative-time-to-live\t" database "\t"
+                      (number->string negative-ttl) "\n"
+                      "suggested-size\t" database "\t"
+                      (number->string size) "\n"
+                      "check-files\t" database "\t"
+                      (if check-files? "yes\n" "no\n")
+                      "persistent\t" database "\t"
+                      (if persistent? "yes\n" "no\n")
+                      "shared\t" database "\t"
+                      (if shared? "yes\n" "no\n")
+                      "max-db-size\t" database "\t"
+                      (number->string max-size) "\n"
+                      "auto-propagate\t" database "\t"
+                      (if propagate? "yes\n" "no\n")))))
 
   (match config
     (($ <nscd-configuration> log-file debug-level caches)
-     (text-file "nscd.conf"
-                (string-append "\
+     (plain-file "nscd.conf"
+                 (string-append "\
 # Configuration of libc's name service cache daemon (nscd).\n\n"
-                               (if log-file
-                                   (string-append "logfile\t" log-file)
-                                   "")
-                               "\n"
-                               (if debug-level
-                                   (string-append "debug-level\t"
-                                                  (number->string debug-level))
-                                   "")
-                               "\n"
-                               (string-concatenate
-                                (map cache->config caches)))))))
+                                (if log-file
+                                    (string-append "logfile\t" log-file)
+                                    "")
+                                "\n"
+                                (if debug-level
+                                    (string-append "debug-level\t"
+                                                   (number->string debug-level))
+                                    "")
+                                "\n"
+                                (string-concatenate
+                                 (map cache->config caches)))))))
 
 (define* (nscd-service #:optional (config %nscd-default-configuration)
                        #:key (glibc (canonical-package glibc))
@@ -518,39 +503,35 @@ tool suite.)
 given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
 @code{#:name-services} is a list of packages that provide name service switch
  (NSS) modules needed by nscd.  @xref{Name Service Switch}, for an example."
-  (mlet %store-monad ((nscd.conf (nscd.conf-file config)))
-    (return (service
-             (documentation "Run libc's name service cache daemon (nscd).")
-             (provision '(nscd))
-             (requirement '(user-processes))
+  (let ((nscd.conf (nscd.conf-file config)))
+    (service
+     (documentation "Run libc's name service cache daemon (nscd).")
+     (provision '(nscd))
+     (requirement '(user-processes))
 
-             (activate #~(begin
-                           (use-modules (guix build utils))
-                           (mkdir-p "/var/run/nscd")
-                           (mkdir-p "/var/db/nscd"))) ;for the persistent cache
+     (activate #~(begin
+                   (use-modules (guix build utils))
+                   (mkdir-p "/var/run/nscd")
+                   (mkdir-p "/var/db/nscd")))     ;for the persistent cache
 
-             (start #~(make-forkexec-constructor
-                       (list (string-append #$glibc "/sbin/nscd")
-                             "-f" #$nscd.conf "--foreground")
+     (start #~(make-forkexec-constructor
+               (list (string-append #$glibc "/sbin/nscd")
+                     "-f" #$nscd.conf "--foreground")
 
-                       #:environment-variables
-                       (list (string-append "LD_LIBRARY_PATH="
-                                            (string-join
-                                             (map (lambda (dir)
-                                                    (string-append dir "/lib"))
-                                                  (list #$@name-services))
-                                             ":")))))
-             (stop #~(make-kill-destructor))
+               #:environment-variables
+               (list (string-append "LD_LIBRARY_PATH="
+                                    (string-join
+                                     (map (lambda (dir)
+                                            (string-append dir "/lib"))
+                                          (list #$@name-services))
+                                     ":")))))
+     (stop #~(make-kill-destructor))
 
-             (respawn? #f)))))
+     (respawn? #f))))
 
-(define* (syslog-service #:key config-file)
-  "Return a service that runs @code{syslogd}.
-If configuration file name @var{config-file} is not specified, use some
-reasonable default settings."
-
-  ;; Snippet adapted from the GNU inetutils manual.
-  (define contents "
+;; Snippet adapted from the GNU inetutils manual.
+(define %default-syslog.conf
+  (plain-file "syslog.conf" "
      # Log all error messages, authentication messages of
      # level notice or higher and anything of level err or
      # higher to the console.
@@ -569,20 +550,19 @@ reasonable default settings."
 
      # Log all the mail messages in one place.
      mail.*                                  /var/log/maillog
-")
-
-  (mlet %store-monad
-      ((syslog.conf (text-file "syslog.conf" contents)))
-    (return
-     (service
-      (documentation "Run the syslog daemon (syslogd).")
-      (provision '(syslogd))
-      (requirement '(user-processes))
-      (start
-       #~(make-forkexec-constructor
-          (list (string-append #$inetutils "/libexec/syslogd")
-                "--no-detach" "--rcfile" #$(or config-file syslog.conf))))
-      (stop #~(make-kill-destructor))))))
+"))
+(define* (syslog-service #:key (config-file %default-syslog.conf))
+  "Return a service that runs @code{syslogd}.
+If configuration file name @var{config-file} is not specified, use some
+reasonable default settings."
+  (service
+   (documentation "Run the syslog daemon (syslogd).")
+   (provision '(syslogd))
+   (requirement '(user-processes))
+   (start #~(make-forkexec-constructor
+             (list (string-append #$inetutils "/libexec/syslogd")
+                   "--no-detach" "--rcfile" #$config-file)))
+   (stop #~(make-kill-destructor))))
 
 (define* (guix-build-accounts count #:key
                               (group "guixbuild")
@@ -658,36 +638,34 @@ passed to @command{guix-daemon}."
     (and authorize-hydra-key?
          (hydra-key-authorization guix)))
 
-  (with-monad %store-monad
-    (return (service
-             (documentation "Run the Guix daemon.")
-             (provision '(guix-daemon))
-             (requirement '(user-processes))
-             (start
-              #~(make-forkexec-constructor
-                 (list (string-append #$guix "/bin/guix-daemon")
-                       "--build-users-group" #$builder-group
-                       #$@(if use-substitutes?
-                              '()
-                              '("--no-substitutes"))
-                       #$@extra-options)
+  (service
+   (documentation "Run the Guix daemon.")
+   (provision '(guix-daemon))
+   (requirement '(user-processes))
+   (start
+    #~(make-forkexec-constructor
+       (list (string-append #$guix "/bin/guix-daemon")
+             "--build-users-group" #$builder-group
+             #$@(if use-substitutes?
+                    '()
+                    '("--no-substitutes"))
+             #$@extra-options)
 
-                 ;; Add 'lsof' (for the GC) and 'lsh' (for offloading) to the
-                 ;; daemon's $PATH.
-                 #:environment-variables
-                 (list (string-append "PATH=" #$lsof "/bin:"
-                                      #$lsh "/bin"))))
-             (stop #~(make-kill-destructor))
-             (user-accounts (guix-build-accounts build-accounts
-                                                 #:group builder-group))
-             (user-groups (list (user-group
-                                 (name builder-group)
-                                 (system? #t)
+       ;; Add 'lsof' (for the GC) and 'lsh' (for offloading) to the
+       ;; daemon's $PATH.
+       #:environment-variables
+       (list (string-append "PATH=" #$lsof "/bin:" #$lsh "/bin"))))
+   (stop #~(make-kill-destructor))
+   (user-accounts (guix-build-accounts build-accounts
+                                       #:group builder-group))
+   (user-groups (list (user-group
+                       (name builder-group)
+                       (system? #t)
 
-                                 ;; Use a fixed GID so that we can create the
-                                 ;; store with the right owner.
-                                 (id 30000))))
-             (activate activate)))))
+                       ;; Use a fixed GID so that we can create the
+                       ;; store with the right owner.
+                       (id 30000))))
+   (activate activate)))
 
 (define (udev-rules-union packages)
   "Return the union of the @code{lib/udev/rules.d} directories found in each
@@ -712,124 +690,125 @@ item of @var{packages}."
         (union-build (string-append #$output "/lib/udev/rules.d")
                      (filter-map rules-sub-directory '#$packages))))
 
-  (gexp->derivation "udev-rules" build
-                    #:modules '((guix build union)
-                                (guix build utils))
-                    #:local-build? #t))
+  (computed-file "udev-rules" build
+                 #:modules '((guix build union)
+                             (guix build utils))))
 
 (define* (kvm-udev-rule)
   "Return a directory with a udev rule that changes the group of
 @file{/dev/kvm} to \"kvm\" and makes it #o660."
   ;; Apparently QEMU-KVM used to ship this rule, but now we have to add it by
   ;; ourselves.
-  (gexp->derivation "kvm-udev-rules"
-                    #~(begin
-                        (use-modules (guix build utils))
+  (computed-file "kvm-udev-rules"
+                 #~(begin
+                     (use-modules (guix build utils))
 
-                        (define rules.d
-                          (string-append #$output "/lib/udev/rules.d"))
+                     (define rules.d
+                       (string-append #$output "/lib/udev/rules.d"))
 
-                        (mkdir-p rules.d)
-                        (call-with-output-file
-                            (string-append rules.d "/90-kvm.rules")
-                          (lambda (port)
-                            ;; Build users are part of the "kvm" group, so we
-                            ;; can fearlessly make /dev/kvm 660 (see
-                            ;; <http://bugs.gnu.org/18994>, for background.)
-                            (display "\
+                     (mkdir-p rules.d)
+                     (call-with-output-file
+                         (string-append rules.d "/90-kvm.rules")
+                       (lambda (port)
+                         ;; Build users are part of the "kvm" group, so we
+                         ;; can fearlessly make /dev/kvm 660 (see
+                         ;; <http://bugs.gnu.org/18994>, for background.)
+                         (display "\
 KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n" port))))
-                    #:modules '((guix build utils))))
+                 #:modules '((guix build utils))))
 
 (define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
-  (mlet* %store-monad ((kvm       (kvm-udev-rule))
-                       (rules     (udev-rules-union (cons* udev kvm rules)))
-                       (udev.conf (text-file* "udev.conf"
-                                              "udev_rules=\"" rules
-                                              "/lib/udev/rules.d\"\n")))
-    (return (service
-             (provision '(udev))
+  (let* ((rules     (udev-rules-union (cons* udev
+                                             (kvm-udev-rule)
+                                             rules)))
+         (udev.conf (computed-file "udev.conf"
+                                   #~(call-with-output-file #$output
+                                       (lambda (port)
+                                         (format port
+                                                 "udev_rules=\"~a/lib/udev/rules.d\"\n"
+                                                 #$rules))))))
+    (service
+     (provision '(udev))
 
-             ;; Udev needs /dev to be a 'devtmpfs' mount so that new device
-             ;; nodes can be added: see
-             ;; <http://www.linuxfromscratch.org/lfs/view/development/chapter07/udev.html>.
-             (requirement '(root-file-system))
+     ;; Udev needs /dev to be a 'devtmpfs' mount so that new device nodes can
+     ;; be added: see
+     ;; <http://www.linuxfromscratch.org/lfs/view/development/chapter07/udev.html>.
+     (requirement '(root-file-system))
 
-             (documentation "Populate the /dev directory, dynamically.")
-             (start #~(lambda ()
-                        (define find
-                          (@ (srfi srfi-1) find))
+     (documentation "Populate the /dev directory, dynamically.")
+     (start #~(lambda ()
+                (define find
+                  (@ (srfi srfi-1) find))
 
-                        (define udevd
-                          ;; Choose the right 'udevd'.
-                          (find file-exists?
-                                (map (lambda (suffix)
-                                       (string-append #$udev suffix))
-                                     '("/libexec/udev/udevd" ;udev
-                                       "/sbin/udevd"))))     ;eudev
+                (define udevd
+                  ;; Choose the right 'udevd'.
+                  (find file-exists?
+                        (map (lambda (suffix)
+                               (string-append #$udev suffix))
+                             '("/libexec/udev/udevd" ;udev
+                               "/sbin/udevd"))))     ;eudev
 
-                        (define (wait-for-udevd)
-                          ;; Wait until someone's listening on udevd's control
-                          ;; socket.
-                          (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
-                            (let try ()
-                              (catch 'system-error
-                                (lambda ()
-                                  (connect sock PF_UNIX "/run/udev/control")
-                                  (close-port sock))
-                                (lambda args
-                                  (format #t "waiting for udevd...~%")
-                                  (usleep 500000)
-                                  (try))))))
+                (define (wait-for-udevd)
+                  ;; Wait until someone's listening on udevd's control
+                  ;; socket.
+                  (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
+                    (let try ()
+                      (catch 'system-error
+                        (lambda ()
+                          (connect sock PF_UNIX "/run/udev/control")
+                          (close-port sock))
+                        (lambda args
+                          (format #t "waiting for udevd...~%")
+                          (usleep 500000)
+                          (try))))))
 
-                        ;; Allow udev to find the modules.
-                        (setenv "LINUX_MODULE_DIRECTORY"
-                                "/run/booted-system/kernel/lib/modules")
+                ;; Allow udev to find the modules.
+                (setenv "LINUX_MODULE_DIRECTORY"
+                        "/run/booted-system/kernel/lib/modules")
 
-                        ;; The first one is for udev, the second one for eudev.
-                        (setenv "UDEV_CONFIG_FILE" #$udev.conf)
-                        (setenv "EUDEV_RULES_DIRECTORY"
-                                (string-append #$rules "/lib/udev/rules.d"))
+                ;; The first one is for udev, the second one for eudev.
+                (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+                (setenv "EUDEV_RULES_DIRECTORY"
+                        (string-append #$rules "/lib/udev/rules.d"))
 
-                        (let ((pid (primitive-fork)))
-                          (case pid
-                            ((0)
-                             (exec-command (list udevd)))
-                            (else
-                             ;; Wait until udevd is up and running.  This
-                             ;; appears to be needed so that the events
-                             ;; triggered below are actually handled.
-                             (wait-for-udevd)
+                (let ((pid (primitive-fork)))
+                  (case pid
+                    ((0)
+                     (exec-command (list udevd)))
+                    (else
+                     ;; Wait until udevd is up and running.  This
+                     ;; appears to be needed so that the events
+                     ;; triggered below are actually handled.
+                     (wait-for-udevd)
 
-                             ;; Trigger device node creation.
-                             (system* (string-append #$udev "/bin/udevadm")
-                                      "trigger" "--action=add")
+                     ;; Trigger device node creation.
+                     (system* (string-append #$udev "/bin/udevadm")
+                              "trigger" "--action=add")
 
-                             ;; Wait for things to settle down.
-                             (system* (string-append #$udev "/bin/udevadm")
-                                      "settle")
-                             pid)))))
-             (stop #~(make-kill-destructor))
+                     ;; Wait for things to settle down.
+                     (system* (string-append #$udev "/bin/udevadm")
+                              "settle")
+                     pid)))))
+     (stop #~(make-kill-destructor))
 
-             ;; When halting the system, 'udev' is actually killed by
-             ;; 'user-processes', i.e., before its own 'stop' method was
-             ;; called.  Thus, make sure it is not respawned.
-             (respawn? #f)))))
+     ;; When halting the system, 'udev' is actually killed by
+     ;; 'user-processes', i.e., before its own 'stop' method was
+     ;; called.  Thus, make sure it is not respawned.
+     (respawn? #f))))
 
 (define (device-mapping-service target open close)
   "Return a service that maps device @var{target}, a string such as
 @code{\"home\"} (meaning @code{/dev/mapper/home}).  Evaluate @var{open}, a
 gexp, to open it, and evaluate @var{close} to close it."
-  (with-monad %store-monad
-    (return (service
-             (provision (list (symbol-append 'device-mapping-
-                                             (string->symbol target))))
-             (requirement '(udev))
-             (documentation "Map a device node using Linux's device mapper.")
-             (start #~(lambda () #$open))
-             (stop #~(lambda _ (not #$close)))
-             (respawn? #f)))))
+  (service
+   (provision (list (symbol-append 'device-mapping- (string->symbol target))))
+   (requirement '(udev))
+   (documentation "Map a device node using Linux's device mapper.")
+   (start #~(lambda () #$open))
+   (stop #~(lambda _ (not #$close)))
+   (respawn? #f)))
 
 (define (swap-service device)
   "Return a service that uses @var{device} as a swap device."
@@ -839,18 +818,17 @@ gexp, to open it, and evaluate @var{close} to close it."
                              (string->symbol (basename device))))
         '()))
 
-  (with-monad %store-monad
-    (return (service
-             (provision (list (symbol-append 'swap- (string->symbol device))))
-             (requirement `(udev ,@requirement))
-             (documentation "Enable the given swap device.")
-             (start #~(lambda ()
-                        (restart-on-EINTR (swapon #$device))
-                        #t))
-             (stop #~(lambda _
-                       (restart-on-EINTR (swapoff #$device))
-                       #f))
-             (respawn? #f)))))
+  (service
+   (provision (list (symbol-append 'swap- (string->symbol device))))
+   (requirement `(udev ,@requirement))
+   (documentation "Enable the given swap device.")
+   (start #~(lambda ()
+              (restart-on-EINTR (swapon #$device))
+              #t))
+   (stop #~(lambda _
+             (restart-on-EINTR (swapoff #$device))
+             #f))
+   (respawn? #f)))
 
 (define %base-services
   ;; Convenience variable holding the basic services.

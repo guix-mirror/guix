@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,6 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages databases)
   #:use-module (guix records)
-  #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:export (postgresql-service))
@@ -34,23 +34,20 @@
 ;;; Code:
 
 (define %default-postgres-hba
-  (text-file "pg_hba.conf"
-             "
+  (plain-file "pg_hba.conf"
+              "
 local	all	all			trust
 host	all	all	127.0.0.1/32 	trust
 host	all	all	::1/128 	trust"))
 
 (define %default-postgres-ident
-  (text-file "pg_ident.conf"
+  (plain-file "pg_ident.conf"
              "# MAPNAME       SYSTEM-USERNAME         PG-USERNAME"))
 
 (define %default-postgres-config
-  (mlet %store-monad ((hba %default-postgres-hba)
-                      (ident %default-postgres-ident))
-    (text-file* "postgresql.conf"
-                ;; The daemon will not start without these.
-                "hba_file = '" hba "'\n"
-                "ident_file = '" ident "'\n")))
+  (mixed-text-file "postgresql.conf"
+                   "hba_file = '" %default-postgres-hba "'\n"
+                   "ident_file = '" %default-postgres-ident "\n"))
 
 (define* (postgresql-service #:key (postgresql postgresql)
                              (config-file %default-postgres-config)
@@ -62,16 +59,15 @@ and stores the database cluster in @var{data-directory}."
   ;; Wrapper script that switches to the 'postgres' user before launching
   ;; daemon.
   (define start-script
-    (mlet %store-monad ((config-file config-file))
-      (gexp->script "start-postgres"
-                    #~(let ((user (getpwnam "postgres"))
-                            (postgres (string-append #$postgresql
-                                                     "/bin/postgres")))
-                        (setgid (passwd:gid user))
-                        (setuid (passwd:uid user))
-                        (system* postgres
-                                 (string-append "--config-file=" #$config-file)
-                                 "-D" #$data-directory)))))
+    (program-file "start-postgres"
+                  #~(let ((user (getpwnam "postgres"))
+                          (postgres (string-append #$postgresql
+                                                   "/bin/postgres")))
+                      (setgid (passwd:gid user))
+                      (setuid (passwd:uid user))
+                      (system* postgres
+                               (string-append "--config-file=" #$config-file)
+                               "-D" #$data-directory))))
 
   (define activate
     #~(begin
@@ -99,23 +95,21 @@ and stores the database cluster in @var{data-directory}."
                  (primitive-exit 1))))
             (pid (waitpid pid))))))
 
-  (mlet %store-monad ((start-script start-script))
-    (return
-     (service
-      (provision '(postgres))
-      (documentation "Run the PostgreSQL daemon.")
-      (requirement '(user-processes loopback))
-      (start #~(make-forkexec-constructor #$start-script))
-      (stop #~(make-kill-destructor))
-      (activate activate)
-      (user-groups (list (user-group
-                          (name "postgres")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "postgres")
-                            (group "postgres")
-                            (system? #t)
-                            (comment "PostgreSQL server user")
-                            (home-directory "/var/empty")
-                            (shell
-                             #~(string-append #$shadow "/sbin/nologin")))))))))
+  (service
+   (provision '(postgres))
+   (documentation "Run the PostgreSQL daemon.")
+   (requirement '(user-processes loopback))
+   (start #~(make-forkexec-constructor #$start-script))
+   (stop #~(make-kill-destructor))
+   (activate activate)
+   (user-groups (list (user-group
+                       (name "postgres")
+                       (system? #t))))
+   (user-accounts (list (user-account
+                         (name "postgres")
+                         (group "postgres")
+                         (system? #t)
+                         (comment "PostgreSQL server user")
+                         (home-directory "/var/empty")
+                         (shell
+                          #~(string-append #$shadow "/sbin/nologin")))))))

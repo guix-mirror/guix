@@ -19,7 +19,6 @@
 (define-module (gnu services ssh)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (gnu services)
   #:use-module (gnu system linux)                 ; 'pam-service'
   #:use-module (gnu packages lsh)
@@ -152,22 +151,21 @@ The other options should be self-descriptive."
         '(networking syslogd)
         '(networking)))
 
-  (with-monad %store-monad
-    (return (service
-             (documentation "GNU lsh SSH server")
-             (provision '(ssh-daemon))
-             (requirement requires)
-             (start #~(make-forkexec-constructor (list #$@lsh-command)))
-             (stop  #~(make-kill-destructor))
-             (pam-services
-              (list (unix-pam-service
-                     "lshd"
-                     #:allow-empty-passwords? allow-empty-passwords?)))
-             (activate #~(begin
-                           (use-modules (guix build utils))
-                           (mkdir-p "/var/spool/lsh")
-                           #$(if initialize?
-                                 (activation lsh host-key)
-                                 #t)))))))
+  (service
+   (documentation "GNU lsh SSH server")
+   (provision '(ssh-daemon))
+   (requirement requires)
+   (start #~(make-forkexec-constructor (list #$@lsh-command)))
+   (stop  #~(make-kill-destructor))
+   (pam-services
+    (list (unix-pam-service
+           "lshd"
+           #:allow-empty-passwords? allow-empty-passwords?)))
+   (activate #~(begin
+                 (use-modules (guix build utils))
+                 (mkdir-p "/var/spool/lsh")
+                 #$(if initialize?
+                       (activation lsh host-key)
+                       #t)))))
 
 ;;; ssh.scm ends here

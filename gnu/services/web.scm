@@ -22,7 +22,6 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages web)
   #:use-module (guix records)
-  #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:export (nginx-service))
@@ -76,22 +75,20 @@ files in LOG-DIRECTORY, and stores temporary runtime files in RUN-DIRECTORY."
   (define nologin #~(string-append #$shadow "/sbin/nologin"))
 
   ;; TODO: Add 'reload' action.
-  (mbegin %store-monad
-    (return
-     (service
-      (provision '(nginx))
-      (documentation "Run the nginx daemon.")
-      (requirement '(user-processes loopback))
-      (start (nginx-action "-p" run-directory))
-      (stop (nginx-action "-s" "stop"))
-      (activate activate)
-      (user-groups (list (user-group
-                          (name "nginx")
-                          (system? #t))))
-      (user-accounts (list (user-account
-                            (name "nginx")
-                            (group "nginx")
-                            (system? #t)
-                            (comment "nginx server user")
-                            (home-directory "/var/empty")
-                            (shell nologin))))))))
+  (service
+   (provision '(nginx))
+   (documentation "Run the nginx daemon.")
+   (requirement '(user-processes loopback))
+   (start (nginx-action "-p" run-directory))
+   (stop (nginx-action "-s" "stop"))
+   (activate activate)
+   (user-groups (list (user-group
+                       (name "nginx")
+                       (system? #t))))
+   (user-accounts (list (user-account
+                         (name "nginx")
+                         (group "nginx")
+                         (system? #t)
+                         (comment "nginx server user")
+                         (home-directory "/var/empty")
+                         (shell nologin))))))
