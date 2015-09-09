@@ -63,40 +63,40 @@
     `(#:configure-flags '("--with-gnutls" "--with-gssapi")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
-      (alist-replace
-       'check
-       (lambda _
-         (substitute* "tests/runtests.pl"
-           (("/bin/sh") (which "sh")))
-         ;; Test #1135 requires extern-scan.pl, which is not part of the
-         ;; tarball due to a mistake.  It has been fixed upstream.  We can
-         ;; simply disable the test as it is specific to VMS and OS/400.
-         (delete-file "tests/data/test1135")
+      (modify-phases %standard-phases
+        (replace
+         'check
+         (lambda _
+           (substitute* "tests/runtests.pl"
+             (("/bin/sh") (which "sh")))
+           ;; Test #1135 requires extern-scan.pl, which is not part of the
+           ;; tarball due to a mistake.  It has been fixed upstream.  We can
+           ;; simply disable the test as it is specific to VMS and OS/400.
+           (delete-file "tests/data/test1135")
 
-         ;; XXX FIXME: Test #1510 seems to work on some machines and not
-         ;; others, possibly based on the kernel version.  It works on GuixSD
-         ;; on x86_64 with linux-libre-4.1, but fails on Hydra for both i686
-         ;; and x86_64 with the following error:
-         ;;
-         ;; test 1510...[HTTP GET connection cache limit (CURLOPT_MAXCONNECTS)]
-         ;;
-         ;;  1510: output (log/stderr1510) FAILED:
-         ;; --- log/check-expected	2015-06-27 07:45:53.166720834 +0000
-         ;; +++ log/check-generated	2015-06-27 07:45:53.166720834 +0000
-         ;; @@ -1,5 +1,5 @@
-         ;;  * Connection #0 to host server1.example.com left intact[LF]
-         ;;  * Connection #1 to host server2.example.com left intact[LF]
-         ;;  * Connection #2 to host server3.example.com left intact[LF]
-         ;; -* Closing connection 0[LF]
-         ;; +* Closing connection 1[LF]
-         ;;  * Connection #3 to host server4.example.com left intact[LF]
-         (delete-file "tests/data/test1510")
+           ;; XXX FIXME: Test #1510 seems to work on some machines and not
+           ;; others, possibly based on the kernel version.  It works on GuixSD
+           ;; on x86_64 with linux-libre-4.1, but fails on Hydra for both i686
+           ;; and x86_64 with the following error:
+           ;;
+           ;; test 1510...[HTTP GET connection cache limit (CURLOPT_MAXCONNECTS)]
+           ;;
+           ;;  1510: output (log/stderr1510) FAILED:
+           ;; --- log/check-expected	2015-06-27 07:45:53.166720834 +0000
+           ;; +++ log/check-generated	2015-06-27 07:45:53.166720834 +0000
+           ;; @@ -1,5 +1,5 @@
+           ;;  * Connection #0 to host server1.example.com left intact[LF]
+           ;;  * Connection #1 to host server2.example.com left intact[LF]
+           ;;  * Connection #2 to host server3.example.com left intact[LF]
+           ;; -* Closing connection 0[LF]
+           ;; +* Closing connection 1[LF]
+           ;;  * Connection #3 to host server4.example.com left intact[LF]
+           (delete-file "tests/data/test1510")
 
-         ;; The top-level "make check" does "make -C tests quiet-test", which
-         ;; is too quiet.  Use the "test" target instead, which is more
-         ;; verbose.
-         (zero? (system* "make" "-C" "tests" "test")))
-       %standard-phases)))
+           ;; The top-level "make check" does "make -C tests quiet-test", which
+           ;; is too quiet.  Use the "test" target instead, which is more
+           ;; verbose.
+           (zero? (system* "make" "-C" "tests" "test")))))))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
