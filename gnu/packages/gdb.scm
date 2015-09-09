@@ -46,7 +46,11 @@
                "1a08c9svaihqmz2mm44il1gwa810gmwkckns8b0y0v3qz52amgby"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; FIXME "make check" fails on single-processor systems.
+     `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
+
+       #:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+
        #:phases (modify-phases %standard-phases
                   (add-after
                    'configure 'post-configure
@@ -54,15 +58,25 @@
                      (for-each patch-makefile-SHELL
                                (find-files "." "Makefile\\.in"))))
                   (add-after
-                   'install 'post-install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; Like Binutils, GDB installs libbfd and libopcodes.
+                   'install 'remove-libs-already-in-binutils
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
                      ;; However, this leads to collisions when both are
                      ;; installed, and really is none of its business,
                      ;; conceptually.  So remove them.
-                     (for-each delete-file
-                               (find-files (assoc-ref outputs "out")
-                                           "^lib(opcodes|bfd)\\.")))))))
+                     (let* ((binutils (assoc-ref inputs "binutils"))
+                            (out      (assoc-ref outputs "out"))
+                            (files1   (with-directory-excursion binutils
+                                        (append (find-files "lib")
+                                                (find-files "include"))))
+                            (files2   (with-directory-excursion out
+                                        (append (find-files "lib")
+                                                (find-files "include"))))
+                            (common   (lset-intersection string=?
+                                                         files1 files2)))
+                       (with-directory-excursion out
+                         (for-each delete-file common)
+                         #t)))))))
     (inputs
      `(("expat" ,expat)
        ("mpfr" ,mpfr)
