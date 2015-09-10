@@ -3629,7 +3629,7 @@ Make @var{file} a symlink to the result, and register it as a garbage
 collector root.
 
 @item --log-file
-Return the build log file names for the given
+Return the build log file names or URLs for the given
 @var{package-or-derivation}s, or raise an error if build logs are
 missing.
 
@@ -3643,7 +3643,19 @@ guix build --log-file guile
 guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
 @end example
 
+If a log is unavailable locally, and unless @code{--no-substitutes} is
+passed, the command looks for a corresponding log on one of the
+substitute servers (as specified with @code{--substitute-urls}.)
 
+So for instance, let's say you want to see the build log of GDB on MIPS
+but you're actually on an @code{x86_64} machine:
+
+@example
+$ guix build --log-file gdb -s mips64el-linux 
+http://hydra.gnu.org/log/@dots{}-gdb-7.10
+@end example
+
+You can freely access a huge library of build logs!
 @end table
 
 @cindex common build options
