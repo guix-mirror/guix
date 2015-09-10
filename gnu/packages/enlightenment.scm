@@ -270,15 +270,14 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.19.5")
+    (version "0.19.9")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/apps/enlightenment/enlightenment-"
-                version ".tar.xz"))
+               (string-append "https://download.enlightenment.org/rel/apps/"
+                              name "/" name "-" version ".tar.xz"))
               (sha256
-               (base32 "0j66x7x76fbgqfw6fi77v8qy50slw3jnsq3vvs82rrfvniabm8wc"))))
+               (base32 "1ajpyw1bfbmxpniw041vbvrs9wqgzyw9kccx72nnfiy2wxspjcr5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
