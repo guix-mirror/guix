@@ -134,15 +134,15 @@ removable devices or support for multimedia.")
 (define-public elementary
   (package
     (name "elementary")
-    (version "1.14.2")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/libs/elementary/elementary-"
-                version ".tar.xz"))
+               (string-append "https://download.enlightenment.org/rel/libs/"
+                              "elementary/elementary-" version ".tar.xz"))
               (sha256
-               (base32 "1ck1jm9dfx2l72nklndqjfsxjqb0024b88naskld1dk9b8drs76b"))))
+               (base32
+                "015b277bvgb4q8cqjl58ir9nqb1d40fpj2jblf4gkxq8a45a88mb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
