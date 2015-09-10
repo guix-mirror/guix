@@ -214,15 +214,15 @@ The only supported now is VLC.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "0.8.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/apps/terminology/terminology-"
-                version ".tar.gz"))
+               (string-append "https://download.enlightenment.org/rel/apps/"
+                              "terminology/terminology-" version ".tar.xz"))
               (sha256
-               (base32 "0a767ixackzmhb2awrhjy7q6vsivsd54wc434i617xiw095x843s"))))
+               (base32
+                "0iwid9cvd96kwl0hjhbby84kkz5sgb4p8454nnkf7wjvdz2f9b96"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
