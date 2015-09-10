@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +21,7 @@
 (define-module (test-lint)
   #:use-module (guix tests)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (guix scripts lint)
@@ -397,6 +398,83 @@ requests."
                      (home-page %local-url))))
           (check-home-page pkg))))
     "not reachable: 404")))
+
+(test-assert "source-file-name"
+  (->bool
+   (string-contains
+    (with-warnings
+      (let ((pkg (dummy-package "x"
+                   (version "3.2.1")
+                   (source
+                    (origin
+                      (method url-fetch)
+                      (uri "http://www.example.com/3.2.1.tar.gz")
+                      (sha256 %null-sha256))))))
+        (check-source-file-name pkg)))
+    "file name should contain the package name")))
+
+(test-assert "source-file-name: v prefix"
+  (->bool
+   (string-contains
+    (with-warnings
+      (let ((pkg (dummy-package "x"
+                   (version "3.2.1")
+                   (source
+                    (origin
+                      (method url-fetch)
+                      (uri "http://www.example.com/v3.2.1.tar.gz")
+                      (sha256 %null-sha256))))))
+        (check-source-file-name pkg)))
+    "file name should contain the package name")))
+
+(test-assert "source-file-name: bad checkout"
+  (->bool
+   (string-contains
+    (with-warnings
+      (let ((pkg (dummy-package "x"
+                   (version "3.2.1")
+                   (source
+                    (origin
+                      (method git-fetch)
+                      (uri (git-reference
+                            (url "http://www.example.com/x.git")
+                            (commit "0")))
+                      (sha256 %null-sha256))))))
+        (check-source-file-name pkg)))
+    "file name should contain the package name")))
+
+(test-assert "source-file-name: good checkout"
+  (not
+   (->bool
+    (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (version "3.2.1")
+                    (source
+                     (origin
+                       (method git-fetch)
+                       (uri (git-reference
+                             (url "http://git.example.com/x.git")
+                             (commit "0")))
+                       (file-name (string-append "x-" version))
+                       (sha256 %null-sha256))))))
+         (check-source-file-name pkg)))
+     "file name should contain the package name"))))
+
+(test-assert "source-file-name: valid"
+  (not
+   (->bool
+    (string-contains
+     (with-warnings
+       (let ((pkg (dummy-package "x"
+                    (version "3.2.1")
+                    (source
+                     (origin
+                       (method url-fetch)
+                       (uri "http://www.example.com/x-3.2.1.tar.gz")
+                       (sha256 %null-sha256))))))
+         (check-source-file-name pkg)))
+     "file name should contain the package name"))))
 
 (test-skip (if %http-server-socket 0 1))
 (test-equal "source: 200"

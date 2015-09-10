@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -57,6 +57,7 @@
             check-derivation
             check-home-page
             check-source
+            check-source-file-name
             check-license
             check-formatting
 
@@ -501,6 +502,26 @@ descriptions maintained upstream."
                           (display warning (guix-warning-port)))
                         (reverse warnings)))))))))
 
+(define (check-source-file-name package)
+  "Emit a warning if PACKAGE's origin has no meaningful file name."
+  (define (origin-file-name-valid? origin)
+    ;; Return #t if the source file name contains only a version or is #f;
+    ;; indicates that the origin needs a 'file-name' field.
+    (let ((file-name (origin-actual-file-name origin))
+          (version (package-version package)))
+      (and file-name
+           (not (or (string-prefix? version file-name)
+                    ;; Common in many projects is for the filename to start
+                    ;; with a "v" followed by the version,
+                    ;; e.g. "v3.2.0.tar.gz".
+                    (string-prefix? (string-append "v" version) file-name))))))
+
+  (let ((origin (package-source package)))
+    (unless (or (not origin) (origin-file-name-valid? origin))
+      (emit-warning package
+                    (_ "the source file name should contain the package name")
+                    'source))))
+
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (catch #t
@@ -642,6 +663,10 @@ or a list thereof")
      (name        'source)
      (description "Validate source URLs")
      (check       check-source))
+   (lint-checker
+     (name        'source-file-name)
+     (description "Validate file names of sources")
+     (check       check-source-file-name))
    (lint-checker
      (name        'derivation)
      (description "Report failure to compile a package to a derivation")
