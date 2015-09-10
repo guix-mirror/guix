@@ -45,6 +45,7 @@
   #:use-module (guix store)
   #:use-module (guix serialization)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:export (guix-publish))
 
 (define (show-help)

@@ -19,6 +19,7 @@
 
 (define-module (guix scripts build)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)

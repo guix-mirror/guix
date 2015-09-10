@@ -18,6 +18,7 @@
 
 (define-module (guix scripts gc)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)

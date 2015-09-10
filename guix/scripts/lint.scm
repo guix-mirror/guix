@@ -29,6 +29,7 @@
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix scripts)
   #:use-module (guix gnu-maintenance)
   #:use-module (guix monads)
   #:use-module (gnu packages)

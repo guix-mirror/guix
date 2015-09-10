@@ -22,6 +22,7 @@
   #:use-module (guix hash)
   #:use-module (guix serialization)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix utils)
   #:use-module (rnrs io ports)
   #:use-module (rnrs files)

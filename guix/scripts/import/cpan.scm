@@ -19,6 +19,7 @@
 (define-module (guix scripts import cpan)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix scripts)
   #:use-module (guix import cpan)
   #:use-module (guix scripts import)
   #:use-module (srfi srfi-1)
