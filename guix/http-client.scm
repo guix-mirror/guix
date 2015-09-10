@@ -19,7 +19,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix http-client)
-  #:use-module (guix utils)
   #:use-module (web uri)
   #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
