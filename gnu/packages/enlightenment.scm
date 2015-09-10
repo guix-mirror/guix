@@ -51,14 +51,15 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.14.2")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://download.enlightenment.org/rel/libs/efl/efl-"
                     version ".tar.xz"))
               (sha256
-               (base32 "0kg51v63ljq1z4dj65aiyxaqhq54gkl4hx53ifwbci6ihammandr"))))
+               (base32
+                "1n2l2n09lys5dph9lrnsv5z3qbgzp7bi0vidal2fvy18hflbbvsn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -127,7 +128,8 @@
 for Enlightenment.  Libraries covers data serialization, wide support for
 graphics rendering, UI layout and themes, interaction with OS, access to
 removable devices or support for multimedia.")
-    (license (list license:bsd-2 license:lgpl2.1 license:zlib)))) ; different parts under different licenses
+    ;; Different parts are under different licenses.
+    (license (list license:bsd-2 license:lgpl2.1 license:zlib))))
 
 (define-public elementary
   (package
