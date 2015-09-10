@@ -1,0 +1,15 @@
+AutoSplit will fail to create an index for files whose modification time is 0
+because its default time for a non-existent index is 1.  Set this default time
+to -1 instead.
+
+--- perl-5.16.1/cpan/AutoLoader/lib/AutoSplit.pm.orig	2012-02-14 22:44:36.000000000 -0600
++++ perl-5.16.1/cpan/AutoLoader/lib/AutoSplit.pm	2015-09-09 19:59:22.208708921 -0500
+@@ -361,7 +361,7 @@
+     my($al_idx_file) = catfile($autodir, $modpname, $IndexFile);
+ 
+     if ($check_mod_time){
+-	my($al_ts_time) = (stat("$al_idx_file"))[9] || 1;
++	my($al_ts_time) = (stat("$al_idx_file"))[9] || -1;
+ 	if ($al_ts_time >= $pm_mod_time and
+ 	    $al_ts_time >= $self_mod_time){
+ 	    print "AutoSplit skipped ($al_idx_file newer than $filename)\n"
