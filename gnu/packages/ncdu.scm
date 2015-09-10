@@ -26,23 +26,24 @@
 
 (define-public ncdu
   (package
-   (name "ncdu")
-   (version "1.10")
-   (source (origin
-	    (method url-fetch)
-	    (uri (string-append "http://dev.yorhel.nl/download/ncdu-"
-				version ".tar.gz"))
-	    (sha256
-	     (base32
-	      "0rqc5wpqcbfqpcwxgh3jxwa0yw2py0hv0acpsf0a9g6v9144m6gm"))))
-   (inputs
-    `(("ncurses" ,ncurses)))
-   (build-system gnu-build-system)
-   (synopsis "Ncurses based disk usage analyzer")
-   (description "A disk usage analyzer with an ncurses interface, aimed to be
+    (name "ncdu")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dev.yorhel.nl/download/ncdu-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0yxv87hpal05p6nii6rlnai5a8958689l9vz020w4qvlwiragbnh"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (synopsis "Ncurses based disk usage analyzer")
+    (description "A disk usage analyzer with an ncurses interface, aimed to be
 run on a remote server where you don't have an entire graphical setup, but have
 to do with a simple SSH connection. ncdu aims to be fast, simple and easy to
 use, and should be able to run in any minimal POSIX-like environment with
 ncurses installed.")
-   (license (x11-style "http://g.blicky.net/ncdu.git/plain/COPYING?id=v1.10"))
-   (home-page "http://dev.yorhel.nl/ncdu")))
+    (license (x11-style
+              (string-append "http://g.blicky.net/ncdu.git/plain/COPYING?id=v"
+                             version)))
+    (home-page "http://dev.yorhel.nl/ncdu")))
