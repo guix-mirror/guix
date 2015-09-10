@@ -177,6 +177,18 @@
           (package-transitive-supported-systems d)
           (package-transitive-supported-systems e))))
 
+(test-equal "origin-actual-file-name"
+  "foo-1.tar.gz"
+  (let ((o (dummy-origin (uri "http://www.example.com/foo-1.tar.gz"))))
+    (origin-actual-file-name o)))
+
+(test-equal "origin-actual-file-name, file-name"
+  "foo-1.tar.gz"
+  (let ((o (dummy-origin
+            (uri "http://www.example.com/tarball")
+            (file-name "foo-1.tar.gz"))))
+    (origin-actual-file-name o)))
+
 (let* ((o (dummy-origin))
        (u (dummy-origin))
        (i (dummy-origin))
