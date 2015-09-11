@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2012, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -87,7 +87,12 @@
 
                       ;; The compatibility mode is needed by some packages,
                       ;; notably iproute2.
-                      "--enable-compat185"))))
+                      "--enable-compat185"
+
+                      ;; The following flag is needed so that the inclusion
+                      ;; of db_cxx.h into C++ files works; it leads to
+                      ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                      "--enable-cxx"))))
                  %standard-phases)))
     (synopsis "Berkeley database")
     (description
