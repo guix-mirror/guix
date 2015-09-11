@@ -213,37 +213,9 @@ if needed."
                  #t))))
          outputs))
 
-(define* (generate-icon-cache #:key outputs #:allow-other-keys)
-  "Implement phase \"glib-or-gtk-icon-cache\": generate icon cache if
-needed."
-  (every (match-lambda
-          ((output . directory)
-           (let ((iconsdir (string-append directory
-                                            "/share/icons")))
-             (when (file-exists? iconsdir)
-               (with-directory-excursion iconsdir
-                 (for-each
-                  (lambda (dir)
-                    (unless (file-exists?
-                             (string-append iconsdir "/" dir "/"
-                                            "icon-theme.cache"))
-                      (system* "gtk-update-icon-cache"
-                               "--ignore-theme-index"
-                               (string-append iconsdir "/" dir))))
-                  (scandir "."
-                           (lambda (name)
-                             (and
-                              (not (equal? name "."))
-                              (not (equal? name ".."))
-                              (equal? 'directory
-                                      (stat:type (stat name)))))))))
-             #t)))
-         outputs))
-
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (add-after 'install 'glib-or-gtk-compile-schemas compile-glib-schemas)
-    (add-after 'install 'glib-or-gtk-icon-cache generate-icon-cache)
     (add-after 'install 'glib-or-gtk-wrap wrap-all-programs)))
 
 (define* (glib-or-gtk-build #:key inputs (phases %standard-phases)

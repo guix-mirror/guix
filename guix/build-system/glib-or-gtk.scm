@@ -36,7 +36,7 @@
 ;; This build system is an extension of the 'gnu-build-system'.  It
 ;; accomodates the needs of applications making use of glib or gtk+ (with "or"
 ;; to be interpreted in the mathematical sense).  This is achieved by adding
-;; three phases run after the 'install' phase:
+;; two phases run after the 'install' phase:
 ;;
 ;; 'glib-or-gtk-wrap' phase:
 ;;
@@ -57,11 +57,6 @@
 ;; exists and does not include a file named "gschemas.compiled", then
 ;; "glib-compile-schemas" is run in that directory.
 ;;
-;; 'glib-or-gtk-icon-cache' phase:
-;;
-;; Looks for the existence of icon themes and, if no cache exists, generate
-;; the "icon-theme.cache" file.
-;;
 ;; Code:
 
 (define %default-modules
@@ -81,22 +76,16 @@
   (let ((module (resolve-interface '(gnu packages glib))))
     (module-ref module 'glib)))
 
-(define (default-gtk+)
-  "Return the default gtk+ package from which we use
-\"gtk-update-icon-cache\"."
-  (let ((module (resolve-interface '(gnu packages gtk))))
-    (module-ref module 'gtk+)))
-
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                (glib (default-glib)) (gtk+ (default-gtk+))
+                (glib (default-glib))
                 (implicit-inputs? #t)
                 (strip-binaries? #t)
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:glib #:gtk+ #:inputs #:native-inputs
+    '(#:source #:target #:glib #:inputs #:native-inputs
       #:outputs #:implicit-inputs?))
 
   (and (not target)                               ;XXX: no cross-compilation
@@ -108,7 +97,6 @@
                               '())
                         ,@inputs))
          (build-inputs `(("glib:bin" ,glib "bin") ; to compile schemas
-                         ("gtk+" ,gtk+)           ; to generate icon cache
                          ,@(if implicit-inputs?
                                (standard-packages)
                                '())
