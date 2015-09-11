@@ -50,13 +50,13 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.35.0")
+   (version "0.36.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256 (base32
-                     "12917smfna0cf1xilrva2rv4kqxhph8iqn2gv0wzwvnzljqmarz8"))))
+                     "13i440kv873wgmw50rs4d1v05cj0r7bqnghd70hp9vy44dxhdk4k"))))
    (build-system gnu-build-system)
    ;; FIXME: more dependencies could  be added
    ;;  cairo output:       no (requires cairo >= 1.10.0)
