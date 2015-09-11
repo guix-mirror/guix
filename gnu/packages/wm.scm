@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module (gnu packages linux)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
@@ -142,4 +146,51 @@ commands would.")
     (description "i3 is a tiling window manager, completely written
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
+    (license bsd-3)))
+
+(define-public xmonad
+  (package
+    (name "xmonad")
+    (version "0.11.1")
+    (synopsis "Tiling window manager")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/xmonad/"
+                                  "xmonad-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pfjssamiwpwjp1qqkm9m9p9s35pv381m0cwg6jxg0ppglibzq1r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-x11" ,ghc-x11)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'install-xsession
+          (lambda _
+            (let* ((xsessions (string-append %output "/share/xsessions")))
+              (mkdir-p xsessions)
+              (call-with-output-file
+                  (string-append xsessions "/xmonad.desktop")
+                (lambda (port)
+                  (format port "~
+                    [Desktop Entry]~@
+                    Name=~a~@
+                    Comment=~a~@
+                    Exec=~a/bin/xmonad~@
+                    Type=Application~%" ,name ,synopsis %output)))))))))
+    (home-page "http://xmonad.org")
+    (description
+     "Xmonad is a tiling window manager for X.  Windows are arranged
+automatically to tile the screen without gaps or overlap, maximising screen
+use.  All features of the window manager are accessible from the keyboard: a
+mouse is strictly optional.  Xmonad is written and extensible in Haskell.
+Custom layout algorithms, and other extensions, may be written by the user in
+config files.  Layouts are applied dynamically, and different layouts may be
+used on each workspace.  Xinerama is fully supported, allowing windows to be
+tiled on several screens.")
     (license bsd-3)))
