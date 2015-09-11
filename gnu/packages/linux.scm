@@ -321,7 +321,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.1.6")
+    (version "1.2.1")
     (source
      (origin
       (method url-fetch)
@@ -331,7 +331,7 @@ It has been modified to remove all non-free binary blobs.")
                                 version ".tar.bz2")))
       (sha256
        (base32
-        "1hlz2kqvbjisvwyicdincq7nz897b9rrafyzccwzqiqg53b8gf5s"))))
+        "1n9lnf9gjs72kbj1g354v1xhi2j27aqaah15vykh7cnkq08i4arl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
