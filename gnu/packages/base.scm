@@ -248,7 +248,9 @@ used to apply commands with arbitrarily long arguments.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))))
+              "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))
+            (patches
+             (list (search-patch "coreutils-racy-tail-test.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
