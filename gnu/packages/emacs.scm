@@ -1071,3 +1071,30 @@ files and directories.")
     (description "This package adds support to Org-Babel for evaluating Python
 source code using IPython.")
     (license license:gpl3+)))
+
+(define-public emacs-debbugs
+  (package
+    (name "emacs-debbugs")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/debbugs-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "0pbglx3paa8icazgxlg4jf40wl8war63y9j2jmbb7gbd1xp95v72"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/debbugs.html")
+    (synopsis "Access the Debbugs bug tracker in Emacs")
+    (description
+     "This package lets you access the @uref{http://bugs.gnu.org,GNU Bug
+Tracker} from within Emacs.
+
+For instance, it defines the command @code{M-x debbugs-gnu} for listing bugs,
+and the command @code{M-x debbugs-gnu-search} for bug searching.  If you
+prefer the listing of bugs as TODO items of @code{org-mode}, you could use
+@code{M-x debbugs-org} and related commands.
+
+A minor mode @code{debbugs-browse-mode} let you browse URLs to the GNU Bug
+Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
+    (license license:gpl3+)))
