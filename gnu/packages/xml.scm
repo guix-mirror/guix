@@ -145,7 +145,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
 (define-public perl-xml-parser
   (package
     (name "perl-xml-parser")
-    (version "2.41")
+    (version "2.44")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -153,7 +153,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1sadi505g5qmxr36lgcbrcrqh3a5gcdg32b405gnr8k54b6rg0dl"))))
+               "05ij0g6bfn27iaggxf8nl5rhlwx6f6p6xmdav6rjcly3x5zd1s8s"))))
     (build-system perl-build-system)
     (arguments `(#:make-maker-flags
                  (let ((expat (assoc-ref %build-inputs "expat")))
@@ -171,7 +171,7 @@ may be provided when the XML::Parser object is created.  These options are
 then passed on to the Expat object on each parse call.  They can also be given
 as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
-    (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
+    (home-page "http://search.cpan.org/dist/XML-Parser")))
 
 (define-public perl-libxml
   (package
