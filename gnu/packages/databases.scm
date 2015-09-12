@@ -311,7 +311,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.10.2")
+   (version "3.8.11.1")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -326,12 +326,16 @@ types are supported, as is encryption.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append
-                    "mirror://sourceforge/sqlite.mirror/SQLite%20" version
-                    "/sqlite-autoconf-" numeric-version ".tar.gz")))
+                   (list
+                    (string-append
+                     "http://distfiles.gentoo.org/distfiles/"
+                     "/sqlite-autoconf-" numeric-version ".tar.gz")
+                    (string-append
+                     "mirror://sourceforge/sqlite.mirror/SQLite%20" version
+                     "/sqlite-autoconf-" numeric-version ".tar.gz"))))
             (sha256
              (base32
-              "09nnaqx50gl1vmfvdipirizr61q3s0ywlql50f9kr1bx9rdfb0l3"))))
+              "1dnkl4qr1dgaprbyf3jddfiynkhxnin86qabni47wjlc0fnb16gv"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
