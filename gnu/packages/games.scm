@@ -576,7 +576,7 @@ for common mesh file formats, and collision detection.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.12")
+    (version "0.4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -585,7 +585,7 @@ for common mesh file formats, and collision detection.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0642vy6r6sv96mz6wbs9qvyr95vd69zj4fxiljdg9801javrmm9p"))))
+                "04xnyfap75v3p818kpqb07xshqwqzpws5xjvw5m96qnd9x4725ld"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -617,7 +617,7 @@ for common mesh file formats, and collision detection.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.12")
+    (version "0.4.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -626,7 +626,7 @@ for common mesh file formats, and collision detection.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pqp8hfwg5wkimig8j5jrihzgjjgplxr24w5xisrxvx1hlvnczdk"))))
+                "1xzrvsg0fpbj5p4pz6lls11m3ab4y2bnjlsm4gnw68x9006ffznp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
