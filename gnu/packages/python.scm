@@ -671,7 +671,7 @@ have been used.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "12.1")
+    (version "18.3.1")
     (source
      (origin
       (method url-fetch)
@@ -679,7 +679,7 @@ have been used.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "04bfk7si1pwj3b5k2b1x9b1zkiclybmzpw6alrs5bciri56lg9zs"))))
+        "0kc7rbav00ks6iaw14p38y81q12fx0lpkhgf5m97xc04f5r318ig"))))
     (build-system python-build-system)
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
     ;; One could bootstrap with an internal untested setuptools.
