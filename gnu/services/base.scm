@@ -50,6 +50,9 @@
             console-keymap-service
             console-font-service
             udev-service
+
+            mingetty-configuration
+            mingetty-configuration?
             mingetty-service
 
             %nscd-default-caches
@@ -342,60 +345,63 @@ stopped before 'kill' is called."
      (stop #~(const #t))
      (respawn? #f))))
 
-(define* (mingetty-service tty
-                           #:key
-                           (motd (plain-file "motd" "Welcome.\n"))
-                           auto-login
-                           login-program
-                           login-pause?
+(define-record-type* <mingetty-configuration>
+  mingetty-configuration make-mingetty-configuration
+  mingetty-configuration?
+  (mingetty       mingetty-configuration-mingetty ;<package>
+                  (default mingetty))
+  (tty            mingetty-configuration-tty)     ;string
+  (motd           mingetty-configuration-motd     ;file-like
+                  (default (plain-file "motd" "Welcome.\n")))
+  (auto-login     mingetty-auto-login             ;string | #f
+                  (default #f))
+  (login-program  mingetty-login-program          ;gexp
+                  (default #f))
+  (login-pause?   mingetty-login-pause?           ;Boolean
+                  (default #f))
 
-                           ;; Allow empty passwords by default so that
-                           ;; first-time users can log in when the 'root'
-                           ;; account has just been created.
-                           (allow-empty-passwords? #t))
-  "Return a service to run mingetty on @var{tty}.
+  ;; Allow empty passwords by default so that first-time users can log in when
+  ;; the 'root' account has just been created.
+  (allow-empty-passwords? mingetty-configuration-allow-empty-passwords?
+                          (default #t)))          ;Boolean
 
-When @var{allow-empty-passwords?} is true, allow empty log-in password.  When
-@var{auto-login} is true, it must be a user name under which to log-in
-automatically.  @var{login-pause?} can be set to @code{#t} in conjunction with
-@var{auto-login}, in which case the user will have to press a key before the
-login shell is launched.
+(define* (mingetty-service config)
+  "Return a service to run mingetty according to @var{config}, a
+@code{<mingetty-configuration>} object, which specifies the tty to run, among
+other things."
+  (match config
+    (($ <mingetty-configuration> mingetty tty motd auto-login login-program
+                                 login-pause? allow-empty-passwords?)
+     (service
+      (documentation "Run mingetty on an tty.")
+      (provision (list (symbol-append 'term- (string->symbol tty))))
 
-When true, @var{login-program} is a gexp denoting the name
-of the log-in program (the default is the @code{login} program from the Shadow
-tool suite.)
+      ;; Since the login prompt shows the host name, wait for the 'host-name'
+      ;; service to be done.  Also wait for udev essentially so that the tty
+      ;; text is not lost in the middle of kernel messages (XXX).
+      (requirement '(user-processes host-name udev))
 
-@var{motd} is a file-like object to use as the ``message of the day''."
-  (service
-   (documentation (string-append "Run mingetty on " tty "."))
-   (provision (list (symbol-append 'term- (string->symbol tty))))
+      (start  #~(make-forkexec-constructor
+                 (list (string-append #$mingetty "/sbin/mingetty")
+                       "--noclear" #$tty
+                       #$@(if auto-login
+                              #~("--autologin" #$auto-login)
+                              #~())
+                       #$@(if login-program
+                              #~("--loginprog" #$login-program)
+                              #~())
+                       #$@(if login-pause?
+                              #~("--loginpause")
+                              #~()))))
+      (stop   #~(make-kill-destructor))
 
-   ;; Since the login prompt shows the host name, wait for the 'host-name'
-   ;; service to be done.  Also wait for udev essentially so that the tty
-   ;; text is not lost in the middle of kernel messages (XXX).
-   (requirement '(user-processes host-name udev))
-
-   (start  #~(make-forkexec-constructor
-              (list (string-append #$mingetty "/sbin/mingetty")
-                    "--noclear" #$tty
-                    #$@(if auto-login
-                           #~("--autologin" #$auto-login)
-                           #~())
-                    #$@(if login-program
-                           #~("--loginprog" #$login-program)
-                           #~())
-                    #$@(if login-pause?
-                           #~("--loginpause")
-                           #~()))))
-   (stop   #~(make-kill-destructor))
-
-   (pam-services
-    ;; Let 'login' be known to PAM.  All the mingetty services will have
-    ;; that PAM service, but that's fine because they're all identical and
-    ;; duplicates are removed.
-    (list (unix-pam-service "login"
-                            #:allow-empty-passwords? allow-empty-passwords?
-                            #:motd motd)))))
+      (pam-services
+       ;; Let 'login' be known to PAM.  All the mingetty services will have
+       ;; that PAM service, but that's fine because they're all identical and
+       ;; duplicates are removed.
+       (list (unix-pam-service "login"
+                               #:allow-empty-passwords? allow-empty-passwords?
+                               #:motd motd)))))))
 
 (define-record-type* <nscd-configuration> nscd-configuration
   make-nscd-configuration
@@ -841,12 +847,19 @@ This is the GNU operating system, welcome!\n\n")))
           (console-font-service "tty5")
           (console-font-service "tty6")
 
-          (mingetty-service "tty1" #:motd motd)
-          (mingetty-service "tty2" #:motd motd)
-          (mingetty-service "tty3" #:motd motd)
-          (mingetty-service "tty4" #:motd motd)
-          (mingetty-service "tty5" #:motd motd)
-          (mingetty-service "tty6" #:motd motd)
+          (mingetty-service (mingetty-configuration
+                             (tty "tty1") (motd motd)))
+          (mingetty-service (mingetty-configuration
+                             (tty "tty2") (motd motd)))
+          (mingetty-service (mingetty-configuration
+                             (tty "tty3") (motd motd)))
+          (mingetty-service (mingetty-configuration
+                             (tty "tty4") (motd motd)))
+          (mingetty-service (mingetty-configuration
+                             (tty "tty5") (motd motd)))
+          (mingetty-service (mingetty-configuration
+                             (tty "tty6") (motd motd)))
+
           (static-networking-service "lo" "127.0.0.1"
                                      #:provision '(loopback))
           (syslog-service)

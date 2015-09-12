@@ -5753,24 +5753,43 @@ this:
 Return a service that sets the host name to @var{name}.
 @end deffn
 
-@deffn {Scheme Procedure} mingetty-service @var{tty} [#:motd] @
-       [#:auto-login #f] [#:login-program] [#:login-pause? #f] @
-       [#:allow-empty-passwords? #f]
-Return a service to run mingetty on @var{tty}.
-
-When @var{allow-empty-passwords?} is true, allow empty log-in password.  When
-@var{auto-login} is true, it must be a user name under which to log-in
-automatically.  @var{login-pause?} can be set to @code{#t} in conjunction with
-@var{auto-login}, in which case the user will have to press a key before the
-login shell is launched.
-
-When true, @var{login-program} is a gexp denoting the name
-of the log-in program (the default is the @code{login} program from the Shadow
-tool suite.)
-
-@var{motd} is a monadic value containing a text file to use as
-the ``message of the day''.
+@deffn {Scheme Procedure} mingetty-service @var{config}
+Return a service to run mingetty according to @var{config}, a
+@code{<mingetty-configuration>} object, which specifies the tty to run, among
+other things.
 @end deffn
+
+@deftp {Data Type} mingetty-configuration
+This is the data type representing the configuration of Mingetty, which
+implements console log-in.
+
+@table @asis
+
+@item @code{tty}
+The name of the console this Mingetty runs on---e.g., @code{"tty1"}.
+
+@item @code{motd}
+A file-like object containing the ``message of the day''.
+
+@item @code{auto-login} (default: @code{#f})
+When true, this field must be a string denoting the user name under
+which the the system automatically logs in.  When it is @code{#f}, a
+user name and password must be entered to log in.
+
+@item @code{login-program} (default: @code{#f})
+This must be either @code{#f}, in which case the default log-in program
+is used (@command{login} from the Shadow tool suite), or a gexp denoting
+the name of the log-in program.
+
+@item @code{login-pause?} (default: @code{#f})
+When set to @code{#t} in conjunction with @var{auto-login}, the user
+will have to press a key before the log-in shell is launched.
+
+@item @code{mingetty} (default: @var{mingetty})
+The Mingetty package to use.
+
+@end table
+@end deftp
 
 @cindex name service cache daemon
 @cindex nscd

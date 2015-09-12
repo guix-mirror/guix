@@ -242,22 +242,24 @@ it is alpha software, so it may BREAK IN UNEXPECTED WAYS.
 You have been warned.  Thanks for being so brave.
 ")))
     (define (normal-tty tty)
-      (mingetty-service tty
-                        #:motd motd
-                        #:auto-login "root"
-                        #:login-pause? #t))
+      (mingetty-service (mingetty-configuration (tty tty)
+                                                (motd motd)
+                                                (auto-login "root")
+                                                (login-pause? #t))))
 
-    (list (mingetty-service "tty1"
-                            #:motd motd
-                            #:auto-login "root")
+    (list (mingetty-service (mingetty-configuration
+                             (tty "tty1")
+                             (motd motd)
+                             (auto-login "root")))
 
           ;; Documentation.  The manual is in UTF-8, but
           ;; 'console-font-service' sets up Unicode support and loads a font
           ;; with all the useful glyphs like em dash and quotation marks.
-          (mingetty-service "tty2"
-                            #:motd motd
-                            #:auto-login "guest"
-                            #:login-program (log-to-info))
+          (mingetty-service (mingetty-configuration
+                             (tty "tty2")
+                             (motd motd)
+                             (auto-login "guest")
+                             (login-program (log-to-info))))
 
           ;; Documentation add-on.
           (configuration-template-service)
