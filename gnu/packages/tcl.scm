@@ -132,14 +132,14 @@ X11 GUIs.")
 (define-public tk
   (package
     (name "tk")
-    (version "8.6.0")
+    (version "8.6.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                  version "/tk" version "-src.tar.gz"))
              (sha256
               (base32
-               "1rld0l7p1h31z488w44j170jpsm11xsjf2qrb7gid2b5dwmqnw2w"))))
+               "1h96vp15zl5xz0d4qp6wjyrchqmrmdm3q5k22wkw9jaxbvw9vy88"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
