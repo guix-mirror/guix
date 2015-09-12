@@ -431,13 +431,13 @@ and examining the file structure (pdfshow).")
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "5.1.2")
+   (version "5.1.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1zbvhrp0zjzbi6q2bnbxbg6399r47pq5gw3kspzph81j19fqvpg9"))))
+                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))))
    (build-system gnu-build-system)
    (arguments
       '(#:phases (alist-cons-before
