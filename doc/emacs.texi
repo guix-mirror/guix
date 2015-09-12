@@ -11,6 +11,7 @@ Guix convenient and fun.
 * Package Management: Emacs Package Management.	Managing packages and generations.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
+* Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
 * Completions: Emacs Completions.       Completing @command{guix} shell command.
 @end menu
 
@@ -569,6 +570,36 @@ mode hooks (@pxref{Hooks,,, emacs, The GNU Emacs Manual}), for example:
 (add-hook 'shell-mode-hook 'guix-prettify-mode)
 (add-hook 'dired-mode-hook 'guix-prettify-mode)
 @end example
+
+
+@node Emacs Build Log
+@section Build Log Mode
+
+GNU@tie{}Guix provides major and minor modes for highlighting build
+logs.  So when you have a file with a package build output---for
+example, a file returned by @command{guix build --log-file @dots{}}
+command (@pxref{Invoking guix build}), you may call @kbd{M-x
+guix-build-log-mode} command in the buffer with this file.  This major
+mode highlights some lines specific to build output and provides the
+following key bindings:
+
+@table @kbd
+
+@item M-n
+Move to the next build phase.
+
+@item M-p
+Move to the previous build phase.
+
+@end table
+
+There is also @kbd{M-x guix-build-log-minor-mode} which also provides
+the same highlighting (but not key bindings).  And as it is a minor
+mode, it can be enabled in any buffer.  For example, if you are building
+some package in a shell buffer (@pxref{Interactive Shell,,, emacs, The
+GNU Emacs Manual}), you may enable @command{guix-build-log-minor-mode}
+to make it more colorful.  Guix build output is rather specific, so this
+new highlighting shouldn't conflict with the existing one.
 
 
 @node Emacs Completions
