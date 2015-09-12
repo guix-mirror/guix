@@ -1545,6 +1545,64 @@ resolution of binding sites through combining the information of both
 sequencing tag position and orientation.")
     (license license:bsd-3)))
 
+(define-public mafft
+  (package
+    (name "mafft")
+    (version "7.221")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mafft.cbrc.jp/alignment/software/mafft-" version
+                    "-without-extensions-src.tgz"))
+              (file-name (string-append name "-" version ".tgz"))
+              (sha256
+               (base32
+                "0xi7klbsgi049vsrk6jiwh9wfj3b770gz3c8c7zwij448v0dr73d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no automated tests, though there are tests in the read me
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "BINDIR="
+                                           (string-append out "/bin"))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+          (lambda _ (chdir "core") #t))
+         (add-after 'enter-dir 'patch-makefile
+          (lambda _
+            ;; on advice from the MAFFT authors, there is no need to
+            ;; distribute mafft-profile, mafft-distance, or
+            ;; mafft-homologs.rb as they are too "specialised".
+            (substitute* "Makefile"
+              ;; remove mafft-homologs.rb from SCRIPTS
+              (("^SCRIPTS = mafft mafft-homologs.rb")
+               "SCRIPTS = mafft")
+              ;; remove mafft-distance from PROGS
+              (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
+               "PROGS = dvtditr dndfast7 dndblast sextet5")
+              ;; remove mafft-profile from PROGS
+              (("splittbfast disttbfast tbfast mafft-profile 2cl mccaskillwrap")
+               "splittbfast disttbfast tbfast f2cl mccaskillwrap")
+              (("^rm -f mafft-profile mafft-profile.exe") "#")
+              (("^rm -f mafft-distance mafft-distance.exe") ")#")
+              ;; do not install MAN pages in libexec folder
+              (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
+\\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
+            #t))
+         (delete 'configure))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://mafft.cbrc.jp/alignment/software/")
+    (synopsis "Multiple sequence alignment program")
+    (description
+     "MAFFT offers a range of multiple alignment methods for nucleotide and
+protein sequences.  For instance, it offers L-INS-i (accurate; for alignment
+of <~200 sequences) and FFT-NS-2 (fast; for alignment of <~30,000
+sequences).")
+    (license (license:non-copyleft
+              "http://mafft.cbrc.jp/alignment/software/license.txt"
+              "BSD-3 with different formatting"))))
 
 (define-public metabat
   (package
