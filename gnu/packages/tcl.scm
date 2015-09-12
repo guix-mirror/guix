@@ -33,7 +33,7 @@
 (define-public tcl
   (package
     (name "tcl")
-    (version "8.6.0")
+    (version "8.6.4")
     (source
      (origin
       (method url-fetch)
@@ -41,7 +41,7 @@
                           version "/tcl" version "-src.tar.gz"))
       (sha256
        (base32
-        "1pnabp3xsja4rc8c01l9q1avb65a3zhdzci3j54qa5krqjwj4i1m"))))
+        "13cwa4bc85ylf5gfj9vk182lvgy60qni3f7gbxghq78wk16djvly"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
