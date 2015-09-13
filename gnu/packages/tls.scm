@@ -105,7 +105,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.4.1")
+    (version "3.4.5")
     (source (origin
              (method url-fetch)
              (uri
@@ -116,7 +116,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1xf354xafavqhi207ll1m1isd4l5b31lic2sz9lw0j0r0fcxfnsj"))
+               "1bks1zpmhmnkz2v32dd9b44pz6x0a5w4yi9zzwsd0a078vhbi25g"))
              (patches (list (search-patch "gnutls-doc-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
