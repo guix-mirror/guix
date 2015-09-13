@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -136,7 +136,7 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
     (lambda* (name #:key allow-empty-passwords? motd)
       "Return a standard Unix-style PAM service for NAME.  When
 ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When MOTD is true, it
-should be a file-like object used as the message-of-the-day."
+should be the name of a file used as the message-of-the-day."
       ;; See <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.
       (let ((name* name))
         (pam-service

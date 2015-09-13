@@ -357,7 +357,7 @@ stopped before 'kill' is called."
 
 (define* (mingetty-service tty
                            #:key
-                           (motd (plain-file "motd" "Welcome.\n"))
+                           (motd (text-file "motd" "Welcome.\n"))
                            auto-login
                            login-program
                            login-pause?
@@ -374,12 +374,19 @@ automatically.  @var{login-pause?} can be set to @code{#t} in conjunction with
 @var{auto-login}, in which case the user will have to press a key before the
 login shell is launched.
 
-When true, @var{login-program} is a gexp denoting the name
+When true, @var{login-program} is a gexp or a monadic gexp denoting the name
 of the log-in program (the default is the @code{login} program from the Shadow
 tool suite.)
 
-@var{motd} is a file-like object to use as the ``message of the day''."
-  (with-monad %store-monad
+@var{motd} is a monadic value containing a text file to use as
+the ``message of the day''."
+  (mlet %store-monad ((motd motd)
+                      (login-program (cond ((gexp? login-program)
+                                            (return login-program))
+                                           ((not login-program)
+                                            (return #f))
+                                           (else
+                                            login-program))))
     (return
      (service
       (documentation (string-append "Run mingetty on " tty "."))
@@ -854,7 +861,7 @@ gexp, to open it, and evaluate @var{close} to close it."
 
 (define %base-services
   ;; Convenience variable holding the basic services.
-  (let ((motd (plain-file "motd" "
+  (let ((motd (text-file "motd" "
 This is the GNU operating system, welcome!\n\n")))
     (list (console-font-service "tty1")
           (console-font-service "tty2")
