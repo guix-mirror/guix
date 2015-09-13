@@ -1134,9 +1134,12 @@ The function is called with a single argument - a command line string."
 
 (defun guix-command-output (args)
   "Return string with 'guix ARGS ...' output."
-  (guix-eval-read
-   (apply #'guix-make-guile-expression
-          'guix-command-output args)))
+  (cl-multiple-value-bind (output error)
+      (guix-eval (apply #'guix-make-guile-expression
+                        'guix-command-output args))
+    ;; Remove trailing new space from the error string.
+    (message (replace-regexp-in-string "\n\\'" "" (read error)))
+    (read output)))
 
 (defun guix-help-string (&optional commands)
   "Return string with 'guix COMMANDS ... --help' output."

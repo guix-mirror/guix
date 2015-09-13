@@ -71,6 +71,18 @@
 (define (list-maybe obj)
   (if (list? obj) obj (list obj)))
 
+(define (output+error thunk)
+  "Call THUNK and return 2 values: output and error output as strings."
+  (let ((output-port (open-output-string))
+        (error-port  (open-output-string)))
+    (with-output-to-port output-port
+      (lambda () (with-error-to-port error-port thunk)))
+    (let ((strings (list (get-output-string output-port)
+                         (get-output-string error-port))))
+      (close-output-port output-port)
+      (close-output-port error-port)
+      (apply values strings))))
+
 (define (full-name->name+version spec)
   "Given package specification SPEC with or without output,
 return two values: name and version.  For example, for SPEC
@@ -953,9 +965,11 @@ GENERATIONS is a list of generation numbers."
     (const #t)))
 
 (define (guix-command-output . args)
-  "Return string with 'guix ARGS ...' output."
-  (with-output-to-string
-    (lambda () (apply guix-command args))))
+  "Return 2 strings with 'guix ARGS ...' output and error output."
+  (output+error
+   (lambda ()
+     (parameterize ((guix-warning-port (current-error-port)))
+       (apply guix-command args)))))
 
 (define (help-string . commands)
   "Return string with 'guix COMMANDS ... --help' output."
