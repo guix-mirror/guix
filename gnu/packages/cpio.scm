@@ -28,29 +28,15 @@
 (define-public cpio
   (package
     (name "cpio")
-    (version "2.11")
+    (version "2.12")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/cpio/cpio-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1gavgpzqwgkpagjxw72xgxz52y1ifgz0ckqh8g7cckz7jvyhp0mv"))
-             (patches (map search-patch
-                           '("cpio-CVE-2014-9112-pt1.patch"
-                             "cpio-CVE-2014-9112-pt2.patch"
-                             "cpio-CVE-2014-9112-pt3.patch"
-                             "cpio-CVE-2014-9112-pt4.patch"
-                             "cpio-CVE-2014-9112-pt5.patch"
-                             "cpio-fix-symlink-bad-length-test.patch"
-                             "cpio-gets-undeclared.patch")))))
+               "0vi9q475h1rki53100zml75vxsykzyhrn70hidy41s5c2rc8r6bh"))))
     (build-system gnu-build-system)
-
-    ;; FIXME: autoconf is needed to run autom4te, to update to test suite
-    ;;        after the CVE-2014-9112 patches.  Remove this when cpio is
-    ;;        updated to post-2.11.
-    (native-inputs `(("autoconf" ,autoconf)))
-
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")
     (description
