@@ -594,8 +594,8 @@ when they log out."
                 (cond
                  ;; Provide an nscd ready to use nss-mdns.
                  ((memq 'nscd (service-provision service))
-                  (nscd-service (nscd-configuration)
-                                #:name-services (list nss-mdns)))
+                  (nscd-service (nscd-configuration
+                                 (name-services (list nss-mdns)))))
 
                  ;; Add more rules to udev-service.
                  ;;

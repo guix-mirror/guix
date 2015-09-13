@@ -5795,11 +5795,9 @@ The Mingetty package to use.
 @cindex nscd
 @deffn {Scheme Procedure} nscd-service [@var{config}] [#:glibc glibc] @
                 [#:name-services '()]
-Return a service that runs libc's name service cache daemon (nscd) with
-the given @var{config}---an @code{<nscd-configuration>} object.
-Optionally, @code{#:name-services} is a list of packages that provide
-name service switch (NSS) modules needed by nscd.  @xref{Name Service
-Switch}, for an example.
+Return a service that runs libc's name service cache daemon (nscd) with the
+given @var{config}---an @code{<nscd-configuration>} object.  @xref{Name
+Service Switch}, for an example.
 @end deffn
 
 @defvr {Scheme Variable} %nscd-default-configuration
@@ -5813,6 +5811,14 @@ This is the type representing the name service cache daemon (nscd)
 configuration.
 
 @table @asis
+
+@item @code{name-services} (default: @code{'()})
+List of packages denoting @dfn{name services} that must be visible to
+the nscd---e.g., @code{(list @var{nss-mdns})}.
+
+@item @code{glibc} (default: @var{glibc})
+Package object denoting the GNU C Library providing the @command{nscd}
+command.
 
 @item @code{log-file} (default: @code{"/var/log/nscd.log"})
 Name of nscd's log file.  This is where debugging output goes when
@@ -6542,8 +6548,8 @@ configuration file:
   ;; about nss-mdns.
   (map (lambda (service)
          (if (member 'nscd (service-provision service))
-             (nscd-service (nscd-configuration)
-                           #:name-services (list nss-mdns))
+             (nscd-service (nscd-configuration
+                             (name-services (list nss-mdns))))
              service))
        %base-services))
 @end example

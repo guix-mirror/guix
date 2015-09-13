@@ -412,7 +412,11 @@ other things."
                (default 0))
   ;; TODO: See nscd.conf in glibc for other options to add.
   (caches     nscd-configuration-caches           ;list of <nscd-cache>
-              (default %nscd-default-caches)))
+              (default %nscd-default-caches))
+  (name-services nscd-configuration-name-services ;list of <packages>
+                 (default '()))
+  (glibc      nscd-configuration-glibc            ;<package>
+              (default (canonical-package glibc))))
 
 (define-record-type* <nscd-cache> nscd-cache make-nscd-cache
   nscd-cache?
@@ -502,13 +506,10 @@ other things."
                                 (string-concatenate
                                  (map cache->config caches)))))))
 
-(define* (nscd-service #:optional (config %nscd-default-configuration)
-                       #:key (glibc (canonical-package glibc))
-                       (name-services '()))
+(define* (nscd-service #:optional (config %nscd-default-configuration))
   "Return a service that runs libc's name service cache daemon (nscd) with the
-given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
-@code{#:name-services} is a list of packages that provide name service switch
- (NSS) modules needed by nscd.  @xref{Name Service Switch}, for an example."
+given @var{config}---an @code{<nscd-configuration>} object.  @xref{Name
+Service Switch}, for an example."
   (let ((nscd.conf (nscd.conf-file config)))
     (service
      (documentation "Run libc's name service cache daemon (nscd).")
@@ -521,7 +522,8 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
                    (mkdir-p "/var/db/nscd")))     ;for the persistent cache
 
      (start #~(make-forkexec-constructor
-               (list (string-append #$glibc "/sbin/nscd")
+               (list (string-append #$(nscd-configuration-glibc config)
+                                    "/sbin/nscd")
                      "-f" #$nscd.conf "--foreground")
 
                #:environment-variables
@@ -529,7 +531,9 @@ given @var{config}---an @code{<nscd-configuration>} object.  Optionally,
                                     (string-join
                                      (map (lambda (dir)
                                             (string-append dir "/lib"))
-                                          (list #$@name-services))
+                                          (list
+                                           #$@(nscd-configuration-name-services
+                                               config)))
                                      ":")))))
      (stop #~(make-kill-destructor))
 
