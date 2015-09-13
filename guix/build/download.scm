@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,17 +55,46 @@ object, as an inexact number."
   (+ (time-second duration)
      (/ (time-nanosecond duration) 1e9)))
 
-(define (throughput->string throughput)
-  "Given THROUGHPUT, measured in bytes per second, return a string
-representing it in a human-readable way."
-  (if (> throughput 3e6)
-      (format #f "~,2f MiB/s" (/ throughput (expt 2. 20)))
-      (format #f "~,0f KiB/s" (/ throughput 1024.0))))
+(define (seconds->string duration)
+  "Given DURATION in seconds, return a string representing it in 'hh:mm:ss'
+format."
+  (if (not (number? duration))
+      "00:00:00"
+      (let* ((total-seconds (inexact->exact (round duration)))
+             (extra-seconds (modulo total-seconds 3600))
+             (hours         (quotient total-seconds 3600))
+             (mins          (quotient extra-seconds 60))
+             (secs          (modulo extra-seconds 60)))
+        (format #f "~2,'0d:~2,'0d:~2,'0d" hours mins secs))))
+
+(define (byte-count->string size)
+  "Given SIZE in bytes, return a string representing it in a human-readable
+way."
+  (let ((KiB 1024.)
+        (MiB (expt 1024. 2))
+        (GiB (expt 1024. 3))
+        (TiB (expt 1024. 4)))
+    (cond
+     ((< size KiB) (format #f "~dB" (inexact->exact size)))
+     ((< size MiB) (format #f "~dKiB" (inexact->exact (round (/ size KiB)))))
+     ((< size GiB) (format #f "~,1fMiB" (/ size MiB)))
+     ((< size TiB) (format #f "~,2fGiB" (/ size GiB)))
+     (else         (format #f "~,3fTiB" (/ size TiB))))))
+
+(define* (progress-bar % #:optional (bar-width 20))
+  "Return % as a string representing an ASCII-art progress bar.  The total
+width of the bar is BAR-WIDTH."
+  (let* ((fraction (/ % 100))
+         (filled   (inexact->exact (floor (* fraction bar-width))))
+         (empty    (- bar-width filled)))
+    (format #f "[~a~a]"
+            (make-string filled #\#)
+            (make-string empty #\space))))
 
 (define* (progress-proc file size #:optional (log-port (current-output-port)))
-  "Return a procedure to show the progress of FILE's download, which is
-SIZE byte long.  The returned procedure is suitable for use as an
-argument to `dump-port'.  The progress report is written to LOG-PORT."
+  "Return a procedure to show the progress of FILE's download, which is SIZE
+bytes long.  The returned procedure is suitable for use as an argument to
+`dump-port'.  The progress report is written to LOG-PORT."
   ;; XXX: Because of <http://bugs.gnu.org/19939> this procedure is often not
   ;; called as frequently as we'd like too; this is especially bad with Nginx
   ;; on hydra.gnu.org, which returns whole nars as a single chunk.
@@ -83,14 +113,24 @@ argument to `dump-port'.  The progress report is written to LOG-PORT."
       (if (number? size)
           (lambda (transferred cont)
             (with-elapsed-time elapsed
-              (let ((%          (* 100.0 (/ transferred size)))
-                    (throughput (if elapsed
-                                    (/ transferred elapsed)
-                                    0)))
+              (let* ((%          (* 100.0 (/ transferred size)))
+                     (throughput (if elapsed
+                                     (/ transferred elapsed)
+                                     0))
+                     (left       (format #f " ~a  ~a"
+                                         (basename file)
+                                         (byte-count->string size)))
+                     (right      (format #f "~a/s ~a ~a~6,1f%"
+                                         (byte-count->string throughput)
+                                         (seconds->string elapsed)
+                                         (progress-bar %) %))
+                     ;; TODO: Make this adapt to the actual terminal width.
+                     (cols       80)
+                     (num-spaces (max 1 (- cols (+ (string-length left)
+                                                   (string-length right)))))
+                     (gap        (make-string num-spaces #\space)))
+                (format log-port "~a~a~a" left gap right)
                 (display #\cr log-port)
-                (format log-port "~a\t~5,1f% of ~,1f KiB (~a)"
-                        file % (/ size 1024.0)
-                        (throughput->string throughput))
                 (flush-output-port log-port)
                 (cont))))
           (lambda (transferred cont)
@@ -99,9 +139,10 @@ argument to `dump-port'.  The progress report is written to LOG-PORT."
                                     (/ transferred elapsed)
                                     0)))
                 (display #\cr log-port)
-                (format log-port "~a\t~6,1f KiB transferred (~a)"
-                        file (/ transferred 1024.0)
-                        (throughput->string throughput))
+                (format log-port "~a\t~a transferred (~a/s)"
+                        file
+                        (byte-count->string transferred)
+                        (byte-count->string throughput))
                 (flush-output-port log-port)
                 (cont))))))))
 

@@ -329,6 +329,12 @@ requests."
         (check-derivation pkg)))
     "failed to create derivation")))
 
+(test-assert "license: invalid license"
+  (string-contains
+   (with-warnings
+     (check-license (dummy-package "x" (license #f))))
+   "invalid license"))
+
 (test-assert "home-page: wrong home-page"
   (->bool
    (string-contains

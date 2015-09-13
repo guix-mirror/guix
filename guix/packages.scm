@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,6 +93,8 @@
             package-cross-derivation
             package-output
             package-grafts
+
+            transitive-input-references
 
             %supported-systems
             %hurd-systems
@@ -603,6 +606,18 @@ for the host system (\"native inputs\"), and not target inputs."
   "Return the propagated inputs of PACKAGE, and their propagated inputs,
 recursively."
   (transitive-inputs (package-propagated-inputs package)))
+
+(define (transitive-input-references alist inputs)
+  "Return a list of (assoc-ref ALIST <label>) for each (<label> <package> . _)
+in INPUTS and their transitive propagated inputs."
+  (define label
+    (match-lambda
+      ((label . _)
+       label)))
+
+  (map (lambda (input)
+         `(assoc-ref ,alist ,(label input)))
+       (transitive-inputs inputs)))
 
 (define-syntax define-memoized/v
   (lambda (form)

@@ -1,0 +1,40 @@
+;;; guix-config.el --- Compile-time configuration of Guix.
+
+;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+
+;; This file is part of GNU Guix.
+
+;; GNU Guix is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; GNU Guix is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
+
+(defconst guix-emacs-interface-directory
+  (replace-regexp-in-string "${prefix}" "@prefix@" "@emacsuidir@"))
+
+(defconst guix-state-directory
+  ;; This must match `NIX_STATE_DIR' as defined in `daemon.am'.
+  (or (getenv "NIX_STATE_DIR") "@guix_localstatedir@/guix"))
+
+(defvar guix-guile-program "@GUILE@"
+  "Name of the guile executable used for Guix REPL.
+May be either a string (the name of the executable) or a list of
+strings of the form:
+
+  (NAME . ARGS)
+
+Where ARGS is a list of arguments to the guile program.")
+
+(provide 'guix-config)
+
+;;; guix-config.el ends here

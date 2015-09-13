@@ -467,3 +467,25 @@ Canonical XML (part of Libxml2) and Exclusive Canonical XML (part of
 Libxml2).")
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public minixml
+  (package
+    (name "minixml")
+    (version "2.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.msweet.org/files/project3/mxml-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "14pzhlfidj5v1qbxy7a59yn4jz9pnjrs2zwalz228jsq7ijm9vfd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))  ;no "check" target
+    (home-page "http://www.minixml.org/")
+    (synopsis "Small XML parsing library")
+    (description
+     "Mini-XML is a small C library to read and write XML files and strings in
+UTF-8 and UTF-16 encoding.")
+    ;; LGPL 2.0+ with additional exceptions for static linking
+    (license license:lgpl2.0+)))

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014 Alex Kost <alezost@gmail.com>
+# Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -21,13 +21,20 @@ AUTOLOADS = emacs/guix-autoloads.el
 ELFILES =					\
   emacs/guix-backend.el				\
   emacs/guix-base.el				\
+  emacs/guix-command.el				\
   emacs/guix-emacs.el				\
+  emacs/guix-external.el			\
+  emacs/guix-help-vars.el			\
   emacs/guix-history.el				\
   emacs/guix-info.el				\
+  emacs/guix-init.el				\
   emacs/guix-list.el				\
   emacs/guix-messages.el			\
   emacs/guix-pcomplete.el			\
+  emacs/guix-popup.el				\
   emacs/guix-prettify.el			\
+  emacs/guix-profiles.el			\
+  emacs/guix-read.el				\
   emacs/guix-utils.el				\
   emacs/guix.el
 
@@ -37,9 +44,7 @@ dist_lisp_DATA =				\
   $(ELFILES)					\
   $(AUTOLOADS)
 
-nodist_lisp_DATA =				\
-  emacs/guix-init.el				\
-  emacs/guix-profiles.el
+nodist_lisp_DATA = emacs/guix-config.el
 
 $(AUTOLOADS): $(ELFILES)
 	$(EMACS) --batch --eval						\

@@ -1,6 +1,6 @@
 ;;; guix-base.el --- Common definitions   -*- lexical-binding: t -*-
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -89,8 +89,8 @@ Each element of the list has a form:
 
 (defun guix-get-param-title (entry-type param)
   "Return title of an ENTRY-TYPE entry parameter PARAM."
-  (or (guix-get-key-val guix-param-titles
-                        entry-type param)
+  (or (guix-assq-value guix-param-titles
+                       entry-type param)
       (prog1 (symbol-name param)
         (message "Couldn't find title for '%S %S'."
                  entry-type param))))
@@ -102,15 +102,15 @@ Each element of the list has a form:
 
 (defun guix-get-full-name (entry &optional output)
   "Return name specification of the package ENTRY and OUTPUT."
-  (guix-get-name-spec (guix-get-key-val entry 'name)
-                      (guix-get-key-val entry 'version)
+  (guix-get-name-spec (guix-assq-value entry 'name)
+                      (guix-assq-value entry 'version)
                       output))
 
 (defun guix-entry-to-specification (entry)
   "Return name specification by the package or output ENTRY."
-  (guix-get-name-spec (guix-get-key-val entry 'name)
-                      (guix-get-key-val entry 'version)
-                      (guix-get-key-val entry 'output)))
+  (guix-get-name-spec (guix-assq-value entry 'name)
+                      (guix-assq-value entry 'version)
+                      (guix-assq-value entry 'output)))
 
 (defun guix-entries-to-specifications (entries)
   "Return name specifications by the package or output ENTRIES."
@@ -120,13 +120,13 @@ Each element of the list has a form:
 (defun guix-get-installed-outputs (entry)
   "Return list of installed outputs for the package ENTRY."
   (mapcar (lambda (installed-entry)
-            (guix-get-key-val installed-entry 'output))
-          (guix-get-key-val entry 'installed)))
+            (guix-assq-value installed-entry 'output))
+          (guix-assq-value entry 'installed)))
 
 (defun guix-get-entry-by-id (id entries)
   "Return entry from ENTRIES by entry ID."
   (cl-find-if (lambda (entry)
-                (equal id (guix-get-key-val entry 'id)))
+                (equal id (guix-assq-value entry 'id)))
               entries))
 
 (defun guix-get-package-id-and-output-by-output-id (oid)
@@ -172,13 +172,36 @@ If PATH is relative, it is considered to be relative to
       (move-to-column col)
       (recenter 1))))
 
-(defun guix-edit-package (id)
-  "Edit (go to location of) package with ID."
-  (let ((loc (guix-eval-read (guix-make-guile-expression
-                              'package-location-string id))))
-    (if loc
-        (guix-find-location loc)
-      (message "Couldn't find package location."))))
+(defun guix-package-location (id-or-name)
+  "Return location of a package with ID-OR-NAME.
+For the meaning of location, see `guix-find-location'."
+  (guix-eval-read (guix-make-guile-expression
+                   'package-location-string id-or-name)))
+
+
+;;; Receivable lists of packages, lint checkers, etc.
+
+(guix-memoized-defun guix-graph-type-names ()
+  "Return a list of names of available graph node types."
+  (guix-eval-read (guix-make-guile-expression 'graph-type-names)))
+
+(guix-memoized-defun guix-lint-checker-names ()
+  "Return a list of names of available lint checkers."
+  (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))
+
+(guix-memoized-defun guix-package-names ()
+  "Return a list of names of available packages."
+  (sort
+   ;; Work around <https://github.com/jaor/geiser/issues/64>:
+   ;; list of strings is parsed much slower than list of lists,
+   ;; so we use 'package-names-lists' instead of 'package-names'.
+
+   ;; (guix-eval-read (guix-make-guile-expression 'package-names))
+
+   (mapcar #'car
+           (guix-eval-read (guix-make-guile-expression
+                            'package-names-lists)))
+   #'string<))
 
 
 ;;; Buffers and auto updating.
@@ -392,7 +415,6 @@ following keywords are available:
          (prefix         (concat "guix-" entry-type-str "-" buf-type-str))
          (group          (intern prefix))
          (mode-map-str   (concat prefix "-mode-map"))
-         (mode-map       (intern mode-map-str))
          (parent-mode    (intern (concat "guix-" buf-type-str "-mode")))
          (mode           (intern (concat prefix "-mode")))
          (mode-init-fun  (intern (concat prefix "-mode-initialize")))
@@ -910,11 +932,11 @@ ENTRIES is a list of package entries to get info about packages."
                   (outputs (cdr spec))
                   (entry (guix-get-entry-by-id id entries)))
              (when entry
-               (let ((location (guix-get-key-val entry 'location)))
+               (let ((location (guix-assq-value entry 'location)))
                  (concat (guix-get-full-name entry)
                          (when outputs
                            (concat ":"
-                                   (mapconcat #'identity outputs ",")))
+                                   (guix-concat-strings outputs ",")))
                          (when location
                            (concat "\t(" location ")")))))))
          specs)))
@@ -1059,6 +1081,63 @@ FILE.  With a prefix argument, also prompt for PROFILE."
       (concat "--profile=" profile)
       (concat "--manifest=" file))
      operation-buffer)))
+
+
+;;; Executing guix commands
+
+(defcustom guix-run-in-shell-function #'guix-run-in-shell
+  "Function used to run guix command.
+The function is called with a single argument - a command line string."
+  :type '(choice (function-item guix-run-in-shell)
+                 (function-item guix-run-in-eshell)
+                 (function :tag "Other function"))
+  :group 'guix)
+
+(defcustom guix-shell-buffer-name "*shell*"
+  "Default name of a shell buffer used for running guix commands."
+  :type 'string
+  :group 'guix)
+
+(declare-function comint-send-input "comint" t)
+
+(defun guix-run-in-shell (string)
+  "Run command line STRING in `guix-shell-buffer-name' buffer."
+  (shell guix-shell-buffer-name)
+  (goto-char (point-max))
+  (insert string)
+  (comint-send-input))
+
+(declare-function eshell-send-input "esh-mode" t)
+
+(defun guix-run-in-eshell (string)
+  "Run command line STRING in eshell buffer."
+  (eshell)
+  (goto-char (point-max))
+  (insert string)
+  (eshell-send-input))
+
+(defun guix-run-command-in-shell (args)
+  "Execute 'guix ARGS ...' command in a shell buffer."
+  (funcall guix-run-in-shell-function
+           (guix-command-string args)))
+
+(defun guix-run-command-in-repl (args)
+  "Execute 'guix ARGS ...' command in Guix REPL."
+  (guix-eval-in-repl
+   (apply #'guix-make-guile-expression
+          'guix-command args)))
+
+(defun guix-command-output (args)
+  "Return string with 'guix ARGS ...' output."
+  (guix-eval-read
+   (apply #'guix-make-guile-expression
+          'guix-command-output args)))
+
+(defun guix-help-string (&optional commands)
+  "Return string with 'guix COMMANDS ... --help' output."
+  (guix-eval-read
+   (apply #'guix-make-guile-expression
+          'help-string commands)))
 
 
 ;;; Pull

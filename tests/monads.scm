@@ -95,10 +95,12 @@
 
 (test-assert "lift"
   (every (lambda (monad run)
-           (let ((f (lift1 1+ monad)))
+           (let ((f (lift1 1+ monad))
+                 (g (apply lift1 1+ (list monad))))
              (with-monad monad
                (let ((number (random 777)))
                  (= (run (>>= (return number) f))
+                    (run (>>= (return number) g))
                     (1+ number))))))
          %monads
          %monad-run))

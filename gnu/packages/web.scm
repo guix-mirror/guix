@@ -663,6 +663,59 @@ minimum to provide high performance operation.")
     ;; bundled CuTest framework uses a different non-copyleft license.
     (license (list l:asl2.0 (l:non-copyleft "file://test/CuTest-README.txt")))))
 
+(define-public sassc
+  ;; libsass must be statically linked and it isn't included in the sassc
+  ;; release tarballs, hence this odd package recipe.
+  (let* ((version "3.2.5")
+         (libsass
+          (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/sass/libsass/archive/"
+                  version ".tar.gz"))
+            (file-name (string-append "libsass-" version ".tar.gz"))
+            (sha256
+             (base32
+              "1x25k6p1s1yzsdpzb7bzh8japilmi1mk3z96q66pycbinj9z9is4")))))
+    (package
+      (name "sassc")
+      (version version)
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/sass/sassc/archive/"
+                                    version ".tar.gz"))
+                (file-name (string-append "sassc-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1xf3w75w840rj0nx375rxi7mcv1ngqqq8p3zrzjlyx8jfpnldmv5"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags '("CC=gcc")
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'unpack-libsass-and-set-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (and (zero? (system* "tar" "xvf" (assoc-ref inputs "libsass")))
+                    (begin
+                      (setenv "SASS_LIBSASS_PATH"
+                              (string-append (getcwd) "/libsass-" ,version))
+                      #t))))
+           (replace 'install ; no install target
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (mkdir-p bin)
+                 (copy-file "bin/sassc" (string-append bin "/sassc"))
+                 #t))))))
+      (inputs
+       `(("libsass" ,libsass)))
+      (synopsis "CSS pre-processor")
+      (description "SassC is a compiler written in C for the CSS pre-processor
+language known as SASS.")
+      (home-page "http://sass-lang.com/libsass")
+      (license l:expat))))
+
 
 (define-public perl-apache-logformat-compiler
   (package
@@ -1620,6 +1673,39 @@ with Encode::decode(locale => $string).")
 which can be used to parse directory listings.")
     (home-page "http://search.cpan.org/~gaas/File-Listing/")))
 
+(define-public perl-finance-quote
+  (package
+   (name "perl-finance-quote")
+   (version "1.37")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://cpan.metacpan.org/authors/id/E/EC/ECOCODE/"
+                          "Finance-Quote-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1b6pbh7f76fb5sa4f0lhx085xy55pprz5v7z7li7pqiyw7i4f4bf"))
+      (patches (list
+                (search-patch "perl-finance-quote-unuse-mozilla-ca.patch")))))
+   (build-system perl-build-system)
+   (propagated-inputs
+    `(("perl-datetime" ,perl-datetime)
+      ("perl-html-parser" ,perl-html-parser)
+      ("perl-html-tableextract" ,perl-html-tableextract)
+      ("perl-html-tree" ,perl-html-tree)
+      ("perl-http-cookies" ,perl-http-cookies)
+      ("perl-http-message" ,perl-http-message)
+      ("perl-json" ,perl-json)
+      ("perl-libwww" ,perl-libwww)
+      ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+      ("perl-uri" ,perl-uri)))
+   (home-page "http://search.cpan.org/dist/Finance-Quote")
+   (synopsis "Stock and mutual fund quotes")
+   (description
+    "Finance::Quote gets stock quotes from various internet sources, including
+Yahoo! Finance, Fidelity Investments, and the Australian Stock Exchange.")
+   (license l:gpl2)))
+
 (define-public perl-gssapi
   (package
     (name "perl-gssapi")
@@ -1641,6 +1727,28 @@ which can be used to parse directory listings.")
     (synopsis "Perl extension providing access to the GSSAPIv2 library")
     (description "This is a Perl extension for using GSSAPI C bindings as
 described in RFC 2744.")
+    (license (package-license perl))))
+
+(define-public perl-html-element-extended
+  (package
+    (name "perl-html-element-extended")
+    (version "1.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MS/MSISK/"
+                           "HTML-Element-Extended-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0axknss8c368r5i082yhkfj8mq0w4nglfrpcxcayyzzj13qimvzk"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-tree" ,perl-html-tree)))
+    (home-page "http://search.cpan.org/dist/HTML-Element-Extended")
+    (synopsis "Manipulate tables of HTML::Element")
+    (description
+     "HTML::Element::Extended is a Perl extension for manipulating a table
+composed of HTML::Element style components.")
     (license (package-license perl))))
 
 (define-public perl-html-form
@@ -1690,6 +1798,29 @@ described in RFC 2744.")
     (description "HTML::Lint is a pure-Perl HTML parser and checker for
 syntactic legitmacy.")
     (license l:artistic2.0)))
+
+(define-public perl-html-tableextract
+  (package
+    (name "perl-html-tableextract")
+    (version "2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/M/MS/MSISK/"
+                           "HTML-TableExtract-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01jimmss3q68a89696wmclvqwb2ybz6xgabpnbp6mm6jcni82z8a"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-element-extended" ,perl-html-element-extended)
+       ("perl-html-parser" ,perl-html-parser)))
+    (home-page "http://search.cpan.org/dist/HTML-TableExtract")
+    (synopsis "Extract contents from HTML tables")
+    (description
+     "HTML::TableExtract is a Perl module for extracting the content contained
+in tables within an HTML document, either as text or encoded element trees.")
+    (license (package-license perl))))
 
 (define-public perl-html-tree
   (package

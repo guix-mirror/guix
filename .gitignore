@@ -120,8 +120,7 @@ GTAGS
 /emacs/Makefile
 /emacs/guix-autoloads.el
 /emacs/guix-helper.scm
-/emacs/guix-init.el
-/emacs/guix-profiles.el
+/emacs/guix-config.el
 /doc/os-config-bare-bones.texi
 /doc/os-config-desktop.texi
 /doc/*.1

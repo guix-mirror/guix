@@ -128,6 +128,53 @@ split it into several short lines."
       (fill-region (point-min) (point-max)))
     (buffer-string)))
 
+(defun guix-concat-strings (strings separator &optional location)
+  "Return new string by concatenating STRINGS with SEPARATOR.
+If LOCATION is a symbol `head', add another SEPARATOR to the
+beginning of the returned string; if `tail' - add SEPARATOR to
+the end of the string; if nil, do not add SEPARATOR; otherwise
+add both to the end and to the beginning."
+  (let ((str (mapconcat #'identity strings separator)))
+    (cond ((null location)
+           str)
+          ((eq location 'head)
+           (concat separator str))
+          ((eq location 'tail)
+           (concat str separator))
+          (t
+           (concat separator str separator)))))
+
+(defun guix-shell-quote-argument (argument)
+  "Quote shell command ARGUMENT.
+This function is similar to `shell-quote-argument', but less strict."
+  (if (equal argument "")
+      "''"
+    (replace-regexp-in-string
+     "\n" "'\n'"
+     (replace-regexp-in-string
+      (rx (not (any alnum "-=,./\n"))) "\\\\\\&" argument))))
+
+(defun guix-command-symbol (&optional args)
+  "Return symbol by concatenating 'guix' and ARGS (strings)."
+  (intern (guix-concat-strings (cons "guix" args) "-")))
+
+(defun guix-command-string (&optional args)
+  "Return 'guix ARGS ...' string with quoted shell arguments."
+  (let ((args (mapcar #'guix-shell-quote-argument args)))
+    (guix-concat-strings (cons "guix" args) " ")))
+
+(defun guix-copy-as-kill (string &optional no-message?)
+  "Put STRING into `kill-ring'.
+If NO-MESSAGE? is non-nil, do not display a message about it."
+  (kill-new string)
+  (unless no-message?
+    (message "'%s' has been added to kill ring." string)))
+
+(defun guix-copy-command-as-kill (args &optional no-message?)
+  "Put 'guix ARGS ...' string into `kill-ring'.
+See also `guix-copy-as-kill'."
+  (guix-copy-as-kill (guix-command-string args) no-message?))
+
 (defun guix-completing-read-multiple (prompt table &optional predicate
                                       require-match initial-input
                                       hist def inherit-input-method)
@@ -146,19 +193,55 @@ Return time value."
   (require 'org)
   (org-read-date nil t nil prompt))
 
-(defun guix-get-key-val (alist &rest keys)
-  "Return value from ALIST by KEYS.
-ALIST is alist of alists of alists ... which can be consecutively
-accessed with KEYS."
-  (let ((val alist))
-    (dolist (key keys val)
-      (setq val (cdr (assq key val))))))
+(defcustom guix-find-file-function #'find-file
+  "Function used to find a file.
+The function is called by `guix-find-file' with a file name as a
+single argument."
+  :type '(choice (function-item find-file)
+                 (function-item org-open-file)
+                 (function :tag "Other function"))
+  :group 'guix)
 
 (defun guix-find-file (file)
   "Find FILE if it exists."
   (if (file-exists-p file)
-      (find-file file)
+      (funcall guix-find-file-function file)
     (message "File '%s' does not exist." file)))
+
+(defmacro guix-while-search (regexp &rest body)
+  "Evaluate BODY after each search for REGEXP in the current buffer."
+  (declare (indent 1) (debug t))
+  `(save-excursion
+     (goto-char (point-min))
+     (while (re-search-forward ,regexp nil t)
+       ,@body)))
+
+(defun guix-any (pred lst)
+  "Test whether any element from LST satisfies PRED.
+If so, return the return value from the successful PRED call.
+Return nil otherwise."
+  (when lst
+    (or (funcall pred (car lst))
+        (guix-any pred (cdr lst)))))
+
+
+;;; Alist accessors
+
+(defmacro guix-define-alist-accessor (name assoc-fun)
+  "Define NAME function to access alist values using ASSOC-FUN."
+  `(defun ,name (alist &rest keys)
+     ,(format "Return value from ALIST by KEYS using `%s'.
+ALIST is alist of alists of alists ... which can be consecutively
+accessed with KEYS."
+              assoc-fun)
+     (if (or (null alist) (null keys))
+         alist
+       (apply #',name
+              (cdr (,assoc-fun (car keys) alist))
+              (cdr keys)))))
+
+(guix-define-alist-accessor guix-assq-value assq)
+(guix-define-alist-accessor guix-assoc-value assoc)
 
 
 ;;; Diff
@@ -198,6 +281,27 @@ See `defun' for the meaning of arguments."
               name
               (mapconcat #'symbol-name arglist " ")
               docstring)))
+
+(defmacro guix-memoized-defalias (symbol definition &optional docstring)
+  "Set SYMBOL's function definition to memoized version of DEFINITION."
+  (declare (doc-string 3) (indent 1))
+  `(defalias ',symbol
+     (guix-memoize #',definition)
+     ,(or docstring
+          (format "Memoized version of `%S'." definition))))
+
+(defvar guix-memoized-font-lock-keywords
+  (eval-when-compile
+    `((,(rx "("
+            (group "guix-memoized-" (or "defun" "defalias"))
+            symbol-end
+            (zero-or-more blank)
+            (zero-or-one
+             (group (one-or-more (or (syntax word) (syntax symbol))))))
+       (1 font-lock-keyword-face)
+       (2 font-lock-function-name-face nil t)))))
+
+(font-lock-add-keywords 'emacs-lisp-mode guix-memoized-font-lock-keywords)
 
 (provide 'guix-utils)
 

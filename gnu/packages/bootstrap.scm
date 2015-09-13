@@ -127,7 +127,7 @@ successful, or false to signal an error."
     (synopsis description)
     (description #f)
     (home-page #f)
-    (license #f)))
+    (license gpl3+)))
 
 (define package-with-bootstrap-guile
   (memoize

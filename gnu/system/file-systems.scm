@@ -50,6 +50,7 @@
             %devtmpfs-file-system
             %immutable-store
             %control-groups
+            %elogind-file-systems
 
             %base-file-systems
             %container-file-systems
@@ -258,6 +259,26 @@ UUID representation."
                '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
                  "blkio" "perf_event" "hugetlb")))))
 
+(define %elogind-file-systems
+  ;; We don't use systemd, but these file systems are needed for elogind,
+  ;; which was extracted from systemd.
+  (list (file-system
+          (device "none")
+          (mount-point "/run/systemd")
+          (type "tmpfs")
+          (check? #f)
+          (flags '(no-suid no-dev no-exec))
+          (options "mode=0755")
+          (create-mount-point? #t))
+        (file-system
+          (device "none")
+          (mount-point "/run/user")
+          (type "tmpfs")
+          (check? #f)
+          (flags '(no-suid no-dev no-exec))
+          (options "mode=0755")
+          (create-mount-point? #t))))
+
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
@@ -265,6 +286,7 @@ UUID representation."
                 %pseudo-terminal-file-system
                 %shared-memory-file-system
                 %immutable-store)
+          %elogind-file-systems
           %control-groups))
 
 ;; File systems for Linux containers differ from %base-file-systems in that

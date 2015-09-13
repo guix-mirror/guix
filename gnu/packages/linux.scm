@@ -210,7 +210,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.1.6")
+  (let* ((version "4.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -283,7 +283,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "07gmpy32v90bx78bm1khc1hw7x0akdh2sxpkxkavwj4fjc6f732v"))))
+               "0jfgbr9qc92bk7hyfdvw030xyic2bg834l8cxp25rw9qbbdck3rs"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)

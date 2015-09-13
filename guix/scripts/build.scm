@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module (guix gexp)
+  #:autoload   (guix http-client) (http-fetch http-get-error?)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -41,6 +42,45 @@
             show-build-options-help
 
             guix-build))
+
+(define %default-log-urls
+  ;; Default base URLs for build logs.
+  '("http://hydra.gnu.org/log"))
+
+;; XXX: The following procedure cannot be in (guix store) because of the
+;; dependency on (guix derivations).
+(define* (log-url store file #:key (base-urls %default-log-urls))
+  "Return a URL under one of the BASE-URLS where a build log for FILE can be
+found.  Return #f if no build log was found."
+  (define (valid-url? url)
+    ;; Probe URL and return #t if it is accessible.
+    (guard (c ((http-get-error? c) #f))
+      (close-port (http-fetch url #:buffered? #f))
+      #t))
+
+  (define (find-url file)
+    (let ((base (basename file)))
+      (any (lambda (base-url)
+             (let ((url (string-append base-url "/" base)))
+               (and (valid-url? url) url)))
+           base-urls)))
+
+  (cond ((derivation-path? file)
+         (catch 'system-error
+           (lambda ()
+             ;; Usually we'll have more luck with the output file name since
+             ;; the deriver that was used by the server could be different, so
+             ;; try one of the output file names.
+             (let ((drv (call-with-input-file file read-derivation)))
+               (or (find-url (derivation->output-path drv))
+                   (find-url file))))
+           (lambda args
+             ;; As a last resort, try the .drv.
+             (if (= ENOENT (system-error-errno args))
+                 (find-url file)
+                 (apply throw args)))))
+        (else
+         (find-url file))))
 
 (define (register-root store paths root)
   "Register ROOT as an indirect GC root for all of PATHS."
@@ -457,6 +497,11 @@ arguments with packages that use the specified source."
                                         (list %default-options)))
              (store (open-connection))
              (drv   (options->derivations store opts))
+             (urls  (map (cut string-append <> "/log")
+                         (if (assoc-ref opts 'substitutes?)
+                             (or (assoc-ref opts 'substitute-urls)
+                                 %default-substitute-urls)
+                             '())))
              (roots (filter-map (match-lambda
                                  (('gc-root . root) root)
                                  (_ #f))
@@ -470,7 +515,9 @@ arguments with packages that use the specified source."
 
         (cond ((assoc-ref opts 'log-file?)
                (for-each (lambda (file)
-                           (let ((log (log-file store file)))
+                           (let ((log (or (log-file store file)
+                                          (log-url store file
+                                                   #:base-urls urls))))
                              (if log
                                  (format #t "~a~%" log)
                                  (leave (_ "no build log for '~a'~%")

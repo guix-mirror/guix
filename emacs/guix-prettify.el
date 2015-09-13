@@ -1,6 +1,6 @@
 ;;; guix-prettify.el --- Prettify Guix store file names
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -47,9 +47,12 @@
 
 ;;; Code:
 
+(require 'guix-utils)
+
 (defgroup guix-prettify nil
   "Prettify Guix store file names."
   :prefix "guix-prettify-"
+  :group 'guix
   :group 'font-lock
   :group 'convenience)
 
@@ -136,13 +139,11 @@ enabling/disabling `guix-prettify-mode'.  If nil, do nothing.")
           (remove-text-properties (point-min)
                                   (point-max)
                                   '(composition nil))
-        (save-excursion
-          (goto-char (point-min))
-          (while (re-search-forward guix-prettify-regexp nil t)
-            (remove-text-properties
-             (match-beginning guix-prettify-regexp-group)
-             (match-end       guix-prettify-regexp-group)
-             '(composition nil))))))))
+        (guix-while-search guix-prettify-regexp
+          (remove-text-properties
+           (match-beginning guix-prettify-regexp-group)
+           (match-end       guix-prettify-regexp-group)
+           '(composition nil)))))))
 
 ;;;###autoload
 (define-minor-mode guix-prettify-mode

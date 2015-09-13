@@ -202,6 +202,12 @@
        "http://ftp.fr.debian.org/debian/"
        "http://ftp.debian.org/debian/"))))
 
+(define %mirror-file
+  ;; Copy of the list of mirrors to a file.  This allows us to keep a single
+  ;; copy in the store, and computing it here avoids repeated calls to
+  ;; 'object->string'.
+  (plain-file "mirrors" (object->string %mirrors)))
+
 (define (gnutls-package)
   "Return the default GnuTLS package."
   (let ((module (resolve-interface '(gnu packages tls))))
@@ -210,16 +216,14 @@
 (define* (url-fetch url hash-algo hash
                     #:optional name
                     #:key (system (%current-system))
-                    (guile (default-guile))
-                    (mirrors %mirrors))
+                    (guile (default-guile)))
   "Return a fixed-output derivation that fetches URL (a string, or a list of
 strings denoting alternate URLs), which is expected to have hash HASH of type
 HASH-ALGO (a symbol).  By default, the file name is the base name of URL;
 optionally, NAME can specify a different file name.
 
 When one of the URL starts with mirror://, then its host part is
-interpreted as the name of a mirror scheme, taken from MIRRORS; MIRRORS
-must be a list of symbol/URL-list pairs.
+interpreted as the name of a mirror scheme, taken from %MIRROR-FILE.
 
 Alternately, when URL starts with file://, return the corresponding file name
 in the store."
@@ -239,10 +243,6 @@ in the store."
         ((url ...)
          (any https? url)))))
 
-  (define mirror-file
-    ;; Copy the list of mirrors to a file to keep a single copy in the store.
-    (plain-file "mirrors" (object->string mirrors)))
-
   (define builder
     #~(begin
         #+(if need-gnutls?
@@ -261,7 +261,7 @@ in the store."
         (url-fetch (call-with-input-string (getenv "guix download url")
                      read)
                    #$output
-                   #:mirrors (call-with-input-file #$mirror-file read))))
+                   #:mirrors (call-with-input-file #$%mirror-file read))))
 
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))
@@ -288,12 +288,11 @@ in the store."
                             ;; Honor the user's proxy settings.
                             #:leaked-env-vars '("http_proxy" "https_proxy")
 
-                            ;; In general, offloading downloads is not a good idea.
-                            ;;#:local-build? #t
-                            ;; FIXME: The above would also disable use of
-                            ;; substitutes on old daemons, so comment it out;
-                            ;; see <https://bugs.gnu.org/18747>.
-                            )))))
+                            ;; In general, offloading downloads is not a good
+                            ;; idea.  Daemons before 0.8.3 would also
+                            ;; interpret this as "do not substitute" (see
+                            ;; <https://bugs.gnu.org/18747>.)
+                            #:local-build? #t)))))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)) recursive?)

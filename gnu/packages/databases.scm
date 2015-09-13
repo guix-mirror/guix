@@ -328,11 +328,18 @@ types are supported, as is encryption.")
                                            6 #\0))))))
                    (list
                     (string-append
-                     "http://distfiles.gentoo.org/distfiles/"
-                     "/sqlite-autoconf-" numeric-version ".tar.gz")
+                     "https://fossies.org/linux/misc/sqlite-autoconf-"
+                     numeric-version ".tar.gz")
                     (string-append
-                     "mirror://sourceforge/sqlite.mirror/SQLite%20" version
-                     "/sqlite-autoconf-" numeric-version ".tar.gz"))))
+                     "http://distfiles.gentoo.org/distfiles/"
+                     "/sqlite-autoconf-" numeric-version ".tar.gz"))
+
+                   ;; XXX: As of 2015-09-08, SourceForge is squatting the URL
+                   ;; below, returning 200 and showing an advertising page.
+                   ;; (string-append
+                   ;;  "mirror://sourceforge/sqlite.mirror/SQLite%20" version
+                   ;;  "/sqlite-autoconf-" numeric-version ".tar.gz")
+                   ))
             (sha256
              (base32
               "1dnkl4qr1dgaprbyf3jddfiynkhxnin86qabni47wjlc0fnb16gv"))))
@@ -740,14 +747,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.0.3")
+    (version "3.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "19cxdrk380qachw160h1x51mwj7kpkxlggfzfh19bl0nbdkgl20x"))))
+                "1kqjc4qrasadgnl3cg71x3g5qpw2rilyk4pwl151698rb2nr0pm3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

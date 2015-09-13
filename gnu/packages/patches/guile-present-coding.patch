@@ -1,0 +1,16 @@
+The tests/org-mode.scm tests expects 'jpl-outline-es' to be read as UTF-8.
+
+--- guile-present-0.3.0/tests/org-mode.scm	2014-09-23 22:29:51.426705753 +0200
++++ guile-present-0.3.0/tests/org-mode.scm	2014-09-23 22:30:09.634705548 +0200
+@@ -194,9 +194,10 @@
+                "(Just another hacker)"
+                "wingo@fluendo.com")
+             (p "Julien Moutte, CEO" "julien@fluendo.com")))
++   (with-fluids ((%default-port-encoding "UTF-8"))
+    (call-with-input-file
+        (in-vicinity *top-srcdir* "tests/jpl-outline-es")
+-     org->presentation)))
++       org->presentation))))
+ 
+ (setlocale LC_ALL "")
+ (exit-with-summary (run-all-defined-test-cases))

@@ -84,7 +84,7 @@ store in '.el' files."
          (elpa-name-ver (store-directory->elpa-name-version out))
          (el-dir (string-append out %install-suffix "/" elpa-name-ver))
          (name-ver (strip-store-file-name out))
-         (info-dir (string-append out "/share/info/" name-ver))
+         (info-dir (string-append out "/share/info/"))
          (info-files (find-files el-dir "\\.info$")))
     (unless (null? info-files)
       (mkdir-p info-dir)

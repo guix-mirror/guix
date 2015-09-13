@@ -200,18 +200,7 @@ the Nix package manager.")
                             (chmod po #o666))
                           (find-files "." "\\.po$"))
 
-                (zero? (system* "sh" "bootstrap"))))
-             (add-after
-              'unpack 'disable-container-tests
-              ;; XXX FIXME: These tests fail within the build container.
-              (lambda _
-                (substitute* "tests/syscalls.scm"
-                  (("^\\(test-assert \"(clone|setns|pivot-root)\"" all)
-                   (string-append "(test-skip 1)\n" all)))
-                (substitute* "tests/containers.scm"
-                  (("^\\(test-assert" all)
-                   (string-append "(test-skip 1)\n" all)))
-                #t))))))
+                (zero? (system* "sh" "bootstrap"))))))))
       (native-inputs
        `(("autoconf" ,(autoconf-wrapper))
          ("automake" ,automake)

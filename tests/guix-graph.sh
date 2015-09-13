@@ -32,3 +32,8 @@ done
 
 guix build guile-bootstrap
 guix graph -t references guile-bootstrap | grep guile-bootstrap
+
+guix graph -e '(@ (gnu packages bootstrap) %bootstrap-guile)' \
+    | grep guile-bootstrap
+
+if guix graph -e +; then false; else true; fi

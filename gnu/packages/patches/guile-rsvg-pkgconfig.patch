@@ -1,0 +1,16 @@
+This patch fixes a bug in guile-rsvg's build system, whereby the CFLAGS
+and LDFLAGS for Guile would not be captured.
+
+--- guile-rsvg-2.18.1/configure.ac	2015-08-31 22:30:30.578909480 +0200
++++ guile-rsvg-2.18.1/configure.ac	2015-08-31 22:32:15.071516084 +0200
+@@ -39,6 +39,10 @@ AC_SUBST(WARN_CFLAGS)
+ 
+ GUILE_PKG([2.2 2.0 1.8])
+ 
++dnl The above macro fails to set the 'GUILE_CFLAGS' and 'GUILE_LIBS'
++dnl substitution variables, hence this line.
++PKG_CHECK_MODULES(GUILE, guile-2.0)
++
+ PKG_CHECK_MODULES(GUILE_CAIRO, guile-cairo >= 1.4.0)
+ AC_SUBST(GUILE_CAIRO_LIBS)
+ AC_SUBST(GUILE_CAIRO_CFLAGS)

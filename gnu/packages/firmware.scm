@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,7 @@
 (define-public ath9k-htc-firmware
   (package
     (name "ath9k-htc-firmware")
-    (version "1.3.2")
+    (version "1.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -37,7 +37,7 @@
                     (commit version)))
               (sha256
                (base32
-                "0dgqfp4cbky79vzjrdy3j462l8figymzrk2v0jalmmz3lkxw88ww"))
+                "16jbj8avg5jkgvq5lxm0hdxxn4c3zn7fx8b4nxllvr024apk9w23"))
               (patches (list (search-patch "ath9k-htc-firmware-objcopy.patch")))))
     (build-system gnu-build-system)
     (arguments

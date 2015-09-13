@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages dejagnu)
@@ -35,11 +37,11 @@
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
 (define-public duplicity
@@ -316,3 +318,37 @@ rsync.  Thus you can use rdiff-backup and ssh to securely back a hard drive up
 to a remote location, and only the differences will be transmitted.  Finally,
 rdiff-backup is easy to use and settings have sensible defaults.")
     (license license:gpl2+)))
+
+(define-public attic
+  (package
+    (name "attic")
+    (version "0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/A/Attic/Attic-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0b5skd36r4c0915lwpkqg5hxm49gls9pprs1b7hc40910wlcsl36"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'set-openssl-prefix
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "ATTIC_OPENSSL_PREFIX" (assoc-ref inputs "openssl"))
+            #t)))))
+    (inputs
+     `(("acl" ,acl)
+       ("openssl" ,openssl)
+       ("python-llfuse" ,python-llfuse)
+       ("python-msgpack" ,python-msgpack)))
+    (synopsis "Deduplicating backup program")
+    (description "Attic is a deduplicating backup program.  The main goal of
+Attic is to provide an efficient and secure way to backup data.  The data
+deduplication technique used makes Attic suitable for daily backups since only
+changes are stored.")
+    (home-page "https://attic-backup.org/")
+    (license license:bsd-3)))

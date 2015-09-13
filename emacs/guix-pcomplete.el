@@ -28,59 +28,7 @@
 (require 'pcmpl-unix)
 (require 'cl-lib)
 (require 'guix-utils)
-
-
-;;; Regexps for parsing various "guix ..." outputs
-
-(defvar guix-pcomplete-parse-package-regexp
-  (rx bol (group (one-or-more (not blank))))
-  "Regexp used to find names of the packages.")
-
-(defvar guix-pcomplete-parse-command-regexp
-  (rx bol "   "
-      (group wordchar (one-or-more (or wordchar "-"))))
-  "Regexp used to find guix commands.
-'Command' means any option not prefixed with '-'.  For example,
-guix subcommand, system action, importer, etc.")
-
-(defvar guix-pcomplete-parse-long-option-regexp
-  (rx (or "  " ", ")
-      (group "--" (one-or-more (or wordchar "-"))
-             (zero-or-one "=")))
-  "Regexp used to find long options.")
-
-(defvar guix-pcomplete-parse-short-option-regexp
-  (rx bol (one-or-more blank)
-      "-" (group (not (any "- "))))
-  "Regexp used to find short options.")
-
-(defvar guix-pcomplete-parse-list-regexp
-  (rx bol (zero-or-more blank) "- "
-      (group (one-or-more (or wordchar "-"))))
-  "Regexp used to find various lists (lint checkers, graph types).")
-
-(defvar guix-pcomplete-parse-regexp-group 1
-  "Parenthesized expression of regexps used to find commands and
-options.")
-
-
-;;; Non-receivable completions
-
-(defvar guix-pcomplete-systems
-  '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux")
-  "List of supported systems.")
-
-(defvar guix-pcomplete-hash-formats
-  '("nix-base32" "base32" "base16" "hex" "hexadecimal")
-  "List of supported hash formats.")
-
-(defvar guix-pcomplete-refresh-subsets
-  '("core" "non-core")
-  "List of supported 'refresh' subsets.")
-
-(defvar guix-pcomplete-key-policies
-  '("interactive" "always" "never")
-  "List of supported key download policies.")
+(require 'guix-help-vars)
 
 
 ;;; Interacting with guix
@@ -105,9 +53,8 @@ Return a list of strings matching REGEXP.
 GROUP specifies a parenthesized expression used in REGEXP."
   (with-temp-buffer
     (apply #'guix-pcomplete-run-guix args)
-    (goto-char (point-min))
     (let (result)
-      (while (re-search-forward regexp nil t)
+      (guix-while-search regexp
         (push (match-string-no-properties group) result))
       (nreverse result))))
 
@@ -129,7 +76,7 @@ function call is returned."
      (let* ((args '("--help"))
             (args (if command (cons command args) args))
             (res (apply #'guix-pcomplete-run-guix-and-search
-                        ,regexp guix-pcomplete-parse-regexp-group args)))
+                        ,regexp guix-help-parse-regexp-group args)))
        ,(if filter
             `(funcall ,filter res)
           'res))))
@@ -138,23 +85,23 @@ function call is returned."
   "If COMMAND is nil, return a list of available guix commands.
 If COMMAND is non-nil (it should be a string), return available
 subcommands, actions, etc. for this guix COMMAND."
-  guix-pcomplete-parse-command-regexp)
+  guix-help-parse-command-regexp)
 
 (guix-pcomplete-define-options-finder guix-pcomplete-long-options
   "Return a list of available long options for guix COMMAND."
-  guix-pcomplete-parse-long-option-regexp)
+  guix-help-parse-long-option-regexp)
 
 (guix-pcomplete-define-options-finder guix-pcomplete-short-options
   "Return a string with available short options for guix COMMAND."
-  guix-pcomplete-parse-short-option-regexp
+  guix-help-parse-short-option-regexp
   (lambda (list)
-    (mapconcat #'identity list "")))
+    (guix-concat-strings list "")))
 
 (guix-memoized-defun guix-pcomplete-all-packages ()
   "Return a list of all available Guix packages."
   (guix-pcomplete-run-guix-and-search
-   guix-pcomplete-parse-package-regexp
-   guix-pcomplete-parse-regexp-group
+   guix-help-parse-package-regexp
+   guix-help-parse-regexp-group
    "package" "--list-available"))
 
 (guix-memoized-defun guix-pcomplete-installed-packages (&optional profile)
@@ -163,22 +110,22 @@ subcommands, actions, etc. for this guix COMMAND."
                     (list (concat "--profile=" profile))))
          (args (append '("package" "--list-installed") args)))
     (apply #'guix-pcomplete-run-guix-and-search
-           guix-pcomplete-parse-package-regexp
-           guix-pcomplete-parse-regexp-group
+           guix-help-parse-package-regexp
+           guix-help-parse-regexp-group
            args)))
 
 (guix-memoized-defun guix-pcomplete-lint-checkers ()
   "Return a list of all available lint checkers."
   (guix-pcomplete-run-guix-and-search
-   guix-pcomplete-parse-list-regexp
-   guix-pcomplete-parse-regexp-group
+   guix-help-parse-list-regexp
+   guix-help-parse-regexp-group
    "lint" "--list-checkers"))
 
 (guix-memoized-defun guix-pcomplete-graph-types ()
   "Return a list of all available graph types."
   (guix-pcomplete-run-guix-and-search
-   guix-pcomplete-parse-list-regexp
-   guix-pcomplete-parse-regexp-group
+   guix-help-parse-list-regexp
+   guix-help-parse-regexp-group
    "graph" "--list-types"))
 
 
@@ -284,7 +231,7 @@ INPUT is the current partially completed string."
      ((option? "-L" "--load-path")
       (complete* (pcomplete-dirs)))
      ((string= "--key-download" option)
-      (complete* guix-pcomplete-key-policies))
+      (complete* guix-help-key-policies))
 
      ((command? "package")
       (cond
@@ -313,7 +260,7 @@ INPUT is the current partially completed string."
 
      ((and (command? "archive" "build" "size")
            (option? "-s" "--system"))
-      (complete* guix-pcomplete-systems))
+      (complete* guix-help-system-types))
 
      ((and (command? "build")
            (option? "-r" "--root"))
@@ -329,7 +276,7 @@ INPUT is the current partially completed string."
 
      ((and (command? "hash" "download")
            (option? "-f" "--format"))
-      (complete* guix-pcomplete-hash-formats))
+      (complete* guix-help-hash-formats))
 
      ((and (command? "lint")
            (option? "-c" "--checkers"))
@@ -342,7 +289,7 @@ INPUT is the current partially completed string."
 
      ((and (command? "refresh")
            (option? "-s" "--select"))
-      (complete* guix-pcomplete-refresh-subsets))
+      (complete* guix-help-refresh-subsets))
 
      ((and (command? "size")
            (option? "-m" "--map-file"))

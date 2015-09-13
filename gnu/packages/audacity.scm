@@ -55,7 +55,7 @@
      `(("wxwidgets" ,wxwidgets-2)
        ("gtk" ,gtk+-2)
        ("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-2)
+       ("jack" ,jack-1)
        ("expat" ,expat)
        ("ffmpeg" ,ffmpeg)
        ("lame" ,lame)

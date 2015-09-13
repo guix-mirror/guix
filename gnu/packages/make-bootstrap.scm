@@ -269,7 +269,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (synopsis "Statically-linked bootstrap binaries")
     (description
      "Binaries used to bootstrap the distribution.")
-    (license #f)
+    (license gpl3+)
     (home-page #f)))
 
 (define %binutils-static

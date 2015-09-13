@@ -44,12 +44,16 @@ directory."
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack the gem SOURCE and enter the resulting directory."
   (and (zero? (system* "gem" "unpack" source))
-       (begin
-         ;; The unpacked gem directory is named the same as the archive, sans
-         ;; the ".gem" extension.
-         (chdir (match:substring (string-match "^(.*)\\.gem$"
-                                               (basename source))
-                                 1))
+       ;; The unpacked gem directory is named the same as the archive, sans
+       ;; the ".gem" extension.  It is renamed to simply "gem" in an effort to
+       ;; keep file names shorter to avoid UNIX-domain socket file names and
+       ;; shebangs that exceed the system's fixed maximum length when running
+       ;; test suites.
+       (let ((dir (match:substring (string-match "^(.*)\\.gem$"
+                                                 (basename source))
+                                   1)))
+         (rename-file dir "gem")
+         (chdir "gem")
          #t)))
 
 (define* (build #:key source #:allow-other-keys)

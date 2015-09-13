@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,7 @@
 (define-public libedit
   (package
     (name "libedit")
-    (version "20141030-3.1")
+    (version "20150325-3.1")
     (source
      (origin
       (method url-fetch)
@@ -34,8 +35,9 @@
                           "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0h2svwfcdldpbg0fy7fnkld706r2a9k9h1mm0yj7z3zvf1jy20cp"))))
+        "1if8zi9h52m80ck796an28rrqfljk2n8cn25m3fl0prwz155x2n8"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags (list "--enable-widec")))
     (inputs
      `(("ncurses" ,ncurses)))
     (home-page "http://thrysoee.dk/editline/")

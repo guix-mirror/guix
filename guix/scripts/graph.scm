@@ -39,6 +39,16 @@
             %bag-emerged-node-type
             %derivation-node-type
             %reference-node-type
+            %node-types
+
+            node-type
+            node-type?
+            node-type-identifier
+            node-type-label
+            node-type-edges
+            node-type-convert
+            node-type-name
+            node-type-description
 
             %graphviz-backend
             graph-backend?
@@ -370,6 +380,9 @@ given BACKEND.  Use NODE-TYPE to traverse the DAG."
                 (lambda (opt name arg result)
                   (list-node-types)
                   (exit 0)))
+        (option '(#\e "expression") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'expression arg result)))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -387,6 +400,8 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
   -t, --type=TYPE        represent nodes of the given TYPE"))
   (display (_ "
       --list-types       list the available graph types"))
+  (display (_ "
+  -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -407,12 +422,14 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
   (with-error-handling
     (let* ((opts     (parse-command-line args %options
                                          (list %default-options)))
-           (specs    (filter-map (match-lambda
-                                   (('argument . spec) spec)
-                                   (_ #f))
-                                 opts))
            (type     (assoc-ref opts 'node-type))
-           (packages (map specification->package specs)))
+           (packages (filter-map (match-lambda
+                                   (('argument . spec)
+                                    (specification->package spec))
+                                   (('expression . exp)
+                                    (read/eval-package-expression exp))
+                                   (_ #f))
+                                 opts)))
       (with-store store
         (run-with-store store
           (mlet %store-monad ((nodes (mapm %store-monad

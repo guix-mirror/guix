@@ -207,6 +207,23 @@
            (member i s)
            (member u s)))))
 
+(test-assert "transitive-input-references"
+  (let* ((a (dummy-package "a"))
+         (b (dummy-package "b"))
+         (c (dummy-package "c"
+              (inputs `(("a" ,a)))
+              (propagated-inputs `(("boo" ,b)))))
+         (d (dummy-package "d"
+              (inputs `(("c*" ,c)))))
+         (keys (map (match-lambda
+                      (('assoc-ref 'l key)
+                       key))
+                    (pk 'refs (transitive-input-references
+                               'l (package-inputs d))))))
+    (and (= (length keys) 2)
+         (member "c*" keys)
+         (member "boo" keys))))
+
 (test-equal "package-transitive-supported-systems, implicit inputs"
   %supported-systems
 

@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
                           isc psfl public-domain x11-style))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -45,6 +47,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
@@ -1171,7 +1174,7 @@ other Python program.")
      "EmPy is a system for embedding Python expressions and statements in
 template text; it takes an EmPy source file, processes it, and produces
 output.  This is accomplished via expansions, which are special signals to the
-EmPy system and are set off by a special prefix (by default the at sign, @).
+EmPy system and are set off by a special prefix (by default the at sign, @@).
 EmPy can expand arbitrary Python expressions and statements in this way, as
 well as a variety of special forms.  Textual data not explicitly delimited in
 this way is sent unaffected to the output, allowing Python to be used in
@@ -1711,11 +1714,12 @@ Python tests.")
         (base32
          "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-testtools" ,python-testtools)))
     (inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-testtools" ,python-testtools)
        ("python-subunit" ,python-subunit)
-       ("python-fixtures" ,python-fixtures)
        ("python-mimeparse" ,python-mimeparse)))
     (home-page "https://launchpad.net/testrepository")
     (synopsis "Database for Python test results")
@@ -4658,3 +4662,109 @@ from an XML-based format.")
 
 (define-public python2-fonttools
   (package-with-python2 python-fonttools))
+
+(define-public python-ly
+  (package
+    (name "python-ly")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-ly/python-ly-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1bsjg4q9ihr8bfdclrcmb8yjcg8xm9dznh58f3zsyrkrjzwbhcd2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (synopsis "Tool and library for manipulating LilyPond files")
+    (description "This package provides a Python library to parse, manipulate
+or create documents in LilyPond format.  A command line program ly is also
+provided that can be used to do various manipulations with LilyPond files.")
+    (home-page "https://pypi.python.org/pypi/python-ly")
+    (license gpl2+)))
+
+(define-public python-appdirs
+  (package
+    (name "python-appdirs")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/a/appdirs/appdirs-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1iddva7v3fq0aqzsahkazxr7vpw28mqcrsy818z4wyiqnkplbhlg"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/ActiveState/appdirs")
+    (synopsis
+      "Determine platform-specific dirs, e.g. a \"user data dir\"")
+    (description
+      "This module provides a portable way of finding out where user data
+should be stored on various operating systems.")
+    (license license:expat)))
+
+(define-public python2-appdirs
+  (package-with-python2 python-appdirs))
+
+(define-public python-llfuse
+  (package
+    (name "python-llfuse")
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
+                    "llfuse-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0yzy8ixpmxk00kdq6lx5vvwbs0n6s59qnja5q0js2ahbqyxiz2hb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("fuse" ,fuse)
+       ("attr" ,attr)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-setuptools" ,python-setuptools)))
+    (synopsis "Python bindings for FUSE")
+    (description
+     "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
+    (home-page "https://bitbucket.org/nikratio/python-llfuse/")
+    ;; Python-LLFUSE includes underscore.js, which is MIT (expat) licensed.
+    ;; The rest of the package is licensed under LGPL2.0 or later.
+    (license (list license:expat lgpl2.0+))))
+
+(define-public python2-llfuse
+  (package-with-python2 python-llfuse))
+
+(define-public python-msgpack
+  (package
+    (name "python-msgpack")
+    (version "0.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/m/"
+                    "msgpack-python/msgpack-python-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1527c76b6fn4zzkgfq5xvhh7x9a9686g7fjiz717rw5vklf5ik5z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (synopsis "MessagePack (de)serializer")
+    (description "MessagePack is a fast, compact binary serialization format,
+suitable for similar data to JSON.  This package provides CPython bindings for
+reading and writing MessagePack data.")
+    (home-page "https://pypi.python.org/pypi/msgpack-python/")
+    (license asl2.0)))
+
+(define-public python2-msgpack
+  (package-with-python2 python-msgpack))

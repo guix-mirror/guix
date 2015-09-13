@@ -58,6 +58,7 @@ MODULES =					\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/waf.scm			\
+  guix/build-system/r.scm			\
   guix/build-system/ruby.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
@@ -77,6 +78,7 @@ MODULES =					\
   guix/build/gnu-dist.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
+  guix/build/r-build-system.scm			\
   guix/build/ruby-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
@@ -97,6 +99,7 @@ MODULES =					\
   guix/import/gnu.scm				\
   guix/import/snix.scm				\
   guix/import/cabal.scm				\
+  guix/import/cran.scm				\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
   guix/scripts/download.scm			\
@@ -112,6 +115,7 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
   guix/scripts/lint.scm				\
+  guix/scripts/import/cran.scm			\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
   guix/scripts/import/hackage.scm		\
@@ -198,6 +202,7 @@ SCM_TESTS =					\
   tests/packages.scm				\
   tests/snix.scm				\
   tests/hackage.scm				\
+  tests/cran.scm				\
   tests/elpa.scm				\
   tests/store.scm				\
   tests/monads.scm				\
@@ -226,7 +231,8 @@ MODULES +=					\
 
 SCM_TESTS += 					\
   tests/pypi.scm				\
-  tests/cpan.scm
+  tests/cpan.scm				\
+  tests/gem.scm
 
 endif
 

@@ -1,9 +1,5 @@
 (require 'guix-autoloads)
 
-(defvar guix-load-path
-  (replace-regexp-in-string "${prefix}" "@prefix@" "@emacsuidir@")
-  "Directory with scheme files for \"guix.el\" package.")
-
 (defcustom guix-package-enable-at-startup t
   "If non-nil, activate Emacs packages installed in a user profile.
 Set this variable to nil before requiring `guix-init' file to

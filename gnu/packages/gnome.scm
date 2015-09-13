@@ -1912,15 +1912,15 @@ library.")
 library.")
     (license license:lgpl2.0+)))
 
-(define-public librest
+(define-public rest
   (package
-    (name "librest")
+    (name "rest")
     (version "0.7.93")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/rest/"
-                                  (version-major+minor version)  "/"
-                                  "rest-" version ".tar.xz"))
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "05mj10hhiik23ai8w4wkk5vhsp7hcv24bih5q3fl82ilam268467"))))
@@ -2629,6 +2629,8 @@ without stepping on each others toes.")
         (base32
          "1b0ikh9q3c3qnny3kbvhqih35449q8ajcbh7zkm8k3kykwfx4scf"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;9 MiB of gtk-doc HTML pages
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
@@ -2649,7 +2651,12 @@ without stepping on each others toes.")
      `(("libxkbcommon" ,libxkbcommon)
        ("udev" ,eudev)))
     (arguments
-     `(#:configure-flags '("--enable-x11-backend=yes")
+     `(#:configure-flags (list "--enable-x11-backend=yes"
+
+                               ;; This produces share/doc/{clutter,cally}.
+                               (string-append "--with-html-dir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/doc"))
        ;; XXX FIXME: Get test suite working.  It would probably fail in the
        ;; same way the cogl tests fail, since clutter is based on cogl.
        #:tests? #f))
@@ -2719,6 +2726,38 @@ It provides a GStreamer sink to upload frames to GL and an actor that
 implements the ClutterGstPlayer interface using playbin.  Clutter is an Open
 GL based interactive canvas library.")
     (license license:lgpl2.0+)))
+
+(define-public libchamplain
+  (package
+    (name "libchamplain")
+    (version "0.12.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/libchamplain/0.12/libchamplain-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "019b8scnx7d3wdylmpk9ihzh06w25b63x9cn8nhj6kjx82rcwlxz"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libsoup" ,libsoup)
+       ("sqlite" ,sqlite)
+       ("clutter" ,clutter)
+       ("clutter-gtk" ,clutter-gtk)
+       ("glib:bin" ,glib "bin")                   ;glib-mkenums, etc.
+       ("cairo" ,cairo)
+       ("gtk+3" ,gtk+)
+       ("glib" ,glib)))
+    (home-page "http://projects.gnome.org/libchamplain/")
+    (synopsis "C library providing a ClutterActor to display maps")
+    (description
+     "libchamplain is a C library providing a ClutterActor to display maps.
+It also provides a Gtk+ widget to display maps in Gtk+ applications.  Python
+and Perl bindings are also available.  It supports numerous free map sources
+such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
+    (license license:lgpl2.1+)))
 
 (define-public gom
   (package
@@ -3370,4 +3409,94 @@ principles are simplicity and standards compliance.")
     (description
      "D-Feet is a D-Bus debugger, which can be used to inspect D-Bus interfaces
 of running programs and invoke methods on those interfaces.")
+    (license license:gpl2+)))
+
+(define-public yelp-xsl
+  (package
+    (name "yelp-xsl")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0jhpni4mmfvj3xf57rjm61nc8d0x66hz9gd1ywws5lh39g6fx59j"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)))
+    (home-page "https://wiki.gnome.org/Apps/Yelp")
+    (synopsis "XSL stylesheets for Yelp")
+    (description
+     "Yelp-xsl contains XSL stylesheets that are used by the yelp help browser
+to format Docbook and Mallard documents.")
+    (license license:gpl2+)))
+
+(define-public yelp
+  (package
+    (name "yelp")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1jk7aad1srykhgc3x0hd3q3dnlshmy1ak00alwjzaasxvy6hp0b0"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (inputs
+     `(("libxslt" ,libxslt)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk-2.4)
+       ("yelp-xsl" ,yelp-xsl)
+       ;; XXX: need by libwebkitgtk-3.0.la.
+       ("icu4c" ,(@ (gnu packages icu4c) icu4c))))
+    (home-page "https://wiki.gnome.org/Apps/Yelp")
+    (synopsis "GNOME help browser")
+    (description
+     "Yelp is the help viewer in Gnome.  It natively views Mallard, DocBook,
+man, info, and HTML documents.  It can locate documents according to the
+freedesktop.org help system specification.")
+    (license license:gpl2+)))
+
+(define-public yelp-tools
+  (package
+    (name "yelp-tools")
+    (version "3.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "177qzvj5w019isdp41qxqcys2kc4sq2x6dqhqn6l9ipib8a6rxml"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; Needed by `yelp-build', `yelp-check' or 'yelp.m4'.
+     `(("itstool" ,itstool)
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("yelp-xsl" ,yelp-xsl)))
+    (home-page "https://wiki.gnome.org/Apps/Yelp/Tools")
+    (synopsis "Yelp documentation tools")
+    (description
+     "Yelp-tools is a collection of scripts and build utilities to help create,
+manage, and publish documentation for Yelp and the web.  Most of the heavy
+lifting is done by packages like yelp-xsl and itstool.  This package just
+wraps things up in a developer-friendly way.")
     (license license:gpl2+)))

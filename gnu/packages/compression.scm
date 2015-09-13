@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages valgrind)
   #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public zlib
@@ -513,3 +515,35 @@ compression library.")
     (description "IO-Compress provides a Perl interface to allow reading and
 writing of compressed data created with the zlib and bzip2 libraries.")
     (license (package-license perl))))
+
+(define-public lz4
+  (package
+    (name "lz4")
+    (version "131")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Cyan4973/lz4/archive/"
+                           "r" version ".tar.gz"))
+       (sha256
+        (base32 "1vfg305zvj50hwscad24wan9jar6nqj14gdk2hqyr7bb9mhh0kcx"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("valgrind" ,valgrind)))
+    (arguments
+     `(#:test-target "test"
+       #:parallel-tests? #f ; tests fail if run in parallel
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (home-page "https://github.com/Cyan4973/lz4")
+    (synopsis "Compression algorithm focused on speed")
+    (description "LZ4 is a lossless compression algorithm, providing
+compression speed at 400 MB/s per core (0.16 Bytes/cycle).  It also features an
+extremely fast decoder, with speed in multiple GB/s per core (0.71 Bytes/cycle).
+A high compression derivative, called LZ4_HC, is also provided.  It trades CPU
+time for compression ratio.")
+    ;; The libraries (lz4, lz4hc, and xxhash are BSD licenced. The command
+    ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
+    (license (list license:bsd-2 license:gpl2+))))

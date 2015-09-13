@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,18 +19,50 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages photo)
-  #:use-module (guix licenses)
-  #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages libusb)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages popt)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphics)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xfig)
+  #:use-module (gnu packages xml))
+
+(define-public libraw
+  (package
+    (name "libraw")
+    (version "0.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libraw.org/data/LibRaw-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "043kckxjqanw8dl3m9f6kvsf0l20ywxmgxd1xb0slj6m8l4w4hz6"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.libraw.org")
+    (synopsis "Raw image decoder")
+    (description
+     "LibRaw is a library for reading RAW files obtained from digital photo
+cameras (CRW/CR2, NEF, RAF, DNG, and others).")
+    (license license:lgpl2.1+)))
 
 (define-public libexif
   (package
@@ -47,7 +81,7 @@
     (description
      "The libexif C library allows applications to read, edit, and save EXIF
 data as produced by digital cameras.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libgphoto2
   (package
@@ -77,7 +111,7 @@ MTP, and other vendor specific protocols for controlling and transferring data
 from digital cameras.")
 
     ;; 'COPYING' says LGPLv2.1+, but in practices files are under LGPLv2+.
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public gphoto2
   (package
@@ -120,7 +154,7 @@ number of different digital cameras.  Through libgphoto2, it supports PTP,
 MTP, and much more.")
 
     ;; Files are typically under LGPLv2+, but 'COPYING' says GPLv2+.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public perl-image-exiftool
   (package
@@ -154,3 +188,73 @@ MTP, and much more.")
      "This package provides the 'exiftool' command and the 'Image::ExifTool'
 Perl library to manipulate EXIF tags of digital images.")
     (license (package-license perl))))
+
+(define-public libpano13
+  (package
+    (name "libpano13")
+    (version "2.9.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/panotools/libpano13/"
+                                  "libpano13-" version "/"
+                                  "libpano13-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1a4m3plmfcrrplqs9zfzhc5apibn10m5sajpizm1sd3q74w5fwq3"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("zlib" ,zlib)))
+    (home-page "http://panotools.sourceforge.net/")
+    (synopsis "Library for panoramic images")
+    (description
+     "The libpano13 package contains the backend library written by the
+Panorama Tools project for building panoramic images from a set of
+overlapping images, as well as some command line tools.")
+    (license license:gpl2+)))
+
+(define-public enblend-enfuse
+  (package
+    (name "enblend-enfuse")
+    (version "4.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/enblend/"
+                                  name "/"
+                                  name "-" (version-major+minor version) "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b7r1nnwaind0344ckwggy0ghl0ipbk9jzylsxcjfl05rnasw00w"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("perl-timedate" ,perl-timedate)
+       ;; for building the documentation
+       ("gnuplot" ,gnuplot)
+       ("imagemagick" ,imagemagick)
+       ("libxml2" ,libxml2)
+       ("tidy" ,tidy)
+       ("transfig" ,transfig)))
+    (inputs
+     `(("boost" ,boost)
+       ("gsl" ,gsl)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("openexr" ,openexr)
+       ("vigra" ,vigra)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags `("--enable-openmp")))
+    (home-page "http://enblend.sourceforge.net/")
+    (synopsis "Tools for combining and blending images")
+    (description
+     "Enblend blends away the seams in a panoramic image mosaic using a
+multi-resolution spline.  Enfuse merges different exposures of the same
+scene to produce an image that looks much like a tone-mapped image.")
+    (license license:gpl2+)))

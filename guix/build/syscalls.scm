@@ -50,6 +50,8 @@
             mkdtemp!
             pivot-root
 
+            CLONE_CHILD_CLEARTID
+            CLONE_CHILD_SETTID
             CLONE_NEWNS
             CLONE_NEWUTS
             CLONE_NEWIPC
@@ -303,12 +305,14 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
         (pointer->string result)))))
 
 ;; Linux clone flags, from linux/sched.h
-(define CLONE_NEWNS   #x00020000)
-(define CLONE_NEWUTS  #x04000000)
-(define CLONE_NEWIPC  #x08000000)
-(define CLONE_NEWUSER #x10000000)
-(define CLONE_NEWPID  #x20000000)
-(define CLONE_NEWNET  #x40000000)
+(define CLONE_CHILD_CLEARTID #x00200000)
+(define CLONE_CHILD_SETTID   #x01000000)
+(define CLONE_NEWNS          #x00020000)
+(define CLONE_NEWUTS         #x04000000)
+(define CLONE_NEWIPC         #x08000000)
+(define CLONE_NEWUSER        #x10000000)
+(define CLONE_NEWPID         #x20000000)
+(define CLONE_NEWNET         #x40000000)
 
 ;; The libc interface to sys_clone is not useful for Scheme programs, so the
 ;; low-level system call is wrapped instead.
@@ -325,7 +329,13 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
       "Create a new child process by duplicating the current parent process.
 Unlike the fork system call, clone accepts FLAGS that specify which resources
 are shared between the parent and child processes."
-      (proc syscall-id flags %null-pointer))))
+      (let ((ret (proc syscall-id flags %null-pointer))
+            (err (errno)))
+        (if (= ret -1)
+            (throw 'system-error "clone" "~d: ~A"
+                   (list flags (strerror err))
+                   (list err))
+            ret)))))
 
 (define setns
   ;; Some systems may be using an old (pre-2.14) version of glibc where there

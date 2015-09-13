@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +24,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages tls)
@@ -34,6 +37,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system ruby))
 
 (define-public ruby
@@ -192,16 +196,16 @@ packaging native C and Java extensions in Ruby.")
 (define-public ruby-i18n
   (package
     (name "ruby-i18n")
-    (version "0.6.11")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "i18n" version))
               (sha256
                (base32
-                "0fwjlgmgry2blf8zlxn9c555cf4a16p287l599kz5104ncjxlzdk"))))
+                "1i5z1ykl8zhszsxcs8mzl8d0dxgs3ylz8qlzrw74jb0gplkx6758"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; requires bundler
+     '(#:tests? #f)) ; no tests
     (synopsis "Internationalization library for Ruby")
     (description "Ruby i18n is an internationalization and localization
 solution for Ruby programs.  It features translation and localization,
@@ -254,7 +258,7 @@ groups.")
     (home-page "https://github.com/rspec/rspec-core")
     (license license:expat)))
 
-(define ruby-diff-lcs-for-rspec
+(define-public ruby-diff-lcs
   (package
     (name "ruby-diff-lcs")
     (version "1.2.5")
@@ -290,7 +294,7 @@ standard diff-like tool.")
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
      `(("ruby-rspec-support" ,ruby-rspec-support)
-       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+       ("ruby-diff-lcs" ,ruby-diff-lcs)))
     (synopsis "RSpec expectations library")
     (description "Rspec-expectations provides a simple API to express expected
 outcomes of a code example.")
@@ -312,7 +316,7 @@ outcomes of a code example.")
      '(#:tests? #f)) ; avoid dependency cycles
     (propagated-inputs
      `(("ruby-rspec-support" ,ruby-rspec-support)
-       ("ruby-diff-lcs" ,ruby-diff-lcs-for-rspec)))
+       ("ruby-diff-lcs" ,ruby-diff-lcs)))
     (synopsis "RSpec stubbing and mocking library")
     (description "Rspec-mocks provides RSpec's \"test double\" framework, with
 support for stubbing and mocking.")
@@ -348,13 +352,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.9.9")
+    (version "1.10.6")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "12qk1569pswa9mmid6lsqy2napn9fmkbmv0k7xkl52nyfh8rsy4d"))))
+                "1vlzfq0bkkj4jyq6av0y55mh5nj5n0f3mfbmmifwgkh44g8k6agv"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -362,6 +366,143 @@ expectations and mocks frameworks.")
     (description "Bundler automatically downloads and installs a list of gems
 specified in a \"Gemfile\", as well as their dependencies.")
     (home-page "http://bundler.io/")
+    (license license:expat)))
+
+(define-public ruby-builder
+  (package
+    (name "ruby-builder")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "builder" version))
+              (sha256
+               (base32
+                "14fii7ab8qszrvsvhz6z2z3i4dw0h41a62fjr2h1j8m41vbrmyv2"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-use-rvm
+          (lambda _
+            (substitute* "rakelib/tags.rake"
+              (("RVM_GEMDIR = .*") "RVM_GEMDIR = 'no-rvm-please'\n"))
+            #t)))))
+    (synopsis "Ruby library to create structured data")
+    (description "Builder provides a number of builder objects that make it
+easy to create structured data.  Currently the following builder objects are
+supported: XML Markup and XML Events.")
+    (home-page "https://github.com/jimweirich/builder")
+    (license license:expat)))
+
+(define-public ruby-rjb
+  (package
+    (name "ruby-rjb")
+    (version "1.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rjb" version))
+              (sha256
+               (base32
+                "0gzs92dagk981s4vrymnqg0vll783b9k564j0cdgp167nc5a2zg4"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; no rakefile
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-java-home
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
+            #t)))))
+    (native-inputs
+     `(("jdk" ,icedtea7 "jdk")))
+    (synopsis "Ruby-to-Java bridge using the Java Native Interface")
+    (description "RJB is a bridge program that connects Ruby and Java via the
+Java Native Interface.")
+    (home-page "http://www.artonx.org/collabo/backyard/?RubyJavaBridge")
+    (license license:lgpl2.1+)))
+
+(define-public ruby-atoulme-antwrap
+  (package
+    (name "ruby-atoulme-antwrap")
+    (version "0.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "atoulme-Antwrap" version))
+              (sha256
+               (base32
+                "05s3iw44lqa81f8nfy5f0xjj808600h82zb9bsh46b9kcq2w2kmz"))))
+    (build-system ruby-build-system)
+    ;; Test data required for most of the tests are not included.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (inputs
+     `(("ruby-rjb" ,ruby-rjb)))
+    (synopsis "Ruby wrapper for the Ant build tool")
+    (description "Antwrap is a Ruby module that wraps the Apache Ant build
+tool.  Antwrap can be used to invoke Ant tasks from a Ruby or a JRuby
+script.")
+    (home-page "http://rubyforge.org/projects/antwrap/")
+    (license license:expat)))
+
+(define-public ruby-orderedhash
+  (package
+    (name "ruby-orderedhash")
+    (version "0.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "orderedhash" version))
+              (sha256
+               (base32
+                "0fryy7f9jbpx33jq5m402yqj01zcg563k9fsxlqbhmq638p4bzd7"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (synopsis "Ruby library providing an order-preserving hash")
+    (description "Orderedhash is a Ruby library providing a hash
+implementation that preserves the order of items and features some array-like
+extensions.")
+    (home-page "http://codeforpeople.com/lib/ruby/orderedhash/")
+    (license license:public-domain)))
+
+(define-public ruby-xml-simple
+  (package
+    (name "ruby-xml-simple")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "xml-simple" version))
+              (sha256
+               (base32
+                "0xlqplda3fix5pcykzsyzwgnbamb3qrqkgbrhhfz2a2fxhrkvhw8"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (synopsis "Simple Ruby library for XML processing")
+    (description "This library provides a simple API for XML processing in
+Ruby.")
+    (home-page "https://github.com/maik/xml-simple")
+    (license license:ruby)))
+
+(define-public ruby-thor
+  (package
+    (name "ruby-thor")
+    (version "0.19.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "thor" version))
+              (sha256
+               (base32
+                "08p5gx18yrbnwc6xc0mxvsfaxzgy2y9i78xq7ds0qmdm67q39y4z"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Ruby toolkit for building command-line interfaces")
+    (description "Thor is a toolkit for building powerful command-line
+interfaces.")
+    (home-page "http://whatisthor.com/")
     (license license:expat)))
 
 (define-public ruby-useragent
@@ -592,6 +733,16 @@ options and parsing command line flags.")
     (home-page "https://github.com/leejarvis/slop")
     (license license:expat)))
 
+(define-public ruby-slop-3
+  (package (inherit ruby-slop)
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "slop" version))
+              (sha256
+               (base32
+                "00w8g3j7k7kl8ri2cf1m58ckxk8rn350gp4chfscmgv6pq1spk3n"))))))
+
 (define-public ruby-multipart-post
   (package
     (name "ruby-multipart-post")
@@ -627,4 +778,349 @@ net/http library.")
     (synopsis "SQL AST manager for Ruby")
     (description "Arel is a SQL AST manager for Ruby.  It simplifies the
 generation of complex SQL queries and is compatible with various RDBMSes.")
+    (license license:expat)))
+
+(define-public ruby-minitar
+  (package
+    (name "ruby-minitar")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitar" version))
+       (sha256
+        (base32
+         "1vpdjfmdq1yc4i620frfp9af02ia435dnpj8ybsd7dc3rypkvbka"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; missing a gemspec
+    (synopsis "Ruby library and utility for handling tar archives")
+    (description
+     "Archive::Tar::Minitar is a pure-Ruby library and command-line utility
+that provides the ability to deal with POSIX tar archive files.")
+    (home-page "http://www.github.com/atoulme/minitar")
+    (license (list license:gpl2+ license:ruby))))
+
+(define-public ruby-mini-portile
+  (package
+    (name "ruby-mini-portile")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mini_portile" version))
+       (sha256
+        (base32
+         "0h3xinmacscrnkczq44s6pnhrp4nqma7k056x5wv5xixvf2wsq2w"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests require network access
+    (synopsis "Ports system for Ruby developers")
+    (description "Mini-portile is a port/recipe system for Ruby developers.
+It provides a standard way to compile against specific versions of libraries
+to reproduce user environments.")
+    (home-page "http://github.com/flavorjones/mini_portile")
+    (license license:expat)))
+
+(define-public ruby-nokogiri
+  (package
+    (name "ruby-nokogiri")
+    (version "1.6.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nokogiri" version))
+              (sha256
+               (base32
+                "1j4qv32qjh67dcrc1yy1h8sqjnny8siyy4s44awla8d6jk361h30"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests fail because Nokogiri can only test with an installed extension,
+     ;; and also because many test framework dependencies are missing.
+     '(#:tests? #f
+       #:gem-flags (list "--" "--use-system-libraries"
+                         (string-append "--with-xml2-include="
+                                        (assoc-ref %build-inputs "libxml2")
+                                        "/include/libxml2" ))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-rake-compiler", ruby-rake-compiler)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (propagated-inputs
+     `(("ruby-mini-portile" ,ruby-mini-portile)))
+    (synopsis "HTML, XML, SAX, and Reader parser for Ruby")
+    (description "Nokogiri (鋸) parses and searches XML/HTML, and features
+both CSS3 selector and XPath 1.0 support.")
+    (home-page "http://www.nokogiri.org/")
+    (license license:expat)))
+
+(define-public ruby-method-source
+  (package
+    (name "ruby-method-source")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "method_source" version))
+       (sha256
+        (base32
+         "1g5i4w0dmlhzd18dijlqw5gk27bv6dj2kziqzrzb7mpgxgsd1sf2"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)
+       ("git" ,git)))
+    (synopsis "Retrieve the source code for Ruby methods")
+    (description "Method_source retrieves the source code for Ruby methods.
+Additionally, it can extract source code from Proc and Lambda objects or just
+extract comments.")
+    (home-page "https://github.com/banister/method_source")
+    (license license:expat)))
+
+(define-public ruby-coderay
+  (package
+    (name "ruby-coderay")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "coderay" version))
+       (sha256
+        (base32
+         "059wkzlap2jlkhg460pkwc1ay4v4clsmg1bp4vfzjzkgwdckr52s"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; missing test files
+    (synopsis "Ruby syntax highlighting library")
+    (description "Coderay is a Ruby library that provides syntax highlighting
+for select languages.")
+    (home-page "http://coderay.rubychan.de")
+    (license license:expat)))
+
+(define-public ruby-pry
+  (package
+    (name "ruby-pry")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "pry" version))
+       (sha256
+        (base32
+         "1j0r5fm0wvdwzbh6d6apnp7c0n150hpm9zxpm5xvcgfqr36jaj8z"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (propagated-inputs
+     `(("ruby-coderay" ,ruby-coderay)
+       ("ruby-method-source" ,ruby-method-source)
+       ("ruby-slop" ,ruby-slop-3)))
+    (synopsis "Ruby REPL")
+    (description "Pry is an IRB alternative and runtime developer console for
+Ruby.  It features syntax highlighting, a plugin architecture, runtime
+invocation, and source and documentation browsing.")
+    (home-page "http://pryrepl.org")
+    (license license:expat)))
+
+(define-public ruby-thread-safe
+  (package
+    (name "ruby-thread-safe")
+    (version "0.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "thread_safe" version))
+       (sha256
+        (base32
+         "1hq46wqsyylx5afkp6jmcihdpv4ynzzq9ygb6z2pb1cbz5js0gcr"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; needs simplecov, among others
+    (synopsis "Thread-safe utilities for Ruby")
+    (description "The thread_safe library provides thread-safe collections and
+utilities for Ruby.")
+    (home-page "https://github.com/ruby-concurrency/thread_safe")
+    (license license:asl2.0)))
+
+(define-public ruby-tzinfo
+  (package
+    (name "ruby-tzinfo")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "tzinfo" version))
+       (sha256
+        (base32
+         "1c01p3kg6xvy1cgjnzdfq45fggbwish8krd0h864jvbpybyx7cgx"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-thread-safe" ,ruby-thread-safe)))
+    (synopsis "Time zone library for Ruby")
+    (description "TZInfo is a Ruby library that provides daylight savings
+aware transformations between times in different time zones.")
+    (home-page "http://tzinfo.github.io")
+    (license license:expat)))
+
+(define-public ruby-json
+  (package
+    (name "ruby-json")
+    (version "1.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "json" version))
+       (sha256
+        (base32
+         "1nsby6ry8l9xg3yw4adlhk2pnc7i0h0rznvcss4vk3v74qg0k8lc"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f)) ; dependency cycle with sdoc
+    (synopsis "JSON library for Ruby")
+    (description "This Ruby library provides a JSON implementation written as
+a native C extension.")
+    (home-page "http://json-jruby.rubyforge.org/")
+    (license (list license:ruby license:gpl2)))) ; GPL2 only
+
+(define-public ruby-activesupport
+  (package
+    (name "ruby-activesupport")
+    (version "4.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "activesupport" version))
+       (sha256
+        (base32
+         "19n38rj6r1gyxgka18qvcxyla0fwan8a5p3ghq0pp8aj93sbmr6f"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (propagated-inputs
+     `(("ruby-i18n" ,ruby-i18n)
+       ("ruby-json" ,ruby-json)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-thread-safe" ,ruby-thread-safe)
+       ("ruby-tzinfo" ,ruby-tzinfo)))
+    (synopsis "Ruby on Rails utility library")
+    (description "ActiveSupport is a toolkit of support libraries and Ruby
+core extensions extracted from the Rails framework.  It includes support for
+multibyte strings, internationalization, time zones, and testing.")
+    (home-page "http://www.rubyonrails.org")
+    (license license:expat)))
+
+(define-public ruby-ox
+  (package
+    (name "ruby-ox")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ox" version))
+       (sha256
+        (base32
+         "00i11xd4ayh7349rhgskajfxn0qzkb74ab01217zix9qcapssxax"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (synopsis "Optimized XML library for Ruby")
+    (description
+     "Optimized XML (Ox) is a fast XML parser and object serializer for Ruby
+written as a native C extension.  It was designed to be an alternative to
+Nokogiri and other Ruby XML parsers for generic XML parsing and as an
+alternative to Marshal for Object serialization. ")
+    (home-page "http://www.ohler.com/ox")
+    (license license:expat)))
+
+(define-public ruby-pg
+  (package
+    (name "ruby-pg")
+    (version "0.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "pg" version))
+       (sha256
+        (base32
+         "1axxbf6ij1iqi3i1r3asvjc80b0py5bz0m2wy5kdi5xkrpr82kpf"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-hoe" ,ruby-hoe)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(("postgresql" ,postgresql)))
+    (synopsis "Ruby interface to PostgreSQL")
+    (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
+with PostgreSQL 8.4 and later.")
+    (home-page "https://bitbucket.org/ged/ruby-pg")
+    (license license:ruby)))
+
+(define-public ruby-byebug
+  (package
+    (name "ruby-byebug")
+    (version "6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "byebug" version))
+       (sha256
+        (base32
+         "0537h9qbhr6csahmzyn4lk1g5b2lcligbzd21gfy93nx9lbfdnzc"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (synopsis "Debugger for Ruby 2")
+    (description "Byebug is a Ruby 2 debugger implemented using the Ruby 2
+TracePoint C API for execution control and the Debug Inspector C API for call
+stack navigation.  The core component provides support that front-ends can
+build on.  It provides breakpoint handling and bindings for stack frames among
+other things and it comes with a command line interface.")
+    (home-page "http://github.com/deivid-rodriguez/byebug")
+    (license license:bsd-2)))
+
+(define-public ruby-rack
+  (package
+    (name "ruby-rack")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rack" version))
+       (sha256
+        (base32
+         "09bs295yq6csjnkzj7ncj50i6chfxrhmzg1pk6p0vd2lb9ac8pj5"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda _
+             ;; A few of the tests use the length of a file on disk for
+             ;; Content-Length and Content-Range headers.  However, this file
+             ;; has a shebang in it which an earlier phase patches, growing
+             ;; the file size from 193 to 239 bytes when the store prefix is
+             ;; "/gnu/store".
+             (let ((size-diff (- (string-length (which "ruby"))
+                                 (string-length "/usr/bin/env ruby"))))
+               (substitute* '("test/spec_file.rb")
+                 (("193")
+                  (number->string (+ 193 size-diff)))
+                 (("bytes(.)22-33" all delimiter)
+                  (string-append "bytes"
+                                 delimiter
+                                 (number->string (+ 22 size-diff))
+                                 "-"
+                                 (number->string (+ 33 size-diff))))))
+             #t)))))
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Unified web application interface for Ruby")
+    (description "Rack provides a minimal, modular and adaptable interface for
+developing web applications in Ruby.  By wrapping HTTP requests and responses,
+it unifies the API for web servers, web frameworks, and software in between
+into a single method call.")
+    (home-page "http://rack.github.io/")
     (license license:expat)))

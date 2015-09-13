@@ -72,7 +72,9 @@ COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
                                #:file->header cpio:file->cpio-header*)))
 
   (or (not compress?)
-      (and (zero? (system* gzip "--best" output))
+      ;; Use '--no-name' so that gzip records neither a file name nor a time
+      ;; stamp in its output.
+      (and (zero? (system* gzip "--best" "--no-name" output))
            (rename-file (string-append output ".gz")
                         output))
       output))

@@ -1052,6 +1052,46 @@ contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
     (license (package-license perl))))
 
+(define-public perl-czplib
+  (package
+    (name "perl-czplib")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/czplib/czplib.v"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "12kln8l5h406r1ss6zbazgcshmys9nvabkrhvk2zwrrgl1saq1kf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove .git directory
+           (delete-file-recursively ".git")
+           #t))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (copy-recursively "."
+                              (string-append (assoc-ref outputs "out")
+                                             "/plib/perl5/site_perl/"
+                                             ,(package-version perl)
+                                             "/czplib/"))
+            #t)))))
+    (home-page "http://sourceforge.net/projects/czplib/")
+    (synopsis "Library for genomic analysis")
+    (description "Chaolin Zhang's Perl Library (czplib) contains assorted
+functions and data structures for processing and analysing genomic and
+bioinformatics data.")
+    (license gpl3+)))
+
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
@@ -1292,6 +1332,31 @@ applicable).")
     (description "Date::Calc::XS is an XS wrapper and C library plug-in for
 Date::Calc.")
     (license (list (package-license perl) lgpl2.0+))))
+
+(define-public perl-date-manip
+  (package
+    (name "perl-date-manip")
+    (version "6.50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/S/SB/SBECK/"
+                           "Date-Manip-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zd0wbf91i49753rnf7m1lw197hdl5r97mxy0n43zdmcmhvkb3qq"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; Tests would require tzdata for timezone information, but tzdata is in
+     ;; (gnu packages base) which would create a circular dependency.  TODO:
+     ;; Maybe put this package elsewhere so we can turn on tests.
+     '(#:tests? #f))
+    (home-page "http://search.cpan.org/dist/Date-Manip")
+    (synopsis "Date manipulation routines")
+    (description "Date::Manip is a series of modules for common date/time
+operations, such as comparing two times, determining a date a given amount of
+time from another, or parsing international times.")
+    (license (package-license perl))))
 
 (define-public perl-datetime
   (package
@@ -1666,7 +1731,7 @@ particular command is available.")
     (home-page "http://search.cpan.org/dist/Devel-GlobalDestruction")
     (synopsis "Provides equivalent of ${^GLOBAL_PHASE} eq 'DESTRUCT' for older perls")
     (description "Devel::GlobalDestruction provides a function returning the
-equivalent of \"${^GLOBAL_PHASE} eq 'DESTRUCT'\" for older perls.")
+equivalent of \"$@{^GLOBAL_PHASE@} eq 'DESTRUCT'\" for older perls.")
     (license (package-license perl))))
 
 (define-public perl-devel-lexalias
@@ -1910,7 +1975,7 @@ constructors, which speeds code up at runtime by a significant amount.  String
 eval is not without its issues however - it's difficult to control the scope
 it's used in (which determines which variables are in scope inside the eval),
 and it's easy to miss compilation errors, since eval catches them and sticks
-them in $@ instead.  This module attempts to solve these problems.  It
+them in $@@ instead.  This module attempts to solve these problems.  It
 provides an eval_closure function, which evals a string in a clean
 environment, other than a fixed list of specified variables.  Compilation
 errors are rethrown automatically.")
@@ -1954,7 +2019,7 @@ in your modules in a \"Java-esque\" manner.")
     (description
      "Exporter::Lite is an alternative to Exporter, intended to provide a
 lightweight subset of the most commonly-used functionality.  It supports
-import(), @EXPORT and @EXPORT_OK and not a whole lot else.")
+import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
     (home-page (string-append "http://search.cpan.org/~neilb/"
                               "Exporter-Lite-" version))
     (license (package-license perl))))

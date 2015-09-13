@@ -1,6 +1,6 @@
 ;;; guix-messages.el --- Minibuffer messages
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -186,14 +186,14 @@
 (defun guix-result-message (profile entries entry-type
                             search-type search-vals)
   "Display an appropriate message after displaying ENTRIES."
-  (let* ((type-spec (guix-get-key-val guix-messages
-                                      entry-type search-type))
+  (let* ((type-spec (guix-assq-value guix-messages
+                                     entry-type search-type))
          (fun-or-count-spec (car type-spec)))
     (if (functionp fun-or-count-spec)
         (funcall fun-or-count-spec profile entries search-vals)
       (let* ((count     (length entries))
              (count-key (if (> count 1) 'many count))
-             (msg-spec  (guix-get-key-val type-spec count-key))
+             (msg-spec  (guix-assq-value type-spec count-key))
              (msg       (car msg-spec))
              (args      (cdr msg-spec)))
         (mapc (lambda (subst)

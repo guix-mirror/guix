@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -486,3 +487,84 @@ code-points needed for zh_cn, zh_sg, zh_tw, zh_hk, zh_mo, ja (Japanese) and
 ko (Korean) locales for fontconfig.")
     ;; GPLv2 with font embedding exception
     (license license:gpl2)))
+
+(define-public font-tex-gyre
+  (package
+    (name "font-tex-gyre")
+    (version "2.005")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.gust.org.pl/projects/e-foundry/"
+                           "tex-gyre/whole/tg-" version "otf.zip"))
+       (sha256
+        (base32
+         "0kph9l3g7jb2bpmxdbdg5zl56wacmnvdvsdn7is1gc750sqvsn31"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let ((unzip    (string-append (assoc-ref %build-inputs "unzip")
+                                        "/bin/unzip"))
+               (font-dir (string-append %output "/share/fonts/opentype")))
+           (mkdir-p font-dir)
+           (system* unzip
+                    (assoc-ref %build-inputs "source")
+                    "-d" font-dir)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.gust.org.pl/projects/e-foundry/tex-gyre/")
+    (synopsis "Remake of Ghostscript fonts")
+    (description "The TeX Gyre collection of fonts is the result of an
+extensive remake and extension of the freely available base PostScript fonts
+distributed with Ghostscript version 4.00.  The collection contains the
+following fonts in the OpenType format: Adventor, Bonum, Chorus, Cursor,
+Heros, Pagella, Schola, Termes.")
+    (license license:gfl1.0)))
+
+(define-public font-anonymous-pro
+  (package
+    (name "font-anonymous-pro")
+    (version "1.002")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.marksimonson.com/assets/content/fonts/"
+                    "AnonymousPro-" version ".zip"))
+              (sha256
+               (base32
+                "1asj6lykvxh46czbal7ymy2k861zlcdqpz8x3s5bbpqwlm3mhrl6"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                     "/bin/unzip"))
+               (font-dir (string-append %output "/share/fonts/truetype"))
+               (doc-dir  (string-append %output "/share/doc/" ,name)))
+           (system* unzip (assoc-ref %build-inputs "source"))
+           (mkdir-p font-dir)
+           (mkdir-p doc-dir)
+           (chdir (string-append "AnonymousPro-" ,version ".001"))
+           (for-each (lambda (ttf)
+                       (copy-file ttf
+                                  (string-append font-dir "/" ttf)))
+                     (find-files "." "\\.ttf$"))
+           (for-each (lambda (doc)
+                       (copy-file doc
+                                  (string-append doc-dir "/" doc)))
+                     (find-files "." "\\.txt$"))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://www.marksimonson.com/fonts/view/anonymous-pro")
+    (synopsis "Fixed-width fonts designed with coding in mind")
+    (description "Anonymous Pro is a family of four fixed-width fonts designed
+with coding in mind.  Anonymous Pro features an international, Unicode-based
+character set, with support for most Western and Central European Latin-based
+languages, plus Greek and Cyrillic.")
+    (license license:silofl1.1)))

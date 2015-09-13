@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -36,33 +36,47 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.9.1")
+    (version "7.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0h5sfg4ndhb8q4fxbq0hdxfjp35n6ih96f6x8yvb418s84x5976d"))))
+               "1a08c9svaihqmz2mm44il1gwa810gmwkckns8b0y0v3qz52amgby"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; FIXME "make check" fails on single-processor systems.
-       #:phases (alist-cons-after
-                 'configure 'post-configure
-                 (lambda _
-                   (for-each patch-makefile-SHELL
-                             (find-files "." "Makefile\\.in")))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Like Binutils, GDB installs libbfd and libopcodes.
-                    ;; However, this leads to collisions when both are
-                    ;; installed, and really is none of its business,
-                    ;; conceptually.  So remove them.
-                    (for-each delete-file
-                              (find-files (assoc-ref outputs "out")
-                                          "^lib(opcodes|bfd)\\.")))
-                  %standard-phases))))
+     `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
+
+       #:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+
+       #:phases (modify-phases %standard-phases
+                  (add-after
+                   'configure 'post-configure
+                   (lambda _
+                     (for-each patch-makefile-SHELL
+                               (find-files "." "Makefile\\.in"))))
+                  (add-after
+                   'install 'remove-libs-already-in-binutils
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     ;; Like Binutils, GDB installs libbfd, libopcodes, etc.
+                     ;; However, this leads to collisions when both are
+                     ;; installed, and really is none of its business,
+                     ;; conceptually.  So remove them.
+                     (let* ((binutils (assoc-ref inputs "binutils"))
+                            (out      (assoc-ref outputs "out"))
+                            (files1   (with-directory-excursion binutils
+                                        (append (find-files "lib")
+                                                (find-files "include"))))
+                            (files2   (with-directory-excursion out
+                                        (append (find-files "lib")
+                                                (find-files "include"))))
+                            (common   (lset-intersection string=?
+                                                         files1 files2)))
+                       (with-directory-excursion out
+                         (for-each delete-file common)
+                         #t)))))))
     (inputs
      `(("expat" ,expat)
        ("mpfr" ,mpfr)

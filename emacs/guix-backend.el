@@ -52,25 +52,15 @@
 ;;; Code:
 
 (require 'geiser-mode)
+(require 'guix-config)
 (require 'guix-emacs)
 
-(defvar guix-load-path
-  (file-name-directory (or load-file-name
-                           (locate-library "guix")))
+(defvar guix-load-path guix-emacs-interface-directory
   "Directory with scheme files for \"guix.el\" package.")
 
 (defvar guix-helper-file
   (expand-file-name "guix-helper.scm" guix-load-path)
   "Auxiliary scheme file for loading.")
-
-(defvar guix-guile-program (or geiser-guile-binary "guile")
-  "Name of the guile executable used for Guix REPL.
-May be either a string (the name of the executable) or a list of
-strings of the form:
-
-  (NAME . ARGS)
-
-Where ARGS is a list of arguments to the guile program.")
 
 
 ;;; REPL

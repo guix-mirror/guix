@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
             non-copyleft
             bsd-style                             ;deprecated!
             cc0
+            cc-by-sa4.0 cc-by3.0
             cddl1.0
             cecill-c
             artistic2.0 clarified-artistic
@@ -38,6 +40,7 @@
             expat
             freetype
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
+            gfl1.0
             fdl1.3+
             opl1.0+
             isc
@@ -135,6 +138,16 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://directory.fsf.org/wiki/License:CC0"
            "http://www.gnu.org/licenses/license-list.html#CC0"))
 
+(define cc-by-sa4.0
+  (license "CC-BY-SA 4.0"
+           "http://creativecommons.org/licenses/by-sa/4.0/"
+           "Creative Commons Attribution-ShareAlike 4.0 International"))
+
+(define cc-by3.0
+  (license "CC-BY 3.0"
+           "http://creativecommons.org/licenses/by/3.0/"
+           "Creative Commons Attribution 3.0 Unported"))
+
 (define cddl1.0
   (license "CDDL 1.0"
            "http://directory.fsf.org/wiki/License:CDDLv1.0"
@@ -210,6 +223,13 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "GPL 3+"
            "https://www.gnu.org/licenses/gpl.html"
            "https://www.gnu.org/licenses/license-list#GNUGPLv3"))
+
+;; The “GUST font license” is legally equivalent to LPPL v1.3c as it only
+;; extends the LPPL with an optional request.
+(define gfl1.0
+  (license "GUST font license 1.0"
+           "http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt"
+           "https://www.gnu.org/licenses/license-list#LPPL-1.3a"))
 
 (define fdl1.3+
   (license "FDL 1.3+"

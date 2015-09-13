@@ -169,6 +169,10 @@ traversing network address translators (NATs) and firewalls.")
                (base32
                 "08ds8s32cjslms1q227ihd6jz35583v378ij4pknfa5xngfijhrb"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--sysconfdir=/etc"
+         "--localstatedir=/var")))
     (inputs `(("zlib" ,zlib)
               ("lzo" ,lzo)
               ("openssl" ,openssl)))

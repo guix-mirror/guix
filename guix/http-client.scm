@@ -19,7 +19,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix http-client)
-  #:use-module (guix utils)
   #:use-module (web uri)
   #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
@@ -167,13 +166,15 @@ closes PORT, unless KEEP-ALIVE? is true."
    (define close
      (and (not keep-alive?)
           (lambda ()
-            (close port))))
+            (close-port port))))
 
    (make-custom-binary-input-port "delimited input port" read! #f #f close))
 
- (unless (guile-version>? "2.0.9")
+ (unless (guile-version>? "2.0.11")
    ;; Guile <= 2.0.9 had a bug whereby 'response-body-port' would read more
    ;; than what 'content-length' says.  See Guile commit 802a25b.
+   ;; Guile <= 2.0.12 had a bug whereby the 'close' method of the response
+   ;; body port would fail with wrong-arg-num.  See Guile commit 5a10e41.
    (module-set! (resolve-module '(web response))
                 'make-delimited-input-port make-delimited-input-port)))
 

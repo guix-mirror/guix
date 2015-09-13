@@ -1659,14 +1659,14 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.3.9")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/qsynth/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "08kyn6cl755l9i1grzjx8yi3f8mgiz4gx0hgqad1n0d8yz85087b"))))
+        (base32 "1chc89v9hcjw3k4rvzakl8g56wv24kh48fzv1gfs4iv8vhyl3j4x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no "check" phase
@@ -1689,12 +1689,13 @@ synthesizer written in C++.")
        (method url-fetch)
        (uri (string-append "https://github.com/Themaister/RSound/archive/v"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version))
        (sha256
         (base32 "1wzs40c0k5zpkmm5ffl6c17xmr399sxli7ys0fbb9ib0fd334knx"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-2)
+       ("jack" ,jack-1)
        ("ao" ,ao)
        ("libsamplerate" ,libsamplerate)
        ("openal" ,openal)

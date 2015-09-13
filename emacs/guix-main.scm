@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,7 @@
 (use-modules
  (ice-9 vlist)
  (ice-9 match)
+ (ice-9 popen)
  (srfi srfi-1)
  (srfi srfi-2)
  (srfi srfi-11)
@@ -57,6 +58,8 @@
  (guix licenses)
  (guix utils)
  (guix ui)
+ (guix scripts graph)
+ (guix scripts lint)
  (guix scripts package)
  (guix scripts pull)
  (gnu packages))
@@ -68,7 +71,14 @@
 (define (list-maybe obj)
   (if (list? obj) obj (list obj)))
 
-(define full-name->name+version package-name->name+version)
+(define (full-name->name+version spec)
+  "Given package specification SPEC with or without output,
+return two values: name and version.  For example, for SPEC
+\"foo-0.9.1b:lib\", return \"foo\" and \"0.9.1b\"."
+  (let-values (((name version output)
+                (package-specification->name+version+output spec)))
+    (values name version)))
+
 (define (name+version->full-name name version)
   (string-append name "-" version))
 
@@ -244,6 +254,10 @@ Example:
   (filter-map (match-lambda
                ((_ (? package? package))
                 (package-full-name package))
+               ((_ (? package? package) output)
+                (make-package-specification (package-name package)
+                                            (package-version package)
+                                            output))
                (_ #f))
               inputs))
 
@@ -279,7 +293,7 @@ Example:
     (license           . ,package-license-names)
     (source            . ,package-source-names)
     (synopsis          . ,package-synopsis)
-    (description       . ,package-description)
+    (description       . ,package-description-string)
     (home-url          . ,package-home-page)
     (outputs           . ,package-outputs)
     (non-unique        . ,(negate package-unique?))
@@ -887,9 +901,10 @@ GENERATIONS is a list of generation numbers."
   (with-store store
     (delete-generations store profile generations)))
 
-(define (package-location-string package-id)
-  "Return a location string of a package PACKAGE-ID."
-  (and-let* ((package  (package-by-id package-id))
+(define (package-location-string id-or-name)
+  "Return a location string of a package with ID-OR-NAME."
+  (and-let* ((package  (or (package-by-id id-or-name)
+                           (first (packages-by-name id-or-name))))
              (location (package-location package)))
     (location->string location)))
 
@@ -927,3 +942,54 @@ GENERATIONS is a list of generation numbers."
           (build-derivations store derivations))
         (format #t "The source store path: ~a~%"
                 (package-source-derivation->store-path derivation))))))
+
+
+;;; Executing guix commands
+
+(define (guix-command . args)
+  "Run 'guix ARGS ...' command."
+  (catch 'quit
+    (lambda () (apply run-guix args))
+    (const #t)))
+
+(define (guix-command-output . args)
+  "Return string with 'guix ARGS ...' output."
+  (with-output-to-string
+    (lambda () (apply guix-command args))))
+
+(define (help-string . commands)
+  "Return string with 'guix COMMANDS ... --help' output."
+  (apply guix-command-output `(,@commands "--help")))
+
+(define (pipe-guix-output guix-args command-args)
+  "Run 'guix GUIX-ARGS ...' command and pipe its output to a shell command
+defined by COMMAND-ARGS.
+Return #t if the shell command was executed successfully."
+  (let ((pipe (apply open-pipe* OPEN_WRITE command-args)))
+    (with-output-to-port pipe
+      (lambda () (apply guix-command guix-args)))
+    (zero? (status:exit-val (close-pipe pipe)))))
+
+
+;;; Lists of packages, lint checkers, etc.
+
+(define (graph-type-names)
+  "Return a list of names of available graph node types."
+  (map node-type-name %node-types))
+
+(define (lint-checker-names)
+  "Return a list of names of available lint checkers."
+  (map (lambda (checker)
+         (symbol->string (lint-checker-name checker)))
+       %checkers))
+
+(define (package-names)
+  "Return a list of names of available packages."
+  (delete-duplicates
+   (fold-packages (lambda (pkg res)
+                    (cons (package-name pkg) res))
+                  '())))
+
+;; See the comment to 'guix-package-names' function in "guix-popup.el".
+(define (package-names-lists)
+  (map list (package-names)))

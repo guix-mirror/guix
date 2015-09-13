@@ -51,14 +51,15 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.14.2")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://download.enlightenment.org/rel/libs/efl/efl-"
                     version ".tar.xz"))
               (sha256
-               (base32 "0kg51v63ljq1z4dj65aiyxaqhq54gkl4hx53ifwbci6ihammandr"))))
+               (base32
+                "1n2l2n09lys5dph9lrnsv5z3qbgzp7bi0vidal2fvy18hflbbvsn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -127,20 +128,21 @@
 for Enlightenment.  Libraries covers data serialization, wide support for
 graphics rendering, UI layout and themes, interaction with OS, access to
 removable devices or support for multimedia.")
-    (license (list license:bsd-2 license:lgpl2.1 license:zlib)))) ; different parts under different licenses
+    ;; Different parts are under different licenses.
+    (license (list license:bsd-2 license:lgpl2.1 license:zlib))))
 
 (define-public elementary
   (package
     (name "elementary")
-    (version "1.14.2")
+    (version "1.15.1")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/libs/elementary/elementary-"
-                version ".tar.xz"))
+               (string-append "https://download.enlightenment.org/rel/libs/"
+                              "elementary/elementary-" version ".tar.xz"))
               (sha256
-               (base32 "1ck1jm9dfx2l72nklndqjfsxjqb0024b88naskld1dk9b8drs76b"))))
+               (base32
+                "015b277bvgb4q8cqjl58ir9nqb1d40fpj2jblf4gkxq8a45a88mb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -157,7 +159,7 @@ full capabilities of EFL.")
 (define-public evas-generic-loaders
   (package
     (name "evas-generic-loaders")
-    (version "1.14.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -166,7 +168,8 @@ full capabilities of EFL.")
                 "evas_generic_loaders/evas_generic_loaders-"
                 version ".tar.xz"))
               (sha256
-               (base32 "18b6xmbf81bly4mlwlzwr17g2m8dzznbhsdjk6pbb3nw4wn3y88l"))))
+               (base32
+                "0zzx06j20x580xqnnsxp7gb7rv279zcgvdxfbhs905af9m6rwlqy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -188,15 +191,16 @@ files in Evas (EFL canvas library).")
 (define-public emotion-generic-players
   (package
     (name "emotion-generic-players")
-    (version "1.14.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/libs/emotion_generic_players/emotion_generic_players-"
-                version ".tar.xz"))
+               (string-append "https://download.enlightenment.org/rel/libs/"
+                              "emotion_generic_players/emotion_generic_players"
+                              "-" version ".tar.xz"))
               (sha256
-               (base32 "0685jzag98ykknycfdqn70zif3fmcfi6m8k9yp6d79r1h8gc49n4"))))
+               (base32
+                "0pszwmcygxnv1sfx0m79md2jmi4sng8mdb1xcr6h2z5c8685wvcz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -214,15 +218,15 @@ The only supported now is VLC.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "0.8.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/apps/terminology/terminology-"
-                version ".tar.gz"))
+               (string-append "https://download.enlightenment.org/rel/apps/"
+                              "terminology/terminology-" version ".tar.xz"))
               (sha256
-               (base32 "0a767ixackzmhb2awrhjy7q6vsivsd54wc434i617xiw095x843s"))))
+               (base32
+                "0iwid9cvd96kwl0hjhbby84kkz5sgb4p8454nnkf7wjvdz2f9b96"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -266,15 +270,14 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.19.5")
+    (version "0.19.9")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://download.enlightenment.org/rel/apps/enlightenment/enlightenment-"
-                version ".tar.xz"))
+               (string-append "https://download.enlightenment.org/rel/apps/"
+                              name "/" name "-" version ".tar.xz"))
               (sha256
-               (base32 "0j66x7x76fbgqfw6fi77v8qy50slw3jnsq3vvs82rrfvniabm8wc"))))
+               (base32 "1ajpyw1bfbmxpniw041vbvrs9wqgzyw9kccx72nnfiy2wxspjcr5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

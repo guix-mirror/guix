@@ -370,14 +370,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.7.2")
+    (version "2.8")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
-                                 version ".tar.bz2"))
+             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "1wlygd0jp34dk4qagi4h9psn4yk8zgyj7zy9lrpm5332mm87bsvw"))))
+               "10l1iwc01k1algk2v4vzsrahdvqjmjfi3qazm2cwism0d8hsfg4r"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -403,7 +403,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("zlib", zlib)))
     (native-inputs
      `(("bc" ,bc)
-       ("bzip2" ,bzip2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
@@ -692,7 +691,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
        ("ffmpeg" ,ffmpeg)
-       ("jack" ,jack-2)
+       ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("lcms" ,lcms)
        ("libass" ,libass)
@@ -792,15 +791,15 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2015.08.16.1")
+    (version "2015.09.03")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://youtube-dl.org/downloads/"
+              (uri (string-append "https://youtube-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04g78anvy519pj8m8ys1ifmnmp1x3i9bw3afwqjch71n9f77papy"))))
+                "0wxjbqr07rm26iih12yhv0qwspfrg9safhgnrp8misqjjk4fz86z"))))
     (build-system python-build-system)
     (inputs `(("setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")

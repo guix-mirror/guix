@@ -1926,3 +1926,39 @@ in finite element programs.")
            "-DMPI_Fortran_COMPILER=mpifort"
            ,@,cf))))
     (synopsis "Finite element library (with MPI support)")))
+
+(define-public flann
+  (package
+    (name "flann")
+    (version "1.8.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append
+            "http://www.cs.ubc.ca/research/flann/uploads/FLANN/flann-"
+            version "-src.zip"))
+        (sha256
+          (base32
+            "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("octave" ,octave)
+       ("python" ,python-2) ; print syntax
+       ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f)) ; The test data are downloaded from the Internet.
+    (home-page "http://www.cs.ubc.ca/research/flann/")
+    (synopsis "Library for approximate nearest neighbors computation")
+    (description "FLANN is a library for performing fast approximate
+nearest neighbor searches in high dimensional spaces.  It implements a
+collection of algorithms and a system for automatically choosing the best
+algorithm and optimum parameters depending on the dataset.
+
+FLANN is written in C++ and contains bindings for C, Octave and Python.")
+    (license (license:non-copyleft "file://COPYING"
+                                "See COPYING in the distribution."))))

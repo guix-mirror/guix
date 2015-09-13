@@ -239,6 +239,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openbox.scm			\
   gnu/packages/openldap.scm			\
+  gnu/packages/openstack.scm			\
   gnu/packages/orpheus.scm			\
   gnu/packages/ots.scm				\
   gnu/packages/package-management.scm		\
@@ -416,12 +417,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-racy-tail-test.patch		\
-  gnu/packages/patches/cpio-CVE-2014-9112-pt1.patch		\
-  gnu/packages/patches/cpio-CVE-2014-9112-pt2.patch		\
-  gnu/packages/patches/cpio-CVE-2014-9112-pt3.patch		\
-  gnu/packages/patches/cpio-CVE-2014-9112-pt4.patch		\
-  gnu/packages/patches/cpio-CVE-2014-9112-pt5.patch		\
-  gnu/packages/patches/cpio-fix-symlink-bad-length-test.patch	\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
   gnu/packages/patches/crda-optional-gcrypt.patch		\
@@ -476,6 +471,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/glibc-o-largefile.patch			\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
+  gnu/packages/patches/gnucash-price-quotes-perl.patch		\
   gnu/packages/patches/gnutls-doc-fix.patch			\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
@@ -489,7 +485,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-arm-fixes.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
+  gnu/packages/patches/guile-present-coding.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
+  gnu/packages/patches/guile-rsvg-pkgconfig.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
@@ -576,6 +574,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/patch-hurd-path-max.patch		\
   gnu/packages/patches/perl-autosplit-default-time.patch	\
+  gnu/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   gnu/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
   gnu/packages/patches/perl-module-pluggable-search.patch	\
   gnu/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
@@ -691,6 +690,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-trident-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-vmware-glibc-2.20.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
+  gnu/packages/patches/xfce4-settings-defaults.patch		\
   gnu/packages/patches/xmodmap-asprintf.patch 			\
   gnu/packages/patches/zathura-plugindir-environment-variable.patch
 
