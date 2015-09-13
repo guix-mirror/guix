@@ -1963,13 +1963,14 @@ package looks like this:
 (define-public hello
   (package
     (name "hello")
-    (version "2.8")
+    (version "2.10")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/hello/hello-" version
-                                 ".tar.gz"))
-             (sha256
-              (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/hello/hello-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--enable-silent-rules")))
     (inputs `(("gawk" ,gawk)))
@@ -7232,22 +7233,22 @@ For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows
 @example
 (define-public gtk+
   (package
-   (name "gtk+")
-   (version "3.9.12")
-   ...))
+    (name "gtk+")
+    (version "3.9.12")
+    ...))
 (define-public gtk+-2
   (package
-   (name "gtk+")
-   (version "2.24.20")
-   ...))
+    (name "gtk+")
+    (version "2.24.20")
+    ...))
 @end example
 If we also wanted GTK+ 3.8.2, this would be packaged as
 @example
 (define-public gtk+-3.8
   (package
-   (name "gtk+")
-   (version "3.8.2")
-   ...))
+    (name "gtk+")
+    (version "3.8.2")
+    ...))
 @end example
 
 
