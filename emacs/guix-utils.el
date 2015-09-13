@@ -208,6 +208,16 @@ single argument."
       (funcall guix-find-file-function file)
     (message "File '%s' does not exist." file)))
 
+(defvar url-handler-regexp)
+
+(defun guix-find-file-or-url (file-or-url)
+  "Find FILE-OR-URL."
+  (require 'url-handlers)
+  (let ((file-name-handler-alist
+         (cons (cons url-handler-regexp 'url-file-handler)
+               file-name-handler-alist)))
+    (find-file file-or-url)))
+
 (defmacro guix-while-search (regexp &rest body)
   "Evaluate BODY after each search for REGEXP in the current buffer."
   (declare (indent 1) (debug t))
