@@ -27,6 +27,7 @@ the installation instructions (@pxref{Requirements}).
 @item @url{http://gnu.org/software/autoconf/, GNU Autoconf};
 @item @url{http://gnu.org/software/automake/, GNU Automake};
 @item @url{http://gnu.org/software/gettext/, GNU Gettext};
+@item @url{http://gnu.org/software/texinfo/, GNU Texinfo};
 @item @url{http://www.graphviz.org/, Graphviz};
 @item @url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
 @end itemize
