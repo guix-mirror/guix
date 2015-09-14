@@ -4853,3 +4853,30 @@ fractional seconds) of a clock which never goes backwards.")
 
 (define-public python2-monotonic
   (package-with-python2 python-monotonic))
+
+(define-public python-webob
+  (package
+    (name "python-webob")
+    (version "1.5.0b0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/W/WebOb/WebOb-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "140b3iczclk1j0405rvw5gxshqfkhcc8254fj520z3m23cwbql4a"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-nose" ,python-nose)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://webob.org/")
+    (synopsis "WSGI request and response object")
+    (description
+      "WebOb provides wrappers around the WSGI request environment, and an
+object to help create WSGI responses.")
+    (license license:expat)))
+
+(define-public python2-webob
+  (package-with-python2 python-webob))
