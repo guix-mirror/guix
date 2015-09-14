@@ -2616,3 +2616,27 @@ data in the form of VCF files.")
     ;; The license is declared as LGPLv3 in the README and
     ;; at http://vcftools.sourceforge.net/license.html
     (license license:lgpl3)))
+
+(define-public bio-locus
+  (package
+    (name "bio-locus")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio-locus" version))
+       (sha256
+        (base32
+         "02vmrxyimkj9sahsp4zhfhnmbvz6dbbqz1y01vglf8cbwvkajfl0"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Tool for fast querying of genome locations")
+    (description
+     "Bio-locus is a tabix-like tool for fast querying of genome
+locations.  Many file formats in bioinformatics contain records that
+start with a chromosome name and a position for a SNP, or a start-end
+position for indels.  Bio-locus allows users to store this chr+pos or
+chr+pos+alt information in a fast database.")
+    (home-page "https://github.com/pjotrp/bio-locus")
+    (license license:expat)))
