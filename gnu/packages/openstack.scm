@@ -253,6 +253,37 @@ extensions.")
 (define-public python2-oslo.config
   (package-with-python2 python-oslo.config))
 
+(define-public python-oslo.context
+  (package
+    (name "python-oslo.context")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/o/oslo.context/"
+             "oslo.context-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16wr9qrkc3lb94ssb14qid4liza66x316fvzjw0izg67h1a0fm86"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests.
+        ("python-oslotest" ,python-oslotest)))
+    (home-page "http://launchpad.net/oslo")
+    (synopsis "Oslo context library")
+    (description
+      "The Oslo context library has helpers to maintain useful information
+about a request context.  The request context is usually populated in the WSGI
+pipeline and used by various modules such as logging.")
+    (license asl2.0)))
+
+(define-public python2-oslo.context
+  (package-with-python2 python-oslo.context))
+
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
