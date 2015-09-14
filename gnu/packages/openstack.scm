@@ -290,6 +290,45 @@ in an application or library.")
 (define-public python2-oslo.i18n
   (package-with-python2 python-oslo.i18n))
 
+(define-public python-oslo.serialization
+  (package
+    (name "python-oslo.serialization")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/o/oslo.serialization/"
+             "oslo.serialization-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00qaxg155s61ylh4fqc7m5fh0gijf33khhai9xvcsc9k106i3c9c"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-iso8601" ,python-iso8601)
+        ("python-netaddr" ,python-netaddr)
+        ("python-oslo.utils" ,python-oslo.utils)
+        ("python-simplejson" ,python-simplejson)
+        ("python-six" ,python-six)
+        ("python-pytz" ,python-pytz)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests.
+        ("python-mock" ,python-mock)
+        ("python-oslo.i18n" ,python-oslo.i18n)
+        ("python-oslotest" ,python-oslotest)))
+    (home-page "http://launchpad.net/oslo")
+    (synopsis "Oslo serialization library")
+    (description
+      "The oslo.serialization library provides support for representing objects
+in transmittable and storable formats, such as JSON and MessagePack.")
+    (license asl2.0)))
+
+(define-public python2-oslo.serialization
+  (package-with-python2 python-oslo.serialization))
+
 (define-public python-oslotest
   (package
     (name "python-oslotest")
