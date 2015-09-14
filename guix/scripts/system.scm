@@ -514,6 +514,13 @@ Build the operating system declared in FILE according to ACTION.\n"))
         (leave (_ "wrong number of arguments for action '~a'~%")
                action))
 
+      (unless action
+        (format (current-error-port)
+                (_ "guix system: missing command name~%"))
+        (format (current-error-port)
+                (_ "Try 'guix system --help' for more information.~%"))
+        (exit 1))
+
       (case action
         ((build vm vm-image disk-image reconfigure)
          (unless (= count 1)
