@@ -414,6 +414,7 @@ following keywords are available:
          (buf-str        (concat buf-type-str " buffer"))
          (prefix         (concat "guix-" entry-type-str "-" buf-type-str))
          (group          (intern prefix))
+         (faces-group    (intern (concat prefix "-faces")))
          (mode-map-str   (concat prefix "-mode-map"))
          (parent-mode    (intern (concat "guix-" buf-type-str "-mode")))
          (mode           (intern (concat prefix "-mode")))
@@ -441,6 +442,10 @@ following keywords are available:
          ,(concat Buf-type-str " buffer with " entry-str ".")
          :prefix ,(concat prefix "-")
          :group ',(intern (concat "guix-" buf-type-str)))
+
+       (defgroup ,faces-group nil
+         ,(concat "Faces for " buf-type-str " buffer with " entry-str ".")
+         :group ',(intern (concat "guix-" buf-type-str "-faces")))
 
        (defcustom ,buf-name-var ,buf-name-val
          ,(concat "Default name of the " buf-str " for displaying " entry-str ".")
@@ -789,7 +794,7 @@ GENERATION is a generation number of `guix-profile' profile."
 (defface guix-operation-option-key
   '((t :inherit font-lock-warning-face))
   "Face used for the keys of operation options."
-  :group 'guix)
+  :group 'guix-faces)
 
 (defcustom guix-operation-confirm t
   "If nil, do not prompt to confirm an operation."
