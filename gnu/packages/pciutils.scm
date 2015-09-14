@@ -28,16 +28,16 @@
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.2.0")
+    (version "3.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kernel.org/software/utils/pciutils/pciutils-"
                     version
-                    ".tar.bz2"))
+                    ".tar.xz"))
               (sha256
                (base32
-                "0d9as9jzjjg5c1nwf58z1y1i7rf9fqxmww1civckhcvcn0xr85mq"))))
+                "1ag3skny1bamqil46dlppw8j1fp08spqa60fjygbxkg4fzdknjji"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
