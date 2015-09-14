@@ -174,6 +174,37 @@ and sensible default behaviors into your setuptools run.")
 (define-public python2-pbr
   (package-with-python2 python-pbr))
 
+(define-public python-requests-mock
+  (package
+    (name "python-requests-mock")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/r/requests-mock/"
+             "requests-mock-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gmd88c224y53b1ai8cfsrcxm9kw3gdqzysclmnaqspg7zjhxwd1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-requests" ,python-requests)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-mock" ,python-mock)
+        ("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "https://requests-mock.readthedocs.org/")
+    (synopsis "Mock out responses from the requests package")
+    (description
+      "This module provides a building block to stub out the HTTP requests
+portions of your testing code.")
+    (license asl2.0)))
+
+(define-public python2-requests-mock
+  (package-with-python2 python-requests-mock))
+
 (define-public python-stevedore
   (package
     (name "python-stevedore")
