@@ -637,3 +637,29 @@ supported via Andre Simon's highlight package.")
      "This package guesses the MIME type from a filename extension using the
 data derived from /etc/mime.types in UNIX-type systems.")
     (license license:gpl2)))
+
+(define-public r-markdown
+  (package
+    (name "r-markdown")
+    (version "0.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "markdown" version))
+              (sha256
+               (base32
+                "00j1hlib3il50azs2vlcyhi0bjpx1r50mxr9w9dl5g1bwjjc71hb"))))
+    (build-system r-build-system)
+    ;; Skip check phase because the tests require the r-knitr package to be
+    ;; installed. This prevents installation failures. Knitr normally
+    ;; shouldn't be available since r-markdown is a dependency of the r-knitr
+    ;; package.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("r-mime" ,r-mime)))
+    (home-page "https://github.com/rstudio/markdown")
+    (synopsis "Markdown rendering for R")
+    (description
+     "This package provides R bindings to the Sundown Markdown rendering
+library (https://github.com/vmg/sundown).  Markdown is a plain-text formatting
+syntax that can be converted to XHTML or other formats.")
+    (license license:gpl2)))
