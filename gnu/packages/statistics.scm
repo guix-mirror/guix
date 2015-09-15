@@ -812,3 +812,24 @@ automatically detected.  Colors and highlighting can be combined and nested.
 New styles can also be created easily.  This package was inspired by the
 \"chalk\" JavaScript project.")
     (license license:expat)))
+
+(define-public r-testthat
+  (package
+    (name "r-testthat")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "testthat" version))
+              (sha256
+               (base32
+                "0b3akwcx5mv9dmi8vssbk91hr3yrrdxd2fm6zhr31fnyz8kjx4pw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/hadley/testthat")
+    (synopsis "Unit testing for R")
+    (description
+     "This package provides a unit testing system for R designed to be fun,
+flexible and easy to set up.")
+    (license license:expat)))
