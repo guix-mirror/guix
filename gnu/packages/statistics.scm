@@ -710,3 +710,23 @@ generation in R using Literate Programming techniques.")
     ;; r-markdown which is available under GPLv2 only, we have chosen GPLv2+
     ;; here.
     (license license:gpl2+)))
+
+(define-public r-microbenchmark
+  (package
+    (name "r-microbenchmark")
+    (version "1.4-2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "microbenchmark" version))
+              (sha256
+               (base32
+                "05yxvdnkxr2ll94h6f2m5sn3gg7vrlm9nbdxgmj2g8cp8gfxpfkg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://cran.r-project.org/web/packages/microbenchmark/")
+    (synopsis "Accurate timing functions for R")
+    (description
+     "This package provides infrastructure to accurately measure and compare
+the execution time of R expressions.")
+    (license license:bsd-2)))
