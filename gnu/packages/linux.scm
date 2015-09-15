@@ -404,13 +404,14 @@ providing the system administrator with some help in common tasks.")
               (snippet
                ;; We take the 'logger' program from GNU Inetutils and 'kill'
                ;; from GNU Coreutils.
-               '(substitute* "configure"
-                  (("build_logger=yes") "build_logger=no")
-                  (("build_kill=yes") "build_kill=no")))))
+               '(begin
+                  (substitute* "configure"
+                    (("build_logger=yes") "build_logger=no")
+                    (("build_kill=yes") "build_kill=no"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-                               "--enable-ddate"
 
                                ;; Install completions where our
                                ;; bash-completion package expects them.
