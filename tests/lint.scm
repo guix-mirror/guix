@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,6 +142,13 @@ requests."
                                    (description ""))))
                         (check-description-style pkg)))
                     "description should not be empty")))
+
+(test-assert "description: valid Texinfo markup"
+  (->bool
+   (string-contains
+    (with-warnings
+      (check-description-style (dummy-package "x" (description "f{oo}b@r"))))
+    "Texinfo markup in description is invalid")))
 
 (test-assert "description: does not start with an upper-case letter"
   (->bool

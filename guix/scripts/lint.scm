@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,6 +142,13 @@ monad."
                     (_ "description should not be empty")
                     'description)))
 
+  (define (check-texinfo-markup package)
+    "Check that PACKAGE description can be parsed as a Texinfo fragment."
+    (catch 'parser-error
+      (lambda () (package-description-string package))
+      (lambda (keys . args)
+        (emit-warning package (_ "Texinfo markup in description is invalid")))))
+
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
                 (string-prefix-ci? (package-name package) description))
@@ -170,6 +178,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
   (let ((description (package-description package)))
     (when (string? description)
       (check-not-empty description)
+      (check-texinfo-markup package)
       (check-proper-start description)
       (check-end-of-sentence-space description))))
 
