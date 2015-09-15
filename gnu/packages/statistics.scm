@@ -619,3 +619,21 @@ There is also a Shiny app as a user interface in this package.")
 it supports LaTeX and HTML output.  Source code of other languages is
 supported via Andre Simon's highlight package.")
     (license license:gpl3+)))
+
+(define-public r-mime
+  (package
+    (name "r-mime")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mime" version))
+              (sha256
+               (base32
+                "145cdcg252w2zsq67dmvmsqka60msfp7agymlxs3gl3ihgiwg46p"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/mime")
+    (synopsis "R package to map filenames to MIME types")
+    (description
+     "This package guesses the MIME type from a filename extension using the
+data derived from /etc/mime.types in UNIX-type systems.")
+    (license license:gpl2)))
