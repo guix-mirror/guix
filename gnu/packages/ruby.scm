@@ -489,6 +489,34 @@ extensions.")
     (home-page "http://codeforpeople.com/lib/ruby/orderedhash/")
     (license license:public-domain)))
 
+(define-public ruby-libxml
+  (package
+    (name "ruby-libxml")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "libxml-ruby" version))
+       (sha256
+        (base32
+         "1dhjqp4r9vkdp00l6h1cj8qfndzxlhlxk6b9g0w4v55gz857ilhb"))))
+    (build-system ruby-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("libxml2" ,libxml2)))
+    (arguments
+     '(#:tests? #f ; test suite hangs for unknown reason
+       #:gem-flags
+       (list "--"
+             (string-append "--with-xml2-include="
+                            (assoc-ref %build-inputs "libxml2")
+                            "/include/libxml2" ))))
+    (synopsis "Ruby bindings for GNOME Libxml2")
+    (description "The Libxml-Ruby project provides Ruby language bindings for
+the GNOME Libxml2 XML toolkit.")
+    (home-page "http://xml4r.github.com/libxml-ruby")
+    (license license:expat)))
+
 (define-public ruby-xml-simple
   (package
     (name "ruby-xml-simple")
