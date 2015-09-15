@@ -539,3 +539,24 @@ wrong.")
      "This package provides the tools necessary to do non-standard
 evaluation (NSE) in R.")
     (license license:gpl3+)))
+
+(define-public r-dbi
+  (package
+    (name "r-dbi")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cran/src/contrib/DBI_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0xj5baxwnhl23rd5nskhjvranrwrc68f3xlyrklglipi41bm69hw"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/rstats-db/DBI")
+    (synopsis "R database interface")
+    (description
+     "The DBI package provides a database interface (DBI) definition for
+communication between R and relational database management systems.  All
+classes in this package are virtual and need to be extended by the various
+R/DBMS implementations.")
+    (license license:lgpl2.0+)))
