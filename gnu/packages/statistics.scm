@@ -540,3 +540,21 @@ communication between R and relational database management systems.  All
 classes in this package are virtual and need to be extended by the various
 R/DBMS implementations.")
     (license license:lgpl2.0+)))
+
+(define-public r-bh
+  (package
+    (name "r-bh")
+    (version "1.58.0-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "BH" version))
+              (sha256
+               (base32
+                "17rnwyw9ib2pvm60iixzkbz7ff4fslpifp1nlx4czp42hy67kqpf"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/eddelbuettel/bh")
+    (synopsis "R package providing subset of Boost headers")
+    (description
+     "This package aims to provide the most useful subset of Boost libraries
+for template use among CRAN packages.")
+    (license license:boost1.0)))
