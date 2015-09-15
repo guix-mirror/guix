@@ -144,6 +144,12 @@ STATE is a symbol denoting how a build phase was ended.  It should be
            (group (1+ digit)) " seconds")
      t)))
 
+(defvar guix-build-log-phase-end-regexp
+  ;; For efficiency, it is better to have a regexp for the general line
+  ;; of the phase end, then to call the function all the time.
+  (guix-build-log-phase-end-regexp)
+  "Regexp for the end line of a 'build' phase.")
+
 (defvar guix-build-log-font-lock-keywords
   `((,(guix-build-log-title-regexp 'start)
      (1 'guix-build-log-title-head)
@@ -177,8 +183,83 @@ STATE is a symbol denoting how a build phase was ended.  It should be
     (set-keymap-parent map special-mode-map)
     (define-key map (kbd "M-n") 'guix-build-log-next-phase)
     (define-key map (kbd "M-p") 'guix-build-log-previous-phase)
+    (define-key map (kbd "TAB") 'guix-build-log-phase-toggle)
+    (define-key map (kbd "<tab>") 'guix-build-log-phase-toggle)
+    (define-key map (kbd "<backtab>") 'guix-build-log-phase-toggle-all)
+    (define-key map [(shift tab)] 'guix-build-log-phase-toggle-all)
     map)
   "Keymap for `guix-build-log-mode' buffers.")
+
+(defun guix-build-log-phase-start (&optional with-header?)
+  "Return the start point of the current build phase.
+If WITH-HEADER? is non-nil, do not skip 'starting phase ...' header.
+Return nil, if there is no phase start before the current point."
+  (save-excursion
+    (end-of-line)
+    (when (re-search-backward guix-build-log-phase-start-regexp nil t)
+      (unless with-header? (end-of-line))
+      (point))))
+
+(defun guix-build-log-phase-end ()
+  "Return the end point of the current build phase."
+  (save-excursion
+    (beginning-of-line)
+    (when (re-search-forward guix-build-log-phase-end-regexp nil t)
+      (point))))
+
+(defun guix-build-log-phase-hide ()
+  "Hide the body of the current build phase."
+  (interactive)
+  (let ((beg (guix-build-log-phase-start))
+        (end (guix-build-log-phase-end)))
+    (when (and beg end)
+      ;; If not on the header line, move to it.
+      (when (and (> (point) beg)
+                 (< (point) end))
+        (goto-char (guix-build-log-phase-start t)))
+      (remove-overlays beg end 'invisible t)
+      (let ((o (make-overlay beg end)))
+        (overlay-put o 'evaporate t)
+        (overlay-put o 'invisible t)))))
+
+(defun guix-build-log-phase-show ()
+  "Show the body of the current build phase."
+  (interactive)
+  (let ((beg (guix-build-log-phase-start))
+        (end (guix-build-log-phase-end)))
+    (when (and beg end)
+      (remove-overlays beg end 'invisible t))))
+
+(defun guix-build-log-phase-hidden-p ()
+  "Return non-nil, if the body of the current build phase is hidden."
+  (let ((beg (guix-build-log-phase-start)))
+    (and beg
+         (cl-some (lambda (o)
+                    (overlay-get o 'invisible))
+                  (overlays-at beg)))))
+
+(defun guix-build-log-phase-toggle-function ()
+  "Return a function to toggle the body of the current build phase."
+  (if (guix-build-log-phase-hidden-p)
+      #'guix-build-log-phase-show
+    #'guix-build-log-phase-hide))
+
+(defun guix-build-log-phase-toggle ()
+  "Show/hide the body of the current build phase."
+  (interactive)
+  (funcall (guix-build-log-phase-toggle-function)))
+
+(defun guix-build-log-phase-toggle-all ()
+  "Show/hide the bodies of all build phases."
+  (interactive)
+  (save-excursion
+    ;; Some phases may be hidden, and some shown.  Whether to hide or to
+    ;; show them, it is determined by the state of the first phase here.
+    (goto-char (point-min))
+    (guix-build-log-next-phase)
+    (let ((fun (guix-build-log-phase-toggle-function)))
+      (while (re-search-forward guix-build-log-phase-start-regexp nil t)
+        (funcall fun)))))
 
 (defun guix-build-log-next-phase (&optional arg)
   "Move to the next build phase.

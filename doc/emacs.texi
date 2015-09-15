@@ -591,6 +591,12 @@ Move to the next build phase.
 @item M-p
 Move to the previous build phase.
 
+@item @key{TAB}
+Toggle (show/hide) the body of the current build phase.
+
+@item S-@key{TAB}
+Toggle (show/hide) the bodies of all build phases.
+
 @end table
 
 There is also @kbd{M-x guix-build-log-minor-mode} which also provides
