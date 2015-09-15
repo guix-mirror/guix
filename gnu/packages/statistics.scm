@@ -746,3 +746,26 @@ the execution time of R expressions.")
     (synopsis "Code analysis tools for R")
     (description "This package provides code analysis tools for R.")
     (license license:gpl3+)))
+
+(define-public r-pryr
+  (package
+    (name "r-pryr")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "pryr" version))
+              (sha256
+               (base32
+                "1in350a8hxwf580afavasvn3jc7x2p1b7nlwmj1scakfz74vghk5"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)
+       ("r-codetools" ,r-codetools)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hadley/pryr")
+    (synopsis "Tools for computing on the R language")
+    (description
+     "This package provides useful tools to pry back the covers of R and
+understand the language at a deeper level.")
+    (license license:gpl2)))
