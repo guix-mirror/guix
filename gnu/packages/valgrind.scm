@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,8 @@
              (sha256
               (base32
                "15xrzhfnwwn7n1sfbkwvdbvs6zk0zx718n6zd5i1nrnvdp13s9gs"))
-             (patches (list (search-patch "valgrind-glibc-2.21.patch")))))
+             (patches (map search-patch '("valgrind-glibc-2.22.patch"
+                                          "valgrind-linux-libre-4.x.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
