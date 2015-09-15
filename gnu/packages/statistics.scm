@@ -663,3 +663,21 @@ data derived from /etc/mime.types in UNIX-type systems.")
 library (https://github.com/vmg/sundown).  Markdown is a plain-text formatting
 syntax that can be converted to XHTML or other formats.")
     (license license:gpl2)))
+
+(define-public r-yaml
+  (package
+    (name "r-yaml")
+    (version "2.1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "yaml" version))
+              (sha256
+               (base32
+                "18kz5mfn7qpif5pn91w4vbrc5bkycsj85vwm5wxwzjlb02i9mxi6"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/yaml/")
+    (synopsis "Methods to convert R data to YAML and back")
+    (description
+     "This package implements the libyaml YAML 1.1 parser and
+emitter (http://pyyaml.org/wiki/LibYAML) for R.")
+    (license license:bsd-3)))
