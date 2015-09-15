@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -498,3 +499,24 @@ by step from multiple data sources.  It also implements a sophisticated
 multidimensional conditioning system and a consistent interface to map data to
 aesthetic attributes.")
     (license license:gpl2+)))
+
+(define-public r-assertthat
+  (package
+    (name "r-assertthat")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cran/src/contrib/assertthat_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0dwsqajyglfscqilj843qfqn1ndbqpswa7b4l1d633qjk9d68qqk"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/hadley/assertthat")
+    (synopsis "Easy pre and post assertions")
+    (description
+     "Assertthat is an extension to stopifnot() that makes it easy to declare
+the pre and post conditions that your code should satisfy, while also
+producing friendly error messages so that your users know what they've done
+wrong.")
+    (license license:gpl3+)))
