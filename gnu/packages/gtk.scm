@@ -154,6 +154,7 @@ affine transformation (scale, rotation, shear, etc.).")
               (base32
                "1xrxlrvgyr6mm9qjxmkif2kvcah082y94gf1vqi0f0bdl1g8gp7b"))))
    (build-system gnu-build-system)
+   (outputs '("out" "bin"))
    (inputs
     `(("cairo" ,cairo)))
    (propagated-inputs
@@ -167,7 +168,9 @@ affine transformation (scale, rotation, shear, etc.).")
       ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
    (arguments
     `(#:configure-flags `("--with-graphite2"
-                          "--with-gobject")))
+                          "--with-gobject"
+                          ,(string-append
+                            "--bindir=" (assoc-ref %outputs "bin") "/bin"))))
    (synopsis "OpenType text shaping engine")
    (description
     "HarfBuzz is an OpenType text shaping engine.")
