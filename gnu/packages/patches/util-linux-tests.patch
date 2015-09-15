@@ -16,15 +16,3 @@ using 'getpwnam' in libmount.  This doesn't work in the chroot because
  ts_init_subtest "deduplicate"
  ts_valgrind $TESTPROG --dedup bbb,ccc,AAA,xxx,AAA=a,AAA=bbb,ddd,AAA=ccc,fff=eee AAA &> $TS_OUTPUT
  ts_finalize_subtest
-
-
-The expected output for this test seems to lack a carriage return.
-
---- util-linux-2.25.2/tests/expected/more/regexp	2015-01-23 14:02:21.098557632 +0100
-+++ util-linux-2.25.2/tests/expected/more/regexp	2015-01-23 14:02:23.598573648 +0100
-@@ -1,4 +1,4 @@
- 
- ...skipping
--foo
-+foo
- xyzzy
