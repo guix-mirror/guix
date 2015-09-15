@@ -867,14 +867,6 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                        (((names . directories) ...)
                         (union-build out directories)))
 
-                     ;; Remove the 'sh' and 'bash' binaries that come with
-                     ;; libc to avoid polluting the user's profile (these are
-                     ;; statically-linked binaries with no locale support and
-                     ;; so on.)
-                     (for-each (lambda (file)
-                                 (delete-file (string-append out "/bin/" file)))
-                               '("sh" "bash"))
-
                      (union-build (assoc-ref %outputs "debug")
                                   (list (assoc-ref %build-inputs
                                                    "libc-debug")))))))
