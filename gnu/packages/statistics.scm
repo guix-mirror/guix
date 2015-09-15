@@ -558,3 +558,25 @@ R/DBMS implementations.")
      "This package aims to provide the most useful subset of Boost libraries
 for template use among CRAN packages.")
     (license license:boost1.0)))
+
+(define-public r-evaluate
+  (package
+    (name "r-evaluate")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "evaluate" version))
+              (sha256
+               (base32
+                "137gc35jlizhqnx19mxim3llrkm403abj8ghb2b7v5ls9rvd40pq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/hadley/evaluate")
+    (synopsis "Parsing and evaluation tools for R")
+    (description
+     "This package provides tools that allow you to recreate the parsing,
+evaluation and display of R code, with enough information that you can
+accurately recreate what happens at the command line.  The tools can easily be
+adapted for other output formats, such as HTML or LaTeX.")
+    (license license:gpl3+)))
