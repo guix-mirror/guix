@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +24,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages ncurses))
 
 (define-public miredo
   (package
@@ -146,3 +148,42 @@ receiving NDP messages.")
 auto-negotiation and checksum offload on many network devices, especially
 Ethernet devices.")
     (license license:gpl2)))
+
+(define-public ifstatus
+  (package
+    (name "ifstatus")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ifstatus/ifstatus-v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "045cbsq9ps32j24v8y5hpyqxnqn9mpaf3mgvirlhgpqyb9jsia0c"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Main.h"
+                  (("#include <stdio.h>")
+                   "#include <stdio.h>\n#include <stdlib.h>")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                                ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)             ; no configure script
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (mkdir-p bin)
+                      (copy-file "ifstatus"
+                                 (string-append bin "/ifstatus"))))))))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://ifstatus.sourceforge.net/graphic/index.html")
+    (synopsis "Text based network interface status monitor")
+    (description
+     "IFStatus is a simple, easy-to-use program for displaying commonly
+needed / wanted real-time traffic statistics of multiple network
+interfaces, with a simple and efficient view on the command line.  It is
+intended as a substitute for the PPPStatus and EthStatus projects.")
+    (license license:bsd-2)))
