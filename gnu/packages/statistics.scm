@@ -580,3 +580,23 @@ evaluation and display of R code, with enough information that you can
 accurately recreate what happens at the command line.  The tools can easily be
 adapted for other output formats, such as HTML or LaTeX.")
     (license license:gpl3+)))
+
+(define-public r-formatr
+  (package
+    (name "r-formatr")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "formatR" version))
+              (sha256
+               (base32
+                "0f4cv2zv5wayyqx99ybfyl0p83kgjvnsv8dhcwa4s49kw6jsx1lr"))))
+    (build-system r-build-system)
+    (home-page "http://yihui.name/formatR")
+    (synopsis "Format R code automatically")
+    (description
+     "This package provides a function to format R source code.  Spaces and
+indent will be added to the code automatically, and comments will be preserved
+under certain conditions, so that R code will be more human-readable and tidy.
+There is also a Shiny app as a user interface in this package.")
+    (license license:gpl3+)))
