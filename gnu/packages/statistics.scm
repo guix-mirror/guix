@@ -833,3 +833,32 @@ New styles can also be created easily.  This package was inspired by the
      "This package provides a unit testing system for R designed to be fun,
 flexible and easy to set up.")
     (license license:expat)))
+
+(define-public r-r6
+  (package
+    (name "r-r6")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R6" version))
+              (sha256
+               (base32
+                "16qq35bgxgswf989yvsqkb6fv7srpf8n8dv2s2c0z9n6zgmwq66m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-microbenchmark" ,r-microbenchmark)
+       ("r-pryr" ,r-pryr)
+       ("r-testthat" ,r-testthat)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/wch/R6/")
+    (synopsis "Classes with reference semantics in R")
+    (description
+     "The R6 package allows the creation of classes with reference semantics,
+similar to R's built-in reference classes.  Compared to reference classes, R6
+classes are simpler and lighter-weight, and they are not built on S4 classes
+so they do not require the methods package.  These classes allow public and
+private members, and they support inheritance, even when the classes are
+defined in different packages.")
+    (license license:expat)))
