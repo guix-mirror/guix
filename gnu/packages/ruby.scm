@@ -1124,3 +1124,26 @@ it unifies the API for web servers, web frameworks, and software in between
 into a single method call.")
     (home-page "http://rack.github.io/")
     (license license:expat)))
+
+(define-public ruby-gherkin3
+  (package
+    (name "ruby-gherkin3")
+    (version "3.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "gherkin3" version))
+        (sha256
+          (base32
+            "0xsyxhqa1gwcxzvsdy4didaiq5vam8ma3fbwbw2w60via4k6r1z9"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (arguments
+     '(#:tests? #f)) ; needs simplecov, among others
+    (synopsis "Gherkin parser for Ruby")
+    (description "Gherkin 3 is a parser and compiler for the Gherkin language.
+It is intended to replace Gherkin 2 and be used by all Cucumber
+implementations to parse '.feature' files.")
+    (home-page "https://github.com/cucumber/gherkin3")
+    (license license:expat)))
