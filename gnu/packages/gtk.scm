@@ -146,19 +146,21 @@ affine transformation (scale, rotation, shear, etc.).")
    (name "harfbuzz")
    (version "1.0.3")
    (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
-                                version ".tar.bz2"))
-            (sha256
-             (base32
-              "1xrxlrvgyr6mm9qjxmkif2kvcah082y94gf1vqi0f0bdl1g8gp7b"))))
+             (method url-fetch)
+             (uri (string-append "http://www.freedesktop.org/software/"
+                                 "harfbuzz/release/harfbuzz-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1xrxlrvgyr6mm9qjxmkif2kvcah082y94gf1vqi0f0bdl1g8gp7b"))))
    (build-system gnu-build-system)
    (inputs
-    `(("cairo" ,cairo)
+    `(("cairo" ,cairo)))
+   (propagated-inputs
+    ;; There are all in the Requires or Requires.private field of '.pc'.
+    `(("glib" ,glib)
       ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
-   (propagated-inputs
-    `(("glib" ,glib))) ; required by harfbuzz-gobject.pc
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
