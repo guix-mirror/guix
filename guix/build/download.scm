@@ -36,8 +36,10 @@
             resolve-uri-reference
             maybe-expand-mirrors
             url-fetch
+            byte-count->string
             progress-proc
-            uri-abbreviation))
+            uri-abbreviation
+            store-path-abbreviation))
 
 ;;; Commentary:
 ;;;
@@ -96,10 +98,33 @@ width of the bar is BAR-WIDTH."
             (make-string filled #\#)
             (make-string empty #\space))))
 
-(define* (progress-proc file size #:optional (log-port (current-output-port)))
+(define (string-pad-middle left right len)
+  "Combine LEFT and RIGHT with enough padding in the middle so that the
+resulting string has length at least LEN.  This right justifies RIGHT."
+  (string-append left
+                 (string-pad right (max 0 (- len (string-length left))))))
+
+(define (store-url-abbreviation url)
+  "Return a friendlier version of URL for display."
+  (let ((store-path (string-append (%store-directory) "/" (basename url))))
+    ;; Take advantage of the implementation for store paths.
+    (store-path-abbreviation store-path)))
+
+(define* (store-path-abbreviation store-path #:optional (prefix-length 6))
+  "Return an abbreviation of STORE-PATH for display, showing PREFIX-LENGTH
+characters of the hash."
+  (let ((base (basename store-path)))
+    (string-append (string-take base prefix-length)
+                   "…"
+                   (string-drop base 32))))
+
+(define* (progress-proc file size
+                        #:optional (log-port (current-output-port))
+                        #:key (abbreviation identity))
   "Return a procedure to show the progress of FILE's download, which is SIZE
 bytes long.  The returned procedure is suitable for use as an argument to
-`dump-port'.  The progress report is written to LOG-PORT."
+`dump-port'.  The progress report is written to LOG-PORT, with ABBREVIATION
+used to shorten FILE for display."
   ;; XXX: Because of <http://bugs.gnu.org/19939> this procedure is often not
   ;; called as frequently as we'd like too; this is especially bad with Nginx
   ;; on hydra.gnu.org, which returns whole nars as a single chunk.
@@ -123,31 +148,31 @@ bytes long.  The returned procedure is suitable for use as an argument to
                                      (/ transferred elapsed)
                                      0))
                      (left       (format #f " ~a  ~a"
-                                         (basename file)
+                                         (abbreviation file)
                                          (byte-count->string size)))
                      (right      (format #f "~a/s ~a ~a~6,1f%"
                                          (byte-count->string throughput)
                                          (seconds->string elapsed)
-                                         (progress-bar %) %))
-                     ;; TODO: Make this adapt to the actual terminal width.
-                     (cols       80)
-                     (num-spaces (max 1 (- cols (+ (string-length left)
-                                                   (string-length right)))))
-                     (gap        (make-string num-spaces #\space)))
-                (format log-port "~a~a~a" left gap right)
+                                         (progress-bar %) %)))
+                ;; TODO: Make this adapt to the actual terminal width.
+                (display (string-pad-middle left right 80) log-port)
                 (display #\cr log-port)
                 (flush-output-port log-port)
                 (cont))))
           (lambda (transferred cont)
             (with-elapsed-time elapsed
-              (let ((throughput (if elapsed
-                                    (/ transferred elapsed)
-                                    0)))
+              (let* ((throughput (if elapsed
+                                     (/ transferred elapsed)
+                                     0))
+                     (left       (format #f " ~a"
+                                         (abbreviation file)))
+                     (right      (format #f "~a/s ~a | ~a transferred"
+                                         (byte-count->string throughput)
+                                         (seconds->string elapsed)
+                                         (byte-count->string transferred))))
+                ;; TODO: Make this adapt to the actual terminal width.
+                (display (string-pad-middle left right 80) log-port)
                 (display #\cr log-port)
-                (format log-port "~a\t~a transferred (~a/s)"
-                        file
-                        (byte-count->string transferred)
-                        (byte-count->string throughput))
                 (flush-output-port log-port)
                 (cont))))))))
 
