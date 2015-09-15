@@ -178,6 +178,7 @@ Services
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
 * Database Services::           SQL databases.
+* Web Services::                Web servers.
 * Various Services::            Other services.
 
 Packaging Guidelines
@@ -185,6 +186,7 @@ Packaging Guidelines
 * Software Freedom::            What may go into the distribution.
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
+* Synopses and Descriptions::   Helping users find the right package.
 * Python Modules::              Taming the snake.
 * Perl Modules::                Little pearls.
 * Fonts::                       Fond of fonts.
@@ -7158,6 +7160,7 @@ needed is to review and apply the patch.
 * Software Freedom::            What may go into the distribution.
 * Package Naming::              What's in a name?
 * Version Numbers::             When the name is not enough.
+* Synopses and Descriptions::   Helping users find the right package.
 * Python Modules::              Taming the snake.
 * Perl Modules::                Little pearls.
 * Fonts::                       Fond of fonts.
@@ -7252,6 +7255,53 @@ If we also wanted GTK+ 3.8.2, this would be packaged as
     (version "3.8.2")
     ...))
 @end example
+
+@node Synopses and Descriptions
+@subsection Synopses and Descriptions
+
+As we have seen before, each package in GNU@tie{}Guix includes a
+synopsis and a description (@pxref{Defining Packages}).  Synopses and
+descriptions are important: They are what @command{guix package
+--search} searches, and a crucial piece of information to help users
+determine whether a given package suits their needs.  Consequently,
+packagers should pay attention to what goes into them.
+
+Synopses must start with a capital letter and must not end with a
+period.  They must not start with ``a'' or ``the'', which usually does
+not bring anything; for instance, prefer ``File-frobbing tool'' over ``A
+tool that frobs files''.  The synopsis should say what the package
+is---e.g., ``Core GNU utilities (file, text, shell)''---or what it is
+used for---e.g., the synopsis for GNU@tie{}grep is ``Print lines
+matching a pattern''.
+
+Keep in mind that the synopsis must be meaningful for a very wide
+audience.  For example, ``Manipulate alignments in the SAM format''
+might make sense for a seasoned bioinformatics researcher, but might be
+fairly unhelpful or even misleading to a non-specialized audience.  It
+is a good idea to come up with a synopsis that gives an idea of the
+application domain of the package.  In this example, this might give
+something like ``Manipulate nucleotide sequence alignments'', which
+hopefully gives the user a better idea of whether this is what they are
+looking for.
+
+@cindex Texinfo markup, in package descriptions
+Descriptions should take between five and ten lines.  Use full
+sentences, and avoid using acronyms without first introducing them.
+Descriptions can include Texinfo markup, which is useful to introduce
+ornaments such as @code{@@code} or @code{@@dfn}, bullet lists, or
+hyperlinks (@pxref{Overview, overview of Texinfo,, texinfo, GNU
+Texinfo}).  User interfaces such as @command{guix package --show} take
+care of rendering it appropriately.
+
+Synopses and descriptions are translated by volunteers
+@uref{http://translationproject.org/domain/guix-packages.html, at the
+Translation Project} so that as many users as possible can read them in
+their native language.  User interfaces search them and display them in
+the language specified by the current locale.
+
+Translation is a lot of work so, as a packager, please pay even more
+attention to your synopses and descriptions as every change may entail
+additional work for translators.
 
 
 @node Python Modules
