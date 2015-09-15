@@ -681,3 +681,32 @@ syntax that can be converted to XHTML or other formats.")
      "This package implements the libyaml YAML 1.1 parser and
 emitter (http://pyyaml.org/wiki/LibYAML) for R.")
     (license license:bsd-3)))
+
+(define-public r-knitr
+  (package
+    (name "r-knitr")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "knitr" version))
+              (sha256
+               (base32
+                "1ikjla0hnpjfkdbydqhhqypc0aiizbi4nyn8c694sdk9ca4jasdd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-evaluate" ,r-evaluate)
+       ("r-digest" ,r-digest)
+       ("r-formatr" ,r-formatr)
+       ("r-highr" ,r-highr)
+       ("r-markdown" ,r-markdown)
+       ("r-stringr" ,r-stringr)
+       ("r-yaml" ,r-yaml)))
+    (home-page "http://yihui.name/knitr/")
+    (synopsis "General-purpose package for dynamic report generation in R")
+    (description
+     "This package provides a general-purpose tool for dynamic report
+generation in R using Literate Programming techniques.")
+    ;; The code is released under any version of the GPL.  As it is used by
+    ;; r-markdown which is available under GPLv2 only, we have chosen GPLv2+
+    ;; here.
+    (license license:gpl2+)))
