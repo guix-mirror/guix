@@ -862,3 +862,35 @@ so they do not require the methods package.  These classes allow public and
 private members, and they support inheritance, even when the classes are
 defined in different packages.")
     (license license:expat)))
+
+(define-public r-dplyr
+  (package
+    (name "r-dplyr")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "dplyr" version))
+              (sha256
+               (base32
+                "1p8rbn4p4yrx2840dapwiahf9iqa8gnvd35nyc200wfhmrxlqdlc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-r6" ,r-r6)
+       ("r-magrittr" ,r-magrittr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-dbi" ,r-dbi)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-bh" ,r-bh)))
+    (home-page "https://github.com/hadley/dplyr")
+    (synopsis "Tools for working with data frames in R")
+    (description
+     "dplyr is the next iteration of plyr.  It is focussed on tools for
+working with data frames.  It has three main goals: 1) identify the most
+important data manipulation tools needed for data analysis and make them easy
+to use in R; 2) provide fast performance for in-memory data by writing key
+pieces of code in C++; 3) use the same code interface to work with data no
+matter where it is stored, whether in a data frame, a data table or
+database.")
+    (license license:expat)))
