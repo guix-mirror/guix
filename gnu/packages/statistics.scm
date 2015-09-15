@@ -769,3 +769,23 @@ the execution time of R expressions.")
      "This package provides useful tools to pry back the covers of R and
 understand the language at a deeper level.")
     (license license:gpl2)))
+
+(define-public r-memoise
+  (package
+    (name "r-memoise")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "memoise" version))
+              (sha256
+               (base32
+                "19wm4b3kq6xva43kga3xydnl7ybl5mq7b4y2fczgzzjz63jd75y4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)))
+    (home-page "http://github.com/hadley/memoise")
+    (synopsis "Memoise functions for R")
+    (description
+     "This R package allows to cache the results of a function so that when
+you call it again with the same arguments it returns the pre-computed value.")
+    (license license:expat)))
