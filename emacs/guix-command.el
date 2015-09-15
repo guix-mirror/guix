@@ -305,9 +305,9 @@ to be modified."
 
 (defun guix-command-improve-argument (argument improvers)
   "Return ARGUMENT modified with IMPROVERS."
-  (or (guix-any (lambda (improver)
-                  (funcall improver argument))
-                improvers)
+  (or (cl-some (lambda (improver)
+                 (funcall improver argument))
+               improvers)
       argument))
 
 (defun guix-command-improve-arguments (arguments commands)

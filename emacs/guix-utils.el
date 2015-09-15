@@ -226,14 +226,6 @@ single argument."
      (while (re-search-forward ,regexp nil t)
        ,@body)))
 
-(defun guix-any (pred lst)
-  "Test whether any element from LST satisfies PRED.
-If so, return the return value from the successful PRED call.
-Return nil otherwise."
-  (when lst
-    (or (funcall pred (car lst))
-        (guix-any pred (cdr lst)))))
-
 
 ;;; Alist accessors
 
