@@ -789,3 +789,26 @@ understand the language at a deeper level.")
      "This R package allows to cache the results of a function so that when
 you call it again with the same arguments it returns the pre-computed value.")
     (license license:expat)))
+
+(define-public r-crayon
+  (package
+    (name "r-crayon")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "crayon" version))
+              (sha256
+               (base32
+                "0d38fm06h272a8iqlc0d45m2rh36giwqw7mwq4z8hkp4vs975fmm"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-memoise" ,r-memoise)))
+    (home-page "https://github.com/gaborcsardi/crayon")
+    (synopsis "Colored terminal output for R")
+    (description
+     "Colored terminal output on terminals that support ANSI color and
+highlight codes.  It also works in Emacs ESS.  ANSI color support is
+automatically detected.  Colors and highlighting can be combined and nested.
+New styles can also be created easily.  This package was inspired by the
+\"chalk\" JavaScript project.")
+    (license license:expat)))
