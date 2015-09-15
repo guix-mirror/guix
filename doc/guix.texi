@@ -45,9 +45,7 @@ Documentation License''.
 @titlepage
 @title GNU Guix Reference Manual
 @subtitle Using the GNU Guix Functional Package Manager
-@author Ludovic Courtès
-@author Andreas Enge
-@author Nikita Karetnikov
+@author The GNU Guix Developers
 
 @page
 @vskip 0pt plus 1filll
