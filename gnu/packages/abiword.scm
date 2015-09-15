@@ -99,8 +99,15 @@
         ("pkg-config" ,pkg-config)))
     (home-page "http://abisource.org/")
     (synopsis "Word processing program")
-    (description
-      "AbiWord is a word processing program.  It is rapidly becoming a state
-of the art word processor, with lots of features useful for your daily work,
-personal needs, or for just some good old typing fun.")
+
+    ;; HACKERS: The comment below is here so that it shows up early in the
+    ;; .pot file.
+
+    ;; TRANSLATORS: Dear translator, We would like to inform you that package
+    ;; descriptions may occasionally include Texinfo markup.  Texinfo markup
+    ;; looks like "@code{rm -rf}", "@emph{important}", etc.  When translating,
+    ;; please leave markup as is.
+    (description "AbiWord is a word processing program.  It is rapidly
+becoming a state of the art word processor, with lots of features useful for
+your daily work, personal needs, or for just some good old typing fun.")
     (license license:gpl2+)))
