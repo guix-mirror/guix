@@ -520,3 +520,22 @@ the pre and post conditions that your code should satisfy, while also
 producing friendly error messages so that your users know what they've done
 wrong.")
     (license license:gpl3+)))
+
+(define-public r-lazyeval
+  (package
+    (name "r-lazyeval")
+    (version "0.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cran/src/contrib/lazyeval_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02qfpn2fmy78vx4jxr7g7rhqzcm1kcivfwai7lbh0vvpawia0qwh"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/hadley/lazyeval")
+    (synopsis "Lazy (non-standard) evaluation in R")
+    (description
+     "This package provides the tools necessary to do non-standard
+evaluation (NSE) in R.")
+    (license license:gpl3+)))
