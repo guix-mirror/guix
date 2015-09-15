@@ -600,3 +600,22 @@ indent will be added to the code automatically, and comments will be preserved
 under certain conditions, so that R code will be more human-readable and tidy.
 There is also a Shiny app as a user interface in this package.")
     (license license:gpl3+)))
+
+(define-public r-highr
+  (package
+    (name "r-highr")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "highr" version))
+              (sha256
+               (base32
+                "11hyawzhaw3ph5y5xphi7alx6df1d0i6wh0a2n5m4sxxhdrzswnb"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/highr")
+    (synopsis "Syntax highlighting for R source code")
+    (description
+     "This package provides syntax highlighting for R source code.  Currently
+it supports LaTeX and HTML output.  Source code of other languages is
+supported via Andre Simon's highlight package.")
+    (license license:gpl3+)))
