@@ -71,7 +71,8 @@
          ,(string-append "--with-rcdir="
                          (assoc-ref %outputs "out") "/etc/rc.d"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("glib" ,glib "bin") ; for gdbus-codegen
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("fontconfig"   ,fontconfig)
        ("freetype"     ,freetype)
