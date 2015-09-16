@@ -1171,3 +1171,30 @@ It is intended to replace Gherkin 2 and be used by all Cucumber
 implementations to parse '.feature' files.")
     (home-page "https://github.com/cucumber/gherkin3")
     (license license:expat)))
+
+(define-public ruby-cucumber-core
+  (package
+    (name "ruby-cucumber-core")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cucumber-core" version))
+       (sha256
+        (base32
+         "12mrzf0s96izpq0k10lahlkgwc4fjs0zfs344rh8r8h3w3jyppr8"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-gherkin3" ,ruby-gherkin3)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (arguments
+     '(#:tests? #f)) ; needs simplecov, among others
+    (synopsis "Core library for the Cucumber BDD app")
+    (description "Cucumber is a tool for running automated tests
+written in plain language.  Because they're written in plain language,
+they can be read by anyone on your team.  Because they can be read by
+anyone, you can use them to help improve communication, collaboration
+and trust on your team.")
+    (home-page "https://cucumber.io/")
+    (license license:expat)))
