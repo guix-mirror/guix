@@ -550,6 +550,28 @@ same log file.")
     (home-page "http://github.com/bdurand/lumberjack")
     (license license:expat)))
 
+(define-public ruby-nenv
+  (package
+    (name "ruby-nenv")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nenv" version))
+              (sha256
+               (base32
+                "152wxwri0afwgnxdf93gi6wjl9rr5z7vwp8ln0gpa3rddbfc27s6"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests included
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("bundler" ,bundler)))
+    (synopsis "Ruby interface for modifying the environment")
+    (description "Nenv provides a convenient wrapper for Ruby's ENV to modify
+and inspect the environment.")
+    (home-page "https://github.com/e2/nenv")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
