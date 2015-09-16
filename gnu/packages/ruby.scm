@@ -529,6 +529,27 @@ interfaces.")
     (home-page "http://whatisthor.com/")
     (license license:expat)))
 
+(define-public ruby-lumberjack
+  (package
+    (name "ruby-lumberjack")
+    (version "1.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "lumberjack" version))
+              (sha256
+               (base32
+                "162frm2bwy58pj8ccsdqa4a6i0csrhb9h5l3inhkl1ivgfc8814l"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Logging utility library for Ruby")
+    (description "Lumberjack is a simple logging utility that can be a drop in
+replacement for Logger or ActiveSupport::BufferedLogger.  It provides support
+for automatically rolling log files even with multiple processes writing the
+same log file.")
+    (home-page "http://github.com/bdurand/lumberjack")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
