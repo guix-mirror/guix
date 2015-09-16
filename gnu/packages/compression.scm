@@ -357,17 +357,15 @@ This package is mostly for compatibility and historical interest.")
 (define-public sfarklib
   (package
     (name "sfarklib")
-    (version "2.23.5ca96b779")
+    (version "2.24")
     (source (origin
-              ;; The 2.23 tarball does not include the Makefile, but only
-              ;; Makefile.am.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/raboof/sfArkLib.git")
-                    (commit (last (string-split version #\.)))))
+              (method url-fetch)
+              (uri (string-append "https://github.com/raboof/sfArkLib/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hk1x88dl5b9jq016r6rx5wyszxknyv0sa7gmil4m4alnhwl4h7h"))))
+                "0bzs2d98rk1xw9qwpnc7gmlbxwmwc3dg1rpn310afy9pq1k9clzi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
