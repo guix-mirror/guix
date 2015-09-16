@@ -1149,6 +1149,27 @@ into a single method call.")
     (home-page "http://rack.github.io/")
     (license license:expat)))
 
+(define-public ruby-docile
+  (package
+    (name "ruby-docile")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "docile" version))
+       (sha256
+        (base32
+         "0m8j31whq7bm5ljgmsrlfkiqvacrw6iz9wq10r3gwrv5785y8gjx"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; needs github-markup, among others
+    (synopsis "Ruby EDSL helper library")
+    (description "Docile is a Ruby library that provides an interface for
+creating embedded domain specific languages (EDSLs) that manipulate existing
+Ruby classes.")
+    (home-page "https://ms-ati.github.io/docile/")
+    (license license:expat)))
+
 (define-public ruby-gherkin3
   (package
     (name "ruby-gherkin3")
