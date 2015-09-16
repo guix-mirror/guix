@@ -646,6 +646,35 @@ standard output stream.")
     (home-page "http://github.com/geemus/formatador")
     (license license:expat)))
 
+(define-public ruby-shindo
+  (package
+    (name "ruby-shindo")
+    (version "0.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "shindo" version))
+              (sha256
+               (base32
+                "0s8v1jbz8i0jh92f2fgxb3p51l1azrpkc8nv4mhrqy4vndpvd7wq"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "shindo_tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+          (lambda _
+            (substitute* "Rakefile"
+              (("system \"shindo") "system \"./bin/shindo")
+              ;; This test doesn't work, so we disable it.
+              (("fail \"The build_error test should fail") "#"))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-formatador" ,ruby-formatador)))
+    (synopsis "Simple depth first Ruby testing")
+    (description "Shindo is a simple depth first testing library for Ruby.")
+    (home-page "https://github.com/geemus/shindo")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
