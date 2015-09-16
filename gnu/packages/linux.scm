@@ -457,62 +457,34 @@ providing the system administrator with some help in common tasks.")
 (define-public procps
   (package
     (name "procps")
-    (version "3.2.8")
+    (version "3.3.11")
     (source (origin
-             (method url-fetch)
-             ;; A mirror://sourceforge URI doesn't work, presumably becuase
-             ;; the SourceForge project is misconfigured.
-             (uri (string-append "http://procps.sourceforge.net/procps-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0d8mki0q4yamnkk4533kx8mc0jd879573srxhg6r2fs3lkc6iv8i"))
-             (patches (list (search-patch "procps-make-3.82.patch")))))
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/procps-ng/Production/"
+                                  "procps-ng-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)))
     (arguments
      '(#:modules ((guix build utils)
                   (guix build gnu-build-system)
                   (srfi srfi-1)
                   (srfi srfi-26))
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; No `configure', just a single Makefile.
-                   (let ((out (assoc-ref outputs "out")))
-                     (substitute* "Makefile"
-                       (("/usr/") "/")
-                       (("--(owner|group) 0") "")
-                       (("ldconfig") "true")
-                       (("^LDFLAGS[[:blank:]]*:=(.*)$" _ value)
-                        ;; Add libproc to the RPATH.
-                        (string-append "LDFLAGS := -Wl,-rpath="
-                                       out "/lib" value))))
-                   (setenv "CC" "gcc"))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (and (zero?
-                            (system* "make" "install"
-                                     (string-append "DESTDIR=" out)))
-
-                           ;; Remove commands and man pages redundant with
-                           ;; Coreutils.
-                           (let ((dup (append-map (cut find-files out <>)
-                                                  '("^kill" "^uptime"))))
-                             (for-each delete-file dup)
-                             #t)
-
-                           ;; Sanity check.
-                           (zero?
-                            (system* (string-append out "/bin/ps")
-                                     "--version")))))
-                  %standard-phases))
-
-       ;; What did you expect?  Tests?
-       #:tests? #f))
-    (home-page "http://procps.sourceforge.net/")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'post-install
+          ;; Remove commands and man pages redudant with
+          ;; Coreutils.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (dup (append-map (cut find-files out <>)
+                                    '("^kill" "^uptime"))))
+              (for-each delete-file dup)
+              #t))))))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://gitlab.com/procps-ng/procps/")
     (synopsis "Utilities that give information about processes")
     (description
      "Procps is the package that has a bunch of small useful utilities
