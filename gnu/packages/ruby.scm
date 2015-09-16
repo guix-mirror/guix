@@ -774,6 +774,34 @@ Ruby Gems.")
     (home-page "https://github.com/postmodern/rubygems-tasks")
     (license license:expat)))
 
+(define-public ruby-ffi
+  (package
+    (name "ruby-ffi")
+    (version "1.9.10")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ffi" version))
+              (sha256
+               (base32
+                "1m5mprppw0xcrv2mkim5zsk70v089ajzqiq5hpyb0xg96fcyzyxj"))))
+    (build-system ruby-build-system)
+    ;; FIXME: Before running tests the build system attempts to build libffi
+    ;; from sources.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (synopsis "Ruby foreign function interface library")
+    (description "Ruby-FFI is a Ruby extension for programmatically loading
+dynamic libraries, binding functions within them, and calling those functions
+from Ruby code.  Moreover, a Ruby-FFI extension works without changes on Ruby
+and JRuby.")
+    (home-page "http://wiki.github.com/ffi/ffi")
+    (license license:bsd-3)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
