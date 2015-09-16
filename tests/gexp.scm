@@ -636,6 +636,19 @@
           (return (and (zero? (close-pipe pipe))
                        (= n (string->number str)))))))))
 
+(test-assertm "scheme-file"
+  (let* ((text   (plain-file "foo" "Hello, world!"))
+         (scheme (scheme-file "bar" #~(list "foo" #$text))))
+    (mlet* %store-monad ((drv  (lower-object scheme))
+                         (text (lower-object text))
+                         (out -> (derivation->output-path drv)))
+      (mbegin %store-monad
+        (built-derivations (list drv))
+        (mlet %store-monad ((refs ((store-lift references) out)))
+          (return (and (equal? refs (list text))
+                       (equal? `(list "foo" ,text)
+                               (call-with-input-file out read)))))))))
+
 (test-assert "text-file*"
   (let ((references (store-lift references)))
     (run-with-store %store

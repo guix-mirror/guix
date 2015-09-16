@@ -3345,10 +3345,10 @@ The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
 @cindex file-like objects
-The @code{local-file}, @code{plain-file}, @code{computed-file}, and
-@code{program-file} procedures below return @dfn{file-like objects}.
-That is, when unquoted in a G-expression, these objects lead to a file
-in the store.  Consider this G-expression:
+The @code{local-file}, @code{plain-file}, @code{computed-file},
+@code{program-file}, and @code{scheme-file} procedures below return
+@dfn{file-like objects}.  That is, when unquoted in a G-expression,
+these objects lead to a file in the store.  Consider this G-expression:
 
 @example
 #~(system* (string-append #$glibc "/sbin/nscd") "-f"
@@ -3435,6 +3435,13 @@ Return a derivation that builds a file @var{name} containing @var{exp}.
 
 The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
+@end deffn
+
+@deffn {Scheme Procedure} scheme-file @var{name} @var{exp}
+Return an object representing the Scheme file @var{name} that contains
+@var{exp}.
+
+This is the declarative counterpart of @code{gexp->file}.
 @end deffn
 
 @deffn {Monadic Procedure} text-file* @var{name} @var{text} @dots{}

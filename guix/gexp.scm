@@ -57,6 +57,11 @@
             program-file-modules
             program-file-guile
 
+            scheme-file
+            scheme-file?
+            scheme-file-name
+            scheme-file-gexp
+
             gexp->derivation
             gexp->file
             gexp->script
@@ -280,6 +285,25 @@ This is the declarative counterpart of 'gexp->script'."
      (gexp->script name gexp
                    #:modules modules
                    #:guile (or guile (default-guile))))))
+
+(define-record-type <scheme-file>
+  (%scheme-file name gexp)
+  scheme-file?
+  (name       scheme-file-name)                  ;string
+  (gexp       scheme-file-gexp))                 ;gexp
+
+(define* (scheme-file name gexp)
+  "Return an object representing the Scheme file NAME that contains GEXP.
+
+This is the declarative counterpart of 'gexp->file'."
+  (%scheme-file name gexp))
+
+(define-gexp-compiler (scheme-file-compiler (file scheme-file?)
+                                            system target)
+  ;; Compile FILE by returning a derivation that builds the file.
+  (match file
+    (($ <scheme-file> name gexp)
+     (gexp->file name gexp))))
 
 
 ;;;
