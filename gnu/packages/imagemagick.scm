@@ -23,6 +23,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:select (fsf-free))
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
@@ -37,14 +38,15 @@
 (define-public imagemagick
   (package
     (name "imagemagick")
-    (version "6.9.1-3")
+    (version "6.9.2-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "18wbsjfccxlgsdsd6h9wvhcjrsglyi086jk4bk029ik07rh81laz"))))
+               "159afhqrj22jlz745ccbgnkdiwvn8pjcc96jic0iv9ms7gqxwln5"))
+             (patches (list (search-patch "imagemagick-test-segv.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -84,7 +86,7 @@
               ("libxml2" ,libxml2)
               ("libtiff" ,libtiff)
               ("libpng" ,libpng)
-              ("libjpeg" ,libjpeg-8)
+              ("libjpeg" ,libjpeg)
               ("pango" ,pango)
               ("freetype" ,freetype)
               ("bzip2" ,bzip2)

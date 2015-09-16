@@ -1,0 +1,20 @@
+This patch works around a segmentation fault in 'Magick++/tests/color' when
+running 'Magick++/tests/tests.tap'.  Here we get an exception early on, which
+is supposedly harmless:
+
+  Caught exception: color: UnableToOpenConfigureFile `colors.xml' @ warning/configure.c/GetConfigureOptions/706
+
+However, when the stack unwinders run, 'UnregisterDOTImage' gets called even
+though 'RegisterDOTImage' hadn't been called yet; thus, 'graphic_context' in
+coders/dot.c is NULL, leading to the segfault.
+
+--- ImageMagick-6.9.2-1/coders/dot.c	2015-09-16 17:32:42.900323334 +0200
++++ ImageMagick-6.9.2-1/coders/dot.c	2015-09-16 17:32:48.312367636 +0200
+@@ -240,6 +240,7 @@ ModuleExport void UnregisterDOTImage(voi
+   (void) UnregisterMagickInfo("GV");
+   (void) UnregisterMagickInfo("DOT");
+ #if defined(MAGICKCORE_GVC_DELEGATE)
++  if (graphic_context != NULL)
+   gvFreeContext(graphic_context);
+ #endif
+ }
