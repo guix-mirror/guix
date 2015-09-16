@@ -572,6 +572,36 @@ and inspect the environment.")
     (home-page "https://github.com/e2/nenv")
     (license license:expat)))
 
+(define-public ruby-shellany
+  (package
+    (name "ruby-shellany")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "shellany" version))
+              (sha256
+               (base32
+                "1ryyzrj1kxmnpdzhlv4ys3dnl2r5r3d2rs2jwzbnd1v96a8pl4hf"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "default"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-test
+          (lambda _
+            (substitute* "spec/shellany_spec.rb"
+              (("^RSpec") "require \"shellany\"\nRSpec"))
+            #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-nenv" ,ruby-nenv)
+       ("bundler" ,bundler)))
+    (synopsis "Capture command output")
+    (description "Shellany is a Ruby library providing functions to capture
+the output produced by running shell commands.")
+    (home-page "https://rubygems.org/gems/shellany")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
