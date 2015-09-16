@@ -602,6 +602,30 @@ the output produced by running shell commands.")
     (home-page "https://rubygems.org/gems/shellany")
     (license license:expat)))
 
+(define-public ruby-notiffany
+  (package
+    (name "ruby-notiffany")
+    (version "0.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "notiffany" version))
+              (sha256
+               (base32
+                "1v5x1w59qq85r6dpv3y9ga34dfd7hka1qxyiykaw7gm0i6kggbhi"))))
+    (build-system ruby-build-system)
+    ;; Tests are not included in the gem.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-shellany" ,ruby-shellany)
+       ("ruby-nenv" ,ruby-nenv)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Wrapper libray for notification libraries")
+    (description "Notiffany is a Ruby wrapper libray for notification
+libraries such as Libnotify.")
+    (home-page "https://github.com/guard/notiffany")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
