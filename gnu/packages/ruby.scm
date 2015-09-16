@@ -1198,3 +1198,25 @@ anyone, you can use them to help improve communication, collaboration
 and trust on your team.")
     (home-page "https://cucumber.io/")
     (license license:expat)))
+
+(define-public ruby-bio-logger
+  (package
+    (name "ruby-bio-logger")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio-logger" version))
+       (sha256
+        (base32
+         "02pylfy8nkdqzyzplvnhn1crzmfkj1zmi3qjhrj2f2imlxvycd28"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; rake errors, missing shoulda
+    (propagated-inputs
+     `(("ruby-log4r" ,ruby-log4r)))
+    (synopsis "Log4r wrapper for Ruby")
+    (description "Bio-logger is a wrapper around Log4r adding extra logging
+features such as filtering and fine grained logging.")
+    (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
+    (license license:expat)))
