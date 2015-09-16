@@ -4434,6 +4434,9 @@ PEP 8.")
       "Pyflakes statically checks Python source code for common errors.")
     (license license:expat)))
 
+(define-public python2-pyflakes
+  (package-with-python2 python-pyflakes))
+
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -4497,7 +4500,7 @@ complexity of Python source code.")
             "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))))
 
 (define-public python2-pyflakes-0.8.1
-  (package-with-python2 python-pyflakes))
+  (package-with-python2 python-pyflakes-0.8.1))
 
 (define-public python-flake8
   (package
