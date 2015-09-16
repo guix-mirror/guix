@@ -421,6 +421,30 @@ Java Native Interface.")
     (home-page "http://www.artonx.org/collabo/backyard/?RubyJavaBridge")
     (license license:lgpl2.1+)))
 
+(define-public ruby-log4r
+  (package
+    (name "ruby-log4r")
+    (version "1.1.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "log4r" version))
+        (sha256
+          (base32
+            "0ri90q0frfmigkirqv5ihyrj59xm8pq5zcmf156cbdv4r4l2jicv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no Rakefile in gem
+    (synopsis "Flexible logging library for Ruby")
+    (description "Comprehensive and flexible logging library written
+in Ruby for use in Ruby programs.  It features a hierarchical logging
+system of any number of levels, custom level names, logger
+inheritance, multiple output destinations per log event, execution
+tracing, custom formatting, thread safteyness, XML and YAML
+configuration, and more.")
+     (home-page "http://log4r.rubyforge.org/")
+     (license license:bsd-3)))
+
 (define-public ruby-atoulme-antwrap
   (package
     (name "ruby-atoulme-antwrap")
