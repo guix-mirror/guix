@@ -626,6 +626,26 @@ libraries such as Libnotify.")
     (home-page "https://github.com/guard/notiffany")
     (license license:expat)))
 
+(define-public ruby-formatador
+  (package
+    (name "ruby-formatador")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "formatador" version))
+              (sha256
+               (base32
+                "1gc26phrwlmlqrmz4bagq1wd5b7g64avpx0ghxr9xdxcvmlii0l0"))))
+    (build-system ruby-build-system)
+    ;; Circular dependency: Tests require ruby-shindo, which requires
+    ;; ruby-formatador at runtime.
+    (arguments `(#:tests? #f))
+    (synopsis "Ruby library to format text on stdout")
+    (description "Formatador is a Ruby library to format text printed to the
+standard output stream.")
+    (home-page "http://github.com/geemus/formatador")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
