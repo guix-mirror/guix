@@ -4880,3 +4880,31 @@ object to help create WSGI responses.")
 
 (define-public python2-webob
   (package-with-python2 python-webob))
+
+(define-public python-prettytable
+  (package
+    (name "python-prettytable")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/PrettyTable/"
+             "prettytable-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://code.google.com/p/prettytable/")
+    (synopsis "Display tabular data in an ASCII table format")
+    (description
+      "A library designed to represent tabular data in visually appealing ASCII
+tables.  PrettyTable allows for selection of which columns are to be printed,
+independent alignment of columns (left or right justified or centred) and
+printing of sub-tables by specifying a row range.")
+    (license bsd-3)))
+
+(define-public python2-prettytable
+  (package-with-python2 python-prettytable))
