@@ -802,6 +802,25 @@ and JRuby.")
     (home-page "http://wiki.github.com/ffi/ffi")
     (license license:bsd-3)))
 
+(define-public ruby-simplecov-html
+  (package
+    (name "ruby-simplecov-html")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "simplecov-html" version))
+              (sha256
+               (base32
+                "1m5mprppw0xcrv2mkim5zsk70v089ajzqiq5hpyb0xg96fcyzyxj"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Default HTML formatter for SimpleCov code coverage tool")
+    (description "This package provides the default HTML formatter for
+the SimpleCov code coverage tool for Ruby version 1.9 and above.")
+    (home-page "https://github.com/colszowka/simplecov-html")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
