@@ -783,6 +783,9 @@ password storage.")
     ;; "MIT" and PSF dual license
     (license x11)))
 
+(define-public python2-keyring
+  (package-with-python2 python-keyring))
+
 (define-public python-six
   (package
     (name "python-six")
