@@ -1098,3 +1098,27 @@ prefer the listing of bugs as TODO items of @code{org-mode}, you could use
 A minor mode @code{debbugs-browse-mode} let you browse URLs to the GNU Bug
 Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
     (license license:gpl3+)))
+
+(define-public emacs-deferred
+  (package
+    (name "emacs-deferred")
+    (version "0.3.2")
+    (home-page "https://github.com/kiwanami/emacs-deferred")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0059jy01ni5irpgrj9fa81ayd9j25nvmjjm79ms3210ysx4pgqdr"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    ;; FIXME: Would need 'el-expectations' to actually run tests.
+    (synopsis "Simple asynchronous functions for Emacs Lisp")
+    (description
+     "The @code{deferred.el} library provides support for asynchronous tasks.
+The API is almost the same as that of
+@uref{https://github.com/cho45/jsdeferred, JSDeferred}, a JavaScript library
+for asynchronous tasks.")
+    (license license:gpl3+)))
