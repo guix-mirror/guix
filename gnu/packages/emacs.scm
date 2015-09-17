@@ -1148,3 +1148,27 @@ integration servers.  Users can specify a list of server in the
 view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
     (license license:gpl3+)))
+
+(define-public typo
+  (package
+    (name "emacs-typo")
+    (version "1.1")
+    (home-page "https://github.com/jorgenschaefer/typoel")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1jhd4grch5iz12gyxwfbsgh4dmz5hj4bg4gnvphccg8dsnni05k2"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    (synopsis "Minor mode for typographic editing")
+    (description
+     "This package provides two Emacs modes, @code{typo-mode} and
+@code{typo-global-mode}.  These modes automatically insert Unicode characters
+for quotation marks, dashes, and ellipses.  For example, typing @kbd{\"}
+automatically inserts a Unicode opening or closing quotation mark, depending
+on context.")
+    (license license:gpl3+)))
