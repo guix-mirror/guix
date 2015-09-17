@@ -141,8 +141,7 @@ available, greatly increasing its breadth and scope.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/colorspace_"
-                           version ".tar.gz"))
+       (uri (cran-uri "colorspace" version))
        (sha256
         (base32 "0y8n4ljwhbdvkysdwgqzcnpv107pb3px1jip3k6svv86p72nacds"))))
     (build-system r-build-system)
@@ -162,8 +161,7 @@ colors are provided.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/dichromat_"
-                           version ".tar.gz"))
+       (uri (cran-uri "dichromat" version))
        (sha256
         (base32 "1l8db1nk29ccqg3mkbafvfiw0775iq4gapysf88xq2zp6spiw59i"))))
     (build-system r-build-system)
@@ -181,8 +179,7 @@ effects of different types of color-blindness.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/digest_"
-                           version ".tar.gz"))
+       (uri (cran-uri "digest" version))
        (sha256
         (base32 "0m9grqv67hhf51lz10whymhw0g0d98466ka694kya5x95hn44qih"))))
     (build-system r-build-system)
@@ -207,8 +204,7 @@ OpenSSL should be used.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/gtable_"
-                           version ".tar.gz"))
+       (uri (cran-uri "gtable" version))
        (sha256
         (base32 "0k9hfj6r5y238gqh92s3cbdn34biczx3zfh79ix5xq0c5vkai2xh"))))
     (build-system r-build-system)
@@ -226,8 +222,7 @@ OpenSSL should be used.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/labeling_"
-                           version ".tar.gz"))
+       (uri (cran-uri "labeling" version))
        (sha256
         (base32 "13sk7zrrrzry6ky1bp8mmnzcl9jhvkig8j4id9nny7z993mnk00d"))))
     (build-system r-build-system)
@@ -244,8 +239,7 @@ algorithms.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/magrittr_"
-                           version ".tar.gz"))
+       (uri (cran-uri "magrittr" version))
        (sha256
         (base32 "1s1ar6rag8m277qcqmdp02gn4awn9bdj9ax0r8s32i59mm1mki05"))))
     (build-system r-build-system)
@@ -266,8 +260,7 @@ see package vignette.  To quote Rene Magritte, \"Ceci n'est pas un pipe.\"")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/munsell_"
-                           version ".tar.gz"))
+       (uri (cran-uri "munsell" version))
        (sha256
         (base32 "1bi5yi0i80778bbzx2rm4f0glpc34kvh24pwwfhm4v32izsqgrw4"))))
     (build-system r-build-system)
@@ -287,8 +280,7 @@ Munsell colour system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/Rcpp_"
-                           version ".tar.gz"))
+       (uri (cran-uri "Rcpp" version))
        (sha256
         (base32 "182109z0yc1snqgd833ssl2cix6cbq83bcxmy5344b15ym820y38"))))
     (build-system r-build-system)
@@ -312,8 +304,7 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/plyr_"
-                           version ".tar.gz"))
+       (uri (cran-uri "plyr" version))
        (sha256
         (base32 "06v4zxawpjz37rp2q2ii5q43g664z9s29j4ydn0cz3crn7lzl6pk"))))
     (build-system r-build-system)
@@ -335,7 +326,7 @@ panels or collapse high-dimensional arrays to simpler summary statistics.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/proto_" version ".tar.gz"))
+       (uri (cran-uri "proto" version))
        (sha256
         (base32 "03mvzi529y6kjcp9bkpk7zlgpcakb3iz73hca6rpjy14pyzl3nfh"))))
     (build-system r-build-system)
@@ -353,8 +344,7 @@ prototype-based, rather than class-based object oriented ideas.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/RColorBrewer_"
-                           version ".tar.gz"))
+       (uri (cran-uri "RColorBrewer" version))
        (sha256
         (base32 "1pfcl8z1pnsssfaaz9dvdckyfnnc6rcq56dhislbf571hhg7isgk"))))
     (build-system r-build-system)
@@ -373,10 +363,7 @@ designed by Cynthia Brewer as described at http://colorbrewer2.org")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://cran/src/contrib/stringi_"
-             version
-             ".tar.gz"))
+       (uri (cran-uri "stringi" version))
        (sha256
         (base32
          "183wrrjhpgl1wbnn9lhghyvhz7l2mc64mpcmzplckal7y9j7pmhw"))))
@@ -402,8 +389,7 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/stringr_"
-                           version ".tar.gz"))
+       (uri (cran-uri "stringr" version))
        (sha256
         (base32 "0jnz6r9yqyf7dschr2fnn1slg4wn6b4ik5q00j4zrh43bfw7s9pq"))))
     (build-system r-build-system)
@@ -427,8 +413,7 @@ the input of another.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/reshape2_"
-                           version ".tar.gz"))
+       (uri (cran-uri "reshape2" version))
        (sha256
         (base32 "0hl082dyk3pk07nqprpn5dvnrkqhnf6zjnjig1ijddxhlmsrzm7v"))))
     (build-system r-build-system)
@@ -450,8 +435,7 @@ using just two functions: melt and dcast (or acast).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/scales_"
-                           version ".tar.gz"))
+       (uri (cran-uri "scales" version))
        (sha256
         (base32 "12xrmn1vh64dl46bq7n7pa427aicb2ifjrby9in3m32nyvir0kac"))))
     (build-system r-build-system)
@@ -477,8 +461,7 @@ legends.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/ggplot2_"
-                           version ".tar.gz"))
+       (uri (cran-uri "ggplot2" version))
        (sha256
         (base32 "0794kjqi3lrxb33lr1mykd58959hlgkhdn259vj8fxrh65mqw920"))))
     (build-system r-build-system)
@@ -506,8 +489,7 @@ aesthetic attributes.")
     (version "0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cran/src/contrib/assertthat_"
-                                  version ".tar.gz"))
+              (uri (cran-uri "assertthat" version))
               (sha256
                (base32
                 "0dwsqajyglfscqilj843qfqn1ndbqpswa7b4l1d633qjk9d68qqk"))))
@@ -527,8 +509,7 @@ wrong.")
     (version "0.1.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cran/src/contrib/lazyeval_"
-                                  version ".tar.gz"))
+              (uri (cran-uri "lazyeval" version))
               (sha256
                (base32
                 "02qfpn2fmy78vx4jxr7g7rhqzcm1kcivfwai7lbh0vvpawia0qwh"))))
@@ -546,8 +527,7 @@ evaluation (NSE) in R.")
     (version "0.3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cran/src/contrib/DBI_"
-                                  version ".tar.gz"))
+              (uri (cran-uri "DBI" version))
               (sha256
                (base32
                 "0xj5baxwnhl23rd5nskhjvranrwrc68f3xlyrklglipi41bm69hw"))))
