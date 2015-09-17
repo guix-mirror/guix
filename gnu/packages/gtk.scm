@@ -154,7 +154,8 @@ affine transformation (scale, rotation, shear, etc.).")
               (base32
                "1xrxlrvgyr6mm9qjxmkif2kvcah082y94gf1vqi0f0bdl1g8gp7b"))))
    (build-system gnu-build-system)
-   (outputs '("out" "bin"))
+   (outputs '("out"
+              "bin")) ; 160K, only hb-view depend on cairo
    (inputs
     `(("cairo" ,cairo)))
    (propagated-inputs
