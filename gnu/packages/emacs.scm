@@ -1122,3 +1122,29 @@ The API is almost the same as that of
 @uref{https://github.com/cho45/jsdeferred, JSDeferred}, a JavaScript library
 for asynchronous tasks.")
     (license license:gpl3+)))
+
+(define-public butler
+  (package
+    (name "emacs-butler")
+    (version "0.2.4")
+    (home-page "https://github.com/AshtonKem/Butler")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32
+                "1pii9dw4skq7nr4na6qxqasl36av8cwjp71bf1fgppqpcd9z8skj"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)))
+    (synopsis "Emacs client for Jenkins")
+    (description
+     "Butler provides an interface to connect to Jenkins continuous
+integration servers.  Users can specify a list of server in the
+@code{butler-server-list} variable and then use @code{M-x butler-status} to
+view the build status of those servers' build jobs, and possibly to trigger
+build jobs.")
+    (license license:gpl3+)))
