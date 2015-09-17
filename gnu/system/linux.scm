@@ -17,10 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system linux)
-  #:use-module (guix store)
   #:use-module (guix records)
   #:use-module (guix derivations)
-  #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -86,18 +84,13 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
                           (map (cut entry->gexp "session" <>) session))
                #t))))
 
-     (gexp->derivation name builder))))
+     (computed-file name builder))))
 
 (define (pam-services->directory services)
   "Return the derivation to build the configuration directory to be used as
 /etc/pam.d for SERVICES."
-  (mlet %store-monad
-      ((names -> (map pam-service-name services))
-       (files (sequence %store-monad
-                        (map pam-service->configuration
-                             ;; XXX: Eventually, SERVICES may be a list of
-                             ;; monadic values instead of plain values.
-                             services))))
+  (let ((names (map pam-service-name services))
+        (files (map pam-service->configuration services)))
     (define builder
       #~(begin
           (use-modules (ice-9 match)
@@ -114,7 +107,7 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
                     ;; instead.  See <http://bugs.gnu.org/20037>.
                     (delete-duplicates '#$(zip names files)))))
 
-    (gexp->derivation "pam.d" builder)))
+    (computed-file "pam.d" builder)))
 
 (define %pam-other-services
   ;; The "other" PAM configuration, which denies everything (see

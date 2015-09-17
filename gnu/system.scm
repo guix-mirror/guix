@@ -447,7 +447,7 @@ on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
                         (sudoers-file (plain-file "sudoers" "")))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
-      ((pam.d      (pam-services->directory pam-services))
+      ((pam.d ->   (pam-services->directory pam-services))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
        (shells     (shells-file shells))
        (emacs      (emacs-site-directory))
