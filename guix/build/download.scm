@@ -63,16 +63,17 @@ object, as an inexact number."
      (/ (time-nanosecond duration) 1e9)))
 
 (define (seconds->string duration)
-  "Given DURATION in seconds, return a string representing it in 'hh:mm:ss'
-format."
+  "Given DURATION in seconds, return a string representing it in 'mm:ss' or
+'hh:mm:ss' format, as needed."
   (if (not (number? duration))
-      "00:00:00"
+      "00:00"
       (let* ((total-seconds (nearest-exact-integer duration))
              (extra-seconds (modulo total-seconds 3600))
-             (hours         (quotient total-seconds 3600))
+             (num-hours     (quotient total-seconds 3600))
+             (hours         (and (positive? num-hours) num-hours))
              (mins          (quotient extra-seconds 60))
              (secs          (modulo extra-seconds 60)))
-        (format #f "~2,'0d:~2,'0d:~2,'0d" hours mins secs))))
+        (format #f "~@[~2,'0d:~]~2,'0d:~2,'0d" hours mins secs))))
 
 (define (byte-count->string size)
   "Given SIZE in bytes, return a string representing it in a human-readable
