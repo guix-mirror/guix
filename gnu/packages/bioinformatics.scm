@@ -2700,3 +2700,46 @@ position for indels.  Bio-locus allows users to store this chr+pos or
 chr+pos+alt information in a database.")
     (home-page "https://github.com/pjotrp/bio-locus")
     (license license:expat)))
+
+(define-public bioruby
+  (package
+    (name "bioruby")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio" version))
+       (sha256
+        (base32
+         "01k2fyjl5fpx4zn8g6gqiqvsg2j1fgixrs9p03vzxckynxdq3wmc"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-libxml" ,ruby-libxml)))
+    (native-inputs
+     `(("which" ,which)))  ; required for test phase
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-test-command
+          (lambda _
+            (substitute* '("test/functional/bio/test_command.rb")
+              (("/bin/sh") (which "sh")))
+            (substitute* '("test/functional/bio/test_command.rb")
+              (("/bin/ls") (which "ls")))
+            (substitute* '("test/functional/bio/test_command.rb")
+              (("which") (which "which")))
+            (substitute* '("test/functional/bio/test_command.rb",
+                           "test/data/command/echoarg2.sh")
+              (("/bin/echo") (which "echo")))
+            #t)))))
+    (synopsis "Ruby library, shell and utilities for bioinformatics")
+    (description "BioRuby comes with a comprehensive set of Ruby development
+tools and libraries for bioinformatics and molecular biology.  BioRuby has
+components for sequence analysis, pathway analysis, protein modelling and
+phylogenetic analysis; it supports many widely used data formats and provides
+easy access to databases, external programs and public web services, including
+BLAST, KEGG, GenBank, MEDLINE and GO.")
+    (home-page "http://bioruby.org/")
+    ;; Code is released under Ruby license, except for setup
+    ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
+    (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
