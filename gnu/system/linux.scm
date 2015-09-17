@@ -20,6 +20,7 @@
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix gexp)
+  #:use-module (gnu services)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -28,7 +29,10 @@
             pam-entry
             pam-services->directory
             unix-pam-service
-            base-pam-services))
+            base-pam-services
+
+            pam-root-service-type
+            pam-root-service))
 
 ;;; Commentary:
 ;;;
@@ -98,8 +102,8 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
 
           (mkdir #$output)
           (for-each (match-lambda
-                     ((name file)
-                      (symlink file (string-append #$output "/" name))))
+                      ((name file)
+                       (symlink file (string-append #$output "/" name))))
 
                     ;; Since <pam-service> objects cannot be compared with
                     ;; 'equal?' since they contain gexps, which contain
@@ -187,5 +191,25 @@ authenticate to run COMMAND."
           (map rootok-pam-service
                '("useradd" "userdel" "usermod"
                  "groupadd" "groupdel" "groupmod"))))
+
+
+;;;
+;;; PAM root service.
+;;;
+
+(define (/etc-entry services)
+  `(("pam.d" ,(pam-services->directory services))))
+
+(define pam-root-service-type
+  (service-type (name 'pam)
+                (extensions (list (service-extension etc-service-type
+                                                     /etc-entry)))
+                (compose concatenate)
+                (extend append)))
+
+(define (pam-root-service base)
+  "The \"root\" PAM service, which collects <pam-service> instance and turns
+them into a /etc/pam.d directory, including the <pam-service> listed in BASE."
+  (service pam-root-service-type base))
 
 ;;; linux.scm ends here

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,16 +19,64 @@
 
 (define-module (gnu services lirc)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (gnu packages lirc)
-  #:use-module (guix store)
   #:use-module (guix gexp)
+  #:use-module (guix records)
+  #:use-module (ice-9 match)
   #:export (lirc-service))
 
 ;;; Commentary:
 ;;;
-;;; LIRC services.
+;;; LIRC service.
 ;;;
 ;;; Code:
+
+(define-record-type* <lirc-configuration>
+  lirc-configuration make-lirc-configuration
+  lirc-configuation?
+  (lirc          lirc-configuration-lirc          ;<package>
+                 (default lirc))
+  (device        lirc-configuration-device)       ;string
+  (driver        lirc-configuration-driver)       ;string
+  (config-file   lirc-configuration-file)         ;string | file-like object
+  (extra-options lirc-configuration-options       ;list of strings
+                 (default '())))
+
+(define %lirc-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/run/lirc")))
+
+(define lirc-dmd-service
+  (match-lambda
+    (($ <lirc-configuration> lirc device driver config-file options)
+     (list (dmd-service
+            (provision '(lircd))
+            (documentation "Run the LIRC daemon.")
+            (requirement '(user-processes))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$lirc "/sbin/lircd")
+                            "--nodaemon"
+                            #$@(if device
+                                   #~("--device" #$device)
+                                   #~())
+                            #$@(if driver
+                                   #~("--driver" #$driver)
+                                   #~())
+                            #$@(if config-file
+                                   #~(#$config-file)
+                                   #~())
+                            #$@options)))
+            (stop #~(make-kill-destructor)))))))
+
+(define lirc-service-type
+  (service-type (name 'lirc)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          lirc-dmd-service)
+                       (service-extension activation-service-type
+                                          (const %lirc-activation))))))
 
 (define* (lirc-service #:key (lirc lirc)
                        device driver config-file
@@ -40,26 +89,11 @@ The daemon will use specified @var{device}, @var{driver} and
 
 Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{lircd}."
-  (service
-   (provision '(lircd))
-   (documentation "Run the LIRC daemon.")
-   (requirement '(user-processes))
-   (start #~(make-forkexec-constructor
-             (list (string-append #$lirc "/sbin/lircd")
-                   "--nodaemon"
-                   #$@(if device
-                          #~("--device" #$device)
-                          #~())
-                   #$@(if driver
-                          #~("--driver" #$driver)
-                          #~())
-                   #$@(if config-file
-                          #~(#$config-file)
-                          #~())
-                   #$@extra-options)))
-   (stop #~(make-kill-destructor))
-   (activate #~(begin
-                 (use-modules (guix build utils))
-                 (mkdir-p "/var/run/lirc")))))
+  (service lirc-service-type
+           (lirc-configuration
+            (lirc lirc)
+            (device device) (driver driver)
+            (config-file config-file)
+            (extra-options extra-options))))
 
 ;;; lirc.scm ends here

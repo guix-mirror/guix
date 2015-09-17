@@ -22,19 +22,95 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (guix derivations)                 ;imported-modules, etc.
   #:use-module (gnu services)
+  #:use-module (gnu packages admin)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:export (dmd-configuration-file))
+  #:export (dmd-root-service-type
+            %dmd-root-service
+            dmd-service-type
+
+            dmd-service
+            dmd-service?
+            dmd-service-documentation
+            dmd-service-provision
+            dmd-service-requirement
+            dmd-service-respawn?
+            dmd-service-start
+            dmd-service-stop
+            dmd-service-auto-start?))
 
 ;;; Commentary:
 ;;;
 ;;; Instantiating system services as a dmd configuration file.
 ;;;
 ;;; Code:
+
+
+(define (dmd-boot-gexp services)
+  (mlet %store-monad ((dmd-conf (dmd-configuration-file services)))
+    (return #~(begin
+                ;; Keep track of the booted system.
+                (false-if-exception (delete-file "/run/booted-system"))
+                (symlink (readlink "/run/current-system")
+                         "/run/booted-system")
+
+                ;; Close any remaining open file descriptors to be on the safe
+                ;; side.  This must be the very last thing we do, because
+                ;; Guile has internal FDs such as 'sleep_pipe' that need to be
+                ;; alive.
+                (let loop ((fd 3))
+                  (when (< fd 1024)
+                    (false-if-exception (close-fdes fd))
+                    (loop (+ 1 fd))))
+
+                ;; Start dmd.
+                (execl (string-append #$dmd "/bin/dmd")
+                       "dmd" "--config" #$dmd-conf)))))
+
+(define dmd-root-service-type
+  (service-type
+   (name 'dmd-root)
+   ;; Extending the root dmd service (aka. PID 1) happens by concatenating the
+   ;; list of services provided by the extensions.
+   (compose concatenate)
+   (extend append)
+   (extensions (list (service-extension boot-service-type dmd-boot-gexp)))))
+
+(define %dmd-root-service
+  ;; The root dmd service, aka. PID 1.  Its parameter is a list of
+  ;; <dmd-service> objects.
+  (service dmd-root-service-type '()))
+
+(define-syntax-rule (dmd-service-type proc)
+  "Return a <service-type> denoting a simple dmd service--i.e., the type for a
+service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
+  (service-type
+   (name 'some-dmd-service)
+   (extensions
+    (list (service-extension dmd-root-service-type
+                             (compose list proc))))))
+
+(define-record-type* <dmd-service>
+  dmd-service make-dmd-service
+  dmd-service?
+  (documentation service-documentation            ; string
+                 (default "[No documentation.]"))
+  (provision     service-provision)               ; list of symbols
+  (requirement   service-requirement              ; list of symbols
+                 (default '()))
+  (respawn?      service-respawn?                 ; Boolean
+                 (default #t))
+  (start         service-start)                   ; g-expression (procedure)
+  (stop          service-stop                     ; g-expression (procedure)
+                 (default #~(const #f)))
+  (auto-start?   service-auto-start?              ; Boolean
+                 (default #t)))
+
 
 (define (assert-no-duplicates services)
   "Raise an error if SERVICES provide the same dmd service more than once.

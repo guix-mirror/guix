@@ -18,10 +18,13 @@
 
 (define-module (gnu services avahi)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services dmd)
+  #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages admin)
-  #:use-module (guix store)
+  #:use-module (guix records)
   #:use-module (guix gexp)
   #:export (avahi-service))
 
@@ -32,11 +35,26 @@
 ;;;
 ;;; Code:
 
-(define* (configuration-file #:key host-name publish?
-                             ipv4? ipv6? wide-area? domains-to-browse)
-  "Return an avahi-daemon configuration file."
+  ;; TODO: Export.
+(define-record-type* <avahi-configuration>
+  avahi-configuration make-avahi-configuration
+  avahi-configuration?
+  (avahi             avahi-configuration-avahi    ;<package>
+                     (default avahi))
+  (host-name         avahi-configuration-host-name) ;string
+  (publish?          avahi-configuration-publish?)  ;Boolean
+  (ipv4?             avahi-configuration-ipv4?)     ;Boolean
+  (ipv6?             avahi-configuration-ipv6?)     ;Boolean
+  (wide-area?        avahi-configuration-wide-area?) ;Boolean
+  (domains-to-browse avahi-configuration-domains-to-browse)) ;list of strings
+
+(define* (configuration-file config)
+  "Return an avahi-daemon configuration file based on CONFIG, an
+<avahi-configuration>."
   (define (bool value)
     (if value "yes\n" "no\n"))
+
+  (define host-name (avahi-configuration-host-name config))
 
   (plain-file "avahi-daemon.conf"
               (string-append
@@ -45,14 +63,63 @@
                    (string-append "host-name=" host-name "\n")
                    "")
 
-               "browse-domains=" (string-join domains-to-browse)
+               "browse-domains=" (string-join
+                                  (avahi-configuration-domains-to-browse
+                                   config))
                "\n"
-               "use-ipv4=" (bool ipv4?)
-               "use-ipv6=" (bool ipv6?)
+               "use-ipv4=" (bool (avahi-configuration-ipv4? config))
+               "use-ipv6=" (bool (avahi-configuration-ipv6? config))
                "[wide-area]\n"
-               "enable-wide-area=" (bool wide-area?)
+               "enable-wide-area=" (bool (avahi-configuration-wide-area? config))
                "[publish]\n"
-               "disable-publishing=" (bool (not publish?)))))
+               "disable-publishing="
+               (bool (not (avahi-configuration-publish? config))))))
+
+(define %avahi-accounts
+  ;; Account and group for the Avahi daemon.
+  (list (user-group (name "avahi") (system? #t))
+        (user-account
+         (name "avahi")
+         (group "avahi")
+         (system? #t)
+         (comment "Avahi daemon user")
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define %avahi-activation
+  ;; Activation gexp.
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/run/avahi-daemon")))
+
+(define (avahi-dmd-service config)
+  "Return a list of <dmd-service> for CONFIG."
+  (let ((config (configuration-file config))
+        (avahi  (avahi-configuration-avahi config)))
+    (list (dmd-service
+           (documentation "Run the Avahi mDNS/DNS-SD responder.")
+           (provision '(avahi-daemon))
+           (requirement '(dbus-system networking))
+
+           (start #~(make-forkexec-constructor
+                     (list (string-append #$avahi "/sbin/avahi-daemon")
+                           "--syslog" "-f" #$config)))
+           (stop #~(make-kill-destructor))))))
+
+(define avahi-service-type
+  (service-type (name 'avahi)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          avahi-dmd-service)
+                       (service-extension dbus-root-service-type
+                                          (compose list
+                                                   avahi-configuration-avahi))
+                       (service-extension account-service-type
+                                          (const %avahi-accounts))
+                       (service-extension activation-service-type
+                                          (const %avahi-activation))
+                       (service-extension nscd-service-type
+                                          (const (list nss-mdns)))))))
 
 (define* (avahi-service #:key (avahi avahi)
                         host-name
@@ -75,36 +142,11 @@ When @var{wide-area?} is true, DNS-SD over unicast DNS is enabled.
 
 Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
 sockets."
-  (let ((config (configuration-file #:host-name host-name
-                                    #:publish? publish?
-                                    #:ipv4? ipv4?
-                                    #:ipv6? ipv6?
-                                    #:wide-area? wide-area?
-                                    #:domains-to-browse
-                                    domains-to-browse)))
-    (service
-     (documentation "Run the Avahi mDNS/DNS-SD responder.")
-     (provision '(avahi-daemon))
-     (requirement '(dbus-system networking))
-
-     (start #~(make-forkexec-constructor
-               (list (string-append #$avahi "/sbin/avahi-daemon")
-                     "--syslog" "-f" #$config)))
-     (stop #~(make-kill-destructor))
-     (activate #~(begin
-                   (use-modules (guix build utils))
-                   (mkdir-p "/var/run/avahi-daemon")))
-
-     (user-groups (list (user-group
-                         (name "avahi")
-                         (system? #t))))
-     (user-accounts (list (user-account
-                           (name "avahi")
-                           (group "avahi")
-                           (system? #t)
-                           (comment "Avahi daemon user")
-                           (home-directory "/var/empty")
-                           (shell
-                            #~(string-append #$shadow "/sbin/nologin"))))))))
+  (service avahi-service-type
+           (avahi-configuration
+            (avahi avahi) (host-name host-name)
+            (publish? publish?) (ipv4? ipv4?) (ipv6? ipv6?)
+            (wide-area? wide-area?)
+            (domains-to-browse domains-to-browse))))
 
 ;;; avahi.scm ends here

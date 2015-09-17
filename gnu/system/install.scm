@@ -24,6 +24,7 @@
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (guix profiles)
+  #:use-module (gnu services dmd)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)
@@ -159,68 +160,74 @@ current store is on a RAM disk."
                (mount "/.rw-store" #$(%store-prefix) "" MS_MOVE)
                (rmdir "/.rw-store"))))))
 
+(define cow-store-service-type
+  (dmd-service-type
+   (lambda _
+     (dmd-service
+      (requirement '(root-file-system user-processes))
+      (provision '(cow-store))
+      (documentation
+       "Make the store copy-on-write, with writes going to \
+the given target.")
+
+      ;; This is meant to be explicitly started by the user.
+      (auto-start? #f)
+
+      (start #~(case-lambda
+                 ((target)
+                  #$(make-cow-store #~target)
+                  target)
+                 (else
+                  ;; Do nothing, and mark the service as stopped.
+                  #f)))
+      (stop #~(lambda (target)
+                ;; Delete the temporary directory, but leave everything
+                ;; mounted as there may still be processes using it since
+                ;; 'user-processes' doesn't depend on us.  The 'user-unmount'
+                ;; service will unmount TARGET eventually.
+                (delete-file-recursively
+                 (string-append target #$%backing-directory))))))))
+
 (define (cow-store-service)
   "Return a service that makes the store copy-on-write, such that writes go to
 the user's target storage device rather than on the RAM disk."
   ;; See <http://bugs.gnu.org/18061> for the initial report.
-  (service
-   (requirement '(root-file-system user-processes))
-   (provision '(cow-store))
-   (documentation
-    "Make the store copy-on-write, with writes going to \
-the given target.")
+  (service cow-store-service-type 'mooooh!))
 
-   ;; This is meant to be explicitly started by the user.
-   (auto-start? #f)
 
-   (start #~(case-lambda
-              ((target)
-               #$(make-cow-store #~target)
-               target)
-              (else
-               ;; Do nothing, and mark the service as stopped.
-               #f)))
-   (stop #~(lambda (target)
-             ;; Delete the temporary directory, but leave everything
-             ;; mounted as there may still be processes using it
-             ;; since 'user-processes' doesn't depend on us.  The
-             ;; 'user-unmount' service will unmount TARGET
-             ;; eventually.
-             (delete-file-recursively
-              (string-append target #$%backing-directory))))))
+(define (/etc/configuration-files _)
+  "Return a list of tuples representing configuration templates to add to
+/etc."
+  (define (file f)
+    (local-file (search-path %load-path
+                             (string-append "gnu/system/examples/" f))))
 
-(define (configuration-template-service)
-  "Return a dummy service whose purpose is to install an operating system
-configuration template file in the installation system."
+  (define directory
+    (computed-file "configuration-templates"
+                   #~(begin
+                       (mkdir #$output)
+                       (for-each (lambda (file target)
+                                   (copy-file file
+                                              (string-append #$output "/"
+                                                             target)))
+                                 '(#$(file "bare-bones.tmpl")
+                                   #$(file "desktop.tmpl"))
+                                 '("bare-bones.scm"
+                                   "desktop.scm"))
+                       #t)
+                   #:modules '((guix build utils))))
 
-  (define search
-    (cut search-path %load-path <>))
-  (define templates
-    (map (match-lambda
-           ((file '-> target)
-            (list (local-file (search file))
-                  (string-append "/etc/configuration/" target))))
-         '(("gnu/system/examples/bare-bones.tmpl" -> "bare-bones.scm")
-           ("gnu/system/examples/desktop.tmpl" -> "desktop.scm"))))
+  `(("configuration" ,directory)))
 
-  (service
-   (requirement '(root-file-system))
-   (provision '(os-config-template))
-   (documentation
-    "This dummy service installs an OS configuration template.")
-   (start #~(const #t))
-   (stop  #~(const #f))
-   (activate
-    #~(begin
-        (use-modules (ice-9 match)
-                     (guix build utils))
+(define configuration-template-service-type
+  (service-type (name 'configuration-template)
+                (extensions
+                 (list (service-extension etc-service-type
+                                          /etc/configuration-files)))))
 
-        (mkdir-p "/etc/configuration")
-        (for-each (match-lambda
-                    ((file target)
-                     (unless (file-exists? target)
-                       (copy-file file target))))
-                  '#$templates)))))
+(define %configuration-template-service
+  (service configuration-template-service-type #t))
+
 
 (define %nscd-minimal-caches
   ;; Minimal in-memory caching policy for nscd.
@@ -262,7 +269,7 @@ You have been warned.  Thanks for being so brave.
                              (login-program (log-to-info))))
 
           ;; Documentation add-on.
-          (configuration-template-service)
+          %configuration-template-service
 
           ;; A bunch of 'root' ttys.
           (normal-tty "tty3")
@@ -276,7 +283,7 @@ You have been warned.  Thanks for being so brave.
           ;; The build daemon.  Register the hydra.gnu.org key as trusted.
           ;; This allows the installation process to use substitutes by
           ;; default.
-          (guix-service #:authorize-hydra-key? #t)
+          (guix-service (guix-configuration (authorize-key? #t)))
 
           ;; Start udev so that useful device nodes are available.
           ;; Use device-mapper rules for cryptsetup & co; enable the CRDA for

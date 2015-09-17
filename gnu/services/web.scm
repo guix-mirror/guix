@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,12 +19,13 @@
 
 (define-module (gnu services web)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages web)
   #:use-module (guix records)
-  #:use-module (guix store)
   #:use-module (guix gexp)
+  #:use-module (ice-9 match)
   #:export (nginx-service))
 
 ;;; Commentary:
@@ -31,6 +33,14 @@
 ;;; Web services.
 ;;;
 ;;; Code:
+
+(define-record-type* <nginx-configuration>
+  nginx-configuration make-nginx-configuration
+  nginx-configuration?
+  (nginx         nginx-configuration-nginx)         ;<package>
+  (log-directory nginx-configuration-log-directory) ;string
+  (run-directory nginx-configuration-run-directory) ;string
+  (file          nginx-configuration-file))         ;string | file-like
 
 (define (default-nginx-config log-directory run-directory)
   (plain-file "nginx.conf"
@@ -45,6 +55,58 @@
                "}\n"
                "events {}\n")))
 
+(define %nginx-accounts
+  (list (user-group (name "nginx") (system? #t))
+        (user-account
+         (name "nginx")
+         (group "nginx")
+         (system? #t)
+         (comment "nginx server user")
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define nginx-activation
+  (match-lambda
+    (($ <nginx-configuration> nginx log-directory run-directory config-file)
+     #~(begin
+         (use-modules (guix build utils))
+
+         (format #t "creating nginx log directory '~a'~%" #$log-directory)
+         (mkdir-p #$log-directory)
+         (format #t "creating nginx run directory '~a'~%" #$run-directory)
+         (mkdir-p #$run-directory)
+         ;; Check configuration file syntax.
+         (system* (string-append #$nginx "/bin/nginx")
+                  "-c" #$config-file "-t")))))
+
+(define nginx-dmd-service
+  (match-lambda
+    (($ <nginx-configuration> nginx log-directory run-directory config-file)
+     (let* ((nginx-binary #~(string-append #$nginx "/sbin/nginx"))
+            (nginx-action
+             (lambda args
+               #~(lambda _
+                   (zero?
+                    (system* #$nginx-binary "-c" #$config-file #$@args))))))
+
+       ;; TODO: Add 'reload' action.
+       (list (dmd-service
+              (provision '(nginx))
+              (documentation "Run the nginx daemon.")
+              (requirement '(user-processes loopback))
+              (start (nginx-action "-p" run-directory))
+              (stop (nginx-action "-s" "stop"))))))))
+
+(define nginx-service-type
+  (service-type (name 'nginx)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          nginx-dmd-service)
+                       (service-extension activation-service-type
+                                          nginx-activation)
+                       (service-extension account-service-type
+                                          (const %nginx-accounts))))))
+
 (define* (nginx-service #:key (nginx nginx)
                         (log-directory "/var/log/nginx")
                         (run-directory "/var/run/nginx")
@@ -54,41 +116,9 @@
 
 The nginx daemon loads its runtime configuration from CONFIG-FIGLE, stores log
 files in LOG-DIRECTORY, and stores temporary runtime files in RUN-DIRECTORY."
-  (define nginx-binary
-    #~(string-append #$nginx "/sbin/nginx"))
-
-  (define (nginx-action . args)
-    #~(lambda _
-        (zero?
-         (system* #$nginx-binary "-c" #$config-file #$@args))))
-
-  (define activate
-    #~(begin
-        (use-modules (guix build utils))
-        (format #t "creating nginx log directory '~a'~%" #$log-directory)
-        (mkdir-p #$log-directory)
-        (format #t "creating nginx run directory '~a'~%" #$run-directory)
-        (mkdir-p #$run-directory)
-        ;; Check configuration file syntax.
-        (system* #$nginx-binary "-c" #$config-file "-t")))
-
-  (define nologin #~(string-append #$shadow "/sbin/nologin"))
-
-  ;; TODO: Add 'reload' action.
-  (service
-   (provision '(nginx))
-   (documentation "Run the nginx daemon.")
-   (requirement '(user-processes loopback))
-   (start (nginx-action "-p" run-directory))
-   (stop (nginx-action "-s" "stop"))
-   (activate activate)
-   (user-groups (list (user-group
-                       (name "nginx")
-                       (system? #t))))
-   (user-accounts (list (user-account
-                         (name "nginx")
-                         (group "nginx")
-                         (system? #t)
-                         (comment "nginx server user")
-                         (home-directory "/var/empty")
-                         (shell nologin))))))
+  (service nginx-service-type
+           (nginx-configuration
+            (nginx nginx)
+            (log-directory log-directory)
+            (run-directory run-directory)
+            (file config-file))))

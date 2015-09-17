@@ -1,0 +1,35 @@
+digraph "Service Type Dependencies" {
+  dmd [shape = box, fontname = Helvetica];
+  pam [shape = box, fontname = Helvetica];
+  etc [shape = box, fontname = Helvetica];
+  accounts [shape = box, fontname = Helvetica];
+  activation [shape = box, fontname = Helvetica];
+  boot [shape = house, fontname = Helvetica];
+  lshd -> dmd;
+  lshd -> pam;
+  udev -> dmd;
+  nscd -> dmd [label = "extends"];
+  "nss-mdns" -> nscd;
+  "kvm-rules" -> udev;
+  colord -> udev;
+  dbus -> dmd;
+  colord -> dbus;
+  upower -> udev;
+  upower -> dbus;
+  polkit -> dbus;
+  polkit -> pam;
+  elogind -> dbus;
+  elogind -> udev;
+  elogind -> polkit [label = "extends"];
+  dmd -> boot;
+  colord -> accounts;
+  accounts -> activation;
+  accounts -> etc;
+  etc -> activation;
+  activation -> boot;
+  pam -> etc;
+  elogind -> pam;
+  guix -> dmd;
+  guix -> activation;
+  guix -> accounts;
+}

@@ -182,6 +182,13 @@ Services
 * Web Services::                Web servers.
 * Various Services::            Other services.
 
+Defining Services
+
+* Service Composition::         The model for composing services.
+* Service Types and Services::  Types and services.
+* Service Reference::           API reference.
+* dmd Services::                A particular type of service.
+
 Packaging Guidelines
 
 * Software Freedom::            What may go into the distribution.
@@ -5899,23 +5906,41 @@ Return a service that runs @code{syslogd}.  If configuration file name
 settings.
 @end deffn
 
-@deffn {Scheme Procedure} guix-service [#:guix guix] @
-       [#:builder-group "guixbuild"] [#:build-accounts 10] @
-       [#:authorize-hydra-key? #t] [#:use-substitutes? #t] @
-       [#:extra-options '()]
-Return a service that runs the build daemon from @var{guix}, and has
-@var{build-accounts} user accounts available under @var{builder-group}.
+@anchor{guix-configuration-type}
+@deftp {Data Type} guix-configuration
+This data type represents the configuration of the Guix build daemon.
+@xref{Invoking guix-daemon}, for more information.
 
-When @var{authorize-hydra-key?} is true, the @code{hydra.gnu.org} public key
-provided by @var{guix} is authorized upon activation, meaning that substitutes
-from @code{hydra.gnu.org} are used by default.
+@table @asis
+@item @code{guix} (default: @var{guix})
+The Guix package to use.
 
-If @var{use-substitutes?} is false, the daemon is run with
-@option{--no-substitutes} (@pxref{Invoking guix-daemon,
-@option{--no-substitutes}}).
+@item @code{build-group} (default: @code{"guixbuild"})
+Name of the group for build user accounts.
 
-Finally, @var{extra-options} is a list of additional command-line options
-passed to @command{guix-daemon}.
+@item @code{build-accounts} (default: @code{10})
+Number of build user accounts to create.
+
+@item @code{authorize-key?} (default: @code{#t})
+Whether to authorize the substitute key for @code{hydra.gnu.org}
+(@pxref{Substitutes}).
+
+@item @code{use-substitutes?} (default: @code{#t})
+Whether to use substitutes.
+
+@item @code{extra-options} (default: @code{'()})
+List of extra command-line options for @command{guix-daemon}.
+
+@item @code{lsof} (default: @var{lsof})
+@itemx @code{lsh} (default: @var{lsh})
+The lsof and lsh packages to use.
+
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} guix-service @var{config}
+Return a service that runs the Guix build daemon according to
+@var{config}.
 @end deffn
 
 @deffn {Scheme Procedure} udev-service [#:udev udev]
@@ -6179,11 +6204,10 @@ The @var{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
-The actual service definitions provided by @code{(gnu services desktop)}
-are described below.
+The actual service definitions provided by @code{(gnu services dbus)}
+and @code{(gnu services desktop)} are described below.
 
-@deffn {Scheme Procedure} dbus-service @var{services} @
-                         [#:dbus @var{dbus}]
+@deffn {Scheme Procedure} dbus-service [#:dbus @var{dbus}] [#:services '()]
 Return a service that runs the ``system bus'', using @var{dbus}, with
 support for @var{services}.
 
@@ -6197,8 +6221,7 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
 @var{services} must be equal to @code{(list avahi)}.
 @end deffn
 
-@deffn {Scheme Procedure} elogind-service @
-                         [#:elogind @var{elogind}] [#:config @var{config}]
+@deffn {Scheme Procedure} elogind-service [#:config @var{config}]
 Return a service that runs the @code{elogind} login and
 seat management daemon.  @uref{https://github.com/andywingo/elogind,
 Elogind} exposes a D-Bus interface that can be used to know which users
@@ -6957,54 +6980,378 @@ build users.
 @node Defining Services
 @subsection Defining Services
 
-The @code{(gnu services @dots{})} modules define several procedures that allow
-users to declare the operating system's services (@pxref{Using the
-Configuration System}).  These procedures are @emph{monadic
-procedures}---i.e., procedures that return a monadic value in the store
-monad (@pxref{The Store Monad}).  For examples of such procedures,
-@xref{Services}.
+The previous sections how the available services and how one can combine
+them in an @code{operating-system} declaration.  But how do we define
+them in the first place?  And what is a service anyway?
 
-@cindex service definition
-The monadic value returned by those procedures is a @dfn{service
-definition}---a structure as returned by the @code{service} form.
-Service definitions specifies the inputs the service depends on, and an
-expression to start and stop the service.  Behind the scenes, service
-definitions are ``translated'' into the form suitable for the
-configuration file of dmd, the init system (@pxref{Services,,, dmd, GNU
-dmd Manual}).
+@menu
+* Service Composition::         The model for composing services.
+* Service Types and Services::  Types and services.
+* Service Reference::           API reference.
+* dmd Services::                A particular type of service.
+@end menu
 
-As an example, here is what the @code{nscd-service} procedure looks
-like:
+@node Service Composition
+@subsubsection Service Composition
 
-@lisp
-(define (nscd-service)
-  (with-monad %store-monad
-    (return (service
-             (documentation "Run libc's name service cache daemon.")
-             (provision '(nscd))
-             (activate #~(begin
-                           (use-modules (guix build utils))
-                           (mkdir-p "/var/run/nscd")))
-             (start #~(make-forkexec-constructor
-                       (string-append #$glibc "/sbin/nscd")
-                       "-f" "/dev/null" "--foreground"))
-             (stop #~(make-kill-destructor))
-             (respawn? #f)))))
-@end lisp
+@cindex services
+@cindex daemons
+Here we define a @dfn{service} as, broadly, something that extends the
+operating system's functionality.  Often a service is a process---a
+@dfn{daemon}---started when the system boots: a secure shell server, a
+Web server, the Guix build daemon, etc.  Sometimes a service is a daemon
+whose execution can be triggered by another daemon---e.g., an FTP server
+started by @command{inetd} or a D-Bus service activated by
+@command{dbus-daemon}.  Occasionally, a service does not map to a
+daemon.  For instance, the ``account'' service collects user accounts
+and makes sure they exist when the system runs; the ``udev'' service
+collects device management rules and makes them available to the eudev
+daemon; the @file{/etc} service populates the system's @file{/etc}
+directory.
+
+GuixSD services are connected by @dfn{extensions}.  For instance, the
+secure shell service @emph{extends} dmd---GuixSD's initialization system,
+running as PID@tie{}1---by giving it the command lines to start and stop
+the secure shell daemon (@pxref{Networking Services,
+@code{lsh-service}}); the UPower service extends the D-Bus service by
+passing it its @file{.service} specification, and extends the udev
+service by passing it device management rules (@pxref{Desktop Services,
+@code{upower-service}}); the Guix daemon service extends dmd by passing
+it the command lines to start and stop the daemon, and extends the
+account service by passing it a list of required build user accounts
+(@pxref{Base Services}).
+
+All in all, services and their ``extends'' relations form a directed
+acyclic graph (DAG).  If we represent services as boxes and extensions
+as arrows, a typical system might provide something like this:
+
+@image{images/service-graph,,5in,Typical service extension graph.}
+
+At the bottom, we see the @dfn{boot service}, which produces the boot
+script that is executed at boot time from the initial RAM disk.
+
+@cindex service types
+Technically, developers can define @dfn{service types} to express these
+relations.  There can be any number of services of a given type on the
+system---for instance, a system running two instances of the GNU secure
+shell server (lsh) has two instances of @var{lsh-service-type}, with
+different parameters.
+
+The following section describes the programming interface for service
+types and services.
+
+@node Service Types and Services
+@subsubsection Service Types and Services
+
+A @dfn{service type} is a node in the DAG described above.  Let us start
+with a simple example, the service type for the Guix build daemon
+(@pxref{Invoking guix-daemon}):
+
+@example
+(define guix-service-type
+  (service-type
+   (name 'guix)
+   (extensions
+    (list (service-extension dmd-root-service-type guix-dmd-service)
+          (service-extension account-service-type guix-accounts)
+          (service-extension activation-service-type guix-activation)))))
+@end example
 
 @noindent
-The @code{activate}, @code{start}, and @code{stop} fields are G-expressions
-(@pxref{G-Expressions}).  The @code{activate} field contains a script to
-run at ``activation'' time; it makes sure that the @file{/var/run/nscd}
-directory exists before @command{nscd} is started.
+It defines a two things:
 
+@enumerate
+@item
+A name, whose sole purpose is to make inspection and debugging easier.
+
+@item
+A list of @dfn{service extensions}, where each extension designates the
+target service type and a procedure that, given the service's
+parameters, returns a list of object to extend the service of that type.
+
+Every service type has at least one service extension.  The only
+exception is the @dfn{boot service type}, which is the ultimate service.
+@end enumerate
+
+In this example, @var{guix-service-type} extends three services:
+
+@table @var
+@item dmd-root-service-type
+The @var{guix-dmd-service} procedure defines how the dmd service is
+extended.  Namely, it returns a @code{<dmd-service>} object that defines
+how @command{guix-daemon} is started and stopped (@pxref{dmd Services}).
+
+@item account-service-type
+This extension for this service is computed by @var{guix-accounts},
+which returns a list of @code{user-group} and @code{user-account}
+objects representing the build user accounts (@pxref{Invoking
+guix-daemon}).
+
+@item activation-service-type
+Here @var{guix-activation} is a procedure that returns a gexp, which is
+a code snippet to run at ``activation time''---e.g., when the service is
+booted.
+@end table
+
+A service of this type is instantiated like this:
+
+@example
+(service guix-service-type
+         (guix-configuration
+           (build-accounts 5)
+           (use-substitutes? #f)))
+@end example
+
+The second argument to the @code{service} form is a value representing
+the parameters of this specific service instance.
+@xref{guix-configuration-type, @code{guix-configuration}}, for
+information about the @code{guix-configuration} data type.
+
+@var{guix-service-type} is quite simple because it extends other
+services but is not extensible itself.
+
+@c @subsubsubsection Extensible Service Types
+
+The service type for an @emph{extensible} service looks like this:
+
+@example
+(define udev-service-type
+  (service-type (name 'udev)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          udev-dmd-service)))
+
+                (compose concatenate)       ;concatenate the list of rules
+                (extend (lambda (config rules)
+                          (match config
+                            (($ <udev-configuration> udev initial-rules)
+                             (udev-configuration
+                              (udev udev)   ;the udev package to use
+                              (rules (append initial-rules rules)))))))))
+@end example
+
+This is the service type for the
+@uref{https://wiki.gentoo.org/wiki/Project:Eudev, eudev device
+management daemon}.  Compared to the previous example, in addition to an
+extension of @var{dmd-root-service-type}, we see two new fields:
+
+@table @code
+@item compose
+This is the procedure to @dfn{compose} the list of extensions to
+services of this type.
+
+Services can extend the udev service by passing it lists of rules; we
+compose those extensions simply by concatenating them.
+
+@item extend
+This procedure defines how the service's value is @dfn{extended} with
+the composition of the extensions.
+
+Udev extensions are composed into a list of rules, but the udev service
+value is itself a @code{<udev-configuration>} record.  So here, we
+extend that record by appending the list of rules is contains to the
+list of contributed rules.
+@end table
+
+There can be only one instance of an extensible service type such as
+@var{udev-service-type}.  If there were more, the
+@code{service-extension} specifications would be ambiguous.
+
+Still here?  The next section provides a reference of the programming
+interface for services.
+
+@node Service Reference
+@subsubsection Service Reference
+
+We have seen an overview of service types (@pxref{Service Types and
+Services}).  This section provides a reference on how to manipulate
+services and service types.  This interface is provided by the
+@code{(gnu services)} module.
+
+@deffn {Scheme Procedure} service @var{type} @var{value}
+Return a new service of @var{type}, a @code{<service-type>} object (see
+below.)  @var{value} can be any object; it represents the parameters of
+this particular service instance.
+@end deffn
+
+@deffn {Scheme Procedure} service? @var{obj}
+Return true if @var{obj} is a service.
+@end deffn
+
+@deffn {Scheme Procedure} service-kind @var{service}
+Return the type of @var{service}---i.e., a @code{<service-type>} object.
+@end deffn
+
+@deffn {Scheme Procedure} service-parameters @var{service}
+Return the value associated with @var{service}.  It represents its
+parameters.
+@end deffn
+
+Here is an example of how a service is created and manipulated:
+
+@example
+(define s
+  (service nginx-service-type
+           (nginx-configuration
+            (nginx nginx)
+            (log-directory log-directory)
+            (run-directory run-directory)
+            (file config-file))))
+
+(service? s)
+@result{} #t
+
+(eq? (service-kind s) nginx-service-type)
+@result{} #t
+@end example
+
+@deftp {Data Type} service-type
+@cindex service type
+This is the representation of a @dfn{service type} (@pxref{Service Types
+and Services}).
+
+@table @asis
+@item @code{name}
+This is a symbol, used only to simplify inspection and debugging.
+
+@item @code{extensions}
+A non-empty list of @code{<service-extension>} objects (see below.)
+
+@item @code{compose} (default: @code{#f})
+If this is @code{#f}, then the service type denotes services that cannot
+be extended---i.e., services that do not receive ``values'' from other
+services.
+
+Otherwise, it must be a one-argument procedure.  The procedure is called
+by @code{fold-services} and is passed a list of values collected from
+extensions.  It must return a value that is a valid parameter value for
+the service instance.
+
+@item @code{extend} (default: @code{#f})
+If this is @code{#f}, services of this type cannot be extended.
+
+Otherwise, it must be a two-argument procedure: @code{fold-services}
+calls it, passing it the service's initial value as the first argument
+and the result of applying @code{compose} to the extension values as the
+second argument.
+@end table
+
+@xref{Service Types and Services}, for examples.
+@end deftp
+
+@deffn {Scheme Procedure} service-extension @var{target-type} @
+                              @var{compute}
+Return a new extension for services of type @var{target-type}.
+@var{compute} must be a one-argument procedure: @code{fold-services}
+calls it, passing it the value associated with the service that provides
+the extension; it must return a valid value for the target service.
+@end deffn
+
+@deffn {Scheme Procedure} service-extension? @var{obj}
+Return true if @var{obj} is a service extension.
+@end deffn
+
+At the core of the service abstraction lies the @code{fold-services}
+procedure, which is responsible for ``compiling'' a list of services
+down to a single boot script.  In essence, it propagates service
+extensions down the service graph, updating each node parameters on the
+way, until it reaches the root node.
+
+@deffn {Scheme Procedure} fold-services @var{services} @
+                            [#:target-type @var{boot-service-type}]
+Fold @var{services} by propagating their extensions down to the root of
+type @var{target-type}; return the root service adjusted accordingly.
+@end deffn
+
+Lastly, the @code{(gnu services)} module also defines several essential
+service types, some of which are listed below.
+
+@defvr {Scheme Variable} boot-service-type
+The type of the ``boot service'', which is the root of the service
+graph.
+@end defvr
+
+@defvr {Scheme Variable} etc-service-type
+The type of the @file{/etc} service.  This service can be extended by
+passing it name/file tuples such as:
+
+@example
+(list `("issue" ,(plain-file "issue" "Welcome!\n")))
+@end example
+
+In this example, the effect would be to add an @file{/etc/issue} file
+pointing to the given file.
+@end defvr
+
+@defvr {Scheme Variable} setuid-program-service-type
+Type for the ``setuid-program service''.  This service collects lists of
+executable file names, passed as gexps, and adds them to the set of
+setuid-root programs on the system (@pxref{Setuid Programs}).
+@end defvr
+
+
+@node dmd Services
+@subsubsection dmd Services
+
+@cindex PID 1
+@cindex init system
+The @code{(gnu services dmd)} provides a way to define services managed
+by GNU@tie{}dmd, which is GuixSD initialization system---the first
+process that is started when the system boots, aka. PID@tie{}1
+(@pxref{Introduction,,, dmd, GNU dmd Manual}).  The
+@var{%dmd-root-service} represents PID@tie{}1, of type
+@var{dmd-root-service-type}; it can be extended by passing it lists of
+@code{<dmd-service>} objects.
+
+@deftp {Data Type} dmd-service
+The data type representing a service managed by dmd.
+
+@table @asis
+@item @code{provision}
+This is a list of symbols denoting what the service provides.
+
+These are the names that may be passed to @command{deco start},
+@command{deco status}, and similar commands (@pxref{Invoking deco,,,
+dmd, GNU dmd Manual}).  @xref{Slots of services, the @code{provides}
+slot,, dmd, GNU dmd Manual}, for details.
+
+@item @code{requirements} (default: @code{'()})
+List of symbols denoting the dmd services this one depends on.
+
+@item @code{respawn?} (default: @code{#t})
+Whether to restart the service when it stops, for instance when the
+underlying process dies.
+
+@item @code{start}
+@itemx @code{stop} (default: @code{#~(const #f)})
 The @code{start} and @code{stop} fields refer to dmd's facilities to
 start and stop processes (@pxref{Service De- and Constructors,,, dmd,
-GNU dmd Manual}).  The @code{provision} field specifies the name under
-which this service is known to dmd, and @code{documentation} specifies
-on-line documentation.  Thus, the commands @command{deco start ncsd},
-@command{deco stop nscd}, and @command{deco doc nscd} will do what you
-would expect (@pxref{Invoking deco,,, dmd, GNU dmd Manual}).
+GNU dmd Manual}).  They are given as G-expressions that get expanded in
+the dmd configuration file (@pxref{G-Expressions}).
+
+@item @code{documentation}
+A documentation string, as shown when running:
+
+@example
+deco doc @var{service-name}
+@end example
+
+where @var{service-name} is one of the symbols in @var{provision}
+(@pxref{Invoking deco,,, dmd, GNU dmd Manual}).
+@end table
+@end deftp
+
+@defvr {Scheme Variable} dmd-root-service-type
+The service type for the dmd ``root service''---i.e., PID@tie{}1.
+
+This is the service type that extensions target when they want to create
+dmd services (@pxref{Service Types and Services}, for an example).  Each
+extension must pass a list of @code{<dmd-service>}.
+@end defvr
+
+@defvr {Scheme Variable} %dmd-root-service
+This service represents PID@tie{}1.
+@end defvr
 
 
 @node Installing Debugging Files

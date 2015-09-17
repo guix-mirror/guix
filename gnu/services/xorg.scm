@@ -20,6 +20,7 @@
 (define-module (gnu services xorg)
   #:use-module (gnu artwork)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (gnu system linux)                 ; 'pam-service'
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
@@ -212,6 +213,95 @@ which should be passed to this script as the first argument.  If not, the
   ;; contains the actual theme files.
   "0.x")
 
+(define-record-type* <slim-configuration>
+  slim-configuration make-slim-configuration
+  slim-configuration?
+  (slim slim-configuration-slim
+        (default slim))
+  (allow-empty-passwords? slim-configuration-allow-empty-passwords?)
+  (auto-login? slim-configuration-auto-login?)
+  (default-user slim-configuration-default-user)
+  (theme slim-configuration-theme)
+  (theme-name slim-configuration-theme-name)
+  (xauth slim-configuration-xauth
+         (default xauth))
+  (dmd slim-configuration-dmd
+       (default dmd))
+  (bash slim-configuration-bash
+        (default bash))
+  (auto-login-session slim-configuration-auto-login-session)
+  (startx slim-configuration-startx))
+
+(define (slim-pam-service config)
+  "Return a PAM service for @command{slim}."
+  (list (unix-pam-service
+         "slim"
+         #:allow-empty-passwords?
+         (slim-configuration-allow-empty-passwords? config))))
+
+(define (slim-dmd-service config)
+  (define slim.cfg
+    (let ((xinitrc (xinitrc #:fallback-session
+                            (slim-configuration-auto-login-session config)))
+          (slim    (slim-configuration-slim config))
+          (xauth   (slim-configuration-xauth config))
+          (startx  (slim-configuration-startx config))
+          (dmd     (slim-configuration-dmd config))
+          (theme-name (slim-configuration-theme-name config)))
+      (mixed-text-file "slim.cfg"  "
+default_path /run/current-system/profile/bin
+default_xserver " startx "
+xserver_arguments :0 vt7
+xauth_path " xauth "/bin/xauth
+authfile /var/run/slim.auth
+
+# The login command.  '%session' is replaced by the chosen session name, one
+# of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
+login_cmd  exec " xinitrc " %session
+sessiondir /run/current-system/profile/share/xsessions
+session_msg session (F1 to change):
+
+halt_cmd " dmd "/sbin/halt
+reboot_cmd " dmd "/sbin/reboot\n"
+(if (slim-configuration-auto-login? config)
+    (string-append "auto_login yes\ndefault_user "
+                   (slim-configuration-default-user config) "\n")
+    "")
+(if theme-name
+    (string-append "current_theme " theme-name "\n")
+    ""))))
+
+  (define theme
+    (slim-configuration-theme config))
+
+  (list (dmd-service
+         (documentation "Xorg display server")
+         (provision '(xorg-server))
+         (requirement '(user-processes host-name udev))
+         (start
+          #~(lambda ()
+              ;; A stale lock file can prevent SLiM from starting, so remove it to
+              ;; be on the safe side.
+              (false-if-exception (delete-file "/var/run/slim.lock"))
+
+              (fork+exec-command
+               (list (string-append #$slim "/bin/slim") "-nodaemon")
+               #:environment-variables
+               (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
+                     #$@(if theme
+                            (list #~(string-append "SLIM_THEMESDIR=" #$theme))
+                            #~())))))
+         (stop #~(make-kill-destructor))
+         (respawn? #t))))
+
+(define slim-service-type
+  (service-type (name 'slim)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          slim-dmd-service)
+                       (service-extension pam-root-service-type
+                                          slim-pam-service)))))
+
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
                        (default-user "")
@@ -246,54 +336,14 @@ If @var{theme} is @code{#f}, the use the default log-in theme; otherwise
 @var{theme} must be a gexp denoting the name of a directory containing the
 theme to use.  In that case, @var{theme-name} specifies the name of the
 theme."
-
-  (define slim.cfg
-    (let ((xinitrc (xinitrc #:fallback-session auto-login-session)))
-      (mixed-text-file "slim.cfg"  "
-default_path /run/current-system/profile/bin
-default_xserver " startx "
-xserver_arguments :0 vt7
-xauth_path " xauth "/bin/xauth
-authfile /var/run/slim.auth
-
-# The login command.  '%session' is replaced by the chosen session name, one
-# of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
-login_cmd  exec " xinitrc " %session
-sessiondir /run/current-system/profile/share/xsessions
-session_msg session (F1 to change):
-
-halt_cmd " dmd "/sbin/halt
-reboot_cmd " dmd "/sbin/reboot\n"
-            (if auto-login?
-                (string-append "auto_login yes\ndefault_user " default-user "\n")
-                "")
-            (if theme-name
-                (string-append "current_theme " theme-name "\n")
-               ""))))
-
-  (service
-   (documentation "Xorg display server")
-   (provision '(xorg-server))
-   (requirement '(user-processes host-name udev))
-   (start
-    #~(lambda ()
-        ;; A stale lock file can prevent SLiM from starting, so remove it
-        ;; to be on the safe side.
-        (false-if-exception (delete-file "/var/run/slim.lock"))
-
-        (fork+exec-command
-         (list (string-append #$slim "/bin/slim") "-nodaemon")
-         #:environment-variables
-         (list (string-append "SLIM_CFGFILE=" #$slim.cfg)
-               #$@(if theme
-                      (list #~(string-append "SLIM_THEMESDIR=" #$theme))
-                      #~())))))
-   (stop #~(make-kill-destructor))
-   (respawn? #t)
-   (pam-services
-    ;; Tell PAM about 'slim'.
-    (list (unix-pam-service
-           "slim"
-           #:allow-empty-passwords? allow-empty-passwords?)))))
+  (service slim-service-type
+           (slim-configuration
+            (slim slim)
+            (allow-empty-passwords? allow-empty-passwords?)
+            (auto-login? auto-login?) (default-user default-user)
+            (theme theme) (theme-name theme-name)
+            (xauth xauth) (dmd dmd) (bash bash)
+            (auto-login-session auto-login-session)
+            (startx startx))))
 
 ;;; xorg.scm ends here

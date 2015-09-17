@@ -22,12 +22,14 @@
   #:use-module (guix store)
   #:use-module (guix sets)
   #:use-module (guix ui)
+  #:use-module (gnu services)
   #:use-module ((gnu system file-systems)
                 #:select (%tty-gid))
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile-wm)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -54,7 +56,9 @@
             skeleton-directory
             %base-groups
             %base-user-accounts
-            assert-valid-users/groups))
+
+            account-service-type
+            account-service))
 
 ;;; Commentary:
 ;;;
@@ -87,31 +91,32 @@
   (system?        user-group-system?              ; Boolean
                   (default #f)))
 
+
 (define %base-groups
   ;; Default set of groups.
   (let-syntax ((system-group (syntax-rules ()
                                ((_ args ...)
                                 (user-group (system? #t) args ...)))))
     (list (system-group (name "root") (id 0))
-          (system-group (name "wheel"))              ; root-like users
-          (system-group (name "users"))              ; normal users
-          (system-group (name "nogroup"))            ; for daemons etc.
+          (system-group (name "wheel"))           ; root-like users
+          (system-group (name "users"))           ; normal users
+          (system-group (name "nogroup"))         ; for daemons etc.
 
           ;; The following groups are conventionally used by things like udev to
           ;; control access to hardware devices.
           (system-group (name "tty") (id %tty-gid))
           (system-group (name "dialout"))
           (system-group (name "kmem"))
-          (system-group (name "input"))              ; input devices, from udev
+          (system-group (name "input"))           ; input devices, from udev
           (system-group (name "video"))
           (system-group (name "audio"))
-          (system-group (name "netdev"))             ; used in avahi-dbus.conf
+          (system-group (name "netdev"))          ; used in avahi-dbus.conf
           (system-group (name "lp"))
           (system-group (name "disk"))
           (system-group (name "floppy"))
           (system-group (name "cdrom"))
           (system-group (name "tape"))
-          (system-group (name "kvm")))))             ; for /dev/kvm
+          (system-group (name "kvm")))))          ; for /dev/kvm
 
 (define %base-user-accounts
   ;; List of standard user accounts.  Note that "root" is a special case, so
@@ -223,5 +228,82 @@ of user '~a' is undeclared")
                 (for-each (cut validate-supplementary-group user <>)
                           (user-account-supplementary-groups user)))
               users)))
+
+
+;;;
+;;; Service.
+;;;
+
+(define (user-group->gexp group)
+  "Turn GROUP, a <user-group> object, into a list-valued gexp suitable for
+'active-groups'."
+  #~(list #$(user-group-name group)
+          #$(user-group-password group)
+          #$(user-group-id group)
+          #$(user-group-system? group)))
+
+(define (user-account->gexp account)
+  "Turn ACCOUNT, a <user-account> object, into a list-valued gexp suitable for
+'activate-users'."
+  #~`(#$(user-account-name account)
+      #$(user-account-uid account)
+      #$(user-account-group account)
+      #$(user-account-supplementary-groups account)
+      #$(user-account-comment account)
+      #$(user-account-home-directory account)
+      ,#$(user-account-shell account)             ; this one is a gexp
+      #$(user-account-password account)
+      #$(user-account-system? account)))
+
+(define (account-activation accounts+groups)
+  "Return a gexp that activates ACCOUNTS+GROUPS, a list of <user-account> and
+<user-group> objects.  Raise an error if a user account refers to a undefined
+group."
+  (define accounts
+    (filter user-account? accounts+groups))
+
+  (define user-specs
+    (map user-account->gexp accounts))
+
+  (define groups
+    (filter user-group? accounts+groups))
+
+  (define group-specs
+    (map user-group->gexp groups))
+
+  (assert-valid-users/groups accounts groups)
+
+  ;; Add users and user groups.
+  #~(begin
+      (setenv "PATH"
+              (string-append #$(@ (gnu packages admin) shadow) "/sbin"))
+      (activate-users+groups (list #$@user-specs)
+                             (list #$@group-specs))))
+
+(define (etc-skel arguments)
+  "Filter out among ARGUMENTS things corresponding to skeletons, and return
+the /etc/skel directory for those."
+  (let ((skels (filter pair? arguments)))
+    `(("skel" ,(skeleton-directory skels)))))
+
+(define account-service-type
+  (service-type (name 'account)
+
+                ;; Concatenate <user-account>, <user-group>, and skeleton
+                ;; lists.
+                (compose concatenate)
+                (extend append)
+
+                (extensions
+                 (list (service-extension activation-service-type
+                                          account-activation)
+                       (service-extension etc-service-type
+                                          etc-skel)))))
+
+(define (account-service accounts+groups skeletons)
+  "Return a <service> that takes care of user accounts and user groups, with
+ACCOUNTS+GROUPS as its initial list of accounts and groups."
+  (service account-service-type
+           (append skeletons accounts+groups)))
 
 ;;; shadow.scm ends here

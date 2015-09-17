@@ -18,8 +18,9 @@
 
 (define-module (gnu services ssh)
   #:use-module (guix gexp)
-  #:use-module (guix store)
+  #:use-module (guix records)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (gnu system linux)                 ; 'pam-service'
   #:use-module (gnu packages lsh)
   #:export (lsh-service))
@@ -30,11 +31,32 @@
 ;;;
 ;;; Code:
 
+;; TODO: Export.
+(define-record-type* <lsh-configuration>
+  lsh-configuration make-lsh-configuration
+  lsh-configuration?
+  (lsh lsh-configuration-lsh
+       (default lsh))
+  (daemonic? lsh-configuration-daemonic?)
+  (host-key lsh-configuration-host-key)
+  (interfaces lsh-configuration-interfaces)
+  (port-number lsh-configuration-port-number)
+  (allow-empty-passwords? lsh-configuration-allow-empty-passwords?)
+  (root-login? lsh-configuration-root-login?)
+  (syslog-output? lsh-configuration-syslog-output?)
+  (pid-file? lsh-configuration-pid-file?)
+  (pid-file lsh-configuration-pid-file)
+  (x11-forwarding? lsh-configuration-x11-forwarding?)
+  (tcp/ip-forwarding? lsh-configuration-tcp/ip-forwarding?)
+  (password-authentication? lsh-configuration-password-authentication?)
+  (public-key-authentication? lsh-configuration-public-key-authentication?)
+  (initialize? lsh-configuration-initialize?))
+
 (define %yarrow-seed
   "/var/spool/lsh/yarrow-seed-file")
 
-(define (activation lsh host-key)
-  "Return the gexp to activate the LSH service for HOST-KEY."
+(define (lsh-initialization lsh host-key)
+  "Return the gexp to initialize the LSH service for HOST-KEY."
   #~(begin
       (unless (file-exists? #$%yarrow-seed)
         (system* (string-append #$lsh "/bin/lsh-make-seed")
@@ -69,6 +91,88 @@
                   (close-port (cdr in+out))
                   (waitpid keygen)
                   (waitpid write-key))))))))))
+
+(define (lsh-activation config)
+  "Return the activation gexp for CONFIG."
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/spool/lsh")
+      #$(if (lsh-configuration-initialize? config)
+            (lsh-initialization (lsh-configuration-lsh config)
+                                (lsh-configuration-host-key config))
+            #t)))
+
+(define (lsh-dmd-service config)
+  "Return a <dmd-service> for lsh with CONFIG."
+  (define lsh (lsh-configuration-lsh config))
+  (define pid-file (lsh-configuration-pid-file config))
+  (define pid-file? (lsh-configuration-pid-file? config))
+  (define daemonic? (lsh-configuration-daemonic? config))
+  (define interfaces (lsh-configuration-interfaces config))
+
+  (define lsh-command
+    (append
+     (cons #~(string-append #$lsh "/sbin/lshd")
+           (if daemonic?
+               (let ((syslog (if (lsh-configuration-syslog-output? config)
+                                 '()
+                                 (list "--no-syslog"))))
+                 (cons "--daemonic"
+                       (if pid-file?
+                           (cons #~(string-append "--pid-file=" #$pid-file)
+                                 syslog)
+                           (cons "--no-pid-file" syslog))))
+               (if pid-file?
+                   (list #~(string-append "--pid-file=" #$pid-file))
+                   '())))
+     (cons* #~(string-append "--host-key="
+                             #$(lsh-configuration-host-key config))
+            #~(string-append "--password-helper=" #$lsh "/sbin/lsh-pam-checkpw")
+            #~(string-append "--subsystems=sftp=" #$lsh "/sbin/sftp-server")
+            "-p" (number->string (lsh-configuration-port-number config))
+            (if (lsh-configuration-password-authentication? config)
+                "--password" "--no-password")
+            (if (lsh-configuration-public-key-authentication? config)
+                "--publickey" "--no-publickey")
+            (if (lsh-configuration-root-login? config)
+                "--root-login" "--no-root-login")
+            (if (lsh-configuration-x11-forwarding? config)
+                "--x11-forward" "--no-x11-forward")
+            (if (lsh-configuration-tcp/ip-forwarding? config)
+                "--tcpip-forward" "--no-tcpip-forward")
+            (if (null? interfaces)
+                '()
+                (list (string-append "--interfaces="
+                                     (string-join interfaces ",")))))))
+
+  (define requires
+    (if (and daemonic? (lsh-configuration-syslog-output? config))
+        '(networking syslogd)
+        '(networking)))
+
+  (list (dmd-service
+         (documentation "GNU lsh SSH server")
+         (provision '(ssh-daemon))
+         (requirement requires)
+         (start #~(make-forkexec-constructor (list #$@lsh-command)))
+         (stop  #~(make-kill-destructor)))))
+
+(define (lsh-pam-services config)
+  "Return a list of <pam-services> for lshd with CONFIG."
+  (list (unix-pam-service
+         "lshd"
+         #:allow-empty-passwords?
+         (lsh-configuration-allow-empty-passwords? config))))
+
+(define lsh-service-type
+  (service-type (name 'lsh)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          lsh-dmd-service)
+                       (service-extension pam-root-service-type
+                                          lsh-pam-services)
+                       (service-extension activation-service-type
+                                          lsh-activation)))))
 
 (define* (lsh-service #:key
                       (lsh lsh)
@@ -114,58 +218,20 @@ passwords, and @var{root-login?} specifies whether to accept log-ins as
 root.
 
 The other options should be self-descriptive."
-  (define lsh-command
-    (append
-     (cons #~(string-append #$lsh "/sbin/lshd")
-           (if daemonic?
-               (let ((syslog (if syslog-output? '()
-                                 (list "--no-syslog"))))
-                 (cons "--daemonic"
-                       (if pid-file?
-                           (cons #~(string-append "--pid-file=" #$pid-file)
-                                 syslog)
-                           (cons "--no-pid-file" syslog))))
-               (if pid-file?
-                   (list #~(string-append "--pid-file=" #$pid-file))
-                   '())))
-     (cons* #~(string-append "--host-key=" #$host-key)
-            #~(string-append "--password-helper=" #$lsh "/sbin/lsh-pam-checkpw")
-            #~(string-append "--subsystems=sftp=" #$lsh "/sbin/sftp-server")
-            "-p" (number->string port-number)
-            (if password-authentication? "--password" "--no-password")
-            (if public-key-authentication?
-                "--publickey" "--no-publickey")
-            (if root-login?
-                "--root-login" "--no-root-login")
-            (if x11-forwarding?
-                "--x11-forward" "--no-x11-forward")
-            (if tcp/ip-forwarding?
-                "--tcpip-forward" "--no-tcpip-forward")
-            (if (null? interfaces)
-                '()
-                (list (string-append "--interfaces="
-                                     (string-join interfaces ",")))))))
-
-  (define requires
-    (if (and daemonic? syslog-output?)
-        '(networking syslogd)
-        '(networking)))
-
-  (service
-   (documentation "GNU lsh SSH server")
-   (provision '(ssh-daemon))
-   (requirement requires)
-   (start #~(make-forkexec-constructor (list #$@lsh-command)))
-   (stop  #~(make-kill-destructor))
-   (pam-services
-    (list (unix-pam-service
-           "lshd"
-           #:allow-empty-passwords? allow-empty-passwords?)))
-   (activate #~(begin
-                 (use-modules (guix build utils))
-                 (mkdir-p "/var/spool/lsh")
-                 #$(if initialize?
-                       (activation lsh host-key)
-                       #t)))))
+  (service lsh-service-type
+           (lsh-configuration (lsh lsh) (daemonic? daemonic?)
+                              (host-key host-key) (interfaces interfaces)
+                              (port-number port-number)
+                              (allow-empty-passwords? allow-empty-passwords?)
+                              (root-login? root-login?)
+                              (syslog-output? syslog-output?)
+                              (pid-file? pid-file?) (pid-file pid-file)
+                              (x11-forwarding? x11-forwarding?)
+                              (tcp/ip-forwarding? tcp/ip-forwarding?)
+                              (password-authentication?
+                               password-authentication?)
+                              (public-key-authentication?
+                               public-key-authentication?)
+                              (initialize? initialize?))))
 
 ;;; ssh.scm ends here

@@ -219,6 +219,7 @@ SCM_TESTS =					\
   tests/size.scm				\
   tests/graph.scm				\
   tests/file-systems.scm			\
+  tests/services.scm				\
   tests/containers.scm
 
 if HAVE_GUILE_JSON

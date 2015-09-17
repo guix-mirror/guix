@@ -87,8 +87,6 @@
             operating-system-locale-directory
             operating-system-boot-script
 
-            file-union
-
             local-host-aliases
             %setuid-programs
             %base-packages
@@ -162,41 +160,6 @@
 
 
 ;;;
-;;; Derivation.
-;;;
-
-(define* (file-union name files)
-  "Return a derivation that builds a directory containing all of FILES.  Each
-item in FILES must be a list where the first element is the file name to use
-in the new directory, and the second element is a gexp denoting the target
-file."
-  (define builder
-    #~(begin
-        (mkdir #$output)
-        (chdir #$output)
-        #$@(map (match-lambda
-                 ((target source)
-                  #~(symlink #$source #$target)))
-                files)))
-
-  (gexp->derivation name builder))
-
-(define (directory-union name things)
-  "Return a directory that is the union of THINGS."
-  (match things
-    ((one)
-     ;; Only one thing; return it.
-     (with-monad %store-monad (return one)))
-    (_
-     (gexp->derivation name
-                       #~(begin
-                           (use-modules (guix build union))
-                           (union-build #$output '#$things))
-                       #:modules '((guix build union))
-                       #:local-build? #t))))
-
-
-;;;
 ;;; Services.
 ;;;
 
@@ -244,18 +207,7 @@ as 'needed-for-boot'."
                                   (string->symbol (mapped-device-target md))))
                  (device-mappings fs))))
 
-  (map (lambda (fs)
-         (match fs
-           (($ <file-system> device title target type flags opts
-                             #f check? create?)
-            (file-system-service device target type
-                                 #:title title
-                                 #:requirements (requirements fs)
-                                 #:check? check?
-                                 #:create-mount-point? create?
-                                 #:options opts
-                                 #:flags flags))))
-       file-systems))
+  (map file-system-service file-systems))
 
 (define (mapped-device-user device file-systems)
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
@@ -302,10 +254,11 @@ from the initrd."
   "Return the list of swap services for OS."
   (map swap-service (operating-system-swap-devices os)))
 
-(define (essential-services os)
+(define* (essential-services os #:key container?)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
-bookkeeping."
+bookkeeping.  CONTAINER? determines whether to return the list of services for
+a container or that of a \"bare metal\" system."
   (define known-fs
     (map file-system-mount-point (operating-system-file-systems os)))
 
@@ -315,17 +268,36 @@ bookkeeping."
          (unmount   (user-unmount-service known-fs))
          (swaps     (swap-services os))
          (procs     (user-processes-service
-                     (map (compose first service-provision)
-                          other-fs)))
+                     (map service-parameters other-fs)))
          (host-name (host-name-service (operating-system-host-name os))))
-    (cons* host-name procs root-fs unmount
-           (append other-fs mappings swaps))))
+    (cons* %boot-service
 
-(define (operating-system-services os)
+           ;; %DMD-ROOT-SERVICE must come first so that the gexp that execs
+           ;; dmd comes last in the boot script (XXX).
+           %dmd-root-service %activation-service
+
+           (pam-root-service (operating-system-pam-services os))
+           (account-service (append (operating-system-accounts os)
+                                    (operating-system-groups os))
+                            (operating-system-skeletons os))
+           (operating-system-etc-service os)
+           host-name procs root-fs unmount
+           (service setuid-program-service-type
+                    (operating-system-setuid-programs os))
+           (append other-fs mappings swaps
+
+                   ;; Add the firmware service, unless we are building for a
+                   ;; container.
+                   (if container?
+                       '()
+                       (list (service firmware-service-type
+                                      (operating-system-firmware os))))))))
+
+(define* (operating-system-services os #:key container?)
   "Return all the services of OS, including \"internal\" services that do not
 explicitly appear in OS."
   (append (operating-system-user-services os)
-          (essential-services os)))
+          (essential-services os #:container? container?)))
 
 
 ;;;
@@ -388,28 +360,27 @@ This is the GNU system.  Welcome.\n")
 (define (emacs-site-file)
   "Return the Emacs 'site-start.el' file.  That file contains the necessary
 settings for 'guix.el' to work out-of-the-box."
-  (gexp->file "site-start.el"
-              #~(progn
-                 ;; Add the "normal" elisp directory to the search path;
-                 ;; guix.el may be there.
-                 (add-to-list
-                  'load-path
-                  "/run/current-system/profile/share/emacs/site-lisp")
+  (scheme-file "site-start.el"
+               #~(progn
+                  ;; Add the "normal" elisp directory to the search path;
+                  ;; guix.el may be there.
+                  (add-to-list
+                   'load-path
+                   "/run/current-system/profile/share/emacs/site-lisp")
 
-                 ;; Attempt to load guix.el.
-                 (require 'guix-init nil t)
+                  ;; Attempt to load guix.el.
+                  (require 'guix-init nil t)
 
-                 ;; Attempt to load geiser.
-                 (require 'geiser-install nil t))))
+                  ;; Attempt to load geiser.
+                  (require 'geiser-install nil t))))
 
 (define (emacs-site-directory)
   "Return the Emacs site directory, aka. /etc/emacs."
-  (mlet %store-monad ((file (emacs-site-file)))
-    (gexp->derivation "emacs"
-                      #~(begin
-                          (mkdir #$output)
-                          (chdir #$output)
-                          (symlink #$file "site-start.el")))))
+  (computed-file "emacs"
+                 #~(begin
+                     (mkdir #$output)
+                     (chdir #$output)
+                     (symlink #$(emacs-site-file) "site-start.el"))))
 
 (define (user-shells os)
   "Return the list of all the shells used by the accounts of OS.  These may be
@@ -417,49 +388,43 @@ gexps or strings."
   (map user-account-shell (operating-system-accounts os)))
 
 (define (shells-file shells)
-  "Return a derivation that builds a shell list for use as /etc/shells based
-on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
-  (gexp->derivation "shells"
-                    #~(begin
-                        (use-modules (srfi srfi-1))
+  "Return a file-like object that builds a shell list for use as /etc/shells
+based on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
+  (computed-file "shells"
+                 #~(begin
+                     (use-modules (srfi srfi-1))
 
-                        (define shells
-                          (delete-duplicates (list #$@shells)))
+                     (define shells
+                       (delete-duplicates (list #$@shells)))
 
-                        (call-with-output-file #$output
-                          (lambda (port)
-                            (display "\
+                     (call-with-output-file #$output
+                       (lambda (port)
+                         (display "\
 /bin/sh
 /run/current-system/profile/bin/sh
 /run/current-system/profile/bin/bash\n" port)
-                            (for-each (lambda (shell)
-                                        (display shell port)
-                                        (newline port))
-                                      shells))))))
+                         (for-each (lambda (shell)
+                                     (display shell port)
+                                     (newline port))
+                                   shells))))))
 
-(define* (etc-directory #:key
-                        (locale "C") (timezone "Europe/Paris")
-                        (issue "Hello!\n")
-                        (skeletons '())
-                        (pam-services '())
-                        (profile "/run/current-system/profile")
-                        hosts-file nss (shells '())
-                        (sudoers-file (plain-file "sudoers" "")))
-  "Return a derivation that builds the static part of the /etc directory."
-  (mlet* %store-monad
-      ((pam.d ->   (pam-services->directory pam-services))
-       (login.defs (text-file "login.defs" "# Empty for now.\n"))
-       (shells     (shells-file shells))
-       (emacs      (emacs-site-directory))
-       (issue      (text-file "issue" issue))
-       (nsswitch   (text-file "nsswitch.conf"
-                              (name-service-switch->string nss)))
+(define* (operating-system-etc-service os)
+  "Return a <service> that builds containing the static part of the /etc
+directory."
+  (let ((login.defs (plain-file "login.defs" "# Empty for now.\n"))
 
-       ;; Startup file for POSIX-compliant login shells, which set system-wide
-       ;; environment variables.
-       (profile    (text-file* "profile"  "\
-export LANG=\"" locale "\"
-export TZ=\"" timezone "\"
+        (shells     (shells-file (user-shells os)))
+        (emacs      (emacs-site-directory))
+        (issue      (plain-file "issue" (operating-system-issue os)))
+        (nsswitch   (plain-file "nsswitch.conf"
+                                (name-service-switch->string
+                                 (operating-system-name-service-switch os))))
+
+        ;; Startup file for POSIX-compliant login shells, which set system-wide
+        ;; environment variables.
+        (profile    (mixed-text-file "profile"  "\
+export LANG=\"" (operating-system-locale os) "\"
+export TZ=\"" (operating-system-timezone os) "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
 # Tell 'modprobe' & co. where to look for modules.
@@ -516,7 +481,7 @@ then
 fi
 "))
 
-       (bashrc    (text-file "bashrc" "\
+        (bashrc    (plain-file "bashrc" "\
 # Bash-specific initialization.
 
 # The 'bash-completion' package.
@@ -526,25 +491,23 @@ then
   # completion loader that searches its own completion files as well
   # as those in ~/.guix-profile and /run/current-system/profile.
   source /run/current-system/profile/etc/profile.d/bash_completion.sh
-fi\n"))
-       (skel ->   (skeleton-directory skeletons)))
-    (file-union "etc"
-                `(("services" ,#~(string-append #$net-base "/etc/services"))
-                  ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
-                  ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
-                  ("emacs" ,#~#$emacs)
-                  ("pam.d" ,#~#$pam.d)
-                  ("login.defs" ,#~#$login.defs)
-                  ("issue" ,#~#$issue)
-                  ("nsswitch.conf" ,#~#$nsswitch)
-                  ("skel" ,#~#$skel)
-                  ("shells" ,#~#$shells)
-                  ("profile" ,#~#$profile)
-                  ("bashrc" ,#~#$bashrc)
-                  ("hosts" ,#~#$hosts-file)
-                  ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
-                                                 #$timezone))
-                  ("sudoers" ,sudoers-file)))))
+fi\n")))
+    (etc-service
+     `(("services" ,#~(string-append #$net-base "/etc/services"))
+       ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
+       ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
+       ("emacs" ,#~#$emacs)
+       ("login.defs" ,#~#$login.defs)
+       ("issue" ,#~#$issue)
+       ("nsswitch.conf" ,#~#$nsswitch)
+       ("shells" ,#~#$shells)
+       ("profile" ,#~#$profile)
+       ("bashrc" ,#~#$bashrc)
+       ("hosts" ,#~#$(or (operating-system-hosts-file os)
+                         (default-/etc/hosts (operating-system-host-name os))))
+       ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
+                                      #$(operating-system-timezone os)))
+       ("sudoers" ,(operating-system-sudoers-file os))))))
 
 (define (operating-system-profile os)
   "Return a derivation that builds the system profile of OS."
@@ -561,18 +524,14 @@ fi\n"))
    (home-directory "/root")))
 
 (define (operating-system-accounts os)
-  "Return the user accounts for OS, including an obligatory 'root' account."
-  (define users
-    ;; Make sure there's a root account.
-    (if (find (lambda (user)
-                (and=> (user-account-uid user) zero?))
-              (operating-system-users os))
-        (operating-system-users os)
-        (cons %root-account (operating-system-users os))))
-
-  (append users
-          (append-map service-user-accounts
-                      (operating-system-services os))))
+  "Return the user accounts for OS, including an obligatory 'root' account,
+and excluding accounts requested by services."
+  ;; Make sure there's a root account.
+  (if (find (lambda (user)
+              (and=> (user-account-uid user) zero?))
+            (operating-system-users os))
+      (operating-system-users os)
+      (cons %root-account (operating-system-users os))))
 
 (define (maybe-string->file file-name thing)
   "If THING is a string, return a <plain-file> with THING as its content.
@@ -607,31 +566,9 @@ use 'plain-file' instead~%")
 
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
-  (mlet* %store-monad
-      ((services -> (operating-system-services os))
-       (pam-services ->
-                     ;; Services known to PAM.
-                     (append (operating-system-pam-services os)
-                             (append-map service-pam-services services)))
-       (profile-drv (operating-system-profile os))
-       (skeletons   (operating-system-skeletons os))
-       (/etc/hosts  (maybe-file->monadic
-                     "hosts"
-                     (or (operating-system-hosts-file os)
-                         (default-/etc/hosts (operating-system-host-name os)))))
-       (shells ->   (user-shells os)))
-   (etc-directory #:pam-services pam-services
-                  #:skeletons skeletons
-                  #:issue (operating-system-issue os)
-                  #:locale (operating-system-locale os)
-                  #:nss (operating-system-name-service-switch os)
-                  #:timezone (operating-system-timezone os)
-                  #:hosts-file /etc/hosts
-                  #:shells shells
-                  #:sudoers-file (maybe-string->file
-                                  "sudoers"
-                                  (operating-system-sudoers-file os))
-                  #:profile profile-drv)))
+  (etc-directory
+   (fold-services (operating-system-services os)
+                  #:target-type etc-service-type)))
 
 (define %setuid-programs
   ;; Default set of setuid-root programs.
@@ -652,176 +589,23 @@ use 'plain-file' instead~%")
 root ALL=(ALL) ALL
 %wheel ALL=(ALL) ALL\n"))
 
-(define (user-group->gexp group)
-  "Turn GROUP, a <user-group> object, into a list-valued gexp suitable for
-'active-groups'."
-  #~(list #$(user-group-name group)
-          #$(user-group-password group)
-          #$(user-group-id group)
-          #$(user-group-system? group)))
-
-(define (user-account->gexp account)
-  "Turn ACCOUNT, a <user-account> object, into a list-valued gexp suitable for
-'activate-users'."
-  #~`(#$(user-account-name account)
-      #$(user-account-uid account)
-      #$(user-account-group account)
-      #$(user-account-supplementary-groups account)
-      #$(user-account-comment account)
-      #$(user-account-home-directory account)
-      ,#$(user-account-shell account)             ; this one is a gexp
-      #$(user-account-password account)
-      #$(user-account-system? account)))
-
-(define (modprobe-wrapper)
-  "Return a wrapper for the 'modprobe' command that knows where modules live.
-
-This wrapper is typically invoked by the Linux kernel ('call_modprobe', in
-kernel/kmod.c), a situation where the 'LINUX_MODULE_DIRECTORY' environment
-variable is not set---hence the need for this wrapper."
-  (let ((modprobe "/run/current-system/profile/bin/modprobe"))
-    (gexp->script "modprobe"
-                  #~(begin
-                      (setenv "LINUX_MODULE_DIRECTORY"
-                              "/run/booted-system/kernel/lib/modules")
-                      (apply execl #$modprobe
-                             (cons #$modprobe (cdr (command-line))))))))
-
 (define* (operating-system-activation-script os #:key container?)
   "Return the activation script for OS---i.e., the code that \"activates\" the
 stateful part of OS, including user accounts and groups, special directories,
 etc."
-  (define %modules
-    '((gnu build activation)
-      (gnu build linux-boot)
-      (gnu build linux-modules)
-      (gnu build file-systems)
-      (guix build utils)
-      (guix build syscalls)
-      (guix elf)))
-
-  (define (service-activations services)
-    ;; Return the activation scripts for SERVICES.
-    (let ((gexps (filter-map service-activate services)))
-      (sequence %store-monad (map (cut gexp->file "activate-service.scm" <>)
-                                  gexps))))
-
-  (mlet* %store-monad ((services -> (operating-system-services os))
-                       (actions  (service-activations services))
-                       (etc      (operating-system-etc-directory os))
-                       (modules  (imported-modules %modules))
-                       (compiled (compiled-modules %modules))
-                       (modprobe (modprobe-wrapper))
-                       (firmware (directory-union
-                                  "firmware" (operating-system-firmware os)))
-                       (accounts -> (operating-system-accounts os)))
-    (define setuid-progs
-      (operating-system-setuid-programs os))
-
-    (define user-specs
-      (map user-account->gexp accounts))
-
-    (define groups
-      (append (operating-system-groups os)
-              (append-map service-user-groups services)))
-
-    (define group-specs
-      (map user-group->gexp groups))
-
-    (assert-valid-users/groups accounts groups)
-
-    (gexp->file "activate"
-                #~(begin
-                    (eval-when (expand load eval)
-                      ;; Make sure 'use-modules' below succeeds.
-                      (set! %load-path (cons #$modules %load-path))
-                      (set! %load-compiled-path
-                            (cons #$compiled %load-compiled-path)))
-
-                    (use-modules (gnu build activation))
-
-                    ;; Make sure /bin/sh is valid and current.
-                    (activate-/bin/sh
-                     (string-append #$(canonical-package bash)
-                                    "/bin/sh"))
-
-                    ;; Populate /etc.
-                    (activate-etc #$etc)
-
-                    ;; Add users and user groups.
-                    (setenv "PATH"
-                            (string-append #$(@ (gnu packages admin) shadow)
-                                           "/sbin"))
-                    (activate-users+groups (list #$@user-specs)
-                                           (list #$@group-specs))
-
-                    ;; Activate setuid programs.
-                    (activate-setuid-programs (list #$@setuid-progs))
-
-                    ;; Tell the kernel to use our 'modprobe' command.
-                    (activate-modprobe #$modprobe)
-
-                    ;; Tell the kernel where firmware is, unless we are
-                    ;; activating a container.
-                    #$@(if container?
-                           #~()
-                           ;; Tell the kernel where firmware is.
-                           #~((activate-firmware
-                               (string-append #$firmware "/lib/firmware"))
-                              ;; Let users debug their own processes!
-                              (activate-ptrace-attach)))
-
-                    ;; Run the services' activation snippets.
-                    ;; TODO: Use 'load-compiled'.
-                    (for-each primitive-load '#$actions)
-
-                    ;; Set up /run/current-system.
-                    (activate-current-system)))))
+  (let* ((services   (operating-system-services os #:container? container?))
+         (activation (fold-services services
+                                    #:target-type activation-service-type)))
+    (activation-service->script activation)))
 
 (define* (operating-system-boot-script os #:key container?)
   "Return the boot script for OS---i.e., the code started by the initrd once
 we're running in the final root.  When CONTAINER? is true, skip all
 hardware-related operations as necessary when booting a Linux container."
-  (mlet* %store-monad ((services -> (operating-system-services os))
-                       (activate (operating-system-activation-script os))
-                       (dmd-conf (dmd-configuration-file services)))
-    (gexp->file "boot"
-                #~(begin
-                    (use-modules (guix build utils))
-
-                    ;; Clean out /tmp and /var/run.
-                    ;;
-                    ;; XXX This needs to happen before service activations, so
-                    ;; it has to be here, but this also implicitly assumes
-                    ;; that /tmp and /var/run are on the root partition.
-                    (false-if-exception (delete-file-recursively "/tmp"))
-                    (false-if-exception (delete-file-recursively "/var/run"))
-                    (false-if-exception (mkdir "/tmp"))
-                    (false-if-exception (chmod "/tmp" #o1777))
-                    (false-if-exception (mkdir "/var/run"))
-                    (false-if-exception (chmod "/var/run" #o755))
-
-                    ;; Activate the system.
-                    ;; TODO: Use 'load-compiled'.
-                    (primitive-load #$activate)
-
-                    ;; Keep track of the booted system.
-                    (false-if-exception (delete-file "/run/booted-system"))
-                    (symlink (readlink "/run/current-system")
-                             "/run/booted-system")
-
-                    ;; Close any remaining open file descriptors to be on the
-                    ;; safe side.  This must be the very last thing we do,
-                    ;; because Guile has internal FDs such as 'sleep_pipe'
-                    ;; that need to be alive.
-                    (let loop ((fd 3))
-                      (when (< fd 1024)
-                        (false-if-exception (close-fdes fd))
-                        (loop (+ 1 fd))))
-
-                    ;; Start dmd.
-                    (execl (string-append #$dmd "/bin/dmd")
-                           "dmd" "--config" #$dmd-conf)))))
+  (let* ((services (operating-system-services os #:container? container?))
+         (boot     (fold-services services)))
+    ;; BOOT is the script as a monadic value.
+    (service-parameters boot)))
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
@@ -908,19 +692,20 @@ this file is the reconstruction of GRUB menu entries for old configurations."
   "Return a derivation that builds OS."
   (mlet* %store-monad
       ((profile     (operating-system-profile os))
-       (etc         (operating-system-etc-directory os))
+       (etc ->      (operating-system-etc-directory os))
        (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
        (initrd      (operating-system-initrd-file os))
        (locale      (operating-system-locale-directory os))
        (params      (operating-system-parameters-file os)))
-    (file-union "system"
-                `(("boot" ,#~#$boot)
-                  ("kernel" ,#~#$kernel)
-                  ("parameters" ,#~#$params)
-                  ("initrd" ,initrd)
-                  ("profile" ,#~#$profile)
-                  ("locale" ,#~#$locale)          ;used by libc
-                  ("etc" ,#~#$etc)))))
+    (lower-object
+     (file-union "system"
+                 `(("boot" ,#~#$boot)
+                   ("kernel" ,#~#$kernel)
+                   ("parameters" ,#~#$params)
+                   ("initrd" ,initrd)
+                   ("profile" ,#~#$profile)
+                   ("locale" ,#~#$locale)         ;used by libc
+                   ("etc" ,#~#$etc))))))
 
 ;;; system.scm ends here
