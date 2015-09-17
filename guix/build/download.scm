@@ -101,15 +101,14 @@ width of the bar is BAR-WIDTH."
 
 (define (string-pad-middle left right len)
   "Combine LEFT and RIGHT with enough padding in the middle so that the
-resulting string has length at least LEN.  This right justifies RIGHT."
-  (string-append left
-                 (string-pad right (max 0 (- len (string-length left))))))
-
-(define (store-url-abbreviation url)
-  "Return a friendlier version of URL for display."
-  (let ((store-path (string-append (%store-directory) "/" (basename url))))
-    ;; Take advantage of the implementation for store paths.
-    (store-path-abbreviation store-path)))
+resulting string has length at least LEN (it may overflow).  If the string
+does not overflow, the last char in RIGHT will be flush with the LEN
+column."
+  (let* ((total-used (+ (string-length left)
+                        (string-length right)))
+         (num-spaces (max 1 (- len total-used)))
+         (padding    (make-string num-spaces #\space)))
+    (string-append left padding right)))
 
 (define* (store-path-abbreviation store-path #:optional (prefix-length 6))
   "Return an abbreviation of STORE-PATH for display, showing PREFIX-LENGTH
@@ -121,7 +120,7 @@ characters of the hash."
 
 (define* (progress-proc file size
                         #:optional (log-port (current-output-port))
-                        #:key (abbreviation identity))
+                        #:key (abbreviation basename))
   "Return a procedure to show the progress of FILE's download, which is SIZE
 bytes long.  The returned procedure is suitable for use as an argument to
 `dump-port'.  The progress report is written to LOG-PORT, with ABBREVIATION
@@ -519,7 +518,7 @@ on success."
                   (_       (list (string->uri url))))))
 
   (define (fetch uri file)
-    (format #t "starting download of `~a' from `~a'...~%"
+    (format #t "~%Starting download of ~a~%From ~a...~%"
             file (uri->string uri))
     (case (uri-scheme uri)
       ((http https)
