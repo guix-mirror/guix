@@ -183,7 +183,7 @@ Ethernet devices.")
     (synopsis "Text based network interface status monitor")
     (description
      "IFStatus is a simple, easy-to-use program for displaying commonly
-needed / wanted real-time traffic statistics of multiple network
+needed/wanted real-time traffic statistics of multiple network
 interfaces, with a simple and efficient view on the command line.  It is
 intended as a substitute for the PPPStatus and EthStatus projects.")
-    (license license:bsd-2)))
+    (license license:gpl2+)))
