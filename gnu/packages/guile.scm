@@ -39,6 +39,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages python)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -599,5 +600,81 @@ interface for reading articles in any format.")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
     (license lgpl3+)))
+
+(define-public guile-wisp
+  (package
+    (name "guile-wisp")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://bitbucket.org/ArneBab/"
+                                  "wisp/downloads/wisp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0y5fxacalkgbv9s71h58vdvm2h2ln3rk024dd0vszwcf953as5fq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((system base compile)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'substitute-before-config
+
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((bash (assoc-ref inputs "bash")))
+              ;; configure checks for guile-2.0, but ours is just named "guile" :)
+              (substitute* "configure"
+                (("guile-2.0") "guile"))
+              ;; Puts together some test files with /bin/bash hardcoded
+              (substitute* "Makefile.in"
+                (("/bin/bash")
+                 (string-append bash "/bin/bash") ))
+              #t)))
+
+         ;; auto compilation breaks, but if we set HOME to /tmp,
+         ;; that works ok
+         (add-before
+          'check 'auto-compile-hacky-workaround
+          (lambda _
+            (setenv "HOME" "/tmp")
+            #t))
+         (replace
+          'install
+          (lambda* (#:key outputs inputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (module-dir (string-append out "/share/guile/site/2.0"))
+                   (language-dir
+                    (string-append module-dir "/language/wisp"))
+                   (guild (string-append (assoc-ref inputs "guile")
+                                         "/bin/guild")))
+              ;; Make installation directories.
+              (mkdir-p module-dir)
+              (mkdir-p language-dir)
+
+              ;; copy the source
+              (copy-file "wisp-scheme.scm"
+                         (string-append module-dir "/wisp-scheme.scm"))
+              (copy-file "language/wisp/spec.scm"
+                         (string-append language-dir "/spec.scm"))
+
+              ;; compile to the destination
+              (compile-file "wisp-scheme.scm"
+                            #:output-file (string-append
+                                           module-dir "/wisp-scheme.go"))
+              (compile-file "language/wisp/spec.scm"
+                            #:output-file (string-append
+                                           language-dir "/spec.go"))
+              #t))))))
+    (home-page "http://draketo.de/english/wisp")
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("python" ,python)))
+    (synopsis "wisp is a whitespace to lisp syntax for Guile")
+    (description "wisp is a syntax for Guile which provides a Python-like
+whitespace-significant language.  It may be easier on the eyes for some
+users and in some situations.")
+    (license gpl3+)))
 
 ;;; guile.scm ends here
