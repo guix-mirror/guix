@@ -594,12 +594,25 @@ descriptions maintained upstream."
                   (format #f (_ "line ~a is way too long (~a characters)")
                           line-number (string-length line)))))
 
+(define %hanging-paren-rx
+  (make-regexp "^[[:blank:]]*[()]+[[:blank:]]*$"))
+
+(define (report-lone-parentheses package line line-number)
+  "Emit a warning if LINE contains hanging parentheses."
+  (when (regexp-exec %hanging-paren-rx line)
+    (emit-warning package
+                  (format #f
+                          (_ "line ~a: parentheses feel lonely, \
+move to the previous or next line")
+                          line-number))))
+
 (define %formatting-reporters
   ;; List of procedures that report formatting issues.  These are not separate
   ;; checkers because they would need to re-read the file.
   (list report-tabulations
         report-trailing-white-space
-        report-long-line))
+        report-long-line
+        report-lone-parentheses))
 
 (define* (report-formatting-issues package file starting-line
                                    #:key (reporters %formatting-reporters))

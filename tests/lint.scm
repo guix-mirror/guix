@@ -512,6 +512,16 @@ requests."
           (check-source pkg))))
     "not reachable: 404")))
 
+(test-assert "formatting: lonely parentheses"
+  (string-contains
+   (with-warnings
+     (check-formatting
+      (
+       dummy-package "ugly as hell!"
+      )
+      ))
+   "lonely"))
+
 (test-assert "formatting: tabulation"
   (string-contains
    (with-warnings
