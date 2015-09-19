@@ -2552,6 +2552,44 @@ manipulation, online and indexed string search, efficient I/O of
 bioinformatics file formats, sequence alignment, and more.")
     (license license:bsd-3)))
 
+(define-public seqmagick
+  (package
+    (name "seqmagick")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/seqmagick/seqmagick-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0cgn477n74gsl4qdaakrrhi953kcsd4q3ivk2lr18x74s3g4ma1d"))))
+    (build-system python-build-system)
+    (arguments
+     ;; python2 only, see https://github.com/fhcrc/seqmagick/issues/56
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; Current test in setup.py does not work as of 0.6.1,
+         ;; so use nose to run tests instead for now. See
+         ;; https://github.com/fhcrc/seqmagick/issues/55
+         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+    (inputs
+     `(("python-biopython" ,python2-biopython)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)
+       ("python-nose" ,python2-nose)))
+    (home-page "http://github.com/fhcrc/seqmagick")
+    (synopsis "Tools for converting and modifying sequence files")
+    (description
+     "Bioinformaticians often have to convert sequence files between formats
+and do little manipulations on them, and it's not worth writing scripts for
+that.  Seqmagick is a utility to expose the file format conversion in
+BioPython in a convenient way.  Instead of having a big mess of scripts, there
+is one that takes arguments.")
+    (license license:gpl3)))
+
 (define-public star
   (package
     (name "star")
