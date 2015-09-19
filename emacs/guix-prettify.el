@@ -77,9 +77,14 @@ disabling `guix-prettify-mode' a little faster."
   :group 'guix-prettify)
 
 (defcustom guix-prettify-regexp
-  (rx "/"
-      (or "nix" "gnu")
-      "/store/"
+  ;; The following file names / URLs should be abbreviated:
+
+  ;; /gnu/store/…-foo-0.1
+  ;; /nix/store/…-foo-0.1
+  ;; http://hydra.gnu.org/nar/…-foo-0.1
+  ;; http://hydra.gnu.org/log/…-foo-0.1
+
+  (rx "/" (or "store" "nar" "log") "/"
       ;; Hash-parts do not include "e", "o", "u" and "t".  See base32Chars
       ;; at <https://github.com/NixOS/nix/blob/master/src/libutil/hash.cc>
       (group (= 32 (any "0-9" "a-d" "f-n" "p-s" "v-z"))))
