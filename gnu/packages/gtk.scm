@@ -562,9 +562,6 @@ application suites.")
          (substitute* "testsuite/Makefile.in"
            (("SUBDIRS = gdk gtk a11y css reftests")
             "SUBDIRS = gdk"))
-         (substitute* '("demos/widget-factory/Makefile.in"
-                        "demos/gtk-demo/Makefile.in")
-           (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
          #t)
        (alist-cons-after
         'install 'wrap-gtk-encode-symbolic-svg
