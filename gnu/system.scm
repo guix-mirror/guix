@@ -527,7 +527,7 @@ then
   # as those in ~/.guix-profile and /run/current-system/profile.
   source /run/current-system/profile/etc/profile.d/bash_completion.sh
 fi\n"))
-       (skel      (skeleton-directory skeletons)))
+       (skel ->   (skeleton-directory skeletons)))
     (file-union "etc"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
                   ("protocols" ,#~(string-append #$net-base "/etc/protocols"))

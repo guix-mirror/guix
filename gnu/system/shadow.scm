@@ -20,7 +20,6 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module ((gnu system file-systems)
@@ -133,10 +132,10 @@
         (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
                    #$output)))
 
-  (mlet %store-monad ((profile (text-file "bash_profile" "\
+  (let ((profile (plain-file "bash_profile" "\
 # Honor per-interactive-shell startup file
 if [ -f ~/.bashrc ]; then . ~/.bashrc; fi\n"))
-                      (bashrc (text-file "bashrc" "\
+        (bashrc  (plain-file "bashrc" "\
 # Bash initialization for interactive non-login shells and
 # for remote shells (info \"(bash) Bash Startup Files\").
 
@@ -162,42 +161,41 @@ else
 fi
 alias ls='ls -p --color'
 alias ll='ls -l'\n"))
-                      (zlogin (text-file "zlogin" "\
+        (zlogin    (plain-file "zlogin" "\
 # Honor system-wide environment variables
 source /etc/profile\n"))
-                      (guile-wm (gexp->derivation "guile-wm" copy-guile-wm
-                                                  #:modules
-                                                  '((guix build utils))))
-                      (xdefaults (text-file "Xdefaults" "\
+        (guile-wm  (computed-file "guile-wm" copy-guile-wm
+                                  #:modules '((guix build utils))))
+        (xdefaults (plain-file "Xdefaults" "\
 XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
-                      (gdbinit   (text-file "gdbinit" "\
+        (gdbinit   (plain-file "gdbinit" "\
 # Tell GDB where to look for separate debugging files.
 set debug-file-directory ~/.guix-profile/lib/debug\n")))
-    (return `((".bash_profile" ,profile)
-              (".bashrc" ,bashrc)
-              (".zlogin" ,zlogin)
-              (".Xdefaults" ,xdefaults)
-              (".guile-wm" ,guile-wm)
-              (".gdbinit" ,gdbinit)))))
+    `((".bash_profile" ,profile)
+      (".bashrc" ,bashrc)
+      (".zlogin" ,zlogin)
+      (".Xdefaults" ,xdefaults)
+      (".guile-wm" ,guile-wm)
+      (".gdbinit" ,gdbinit))))
 
 (define (skeleton-directory skeletons)
-  "Return a directory containing SKELETONS, a list of name/derivation pairs."
-  (gexp->derivation "skel"
-                    #~(begin
-                        (use-modules (ice-9 match))
+  "Return a directory containing SKELETONS, a list of name/derivation tuples."
+  (computed-file "skel"
+                 #~(begin
+                     (use-modules (ice-9 match))
 
-                        (mkdir #$output)
-                        (chdir #$output)
+                     (mkdir #$output)
+                     (chdir #$output)
 
-                        ;; Note: copy the skeletons instead of symlinking
-                        ;; them like 'file-union' does, because 'useradd'
-                        ;; would just copy the symlinks as is.
-                        (for-each (match-lambda
-                                   ((target source)
-                                    (copy-file source target)))
-                                  '#$skeletons)
-                        #t)))
+                     ;; Note: copy the skeletons instead of symlinking
+                     ;; them like 'file-union' does, because 'useradd'
+                     ;; would just copy the symlinks as is.
+                     (for-each (match-lambda
+                                 ((target source)
+                                  (copy-file source target)))
+                               '#$skeletons)
+                     #t)))
 
 (define (assert-valid-users/groups users groups)
   "Raise an error if USERS refer to groups not listed in GROUPS."
