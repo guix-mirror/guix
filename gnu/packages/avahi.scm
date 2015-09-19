@@ -52,7 +52,8 @@
                            "--disable-xmltoman"
                            "--enable-tests"
                            "--disable-qt3" "--disable-qt4"
-                           "--disable-gtk" "--disable-gtk3")))
+                           "--disable-gtk" "--disable-gtk3"
+                           "--enable-compat-libdns_sd")))
     (inputs
      `(("expat" ,expat)
        ("glib" ,glib)
