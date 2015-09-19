@@ -60,6 +60,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
@@ -1737,6 +1738,39 @@ synthesizer written in C++.")
      "RSound allows you to send audio from an application and transfer it
 directly to a different computer on your LAN network.  It is an audio daemon
 with a much different focus than most other audio daemons.")
+    (license license:gpl3+)))
+
+(define-public xjackfreak
+  (package
+    (name "xjackfreak")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/johnhldavis/xjackfreak/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xj6gpxfnw9jbdgwgm0x23xgfvj2kwmwb1nk0drw8lxgcchkq7d9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/xjackfreak"))))
+    (inputs
+     `(("jack" ,jack-1)
+       ("libx11" ,libx11)
+       ("libxt" ,libxt)
+       ("libxext" ,libxext)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/johnhldavis/xjackfreak")
+    (synopsis "JACK audio frequency analyzer and display")
+    (description
+     "XJackFreak is an audio analysis and equalizing tool for the Jack Audio
+Connection Kit.  It can display the FFT of any input, modify it and output the
+result.")
     (license license:gpl3+)))
 
 (define-public zita-convolver
