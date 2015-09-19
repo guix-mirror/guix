@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4917,6 +4918,37 @@ object to help create WSGI responses.")
 
 (define-public python2-webob
   (package-with-python2 python-webob))
+
+(define-public python-xlrd
+  (package
+    (name "python-xlrd")
+    (version "0.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/x/"
+                                  "xlrd/xlrd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wpa55nvidmm5m2qr622dsh3cj46akdk0h3zjgzschcmydck73cf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Current test in setup.py does not work as of 0.9.4, so use nose to
+         ;; run tests instead for now.
+         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+    (native-inputs `(("python-nose"       ,python-nose)
+                     ("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.python-excel.org/")
+    (synopsis "Library for extracting data from Excel files")
+    (description "This packages provides a library to extract data from
+spreadsheets using Microsoft Excel® proprietary file formats @samp{.xls} and
+@samp{.xlsx} (versions 2.0 onwards).  It has support for Excel dates and is
+Unicode-aware.  It is not intended as an end-user tool.")
+    (license bsd-3)))
+
+(define-public python2-xlrd
+  (package-with-python2 python-xlrd))
 
 (define-public python-prettytable
   (package
