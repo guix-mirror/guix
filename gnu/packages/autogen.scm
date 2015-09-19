@@ -30,16 +30,16 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.5")
+    (version "5.18.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/autogen/rel"
                           version "/autogen-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "1flnbnmkbqmbfgammkl8m36wrlk6rhpgnf9pdm6gdfhqalxvggbv"))))
+        "0sfmmy19k9z0j3f738fyk6ljf6b66410cvd5zzyplxi2683j10qs"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for doc generator mdoc
                      ("pkg-config" ,pkg-config)))
