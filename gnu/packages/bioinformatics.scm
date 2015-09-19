@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +29,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -2743,3 +2746,28 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; Code is released under Ruby license, except for setup
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
+
+(define-public r-qtl
+ (package
+  (name "r-qtl")
+  (version "1.37-11")
+  (source
+   (origin
+    (method url-fetch)
+    (uri (string-append "mirror://cran/src/contrib/qtl_"
+                        version ".tar.gz"))
+    (sha256
+     (base32
+      "0h20d36mww7ljp51pfs66xq33yq4b4fwq9nsh02dpmfhlaxgx1xi"))))
+  (build-system r-build-system)
+  (home-page "http://rqtl.org/")
+  (synopsis "R package for analyzing QTL experiments in genetics")
+  (description "R/qtl is an extension library for the R statistics
+system.  It is used to analyze experimental crosses for identifying
+genes contributing to variation in quantitative traits (so-called
+quantitative trait loci, QTLs).
+
+Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
+identify genotyping errors, and to perform single-QTL and two-QTL,
+two-dimensional genome scans.")
+  (license license:gpl3)))
