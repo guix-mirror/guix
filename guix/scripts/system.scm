@@ -300,7 +300,7 @@ it atomically, and then run OS's activation script."
      (system-disk-image os #:disk-image-size image-size))))
 
 (define* (perform-action action os
-                         #:key grub? dry-run?
+                         #:key grub? dry-run? derivations-only?
                          use-substitutes? device target
                          image-size full-boot?
                          (mappings '()))
@@ -308,7 +308,13 @@ it atomically, and then run OS's activation script."
 the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
 is the size of the image to be built, for the 'vm-image' and 'disk-image'
 actions.  FULL-BOOT? is used for the 'vm' action; it determines whether to
-boot directly to the kernel or to the bootloader."
+boot directly to the kernel or to the bootloader.
+
+When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
+building anything."
+  (define println
+    (cut format #t "~a~%" <>))
+
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
                                                 #:image-size image-size
@@ -322,14 +328,17 @@ boot directly to the kernel or to the bootloader."
        (drvs   -> (if (and grub? (memq action '(init reconfigure)))
                       (list sys grub grub.cfg)
                       (list sys)))
-       (%         (maybe-build drvs #:dry-run? dry-run?
-                               #:use-substitutes? use-substitutes?)))
+       (%         (if derivations-only?
+                      (return (for-each (compose println derivation-file-name)
+                                        drvs))
+                      (maybe-build drvs #:dry-run? dry-run?
+                                   #:use-substitutes? use-substitutes?))))
 
-    (if dry-run?
+    (if (or dry-run? derivations-only?)
         (return #f)
         (begin
-          (for-each (cut format #t "~a~%" <>)
-                    (map derivation->output-path drvs))
+          (for-each (compose println derivation->output-path)
+                    drvs)
 
           ;; Make sure GRUB is accessible.
           (when grub?
@@ -383,6 +392,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
 
   (show-build-options-help)
   (display (_ "
+  -d, --derivation       return the derivation of the given system"))
+  (display (_ "
       --on-error=STRATEGY
                          apply STRATEGY when an error occurs while reading FILE"))
   (display (_ "
@@ -425,6 +436,9 @@ Build the operating system declared in FILE according to ACTION.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix system")))
+         (option '(#\d "derivation") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'derivations-only? #t result)))
          (option '("on-error") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'on-error (string->symbol arg)
@@ -549,6 +563,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
           (set-guile-for-build (default-guile))
           (perform-action action os
                           #:dry-run? dry?
+                          #:derivations-only? (assoc-ref opts
+                                                         'derivations-only?)
                           #:use-substitutes? (assoc-ref opts 'substitutes?)
                           #:image-size (assoc-ref opts 'image-size)
                           #:full-boot? (assoc-ref opts 'full-boot?)

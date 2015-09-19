@@ -132,6 +132,12 @@ EOF
 make_user_config "users" "wheel"
 guix system build "$tmpfile" -n       # succeeds
 
+guix system build "$tmpfile" -d	      # succeeds
+guix system build "$tmpfile" -d | grep '\.drv$'
+
+guix system vm "$tmpfile" -d	      # succeeds
+guix system vm "$tmpfile" -d | grep '\.drv$'
+
 make_user_config "group-that-does-not-exist" "users"
 if guix system build "$tmpfile" -n 2> "$errorfile"
 then false

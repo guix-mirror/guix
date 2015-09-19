@@ -6916,6 +6916,11 @@ using the following command:
 Attempt to build for @var{system} instead of the host's system type.
 This works as per @command{guix build} (@pxref{Invoking guix build}).
 
+@item --derivation
+@itemx -d
+Return the derivation file name of the given operating system without
+building anything.
+
 @item --image-size=@var{size}
 For the @code{vm-image} and @code{disk-image} actions, create an image
 of the given @var{size}.  @var{size} may be a number of bytes, or it may
