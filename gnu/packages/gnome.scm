@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3625,3 +3626,36 @@ environment.  It allows you to import photos from disk or camera, organize
 them by keywords and events, view them in full-window or fullscreen mode, and
 share them with others via social networking and more.")
     (license license:lgpl2.1+)))
+
+(define-public file-roller
+  (package
+    (name "file-roller")
+    (version "3.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "04sg4yzz4c3hzgxhbgx2dc36lq5hjrnrmal2q0amfvhl0jcvp2fq"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    ;; TODO: Add libnautilus.
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("json-glib" ,json-glib)
+       ("libarchive" ,libarchive)
+       ("libnotify" ,libnotify)
+       ("nettle" ,nettle)
+       ("itstool" ,itstool)
+       ("libxml2" ,libxml2)))
+    (synopsis "Graphical archive manager for GNOME")
+    (description "File Roller is an archive manager for the GNOME desktop
+environment that allows users to view, unpack, and create compressed archives
+such as gzip tarballs.")
+    (home-page "http://fileroller.sourceforge.net/")
+    (license license:gpl2+)))
