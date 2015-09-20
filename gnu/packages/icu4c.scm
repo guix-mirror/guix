@@ -38,7 +38,9 @@
                    "-src.tgz"))
             (sha256
              (base32 "0ys5f5spizg45qlaa31j2lhgry0jka2gfha527n4ndfxxz5j4sz1"))
-            (patches (list (search-patch "icu4c-CVE-2015-4760.patch")))))
+            (patches (map search-patch '("icu4c-CVE-2014-6585.patch"
+                                         "icu4c-CVE-2015-1270.patch"
+                                         "icu4c-CVE-2015-4760.patch")))))
    (build-system gnu-build-system)
    (inputs
     `(("perl" ,perl)))

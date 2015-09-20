@@ -504,6 +504,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-enable-acceleration-and-webgl.patch \
   gnu/packages/patches/icecat-freetype-2.6.patch		\
   gnu/packages/patches/icecat-libvpx-1.4.patch			\
+  gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
+  gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/imagemagick-test-segv.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
