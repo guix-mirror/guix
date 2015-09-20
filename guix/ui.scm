@@ -75,6 +75,7 @@
             switch-symlinks
             config-directory
             fill-paragraph
+            texi->plain-text
             package-description-string
             string->recutils
             package->recutils

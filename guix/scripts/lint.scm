@@ -143,12 +143,14 @@ monad."
                     (_ "description should not be empty")
                     'description)))
 
-  (define (check-texinfo-markup package)
-    "Check that PACKAGE description can be parsed as a Texinfo fragment."
+  (define (check-texinfo-markup description)
+    "Check that DESCRIPTION can be parsed as a Texinfo fragment.  If the
+markup is valid return a plain-text version of DESCRIPTION, otherwise #f."
     (catch 'parser-error
-      (lambda () (package-description-string package))
+      (lambda () (texi->plain-text description))
       (lambda (keys . args)
-        (emit-warning package (_ "Texinfo markup in description is invalid")))))
+        (emit-warning package (_ "Texinfo markup in description is invalid"))
+        #f)))
 
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
@@ -179,9 +181,11 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
   (let ((description (package-description package)))
     (when (string? description)
       (check-not-empty description)
-      (check-texinfo-markup package)
-      (check-proper-start description)
-      (check-end-of-sentence-space description))))
+      ;; Use raw description for this because Texinfo rendering automatically
+      ;; fixes end of sentence space.
+      (check-end-of-sentence-space description)
+      (and=> (check-texinfo-markup description)
+             check-proper-start))))
 
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
