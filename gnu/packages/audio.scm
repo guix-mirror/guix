@@ -1052,7 +1052,25 @@ lv2-c++-tools.")
                 "0mmhdqiyb3c9dzvxspm8h2v8jibhi8pfjxnf6m0wn744y1ia2a8f"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; no check target
+     `(#:tests? #f  ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'use-full-library-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Alc/backends/pulseaudio.c"
+              (("#define PALIB \"libpulse\\.so\\.0\"")
+               (string-append "#define PALIB \""
+                              (assoc-ref inputs "pulseaudio")
+                              "/lib/libpulse.so.0"
+                              "\"")))
+            (substitute* "Alc/backends/alsa.c"
+              (("LoadLib\\(\"libasound\\.so\\.2\"\\)")
+               (string-append "LoadLib(\""
+                              (assoc-ref inputs "alsa-lib")
+                              "/lib/libasound.so.2"
+                              "\")")))
+            #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("pulseaudio" ,pulseaudio)))
