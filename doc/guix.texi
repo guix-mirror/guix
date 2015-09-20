@@ -5295,14 +5295,9 @@ variables.
 
 @defvr {Scheme Variable} %base-file-systems
 These are essential file systems that are required on normal systems,
-such as @var{%devtmpfs-file-system} and @var{%immutable-store} (see
+such as @var{%pseudo-terminal-file-system} and @var{%immutable-store} (see
 below.)  Operating system declarations should always contain at least
 these.
-@end defvr
-
-@defvr {Scheme Variable} %devtmpfs-file-system
-The @code{devtmpfs} file system to be mounted on @file{/dev}.  This is a
-requirement for udev (@pxref{Base Services, @code{udev-service}}).
 @end defvr
 
 @defvr {Scheme Variable} %pseudo-terminal-file-system
