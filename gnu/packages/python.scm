@@ -3724,13 +3724,15 @@ computing.")
        `(#:tests? #f ,@(package-arguments ipython)))
       ;; Make sure we use custom python2-NAME packages.
       ;; FIXME: add pyreadline once available.
+      (propagated-inputs
+       `(("python2-terminado" ,python2-terminado)
+         ,@(alist-delete "python-terminado"
+                         (package-propagated-inputs ipython))))
       (inputs
        `(("python2-mock" ,python2-mock)
          ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-terminado" ,python2-terminado)
-         ,@(alist-delete "python-terminado"
-                         (alist-delete "python-matplotlib"
-                                       (package-inputs ipython))))))))
+         ,@(alist-delete "python-matplotlib"
+                         (package-inputs ipython)))))))
 
 (define-public python-isodate
   (package
