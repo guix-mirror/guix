@@ -5047,3 +5047,48 @@ responses, rather than doing any computation.")
 
 (define-public python2-cryptography-vectors
   (package-with-python2 python-cryptography-vectors))
+
+(define-public python-cryptography
+  (package
+    (name "python-cryptography")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/c/"
+                           "cryptography/cryptography-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lxzvhlyl6h6nm77n34622rcj2cxnx220x9vgjlw76wjd8m0kqyg"))))
+    (build-system python-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-six" ,python-six)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-enum34" ,python-enum34)
+       ("python-idna" ,python-idna)
+       ("python-iso8601" ,python-iso8601)))
+    (native-inputs
+     `(("python-cryptography-vectors" ,python-cryptography-vectors)
+       ("python-setuptools" ,python-setuptools)
+       ("python-pretend" ,python-pretend)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pyca/cryptography")
+    (synopsis "Cryptographic recipes and primitives for Python")
+    (description
+      "cryptography is a package which provides cryptographic recipes and
+primitives to Python developers.  It aims to be the “cryptographic standard
+library” for Python.  The package includes both high level recipes, and low
+level interfaces to common cryptographic algorithms such as symmetric ciphers,
+message digests and key derivation functions.")
+    ;; Distributed under either BSD-3 or ASL2.0
+    (license (list bsd-3 asl2.0))))
+
+(define-public python2-cryptography
+  (let ((crypto (package-with-python2 python-cryptography)))
+    (package (inherit crypto)
+      (propagated-inputs
+       `(("python2-ipaddress" ,python2-ipaddress)
+         ,@(package-propagated-inputs crypto))))))
