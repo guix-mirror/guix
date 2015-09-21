@@ -431,13 +431,13 @@ using just two functions: melt and dcast (or acast).")
 (define-public r-scales
   (package
     (name "r-scales")
-    (version "0.2.5")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "scales" version))
        (sha256
-        (base32 "12xrmn1vh64dl46bq7n7pa427aicb2ifjrby9in3m32nyvir0kac"))))
+        (base32 "1kkgpqzb0a6lnpblhcprr4qzyfk5lhicdv4639xs5cq16n7bkqgl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dichromat" ,r-dichromat)
