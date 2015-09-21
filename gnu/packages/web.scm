@@ -2886,3 +2886,27 @@ particularly easy to create complete web applications using httpuv alone.")
     ;; under various non-copyleft licenses.  Full licensing information can be
     ;; obtained here: https://github.com/rstudio/httpuv/blob/master/LICENSE
     (license l:gpl3+)))
+
+(define-public r-jsonlite
+  (package
+    (name "r-jsonlite")
+    (version "0.9.17")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "jsonlite" version))
+              (sha256
+               (base32
+                "07s11m8z43dh5pyci5rpjqj5js69q8prjar42qhhxbvdmcrjk4z7"))))
+    (build-system r-build-system)
+    (home-page "http://arxiv.org/abs/1403.2805")
+    (synopsis "Robust, high performance JSON parser and generator for R")
+    (description
+     "The jsonlite package provides a fast JSON parser and generator optimized
+for statistical data and the web.  It offers flexible, robust, high
+performance tools for working with JSON in R and is particularly powerful for
+building pipelines and interacting with a web API.  In addition to converting
+JSON data from/to R objects, jsonlite contains functions to stream, validate,
+and prettify JSON data.  The unit tests included with the package verify that
+all edge cases are encoded and decoded consistently for use with dynamic data
+in systems and applications.")
+    (license l:expat)))
