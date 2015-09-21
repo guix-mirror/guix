@@ -25,6 +25,46 @@
                 #:select (asl2.0))
   #:use-module (guix packages))
 
+(define-public python-bandit
+  (package
+    (name "python-bandit")
+    (version "0.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/b/bandit/bandit-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "03g3cflvrc99ncjd611iy5nnnscsc2vgnrx4mjaqyx8glbfw8y7g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-appdirs" ,python-appdirs)
+        ("python-pyyaml" ,python-pyyaml)
+        ("python-six" ,python-six)
+        ("python-stevedore" ,python-stevedore)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-setuptools" ,python-setuptools)
+        ;; Tests
+        ("python-fixtures" ,python-fixtures)
+        ("python-mock" ,python-mock)
+        ("python-testrepository" ,python-testrepository)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)))
+    (home-page "https://wiki.openstack.org/wiki/Security/Projects/Bandit")
+    (synopsis "Security oriented static analyser for python code.")
+    (description
+      "Bandit is a tool designed to find common security issues in Python code.
+To do this Bandit processes each file, builds an AST from it, and runs
+appropriate plugins against the AST nodes.  Once Bandit has finished scanning
+all the files it generates a report.")
+    (license asl2.0)))
+
+(define-public python2-bandit
+  (package-with-python2 python-bandit))
+
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
