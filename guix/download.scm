@@ -167,9 +167,9 @@
       (cran
        ;; Arbitrary mirrors from http://cran.r-project.org/mirrors.html
        ;; This one automatically redirects to servers worldwide
+       "http://cran.r-project.org/"
        "http://cran.rstudio.com/"
        "http://cran.univ-lyon1.fr/"
-       "http://cran.r-mirror.de/"
        "http://cran.ism.ac.jp/"
        "http://cran.stat.auckland.ac.nz/"
        "http://cran.mirror.ac.za/"
