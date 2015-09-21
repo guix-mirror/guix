@@ -2910,3 +2910,28 @@ and prettify JSON data.  The unit tests included with the package verify that
 all edge cases are encoded and decoded consistently for use with dynamic data
 in systems and applications.")
     (license l:expat)))
+
+(define-public r-servr
+  (package
+    (name "r-servr")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "servr" version))
+              (sha256
+               (base32
+                "0gah99snaj8lk5zfzbxi3jwvpnlff9diz9gqv4qalfxpmb7fp6lc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httpuv" ,r-httpuv)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-mime" ,r-mime)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/yihui/servr")
+    (synopsis "Simple HTTP server to serve static files or dynamic documents")
+    (description
+     "Servr provides an HTTP server in R to serve static files, or dynamic
+documents that can be converted to HTML files (e.g., R Markdown) under a given
+directory.")
+    (license l:expat)))
