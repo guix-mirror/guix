@@ -4916,3 +4916,26 @@ printing of sub-tables by specifying a row range.")
 
 (define-public python2-prettytable
   (package-with-python2 python-prettytable))
+
+(define-public python-pyasn1
+  (package
+    (name "python-pyasn1")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pyasn1/pyasn1-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iw31d9l0zwx35szkzq72hiw002wnqrlrsi9dpbrfngcl1ybwcsx"))))
+    (build-system python-build-system)
+    (home-page "http://pyasn1.sourceforge.net/")
+    (synopsis "ASN.1 types and codecs")
+    (description
+     "This is an implementation of ASN.1 types and codecs in Python.  It is
+suitable for a wide range of protocols based on the ASN.1 specification.")
+    (license bsd-2)))
+
+(define-public python2-pyasn1
+  (package-with-python2 python-pyasn1))
