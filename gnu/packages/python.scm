@@ -4994,3 +4994,30 @@ specification.")
 
 (define-public python2-idna
   (package-with-python2 python-idna))
+
+(define-public python-pretend
+  (package
+    (name "python-pretend")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pretend/pretend-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0r5r7ygz9m6d2bklflbl84cqhjkc2q12xgis8268ygjh30g2q3wk"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/alex/pretend")
+    (synopsis "Library for stubbing in Python")
+    (description
+     "Pretend is a library to make stubbing with Python easier.  Stubbing is a
+technique for writing tests.  You may hear the term mixed up with mocks,
+fakes, or doubles.  Basically, a stub is an object that returns pre-canned
+responses, rather than doing any computation.")
+    (license bsd-3)))
+
+(define-public python2-pretend
+  (package-with-python2 python-pretend))
