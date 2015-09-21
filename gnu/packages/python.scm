@@ -1691,7 +1691,14 @@ protocol.")
 (define-public python2-subunit
   (package-with-python2 python-subunit))
 
-(define-public python-fixtures
+;; Recent versions of python-fixtures need a recent version of python-pbr,
+;; which needs a recent version of python-fixtures. To fix this circular
+;; dependency, we keep old versions of python-fixtures and python-pbr to
+;; bootstrap the whole thing:
+;; - python-fixtures-0.3.16 is used to build python-pbr-0.11
+;; - python-pbr-0.11 is used to build python-fixtures
+;; - python-fixtures is used to build python-pbr
+(define-public python-fixtures-0.3.16
   (package
     (name "python-fixtures")
     (version "0.3.16")
@@ -1707,6 +1714,70 @@ protocol.")
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page "https://launchpad.net/python-fixtures")
+    (synopsis "Python test fixture library")
+    (description
+     "Fixtures provides a way to create reusable state, useful when writing
+Python tests.")
+    (license (list bsd-3 asl2.0)))) ; at user's option
+
+(define-public python2-fixtures-0.3.16
+  (package-with-python2 python-fixtures-0.3.16))
+
+(define-public python-pbr-0.11
+  (package
+    (name "python-pbr")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pbr/pbr-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0v9gb7gyqf7q9s99l0nnjj9ww9b0jvyqlwm4d56pcyinxydddw6p"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Most tests seem to use the Internet.
+    (inputs
+      `(("python-fixtures-0.3.16" ,python-fixtures-0.3.16)
+        ("python-pip" ,python-pip)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "https://launchpad.net/pbr")
+    (synopsis "Change the default behavior of Python’s setuptools")
+    (description
+      "Python Build Reasonableness (PBR) is a library that injects some useful
+and sensible default behaviors into your setuptools run.")
+    (license asl2.0)))
+
+(define-public python2-pbr-0.11
+  (package-with-python2 python-pbr-0.11))
+
+(define-public python-fixtures
+  (package
+    (name "python-fixtures")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/f/fixtures/fixtures-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1khpywdh91ijryhxjxiyyi5rmbimhl8hwbbf8lazhgzq6yxz6g5n"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-pbr-0.11" ,python-pbr-0.11)))
+    (inputs
+     `(("python-pip" ,python-pip)
+       ("python-setuptools" ,python-setuptools)
+       ;; Tests
+       ("python-testtools" ,python-testtools)))
     (arguments
      '(#:tests? #f)) ; no setup.py test command
     (home-page "https://launchpad.net/python-fixtures")
@@ -1734,7 +1805,7 @@ Python tests.")
          "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-fixtures" ,python-fixtures)
+     `(("python-fixtures-0.3.16" ,python-fixtures-0.3.16)
        ("python-testtools" ,python-testtools)))
     (inputs
      `(("python-setuptools" ,python-setuptools)
