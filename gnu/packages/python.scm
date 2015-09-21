@@ -5251,3 +5251,35 @@ library.")
        `(("python2-cryptography" ,python2-cryptography)
          ,@(alist-delete "python-cryptography"
                          (package-propagated-inputs pyopenssl)))))))
+
+(define-public python-pip
+  (package
+    (name "python-pip")
+    (version "7.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pip/pip-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0xx4aypfgchxdknxq7gyqghd8wb221zrzyqlbabzm32jy237j16a"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ("python-virtualenv" ,python-virtualenv)
+        ;; Tests
+        ("python-mock" ,python-mock)
+        ("python-pytest" ,python-pytest)
+        ("python-scripttest" ,python-scripttest)))
+    (home-page "https://pip.pypa.io/")
+    (synopsis
+      "Package manager for Python software")
+    (description
+      "Pip is a package manager for Python software, that finds packages on the
+Python Package Index (PyPI).")
+    (license license:expat)))
+
+(define-public python2-pip
+  (package-with-python2 python-pip))
