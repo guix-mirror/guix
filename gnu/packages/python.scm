@@ -5021,3 +5021,29 @@ responses, rather than doing any computation.")
 
 (define-public python2-pretend
   (package-with-python2 python-pretend))
+
+(define-public python-cryptography-vectors
+  (package
+    (name "python-cryptography-vectors")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/c/"
+                           "cryptography-vectors/cryptography_vectors-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1i2chlyhlx4792di82fqzcy9wz0gnnc661bj46zr794ip4629sp4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/pyca/cryptography")
+    (synopsis "Test vectors for the cryptography package.")
+    (description
+      "This package contains test vectors for the cryptography package.")
+    ;; Distributed under either BSD-3 or ASL2.0
+    (license (list bsd-3 asl2.0))))
+
+(define-public python2-cryptography-vectors
+  (package-with-python2 python-cryptography-vectors))
