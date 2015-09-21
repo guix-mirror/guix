@@ -4939,3 +4939,28 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 
 (define-public python2-pyasn1
   (package-with-python2 python-pyasn1))
+
+(define-public python2-ipaddress
+  (package
+    (name "python2-ipaddress")
+    (version "1.0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/i/"
+                           "ipaddress/ipaddress-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0givid4963n57nsjibms2fc347zmcs188q1hw9al1dkc9kj4nvr2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; no tests
+       #:python ,python-2))
+    (home-page "https://github.com/phihag/ipaddress")
+    (synopsis "IP address manipulation library")
+    (description
+     "This package provides a fast, lightweight IPv4/IPv6 manipulation library
+in Python.  This library is used to create, poke at, and manipulate IPv4 and
+IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
+module to older versions of Python.")
+    (license psfl)))
