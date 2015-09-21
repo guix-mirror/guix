@@ -3390,14 +3390,14 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "0.8.6")
+    (version "1.2.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://pypi.python.org/packages/source/c/"
                           "cffi/cffi-" version ".tar.gz"))
       (sha256
-       (base32 "0406j3sgndmx88idv5zxkkrwfqxmjl18pj8gf47nsg4ymzixjci5"))))
+       (base32 "0g8yfzinry1vsj6d1jlnd19338bh92lhhk207ksy4lm1n3g73dga"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -3407,10 +3407,10 @@ a front-end for C compilers or analysis tools.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
+       ("python-pytest" ,python-pytest)
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:tests? #f ; FIXME: requires pytest
-       #:phases
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
