@@ -33,6 +33,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages asciidoc)
@@ -54,7 +55,8 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages statistics))
 
 (define-public httpd
   (package
@@ -2860,3 +2862,27 @@ web browsing, used for automating interaction with websites.")
 /robots.txt file to forbid conforming robots from accessing parts of
 their web site.")
     (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
+
+(define-public r-httpuv
+  (package
+    (name "r-httpuv")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "httpuv" version))
+              (sha256
+               (base32
+                "0aibs0hf38n8f6xxx4g2i2lzd6l5h92m5pscx2z834sdvhnladxv"))))
+    (build-system r-build-system)
+    (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/rstudio/httpuv")
+    (synopsis "HTTP and WebSocket server library for R")
+    (description
+     "The httpuv package provides low-level socket and protocol support for
+handling HTTP and WebSocket requests directly from within R.  It is primarily
+intended as a building block for other packages, rather than making it
+particularly easy to create complete web applications using httpuv alone.")
+    ;; This package includes third-party code that was originally released
+    ;; under various non-copyleft licenses.  Full licensing information can be
+    ;; obtained here: https://github.com/rstudio/httpuv/blob/master/LICENSE
+    (license l:gpl3+)))
