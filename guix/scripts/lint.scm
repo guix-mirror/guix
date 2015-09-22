@@ -129,7 +129,7 @@ monad."
   (exit 0))
 
 (define (properly-starts-sentence? s)
-  (string-match "^[(\"'[:upper:][:digit:]]" s))
+  (string-match "^[(\"'`[:upper:][:digit:]]" s))
 
 (define (starts-with-abbreviation? s)
   "Return #t if S starts with what looks like an abbreviation or acronym."
