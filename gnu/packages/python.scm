@@ -3763,6 +3763,30 @@ child application and control it as if a human were typing commands.")
 (define-public python2-pexpect
   (package-with-python2 python-pexpect))
 
+(define-public python-setuptools-scm
+  (package
+    (name "python-setuptools-scm")
+    (version "1.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/s/"
+                                  "setuptools_scm/setuptools_scm-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "00p60v2yfqy1r58pjcx9wy6dvqd7wkpfs5z1dzwf7y75c1g3dgyx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/pypa/setuptools_scm/")
+    (synopsis "Manage Python package versions in SCM metadata")
+    (description
+     "setuptools_scm handles managing your Python package versions in
+@dfn{software configuration management} (SCM) metadata instead of declaring
+them as the version argument or in a SCM managed file.")
+    (license license:expat)))
+
+(define-public python2-setuptools-scm
+  (package-with-python2 python-setuptools-scm))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
