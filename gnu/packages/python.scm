@@ -3733,6 +3733,36 @@ cluster without needing to write any wrapper code yourself.")
 (define-public python2-gridmap
   (package-with-python2 python-gridmap))
 
+(define-public python-pexpect
+  (package
+    (name "python-pexpect")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pexpect/pexpect-" version ".tar.gz"))
+       (sha256
+        (base32 "1fp5gm976z7ghm8jw57463rj19cv06c8zw842prgyg788f6n3snz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://pexpect.readthedocs.org/")
+    (synopsis "Controlling interactive console applications")
+    (description
+     "Pexpect is a pure Python module for spawning child applications;
+controlling them; and responding to expected patterns in their output.
+Pexpect works like Don Libes’ Expect.  Pexpect allows your script to spawn a
+child application and control it as if a human were typing commands.")
+    (license isc)))
+
+(define-public python2-pexpect
+  (package-with-python2 python-pexpect))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
