@@ -19,6 +19,7 @@
 (define-module (guix scripts import hackage)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix scripts)
   #:use-module (guix import hackage)
   #:use-module (guix scripts import)
   #:use-module (srfi srfi-1)
@@ -47,7 +48,7 @@ package will be generated.  If no version suffix is pecified, then the
 generated package definition will correspond to the latest available
 version.\n"))
   (display (_ "
-  -e ALIST, --cabal-environment=ALIST   
+  -e ALIST, --cabal-environment=ALIST
                                specify environment for Cabal evaluation"))
   (display (_ "
   -h, --help                   display this help and exit"))

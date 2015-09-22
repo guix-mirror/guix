@@ -35,10 +35,15 @@
   :prefix "guix-list-"
   :group 'guix)
 
+(defgroup guix-list-faces nil
+  "Faces for list buffers."
+  :group 'guix-list
+  :group 'guix-faces)
+
 (defface guix-list-file-path
   '((t :inherit guix-info-file-path))
   "Face used for file paths."
-  :group 'guix-list)
+  :group 'guix-list-faces)
 
 (defcustom guix-list-describe-warning-count 10
   "The maximum number of entries for describing without a warning.
@@ -488,12 +493,12 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
 (defface guix-package-list-installed
   '((t :inherit guix-package-info-installed-outputs))
   "Face used if there are installed outputs for the current package."
-  :group 'guix-package-list)
+  :group 'guix-package-list-faces)
 
 (defface guix-package-list-obsolete
   '((t :inherit guix-package-info-obsolete))
   "Face used if a package is obsolete."
-  :group 'guix-package-list)
+  :group 'guix-package-list-faces)
 
 (defcustom guix-package-list-generation-marking-enabled nil
   "If non-nil, allow putting marks in a list with 'generation packages'.

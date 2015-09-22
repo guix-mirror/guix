@@ -185,18 +185,19 @@ without requiring the source code to be rewritten.")
   ;; in the `base' module, and thus changing it entails a full rebuild.
   guile-2.0)
 
-(define-public guile-for-guile-emacs
+(define-public guile-next
   (package (inherit guile-2.0)
-    (name "guile-for-guile-emacs")
-    (version "20150510.d8d9a8d")
+    (name "guile-next")
+    (version "20150815.00884bb")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "git://git.hcoop.net/git/bpt/guile.git")
-                    (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
+                    (url "git://git.sv.gnu.org/guile.git")
+                    (commit "00884bb79fff41fdf5f22f24a74e366a94a14c9b")))
               (sha256
                (base32
-                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
+                "0qk8m9aq3i7pzw6npim58xmsvjqfz5kl1pkyb6b43awn2vydydi5"))))
+
     (arguments
      (substitute-keyword-arguments `(;; Tests aren't passing for now.
                                      ;; Obviously we should re-enable this!
@@ -212,6 +213,7 @@ without requiring the source code to be rewritten.")
                          (substitute* "build-aux/git-version-gen"
                            (("#!/bin/sh") (string-append "#!" (which "sh"))))
                          #t))))))
+    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -220,6 +222,19 @@ without requiring the source code to be rewritten.")
        ("texinfo" ,texinfo)
        ("gettext" ,gnu-gettext)
        ,@(package-native-inputs guile-2.0)))))
+
+(define-public guile-for-guile-emacs
+  (package (inherit guile-next)
+    (name "guile-for-guile-emacs")
+    (version "20150510.d8d9a8d")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.hcoop.net/git/bpt/guile.git")
+                    (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
+              (sha256
+               (base32
+                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))))
 
 
 ;;;

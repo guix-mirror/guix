@@ -41,53 +41,63 @@ directory."
     ((file-name . _) file-name)
     (() (error "No files matching pattern: " pattern))))
 
+(define gnu:unpack (assq-ref gnu:%standard-phases 'unpack))
+
+(define (gem-archive? file-name)
+  (string-match "^.*\\.gem$" file-name))
+
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack the gem SOURCE and enter the resulting directory."
-  (and (zero? (system* "gem" "unpack" source))
-       ;; The unpacked gem directory is named the same as the archive, sans
-       ;; the ".gem" extension.  It is renamed to simply "gem" in an effort to
-       ;; keep file names shorter to avoid UNIX-domain socket file names and
-       ;; shebangs that exceed the system's fixed maximum length when running
-       ;; test suites.
-       (let ((dir (match:substring (string-match "^(.*)\\.gem$"
-                                                 (basename source))
-                                   1)))
-         (rename-file dir "gem")
-         (chdir "gem")
-         #t)))
+  (if (gem-archive? source)
+      (and (zero? (system* "gem" "unpack" source))
+           ;; The unpacked gem directory is named the same as the archive,
+           ;; sans the ".gem" extension.  It is renamed to simply "gem" in an
+           ;; effort to keep file names shorter to avoid UNIX-domain socket
+           ;; file names and shebangs that exceed the system's fixed maximum
+           ;; length when running test suites.
+           (let ((dir (match:substring (string-match "^(.*)\\.gem$"
+                                                     (basename source))
+                                       1)))
+             (rename-file dir "gem")
+             (chdir "gem")
+             #t))
+      ;; Use GNU unpack strategy for things that aren't gem archives.
+      (gnu:unpack #:source source)))
 
 (define* (build #:key source #:allow-other-keys)
   "Build a new gem using the gemspec from the SOURCE gem."
+  (define (first-gemspec)
+    (first-matching-file "\\.gemspec$"))
 
   ;; Remove the original gemspec, if present, and replace it with a new one.
   ;; This avoids issues with upstream gemspecs requiring tools such as git to
   ;; generate the files list.
-  (let ((gemspec (or (false-if-exception
-                      (first-matching-file "\\.gemspec$"))
-                     ;; Make new gemspec if one wasn't shipped.
-                     ".gemspec")))
+  (when (gem-archive? source)
+    (let ((gemspec (or (false-if-exception (first-gemspec))
+                       ;; Make new gemspec if one wasn't shipped.
+                       ".gemspec")))
 
-    (when (file-exists? gemspec) (delete-file gemspec))
+      (when (file-exists? gemspec) (delete-file gemspec))
 
-    ;; Extract gemspec from source gem.
-    (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
-      (dynamic-wind
-        (const #t)
-        (lambda ()
-          (call-with-output-file gemspec
-            (lambda (out)
-              ;; 'gem spec' writes to stdout, but 'gem build' only reads
-              ;; gemspecs from a file, so we redirect the output to a file.
-              (while (not (eof-object? (peek-char pipe)))
-                (write-char (read-char pipe) out))))
-          #t)
-        (lambda ()
-          (close-pipe pipe))))
+      ;; Extract gemspec from source gem.
+      (let ((pipe (open-pipe* OPEN_READ "gem" "spec" "--ruby" source)))
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (call-with-output-file gemspec
+              (lambda (out)
+                ;; 'gem spec' writes to stdout, but 'gem build' only reads
+                ;; gemspecs from a file, so we redirect the output to a file.
+                (while (not (eof-object? (peek-char pipe)))
+                  (write-char (read-char pipe) out))))
+            #t)
+          (lambda ()
+            (close-pipe pipe))))))
 
-    ;; Build a new gem from the current working directory.  This also allows any
-    ;; dynamic patching done in previous phases to be present in the installed
-    ;; gem.
-    (zero? (system* "gem" "build" gemspec))))
+  ;; Build a new gem from the current working directory.  This also allows any
+  ;; dynamic patching done in previous phases to be present in the installed
+  ;; gem.
+  (zero? (system* "gem" "build" (first-gemspec))))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
   "Run the gem's test suite rake task TEST-TARGET.  Skip the tests if TESTS?

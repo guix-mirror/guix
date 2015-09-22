@@ -65,6 +65,7 @@
 (require 'guix-help-vars)
 (require 'guix-read)
 (require 'guix-base)
+(require 'guix-guile)
 (require 'guix-external)
 
 (defgroup guix-commands nil
@@ -305,9 +306,9 @@ to be modified."
 
 (defun guix-command-improve-argument (argument improvers)
   "Return ARGUMENT modified with IMPROVERS."
-  (or (guix-any (lambda (improver)
-                  (funcall improver argument))
-                improvers)
+  (or (cl-some (lambda (improver)
+                 (funcall improver argument))
+               improvers)
       argument))
 
 (defun guix-command-improve-arguments (arguments commands)
@@ -497,7 +498,10 @@ to be modified."
   "List of default 'execute' action arguments.")
 
 (defvar guix-command-additional-execute-arguments
-  `((("graph")
+  `((("build")
+     ,(guix-command-make-argument
+       :name "log" :char ?l :doc "View build log"))
+    (("graph")
      ,(guix-command-make-argument
        :name "view" :char ?v :doc "View graph")))
   "Alist of guix commands and additional 'execute' action arguments.")
@@ -518,6 +522,8 @@ to be modified."
      ("repl" . guix-run-environment-command-in-repl))
     (("pull")
      ("repl" . guix-run-pull-command-in-repl))
+    (("build")
+     ("log" . guix-run-view-build-log))
     (("graph")
      ("view" . guix-run-view-graph)))
   "Alist of guix commands and alists of special executers for them.
@@ -555,6 +561,18 @@ Perform pull-specific actions after operation, see
   (guix-eval-in-repl
    (apply #'guix-make-guile-expression 'guix-command args)
    nil 'pull))
+
+(defun guix-run-view-build-log (args)
+  "Add --log-file to ARGS, run 'guix ARGS ...' build command, and
+open the log file(s)."
+  (let* ((args (if (member "--log-file" args)
+                   args
+                 (apply #'list (car args) "--log-file" (cdr args))))
+         (output (guix-command-output args))
+         (files  (split-string output "\n" t)))
+    (dolist (file files)
+      (guix-find-file-or-url file)
+      (guix-build-log-mode))))
 
 (defun guix-run-view-graph (args)
   "Run 'guix ARGS ...' graph command, make the image and open it."

@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module (guix profiles)
+  #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix build utils)
   #:use-module (gnu build install)
@@ -298,19 +299,6 @@ it atomically, and then run OS's activation script."
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
-(define* (maybe-build drvs
-                      #:key dry-run? use-substitutes?)
-  "Show what will/would be built, and actually build DRVS, unless DRY-RUN? is
-true."
-  (with-monad %store-monad
-    (>>= (show-what-to-build* drvs
-                              #:dry-run? dry-run?
-                              #:use-substitutes? use-substitutes?)
-         (lambda (_)
-           (if dry-run?
-               (return #f)
-               (built-derivations drvs))))))
-
 (define* (perform-action action os
                          #:key grub? dry-run?
                          use-substitutes? device target
@@ -513,6 +501,13 @@ Build the operating system declared in FILE according to ACTION.\n"))
       (define (fail)
         (leave (_ "wrong number of arguments for action '~a'~%")
                action))
+
+      (unless action
+        (format (current-error-port)
+                (_ "guix system: missing command name~%"))
+        (format (current-error-port)
+                (_ "Try 'guix system --help' for more information.~%"))
+        (exit 1))
 
       (case action
         ((build vm vm-image disk-image reconfigure)

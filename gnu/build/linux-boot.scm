@@ -48,7 +48,7 @@
 ;;; Code:
 
 (define* (mount-essential-file-systems #:key (root "/"))
-  "Mount /proc and /sys under ROOT."
+  "Mount /dev, /proc, and /sys under ROOT."
   (define (scope dir)
     (string-append root
                    (if (string-suffix? "/" root)
@@ -59,6 +59,10 @@
   (unless (file-exists? (scope "proc"))
     (mkdir (scope "proc")))
   (mount "none" (scope "proc") "proc")
+
+  (unless (file-exists? (scope "dev"))
+    (mkdir (scope "dev")))
+  (mount "none" (scope "dev") "devtmpfs")
 
   (unless (file-exists? (scope "sys"))
     (mkdir (scope "sys")))
@@ -71,7 +75,7 @@
                 (unless (file-exists? target)
                   (mkdir target))
                 (mount dir target "" MS_MOVE)))
-            '("/proc" "/sys")))
+            '("/dev" "/proc" "/sys")))
 
 (define (linux-command-line)
   "Return the Linux kernel command line as a list of strings."
@@ -100,7 +104,7 @@ with the given MAJOR number, starting with MINOR."
 
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
-  ;; The hand-made udev!
+  ;; The hand-made devtmpfs/udev!
 
   (define (scope dir)
     (string-append root
@@ -255,7 +259,8 @@ UNIONFS."
         (mount "none" "/rw-root" "tmpfs")
 
         ;; We want read-write /dev nodes.
-        (make-essential-device-nodes #:root "/rw-root")
+        (mkdir-p "/rw-root/dev")
+        (mount "none" "/rw-root/dev" "devtmpfs")
 
         ;; Make /root a union of the tmpfs and the actual root.  Use
         ;; 'max_files' to set a high RLIMIT_NOFILE for the unionfs process
@@ -385,9 +390,6 @@ to it are lost."
          (unless (configure-qemu-networking)
            (display "network interface is DOWN\n")))
 
-       ;; Make /dev nodes.
-       (make-essential-device-nodes)
-
        ;; Prepare the real root file system under /root.
        (unless (file-exists? "/root")
          (mkdir "/root"))
@@ -404,10 +406,6 @@ to it are lost."
                                    root-fs-type
                                    #:volatile-root? volatile-root?)
            (mount "none" "/root" "tmpfs"))
-
-       (unless (file-exists? "/root/dev")
-         (mkdir "/root/dev")
-         (make-essential-device-nodes #:root "/root"))
 
        ;; Mount the specified file systems.
        (for-each mount-file-system

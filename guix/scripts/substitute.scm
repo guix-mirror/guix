@@ -31,7 +31,8 @@
   #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
-                #:select (progress-proc uri-abbreviation))
+                #:select (progress-proc uri-abbreviation
+                          store-path-abbreviation byte-count->string))
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -337,8 +338,9 @@ or is signed by an unauthorized key."
           (unless %allow-unauthenticated-substitutes?
             (assert-valid-signature narinfo signature hash acl)
             (when verbose?
+              ;; Visually separate substitutions with a newline.
               (format (current-error-port)
-                      "found valid signature for '~a', from '~a'~%"
+                      "~%Found valid signature for ~a~%From ~a~%"
                       (narinfo-path narinfo)
                       (uri->string (narinfo-uri narinfo)))))
           narinfo))))
@@ -753,13 +755,12 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
 
-    (format (current-error-port) "downloading `~a'~:[~*~; (~,1f MiB installed)~]...~%"
-            store-item
-
+    (format (current-error-port) "Downloading ~a~:[~*~; (~a installed)~]...~%"
+            (store-path-abbreviation store-item)
             ;; Use the Nar size as an estimate of the installed size.
             (narinfo-size narinfo)
             (and=> (narinfo-size narinfo)
-                   (cute / <> (expt 2. 20))))
+                   (cute byte-count->string <>)))
     (let*-values (((raw download-size)
                    ;; Note that Hydra currently generates Nars on the fly
                    ;; and doesn't specify a Content-Length, so
@@ -772,7 +773,9 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                                              (narinfo-size narinfo))))
                           (progress (progress-proc (uri-abbreviation uri)
                                                    dl-size
-                                                   (current-error-port))))
+                                                   (current-error-port)
+                                                   #:abbreviation
+                                                   store-path-abbreviation)))
                      (progress-report-port progress raw)))
                   ((input pids)
                    (decompressed-port (and=> (narinfo-compression narinfo)

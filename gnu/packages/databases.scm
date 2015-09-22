@@ -289,7 +289,8 @@ pictures, sounds, or video.")
     (arguments '(#:parallel-tests? #f))
 
     (native-inputs `(("emacs" ,emacs-no-x)
-                     ("bc" ,bc)))
+                     ("bc" ,bc)
+                     ("libuuid", util-linux)))
 
     ;; TODO: Add more optional inputs.
     ;; FIXME: Our Bash doesn't have development headers (need for the 'readrec'

@@ -29,6 +29,7 @@
   #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p search-path-as-list))

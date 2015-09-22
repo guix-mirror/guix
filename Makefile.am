@@ -102,6 +102,7 @@ MODULES =					\
   guix/import/cran.scm				\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
+  guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
@@ -214,6 +215,7 @@ SCM_TESTS =					\
   tests/gremlin.scm				\
   tests/lint.scm				\
   tests/publish.scm				\
+  tests/scripts.scm				\
   tests/size.scm				\
   tests/graph.scm				\
   tests/file-systems.scm			\

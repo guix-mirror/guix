@@ -208,6 +208,16 @@ single argument."
       (funcall guix-find-file-function file)
     (message "File '%s' does not exist." file)))
 
+(defvar url-handler-regexp)
+
+(defun guix-find-file-or-url (file-or-url)
+  "Find FILE-OR-URL."
+  (require 'url-handlers)
+  (let ((file-name-handler-alist
+         (cons (cons url-handler-regexp 'url-file-handler)
+               file-name-handler-alist)))
+    (find-file file-or-url)))
+
 (defmacro guix-while-search (regexp &rest body)
   "Evaluate BODY after each search for REGEXP in the current buffer."
   (declare (indent 1) (debug t))
@@ -215,14 +225,6 @@ single argument."
      (goto-char (point-min))
      (while (re-search-forward ,regexp nil t)
        ,@body)))
-
-(defun guix-any (pred lst)
-  "Test whether any element from LST satisfies PRED.
-If so, return the return value from the successful PRED call.
-Return nil otherwise."
-  (when lst
-    (or (funcall pred (car lst))
-        (guix-any pred (cdr lst)))))
 
 
 ;;; Alist accessors

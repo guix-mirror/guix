@@ -27,6 +27,7 @@
   #:use-module (guix ui)
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
+  #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)

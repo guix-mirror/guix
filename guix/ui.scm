@@ -2,9 +2,11 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
-;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +41,6 @@
   #:use-module (srfi srfi-31)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module (srfi srfi-37)
   #:autoload   (ice-9 ftw)  (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -61,6 +62,7 @@
             show-bug-report-information
             string->number*
             size->number
+            show-derivation-outputs
             show-what-to-build
             show-what-to-build*
             show-manifest-transaction
@@ -79,8 +81,6 @@
             package-specification->name+version+output
             string->generations
             string->duration
-            args-fold*
-            parse-command-line
             run-guix-command
             run-guix
             program-name
@@ -502,6 +502,14 @@ error."
     (_
      (leave (_ "expression ~s does not evaluate to a package~%")
             str))))
+
+(define (show-derivation-outputs derivation)
+  "Show the output file names of DERIVATION."
+  (format #t "~{~a~%~}"
+          (map (match-lambda
+                 ((out-name . out)
+                  (derivation->output-path derivation out-name)))
+               (derivation-outputs derivation))))
 
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t))
@@ -958,52 +966,6 @@ optionally contain a version number and an output name, as in these examples:
 ;;;
 ;;; Command-line option processing.
 ;;;
-
-(define (args-fold* options unrecognized-option-proc operand-proc . seeds)
-  "A wrapper on top of `args-fold' that does proper user-facing error
-reporting."
-  (catch 'misc-error
-    (lambda ()
-      (apply args-fold options unrecognized-option-proc
-             operand-proc seeds))
-    (lambda (key proc msg args . rest)
-      ;; XXX: MSG is not i18n'd.
-      (leave (_ "invalid argument: ~a~%")
-             (apply format #f msg args)))))
-
-(define (environment-build-options)
-  "Return additional build options passed as environment variables."
-  (arguments-from-environment-variable "GUIX_BUILD_OPTIONS"))
-
-(define %default-argument-handler
-  ;; The default handler for non-option command-line arguments.
-  (lambda (arg result)
-    (alist-cons 'argument arg result)))
-
-(define* (parse-command-line args options seeds
-                             #:key
-                             (argument-handler %default-argument-handler))
-  "Parse the command-line arguments ARGS as well as arguments passed via the
-'GUIX_BUILD_OPTIONS' environment variable according to OPTIONS (a list of
-SRFI-37 options) and return the result, seeded by SEEDS.
-Command-line options take precedence those passed via 'GUIX_BUILD_OPTIONS'.
-
-ARGUMENT-HANDLER is called for non-option arguments, like the 'operand-proc'
-parameter of 'args-fold'."
-  (define (parse-options-from args seeds)
-    ;; Actual parsing takes place here.
-    (apply args-fold* args options
-           (lambda (opt name arg . rest)
-             (leave (_ "~A: unrecognized option~%") name))
-           argument-handler
-           seeds))
-
-  (call-with-values
-      (lambda ()
-        (parse-options-from (environment-build-options) seeds))
-    (lambda seeds
-      ;; ARGS take precedence over what the environment variable specifies.
-      (parse-options-from args seeds))))
 
 (define (show-guix-usage)
   (format (current-error-port)

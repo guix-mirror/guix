@@ -44,6 +44,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
@@ -69,6 +71,7 @@
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages qt)  ; for libxkbcommon
   #:use-module (gnu packages compression)
@@ -3500,3 +3503,125 @@ manage, and publish documentation for Yelp and the web.  Most of the heavy
 lifting is done by packages like yelp-xsl and itstool.  This package just
 wraps things up in a developer-friendly way.")
     (license license:gpl2+)))
+
+(define-public libgee
+  (package
+    (name "libgee")
+    (version "0.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "16a34js81w9m2bw4qd8csm4pcgr3zq5z87867j4b8wfh6zwrxnaa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-introspection-install-dir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "gee/Makefile.in"
+                (("@INTROSPECTION_GIRDIR@")
+                 (string-append out "/share/gir-1.0/"))
+                (("@INTROSPECTION_TYPELIBDIR@")
+                 (string-append out "/lib/girepository-1.0/")))))))))
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://wiki.gnome.org/Projects/Libgee")
+    (synopsis "GObject collection library")
+    (description
+     "Libgee is a utility library providing GObject-based interfaces and
+classes for commonly used data structures.")
+    (license license:lgpl2.1+)))
+
+(define-public gexiv2
+  (package
+    (name "gexiv2")
+    (version "0.10.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "121r5lv6l82pjr0ycdf2b01mdwy7sxwca2r068zrzylpc6bgn31r"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; Listed in "Requires" section of gexiv2.pc
+     `(("exiv2" ,exiv2)))
+    (inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://wiki.gnome.org/Projects/gexiv2")
+    (synopsis "GObject wrapper around the Exiv2 photo metadata library")
+    (description
+     "Gexiv2 is a GObject wrapper around the Exiv2 photo metadata library.  It
+allows for GNOME applications to easily inspect and update EXIF, IPTC, and XMP
+metadata in photo and video files of various formats.")
+    (license license:gpl2+)))
+
+(define-public shotwell
+  (package
+    (name "shotwell")
+    (version "0.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0cgqaaikrb10plhf6zxbgqy32zqpiwyi9dpx3g8yr261q72r5c81"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("CC=gcc")
+       #:configure-flags '("--disable-gsettings-convert-install")
+       #:out-of-source? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)
+       ("m4" ,m4)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("vala" ,vala)
+       ("which" ,which)
+       ("gnome-doc-utils" ,gnome-doc-utils)
+       ;; FIXME: I only added python2-libxml2 because xml2po needs it at
+       ;; runtime.  It should be propagated.
+       ("python2-libxml2" ,python2-libxml2)
+       ("python2" ,python-2)))
+    (inputs
+     `(("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("libgee" ,libgee)
+       ("gexiv2" ,gexiv2)
+       ("libraw" ,libraw)
+       ("json-glib" ,json-glib)
+       ("rest" ,rest)
+       ("webkitgtk" ,webkitgtk-2.4)
+       ("sqlite" ,sqlite)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
+       ("gtk+" ,gtk+)
+       ("libgudev" ,libgudev)
+       ("libgphoto2" ,libgphoto2)))
+    (home-page "https://wiki.gnome.org/Apps/Shotwell")
+    (synopsis "Photo manager for GNOME 3")
+    (description
+     "Shotwell is a digital photo manager designed for the GNOME desktop
+environment.  It allows you to import photos from disk or camera, organize
+them by keywords and events, view them in full-window or fullscreen mode, and
+share them with others via social networking and more.")
+    (license license:lgpl2.1+)))

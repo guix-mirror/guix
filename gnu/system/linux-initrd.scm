@@ -182,6 +182,7 @@ loaded at boot time in the order in which they appear."
       "isci"                              ;for SAS controllers like Intel C602
       "usb-storage" "uas"                     ;for the installation image etc.
       "usbkbd" "usbhid"                       ;USB keyboards, for debugging
+      "dm-crypt" "xts"                        ;for encrypted root partitions
       ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())

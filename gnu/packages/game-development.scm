@@ -102,19 +102,21 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://mirror0.sfml-dev.org/files/SFML-"
-                                  version "-sources.zip"))
+              ;; Do not fetch the archives from
+              ;; http://mirror0.sfml-dev.org/files/ because files there seem
+              ;; to be changed in place.
+              (uri (string-append "https://github.com/SFML/SFML/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mjpkgfnz6ka4p0ir219pcqsbdy7gwcjydk7xxmjjfm2k5sw2qys"))))
+                "0k2fl5xk3ni2q8bsxl0551inx26ww3w6cp6hssvww0wfjdjcirsm"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
-    (native-inputs
-     `(("unzip" ,unzip)))
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)

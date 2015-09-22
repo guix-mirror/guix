@@ -361,6 +361,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/grub.scm				\
   gnu/system/install.scm			\
   gnu/system/linux.scm				\
+  gnu/system/linux-container.scm		\
   gnu/system/linux-initrd.scm			\
   gnu/system/locale.scm				\
   gnu/system/nss.scm				\
@@ -524,6 +525,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   gnu/packages/patches/libevent-dns-tests.patch			\
+  gnu/packages/patches/libmtp-devices.patch			\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/liblxqt-include.patch			\
   gnu/packages/patches/libmad-armv7-thumb-pt1.patch		\

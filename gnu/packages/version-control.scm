@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -34,10 +35,12 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cook)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -680,6 +683,45 @@ Configuration Management (SCM).  Using it, you can record the history of
 sources files, and documents.  It fills a similar role to the free software
 RCS, PRCS, and Aegis packages.")
     (license gpl1+)))
+
+(define-public cvs-fast-export
+  (package
+    (name "cvs-fast-export")
+    (version "1.33")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.catb.org/~esr/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c3s4nacbwlaaccx1fr7hf72kxxrzy49y2rdz5hhqbk8r29vm8w1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:make-flags
+       (list "CC=gcc" (string-append "prefix?=" (assoc-ref %outputs "out")))))
+    (inputs `(("git" ,git)))
+    (native-inputs `(("asciidoc"    ,asciidoc)
+                     ("docbook-xml" ,docbook-xml)
+                     ("docbook-xsl" ,docbook-xsl)
+                     ("xmllint"     ,libxml2)
+                     ("xsltproc"    ,libxslt)
+                     ;; These are needed for the tests.
+                     ("cvs"    ,cvs)
+                     ("python" ,python-2)
+                     ("rcs"    ,rcs)))
+    (home-page "http://www.catb.org/esr/cvs-fast-export/")
+    (synopsis "Export an RCS or CVS history as a fast-import stream")
+    (description "This program analyzes a collection of RCS files in a CVS
+repository (or outside of one) and, when possible, emits an equivalent history
+in the form of a fast-import stream.  Not all possible histories can be
+rendered this way; the program tries to emit useful warnings when it can't.
+
+The program can also produce a visualization of the resulting commit directed
+acyclic graph (DAG) in the input format of @uref{http://www.graphviz.org,
+Graphviz}.  The package also includes @command{cvssync}, a tool for mirroring
+masters from remote CVS hosts.")
+    (license gpl2+)))
 
 (define-public vc-dwim
   (package

@@ -28,13 +28,23 @@
   #:use-module (srfi srfi-26)
   #:export (%r-build-system-modules
             r-build
-            r-build-system))
+            r-build-system
+            cran-uri))
 
 ;; Commentary:
 ;;
 ;; Standard build procedure for R packages.
 ;;
 ;; Code:
+
+(define (cran-uri name version)
+  "Return a list of URI strings for the R package archive on CRAN for the
+release corresponding to NAME and VERSION.  As only the most recent version is
+available via the first URI, the second URI points to the archived version."
+  (list (string-append "mirror://cran/src/contrib/"
+                       name "_" version ".tar.gz")
+        (string-append "mirror://cran/src/contrib/Archive/"
+                       name "/" name "_" version ".tar.gz")))
 
 (define %r-build-system-modules
   ;; Build-side modules imported by default.

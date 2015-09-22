@@ -421,6 +421,30 @@ Java Native Interface.")
     (home-page "http://www.artonx.org/collabo/backyard/?RubyJavaBridge")
     (license license:lgpl2.1+)))
 
+(define-public ruby-log4r
+  (package
+    (name "ruby-log4r")
+    (version "1.1.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "log4r" version))
+        (sha256
+          (base32
+            "0ri90q0frfmigkirqv5ihyrj59xm8pq5zcmf156cbdv4r4l2jicv"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no Rakefile in gem
+    (synopsis "Flexible logging library for Ruby")
+    (description "Comprehensive and flexible logging library written
+in Ruby for use in Ruby programs.  It features a hierarchical logging
+system of any number of levels, custom level names, logger
+inheritance, multiple output destinations per log event, execution
+tracing, custom formatting, thread safteyness, XML and YAML
+configuration, and more.")
+     (home-page "http://log4r.rubyforge.org/")
+     (license license:bsd-3)))
+
 (define-public ruby-atoulme-antwrap
   (package
     (name "ruby-atoulme-antwrap")
@@ -465,6 +489,34 @@ extensions.")
     (home-page "http://codeforpeople.com/lib/ruby/orderedhash/")
     (license license:public-domain)))
 
+(define-public ruby-libxml
+  (package
+    (name "ruby-libxml")
+    (version "2.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "libxml-ruby" version))
+       (sha256
+        (base32
+         "1dhjqp4r9vkdp00l6h1cj8qfndzxlhlxk6b9g0w4v55gz857ilhb"))))
+    (build-system ruby-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("libxml2" ,libxml2)))
+    (arguments
+     '(#:tests? #f ; test suite hangs for unknown reason
+       #:gem-flags
+       (list "--"
+             (string-append "--with-xml2-include="
+                            (assoc-ref %build-inputs "libxml2")
+                            "/include/libxml2" ))))
+    (synopsis "Ruby bindings for GNOME Libxml2")
+    (description "The Libxml-Ruby project provides Ruby language bindings for
+the GNOME Libxml2 XML toolkit.")
+    (home-page "http://xml4r.github.com/libxml-ruby")
+    (license license:expat)))
+
 (define-public ruby-xml-simple
   (package
     (name "ruby-xml-simple")
@@ -503,6 +555,152 @@ Ruby.")
     (description "Thor is a toolkit for building powerful command-line
 interfaces.")
     (home-page "http://whatisthor.com/")
+    (license license:expat)))
+
+(define-public ruby-lumberjack
+  (package
+    (name "ruby-lumberjack")
+    (version "1.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "lumberjack" version))
+              (sha256
+               (base32
+                "162frm2bwy58pj8ccsdqa4a6i0csrhb9h5l3inhkl1ivgfc8814l"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Logging utility library for Ruby")
+    (description "Lumberjack is a simple logging utility that can be a drop in
+replacement for Logger or ActiveSupport::BufferedLogger.  It provides support
+for automatically rolling log files even with multiple processes writing the
+same log file.")
+    (home-page "http://github.com/bdurand/lumberjack")
+    (license license:expat)))
+
+(define-public ruby-nenv
+  (package
+    (name "ruby-nenv")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nenv" version))
+              (sha256
+               (base32
+                "152wxwri0afwgnxdf93gi6wjl9rr5z7vwp8ln0gpa3rddbfc27s6"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests included
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("bundler" ,bundler)))
+    (synopsis "Ruby interface for modifying the environment")
+    (description "Nenv provides a convenient wrapper for Ruby's ENV to modify
+and inspect the environment.")
+    (home-page "https://github.com/e2/nenv")
+    (license license:expat)))
+
+(define-public ruby-shellany
+  (package
+    (name "ruby-shellany")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "shellany" version))
+              (sha256
+               (base32
+                "1ryyzrj1kxmnpdzhlv4ys3dnl2r5r3d2rs2jwzbnd1v96a8pl4hf"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "default"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-version-test
+          (lambda _
+            (substitute* "spec/shellany_spec.rb"
+              (("^RSpec") "require \"shellany\"\nRSpec"))
+            #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-nenv" ,ruby-nenv)
+       ("bundler" ,bundler)))
+    (synopsis "Capture command output")
+    (description "Shellany is a Ruby library providing functions to capture
+the output produced by running shell commands.")
+    (home-page "https://rubygems.org/gems/shellany")
+    (license license:expat)))
+
+(define-public ruby-notiffany
+  (package
+    (name "ruby-notiffany")
+    (version "0.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "notiffany" version))
+              (sha256
+               (base32
+                "1v5x1w59qq85r6dpv3y9ga34dfd7hka1qxyiykaw7gm0i6kggbhi"))))
+    (build-system ruby-build-system)
+    ;; Tests are not included in the gem.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-shellany" ,ruby-shellany)
+       ("ruby-nenv" ,ruby-nenv)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Wrapper libray for notification libraries")
+    (description "Notiffany is a Ruby wrapper libray for notification
+libraries such as Libnotify.")
+    (home-page "https://github.com/guard/notiffany")
+    (license license:expat)))
+
+(define-public ruby-formatador
+  (package
+    (name "ruby-formatador")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "formatador" version))
+              (sha256
+               (base32
+                "1gc26phrwlmlqrmz4bagq1wd5b7g64avpx0ghxr9xdxcvmlii0l0"))))
+    (build-system ruby-build-system)
+    ;; Circular dependency: Tests require ruby-shindo, which requires
+    ;; ruby-formatador at runtime.
+    (arguments `(#:tests? #f))
+    (synopsis "Ruby library to format text on stdout")
+    (description "Formatador is a Ruby library to format text printed to the
+standard output stream.")
+    (home-page "http://github.com/geemus/formatador")
+    (license license:expat)))
+
+(define-public ruby-shindo
+  (package
+    (name "ruby-shindo")
+    (version "0.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "shindo" version))
+              (sha256
+               (base32
+                "0s8v1jbz8i0jh92f2fgxb3p51l1azrpkc8nv4mhrqy4vndpvd7wq"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "shindo_tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+          (lambda _
+            (substitute* "Rakefile"
+              (("system \"shindo") "system \"./bin/shindo")
+              ;; This test doesn't work, so we disable it.
+              (("fail \"The build_error test should fail") "#"))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-formatador" ,ruby-formatador)))
+    (synopsis "Simple depth first Ruby testing")
+    (description "Shindo is a simple depth first testing library for Ruby.")
+    (home-page "https://github.com/geemus/shindo")
     (license license:expat)))
 
 (define-public ruby-useragent
@@ -1123,4 +1321,97 @@ developing web applications in Ruby.  By wrapping HTTP requests and responses,
 it unifies the API for web servers, web frameworks, and software in between
 into a single method call.")
     (home-page "http://rack.github.io/")
+    (license license:expat)))
+
+(define-public ruby-docile
+  (package
+    (name "ruby-docile")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "docile" version))
+       (sha256
+        (base32
+         "0m8j31whq7bm5ljgmsrlfkiqvacrw6iz9wq10r3gwrv5785y8gjx"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; needs github-markup, among others
+    (synopsis "Ruby EDSL helper library")
+    (description "Docile is a Ruby library that provides an interface for
+creating embedded domain specific languages (EDSLs) that manipulate existing
+Ruby classes.")
+    (home-page "https://ms-ati.github.io/docile/")
+    (license license:expat)))
+
+(define-public ruby-gherkin3
+  (package
+    (name "ruby-gherkin3")
+    (version "3.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "gherkin3" version))
+        (sha256
+          (base32
+            "0xsyxhqa1gwcxzvsdy4didaiq5vam8ma3fbwbw2w60via4k6r1z9"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (arguments
+     '(#:tests? #f)) ; needs simplecov, among others
+    (synopsis "Gherkin parser for Ruby")
+    (description "Gherkin 3 is a parser and compiler for the Gherkin language.
+It is intended to replace Gherkin 2 and be used by all Cucumber
+implementations to parse '.feature' files.")
+    (home-page "https://github.com/cucumber/gherkin3")
+    (license license:expat)))
+
+(define-public ruby-cucumber-core
+  (package
+    (name "ruby-cucumber-core")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "cucumber-core" version))
+       (sha256
+        (base32
+         "12mrzf0s96izpq0k10lahlkgwc4fjs0zfs344rh8r8h3w3jyppr8"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-gherkin3" ,ruby-gherkin3)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (arguments
+     '(#:tests? #f)) ; needs simplecov, among others
+    (synopsis "Core library for the Cucumber BDD app")
+    (description "Cucumber is a tool for running automated tests
+written in plain language.  Because they're written in plain language,
+they can be read by anyone on your team.  Because they can be read by
+anyone, you can use them to help improve communication, collaboration
+and trust on your team.")
+    (home-page "https://cucumber.io/")
+    (license license:expat)))
+
+(define-public ruby-bio-logger
+  (package
+    (name "ruby-bio-logger")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio-logger" version))
+       (sha256
+        (base32
+         "02pylfy8nkdqzyzplvnhn1crzmfkj1zmi3qjhrj2f2imlxvycd28"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; rake errors, missing shoulda
+    (propagated-inputs
+     `(("ruby-log4r" ,ruby-log4r)))
+    (synopsis "Log4r wrapper for Ruby")
+    (description "Bio-logger is a wrapper around Log4r adding extra logging
+features such as filtering and fine grained logging.")
+    (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
     (license license:expat)))

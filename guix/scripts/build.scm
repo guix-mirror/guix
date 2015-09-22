@@ -19,6 +19,7 @@
 
 (define-module (guix scripts build)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -537,14 +538,7 @@ arguments with packages that use the specified source."
                          roots))
               ((not (assoc-ref opts 'dry-run?))
                (and (build-derivations store drv)
-                    (for-each (lambda (d)
-                                (format #t "~{~a~%~}"
-                                        (map (match-lambda
-                                              ((out-name . out)
-                                               (derivation->output-path
-                                                d out-name)))
-                                             (derivation-outputs d))))
-                              drv)
+                    (for-each show-derivation-outputs drv)
                     (for-each (cut register-root store <> <>)
                               (map (lambda (drv)
                                      (map cdr

@@ -207,6 +207,10 @@ please run through this check list:
 
 @enumerate
 @item
+Take some time to provide an adequate synopsis and description for the
+package.  @xref{Synopses and Descriptions}, for some guidelines.
+
+@item
 Run @code{guix lint @var{package}}, where @var{package} is the
 name of the new or modified package, and fix any errors it reports
 (@pxref{Invoking guix lint}).

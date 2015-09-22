@@ -165,7 +165,7 @@ representation of the package page."
         (version ,version)
         (source (origin
                   (method url-fetch)
-                  (uri (string-append ,@(factorize-uri source-url version)))
+                  (uri (cran-uri ,name version))
                   (sha256
                    (base32
                     ,(bytevector->nix-base32-string (file-sha256 tarball))))))

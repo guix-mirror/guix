@@ -1092,3 +1092,77 @@ prefer the listing of bugs as TODO items of @code{org-mode}, you could use
 A minor mode @code{debbugs-browse-mode} let you browse URLs to the GNU Bug
 Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
     (license license:gpl3+)))
+
+(define-public emacs-deferred
+  (package
+    (name "emacs-deferred")
+    (version "0.3.2")
+    (home-page "https://github.com/kiwanami/emacs-deferred")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0059jy01ni5irpgrj9fa81ayd9j25nvmjjm79ms3210ysx4pgqdr"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    ;; FIXME: Would need 'el-expectations' to actually run tests.
+    (synopsis "Simple asynchronous functions for Emacs Lisp")
+    (description
+     "The @code{deferred.el} library provides support for asynchronous tasks.
+The API is almost the same as that of
+@uref{https://github.com/cho45/jsdeferred, JSDeferred}, a JavaScript library
+for asynchronous tasks.")
+    (license license:gpl3+)))
+
+(define-public butler
+  (package
+    (name "emacs-butler")
+    (version "0.2.4")
+    (home-page "https://github.com/AshtonKem/Butler")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32
+                "1pii9dw4skq7nr4na6qxqasl36av8cwjp71bf1fgppqpcd9z8skj"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)))
+    (synopsis "Emacs client for Jenkins")
+    (description
+     "Butler provides an interface to connect to Jenkins continuous
+integration servers.  Users can specify a list of server in the
+@code{butler-server-list} variable and then use @code{M-x butler-status} to
+view the build status of those servers' build jobs, and possibly to trigger
+build jobs.")
+    (license license:gpl3+)))
+
+(define-public typo
+  (package
+    (name "emacs-typo")
+    (version "1.1")
+    (home-page "https://github.com/jorgenschaefer/typoel")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1jhd4grch5iz12gyxwfbsgh4dmz5hj4bg4gnvphccg8dsnni05k2"))
+              (file-name (string-append name "-" version))))
+    (build-system emacs-build-system)
+    (synopsis "Minor mode for typographic editing")
+    (description
+     "This package provides two Emacs modes, @code{typo-mode} and
+@code{typo-global-mode}.  These modes automatically insert Unicode characters
+for quotation marks, dashes, and ellipses.  For example, typing @kbd{\"}
+automatically inserts a Unicode opening or closing quotation mark, depending
+on context.")
+    (license license:gpl3+)))

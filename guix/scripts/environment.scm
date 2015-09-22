@@ -27,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module ((guix gexp) #:select (lower-inputs))
+  #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (ice-9 format)

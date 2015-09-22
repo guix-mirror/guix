@@ -37,6 +37,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (web uri)
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
@@ -46,6 +47,7 @@
             origin-method
             origin-sha256
             origin-file-name
+            origin-actual-file-name
             origin-patches
             origin-patch-flags
             origin-patch-inputs
@@ -188,6 +190,26 @@ representation."
          #''bv))
       ((_ str)
        #'(nix-base32-string->bytevector str)))))
+
+(define (origin-actual-file-name origin)
+  "Return the file name of ORIGIN, either its 'file-name' field or the file
+name of its URI."
+  (define (uri->file-name uri)
+    ;; Return the 'base name' of URI or URI itself, where URI is a string.
+    (let ((path (and=> (string->uri uri) uri-path)))
+      (if path
+          (basename path)
+          uri)))
+
+  (or (origin-file-name origin)
+      (match (origin-uri origin)
+        ((head . tail)
+         (uri->file-name head))
+        ((? string? uri)
+         (uri->file-name uri))
+        (else
+         ;; git, svn, cvs, etc. reference
+         #f))))
 
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,8 +141,7 @@ available, greatly increasing its breadth and scope.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/colorspace_"
-                           version ".tar.gz"))
+       (uri (cran-uri "colorspace" version))
        (sha256
         (base32 "0y8n4ljwhbdvkysdwgqzcnpv107pb3px1jip3k6svv86p72nacds"))))
     (build-system r-build-system)
@@ -161,8 +161,7 @@ colors are provided.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/dichromat_"
-                           version ".tar.gz"))
+       (uri (cran-uri "dichromat" version))
        (sha256
         (base32 "1l8db1nk29ccqg3mkbafvfiw0775iq4gapysf88xq2zp6spiw59i"))))
     (build-system r-build-system)
@@ -180,8 +179,7 @@ effects of different types of color-blindness.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/digest_"
-                           version ".tar.gz"))
+       (uri (cran-uri "digest" version))
        (sha256
         (base32 "0m9grqv67hhf51lz10whymhw0g0d98466ka694kya5x95hn44qih"))))
     (build-system r-build-system)
@@ -206,8 +204,7 @@ OpenSSL should be used.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/gtable_"
-                           version ".tar.gz"))
+       (uri (cran-uri "gtable" version))
        (sha256
         (base32 "0k9hfj6r5y238gqh92s3cbdn34biczx3zfh79ix5xq0c5vkai2xh"))))
     (build-system r-build-system)
@@ -225,8 +222,7 @@ OpenSSL should be used.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/labeling_"
-                           version ".tar.gz"))
+       (uri (cran-uri "labeling" version))
        (sha256
         (base32 "13sk7zrrrzry6ky1bp8mmnzcl9jhvkig8j4id9nny7z993mnk00d"))))
     (build-system r-build-system)
@@ -243,8 +239,7 @@ algorithms.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/magrittr_"
-                           version ".tar.gz"))
+       (uri (cran-uri "magrittr" version))
        (sha256
         (base32 "1s1ar6rag8m277qcqmdp02gn4awn9bdj9ax0r8s32i59mm1mki05"))))
     (build-system r-build-system)
@@ -265,8 +260,7 @@ see package vignette.  To quote Rene Magritte, \"Ceci n'est pas un pipe.\"")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/munsell_"
-                           version ".tar.gz"))
+       (uri (cran-uri "munsell" version))
        (sha256
         (base32 "1bi5yi0i80778bbzx2rm4f0glpc34kvh24pwwfhm4v32izsqgrw4"))))
     (build-system r-build-system)
@@ -286,8 +280,7 @@ Munsell colour system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/Rcpp_"
-                           version ".tar.gz"))
+       (uri (cran-uri "Rcpp" version))
        (sha256
         (base32 "182109z0yc1snqgd833ssl2cix6cbq83bcxmy5344b15ym820y38"))))
     (build-system r-build-system)
@@ -311,8 +304,7 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/plyr_"
-                           version ".tar.gz"))
+       (uri (cran-uri "plyr" version))
        (sha256
         (base32 "06v4zxawpjz37rp2q2ii5q43g664z9s29j4ydn0cz3crn7lzl6pk"))))
     (build-system r-build-system)
@@ -334,7 +326,7 @@ panels or collapse high-dimensional arrays to simpler summary statistics.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/proto_" version ".tar.gz"))
+       (uri (cran-uri "proto" version))
        (sha256
         (base32 "03mvzi529y6kjcp9bkpk7zlgpcakb3iz73hca6rpjy14pyzl3nfh"))))
     (build-system r-build-system)
@@ -352,8 +344,7 @@ prototype-based, rather than class-based object oriented ideas.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/RColorBrewer_"
-                           version ".tar.gz"))
+       (uri (cran-uri "RColorBrewer" version))
        (sha256
         (base32 "1pfcl8z1pnsssfaaz9dvdckyfnnc6rcq56dhislbf571hhg7isgk"))))
     (build-system r-build-system)
@@ -372,10 +363,7 @@ designed by Cynthia Brewer as described at http://colorbrewer2.org")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://cran/src/contrib/stringi_"
-             version
-             ".tar.gz"))
+       (uri (cran-uri "stringi" version))
        (sha256
         (base32
          "183wrrjhpgl1wbnn9lhghyvhz7l2mc64mpcmzplckal7y9j7pmhw"))))
@@ -401,8 +389,7 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/stringr_"
-                           version ".tar.gz"))
+       (uri (cran-uri "stringr" version))
        (sha256
         (base32 "0jnz6r9yqyf7dschr2fnn1slg4wn6b4ik5q00j4zrh43bfw7s9pq"))))
     (build-system r-build-system)
@@ -426,8 +413,7 @@ the input of another.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/reshape2_"
-                           version ".tar.gz"))
+       (uri (cran-uri "reshape2" version))
        (sha256
         (base32 "0hl082dyk3pk07nqprpn5dvnrkqhnf6zjnjig1ijddxhlmsrzm7v"))))
     (build-system r-build-system)
@@ -449,8 +435,7 @@ using just two functions: melt and dcast (or acast).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/scales_"
-                           version ".tar.gz"))
+       (uri (cran-uri "scales" version))
        (sha256
         (base32 "1kkgpqzb0a6lnpblhcprr4qzyfk5lhicdv4639xs5cq16n7bkqgl"))))
     (build-system r-build-system)
@@ -476,8 +461,7 @@ legends.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cran/src/contrib/ggplot2_"
-                           version ".tar.gz"))
+       (uri (cran-uri "ggplot2" version))
        (sha256
         (base32 "0794kjqi3lrxb33lr1mykd58959hlgkhdn259vj8fxrh65mqw920"))))
     (build-system r-build-system)
@@ -498,3 +482,415 @@ by step from multiple data sources.  It also implements a sophisticated
 multidimensional conditioning system and a consistent interface to map data to
 aesthetic attributes.")
     (license license:gpl2+)))
+
+(define-public r-assertthat
+  (package
+    (name "r-assertthat")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "assertthat" version))
+              (sha256
+               (base32
+                "0dwsqajyglfscqilj843qfqn1ndbqpswa7b4l1d633qjk9d68qqk"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/hadley/assertthat")
+    (synopsis "Easy pre and post assertions")
+    (description
+     "Assertthat is an extension to stopifnot() that makes it easy to declare
+the pre and post conditions that your code should satisfy, while also
+producing friendly error messages so that your users know what they've done
+wrong.")
+    (license license:gpl3+)))
+
+(define-public r-lazyeval
+  (package
+    (name "r-lazyeval")
+    (version "0.1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lazyeval" version))
+              (sha256
+               (base32
+                "02qfpn2fmy78vx4jxr7g7rhqzcm1kcivfwai7lbh0vvpawia0qwh"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/hadley/lazyeval")
+    (synopsis "Lazy (non-standard) evaluation in R")
+    (description
+     "This package provides the tools necessary to do non-standard
+evaluation (NSE) in R.")
+    (license license:gpl3+)))
+
+(define-public r-dbi
+  (package
+    (name "r-dbi")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "DBI" version))
+              (sha256
+               (base32
+                "0xj5baxwnhl23rd5nskhjvranrwrc68f3xlyrklglipi41bm69hw"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/rstats-db/DBI")
+    (synopsis "R database interface")
+    (description
+     "The DBI package provides a database interface (DBI) definition for
+communication between R and relational database management systems.  All
+classes in this package are virtual and need to be extended by the various
+R/DBMS implementations.")
+    (license license:lgpl2.0+)))
+
+(define-public r-bh
+  (package
+    (name "r-bh")
+    (version "1.58.0-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "BH" version))
+              (sha256
+               (base32
+                "17rnwyw9ib2pvm60iixzkbz7ff4fslpifp1nlx4czp42hy67kqpf"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/eddelbuettel/bh")
+    (synopsis "R package providing subset of Boost headers")
+    (description
+     "This package aims to provide the most useful subset of Boost libraries
+for template use among CRAN packages.")
+    (license license:boost1.0)))
+
+(define-public r-evaluate
+  (package
+    (name "r-evaluate")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "evaluate" version))
+              (sha256
+               (base32
+                "137gc35jlizhqnx19mxim3llrkm403abj8ghb2b7v5ls9rvd40pq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/hadley/evaluate")
+    (synopsis "Parsing and evaluation tools for R")
+    (description
+     "This package provides tools that allow you to recreate the parsing,
+evaluation and display of R code, with enough information that you can
+accurately recreate what happens at the command line.  The tools can easily be
+adapted for other output formats, such as HTML or LaTeX.")
+    (license license:gpl3+)))
+
+(define-public r-formatr
+  (package
+    (name "r-formatr")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "formatR" version))
+              (sha256
+               (base32
+                "0f4cv2zv5wayyqx99ybfyl0p83kgjvnsv8dhcwa4s49kw6jsx1lr"))))
+    (build-system r-build-system)
+    (home-page "http://yihui.name/formatR")
+    (synopsis "Format R code automatically")
+    (description
+     "This package provides a function to format R source code.  Spaces and
+indent will be added to the code automatically, and comments will be preserved
+under certain conditions, so that R code will be more human-readable and tidy.
+There is also a Shiny app as a user interface in this package.")
+    (license license:gpl3+)))
+
+(define-public r-highr
+  (package
+    (name "r-highr")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "highr" version))
+              (sha256
+               (base32
+                "11hyawzhaw3ph5y5xphi7alx6df1d0i6wh0a2n5m4sxxhdrzswnb"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/highr")
+    (synopsis "Syntax highlighting for R source code")
+    (description
+     "This package provides syntax highlighting for R source code.  Currently
+it supports LaTeX and HTML output.  Source code of other languages is
+supported via Andre Simon's highlight package.")
+    (license license:gpl3+)))
+
+(define-public r-mime
+  (package
+    (name "r-mime")
+    (version "0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mime" version))
+              (sha256
+               (base32
+                "145cdcg252w2zsq67dmvmsqka60msfp7agymlxs3gl3ihgiwg46p"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/yihui/mime")
+    (synopsis "R package to map filenames to MIME types")
+    (description
+     "This package guesses the MIME type from a filename extension using the
+data derived from /etc/mime.types in UNIX-type systems.")
+    (license license:gpl2)))
+
+(define-public r-markdown
+  (package
+    (name "r-markdown")
+    (version "0.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "markdown" version))
+              (sha256
+               (base32
+                "00j1hlib3il50azs2vlcyhi0bjpx1r50mxr9w9dl5g1bwjjc71hb"))))
+    (build-system r-build-system)
+    ;; Skip check phase because the tests require the r-knitr package to be
+    ;; installed. This prevents installation failures. Knitr normally
+    ;; shouldn't be available since r-markdown is a dependency of the r-knitr
+    ;; package.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("r-mime" ,r-mime)))
+    (home-page "https://github.com/rstudio/markdown")
+    (synopsis "Markdown rendering for R")
+    (description
+     "This package provides R bindings to the Sundown Markdown rendering
+library (https://github.com/vmg/sundown).  Markdown is a plain-text formatting
+syntax that can be converted to XHTML or other formats.")
+    (license license:gpl2)))
+
+(define-public r-yaml
+  (package
+    (name "r-yaml")
+    (version "2.1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "yaml" version))
+              (sha256
+               (base32
+                "18kz5mfn7qpif5pn91w4vbrc5bkycsj85vwm5wxwzjlb02i9mxi6"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/yaml/")
+    (synopsis "Methods to convert R data to YAML and back")
+    (description
+     "This package implements the libyaml YAML 1.1 parser and
+emitter (http://pyyaml.org/wiki/LibYAML) for R.")
+    (license license:bsd-3)))
+
+(define-public r-knitr
+  (package
+    (name "r-knitr")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "knitr" version))
+              (sha256
+               (base32
+                "1ikjla0hnpjfkdbydqhhqypc0aiizbi4nyn8c694sdk9ca4jasdd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-evaluate" ,r-evaluate)
+       ("r-digest" ,r-digest)
+       ("r-formatr" ,r-formatr)
+       ("r-highr" ,r-highr)
+       ("r-markdown" ,r-markdown)
+       ("r-stringr" ,r-stringr)
+       ("r-yaml" ,r-yaml)))
+    (home-page "http://yihui.name/knitr/")
+    (synopsis "General-purpose package for dynamic report generation in R")
+    (description
+     "This package provides a general-purpose tool for dynamic report
+generation in R using Literate Programming techniques.")
+    ;; The code is released under any version of the GPL.  As it is used by
+    ;; r-markdown which is available under GPLv2 only, we have chosen GPLv2+
+    ;; here.
+    (license license:gpl2+)))
+
+(define-public r-microbenchmark
+  (package
+    (name "r-microbenchmark")
+    (version "1.4-2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "microbenchmark" version))
+              (sha256
+               (base32
+                "05yxvdnkxr2ll94h6f2m5sn3gg7vrlm9nbdxgmj2g8cp8gfxpfkg"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://cran.r-project.org/web/packages/microbenchmark/")
+    (synopsis "Accurate timing functions for R")
+    (description
+     "This package provides infrastructure to accurately measure and compare
+the execution time of R expressions.")
+    (license license:bsd-2)))
+
+(define-public r-codetools
+  (package
+    (name "r-codetools")
+    (version "0.2-14")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "codetools" version))
+              (sha256
+               (base32
+                "0y9r4m2b8xgavr89sc179knzwpz54xljbc1dinpq2q07i4xn0397"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/codetools/index.html")
+    (synopsis "Code analysis tools for R")
+    (description "This package provides code analysis tools for R.")
+    (license license:gpl3+)))
+
+(define-public r-pryr
+  (package
+    (name "r-pryr")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "pryr" version))
+              (sha256
+               (base32
+                "1in350a8hxwf580afavasvn3jc7x2p1b7nlwmj1scakfz74vghk5"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)
+       ("r-codetools" ,r-codetools)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/hadley/pryr")
+    (synopsis "Tools for computing on the R language")
+    (description
+     "This package provides useful tools to pry back the covers of R and
+understand the language at a deeper level.")
+    (license license:gpl2)))
+
+(define-public r-memoise
+  (package
+    (name "r-memoise")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "memoise" version))
+              (sha256
+               (base32
+                "19wm4b3kq6xva43kga3xydnl7ybl5mq7b4y2fczgzzjz63jd75y4"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)))
+    (home-page "http://github.com/hadley/memoise")
+    (synopsis "Memoise functions for R")
+    (description
+     "This R package allows to cache the results of a function so that when
+you call it again with the same arguments it returns the pre-computed value.")
+    (license license:expat)))
+
+(define-public r-crayon
+  (package
+    (name "r-crayon")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "crayon" version))
+              (sha256
+               (base32
+                "0d38fm06h272a8iqlc0d45m2rh36giwqw7mwq4z8hkp4vs975fmm"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-memoise" ,r-memoise)))
+    (home-page "https://github.com/gaborcsardi/crayon")
+    (synopsis "Colored terminal output for R")
+    (description
+     "Colored terminal output on terminals that support ANSI color and
+highlight codes.  It also works in Emacs ESS.  ANSI color support is
+automatically detected.  Colors and highlighting can be combined and nested.
+New styles can also be created easily.  This package was inspired by the
+\"chalk\" JavaScript project.")
+    (license license:expat)))
+
+(define-public r-testthat
+  (package
+    (name "r-testthat")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "testthat" version))
+              (sha256
+               (base32
+                "0b3akwcx5mv9dmi8vssbk91hr3yrrdxd2fm6zhr31fnyz8kjx4pw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-crayon" ,r-crayon)))
+    (home-page "https://github.com/hadley/testthat")
+    (synopsis "Unit testing for R")
+    (description
+     "This package provides a unit testing system for R designed to be fun,
+flexible and easy to set up.")
+    (license license:expat)))
+
+(define-public r-r6
+  (package
+    (name "r-r6")
+    (version "2.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R6" version))
+              (sha256
+               (base32
+                "16qq35bgxgswf989yvsqkb6fv7srpf8n8dv2s2c0z9n6zgmwq66m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-microbenchmark" ,r-microbenchmark)
+       ("r-pryr" ,r-pryr)
+       ("r-testthat" ,r-testthat)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://github.com/wch/R6/")
+    (synopsis "Classes with reference semantics in R")
+    (description
+     "The R6 package allows the creation of classes with reference semantics,
+similar to R's built-in reference classes.  Compared to reference classes, R6
+classes are simpler and lighter-weight, and they are not built on S4 classes
+so they do not require the methods package.  These classes allow public and
+private members, and they support inheritance, even when the classes are
+defined in different packages.")
+    (license license:expat)))
+
+(define-public r-dplyr
+  (package
+    (name "r-dplyr")
+    (version "0.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "dplyr" version))
+              (sha256
+               (base32
+                "1p8rbn4p4yrx2840dapwiahf9iqa8gnvd35nyc200wfhmrxlqdlc"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-r6" ,r-r6)
+       ("r-magrittr" ,r-magrittr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-dbi" ,r-dbi)))
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-bh" ,r-bh)))
+    (home-page "https://github.com/hadley/dplyr")
+    (synopsis "Tools for working with data frames in R")
+    (description
+     "dplyr is the next iteration of plyr.  It is focussed on tools for
+working with data frames.  It has three main goals: 1) identify the most
+important data manipulation tools needed for data analysis and make them easy
+to use in R; 2) provide fast performance for in-memory data by writing key
+pieces of code in C++; 3) use the same code interface to work with data no
+matter where it is stored, whether in a data frame, a data table or
+database.")
+    (license license:expat)))

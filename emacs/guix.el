@@ -39,6 +39,11 @@
   :prefix "guix-"
   :group 'external)
 
+(defgroup guix-faces nil
+  "Guix faces."
+  :group 'guix
+  :group 'faces)
+
 (defcustom guix-list-single-package nil
   "If non-nil, list a package even if it is the only matching result.
 If nil, show a single package in the info buffer."

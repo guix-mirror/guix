@@ -47,7 +47,6 @@
             %binary-format-file-system
             %shared-memory-file-system
             %pseudo-terminal-file-system
-            %devtmpfs-file-system
             %immutable-store
             %control-groups
             %elogind-file-systems
@@ -186,17 +185,6 @@ UUID representation."
     (type "binfmt_misc")
     (check? #f)))
 
-(define %devtmpfs-file-system
-  ;; /dev as a 'devtmpfs' file system, needed for udev.
-  (file-system
-    (device "none")
-    (mount-point "/dev")
-    (type "devtmpfs")
-    (check? #f)
-
-    ;; Mount it from the initrd so /dev/pts & co. can then be mounted over it.
-    (needed-for-boot? #t)))
-
 (define %tty-gid
   ;; ID of the 'tty' group.  Allocate it statically to make it easy to refer
   ;; to it from here and from the 'tty' group definitions.
@@ -282,8 +270,7 @@ UUID representation."
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
-  (append (list %devtmpfs-file-system
-                %pseudo-terminal-file-system
+  (append (list %pseudo-terminal-file-system
                 %shared-memory-file-system
                 %immutable-store)
           %elogind-file-systems

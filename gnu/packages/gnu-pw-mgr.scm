@@ -29,7 +29,7 @@
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0a352y1m33vp6zmdbn96fdrq9gr9lchc9vcrj14mfx7g0dsvxjns"))))
+        "1winmckl4h8lypg57hd3nd7jscpdr7f1v8zi432k5h648izkf2dg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)

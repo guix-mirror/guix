@@ -33,25 +33,30 @@
   :prefix "guix-info-"
   :group 'guix)
 
+(defgroup guix-info-faces nil
+  "Faces for info buffers."
+  :group 'guix-info
+  :group 'guix-faces)
+
 (defface guix-info-param-title
   '((t :inherit font-lock-type-face))
   "Face used for titles of parameters."
-  :group 'guix-info)
+  :group 'guix-info-faces)
 
 (defface guix-info-file-path
   '((t :inherit link))
   "Face used for file paths."
-  :group 'guix-info)
+  :group 'guix-info-faces)
 
 (defface guix-info-url
   '((t :inherit link))
   "Face used for URLs."
-  :group 'guix-info)
+  :group 'guix-info-faces)
 
 (defface guix-info-time
   '((t :inherit font-lock-constant-face))
   "Face used for timestamps."
-  :group 'guix-info)
+  :group 'guix-info-faces)
 
 (defface guix-info-action-button
   '((((type x w32 ns) (class color))
@@ -59,7 +64,7 @@
      :background "lightgrey" :foreground "black")
     (t :inherit button))
   "Face used for action buttons."
-  :group 'guix-info)
+  :group 'guix-info-faces)
 
 (defface guix-info-action-button-mouse
   '((((type x w32 ns) (class color))
@@ -67,7 +72,7 @@
      :background "grey90" :foreground "black")
     (t :inherit highlight))
   "Mouse face used for action buttons."
-  :group 'guix-info)
+  :group 'guix-info-faces)
 
 (defcustom guix-info-ignore-empty-vals nil
   "If non-nil, do not display parameters with nil values."
@@ -414,43 +419,43 @@ See `insert-text-button' for the meaning of PROPERTIES."
   '((((type tty pc) (class color)) :weight bold)
     (t :height 1.6 :weight bold :inherit variable-pitch))
   "Face for package name and version headings."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-name
   '((t :inherit font-lock-keyword-face))
   "Face used for a name of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-name-button
   '((t :inherit button))
   "Face used for a full name that can be used to describe a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-version
   '((t :inherit font-lock-builtin-face))
   "Face used for a version of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-synopsis
   '((((type tty pc) (class color)) :weight bold)
     (t :height 1.1 :weight bold :inherit variable-pitch))
   "Face used for a synopsis of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-description
   '((t))
   "Face used for a description of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-license
   '((t :inherit font-lock-string-face))
   "Face used for a license of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-location
   '((t :inherit link))
   "Face used for a location of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-installed-outputs
   '((default :weight bold)
@@ -462,17 +467,17 @@ See `insert-text-button' for the meaning of PROPERTIES."
      :foreground "green")
     (t :underline t))
   "Face used for installed outputs of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-uninstalled-outputs
   '((t :weight bold))
   "Face used for uninstalled outputs of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defface guix-package-info-obsolete
   '((t :inherit error))
   "Face used if a package is obsolete."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defvar guix-info-insert-package-function
   #'guix-package-info-insert-with-heading
@@ -541,7 +546,7 @@ Face name is `guix-package-info-TYPE-inputs'."
        (defface ,face
          '((t :inherit guix-package-info-name-button))
          ,(concat "Face used for " type-desc "inputs of a package.")
-         :group 'guix-package-info)
+         :group 'guix-package-info-faces)
 
        (define-button-type ',btn
          :supertype 'guix-package-name
@@ -672,7 +677,7 @@ ENTRY is an alist with package info."
 (defface guix-package-info-source
   '((t :inherit link :underline nil))
   "Face used for a source URL of a package."
-  :group 'guix-package-info)
+  :group 'guix-package-info-faces)
 
 (defcustom guix-package-info-auto-find-source nil
   "If non-nil, find a source file after pressing a \"Show\" button.
@@ -825,17 +830,17 @@ If nil, insert output in a default way.")
 (defface guix-generation-info-number
   '((t :inherit font-lock-keyword-face))
   "Face used for a number of a generation."
-  :group 'guix-generation-info)
+  :group 'guix-generation-info-faces)
 
 (defface guix-generation-info-current
   '((t :inherit guix-package-info-installed-outputs))
   "Face used if a generation is the current one."
-  :group 'guix-generation-info)
+  :group 'guix-generation-info-faces)
 
 (defface guix-generation-info-not-current
   '((t nil))
   "Face used if a generation is not the current one."
-  :group 'guix-generation-info)
+  :group 'guix-generation-info-faces)
 
 (defvar guix-info-insert-generation-function nil
   "Function used to insert a generation information.

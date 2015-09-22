@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix scripts)
   #:use-module (guix gnu-maintenance)
   #:use-module (guix monads)
   #:use-module (gnu packages)
@@ -57,6 +59,7 @@
             check-derivation
             check-home-page
             check-source
+            check-source-file-name
             check-license
             check-formatting
 
@@ -140,6 +143,13 @@ monad."
                     (_ "description should not be empty")
                     'description)))
 
+  (define (check-texinfo-markup package)
+    "Check that PACKAGE description can be parsed as a Texinfo fragment."
+    (catch 'parser-error
+      (lambda () (package-description-string package))
+      (lambda (keys . args)
+        (emit-warning package (_ "Texinfo markup in description is invalid")))))
+
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
                 (string-prefix-ci? (package-name package) description))
@@ -169,6 +179,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
   (let ((description (package-description package)))
     (when (string? description)
       (check-not-empty description)
+      (check-texinfo-markup package)
       (check-proper-start description)
       (check-end-of-sentence-space description))))
 
@@ -501,6 +512,26 @@ descriptions maintained upstream."
                           (display warning (guix-warning-port)))
                         (reverse warnings)))))))))
 
+(define (check-source-file-name package)
+  "Emit a warning if PACKAGE's origin has no meaningful file name."
+  (define (origin-file-name-valid? origin)
+    ;; Return #t if the source file name contains only a version or is #f;
+    ;; indicates that the origin needs a 'file-name' field.
+    (let ((file-name (origin-actual-file-name origin))
+          (version (package-version package)))
+      (and file-name
+           (not (or (string-prefix? version file-name)
+                    ;; Common in many projects is for the filename to start
+                    ;; with a "v" followed by the version,
+                    ;; e.g. "v3.2.0.tar.gz".
+                    (string-prefix? (string-append "v" version) file-name))))))
+
+  (let ((origin (package-source package)))
+    (unless (or (not origin) (origin-file-name-valid? origin))
+      (emit-warning package
+                    (_ "the source file name should contain the package name")
+                    'source))))
+
 (define (check-derivation package)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
   (catch #t
@@ -563,12 +594,25 @@ descriptions maintained upstream."
                   (format #f (_ "line ~a is way too long (~a characters)")
                           line-number (string-length line)))))
 
+(define %hanging-paren-rx
+  (make-regexp "^[[:blank:]]*[()]+[[:blank:]]*$"))
+
+(define (report-lone-parentheses package line line-number)
+  "Emit a warning if LINE contains hanging parentheses."
+  (when (regexp-exec %hanging-paren-rx line)
+    (emit-warning package
+                  (format #f
+                          (_ "line ~a: parentheses feel lonely, \
+move to the previous or next line")
+                          line-number))))
+
 (define %formatting-reporters
   ;; List of procedures that report formatting issues.  These are not separate
   ;; checkers because they would need to re-read the file.
   (list report-tabulations
         report-trailing-white-space
-        report-long-line))
+        report-long-line
+        report-lone-parentheses))
 
 (define* (report-formatting-issues package file starting-line
                                    #:key (reporters %formatting-reporters))
@@ -642,6 +686,10 @@ or a list thereof")
      (name        'source)
      (description "Validate source URLs")
      (check       check-source))
+   (lint-checker
+     (name        'source-file-name)
+     (description "Validate file names of sources")
+     (check       check-source-file-name))
    (lint-checker
      (name        'derivation)
      (description "Report failure to compile a package to a derivation")

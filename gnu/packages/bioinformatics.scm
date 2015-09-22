@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +29,8 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system r)
+  #:use-module (guix build-system ruby)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -45,6 +49,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages textutils)
@@ -1539,6 +1544,64 @@ resolution of binding sites through combining the information of both
 sequencing tag position and orientation.")
     (license license:bsd-3)))
 
+(define-public mafft
+  (package
+    (name "mafft")
+    (version "7.221")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://mafft.cbrc.jp/alignment/software/mafft-" version
+                    "-without-extensions-src.tgz"))
+              (file-name (string-append name "-" version ".tgz"))
+              (sha256
+               (base32
+                "0xi7klbsgi049vsrk6jiwh9wfj3b770gz3c8c7zwij448v0dr73d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no automated tests, though there are tests in the read me
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "BINDIR="
+                                           (string-append out "/bin"))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+          (lambda _ (chdir "core") #t))
+         (add-after 'enter-dir 'patch-makefile
+          (lambda _
+            ;; on advice from the MAFFT authors, there is no need to
+            ;; distribute mafft-profile, mafft-distance, or
+            ;; mafft-homologs.rb as they are too "specialised".
+            (substitute* "Makefile"
+              ;; remove mafft-homologs.rb from SCRIPTS
+              (("^SCRIPTS = mafft mafft-homologs.rb")
+               "SCRIPTS = mafft")
+              ;; remove mafft-distance from PROGS
+              (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
+               "PROGS = dvtditr dndfast7 dndblast sextet5")
+              ;; remove mafft-profile from PROGS
+              (("splittbfast disttbfast tbfast mafft-profile 2cl mccaskillwrap")
+               "splittbfast disttbfast tbfast f2cl mccaskillwrap")
+              (("^rm -f mafft-profile mafft-profile.exe") "#")
+              (("^rm -f mafft-distance mafft-distance.exe") ")#")
+              ;; do not install MAN pages in libexec folder
+              (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
+\\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
+            #t))
+         (delete 'configure))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://mafft.cbrc.jp/alignment/software/")
+    (synopsis "Multiple sequence alignment program")
+    (description
+     "MAFFT offers a range of multiple alignment methods for nucleotide and
+protein sequences.  For instance, it offers L-INS-i (accurate; for alignment
+of <~200 sequences) and FFT-NS-2 (fast; for alignment of <~30,000
+sequences).")
+    (license (license:non-copyleft
+              "http://mafft.cbrc.jp/alignment/software/license.txt"
+              "BSD-3 with different formatting"))))
 
 (define-public metabat
   (package
@@ -2607,3 +2670,95 @@ data in the form of VCF files.")
     ;; The license is declared as LGPLv3 in the README and
     ;; at http://vcftools.sourceforge.net/license.html
     (license license:lgpl3)))
+
+(define-public bio-locus
+  (package
+    (name "bio-locus")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio-locus" version))
+       (sha256
+        (base32
+         "02vmrxyimkj9sahsp4zhfhnmbvz6dbbqz1y01vglf8cbwvkajfl0"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Tool for fast querying of genome locations")
+    (description
+     "Bio-locus is a tabix-like tool for fast querying of genome
+locations.  Many file formats in bioinformatics contain records that
+start with a chromosome name and a position for a SNP, or a start-end
+position for indels.  Bio-locus allows users to store this chr+pos or
+chr+pos+alt information in a database.")
+    (home-page "https://github.com/pjotrp/bio-locus")
+    (license license:expat)))
+
+(define-public bioruby
+  (package
+    (name "bioruby")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio" version))
+       (sha256
+        (base32
+         "01k2fyjl5fpx4zn8g6gqiqvsg2j1fgixrs9p03vzxckynxdq3wmc"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-libxml" ,ruby-libxml)))
+    (native-inputs
+     `(("which" ,which)))  ; required for test phase
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-test-command
+          (lambda _
+            (substitute* '("test/functional/bio/test_command.rb")
+              (("/bin/sh") (which "sh")))
+            (substitute* '("test/functional/bio/test_command.rb")
+              (("/bin/ls") (which "ls")))
+            (substitute* '("test/functional/bio/test_command.rb")
+              (("which") (which "which")))
+            (substitute* '("test/functional/bio/test_command.rb",
+                           "test/data/command/echoarg2.sh")
+              (("/bin/echo") (which "echo")))
+            #t)))))
+    (synopsis "Ruby library, shell and utilities for bioinformatics")
+    (description "BioRuby comes with a comprehensive set of Ruby development
+tools and libraries for bioinformatics and molecular biology.  BioRuby has
+components for sequence analysis, pathway analysis, protein modelling and
+phylogenetic analysis; it supports many widely used data formats and provides
+easy access to databases, external programs and public web services, including
+BLAST, KEGG, GenBank, MEDLINE and GO.")
+    (home-page "http://bioruby.org/")
+    ;; Code is released under Ruby license, except for setup
+    ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
+    (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
+
+(define-public r-qtl
+ (package
+  (name "r-qtl")
+  (version "1.37-11")
+  (source
+   (origin
+    (method url-fetch)
+    (uri (string-append "mirror://cran/src/contrib/qtl_"
+                        version ".tar.gz"))
+    (sha256
+     (base32
+      "0h20d36mww7ljp51pfs66xq33yq4b4fwq9nsh02dpmfhlaxgx1xi"))))
+  (build-system r-build-system)
+  (home-page "http://rqtl.org/")
+  (synopsis "R package for analyzing QTL experiments in genetics")
+  (description "R/qtl is an extension library for the R statistics
+system.  It is used to analyze experimental crosses for identifying
+genes contributing to variation in quantitative traits (so-called
+quantitative trait loci, QTLs).
+
+Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
+identify genotyping errors, and to perform single-QTL and two-QTL,
+two-dimensional genome scans.")
+  (license license:gpl3)))

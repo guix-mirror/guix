@@ -783,6 +783,9 @@ password storage.")
     ;; "MIT" and PSF dual license
     (license x11)))
 
+(define-public python2-keyring
+  (package-with-python2 python-keyring))
+
 (define-public python-six
   (package
     (name "python-six")
@@ -3719,13 +3722,15 @@ computing.")
        `(#:tests? #f ,@(package-arguments ipython)))
       ;; Make sure we use custom python2-NAME packages.
       ;; FIXME: add pyreadline once available.
+      (propagated-inputs
+       `(("python2-terminado" ,python2-terminado)
+         ,@(alist-delete "python-terminado"
+                         (package-propagated-inputs ipython))))
       (inputs
        `(("python2-mock" ,python2-mock)
          ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-terminado" ,python2-terminado)
-         ,@(alist-delete "python-terminado"
-                         (alist-delete "python-matplotlib"
-                                       (package-inputs ipython))))))))
+         ,@(alist-delete "python-matplotlib"
+                         (package-inputs ipython)))))))
 
 (define-public python-isodate
   (package
@@ -4432,6 +4437,9 @@ PEP 8.")
       "Pyflakes statically checks Python source code for common errors.")
     (license license:expat)))
 
+(define-public python2-pyflakes
+  (package-with-python2 python-pyflakes))
+
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -4495,7 +4503,7 @@ complexity of Python source code.")
             "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))))
 
 (define-public python2-pyflakes-0.8.1
-  (package-with-python2 python-pyflakes))
+  (package-with-python2 python-pyflakes-0.8.1))
 
 (define-public python-flake8
   (package
@@ -4768,3 +4776,172 @@ reading and writing MessagePack data.")
 
 (define-public python2-msgpack
   (package-with-python2 python-msgpack))
+
+(define-public python-netaddr
+  (package
+    (name "python-netaddr")
+    (version "0.7.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/n/netaddr/netaddr-"
+             version
+             ".tar.gz"))
+       (sha256
+         (base32
+          "06dxjlbcicq7q3vqy8agq11ra01kvvd47j4mk6dmghjsyzyckxd1"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ;; No tests.
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/drkjam/netaddr/")
+    (synopsis "Pythonic manipulation of  network addresses")
+    (description
+      "A Python library for representing and manipulating IPv4, IPv6, CIDR, EUI
+and MAC network addresses.")
+    (license bsd-3)))
+
+(define-public python2-netaddr
+  (package-with-python2 python-netaddr))
+
+(define-public python-wrapt
+  (package
+    (name "python-wrapt")
+    (version "1.10.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/w/wrapt/wrapt-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0cq8rlpzkxzk48b50yrfhzn1d1hrq4gjcdqlrgq4v5palgiv9jwr"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests are not included in the tarball, they are only available in the
+     ;; git repository.
+     `(#:tests? #f))
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/GrahamDumpleton/wrapt")
+    (synopsis "Module for decorators, wrappers and monkey patching")
+    (description
+      "The aim of the wrapt module is to provide a transparent object proxy for
+  Python, which can be used as the basis for the construction of function
+  wrappers and decorator functions.")
+    (license bsd-2)))
+
+(define-public python2-wrapt
+  (package-with-python2 python-wrapt))
+
+(define-public python-iso8601
+  (package
+  (name "python-iso8601")
+  (version "0.1.10")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/source/i/iso8601/iso8601-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1qf01afxh7j4gja71vxv345if8avg6nnm0ry0zsk6j3030xgy4p7"))))
+  (build-system python-build-system)
+  (inputs
+    `(("python-setuptools" ,python-setuptools)))
+  (home-page "https://bitbucket.org/micktwomey/pyiso8601")
+  (synopsis "Module to parse ISO 8601 dates")
+  (description
+    "This module parses the most common forms of ISO 8601 date strings (e.g.
+@code{2007-01-14T20:34:22+00:00}) into @code{datetime} objects.")
+  (license license:expat)))
+
+(define-public python2-iso8601
+  (package-with-python2 python-iso8601))
+
+(define-public python-monotonic
+  (package
+    (name "python-monotonic")
+    (version "0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/m/monotonic/monotonic-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0yz0bcbwx8r2c01czzfpbrxddynxyk9k95jj8h6sgcb7xmfvl998"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/atdt/monotonic")
+    (synopsis "Implementation of time.monotonic() for Python 2 & < 3.3")
+    (description
+      "This module provides a monotonic() function which returns the value (in
+fractional seconds) of a clock which never goes backwards.")
+    (license asl2.0)))
+
+(define-public python2-monotonic
+  (package-with-python2 python-monotonic))
+
+(define-public python-webob
+  (package
+    (name "python-webob")
+    (version "1.5.0b0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/W/WebOb/WebOb-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "140b3iczclk1j0405rvw5gxshqfkhcc8254fj520z3m23cwbql4a"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-nose" ,python-nose)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://webob.org/")
+    (synopsis "WSGI request and response object")
+    (description
+      "WebOb provides wrappers around the WSGI request environment, and an
+object to help create WSGI responses.")
+    (license license:expat)))
+
+(define-public python2-webob
+  (package-with-python2 python-webob))
+
+(define-public python-prettytable
+  (package
+    (name "python-prettytable")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/PrettyTable/"
+             "prettytable-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0diwsicwmiq2cpzpxri7cyl5fmsvicafw6nfqf6p6p322dji2g45"))))
+    (build-system python-build-system)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://code.google.com/p/prettytable/")
+    (synopsis "Display tabular data in an ASCII table format")
+    (description
+      "A library designed to represent tabular data in visually appealing ASCII
+tables.  PrettyTable allows for selection of which columns are to be printed,
+independent alignment of columns (left or right justified or centred) and
+printing of sub-tables by specifying a row range.")
+    (license bsd-3)))
+
+(define-public python2-prettytable
+  (package-with-python2 python-prettytable))

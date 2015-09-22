@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,9 +19,14 @@
 
 (define-module (gnu packages password-utils)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xorg))
 
 (define-public pwgen
   (package
@@ -41,3 +47,32 @@
     (description "Pwgen generates passwords which can be easily memorized by a
 human.")
     (license license:gpl2)))
+
+(define-public keepassx
+  (package
+    (name "keepassx")
+    (version "2.0-beta2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/keepassx/keepassx/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ljf9ws3wh62zd0gyb0vk2qw6pqsmxrlybrfs5mqahf44q92ca2q"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libxtst" ,libxtst)
+       ("qt" ,qt-4)))
+    (native-inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://www.keepassx.org")
+    (synopsis "Password manager")
+    (description "KeePassX is a password manager or safe which helps you to
+manage your passwords in a secure way.  You can put all your passwords in one
+database, which is locked with one master key or a key-file which can be stored
+on an external storage device.  The databases are encrypted using the
+algorithms AES or Twofish.")
+    ;; Non functional parts use various licences.
+    (license license:gpl3)))

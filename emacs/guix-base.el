@@ -30,6 +30,7 @@
 (require 'cl-lib)
 (require 'guix-profiles)
 (require 'guix-backend)
+(require 'guix-guile)
 (require 'guix-utils)
 (require 'guix-history)
 (require 'guix-messages)
@@ -414,6 +415,7 @@ following keywords are available:
          (buf-str        (concat buf-type-str " buffer"))
          (prefix         (concat "guix-" entry-type-str "-" buf-type-str))
          (group          (intern prefix))
+         (faces-group    (intern (concat prefix "-faces")))
          (mode-map-str   (concat prefix "-mode-map"))
          (parent-mode    (intern (concat "guix-" buf-type-str "-mode")))
          (mode           (intern (concat prefix "-mode")))
@@ -441,6 +443,10 @@ following keywords are available:
          ,(concat Buf-type-str " buffer with " entry-str ".")
          :prefix ,(concat prefix "-")
          :group ',(intern (concat "guix-" buf-type-str)))
+
+       (defgroup ,faces-group nil
+         ,(concat "Faces for " buf-type-str " buffer with " entry-str ".")
+         :group ',(intern (concat "guix-" buf-type-str "-faces")))
 
        (defcustom ,buf-name-var ,buf-name-val
          ,(concat "Default name of the " buf-str " for displaying " entry-str ".")
@@ -789,7 +795,7 @@ GENERATION is a generation number of `guix-profile' profile."
 (defface guix-operation-option-key
   '((t :inherit font-lock-warning-face))
   "Face used for the keys of operation options."
-  :group 'guix)
+  :group 'guix-faces)
 
 (defcustom guix-operation-confirm t
   "If nil, do not prompt to confirm an operation."
@@ -1129,9 +1135,12 @@ The function is called with a single argument - a command line string."
 
 (defun guix-command-output (args)
   "Return string with 'guix ARGS ...' output."
-  (guix-eval-read
-   (apply #'guix-make-guile-expression
-          'guix-command-output args)))
+  (cl-multiple-value-bind (output error)
+      (guix-eval (apply #'guix-make-guile-expression
+                        'guix-command-output args))
+    ;; Remove trailing new space from the error string.
+    (message (replace-regexp-in-string "\n\\'" "" (read error)))
+    (read output)))
 
 (defun guix-help-string (&optional commands)
   "Return string with 'guix COMMANDS ... --help' output."

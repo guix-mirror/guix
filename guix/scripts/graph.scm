@@ -18,6 +18,7 @@
 
 (define-module (guix scripts graph)
   #:use-module (guix ui)
+  #:use-module (guix scripts)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix monads)
@@ -33,7 +34,6 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
-  #:use-module (web uri)
   #:export (%package-node-type
             %bag-node-type
             %bag-emerged-node-type
@@ -78,25 +78,13 @@
 ;;; Package DAG.
 ;;;
 
-(define (uri->file-name uri)
-  "Return the 'base name' of URI or URI itself, where URI is a string."
-  (let ((path (and=> (string->uri uri) uri-path)))
-    (if path
-        (basename path)
-        uri)))
-
 (define (node-full-name thing)
   "Return a human-readable name to denote THING, a package, origin, or file
 name."
   (cond ((package? thing)
          (package-full-name thing))
         ((origin? thing)
-         (or (origin-file-name thing)
-             (match (origin-uri thing)
-               ((head . tail)
-                (uri->file-name head))
-               ((? string? uri)
-                (uri->file-name uri)))))
+         (origin-actual-file-name thing))
         ((string? thing)                          ;file name
          (or (basename thing)
              (error "basename" thing)))
