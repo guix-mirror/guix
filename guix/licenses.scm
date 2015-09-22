@@ -61,6 +61,7 @@
             sleepycat
             vim
             x11 x11-style
+            zpl2.1
             zlib
             fsf-free))
 
@@ -381,6 +382,11 @@ which may be a file:// URI pointing the package's tree."
             "This is an X11-style, non-copyleft free software license.  "
             "Check the URI for details.  "
             comment)))
+
+(define zpl2.1
+  (license "Zope Public License 2.1"
+           "http://directory.fsf.org/wiki?title=License:ZopePLv2.1"
+           "https://www.gnu.org/licenses/license-list.html#Zope2.0"))
 
 (define zlib
   (license "Zlib"
