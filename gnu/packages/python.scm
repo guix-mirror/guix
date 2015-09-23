@@ -3825,6 +3825,34 @@ them as the version argument or in a SCM managed file.")
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
 
+(define-public python-pathpy
+  (package
+    (name "python-pathpy")
+    (version "8.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "path.py/path.py-" version ".tar.gz"))
+       (sha256
+        (base32 "1p8s1l2vfkqhqxdhqlj0g1jjw4f1as2frr35sjcpjjpd5a89y41f"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "http://github.com/jaraco/path.py")
+    (synopsis "Python module wrapper for built-in os.path")
+    (description
+     "@code{path.py} implements path objects as first-class entities, allowing
+common operations on files to be invoked on those path objects directly.")
+    (license license:expat)))
+
+(define-public python2-pathpy
+  (package-with-python2 python-pathpy))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
