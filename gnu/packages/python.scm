@@ -3933,6 +3933,42 @@ standard library.")
 (define-public python2-ipython-genutils
   (package-with-python2 python-ipython-genutils))
 
+(define-public python-traitlets
+  (package
+    (name "python-traitlets")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/t/"
+                           "traitlets/traitlets-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fr3w2xwb46c591dp7zw02bgf4d21mjy9g6rhwc9bwd4ji50n50b"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (zero? (system* "nosetests")))))))
+    (propagated-inputs
+     `(("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-decorator" ,python-decorator)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://ipython.org")
+    (synopsis "Configuration system for Python applications")
+    (description
+     "Traitlets is a framework that lets Python classes have attributes with
+type checking, dynamically calculated default values, and ‘on change’
+callbacks.  The package also includes a mechanism to use traitlets for
+configuration, loading values from files or from command line arguments.  This
+is a distinct layer on top of traitlets, so you can use traitlets in your code
+without using the configuration machinery.")
+    (license bsd-3)))
+
+(define-public python2-traitlets
+  (package-with-python2 python-traitlets))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
