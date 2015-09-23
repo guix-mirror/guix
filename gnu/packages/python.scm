@@ -3910,6 +3910,29 @@ standard library.")
 (define-public python2-simplegeneric
   (package-with-python2 python-simplegeneric))
 
+(define-public python-ipython-genutils
+  (package
+    (name "python-ipython-genutils")
+    (version "0.1.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/i/"
+                          "ipython_genutils/ipython_genutils-"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "19l2pp1c64ansr89l3cqh19jdi2ixhssdzx0vz4n6r52a6i281is"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "http://ipython.org")
+    (synopsis "Vestigial utilities from IPython")
+    (description
+     "This package provides retired utilities from IPython.")
+    (license bsd-3)))
+
+(define-public python2-ipython-genutils
+  (package-with-python2 python-ipython-genutils))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
