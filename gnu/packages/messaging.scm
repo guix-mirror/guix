@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,13 +22,14 @@
 
 (define-module (gnu packages messaging)
   #:use-module ((guix licenses)
-                #:select (gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft
+                #:select (gpl3+ gpl2+ gpl2 lgpl2.1 lgpl2.0+ bsd-2 non-copyleft
                           asl2.0))
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
@@ -392,5 +394,31 @@ client from the actual IRC server, and also from selected channels.  Multiple
 clients from different locations can connect to a single ZNC account
 simultaneously and therefore appear under the same nickname on IRC.")
     (license asl2.0)))
+
+(define-public python-nbxmpp
+  (package
+    (name "python-nbxmpp")
+    (version "0.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/n/nbxmpp/"
+                           "nbxmpp-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dcr786dyips1fdvgsn8yvpgcz5j7217fi05c29cfypdl8jnp6mp"))))
+    (build-system python-build-system)
+    ;; No tests included
+    (arguments `(#:tests? #f))
+    (home-page "http://python-nbxmpp.gajim.org")
+    (synopsis "Non-blocking Jabber/XMPP module")
+    (description
+     "The goal of this python library is to provide a way for Python
+applications to use Jabber/XMPP networks in a non-blocking way.  This library
+was initially a fork of xmpppy, but is using non-blocking sockets.")
+    (license gpl3+)))
+
+(define-public python2-nbxmpp
+  (package-with-python2 python-nbxmpp))
 
 ;;; messaging.scm ends here
