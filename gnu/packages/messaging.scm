@@ -421,4 +421,54 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
 (define-public python2-nbxmpp
   (package-with-python2 python-nbxmpp))
 
+(define-public gajim
+  (package
+    (name "gajim")
+    (version "0.16.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gajim.org/downloads/"
+                                  (version-major+minor version)
+                                  "/gajim-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05a59hf9wna6n9fi0a4bhz1hifqj21bwb4ff9rd0my23rdwmij51"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Make sure all Python scripts run with the correct PYTHONPATH.
+            (let ((out (assoc-ref outputs "out"))
+                  (path (getenv "PYTHONPATH")))
+              (for-each (lambda (name)
+                          (let ((file (string-append out "/bin/" name)))
+                            ;; Wrapping destroys identification of intended
+                            ;; application, so we need to override "APP".
+                            (substitute* file
+                              (("APP=`basename \\$0`")
+                               (string-append "APP=" name)))
+                            (wrap-program file
+                              `("PYTHONPATH" ":" prefix (,path)))))
+                        '("gajim" "gajim-remote" "gajim-history-manager")))
+            #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (propagated-inputs
+     `(("python2-nbxmpp" ,python2-nbxmpp)
+       ("python2-pyopenssl" ,python2-pyopenssl)
+       ("python2-gnupg" ,python2-gnupg)))
+    (inputs
+     `(("python2-pygtk" ,python2-pygtk)
+       ("python" ,python-2)))
+    (home-page "https://gajim.org/")
+    (synopsis "Jabber (XMPP) client")
+    (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.
+Among its features are: a tabbed chat window and single window modes; support
+for group chat (with Multi-User Chat protocol), invitation, chat to group chat
+transformation; audio and video conferences; file transfer; TLS, GPG and
+end-to-end encryption support; XML console.")
+    (license gpl3+)))
+
 ;;; messaging.scm ends here
