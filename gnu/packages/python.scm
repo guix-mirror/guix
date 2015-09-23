@@ -3853,6 +3853,35 @@ common operations on files to be invoked on those path objects directly.")
 (define-public python2-pathpy
   (package-with-python2 python-pathpy))
 
+(define-public python-pickleshare
+  (package
+    (name "python-pickleshare")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pickleshare/pickleshare-" version ".tar.gz"))
+       (sha256
+        (base32 "11ljr90j3p6qswdrbl7p4cjb2i93f6vn0vx9anzpshsx0d2mggn0"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pathpy" ,python-pathpy)))
+    (home-page "https://github.com/vivainio/pickleshare")
+    (synopsis "Tiny key value database with concurrency support")
+    (description
+     "PickleShare is a small ‘shelve’-like datastore with concurrency support.
+Like shelve, a PickleShareDB object acts like a normal dictionary.  Unlike
+shelve, many processes can access the database simultaneously.  Changing a
+value in database is immediately visible to other processes accessing the same
+database.  Concurrency is possible because the values are stored in separate
+files.  Hence the “database” is a directory where all files are governed by
+PickleShare.")
+    (license license:expat)))
+
+(define-public python2-pickleshare
+  (package-with-python2 python-pickleshare))
+
 (define-public python-ipython
   (package
     (name "python-ipython")
