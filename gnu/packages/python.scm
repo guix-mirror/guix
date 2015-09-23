@@ -32,7 +32,7 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
-                          isc psfl public-domain x11-style))
+                          isc psfl public-domain x11-style zpl2.1))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -3881,6 +3881,34 @@ PickleShare.")
 
 (define-public python2-pickleshare
   (package-with-python2 python-pickleshare))
+
+(define-public python-simplegeneric
+  (package
+    (name "python-simplegeneric")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/s/"
+                           "simplegeneric/simplegeneric-" version ".zip"))
+       (sha256
+        (base32 "0wwi1c6md4vkbcsfsf8dklf3vr4mcdj4mpxkanwgb6jb1432x5yw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://cheeseshop.python.org/pypi/simplegeneric")
+    (synopsis "Python module for simple generic functions")
+    (description
+     "The simplegeneric module lets you define simple single-dispatch generic
+functions, akin to Python’s built-in generic functions like @code{len()},
+@code{iter()} and so on.  However, instead of using specially-named methods,
+these generic functions use simple lookup tables, akin to those used by
+e.g. @code{pickle.dump()} and other generic functions found in the Python
+standard library.")
+    (license zpl2.1)))
+
+(define-public python2-simplegeneric
+  (package-with-python2 python-simplegeneric))
 
 (define-public python-ipython
   (package
