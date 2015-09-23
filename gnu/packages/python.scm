@@ -1549,6 +1549,44 @@ and many external plugins.")
 (define-public python2-pytest
   (package-with-python2 python-pytest))
 
+(define-public python-pytest-runner
+  (package
+    (name "python-pytest-runner")
+    (version "2.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pytest-runner/pytest-runner-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwcqx0l3fv52kv8526wy8ypzghbq96c96di318d98d3wh7a8xg7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The fancy way of setting the version with setuptools_scm does not
+         ;; seem to work here.
+         (add-after 'unpack 'set-version
+          (lambda _
+            (substitute* "docs/conf.py"
+              (("version = setuptools_scm\\.get_version\\(root='\\.\\.')")
+               (string-append "version = \"" ,version "\"")))
+            #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://bitbucket.org/pytest-dev/pytest-runner")
+    (synopsis "Invoke py.test as a distutils command")
+    (description
+     "This package provides a @command{pytest-runner} command that
+@file{setup.py} files can use to run tests.")
+    (license license:expat)))
+
+(define-public python2-pytest-runner
+  (package-with-python2 python-pytest-runner))
+
 (define-public python-scripttest
   (package
     (name "python-scripttest")
