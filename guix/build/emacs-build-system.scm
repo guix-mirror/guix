@@ -138,10 +138,9 @@ DIRS."
 (define (package-name-version->elpa-name-version name-ver)
   "Convert the Guix package NAME-VER to the corresponding ELPA name-version
 format.  Essnetially drop the prefix used in Guix."
-  (let ((name (strip-store-file-name name-ver)))
-    (if (emacs-package? name-ver)
-        (strip-store-file-name name-ver)
-        name-ver)))
+  (if (emacs-package? name-ver)  ; checks for "emacs-" prefix
+      (string-drop name-ver (string-length "emacs-"))
+      name-ver))
 
 (define (store-directory->elpa-name-version store-dir)
   "Given a store directory STORE-DIR return the part of the basename after the
