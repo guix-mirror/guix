@@ -141,7 +141,7 @@ STATE is a symbol denoting how a build phase was ended.  It should be
     (rx-to-string
      `(and bol "phase " (regexp ,guix-build-log-phase-name-regexp)
            " " (group (regexp ,state-rx)) " after "
-           (group (1+ digit)) " seconds")
+           (group (1+ (or digit "."))) " seconds")
      t)))
 
 (defvar guix-build-log-phase-end-regexp
