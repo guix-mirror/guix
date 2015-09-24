@@ -59,6 +59,10 @@ Return nil, if current buffer does not define a module."
 Transform elisp ARG (nil or non-nil) to the guile boolean (#f or #t)."
   (concat "#" (prin1-to-string (if arg 't 'f))))
 
+(defun guix-guile-keyword-regexp (keyword)
+  "Return regexp to find guile KEYWORD."
+  (format "(\\(%s\\)\\_>" keyword))
+
 (defun guix-guile-make-call-expression (proc &rest args)
   "Return \"(PROC ARGS ...)\" string.
 PROC and ARGS should be strings."

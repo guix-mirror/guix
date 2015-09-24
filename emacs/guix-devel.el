@@ -33,6 +33,16 @@
   "Settings for Guix development utils."
   :group 'guix)
 
+(defgroup guix-devel-faces nil
+  "Faces for `guix-devel-mode'."
+  :group 'guix-devel
+  :group 'guix-faces)
+
+(defface guix-devel-modify-phases-keyword
+  '((t :inherit font-lock-preprocessor-face))
+  "Face for a `modify-phases' keyword ('delete', 'replace', etc.)."
+  :group 'guix-devel-faces)
+
 (defcustom guix-devel-activate-mode t
   "If non-nil, then `guix-devel-mode' is automatically activated
 in Scheme buffers."
@@ -94,6 +104,41 @@ Interactively, use the module defined by the current scheme file."
                                       guix-use-substitutes)
                 "#:dry-run?" (guix-guile-boolean guix-dry-run)))))))
 
+
+;;; Font-lock
+
+(defvar guix-devel-modify-phases-keyword-regexp
+  (rx (+ word))
+  "Regexp for a 'modify-phases' keyword ('delete', 'replace', etc.).")
+
+(defun guix-devel-modify-phases-font-lock-matcher (limit)
+  "Find a 'modify-phases' keyword.
+This function is used as a MATCHER for `font-lock-keywords'."
+  (ignore-errors
+    (down-list)
+    (or (re-search-forward guix-devel-modify-phases-keyword-regexp
+                           limit t)
+        (set-match-data nil))
+    (up-list)
+    t))
+
+(defun guix-devel-modify-phases-font-lock-pre ()
+  "Skip the next sexp, and return the end point of the current list.
+This function is used as a PRE-MATCH-FORM for `font-lock-keywords'
+to find 'modify-phases' keywords."
+  (ignore-errors (forward-sexp))
+  (save-excursion (up-list) (point)))
+
+(defvar guix-devel-font-lock-keywords
+  `((,(guix-guile-keyword-regexp "modify-phases")
+     (1 'font-lock-keyword-face)
+     (guix-devel-modify-phases-font-lock-matcher
+      (guix-devel-modify-phases-font-lock-pre)
+      nil
+      (0 'guix-devel-modify-phases-keyword nil t))))
+  "A list of `font-lock-keywords' for `guix-devel-mode'.")
+
+
 (defvar guix-devel-keys-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "b") 'guix-devel-build-package-definition)
@@ -122,7 +167,15 @@ bindings:
 \\{guix-devel-mode-map}"
   :init-value nil
   :lighter " Guix"
-  :keymap guix-devel-mode-map)
+  :keymap guix-devel-mode-map
+  (if guix-devel-mode
+      (progn
+        (setq-local font-lock-multiline t)
+        (font-lock-add-keywords nil guix-devel-font-lock-keywords))
+    (setq-local font-lock-multiline nil)
+    (font-lock-remove-keywords nil guix-devel-font-lock-keywords))
+  (when font-lock-mode
+    (font-lock-fontify-buffer)))
 
 ;;;###autoload
 (defun guix-devel-activate-mode-maybe ()
