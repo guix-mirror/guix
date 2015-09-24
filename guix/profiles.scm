@@ -474,7 +474,9 @@ MANIFEST."
                            '#$(manifest-inputs manifest)))))
 
   (gexp->derivation "info-dir" build
-                    #:modules '((guix build utils))))
+                    #:modules '((guix build utils))
+                    #:local-build? #t
+                    #:substitutable? #f))
 
 (define (ghc-package-cache-file manifest)
   "Return a derivation that builds the GHC 'package.cache' file for all the
@@ -527,7 +529,8 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
              (map manifest-entry-name (manifest-entries manifest)))
         (gexp->derivation "ghc-package-cache" build
                           #:modules '((guix build utils))
-                          #:local-build? #t)
+                          #:local-build? #t
+                          #:substitutable? #f)
         (return #f))))
 
 (define (ca-certificate-bundle manifest)
@@ -591,7 +594,8 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
 
   (gexp->derivation "ca-certificate-bundle" build
                     #:modules '((guix build utils))
-                    #:local-build? #t))
+                    #:local-build? #t
+                    #:substitutable? #f))
 
 (define (gtk-icon-themes manifest)
   "Return a derivation that unions all icon themes from manifest entries and
@@ -669,7 +673,8 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                                       (guix build profiles)
                                       (guix search-paths)
                                       (guix records))
-                          #:local-build? #t)
+                          #:local-build? #t
+                          #:substitutable? #f)
         (return #f))))
 
 (define %default-profile-hooks
@@ -727,7 +732,14 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
                                   (guix build utils)
                                   (guix search-paths)
                                   (guix records))
-                      #:local-build? #t)))
+
+                      ;; Not worth offloading.
+                      #:local-build? #t
+
+                      ;; Disable substitution because it would trigger a
+                      ;; connection to the substitute server, which is likely
+                      ;; to have no substitute to offer.
+                      #:substitutable? #f)))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."
