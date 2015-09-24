@@ -149,8 +149,7 @@
          ('version "1.2.3")
          ('source ('origin
                     ('method 'url-fetch)
-                    ('uri ('string-append "mirror://cran/src/contrib/my-example-sxml_"
-                                          'version ".tar.gz"))
+                    ('uri ('cran-uri "my-example-sxml" 'version))
                     ('sha256
                      ('base32
                       (? string? hash)))))

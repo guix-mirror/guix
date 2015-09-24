@@ -28,6 +28,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
@@ -128,6 +130,44 @@ exception-handling library.")
      "OpenEXR is a high dynamic-range (HDR) image file format developed for
 use in computer imaging applications.  The IlmImf C++ libraries support
 storage of the \"EXR\" file format for storing 16-bit floating-point images.")
+    (license license:bsd-3)))
+
+(define-public openimageio
+  (package
+    (name "openimageio")
+    (version "1.5.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/OpenImageIO/oiio/"
+                                  "archive/Release-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mn7cz19mn8dcrhkq15h25gl20ammr1wz0j2j3c2vxs6ph7zn8jy"))))
+    (build-system cmake-build-system)
+    ;; FIXME: To run all tests successfully, test image sets from multiple
+    ;; third party sources have to be present.  For details see
+    ;; https://github.com/OpenImageIO/oiio/blob/master/INSTALL
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg-8)
+       ("libtiff" ,libtiff)
+       ("giflib" ,giflib)
+       ("openexr" ,openexr)
+       ("ilmbase" ,ilmbase)
+       ("python" ,python-2)
+       ("zlib" ,zlib)))
+    (synopsis "C++ library for reading and writing images")
+    (description
+     "OpenImageIO is a library for reading and writing images, and a bunch of
+related classes, utilities, and applications.  There is a particular emphasis
+on formats and functionality used in professional, large-scale animation and
+visual effects work for film.")
+    (home-page "http://www.openimageio.org")
     (license license:bsd-3)))
 
 (define-public ctl

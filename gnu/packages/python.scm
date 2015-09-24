@@ -3388,14 +3388,14 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "0.8.6")
+    (version "1.2.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://pypi.python.org/packages/source/c/"
                           "cffi/cffi-" version ".tar.gz"))
       (sha256
-       (base32 "0406j3sgndmx88idv5zxkkrwfqxmjl18pj8gf47nsg4ymzixjci5"))))
+       (base32 "0g8yfzinry1vsj6d1jlnd19338bh92lhhk207ksy4lm1n3g73dga"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -3405,10 +3405,10 @@ a front-end for C compilers or analysis tools.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
+       ("python-pytest" ,python-pytest)
        ("python-setuptools" ,python-setuptools)))
     (arguments
-     `(#:tests? #f ; FIXME: requires pytest
-       #:phases
+     `(#:phases
        (alist-cons-after
         'install 'install-doc
         (lambda* (#:key outputs #:allow-other-keys)
@@ -4945,3 +4945,26 @@ printing of sub-tables by specifying a row range.")
 
 (define-public python2-prettytable
   (package-with-python2 python-prettytable))
+
+(define-public python-pyasn1
+  (package
+    (name "python-pyasn1")
+    (version "0.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pyasn1/pyasn1-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iw31d9l0zwx35szkzq72hiw002wnqrlrsi9dpbrfngcl1ybwcsx"))))
+    (build-system python-build-system)
+    (home-page "http://pyasn1.sourceforge.net/")
+    (synopsis "ASN.1 types and codecs")
+    (description
+     "This is an implementation of ASN.1 types and codecs in Python.  It is
+suitable for a wide range of protocols based on the ASN.1 specification.")
+    (license bsd-2)))
+
+(define-public python2-pyasn1
+  (package-with-python2 python-pyasn1))

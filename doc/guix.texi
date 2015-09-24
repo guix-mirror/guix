@@ -113,7 +113,8 @@ Emacs Interface
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
-* Completions: Emacs Completions.       Completing @command{guix} shell command.
+* Completions: Emacs Completions.	Completing @command{guix} shell command.
+* Development: Emacs Development.	Tools for Guix developers.
 
 Programming Interface
 

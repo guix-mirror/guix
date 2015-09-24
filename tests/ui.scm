@@ -22,6 +22,7 @@
   #:use-module (guix profiles)
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module (guix tests)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -88,6 +89,12 @@ interface, and powerful string processing.")
   "First line.  Second line"
   (fill-paragraph "First line.
 Second line" 24))
+
+(test-equal "package-description-string vs. Unicode"
+  "b•ll•t\n\n"                                ;see <http://bugs.gnu.org/21536>
+  (with-fluids ((%default-port-encoding "ISO-8859-1"))
+    (package-description-string
+     (dummy-package "foo" (description "b•ll•t")))))
 
 (test-equal "package-specification->name+version+output"
   '(("guile" #f "out")

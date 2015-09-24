@@ -503,7 +503,10 @@ to be modified."
        :name "log" :char ?l :doc "View build log"))
     (("graph")
      ,(guix-command-make-argument
-       :name "view" :char ?v :doc "View graph")))
+       :name "view" :char ?v :doc "View graph"))
+    (("size")
+     ,(guix-command-make-argument
+       :name "view" :char ?v :doc "View map")))
   "Alist of guix commands and additional 'execute' action arguments.")
 
 (defun guix-command-execute-arguments (commands)
@@ -525,7 +528,9 @@ to be modified."
     (("build")
      ("log" . guix-run-view-build-log))
     (("graph")
-     ("view" . guix-run-view-graph)))
+     ("view" . guix-run-view-graph))
+    (("size")
+     ("view" . guix-run-view-size-map)))
   "Alist of guix commands and alists of special executers for them.
 See also `guix-command-default-executors'.")
 
@@ -582,6 +587,23 @@ open the log file(s)."
                          'pipe-guix-output args dot-args))
         (guix-find-file graph-file)
       (error "Couldn't create a graph"))))
+
+(defun guix-run-view-size-map (args)
+  "Run 'guix ARGS ...' size command, and open the map file."
+  (let* ((wished-map-file
+          (cl-some (lambda (arg)
+                     (and (string-match "--map-file=\\(.+\\)" arg)
+                          (match-string 1 arg)))
+                   args))
+         (map-file (or wished-map-file (guix-png-file-name)))
+         (args (if wished-map-file
+                   args
+                 (apply #'list
+                        (car args)
+                        (concat "--map-file=" map-file)
+                        (cdr args)))))
+    (guix-command-output args)
+    (guix-find-file map-file)))
 
 
 ;;; Generating popups, actions, etc.

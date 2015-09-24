@@ -12,4 +12,6 @@ avoid loading autoloads of Emacs packages installed in
   (require 'guix-emacs)
   (guix-emacs-load-autoloads 'all))
 
+(add-hook 'scheme-mode-hook 'guix-devel-activate-mode-maybe)
+
 (provide 'guix-init)

@@ -12,7 +12,8 @@ Guix convenient and fun.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
-* Completions: Emacs Completions.       Completing @command{guix} shell command.
+* Completions: Emacs Completions.	Completing @command{guix} shell command.
+* Development: Emacs Development.	Tools for Guix developers.
 @end menu
 
 
@@ -637,3 +638,49 @@ something:
 @item @code{guix lint --checkers=synopsis,des}@key{TAB}
 
 @end itemize
+
+
+@node Emacs Development
+@section Development
+
+By default, when you open a Scheme file, @code{guix-devel-mode} will be
+activated (if you don't want it, set @code{guix-devel-activate-mode} to
+nil).  This minor mode provides the following key bindings:
+
+@table @kbd
+
+@item C-c . k
+Copy the name of the current Guile module into kill ring
+(@code{guix-devel-copy-module-as-kill}).
+
+@item C-c . u
+Use the current Guile module.  Often after opening a Scheme file, you
+want to use a module it defines, so you switch to the Geiser REPL and
+write @code{,use (some module)} there.  You may just use this command
+instead (@code{guix-devel-use-module}).
+
+@item C-c . b
+Build a package defined by the current variable definition.  The
+building process is run in the current Geiser REPL.  If you modified the
+current package definition, don't forget to reevaluate it before calling
+this command---for example, with @kbd{C-M-x} (@pxref{To eval or not to
+eval,,, geiser, Geiser User Manual})
+(@code{guix-devel-build-package-definition}).
+
+@end table
+
+Unluckily, there is a limitation related to long-running REPL commands.
+When there is a running process in a Geiser REPL, you are not supposed
+to evaluate anything in a scheme buffer, because this will ``freeze''
+the REPL: it will stop producing any output (however, the evaluating
+process will continue---you will just not see any progress anymore).  Be
+aware: even moving the point in a scheme buffer may ``break'' the REPL
+if Autodoc (@pxref{Autodoc and friends,,, geiser, Geiser User Manual})
+is enabled (which is the default).
+
+So you have to postpone editing your scheme buffers until the running
+evaluation will be finished in the REPL.
+
+Alternatively, to avoid this limitation, you may just run another Geiser
+REPL, and while something is being evaluated in the previous REPL, you
+can continue editing a scheme file with the help of the current one.
