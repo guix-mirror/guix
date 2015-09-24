@@ -111,12 +111,15 @@ column."
     (string-append left padding right)))
 
 (define* (store-path-abbreviation store-path #:optional (prefix-length 6))
-  "Return an abbreviation of STORE-PATH for display, showing PREFIX-LENGTH
-characters of the hash."
-  (let ((base (basename store-path)))
-    (string-append (string-take base prefix-length)
-                   "…"
-                   (string-drop base 32))))
+  "If STORE-PATH is the file name of a store entry, return an abbreviation of
+STORE-PATH for display, showing PREFIX-LENGTH characters of the hash.
+Otherwise return STORE-PATH."
+  (if (string-prefix? (%store-directory) store-path)
+      (let ((base (basename store-path)))
+        (string-append (string-take base prefix-length)
+                       "…"
+                       (string-drop base 32)))
+      store-path))
 
 (define* (progress-proc file size
                         #:optional (log-port (current-output-port))
