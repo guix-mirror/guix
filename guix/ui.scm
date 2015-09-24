@@ -803,7 +803,10 @@ converted to a space; sequences of more than one line break are preserved."
 
 (define (texi->plain-text str)
   "Return a plain-text representation of texinfo fragment STR."
-  (stexi->plain-text (texi-fragment->stexi str)))
+  ;; 'texi-fragment->stexi' uses a string port so make sure it's a
+  ;; Unicode-capable one (see <http://bugs.gnu.org/11197>.)
+  (with-fluids ((%default-port-encoding "UTF-8"))
+    (stexi->plain-text (texi-fragment->stexi str))))
 
 (define (package-description-string package)
   "Return a plain-text representation of PACKAGE description field."
