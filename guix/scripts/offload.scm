@@ -474,14 +474,19 @@ success, #f otherwise."
 
       ;; Compute the subset of FILES missing on MACHINE, and send them in
       ;; topologically sorted order so that they can actually be imported.
+      ;;
+      ;; To reduce load on the machine that's offloading (since it's typically
+      ;; already quite busy, see hydra.gnu.org), compress with gzip rather
+      ;; than xz: For a compression ratio 2 times larger, it is 20 times
+      ;; faster.
       (let* ((files (missing-files (topologically-sorted store files)))
              (pipe  (remote-pipe machine OPEN_WRITE
-                                 '("xz" "-dc" "|"
+                                 '("gzip" "-dc" "|"
                                    "guix" "archive" "--import")
                                  #:quote? #f)))
         (format #t (_ "sending ~a store files to '~a'...~%")
                 (length files) (build-machine-name machine))
-        (call-with-compressed-output-port 'xz pipe
+        (call-with-compressed-output-port 'gzip pipe
           (lambda (compressed)
             (catch 'system-error
               (lambda ()
@@ -489,7 +494,8 @@ success, #f otherwise."
               (lambda args
                 (warning (_ "failed while exporting files to '~a': ~a~%")
                          (build-machine-name machine)
-                         (strerror (system-error-errno args)))))))
+                         (strerror (system-error-errno args))))))
+          #:options '("--fast"))
 
         ;; Wait for the 'lsh' process to complete.
         (zero? (close-pipe pipe))))))
