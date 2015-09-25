@@ -283,22 +283,27 @@ data is lost."
         (close-port in)
         (values out (list child)))))))
 
-(define (compressed-output-port compression output)
+(define* (compressed-output-port compression output
+                                 #:key (options '()))
   "Return an output port whose input is compressed according to COMPRESSION,
 a symbol such as 'xz, and then written to OUTPUT.  In addition return a list
-of PIDs to wait for."
+of PIDs to wait for.  OPTIONS is a list of strings passed to the compression
+program--e.g., '(\"--fast\")."
   (match compression
     ((or #f 'none) (values output '()))
-    ('bzip2        (filtered-output-port `(,%bzip2 "-c") output))
-    ('xz           (filtered-output-port `(,%xz "-c") output))
-    ('gzip         (filtered-output-port `(,%gzip "-c") output))
+    ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
+    ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
+    ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
     (else          (error "unsupported compression scheme" compression))))
 
-(define (call-with-compressed-output-port compression port proc)
+(define* (call-with-compressed-output-port compression port proc
+                                           #:key (options '()))
   "Call PROC with a wrapper around PORT, a file port, that compresses data
-that goes to PORT according to COMPRESSION, a symbol such as 'xz."
+that goes to PORT according to COMPRESSION, a symbol such as 'xz.  OPTIONS is
+a list of command-line arguments passed to the compression program."
   (let-values (((compressed pids)
-                (compressed-output-port compression port)))
+                (compressed-output-port compression port
+                                        #:options options)))
     (dynamic-wind
       (const #f)
       (lambda ()
