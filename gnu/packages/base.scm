@@ -640,10 +640,6 @@ the 'share/locale' sub-directory of this package.")
           `(alist-replace
             'build
             (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                ;; Delete $out/bin, which contains 'bash'.
-                (delete-file-recursively (string-append out "/bin")))
-
               (zero? (system* "make" "localedata/install-locales"
                               "-j" (number->string (parallel-job-count)))))
             (alist-delete 'install ,phases)))
