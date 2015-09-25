@@ -4964,3 +4964,33 @@ in Python.  This library is used to create, poke at, and manipulate IPv4 and
 IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
 module to older versions of Python.")
     (license psfl)))
+
+(define-public python-idna
+  (package
+    (name "python-idna")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/i/"
+                           "idna/idna-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0frxgmgi234lr9hylg62j69j4ik5zhg0wz05w5dhyacbjfnrl68n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/kjd/idna")
+    (synopsis "Internationalized domain names in applications")
+    (description
+     "This is a library to support the Internationalised Domain Names in
+Applications (IDNA) protocol as specified in RFC 5891.  This version of the
+protocol is often referred to as “IDNA2008” and can produce different results
+from the earlier standard from 2003.  The library is also intended to act as a
+suitable drop-in replacement for the “encodings.idna” module that comes with
+the Python standard library but currently only supports the older 2003
+specification.")
+    (license bsd-4)))
+
+(define-public python2-idna
+  (package-with-python2 python-idna))
