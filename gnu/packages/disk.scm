@@ -101,7 +101,7 @@ tables, and it understands a variety of different formats.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.19")
+    (version "1.20")
     (source
      (origin
       (method url-fetch)
@@ -109,7 +109,7 @@ tables, and it understands a variety of different formats.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "1f278w7i9sx45jk6fsw1kyzx743k3alx1c4w1q8sk05ckafhr3gd"))))
+        "1gb0ak2c47nass7qdf9pnfrshcb38c318z1fx5v5v1k7l6qr7yc3"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
