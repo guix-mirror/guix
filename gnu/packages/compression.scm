@@ -545,3 +545,44 @@ time for compression ratio.")
     ;; The libraries (lz4, lz4hc, and xxhash are BSD licenced. The command
     ;; line interface programs (lz4, fullbench, fuzzer, datagen) are GPL2+.
     (license (list license:bsd-2 license:gpl2+))))
+
+(define-public squashfs-tools
+  (package
+    (name "squashfs-tools")
+    (version "4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/squashfs/"
+                                  "squashfs" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xpklm0y43nd9i6jw43y2xh5zvlmj9ar2rvknh0bh7kv8c95aq0d"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:make-flags
+       (list "CC=gcc"
+             "XZ_SUPPORT=1"
+             "LZO_SUPPORT=1"
+             "LZ4_SUPPORT=1"
+             (string-append "INSTALL_DIR=" %output "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda _
+                    (chdir "squashfs-tools"))))))
+    (inputs
+     `(("lz4" ,lz4)
+       ("lzo" ,lzo)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "http://squashfs.sourceforge.net/")
+    (synopsis "Tools to create and extract squashfs filesystems")
+    (description
+     "Squashfs is a highly compressed read-only filesystem for Linux.  It uses
+zlib to compress files, inodes, and directories.  All blocks are packed to
+minimize the data overhead, and block sizes of between 4K and 1M are supported.
+It is intended to be used for archival use, for live CDs, and for embedded
+systems where low overhead is needed.  This package allows you to create and
+extract such filesystems.")
+    (license license:gpl2+)))
