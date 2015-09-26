@@ -990,7 +990,7 @@ for use with HTML5 video.")
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt-4)
+       ("qt" ,qt)
        ("sdl" ,sdl)
        ("sqlite" ,sqlite)
        ("yasm" ,yasm)
@@ -1045,6 +1045,7 @@ for use with HTML5 video.")
                                  (string-append "-DSDL_INCLUDE_DIR="
                                                 sdl "/include/SDL")
                                  (string-append "../" srcdir)
+                                 "-DENABLE_QT5=True"
                                  args)
                           (system* "make" "-j"
                                    (number->string (parallel-job-count)))
