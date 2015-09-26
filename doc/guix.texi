@@ -7294,9 +7294,12 @@ Descriptions should take between five and ten lines.  Use full
 sentences, and avoid using acronyms without first introducing them.
 Descriptions can include Texinfo markup, which is useful to introduce
 ornaments such as @code{@@code} or @code{@@dfn}, bullet lists, or
-hyperlinks (@pxref{Overview, overview of Texinfo,, texinfo, GNU
-Texinfo}).  User interfaces such as @command{guix package --show} take
-care of rendering it appropriately.
+hyperlinks (@pxref{Overview,,, texinfo, GNU Texinfo}).  However you
+should be careful when using some characters for example @samp{@@} and
+curly braces which are the basic special characters in Texinfo
+(@pxref{Special Characters,,, texinfo, GNU Texinfo}).  User interfaces
+such as @command{guix package --show} take care of rendering it
+appropriately.
 
 Synopses and descriptions are translated by volunteers
 @uref{http://translationproject.org/domain/guix-packages.html, at the
@@ -7306,7 +7309,16 @@ the language specified by the current locale.
 
 Translation is a lot of work so, as a packager, please pay even more
 attention to your synopses and descriptions as every change may entail
-additional work for translators.
+additional work for translators.  In order to help them, it is possible
+to make recommandations or instructions visible to them by inserting
+special comments like this (@pxref{xgettext Invocation,,, gettext, GNU
+Gettext}):
+
+@example
+;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
+(description "ARandR is designed to provide a simple visual front end
+for the X11 resize-and-rotate (RandR) extension. @dots{}")
+@end example
 
 
 @node Python Modules
