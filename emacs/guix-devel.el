@@ -43,6 +43,12 @@
   "Face for a `modify-phases' keyword ('delete', 'replace', etc.)."
   :group 'guix-devel-faces)
 
+(defface guix-devel-gexp-symbol
+  '((t :inherit font-lock-keyword-face))
+  "Face for gexp symbols ('#~', '#$', etc.).
+See Info node `(guix) G-Expressions'."
+  :group 'guix-devel-faces)
+
 (defcustom guix-devel-activate-mode t
   "If non-nil, then `guix-devel-mode' is automatically activated
 in Scheme buffers."
@@ -130,7 +136,9 @@ to find 'modify-phases' keywords."
   (save-excursion (up-list) (point)))
 
 (defvar guix-devel-font-lock-keywords
-  `((,(guix-guile-keyword-regexp "modify-phases")
+  `((,(rx (or "#~" "#$" "#$@" "#+" "#+@")) .
+     'guix-devel-gexp-symbol)
+    (,(guix-guile-keyword-regexp "modify-phases")
      (1 'font-lock-keyword-face)
      (guix-devel-modify-phases-font-lock-matcher
       (guix-devel-modify-phases-font-lock-pre)
