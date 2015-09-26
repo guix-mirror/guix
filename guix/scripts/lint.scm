@@ -146,11 +146,13 @@ monad."
   (define (check-texinfo-markup description)
     "Check that DESCRIPTION can be parsed as a Texinfo fragment.  If the
 markup is valid return a plain-text version of DESCRIPTION, otherwise #f."
-    (unless (false-if-exception (texi->plain-text description))
-      (emit-warning package
-                    (_ "Texinfo markup in description is invalid")
-                    'description)
-      #f))
+    (catch #t
+      (lambda () (texi->plain-text description))
+      (lambda (keys . args)
+        (emit-warning package
+                      (_ "Texinfo markup in description is invalid")
+                      'description)
+        #f)))
 
   (define (check-proper-start description)
     (unless (or (properly-starts-sentence? description)
