@@ -32,13 +32,13 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.2.18")
+    (version "1.2.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
               (sha256
-               (base32 "16i063xzwxdrqy32vlr292lljb65hkg3xx0i2m0qx2v00pcn4b3n"))))
+               (base32 "0grd2s6gf8yzqwdaa50g57j9d81mxkrrpkyldm2shgyizdc8gx33"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
