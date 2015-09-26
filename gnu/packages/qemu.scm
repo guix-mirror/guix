@@ -44,28 +44,15 @@
   ;; This is QEMU without GUI support.
   (package
     (name "qemu-headless")
-    (version "2.3.1")
+    (version "2.4.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0px1vhkglxzjdxkkqln98znv832n1sn79g5inh3aw72216c047b6"))
-             (patches (map search-patch '("qemu-CVE-2015-3209.patch"
-                                          "qemu-CVE-2015-4037.patch"
-                                          "qemu-CVE-2015-4103.patch"
-                                          "qemu-CVE-2015-4104.patch"
-                                          "qemu-CVE-2015-4105.patch"
-                                          "qemu-CVE-2015-4106-pt1.patch"
-                                          "qemu-CVE-2015-4106-pt2.patch"
-                                          "qemu-CVE-2015-4106-pt3.patch"
-                                          "qemu-CVE-2015-4106-pt4.patch"
-                                          "qemu-CVE-2015-4106-pt5.patch"
-                                          "qemu-CVE-2015-4106-pt6.patch"
-                                          "qemu-CVE-2015-4106-pt7.patch"
-                                          "qemu-CVE-2015-4106-pt8.patch"
-                                          "qemu-CVE-2015-5745.patch")))))
+               "1nqv5p94zpnhcaqkifnn83ap7dd0qrb0qiicswbyhhby0f48pzpc"))
+             (patches (map search-patch '("qemu-CVE-2015-6855.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
