@@ -82,6 +82,7 @@
       ("dconf" ,dconf)
       ("gconf" ,gconf)
       ("gtk2" ,gtk+-2)
+      ("gtk+" ,gtk+)
       ("intltool" ,intltool)
       ("libnotify" ,libnotify)
       ("iso-codes" ,iso-codes)
