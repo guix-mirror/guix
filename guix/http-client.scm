@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (ice-9 match)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
@@ -66,7 +67,8 @@
 
 (when-guile<=2.0.5-or-otherwise-broken
  ;; Backport of Guile commits 312e79f8 ("Add HTTP Chunked Encoding support to
- ;; web modules.") and 00d3ecf2 ("http: Do not buffer HTTP chunks.")
+ ;; web modules."), 00d3ecf2 ("http: Do not buffer HTTP chunks."), and 53b8d5f
+ ;; ("web: Gracefully handle premature EOF when reading chunk header.")
 
  (use-modules (ice-9 rdelim))
 
@@ -75,14 +77,21 @@
 
  ;; Chunked Responses
  (define (read-chunk-header port)
-   (let* ((str (read-line port))
-          (extension-start (string-index str (lambda (c) (or (char=? c #\;)
-                                                             (char=? c #\return)))))
-          (size (string->number (if extension-start ; unnecessary?
-                                    (substring str 0 extension-start)
-                                    str)
-                                16)))
-     size))
+   "Read a chunk header from PORT and return the size in bytes of the
+ upcoming chunk."
+   (match (read-line port)
+     ((? eof-object?)
+      ;; Connection closed prematurely: there's nothing left to read.
+      0)
+     (str
+      (let ((extension-start (string-index str
+                                           (lambda (c)
+                                             (or (char=? c #\;)
+                                                 (char=? c #\return))))))
+        (string->number (if extension-start       ; unnecessary?
+                            (substring str 0 extension-start)
+                            str)
+                        16)))))
 
  (define* (make-chunked-input-port port #:key (keep-alive? #f))
    "Returns a new port which translates HTTP chunked transfer encoded
