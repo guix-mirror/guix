@@ -321,7 +321,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.1.6")
+    (version "1.2.1")
     (source
      (origin
       (method url-fetch)
@@ -331,7 +331,7 @@ It has been modified to remove all non-free binary blobs.")
                                 version ".tar.bz2")))
       (sha256
        (base32
-        "1hlz2kqvbjisvwyicdincq7nz897b9rrafyzccwzqiqg53b8gf5s"))))
+        "1n9lnf9gjs72kbj1g354v1xhi2j27aqaah15vykh7cnkq08i4arl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -390,7 +390,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.25.2")
+    (version "2.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -398,19 +398,20 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1miwwdq1zwvhf0smrxx3fjddq3mz22s8rc5cw54s7x3kbdqpyig0"))
+                "1ivdx1bhjbakf77agm9dn3wyxia1wgz9lzxgd61zqxw3xzih9gzw"))
               (patches (list (search-patch "util-linux-tests.patch")))
               (modules '((guix build utils)))
               (snippet
                ;; We take the 'logger' program from GNU Inetutils and 'kill'
                ;; from GNU Coreutils.
-               '(substitute* "configure"
-                  (("build_logger=yes") "build_logger=no")
-                  (("build_kill=yes") "build_kill=no")))))
+               '(begin
+                  (substitute* "configure"
+                    (("build_logger=yes") "build_logger=no")
+                    (("build_kill=yes") "build_kill=no"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-                               "--enable-ddate"
 
                                ;; Install completions where our
                                ;; bash-completion package expects them.
@@ -1021,19 +1022,15 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.22")
+    (version "2.24")
     (source (origin
              (method url-fetch)
-
-             ;; Tarballs used to be available from
-             ;; <https://www.kernel.org/pub/linux/libs/security/linux-privs/>
-             ;; but they never came back after kernel.org was compromised.
              (uri (string-append
-                   "mirror://debian/pool/main/libc/libcap2/libcap2_"
-                   version ".orig.tar.gz"))
+                   "mirror://kernel.org/linux/libs/security/linux-privs/"
+                   "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "07vjhkznm82p8dm4w6j8mmg7h5c70lp5s9bwwfdmgwpbixfydjp1"))))
+               "0rbc9qbqs5bp9am9s9g83wxj5k4ixps2agy9dxr1v1fwg27mdr6f"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases

@@ -674,7 +674,7 @@ have been used.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "12.1")
+    (version "18.3.1")
     (source
      (origin
       (method url-fetch)
@@ -682,7 +682,7 @@ have been used.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "04bfk7si1pwj3b5k2b1x9b1zkiclybmzpw6alrs5bciri56lg9zs"))))
+        "0kc7rbav00ks6iaw14p38y81q12fx0lpkhgf5m97xc04f5r318ig"))))
     (build-system python-build-system)
     ;; FIXME: Tests require pytest, which itself relies on setuptools.
     ;; One could bootstrap with an internal untested setuptools.
@@ -2791,7 +2791,7 @@ association studies (GWAS) on extremely large data sets.")
                                          (tgt-dir (string-append html "/" dir)))
                                     (unless (equal? "." dir)
                                       (mkdir-p tgt-dir))
-                                    (copy-file file (string-append html "/" file))))
+                                    (install-file file html)))
                                 (find-files "." ".*"))))))
               ,phases)))))))
 
@@ -2835,7 +2835,7 @@ association studies (GWAS) on extremely large data sets.")
             (for-each
              (lambda (dir tgt)
                (map (lambda (file)
-                      (copy-file file (string-append tgt "/" (basename file))))
+                      (install-file file tgt))
                     (find-files dir ".*")))
              (list "docs" "htmldoc" "examples")
              (list doc html-doc examples))))
@@ -3147,9 +3147,7 @@ atlas_libs = openblas
                  (for-each (lambda (file)
                              (let* ((dir (dirname file))
                                     (tgt-dir (string-append html "/" dir)))
-                               (unless (equal? "." dir)
-                                 (mkdir-p tgt-dir))
-                               (copy-file file (string-append html "/" file))))
+                               (install-file file html)))
                            (find-files "." ".*"))))))
          ;; Tests can only be run after the library has been installed and not
          ;; within the source directory.
@@ -4641,6 +4639,37 @@ term.js Javascript terminal emulator library.")
                  ,python2-backport-ssl-match-hostname)
                 ,@(alist-delete "python-tornado"
                                 (package-propagated-inputs terminado)))))))
+
+(define-public python-fonttools
+  (package
+    (name "python-fonttools")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/F/FontTools/"
+                    "fonttools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08ay3x4ijarwhl60gqx2i9jzq6pxs20p4snc2d1q5jagh4rn39lb"))))
+    (build-system python-build-system)
+    (arguments '(#:test-target "check"))
+    (propagated-inputs
+     ;; XXX: module not found if setuptools is not available.
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/behdad/fonttools")
+    (synopsis "Tools to manipulate font files")
+    (description
+     "FontTools/TTX is a library to manipulate font files from Python.  It
+supports reading and writinfg of TrueType/OpenType fonts, reading and writing
+of AFM files, reading (and partially writing) of PS Type 1 fonts.  The package
+also contains a tool called “TTX” which converts TrueType/OpenType fonts to and
+from an XML-based format.")
+    (license (non-copyleft "file://LICENSE.txt"
+                           "See LICENSE.txt in the distribution."))))
+
+(define-public python2-fonttools
+  (package-with-python2 python-fonttools))
 
 (define-public python-ly
   (package

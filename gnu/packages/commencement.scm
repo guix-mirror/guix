@@ -419,18 +419,17 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                   #:guile %bootstrap-guile))))
 
 (define static-bash-for-glibc
-  ;; A statically-linked Bash to be embedded in GLIBC-FINAL, for use by
-  ;; system(3) & co.
+  ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
   (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
                                   glibc-final-with-bootstrap-bash
                                   (car (assoc-ref %boot1-inputs "bash"))))
-         (bash (package (inherit bash-light)
+         (bash (package (inherit static-bash)
                  (native-inputs `(("bison" ,bison-boot1)))
                  (arguments
                   `(#:guile ,%bootstrap-guile
-                    ,@(package-arguments bash-light))))))
+                    ,@(package-arguments static-bash))))))
     (package-with-bootstrap-guile
-     (package-with-explicit-inputs (static-package bash)
+     (package-with-explicit-inputs bash
                                    `(("gcc" ,gcc)
                                      ("libc" ,glibc-final-with-bootstrap-bash)
                                      ,@(fold alist-delete %boot1-inputs
@@ -490,6 +489,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (arguments
      `(#:allowed-references
        ,(cons* `(,gcc-boot0 "lib") (linux-libre-headers-boot0)
+               static-bash-for-glibc
                (package-outputs glibc-final-with-bootstrap-bash))
 
        ,@(package-arguments glibc-final-with-bootstrap-bash)))))
@@ -562,7 +562,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
 
-       #:allowed-references ("out" "lib" ,glibc-final)
+       #:allowed-references ("out" "lib"
+                             ,glibc-final ,static-bash-for-glibc)
 
        ;; Things like libasan.so and libstdc++.so NEED ld.so for some
        ;; reason, but it is not in their RUNPATH.  This is a false
@@ -596,8 +597,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
-    ;; This time we want Texinfo, so we get the manual.
+    ;; This time we want Texinfo, so we get the manual.  Add
+    ;; STATIC-BASH-FOR-GLIBC so that it's used in the final shebangs of
+    ;; scripts such as 'mkheaders' and 'fixinc.sh' (XXX: who cares about these
+    ;; scripts?).
     (native-inputs `(("texinfo" ,texinfo-boot0)
+                     ("static-bash" ,static-bash-for-glibc)
                      ,@(package-native-inputs gcc-boot0)))
 
     (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp)))
@@ -655,10 +660,90 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                               (current-source-location)
                                               #:guile %bootstrap-guile))))))
 
+(define (locale-proof-package p)
+  "Return a new package based on P that ignores 'LOCPATH'.  The result is a
+\"locale-proof\" package in the sense that it cannot end up loading locale
+data that is not in the format its libc expects.  This is useful because the
+locale binary format may change incompatibly between libc versions."
+  (package
+    (inherit p)
+    (name (string-append (package-name p) "-lp"))
+    (build-system trivial-build-system)
+    (inputs `(("original" ,p)
+              ("bash" ,bash-final)))
+    (outputs '("out"))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let* ((out      (assoc-ref %outputs "out"))
+                (bin      (string-append out "/bin"))
+                (bash     (assoc-ref %build-inputs "bash"))
+                (binaries (assoc-ref %build-inputs "original"))
+                (programs (find-files (string-append binaries "/bin"))))
+           (define (wrap-program program)
+             (let ((base (basename program)))
+               (call-with-output-file base
+                 (lambda (port)
+                   (format port "#!~a/bin/sh
+# Unset 'LOCPATH' so that the program does not end up loading incompatible
+# locale data.
+unset LOCPATH
+exec \"~a\" \"$@\"\n"
+                           bash program)))
+               (chmod base #o755)))
+
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (for-each wrap-program programs)
+             #t)))))))
+
+(define-public ld-wrapper
+  ;; The final 'ld' wrapper, which uses the final Guile and Binutils.
+  (package (inherit ld-wrapper-boot3)
+    (name "ld-wrapper")
+    (inputs `(("guile" ,guile-final)
+              ("bash"  ,bash-final)
+              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
+                      '("guile" "bash"))))))
+
 (define %boot5-inputs
-  ;; Now with UTF-8 locale.
-  `(("locales" ,glibc-utf8-locales-final)
-    ,@%boot4-inputs))
+  ;; Now with UTF-8 locales.  Since the locale binary format differs between
+  ;; libc versions, we have to rebuild some of the packages so that they use
+  ;; the new libc, which allows them to load locale data from
+  ;; GLIBC-UTF8-LOCALES-FINAL (remember that the bootstrap binaries were built
+  ;; with an older libc, which cannot load the new locale format.)  See
+  ;; <https://lists.gnu.org/archive/html/guix-devel/2015-08/msg00737.html>.
+  (let ((new-libc-package (compose package-with-bootstrap-guile
+                                   (cut package-with-explicit-inputs <>
+                                        %boot4-inputs
+                                        (current-source-location)
+                                        #:guile %bootstrap-guile))))
+    `(("locales" ,glibc-utf8-locales-final)
+      ("ld-wrapper" ,ld-wrapper)
+      ("binutils" ,binutils-final)
+      ("bash" ,bash-final)
+      ("make" ,(new-libc-package gnu-make))
+
+      ;; Some test suites (grep, Gnulib) use 'diff' to compare files in locale
+      ;; encoding, so we need support this.
+      ("diffutils" ,(new-libc-package diffutils))
+      ("findutils" ,(new-libc-package findutils))
+
+      ;; Grep's test suite uses 'timeout' from Coreutils to execute command,
+      ;; and yet these commands need to see the valid 'LOCPATH'.
+      ("coreutils" ,(new-libc-package coreutils-minimal))
+
+      ;; We just wrap the remaining binaries (tar, gzip, xz, etc.)  so that
+      ;; they ignore 'LOCPATH' (if they did not, they would be hit by an
+      ;; assertion failure in loadlocale.c.)
+      ("coreutils&co" ,(locale-proof-package %bootstrap-coreutils&co))
+
+      ,@(fold alist-delete %boot4-inputs
+              '("coreutils&co" "findutils" "diffutils" "make"
+                "bash" "binutils-cross" "ld-wrapper")))))
 
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
@@ -667,15 +752,6 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                  `(("guile" ,guile-final)
                                    ,@%boot5-inputs)
                                  (current-source-location))))
-
-(define-public ld-wrapper
-  ;; The final `ld' wrapper, which uses the final Guile.
-  (package (inherit ld-wrapper-boot3)
-    (name "ld-wrapper")
-    (inputs `(("guile" ,guile-final)
-              ("bash"  ,bash-final)
-              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
-                      '("guile" "bash"))))))
 
 (define coreutils-final
   ;; The final Coreutils.  Treat them specially because some packages, such as
@@ -790,14 +866,6 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                      (match %build-inputs
                        (((names . directories) ...)
                         (union-build out directories)))
-
-                     ;; Remove the 'sh' and 'bash' binaries that come with
-                     ;; libc to avoid polluting the user's profile (these are
-                     ;; statically-linked binaries with no locale support and
-                     ;; so on.)
-                     (for-each (lambda (file)
-                                 (delete-file (string-append out "/bin/" file)))
-                               '("sh" "bash"))
 
                      (union-build (assoc-ref %outputs "debug")
                                   (list (assoc-ref %build-inputs

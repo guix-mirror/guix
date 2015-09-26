@@ -105,7 +105,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.4.1")
+    (version "3.4.5")
     (source (origin
              (method url-fetch)
              (uri
@@ -116,7 +116,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1xf354xafavqhi207ll1m1isd4l5b31lic2sz9lw0j0r0fcxfnsj"))
+               "1bks1zpmhmnkz2v32dd9b44pz6x0a5w4yi9zzwsd0a078vhbi25g"))
              (patches (list (search-patch "gnutls-doc-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -195,7 +195,9 @@ required structures.")
             (sha256
              (base32
               "1j58r7rdj9fz2lanir8ajbx4bspb5jnm5ikl6dq8lql5fx43c737"))
-            (patches (list (search-patch "openssl-runpath.patch")))))
+            (patches (map search-patch
+                          '("openssl-runpath.patch"
+                            "openssl-c-rehash.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
@@ -203,32 +205,68 @@ required structures.")
       #:parallel-tests? #f
       #:test-target "test"
       #:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (zero?
-            (system* "./config"
-                     "shared"                   ; build shared libraries
-                     "--libdir=lib"
-                     (string-append "--prefix=" out)
-                     ;; XXX FIXME: Work around a code generation bug in GCC
-                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                     ,@(if (and (not (%current-target-system))
-                                (string-prefix? "armhf" (%current-system)))
-                           '("-mfpu=vfpv3")
-                           '())))))
-       (alist-cons-before
-        'patch-source-shebangs 'patch-tests
-        (lambda* (#:key inputs native-inputs #:allow-other-keys)
-          (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
-            (substitute* (find-files "test" ".*")
-              (("/bin/sh")
-               (string-append bash "/bin/bash"))
-              (("/bin/rm")
-               "rm"))))
-        %standard-phases))))
+      (modify-phases %standard-phases
+        (add-before
+         'configure 'fix-man-dir
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; The default MANDIR is some unusual place.  Fix that.
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* "Makefile.org"
+               (("^MANDIR[[:blank:]]*=.*$")
+                (string-append "MANDIR = " out "/share/man\n")))
+             #t)))
+        (replace
+         'configure
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (zero?
+              (system* "./config"
+                       "shared"                   ;build shared libraries
+                       "--libdir=lib"
+
+                       ;; The default for this catch-all directory is
+                       ;; PREFIX/ssl.  Change that to something more
+                       ;; conventional.
+                       (string-append "--openssldir=" out
+                                      "/share/openssl-" ,version)
+
+                       (string-append "--prefix=" out)
+
+                       ;; XXX FIXME: Work around a code generation bug in GCC
+                       ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                       ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                       ,@(if (and (not (%current-target-system))
+                                  (string-prefix? "armhf" (%current-system)))
+                             '("-mfpu=vfpv3")
+                             '()))))))
+        (add-after
+         'install 'make-libraries-writable
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Make libraries writable so that 'strip' does its job.
+           (let ((out (assoc-ref outputs "out")))
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files (string-append out "/lib")
+                                   "\\.so"))
+             #t)))
+        (add-before
+         'patch-source-shebangs 'patch-tests
+         (lambda* (#:key inputs native-inputs #:allow-other-keys)
+           (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
+             (substitute* (find-files "test" ".*")
+               (("/bin/sh")
+                (string-append bash "/bin/bash"))
+               (("/bin/rm")
+                "rm")))))
+        (add-after
+         'install 'remove-miscellany
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; The 'misc' directory contains random undocumented shell and Perl
+           ;; scripts.  Remove them to avoid retaining a reference on Perl.
+           (let ((out (assoc-ref outputs "out")))
+             (delete-file-recursively (string-append out "/share/openssl-"
+                                                     ,version "/misc"))
+             #t))))))
    (native-search-paths
     ;; FIXME: These two variables must designate a single file or directory
     ;; and are not actually "search paths."  In practice it works OK in user

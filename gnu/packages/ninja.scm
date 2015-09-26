@@ -66,11 +66,8 @@
             (let* ((out (assoc-ref outputs "out"))
                    (bin (string-append out "/bin"))
                    (doc (string-append out "/share/doc/ninja")))
-              (mkdir-p bin)
-              (copy-file "ninja" (string-append bin "/ninja"))
-              (mkdir-p doc)
-              (copy-file "doc/manual.asciidoc"
-                         (string-append doc "/manual.asciidoc"))
+              (install-file "ninja" bin)
+              (install-file "doc/manual.asciidoc" doc)
               #t))))))
     (home-page "http://martine.github.io/ninja/")
     (synopsis "Small build system")

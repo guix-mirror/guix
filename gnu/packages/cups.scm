@@ -37,7 +37,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.0.71")
+    (version "1.0.75")
     (source (origin
               (method url-fetch)
               (uri
@@ -45,7 +45,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "07wwlqcykfjfqcwj1bxk60ggahyaw7wcx32n5s104d1qkhham01i"))
+                "0wrh9jmd2rm4z8c8nb50llb10shj1hik9vwqnr0djcvf63mfqsbw"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -71,7 +71,8 @@
          ,(string-append "--with-rcdir="
                          (assoc-ref %outputs "out") "/etc/rc.d"))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("glib" ,glib "bin") ; for gdbus-codegen
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("fontconfig"   ,fontconfig)
        ("freetype"     ,freetype)
@@ -109,14 +110,14 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.0.3")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.cups.org/software/"
-                                  version "/cups-" version "-source.tar.gz"))
+                                  version "/cups-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "1kq1kpny0hghqgbjvashlv6qw1xn0c1p3d4r3cx8qxdzd2ifk4lf"))))
+                "1jfjqsw9l7jbn5kb9i96k0wj12kjdbgx0rd8157dif22hi0kh0ms"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

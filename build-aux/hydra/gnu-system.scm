@@ -221,10 +221,11 @@ valid."
 
   (define (cross-jobs system)
     (define (from-32-to-64? target)
-      ;; Return true if SYSTEM is 32-bit and TARGET is 64-bit.
-      ;; This hacks prevents known-to-fail cross-builds from i686-linux to
+      ;; Return true if SYSTEM is 32-bit and TARGET is 64-bit.  This hack
+      ;; prevents known-to-fail cross-builds from i686-linux or armhf-linux to
       ;; mips64el-linux-gnuabi64.
-      (and (string-prefix? "i686-" system)
+      (and (or (string-prefix? "i686-" system)
+               (string-prefix? "armhf-" system))
            (string-suffix? "64" target)))
 
     (define (same? target)

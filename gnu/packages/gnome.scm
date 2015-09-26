@@ -787,7 +787,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.30")
+    (version "1.14.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -795,7 +795,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0w2v1a9sxsymd1mcy4mwsz4r6za9iwq69rj86nb939p41d4c6j6b"))))
+                "0a5m1i5gp4m2z0cn2x1rrdm8wgrr04bzv65l8pgp6jipw13s9zph"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -820,7 +820,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.9")
+    (version "2.40.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -828,7 +828,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0fplymmqqr28y24vcnb01szn62pfbqhk8p1ngns54x9m6mflr5hk"))))
+                "0y9lvnb9ij9mjg8cyp7xysi0c5ms5v4q1zrhx42b546f71s80p4n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-60)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
@@ -33,6 +35,8 @@
                alist-delete)
   #:export (%store-directory
             store-file-name?
+            strip-store-file-name
+            package-name->name+version
             parallel-job-count
 
             directory-exists?
@@ -43,6 +47,7 @@
             ar-file?
             with-directory-excursion
             mkdir-p
+            install-file
             copy-recursively
             delete-file-recursively
             file-name-predicate
@@ -85,6 +90,33 @@
 (define (store-file-name? file)
   "Return true if FILE is in the store."
   (string-prefix? (%store-directory) file))
+
+(define (strip-store-file-name file)
+  "Strip the '/gnu/store' and hash from FILE, a store file name.  The result
+is typically a \"PACKAGE-VERSION\" string."
+  (string-drop file
+               (+ 34 (string-length (%store-directory)))))
+
+(define (package-name->name+version name)
+  "Given NAME, a package name like \"foo-0.9.1b\", return two values:
+\"foo\" and \"0.9.1b\".  When the version part is unavailable, NAME and
+#f are returned.  The first hyphen followed by a digit is considered to
+introduce the version part."
+  ;; See also `DrvName' in Nix.
+
+  (define number?
+    (cut char-set-contains? char-set:digit <>))
+
+  (let loop ((chars   (string->list name))
+             (prefix '()))
+    (match chars
+      (()
+       (values name #f))
+      ((#\- (? number? n) rest ...)
+       (values (list->string (reverse prefix))
+               (list->string (cons n rest))))
+      ((head tail ...)
+       (loop tail (cons head prefix))))))
 
 (define parallel-job-count
   ;; Number of processes to be passed next to GNU Make's `-j' argument.
@@ -197,6 +229,12 @@ with the bytes in HEADER, a bytevector."
                  (apply throw args))))))
       (() #t))))
 
+(define (install-file file directory)
+  "Create DIRECTORY if it does not exist and copy FILE in there under the same
+name."
+  (mkdir-p directory)
+  (copy-file file (string-append directory "/" (basename file))))
+
 (define* (copy-recursively source destination
                            #:key
                            (log (current-output-port))
@@ -279,13 +317,16 @@ name matches REGEXP."
       (regexp-exec file-rx (basename file)))))
 
 (define* (find-files dir #:optional (pred (const #t))
-                     #:key (stat lstat))
+                     #:key (stat lstat)
+                     directories?
+                     fail-on-error?)
   "Return the lexicographically sorted list of files under DIR for which PRED
 returns true.  PRED is passed two arguments: the absolute file name, and its
 stat buffer; the default predicate always returns true.  PRED can also be a
 regular expression, in which case it is equivalent to (file-name-predicate
 PRED).  STAT is used to obtain file information; using 'lstat' means that
-symlinks are not followed."
+symlinks are not followed.  If DIRECTORIES? is true, then directories will
+also be included.  If FAIL-ON-ERROR? is true, raise an exception upon error."
   (let ((pred (if (procedure? pred)
                   pred
                   (file-name-predicate pred))))
@@ -296,7 +337,10 @@ symlinks are not followed."
                                   (cons file result)
                                   result))
                             (lambda (dir stat result) ; down
-                              result)
+                              (if (and directories?
+                                       (pred dir stat))
+                                  (cons dir result)
+                                  result))
                             (lambda (dir stat result) ; up
                               result)
                             (lambda (file stat result) ; skip
@@ -304,6 +348,8 @@ symlinks are not followed."
                             (lambda (file stat errno result)
                               (format (current-error-port) "find-files: ~a: ~a~%"
                                       file (strerror errno))
+                              (when fail-on-error?
+                                (error "find-files failed"))
                               result)
                             '()
                             dir

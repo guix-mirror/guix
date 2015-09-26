@@ -29,7 +29,8 @@
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
   #:use-module ((rnrs io ports) #:select (put-bytevector))
-  #:use-module ((guix build utils) #:select (dump-port))
+  #:use-module ((guix build utils)
+                #:select (dump-port package-name->name+version))
   #:use-module ((guix build syscalls) #:select (errno mkdtemp!))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -39,6 +40,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (system foreign)
+  #:re-export (package-name->name+version)
   #:export (bytevector->base16-string
             base16-string->bytevector
 
@@ -71,7 +73,6 @@
             version-prefix
             version-major+minor
             guile-version>?
-            package-name->name+version
             string-replace-substring
             arguments-from-environment-variable
             file-extension
@@ -577,27 +578,6 @@ minor version numbers from version-string."
                             (minor-version) "."
                             (micro-version))
              str))
-
-(define (package-name->name+version name)
-  "Given NAME, a package name like \"foo-0.9.1b\", return two values:
-\"foo\" and \"0.9.1b\".  When the version part is unavailable, NAME and
-#f are returned.  The first hyphen followed by a digit is considered to
-introduce the version part."
-  ;; See also `DrvName' in Nix.
-
-  (define number?
-    (cut char-set-contains? char-set:digit <>))
-
-  (let loop ((chars   (string->list name))
-             (prefix '()))
-    (match chars
-      (()
-       (values name #f))
-      ((#\- (? number? n) rest ...)
-       (values (list->string (reverse prefix))
-               (list->string (cons n rest))))
-      ((head tail ...)
-       (loop tail (cons head prefix))))))
 
 (define (file-extension file)
   "Return the extension of FILE or #f if there is none."

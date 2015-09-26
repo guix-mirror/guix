@@ -174,16 +174,13 @@
              ;; directory.
              (let ((dest-dir (string-append out "/etc/wicd"))
                    (name "dhclient.conf.template.default"))
-               (mkdir-p dest-dir)
-               (copy-file (string-append "other/" name)
-                          (string-append dest-dir "/" name)))
+               (install-file (string-append "other/" name) dest-dir))
 
              ;; Copy index.theme from hicolor-icon-theme.  This is needed to
              ;; allow wicd-gtk to find its icons.
              (let ((hicolor (assoc-ref inputs "hicolor-icon-theme"))
                    (name "/share/icons/hicolor/index.theme"))
-               (copy-file (string-append hicolor name)
-                          (string-append out name)))
+               (install-file (string-append hicolor name) out))
              #t))
          %standard-phases))))
     (synopsis "Network connection manager")

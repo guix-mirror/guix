@@ -1,0 +1,15 @@
+Fix <https://bugs.freedesktop.org/show_bug.cgi?id=92027> whereby
+an arithemitic overflow could occur while doing pointer arithmetic,
+leading pixman to use an invalid address as the destination buffer.
+
+--- pixman-0.32.6/pixman/pixman-general.c	2015-09-21 15:14:34.695981325 +0200
++++ pixman-0.32.6/pixman/pixman-general.c	2015-09-21 15:19:48.898355548 +0200
+@@ -144,8 +144,7 @@ general_composite_rect  (pixman_implemen
+     mask_buffer = ALIGN (src_buffer + width * Bpp);
+     dest_buffer = ALIGN (mask_buffer + width * Bpp);
+ 
+-    if (ALIGN (dest_buffer + width * Bpp) >
+-	    scanline_buffer + sizeof (stack_scanline_buffer))
++    if ((width + 1) * Bpp * 3 > sizeof (stack_scanline_buffer))
+     {
+ 	scanline_buffer = pixman_malloc_ab_plus_c (width, Bpp * 3, 32 * 3);

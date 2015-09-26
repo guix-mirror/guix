@@ -47,6 +47,7 @@
                "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))
              (patches (map search-patch
                            '("perl-no-sys-dirs.patch"
+                             "perl-autosplit-default-time.patch"
                              "perl-module-pluggable-search.patch")))))
     (build-system gnu-build-system)
     (arguments

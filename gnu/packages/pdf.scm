@@ -52,13 +52,13 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.32.0")
+   (version "0.36.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256 (base32
-                     "162vfbvbz0frvqyk00ldsbl49h4bj8i8wn0ngfl30xg1lldy6qs9"))))
+                     "13i440kv873wgmw50rs4d1v05cj0r7bqnghd70hp9vy44dxhdk4k"))))
    (build-system gnu-build-system)
    ;; FIXME: more dependencies could  be added
    ;;  cairo output:       no (requires cairo >= 1.10.0)
@@ -477,13 +477,13 @@ and examining the file structure (pdfshow).")
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "5.1.2")
+   (version "5.1.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1zbvhrp0zjzbi6q2bnbxbg6399r47pq5gw3kspzph81j19fqvpg9"))))
+                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))))
    (build-system gnu-build-system)
    (arguments
       '(#:phases (alist-cons-before

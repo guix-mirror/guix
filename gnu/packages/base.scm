@@ -4,6 +4,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,11 +34,13 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gettext)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial))
 
@@ -246,10 +249,18 @@ used to apply commands with arbitrarily long arguments.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))))
+              "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))
+            (patches
+             (list (search-patch "coreutils-racy-tail-test.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
-             ("gmp"  ,gmp)))
+             ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
+
+             ;; Drop the dependency on libcap when cross-compiling since it's
+             ;; not quite cross-compilable.
+             ,@(if (%current-target-system)
+                   '()
+                   `(("libcap" ,libcap)))))  ;capability support is 'ls', etc.
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
     ;; copy of help2man.  However, don't pass it when cross-compiling since
@@ -284,6 +295,14 @@ manipulation functions of the GNU system.  Most of these tools offer extended
 functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/coreutils/")))
+
+(define-public coreutils-minimal
+  ;; Coreutils without its optional dependencies.
+  (package
+    (inherit coreutils)
+    (name "coreutils-minimal")
+    (outputs '("out"))
+    (inputs '())))
 
 (define-public gnu-make
   (package
@@ -326,14 +345,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.25")
+   (version "2.25.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "08r9i26b05zcwb9zxb6zllpfdiiicdfsgbpsjlrjmvx3rxjzrpi2"))
+              "08lzmhidzc16af1zbx34f8cy4z7mzrswpdbhrb8shy3xxpflmcdm"))
             (patches (list (search-patch "binutils-ld-new-dtags.patch")
                            (search-patch "binutils-loongson-workaround.patch")))))
    (build-system gnu-build-system)
@@ -439,14 +458,14 @@ store.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.21")
+   (version "2.22")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
+              "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -455,7 +474,9 @@ store.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (map search-patch
+                          '("glibc-ldd-x86_64.patch"
+                            "glibc-o-largefile.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -472,7 +493,7 @@ store.")
       #:parallel-build? #f
 
       ;; The libraries have an empty RUNPATH, but some, such as the versioned
-      ;; libraries (libdl-2.21.so, etc.) have ld.so marked as NEEDED.  Since
+      ;; libraries (libdl-2.22.so, etc.) have ld.so marked as NEEDED.  Since
       ;; these libraries are always going to be found anyway, just skip
       ;; RUNPATH checks.
       #:validate-runpath? #f
@@ -513,72 +534,65 @@ store.")
             "libc_cv_ssp=no")
 
       #:tests? #f                                 ; XXX
-      #:phases (alist-cons-before
-                'configure 'pre-configure
-                (lambda* (#:key inputs native-inputs outputs
-                          #:allow-other-keys)
-                  (let* ((out  (assoc-ref outputs "out"))
-                         (bin  (string-append out "/bin")))
-                    ;; Use `pwd', not `/bin/pwd'.
-                    (substitute* "configure"
-                      (("/bin/pwd") "pwd"))
+      #:phases (modify-phases %standard-phases
+                 (add-before
+                  'configure 'pre-configure
+                  (lambda* (#:key inputs native-inputs outputs
+                                  #:allow-other-keys)
+                    (let* ((out  (assoc-ref outputs "out"))
+                           (bin  (string-append out "/bin"))
+                           ;; FIXME: Normally we would look it up only in INPUTS
+                           ;; but cross-base uses it as a native input.
+                           (bash (or (assoc-ref inputs "static-bash")
+                                     (assoc-ref native-inputs "static-bash"))))
+                      ;; Use `pwd', not `/bin/pwd'.
+                      (substitute* "configure"
+                        (("/bin/pwd") "pwd"))
 
-                    ;; Install the rpc data base file under `$out/etc/rpc'.
-                    ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
-                    (substitute* "sunrpc/Makefile"
-                      (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
-                       (string-append out "/etc/rpc" suffix "\n"))
-                      (("^install-others =.*$")
-                       (string-append "install-others = " out "/etc/rpc\n")))
+                      ;; Install the rpc data base file under `$out/etc/rpc'.
+                      ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
+                      (substitute* "sunrpc/Makefile"
+                        (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
+                         (string-append out "/etc/rpc" suffix "\n"))
+                        (("^install-others =.*$")
+                         (string-append "install-others = " out "/etc/rpc\n")))
 
-                    (substitute* "Makeconfig"
-                      ;; According to
-                      ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
-                      ;; linking against libgcc_s is not needed with GCC
-                      ;; 4.7.1.
-                      ((" -lgcc_s") ""))
+                      (substitute* "Makeconfig"
+                        ;; According to
+                        ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
+                        ;; linking against libgcc_s is not needed with GCC
+                        ;; 4.7.1.
+                        ((" -lgcc_s") ""))
 
-                    ;; Copy a statically-linked Bash in the output, with
-                    ;; no references to other store paths.
-                    ;; FIXME: Normally we would look it up only in INPUTS but
-                    ;; cross-base uses it as a native input.
-                    (mkdir-p bin)
-                    (copy-file (string-append (or (assoc-ref inputs
-                                                             "static-bash")
-                                                  (assoc-ref native-inputs
-                                                             "static-bash"))
-                                              "/bin/bash")
-                               (string-append bin "/bash"))
-                    (remove-store-references (string-append bin "/bash"))
-                    (chmod (string-append bin "/bash") #o555)
+                      ;; Have `system' use that Bash.
+                      (substitute* "sysdeps/posix/system.c"
+                        (("#define[[:blank:]]+SHELL_PATH.*$")
+                         (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
+                                 bash)))
 
-                    ;; Keep a symlink, for `patch-shebang' resolution.
-                    (with-directory-excursion bin
-                      (symlink "bash" "sh"))
+                      ;; Same for `popen'.
+                      (substitute* "libio/iopopen.c"
+                        (("/bin/sh")
+                         (string-append bash "/bin/bash")))
 
-                    ;; Have `system' use that Bash.
-                    (substitute* "sysdeps/posix/system.c"
-                      (("#define[[:blank:]]+SHELL_PATH.*$")
-                       (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
-                               out)))
+                      ;; Same for the shell used by the 'exec' functions for
+                      ;; scripts that lack a shebang.
+                      (substitute* (find-files "." "^paths\\.h$")
+                        (("#define[[:blank:]]+_PATH_BSHELL[[:blank:]].*$")
+                         (string-append "#define _PATH_BSHELL \""
+                                        bash "/bin/bash\"\n")))
 
-                    ;; Same for `popen'.
-                    (substitute* "libio/iopopen.c"
-                      (("/bin/sh")
-                       (string-append out "/bin/bash")))
+                      ;; Make sure we don't retain a reference to the
+                      ;; bootstrap Perl.
+                      (substitute* "malloc/mtrace.pl"
+                        (("^#!.*")
+                         ;; The shebang can be omitted, because there's the
+                         ;; "bilingual" eval/exec magic at the top of the file.
+                         "")
+                        (("exec @PERL@")
+                         "exec perl"))))))))
 
-                    ;; Make sure we don't retain a reference to the
-                    ;; bootstrap Perl.
-                    (substitute* "malloc/mtrace.pl"
-                      (("^#!.*")
-                       ;; The shebang can be omitted, because there's the
-                       ;; "bilingual" eval/exec magic at the top of the file.
-                       "")
-                      (("exec @PERL@")
-                       "exec perl"))))
-                %standard-phases)))
-
-   (inputs `(("static-bash" ,(static-package bash-light))))
+   (inputs `(("static-bash" ,static-bash)))
 
    ;; To build the manual, we need Texinfo and Perl.  Gettext is needed to
    ;; install the message catalogs, with 'msgfmt'.
@@ -626,10 +640,6 @@ the 'share/locale' sub-directory of this package.")
           `(alist-replace
             'build
             (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                ;; Delete $out/bin, which contains 'bash'.
-                (delete-file-recursively (string-append out "/bin")))
-
               (zero? (system* "make" "localedata/install-locales"
                               "-j" (number->string (parallel-job-count)))))
             (alist-delete 'install ,phases)))
@@ -699,6 +709,113 @@ test environments.")
 variety of options.  It is an alternative to the shell \"type\" built-in
 command.")
     (license gpl3+))) ; some files are under GPLv2+
+
+(define-public glibc/hurd
+  ;; The Hurd's libc variant.
+  (package (inherit glibc)
+    (name "glibc-hurd")
+    (version "2.18")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.sv.gnu.org/hurd/glibc")
+                    (commit "cc94b3cfe65523f980359e5f0e93a26196bda1d3")))
+              (sha256
+               (base32
+                "17gsh0kaz0zyvghjmx861mi2p65m9901lngi179x61zm6v2v3xc4"))
+              (file-name (string-append name "-" version))
+              (patches (map search-patch
+                            '("glibc-hurd-extern-inline.patch")))))
+
+    ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
+    ;; so both should be propagated.
+    (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
+                         ("hurd-headers" ,hurd-headers)
+                         ("hurd-minimal" ,hurd-minimal)))
+    (native-inputs
+     `(,@(package-native-inputs glibc)
+       ("patch/libpthread-patch" ,(search-patch "libpthread-glibc-preparation.patch"))
+       ("mig" ,mig)
+       ("perl" ,perl)
+       ("libpthread" ,(origin
+                        (method git-fetch)
+                        (uri (git-reference
+                              (url "git://git.sv.gnu.org/hurd/libpthread")
+                              (commit "0ef7b75c4ba91b6660f0d3d8b51d14d25e3d5bfb")))
+                        (sha256
+                         (base32
+                          "031py18fls15z0wprni33mf762kg6fx8xqijppimhp83yp6ky3l3"))
+                        (file-name "libpthread")))))
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc)
+       ((#:configure-flags original-configure-flags)
+        `(append (list "--host=i686-pc-gnu"
+
+                       ;; nscd fails to build for GNU/Hurd:
+                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
+                       ;; Disable it.
+                       "--disable-nscd")
+                 (filter (lambda (flag)
+                           (not (or (string-prefix? "--with-headers=" flag)
+                                    (string-prefix? "--enable-kernel=" flag))))
+                         ;; Evaluate 'original-configure-flags' in a
+                         ;; lexical environment that has a dummy
+                         ;; "linux-headers" input, to prevent errors.
+                         (let ((%build-inputs `(("linux-headers" . "@DUMMY@")
+                                                ,@%build-inputs)))
+                           ,original-configure-flags))))
+       ((#:phases phases)
+        `(alist-cons-after
+          'unpack 'prepare-libpthread
+          (lambda* (#:key inputs #:allow-other-keys)
+            (copy-recursively (assoc-ref inputs "libpthread") "libpthread")
+
+            (system* "patch" "--force" "-p1" "-i"
+                     (assoc-ref inputs "patch/libpthread-patch"))
+            #t)
+          ,phases))))
+    (synopsis "The GNU C Library (GNU Hurd variant)")
+    (supported-systems %hurd-systems)))
+
+(define-public glibc/hurd-headers
+  (package (inherit glibc/hurd)
+    (name "glibc-hurd-headers")
+    (outputs '("out"))
+    (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
+                         ("hurd-headers" ,hurd-headers)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc/hurd)
+       ;; We just pass the flags really needed to build the headers.
+       ((#:configure-flags _)
+        `(list "--enable-add-ons"
+               "--host=i686-pc-gnu"
+               "--enable-obsolete-rpc"))
+       ((#:phases _)
+        '(alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (and (zero? (system* "make" "install-headers"))
+
+                 ;; Make an empty stubs.h to work around not being able to
+                 ;; produce a valid stubs.h and causing the build to fail. See
+                 ;; <http://lists.gnu.org/archive/html/guix-devel/2014-04/msg00233.html>.
+                 (let ((out (assoc-ref outputs "out")))
+                   (close-port
+                    (open-output-file
+                     (string-append out "/include/gnu/stubs.h"))))))
+
+          ;; Nothing to build.
+          (alist-delete
+           'build
+
+           (alist-cons-before
+            'configure 'pre-configure
+            (lambda _
+              ;; Use the right 'pwd'.
+              (substitute* "configure"
+                (("/bin/pwd") "pwd")))
+            %standard-phases))))))))
 
 (define-public tzdata
   (package

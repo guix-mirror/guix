@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,8 @@
              (base32
               "0gjnaav9vmwwwza451na1643br7i0kxgd4002pwqh3xk5ywvdap7"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "doc"))                             ;1.2 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
              ("libidn" ,libidn)
@@ -63,40 +66,50 @@
     `(#:configure-flags '("--with-gnutls" "--with-gssapi")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
-      (alist-replace
-       'check
-       (lambda _
-         (substitute* "tests/runtests.pl"
-           (("/bin/sh") (which "sh")))
-         ;; Test #1135 requires extern-scan.pl, which is not part of the
-         ;; tarball due to a mistake.  It has been fixed upstream.  We can
-         ;; simply disable the test as it is specific to VMS and OS/400.
-         (delete-file "tests/data/test1135")
+      (modify-phases %standard-phases
+        (add-after
+         'install 'move-man3-pages
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Move section 3 man pages to "doc".
+           (let ((out (assoc-ref outputs "out"))
+                 (doc (assoc-ref outputs "doc")))
+             (mkdir-p (string-append doc "/share/man"))
+             (rename-file (string-append out "/share/man/man3")
+                          (string-append doc "/share/man/man3"))
+             #t)))
+        (replace
+         'check
+         (lambda _
+           (substitute* "tests/runtests.pl"
+             (("/bin/sh") (which "sh")))
+           ;; Test #1135 requires extern-scan.pl, which is not part of the
+           ;; tarball due to a mistake.  It has been fixed upstream.  We can
+           ;; simply disable the test as it is specific to VMS and OS/400.
+           (delete-file "tests/data/test1135")
 
-         ;; XXX FIXME: Test #1510 seems to work on some machines and not
-         ;; others, possibly based on the kernel version.  It works on GuixSD
-         ;; on x86_64 with linux-libre-4.1, but fails on Hydra for both i686
-         ;; and x86_64 with the following error:
-         ;;
-         ;; test 1510...[HTTP GET connection cache limit (CURLOPT_MAXCONNECTS)]
-         ;;
-         ;;  1510: output (log/stderr1510) FAILED:
-         ;; --- log/check-expected	2015-06-27 07:45:53.166720834 +0000
-         ;; +++ log/check-generated	2015-06-27 07:45:53.166720834 +0000
-         ;; @@ -1,5 +1,5 @@
-         ;;  * Connection #0 to host server1.example.com left intact[LF]
-         ;;  * Connection #1 to host server2.example.com left intact[LF]
-         ;;  * Connection #2 to host server3.example.com left intact[LF]
-         ;; -* Closing connection 0[LF]
-         ;; +* Closing connection 1[LF]
-         ;;  * Connection #3 to host server4.example.com left intact[LF]
-         (delete-file "tests/data/test1510")
+           ;; XXX FIXME: Test #1510 seems to work on some machines and not
+           ;; others, possibly based on the kernel version.  It works on GuixSD
+           ;; on x86_64 with linux-libre-4.1, but fails on Hydra for both i686
+           ;; and x86_64 with the following error:
+           ;;
+           ;; test 1510...[HTTP GET connection cache limit (CURLOPT_MAXCONNECTS)]
+           ;;
+           ;;  1510: output (log/stderr1510) FAILED:
+           ;; --- log/check-expected	2015-06-27 07:45:53.166720834 +0000
+           ;; +++ log/check-generated	2015-06-27 07:45:53.166720834 +0000
+           ;; @@ -1,5 +1,5 @@
+           ;;  * Connection #0 to host server1.example.com left intact[LF]
+           ;;  * Connection #1 to host server2.example.com left intact[LF]
+           ;;  * Connection #2 to host server3.example.com left intact[LF]
+           ;; -* Closing connection 0[LF]
+           ;; +* Closing connection 1[LF]
+           ;;  * Connection #3 to host server4.example.com left intact[LF]
+           (delete-file "tests/data/test1510")
 
-         ;; The top-level "make check" does "make -C tests quiet-test", which
-         ;; is too quiet.  Use the "test" target instead, which is more
-         ;; verbose.
-         (zero? (system* "make" "-C" "tests" "test")))
-       %standard-phases)))
+           ;; The top-level "make check" does "make -C tests quiet-test", which
+           ;; is too quiet.  Use the "test" target instead, which is more
+           ;; verbose.
+           (zero? (system* "make" "-C" "tests" "test")))))))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,

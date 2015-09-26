@@ -9,9 +9,9 @@ in a package separate from glibc.
      because otherwise, 'localedef' fails with:
      "cannot write output files to `(null)'".
 
---- glibc-2.20/localedata/Makefile	2014-09-07 10:09:09.000000000 +0200
-+++ glibc-2.20/localedata/Makefile	2015-02-11 10:23:55.560545568 +0100
-@@ -217,7 +217,7 @@ INSTALL-SUPPORTED-LOCALES=$(addprefix in
+--- glibc-2.22/localedata/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ glibc-2.22/localedata/Makefile	2015-09-25 14:18:34.698941752 +0200
+@@ -195,7 +195,7 @@ INSTALL-SUPPORTED-LOCALES=$(addprefix in
  
  # Sometimes the whole collection of locale files should be installed.
  LOCALEDEF=I18NPATH=. GCONV_PATH=$(common-objpfx)iconvdata LC_ALL=C \
@@ -20,12 +20,12 @@ in a package separate from glibc.
  install-locales: $(INSTALL-SUPPORTED-LOCALES)
  
  install-locales-dir:
-@@ -234,7 +234,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-lo
+@@ -212,7 +212,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-lo
  	input=`echo $$locale | sed 's/\([^.]*\)[^@]*\(.*\)/\1\2/'`; \
  	$(LOCALEDEF) --alias-file=../intl/locale.alias \
  		     -i locales/$$input -c -f charmaps/$$charset \
--		     $(addprefix --prefix=,$(install_root)) $$locale; \
-+		     $(addprefix --prefix=,$(install_root)) $(localedir)/$$locale; \
- 	echo ' done'; \
+-		     $(addprefix --prefix=,$(install_root)) $$locale \
++		     $(addprefix --prefix=,$(install_root)) $(localedir)/$$locale \
+ 	&& echo ' done'; \
  
  tst-setlocale-ENV = LC_ALL=ja_JP.EUC-JP

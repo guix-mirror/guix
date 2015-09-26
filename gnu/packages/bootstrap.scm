@@ -164,6 +164,8 @@ successful, or false to signal an error."
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
         ((string=? system "armhf-linux") "/lib/ld-linux-armhf.so.3")
         ((string=? system "mips64el-linux") "/lib/ld.so.1")
+        ((string=? system "i586-gnu") "/lib/ld.so.1")
+        ((string=? system "i686-gnu") "/lib/ld.so.1")
 
         ;; XXX: This one is used bare-bones, without a libc, so add a case
         ;; here just so we can keep going.

@@ -4951,6 +4951,12 @@ draggable titlebars and borders.")
           (base32
             "05mx0s0vqzds3qjc1gmjr2s6x2ll37z4lfhgm7p2w7936zl2g81a"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;8 MiB of man pages + XML
+    (arguments
+     '(#:configure-flags (list (string-append "--mandir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/man"))))
     (propagated-inputs
       `(("kbproto" ,kbproto)
         ("libxcb" ,libxcb)))
@@ -5011,6 +5017,12 @@ draggable titlebars and borders.")
           (base32
             "0myxwbx9ylam5x3ia5b5f4x8azcqdm420h9ad1r4hrgmi2lrffl4"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;2 MiB of man pages + XML
+    (arguments
+     '(#:configure-flags (list (string-append "--mandir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/man"))))
     (propagated-inputs
       `(("libx11" ,libx11)
         ("libice" ,libice)

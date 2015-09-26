@@ -150,7 +150,8 @@ following the mouse.")
                ".tar.gz"))
         (sha256
           (base32
-           "0129g4zdrw5hif5783li7rzcr4vpbc2cfia91azxmsk0h0xx3zix"))))
+           "0129g4zdrw5hif5783li7rzcr4vpbc2cfia91azxmsk0h0xx3zix"))
+        (patches (list (search-patch "pixman-pointer-arithmetic.patch")))))
     (build-system gnu-build-system)
     (inputs
       `(("libpng" ,libpng)

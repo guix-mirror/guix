@@ -99,6 +99,7 @@
             transitive-input-references
 
             %supported-systems
+            %hurd-systems
             %hydra-supported-systems
             supported-package?
 
@@ -215,9 +216,13 @@ name of its URI."
   ;; expect all packages to build successfully here.
   '("x86_64-linux" "i686-linux" "armhf-linux" "mips64el-linux"))
 
+(define %hurd-systems
+  ;; The GNU/Hurd systems for which support is being developed.
+  '("i585-gnu" "i686-gnu"))
+
 (define %hydra-supported-systems
   ;; This is the list of system types for which build slaves are available.
-  (delete "armhf-linux" %supported-systems))
+  %supported-systems)
 
 
 ;; A package.
@@ -445,6 +450,13 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                        (srfi srfi-1)
                        (guix build utils))
 
+          ;; The --sort option was added to GNU tar in version 1.28, released
+          ;; 2014-07-28.  During bootstrap we must cope with older versions.
+          (define tar-supports-sort?
+            (zero? (system* (string-append #+tar "/bin/tar")
+                            "cf" "/dev/null" "--files-from=/dev/null"
+                            "--sort=name")))
+
           (define (apply-patch patch)
             (format (current-error-port) "applying '~a'...~%" patch)
 
@@ -504,12 +516,25 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                              #~())
 
                       (begin (chdir "..") #t)
-                      (zero? (system* (string-append #+tar "/bin/tar")
-                                      "cvfa" #$output directory
-                                      ;; avoid non-determinism in the archive
-                                      "--mtime=@0"
-                                      "--owner=root:0"
-                                      "--group=root:0")))))))
+
+                      (unless tar-supports-sort?
+                        (call-with-output-file ".file_list"
+                          (lambda (port)
+                            (for-each (lambda (name) (format port "~a~%" name))
+                                      (find-files directory
+                                                  #:directories? #t
+                                                  #:fail-on-error? #t)))))
+                      (zero? (apply system* (string-append #+tar "/bin/tar")
+                                    "cvfa" #$output
+                                    ;; avoid non-determinism in the archive
+                                    "--mtime=@0"
+                                    "--owner=root:0"
+                                    "--group=root:0"
+                                    (if tar-supports-sort?
+                                        `("--sort=name"
+                                          ,directory)
+                                        '("--no-recursion"
+                                          "--files-from=.file_list")))))))))
 
     (let ((name    (tarxz-name original-file-name))
           (modules (delete-duplicates (cons '(guix build utils) modules))))

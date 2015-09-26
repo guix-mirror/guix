@@ -144,28 +144,34 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "0.9.40")
+   (version "1.0.3")
    (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
-                                version ".tar.bz2"))
-            (sha256
-             (base32
-              "07rjp05axas96fp23lpf8l2yyfdj9yib4m0qjv592vdyhcsxaw8p"))))
+             (method url-fetch)
+             (uri (string-append "http://www.freedesktop.org/software/"
+                                 "harfbuzz/release/harfbuzz-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1xrxlrvgyr6mm9qjxmkif2kvcah082y94gf1vqi0f0bdl1g8gp7b"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "bin")) ; 160K, only hb-view depend on cairo
    (inputs
-    `(("cairo" ,cairo)
+    `(("cairo" ,cairo)))
+   (propagated-inputs
+    ;; There are all in the Requires or Requires.private field of '.pc'.
+    `(("glib" ,glib)
       ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
-   (propagated-inputs
-    `(("glib" ,glib))) ; required by harfbuzz-gobject.pc
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
    (arguments
     `(#:configure-flags `("--with-graphite2"
-                          "--with-gobject")))
+                          "--with-gobject"
+                          ,(string-append
+                            "--bindir=" (assoc-ref %outputs "bin") "/bin"))))
    (synopsis "OpenType text shaping engine")
    (description
     "HarfBuzz is an OpenType text shaping engine.")
@@ -508,7 +514,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.16.3")
+   (version "3.16.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -516,7 +522,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "195ykv53sl2gsc847wcnd79zilm1yzcc2cfjxnrakhh2dd5gshr9"))))
+              "1gpzlnfrifc17yfk0zki6b2vmsfpf5cmrbh232s6iaan11np44jd"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -556,9 +562,6 @@ application suites.")
          (substitute* "testsuite/Makefile.in"
            (("SUBDIRS = gdk gtk a11y css reftests")
             "SUBDIRS = gdk"))
-         (substitute* '("demos/widget-factory/Makefile.in"
-                        "demos/gtk-demo/Makefile.in")
-           (("gtk-update-icon-cache") "$(bindir)/gtk-update-icon-cache"))
          #t)
        (alist-cons-after
         'install 'wrap-gtk-encode-symbolic-svg

@@ -92,19 +92,15 @@
                      (ex  (string-append out "/share/doc/synergy-"
                                          ,version "/examples")))
                 (begin
-                  (mkdir-p bin)
                   (for-each
                    (lambda (f)
-                     (copy-file (string-append srcdir "/bin/" f)
-                                (string-append bin "/" f)))
+                     (install-file (string-append srcdir "/bin/" f) bin))
                    '("synergyc" "synergys" "synergyd"
                      "usynergy" "syntool"))
                   ;; Install example configuration files
-                  (mkdir-p ex)
                   (for-each
                    (lambda (e)
-                     (copy-file (string-append srcdir "/doc/" e)
-                                (string-append ex "/" e)))
+                     (install-file (string-append srcdir "/doc/" e) ex))
                    '("synergy.conf.example"
                      "synergy.conf.example-advanced"
                      "synergy.conf.example-basic")))))

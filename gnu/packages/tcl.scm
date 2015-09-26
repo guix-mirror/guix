@@ -25,6 +25,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
@@ -33,7 +34,7 @@
 (define-public tcl
   (package
     (name "tcl")
-    (version "8.6.0")
+    (version "8.6.4")
     (source
      (origin
       (method url-fetch)
@@ -41,7 +42,7 @@
                           version "/tcl" version "-src.tar.gz"))
       (sha256
        (base32
-        "1pnabp3xsja4rc8c01l9q1avb65a3zhdzci3j54qa5krqjwj4i1m"))))
+        "13cwa4bc85ylf5gfj9vk182lvgy60qni3f7gbxghq78wk16djvly"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -132,21 +133,34 @@ X11 GUIs.")
 (define-public tk
   (package
     (name "tk")
-    (version "8.6.0")
+    (version "8.6.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                  version "/tk" version "-src.tar.gz"))
              (sha256
               (base32
-               "1rld0l7p1h31z488w44j170jpsm11xsjf2qrb7gid2b5dwmqnw2w"))))
+               "1h96vp15zl5xz0d4qp6wjyrchqmrmdm3q5k22wkw9jaxbvw9vy88"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (chdir "unix"))
-                 %standard-phases)
+     '(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'pre-configure
+                   (lambda _
+                     (chdir "unix")))
+                  (add-after
+                   'install 'add-fontconfig-flag
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     ;; Add the missing -L flag for Fontconfig in 'tk.pc' and
+                     ;; 'tkConfig.sh'.
+                     (let ((out        (assoc-ref outputs "out"))
+                           (fontconfig (assoc-ref inputs "fontconfig")))
+                       (substitute* (find-files out
+                                                "^(tkConfig\\.sh|tk\\.pc)$")
+                         (("-lfontconfig")
+                          (string-append "-L" fontconfig
+                                         "/lib -lfontconfig")))
+                       #t))))
 
        #:configure-flags (list (string-append "--with-tcl="
                                               (assoc-ref %build-inputs "tcl")
@@ -156,6 +170,7 @@ X11 GUIs.")
        #:tests? #f))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libxft" ,libxft)
+              ("fontconfig" ,fontconfig)
               ("tcl" ,tcl)))
     ;; tk.h refers to X11 headers, hence the propagation.
     (propagated-inputs `(("libx11" ,libx11)

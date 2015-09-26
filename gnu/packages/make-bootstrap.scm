@@ -115,7 +115,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 #:native-inputs native-inputs))
 
 (define %bash-static
-  (static-package bash-light))
+  (static-package bash-minimal))
 
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
@@ -253,10 +253,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
             ;; But of course, there are exceptions to this rule.
             (let ((grep (assoc-ref %build-inputs "grep")))
-              (copy-file (string-append grep "/bin/fgrep")
-                         (string-append bin "/fgrep"))
-              (copy-file (string-append grep "/bin/egrep")
-                         (string-append bin "/egrep")))
+              (install-file (string-append grep "/bin/fgrep") bin)
+              (install-file (string-append grep "/bin/egrep") bin))
 
             ;; Clear references to the store path.
             (for-each remove-store-references
@@ -425,8 +423,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libcilkrts"
                        "--disable-libvtv"
                        "--disable-libssp"
-                       "--disable-libquadmath"
-                       "--disable-decimal-float")
+                       "--disable-libquadmath")
                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
                               ,flags)))
             ((#:phases phases)
@@ -631,7 +628,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                               ".tar.xz")
                                "."
                                ;; avoid non-determinism in the archive
-                               "--mtime=@0" "--owner=root:0" "--group=root:0"))))))))))
+                               "--sort=name" "--mtime=@0"
+                               "--owner=root:0" "--group=root:0"))))))))))
 
 (define %bootstrap-binaries-tarball
   ;; A tarball with the statically-linked bootstrap binaries.

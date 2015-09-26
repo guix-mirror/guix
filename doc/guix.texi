@@ -934,7 +934,9 @@ some of them.
 
 @subsection Locales
 
+@anchor{locales-and-locpath}
 @cindex locales, when not on GuixSD
+@vindex LOCPATH
 Packages installed @i{via} Guix will not use the host system's locale
 data.  Instead, you must first install one of the locale packages
 available with Guix and then define the @code{LOCPATH} environment
@@ -5568,6 +5570,13 @@ list only the locales that are actually used, as in:
         (name "ja_JP.eucjp") (source "ja_JP")
         (charset "EUC-JP")))
 @end example
+
+@vindex LOCPATH
+The compiled locale definitions are available at
+@file{/run/current-system/locale}, which is the default location where
+the GNU@tie{}libc looks for locale data.  This can be overridden using
+the @code{LOCPATH} environment variable (@pxref{locales-and-locpath,
+@code{LOCPATH} and locale packages}).
 
 The @code{locale-definition} form is provided by the @code{(gnu system
 locale)} module.  Details are given below.

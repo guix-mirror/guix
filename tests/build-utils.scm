@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +128,11 @@
               (inputs `(("bash" ,(search-bootstrap-binary "bash"
                                                           (%current-system)))))))
          (d (package-derivation %store p)))
+
+    ;; The bootstrap Bash is linked against an old libc and would abort with
+    ;; an assertion failure when trying to load incompatible locale data.
+    (unsetenv "LOCPATH")
+
     (and (build-derivations %store (pk 'drv d (list d)))
          (let* ((p    (derivation->output-path d))
                 (foo  (string-append p "/foo"))

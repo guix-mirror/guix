@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2012, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -68,26 +68,31 @@
                "doc"))                           ; 94 MiB of HTML docs
     (arguments
      '(#:tests? #f                            ; no check target available
-                #:phases
-                (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out"))
-                         (doc (assoc-ref outputs "doc")))
-                     ;; '--docdir' is not honored, so we need to patch.
-                     (substitute* "dist/Makefile.in"
-                       (("docdir[[:blank:]]*=.*")
-                        (string-append "docdir = " doc "/share/doc/bdb")))
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out"))
+                (doc (assoc-ref outputs "doc")))
+            ;; '--docdir' is not honored, so we need to patch.
+            (substitute* "dist/Makefile.in"
+              (("docdir[[:blank:]]*=.*")
+               (string-append "docdir = " doc "/share/doc/bdb")))
 
-                     (zero?
-                      (system* "./dist/configure"
-                               (string-append "--prefix=" out)
-                               (string-append "CONFIG_SHELL=" (which "bash"))
-                               (string-append "SHELL=" (which "bash"))
+            (zero?
+             (system* "./dist/configure"
+                      (string-append "--prefix=" out)
+                      (string-append "CONFIG_SHELL=" (which "bash"))
+                      (string-append "SHELL=" (which "bash"))
 
-                               ;; The compatibility mode is needed by some packages,
-                               ;; notably iproute2.
-                               "--enable-compat185"))))
+                      ;; The compatibility mode is needed by some packages,
+                      ;; notably iproute2.
+                      "--enable-compat185"
+
+                      ;; The following flag is needed so that the inclusion
+                      ;; of db_cxx.h into C++ files works; it leads to
+                      ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                      "--enable-cxx"))))
                  %standard-phases)))
     (synopsis "Berkeley database")
     (description
@@ -307,7 +312,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.10.2")
+   (version "3.8.11.1")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -322,9 +327,13 @@ types are supported, as is encryption.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append
-                    "https://fossies.org/linux/misc/sqlite-autoconf-"
-                    numeric-version ".tar.gz")
+                   (list
+                    (string-append
+                     "https://fossies.org/linux/misc/sqlite-autoconf-"
+                     numeric-version ".tar.gz")
+                    (string-append
+                     "http://distfiles.gentoo.org/distfiles/"
+                     "/sqlite-autoconf-" numeric-version ".tar.gz"))
 
                    ;; XXX: As of 2015-09-08, SourceForge is squatting the URL
                    ;; below, returning 200 and showing an advertising page.
@@ -334,7 +343,7 @@ types are supported, as is encryption.")
                    ))
             (sha256
              (base32
-              "09nnaqx50gl1vmfvdipirizr61q3s0ywlql50f9kr1bx9rdfb0l3"))))
+              "1dnkl4qr1dgaprbyf3jddfiynkhxnin86qabni47wjlc0fnb16gv"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments

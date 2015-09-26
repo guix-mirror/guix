@@ -43,15 +43,15 @@
 (define-public cgal
   (package
     (name "cgal")
-    (version "4.5.1")
+    (version "4.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://gforge.inria.fr/frs/download.php/file/34402/CGAL-"
-                    version ".tar.xz"))
+                    "http://gforge.inria.fr/frs/download.php/file/"
+                    "35139/CGAL-4.6.3.tar.xz"))
               (sha256
                (base32
-                "1565ycbds92bxmhi09avc1jl6ks141ig00j110l49gqxp9swy6zv"))))
+                "08gwjjh0qz3fakj1y2nsl2qvb0qv5lc7k1pxwjkagh37hxxh4f73"))))
     (build-system cmake-build-system)
     (arguments
      '(;; "RelWithDebInfo" is not supported.

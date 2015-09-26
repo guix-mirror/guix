@@ -340,7 +340,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
 (define-public csound
   (package
     (name "csound")
-    (version "6.04")
+    (version "6.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -348,7 +348,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
                     version "/Csound" version ".tar.gz"))
               (sha256
                (base32
-                "1030w38lxdwjz1irr32m9cl0paqmgr02lab2m7f7j1yihwxj1w0g"))))
+                "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

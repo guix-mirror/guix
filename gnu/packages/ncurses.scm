@@ -28,21 +28,17 @@
          '(lambda _
             (for-each patch-makefile-SHELL
                       (find-files "." "Makefile.in"))))
-        (configure-phase
-         '(lambda* (#:key inputs outputs configure-flags
-                    #:allow-other-keys)
-            ;; The `ncursesw5-config' has a #!/bin/sh.  We want to patch
-            ;; it to point to libc's embedded Bash, to avoid retaining a
-            ;; reference to the bootstrap Bash.
-            (let* ((libc (assoc-ref inputs "libc"))
-                   (bash (string-append libc "/bin/bash"))
-                   (out  (assoc-ref outputs "out")))
-              (format #t "configure flags: ~s~%" configure-flags)
-              (zero? (apply system* bash "./configure"
-                            (string-append "SHELL=" bash)
-                            (string-append "CONFIG_SHELL=" bash)
-                            (string-append "--prefix=" out)
-                            configure-flags)))))
+        (remove-shebang-phase
+         '(lambda _
+            ;; To avoid retaining a reference to the bootstrap Bash via the
+            ;; shebang of the 'ncursesw5-config' script, simply remove that
+            ;; shebang: it'll work just as well without it.
+            (substitute* "misc/ncurses-config.in"
+              (("#!@SHELL@")
+               "# No shebang here, use /bin/sh!\n")
+              (("@SHELL@ \\$0")
+               "$0"))
+            #t))
         (post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -56,9 +52,9 @@
                             (define lib.a
                               (string-append "lib" lib ".a"))
                             (define libw.so.x
-                              (string-append "lib" lib "w.so.5"))
+                              (string-append "lib" lib "w.so.6"))
                             (define lib.so.x
-                              (string-append "lib" lib ".so.5"))
+                              (string-append "lib" lib ".so.6"))
                             (define lib.so
                               (string-append "lib" lib ".so"))
 
@@ -73,14 +69,14 @@
                           '("curses" "ncurses" "form" "panel" "menu")))))))
     (package
      (name "ncurses")
-     (version "5.9")
+     (version "6.0")
      (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fsn7xis81za62afan0vvm38bvgzg5wfmv1m86flqcj0nj7jjilh"))))
+                "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
      (build-system gnu-build-system)
      (arguments
       `(#:configure-flags
@@ -90,37 +86,20 @@
           ;; what users expect.
           ,(string-append "--includedir=" (assoc-ref %outputs "out")
                           "/include")
+          "--enable-overwrite"                    ;really honor --includedir
 
           ;; Make sure programs like 'tic', 'reset', and 'clear' have a
           ;; correct RUNPATH.
           ,(string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
-                          "/lib")
-
-          ;; C++ bindings fail to build on
-          ;; `i386-pc-solaris2.11' with GCC 3.4.3:
-          ;; <http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191>.
-          ,,@(if (string=? (%current-system) "i686-solaris")
-                 '("--without-cxx-binding")
-                 '()))
+                          "/lib"))
         #:tests? #f                               ; no "check" target
-        #:phases ,(if (%current-target-system)
-
-                      `(alist-cons-before         ; cross build
-                        'configure 'patch-makefile-SHELL
-                        ,patch-makefile-phase
-                        (alist-cons-after
-                         'install 'post-install ,post-install-phase
-                         %standard-phases))
-
-                      `(alist-cons-after          ; native build
-                        'install 'post-install ,post-install-phase
-                        (alist-cons-before
-                         'configure 'patch-makefile-SHELL
-                         ,patch-makefile-phase
-                         (alist-replace
-                          'configure
-                          ,configure-phase
-                          %standard-phases))))))
+        #:phases (modify-phases %standard-phases
+                   (add-after 'install 'post-install
+                              ,post-install-phase)
+                   (add-before 'configure 'patch-makefile-SHELL
+                               ,patch-makefile-phase)
+                   (add-after 'unpack 'remove-unneeded-shebang
+                              ,remove-shebang-phase))))
      (self-native-input? #t)                      ; for `tic'
      (synopsis "Terminal emulation (termcap, terminfo) library")
      (description

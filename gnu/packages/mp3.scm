@@ -435,7 +435,7 @@ format.")
                     (let* ((out (assoc-ref outputs "out"))
                            (bin (string-append out "/bin")))
                       (mkdir-p bin)
-                      (copy-file "mpc123" (string-append bin "/mpc123"))))
+                      (install-file "mpc123" bin)))
                   %standard-phases))
        #:tests? #f))
 

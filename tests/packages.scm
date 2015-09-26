@@ -321,7 +321,10 @@
                                 (chmod "." #o777)
                                 (symlink "guile" "guile-rocks")
                                 (copy-recursively "../share/guile/2.0/scripts"
-                                                  "scripts"))))))
+                                                  "scripts")
+
+                                ;; Make sure '.file_list' can be created.
+                                (chmod ".." #o777))))))
          (package (package (inherit (dummy-package "with-snippet"))
                     (source source)
                     (build-system trivial-build-system)

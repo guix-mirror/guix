@@ -36,7 +36,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.2.2")
+    (version "3.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -44,12 +44,11 @@
                    (version-major+minor version)
                    "/cmake-" version ".tar.gz"))
              (sha256
-              (base32 "0y3w83al0vh9ll7fnqm3nx7l8hsl85k8iv9abxb791q36rp4xsdd"))
+              (base32 "1mp32dqywk4dfw7zmpgp31axszv7h74yk69g273z21q7d8n04rfd"))
              (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:parallel-tests? #f ; 3 test from RunCMake fails
        #:phases (alist-cons-before
                  'configure 'patch-bin-sh
                  (lambda _

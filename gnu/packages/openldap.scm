@@ -34,7 +34,7 @@
 (define-public openldap
   (package
    (name "openldap")
-   (version "2.4.40")
+   (version "2.4.42")
    (source (origin
             (method url-fetch)
 
@@ -51,7 +51,7 @@
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "1nyslrgwxwilgv5sixc37svls5rbvhsv9drb7hlrjr2vqaji29ni"))))
+              "0qwfpb5ipp2l76v11arghq5mr0sjc6xhjfg8a0kgsaw5qpib1dzf"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb)
              ("openssl" ,openssl)
