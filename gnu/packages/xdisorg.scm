@@ -30,12 +30,15 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xml)
@@ -43,6 +46,34 @@
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
+
+(define-public arandr
+  (package
+    (name "arandr")
+    (version "0.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://christian.amsuess.com/tools/" name
+                                  "/files/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0d574mbmhaqmh7kivaryj2hpghz6xkvic9ah43s1hf385y7c33kd"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2     ;incompatible with python 3
+                 #:tests? #f))          ;no tests
+    (inputs `(("pygtk" ,python2-pygtk)))
+    (native-inputs `(("gettext"           ,gnu-gettext)
+                     ("python-docutils"   ,python2-docutils)
+                     ("python-setuptools" ,python2-setuptools)))
+    (home-page "https://christian.amsuess.com/tools/arandr/")
+    (synopsis "Another RandR graphical user interface")
+    ;; TRANSLATORS: "X11 resize-and-rotate" should not be translated.
+    (description "ARandR is designed to provide a simple visual front end for
+the X11 resize-and-rotate (RandR) extension.  Relative monitor positions are
+shown graphically and can be changed in a drag-and-drop way.  Configurations
+are saved as executable shell scripts which can be loaded without using this
+program.")
+    (license license:gpl3+)))
 
 (define-public xclip
   (package
