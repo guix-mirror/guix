@@ -912,3 +912,24 @@ database.")
      "This package provides chronological R objects which can handle dates and
 times.")
     (license license:gpl2)))
+
+(define-public r-data.table
+  (package
+    (name "r-data.table")
+    (version "1.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "data.table" version))
+              (sha256
+               (base32
+                "0vi3zplpxqbg78z9ifjfs1kl2i8qhkqxr7l9ysp2663kq54w6x3g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-chron" ,r-chron)))
+    (home-page "https://github.com/Rdatatable/data.table/wiki")
+    (synopsis "Enhanced version of data.frame R object")
+    (description
+     "The R data.table package provides functions for fast aggregation of
+large data (e.g. 100GB in RAM), fast ordered joins, fast add/modify/delete of
+columns by group, column listing and fast file reading.")
+    (license license:gpl2+)))
