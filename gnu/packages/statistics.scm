@@ -894,3 +894,21 @@ pieces of code in C++; 3) use the same code interface to work with data no
 matter where it is stored, whether in a data frame, a data table or
 database.")
     (license license:expat)))
+
+(define-public r-chron
+  (package
+    (name "r-chron")
+    (version "2.3-47")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "chron" version))
+              (sha256
+               (base32
+                "1xj50kk8b8mbjpszp8i0wbripb5a4b36jcscwlbyap8n4487g34s"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/chron")
+    (synopsis "Chronological R objects which can handle dates and times")
+    (description
+     "This package provides chronological R objects which can handle dates and
+times.")
+    (license license:gpl2)))
