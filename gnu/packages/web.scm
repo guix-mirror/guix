@@ -2935,3 +2935,22 @@ in systems and applications.")
 documents that can be converted to HTML files (e.g., R Markdown) under a given
 directory.")
     (license l:expat)))
+
+(define-public r-htmltools
+  (package
+    (name "r-htmltools")
+    (version "0.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "htmltools" version))
+              (sha256
+               (base32
+                "1gp6f6388xy3cvnb08q08vraidjp740gfxlafdd19m2s04v5hncz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)))
+    (home-page "http://cran.r-project.org/web/packages/htmltools")
+    (synopsis "R tools for HTML")
+    (description
+     "This package provides tools for HTML generation and output in R.")
+    (license l:expat)))
