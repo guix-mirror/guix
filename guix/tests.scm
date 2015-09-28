@@ -56,13 +56,13 @@
    (or (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL") list)
        '())))
 
-(define (open-connection-for-tests)
+(define* (open-connection-for-tests #:optional (file (%daemon-socket-file)))
   "Open a connection to the build daemon for tests purposes and return it."
   (guard (c ((nix-error? c)
              (format (current-error-port)
                      "warning: build daemon error: ~s~%" c)
              #f))
-    (let ((store (open-connection)))
+    (let ((store (open-connection file)))
       ;; Make sure we build everything by ourselves.
       (set-build-options store
                          #:use-substitutes? #f
