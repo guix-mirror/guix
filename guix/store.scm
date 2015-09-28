@@ -67,6 +67,8 @@
             add-to-store
             build-things
             build
+            query-failed-paths
+            clear-failed-paths
             add-temp-root
             add-indirect-root
             add-permanent-root
@@ -888,6 +890,19 @@ PATHS---i.e., PATHS and all their dependencies."
        (write-int 1 port)
        (and (export-path server head port #:sign? sign?)
             (loop tail))))))
+
+(define-operation (query-failed-paths)
+  "Return the list of store items for which a build failure is cached.
+
+The result is always the empty list unless the daemon was started with
+'--cache-failures'."
+  store-path-list)
+
+(define-operation (clear-failed-paths (store-path-list items))
+  "Remove ITEMS from the list of cached build failures.
+
+This makes sense only when the daemon was started with '--cache-failures'."
+  boolean)
 
 (define* (register-path path
                         #:key (references '()) deriver prefix

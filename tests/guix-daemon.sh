@@ -65,7 +65,7 @@ guile -c "
 socket="$NIX_STATE_DIR/alternate-socket"
 guix-daemon --no-substitutes --listen="$socket" --disable-chroot &
 daemon_pid=$!
-trap "kill $daemon_pid" EXIT
+trap 'kill $daemon_pid' EXIT
 
 # Make sure we DON'T see the substitute.
 guile -c "
@@ -77,3 +77,40 @@ guile -c "
                      #:substitute-urls (list \"$GUIX_BINARY_SUBSTITUTE_URL\"))
 
   (exit (not (has-substitutes? store \"$out\")))"
+
+kill "$daemon_pid"
+
+
+# Check the failed build cache.
+
+guix-daemon --no-substitutes --listen="$socket" --disable-chroot	\
+  --cache-failures &
+daemon_pid=$!
+
+guile -c "
+  (use-modules (guix) (guix tests) (srfi srfi-34))
+  (define store (open-connection-for-tests \"$socket\"))
+
+  (define (build-without-failing drv)
+    (lambda (store)
+      (guard (c ((nix-protocol-error? c) (values #t store)))
+        (build-derivations store (list drv))
+        (values #f store))))
+
+  ;; Make sure failed builds are cached and can be removed from
+  ;; the cache.
+  (run-with-store store
+    (mlet* %store-monad ((drv (gexp->derivation \"failure\"
+                                                #~(begin
+                                                    (ungexp output)
+                                                     #f)))
+                         (out -> (derivation->output-path drv))
+                         (ok?    (build-without-failing drv)))
+      ;; Note the mixture of monadic and direct style.  Don't try
+      ;; this at home!
+      (return (exit (and ok?
+                         (equal? (query-failed-paths store) (list out))
+                         (begin
+                           (clear-failed-paths store (list out))
+                           (null? (query-failed-paths store)))))))
+    #:guile-for-build (%guile-for-build)) "
