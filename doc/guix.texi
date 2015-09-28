@@ -814,6 +814,11 @@ builds to other machines (@pxref{Daemon Offload Setup}).
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
 
+When this option is used, @command{guix gc --list-failures} can be used
+to query the set of store items marked as failed; @command{guix gc
+--clear-failures} removes store items from the set of cached failures.
+@xref{Invoking guix gc}.
+
 @item --cores=@var{n}
 @itemx -c @var{n}
 Use @var{n} CPU cores to build each derivation; @code{0} means as many
@@ -1673,6 +1678,19 @@ When @var{min} is omitted, collect all the garbage.
 Attempt to delete all the store files and directories specified as
 arguments.  This fails if some of the files are not in the store, or if
 they are still live.
+
+@item --list-failures
+List store items corresponding to cached build failures.
+
+This prints nothing unless the daemon was started with
+@option{--cache-failures} (@pxref{Invoking guix-daemon,
+@option{--cache-failures}}).
+
+@item --clear-failures
+Remove the specified store items from the failed-build cache.
+
+Again, this option only makes sense when the daemon is started with
+@option{--cache-failures}.  Otherwise, it does nothing.
 
 @item --list-dead
 Show the list of dead files and directories still present in the

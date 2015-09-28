@@ -62,6 +62,10 @@ Invoke the garbage collector.\n"))
       --verify[=OPTS]    verify the integrity of the store; OPTS is a
                          comma-separated combination of 'repair' and
                          'contents'"))
+  (display (_ "
+      --list-failures    list cached build failures"))
+  (display (_ "
+      --clear-failures   remove PATHS from the set of cached failures"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -130,6 +134,14 @@ Invoke the garbage collector.\n"))
         (option '("referrers") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-referrers
+                              (alist-delete 'action result))))
+        (option '("list-failures") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-failures
+                              (alist-delete 'action result))))
+        (option '("clear-failures") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'clear-failures
                               (alist-delete 'action result))))))
 
 
@@ -200,6 +212,11 @@ Invoke the garbage collector.\n"))
             (verify-store store
                           #:check-contents? (memq 'contents options)
                           #:repair? (memq 'repair options)))))
+        ((list-failures)
+         (for-each (cut simple-format #t "~a~%" <>)
+                   (query-failed-paths store)))
+        ((clear-failures)
+         (clear-failed-paths store (map direct-store-path paths)))
         ((list-dead)
          (for-each (cut simple-format #t "~a~%" <>)
                    (dead-paths store)))
