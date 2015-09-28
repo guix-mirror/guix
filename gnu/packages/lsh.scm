@@ -116,14 +116,19 @@ basis for almost any application.")
        (alist-cons-before
         'configure 'pre-configure
         (lambda* (#:key inputs #:allow-other-keys)
-          ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place by
-          ;; default.
-          (substitute* "src/environ.h.in"
-            (("^#define PATH_SEXP_CONV.*")
-             (let* ((nettle    (assoc-ref inputs "nettle"))
-                    (sexp-conv (string-append nettle "/bin/sexp-conv")))
+          (let* ((nettle    (assoc-ref inputs "nettle"))
+                 (sexp-conv (string-append nettle "/bin/sexp-conv")))
+            ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
+            ;; by default.
+            (substitute* "src/environ.h.in"
+              (("^#define PATH_SEXP_CONV.*")
                (string-append "#define PATH_SEXP_CONV \""
-                              sexp-conv "\"\n"))))
+                              sexp-conv "\"\n")))
+
+            ;; Same for the 'lsh-authorize' script.
+            (substitute* "src/lsh-authorize"
+              (("=sexp-conv")
+               (string-append "=" sexp-conv))))
 
           ;; Tests rely on $USER being set.
           (setenv "USER" "guix"))
