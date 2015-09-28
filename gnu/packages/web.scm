@@ -2954,3 +2954,26 @@ directory.")
     (description
      "This package provides tools for HTML generation and output in R.")
     (license l:expat)))
+
+(define-public r-htmlwidgets
+  (package
+    (name "r-htmlwidgets")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "htmlwidgets" version))
+              (sha256
+               (base32
+                "1d583kk7g29r4sq0y1scri7fs48z6q17c051nyjywcvnpy4lvi8j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/ramnathv/htmlwidgets")
+    (synopsis "HTML Widgets for R")
+    (description
+     "HTML widgets is a framework for creating HTML widgets that render in
+various contexts including the R console, R Markdown documents, and Shiny web
+applications.")
+    (license l:expat)))
