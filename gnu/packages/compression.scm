@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -586,3 +587,41 @@ It is intended to be used for archival use, for live CDs, and for embedded
 systems where low overhead is needed.  This package allows you to create and
 extract such filesystems.")
     (license license:gpl2+)))
+
+(define-public pigz
+  (package
+    (name "pigz")
+    (version "2.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://zlib.net/pigz/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "172hdf26k4zmm7z8md7nl0dph2a7mhf3x7slb9bhfyff6as6g2sf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin"))
+                           (man (string-append out "/share/man/man1")))
+                      (install-file "pigz" bin)
+                      (symlink "pigz" (string-append bin  "/unpigz"))
+                      (install-file "pigz.1" man)
+                      #t))))
+       #:make-flags (list "CC=gcc")
+       #:test-target "tests"))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://zlib.net/pigz/")
+    (synopsis "Parallel implementation of gzip")
+    (description
+     "This package provides a parallel implementation of gzip that exploits
+multiple processors and multiple cores when compressing data.")
+
+    ;; Things under zopfli/ are under ASL2.0, but 4 files at the top-level,
+    ;; written by Mark Adler, are under another non-copyleft license.
+    (license license:asl2.0)))
