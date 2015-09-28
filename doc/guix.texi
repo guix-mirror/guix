@@ -7310,7 +7310,7 @@ the language specified by the current locale.
 Translation is a lot of work so, as a packager, please pay even more
 attention to your synopses and descriptions as every change may entail
 additional work for translators.  In order to help them, it is possible
-to make recommandations or instructions visible to them by inserting
+to make recommendations or instructions visible to them by inserting
 special comments like this (@pxref{xgettext Invocation,,, gettext, GNU
 Gettext}):
 
