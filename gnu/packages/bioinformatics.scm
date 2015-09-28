@@ -2733,6 +2733,30 @@ chr+pos+alt information in a database.")
     (home-page "https://github.com/pjotrp/bio-locus")
     (license license:expat)))
 
+(define-public bio-blastxmlparser
+  (package
+    (name "bio-blastxmlparser")
+    (version "2.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "bio-blastxmlparser" version))
+              (sha256
+               (base32
+                "1wf4qygcmdjgcqm6flmvsagfr1gs9lf63mj32qv3z1f481zc5692"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-bio-logger" ,ruby-bio-logger)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Fast big data BLAST XML parser and library")
+    (description
+     "Very fast parallel big-data BLAST XML file parser which can be used as
+command line utility.  Use blastxmlparser to: Parse BLAST XML; filter output;
+generate FASTA, JSON, YAML, RDF, JSON-LD, HTML, CSV, tabular output etc.")
+    (home-page "http://github.com/pjotrp/blastxmlparser")
+    (license license:expat)))
+
 (define-public bioruby
   (package
     (name "bioruby")
