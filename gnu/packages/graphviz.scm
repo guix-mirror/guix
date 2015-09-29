@@ -36,16 +36,15 @@
 (define-public graphviz
   (package
     (name "graphviz")
-    (version "2.28.0")
+    (version "2.38.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-"
-                   version
-                   ".tar.gz"))
+                   version ".tar.gz"))
              (sha256
               (base32
-               "0xpwg99cd8sp0c6r8klsmc66h1pday64kmnr4v6f9jkqqmrpkank"))))
+               "17l5czpvv5ilmg17frg0w4qwf89jzh2aglm9fgx0l0aakn6j7al1"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: rtest/rtest.sh is a ksh script (!).  Add ksh as an input.
