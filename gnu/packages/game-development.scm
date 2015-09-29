@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,12 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnunet)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages zip)
@@ -63,6 +71,49 @@
      "Bullet is a physics engine library usable for collision detection.  It
 is used in some video games and movies.")
     (license license:zlib)))
+
+(define-public gzochi
+  (package
+    (name "gzochi")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/gzochi/gzochi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1nf8naqbc4hmhy99b8n70yswg9j71nh5mfpwwh6d8pdw5mp9b46a"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'remove-Werror
+                              (lambda _
+                                ;; We can't build with '-Werror', notably
+                                ;; because deprecated functions of
+                                ;; libmicrohttpd are being used.
+                                (substitute* (find-files "." "^Makefile\\.in$")
+                                  (("-Werror")
+                                   ""))
+                                #t)))))
+    (native-inputs `(("pkgconfig" ,pkg-config)))
+    (inputs `(("bdb" ,bdb)
+              ("glib" ,glib)
+              ("gmp" ,gmp)
+              ("guile" ,guile-2.0)
+              ("libmicrohttpd" ,libmicrohttpd)
+              ("ncurses" ,ncurses)
+              ("sdl" ,sdl)
+              ("zlib" ,zlib)))
+    (home-page "http://www.nongnu.org/gzochi/")
+    (synopsis "Scalable middleware for multiplayer games")
+    (description
+     "gzochi is a framework for developing massively multiplayer online games.
+A server container provides services to deployed games, which are written in
+Guile Scheme, that abstract and simplify some of the most challenging and
+error-prone aspects of online game development: Concurrency, data persistence,
+and network communications.  A very thin client library can be embedded to
+provide connectivity for client applications written in any language.")
+    (license license:gpl3+)))
 
 (define-public tiled
   (package
