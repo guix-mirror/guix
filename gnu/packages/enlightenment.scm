@@ -218,7 +218,7 @@ The only supported now is VLC.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -226,7 +226,7 @@ The only supported now is VLC.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "0iwid9cvd96kwl0hjhbby84kkz5sgb4p8454nnkf7wjvdz2f9b96"))))
+                "1kwv9vkhngdm5v38q93xpcykghnyawhjjcb5bgy0p89gpbk7mvpc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
