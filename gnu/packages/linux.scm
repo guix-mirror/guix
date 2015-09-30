@@ -1159,7 +1159,7 @@ devices.  It replaces 'iwconfig', which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.5")
+    (version "2.7")
     (source
      (origin
        (method url-fetch)
@@ -1168,12 +1168,11 @@ devices.  It replaces 'iwconfig', which is deprecated.")
              version ".tar.gz"))
        (sha256
         (base32
-         "02rwqbpasdayl201v0549gbp2f82rd0hqiv3i111r7npanjhhb4b"))))
+         "1jkqqr3l1x98m7rgin1dgfzxqwj4vciw9lyyq1kl9bdswa818jwd"))))
     (build-system gnu-build-system)
     (inputs
-     ;; TODO: Add pciutils.
      `(("zlib" ,zlib)
-       ;; ("pciutils" ,pciutils)
+       ("pciutils" ,pciutils)
        ("ncurses" ,ncurses)
        ("libnl" ,libnl)))
     (native-inputs
