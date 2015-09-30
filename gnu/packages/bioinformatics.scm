@@ -33,6 +33,7 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
@@ -53,6 +54,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -2708,6 +2710,63 @@ data in the form of VCF files.")
     ;; The license is declared as LGPLv3 in the README and
     ;; at http://vcftools.sourceforge.net/license.html
     (license license:lgpl3)))
+
+(define-public vsearch
+  (package
+    (name "vsearch")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/torognes/vsearch/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b1359wbzgb2cm04h7dq05v80vik88hnsv298xxd1q1f2q4ydni7"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove bundled cityhash and '-mtune=native'.
+           (substitute* "src/Makefile.am"
+             (("^AM_CXXFLAGS=-I\\$\\{srcdir\\}/cityhash \
+-O3 -mtune=native -Wall -Wsign-compare")
+              (string-append "AM_CXXFLAGS=-lcityhash"
+                             " -O3 -Wall -Wsign-compare"))
+             (("^__top_builddir__bin_vsearch_SOURCES = cityhash/city.h \\\\")
+              "__top_builddir__bin_vsearch_SOURCES = \\")
+             (("^cityhash/config.h \\\\") "\\")
+             (("^cityhash/city.cc \\\\") "\\"))
+           (substitute* "src/vsearch.h"
+             (("^\\#include \"cityhash/city.h\"")
+              "#include <city.h>"))
+           (delete-file-recursively "src/cityhash")
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autogen
+                     (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("bzip2" ,bzip2)
+       ("cityhash" ,cityhash)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Sequence search tools for metagenomics")
+    (description
+     "VSEARCH supports DNA sequence searching, clustering, chimera detection,
+dereplication, pairwise alignment, shuffling, subsampling, sorting and
+masking.  The tool takes advantage of parallelism in the form of SIMD
+vectorization as well as multiple threads to perform accurate alignments at
+high speed.  VSEARCH uses an optimal global aligner (full dynamic programming
+Needleman-Wunsch).")
+    (home-page "https://github.com/torognes/vsearch")
+    ;; Dual licensed; also includes public domain source.
+    (license (list license:gpl3 license:bsd-2))))
 
 (define-public bio-locus
   (package
