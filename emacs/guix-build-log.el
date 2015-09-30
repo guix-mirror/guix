@@ -256,8 +256,9 @@ Return nil, if there is no phase start before the current point."
     ;; Some phases may be hidden, and some shown.  Whether to hide or to
     ;; show them, it is determined by the state of the first phase here.
     (goto-char (point-min))
-    (guix-build-log-next-phase)
-    (let ((fun (guix-build-log-phase-toggle-function)))
+    (let ((fun (save-excursion
+                 (re-search-forward guix-build-log-phase-start-regexp nil t)
+                 (guix-build-log-phase-toggle-function))))
       (while (re-search-forward guix-build-log-phase-start-regexp nil t)
         (funcall fun)))))
 
