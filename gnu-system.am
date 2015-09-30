@@ -589,7 +589,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/pidgin-add-search-path.patch		\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
-  gnu/packages/patches/pixman-pointer-arithmetic.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
