@@ -5591,9 +5591,10 @@ list only the locales that are actually used, as in:
 
 @vindex LOCPATH
 The compiled locale definitions are available at
-@file{/run/current-system/locale}, which is the default location where
-the GNU@tie{}libc looks for locale data.  This can be overridden using
-the @code{LOCPATH} environment variable (@pxref{locales-and-locpath,
+@file{/run/current-system/locale/X.Y}, where @code{X.Y} is the libc
+version, which is the default location where the GNU@tie{}libc provided
+by Guix looks for locale data.  This can be overridden using the
+@code{LOCPATH} environment variable (@pxref{locales-and-locpath,
 @code{LOCPATH} and locale packages}).
 
 The @code{locale-definition} form is provided by the @code{(gnu system
