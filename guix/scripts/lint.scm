@@ -62,6 +62,7 @@
             check-source-file-name
             check-license
             check-formatting
+            run-checkers
 
             %checkers
             lint-checker
@@ -709,8 +710,8 @@ or a list thereof")
      (description "Look for formatting issues in the source")
      (check       check-formatting))))
 
-(define (run-checkers package checkers)
-  ;; Run the given CHECKERS on PACKAGE.
+(define* (run-checkers package #:optional (checkers %checkers))
+  "Run the given CHECKERS on PACKAGE."
   (let ((tty? (isatty? (current-error-port)))
         (name (package-full-name package)))
     (for-each (lambda (checker)
