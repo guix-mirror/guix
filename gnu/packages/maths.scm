@@ -1474,10 +1474,13 @@ constant parts of it.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ;no "check" target
-       ;; DYNAMIC_ARCH is not supported on MIPS.  When it is disabled,
+       ;; DYNAMIC_ARCH is only supported on x86.  When it is disabled,
        ;; OpenBLAS will tune itself to the build host, so we need to disable
        ;; substitutions.
-       #:substitutable? ,(not (string-prefix? "mips" (%current-system)))
+       #:substitutable?
+        ,(let ((system (or (%current-target-system) (%current-system))))
+           (or (string-prefix? "x86_64" system)
+               (string-prefix? "i686" system)))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
@@ -1485,10 +1488,13 @@ constant parts of it.")
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
-             ;; Unfortunately, this is not supported on MIPS.
-             ,@(if (string-prefix? "mips" (%current-system))
-                   '()
-                   '("DYNAMIC_ARCH=1")))
+             ;; Unfortunately, this is not supported on non-x86 architectures,
+             ;; where it leads to failed builds.
+             ,@(let ((system (or (%current-target-system) (%current-system))))
+               (if (or (string-prefix? "x86_64" system)
+                       (string-prefix? "i686" system))
+                   '("DYNAMIC_ARCH=1")
+                   '())))
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
