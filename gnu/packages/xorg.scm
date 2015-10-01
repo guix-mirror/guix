@@ -5329,14 +5329,14 @@ Intrinsics (Xt) Library.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "317")
+    (version "320")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
                                   "xterm-" version ".tgz"))
               (sha256
                (base32
-                "0v9mirqws1vb8wxbdgn1w166ln7xmapg1913c7kzjs3mwkdv1rfj"))))
+                "19r4rs5pjq944m7aiqligazf6wgmv4f023x3bx183h1l8dbvn3d6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
