@@ -82,14 +82,14 @@ algorithms AES or Twofish.")
 (define-public shroud
   (package
     (name "shroud")
-    (version "0.1")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://files.dthompson.us/shroud/shroud-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jrahwwlrfn1q2bxl99dv9jcvklf8lkm4dq33iv5h75vxw4l56fw"))))
+                "1y43yhgy2zbrk5bqj3qyx9rkcz2bma9sinlrg7dip3jqms9gq4lr"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.0)
