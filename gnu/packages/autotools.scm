@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -157,6 +158,30 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                      (exit (status:exit-val result))))
                 port)))
            (chmod (string-append bin "/autoconf") #o555)))))))
+
+(define-public autobuild
+  (package
+    (name "autobuild")
+    (version "5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/autobuild/autobuild-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0gv7g61ja9q9zg1m30k4snqwwy1kq7b4df6sb7d2qra7kbdq8af1"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (synopsis "Process generated build logs")
+    (description "Autobuild is a package that processes build logs generated
+when building software.  Autobuild is primarily focused on packages using
+Autoconf and Automake, but can be used with other build systems too.
+Autobuild generates an HTML summary file, containing links to each build log.
+The summary includes project name, version, build hostname, host type (cross
+compile aware), date of build, and indication of success or failure.  The
+output is indexed in many ways to simplify browsing.")
+    (home-page "http://josefsson.org/autobuild/")
+    (license gpl3+)))
 
 (define-public automake
   (package
