@@ -109,6 +109,12 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
+
+    (native-search-paths
+     (list (search-path-specification
+            (variable "INFOPATH")
+            (files '("share/info")))))
+
     (home-page "http://www.gnu.org/software/emacs/")
     (synopsis "The extensible, customizable, self-documenting text editor")
     (description
