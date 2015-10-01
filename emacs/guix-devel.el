@@ -94,12 +94,21 @@ Interactively, use the module defined by the current scheme file."
       (guix-devel-setup-repl repl)
       (push process guix-devel-repl-processes))))
 
+(defmacro guix-devel-with-definition (def-var &rest body)
+  "Run BODY with the current guile definition bound to DEF-VAR.
+Bind DEF-VAR variable to the name of the current top-level
+definition, setup the current REPL, use the current module, and
+run BODY."
+  (declare (indent 1) (debug (symbolp body)))
+  `(let ((,def-var (guix-guile-current-definition)))
+     (guix-devel-setup-repl-maybe)
+     (guix-devel-use-modules (guix-guile-current-module))
+     ,@body))
+
 (defun guix-devel-build-package-definition ()
   "Build a package defined by the current top-level variable definition."
   (interactive)
-  (let ((def (guix-guile-current-definition)))
-    (guix-devel-setup-repl-maybe)
-    (guix-devel-use-modules (guix-guile-current-module))
+  (guix-devel-with-definition def
     (when (or (not guix-operation-confirm)
               (guix-operation-prompt (format "Build '%s'?" def)))
       (guix-geiser-eval-in-repl
@@ -195,6 +204,14 @@ bindings:
 `guix-devel-activate-mode' variable."
   (when guix-devel-activate-mode
     (guix-devel-mode)))
+
+
+(defvar guix-devel-emacs-font-lock-keywords
+  (eval-when-compile
+    `((,(rx "(" (group "guix-devel-with-definition") symbol-end) . 1))))
+
+(font-lock-add-keywords 'emacs-lisp-mode
+                        guix-devel-emacs-font-lock-keywords)
 
 (provide 'guix-devel)
 
