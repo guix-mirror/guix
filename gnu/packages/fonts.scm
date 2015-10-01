@@ -568,3 +568,61 @@ with coding in mind.  Anonymous Pro features an international, Unicode-based
 character set, with support for most Western and Central European Latin-based
 languages, plus Greek and Cyrillic.")
     (license license:silofl1.1)))
+
+(define-public font-gnu-unifont
+  (package
+    (name "font-gnu-unifont")
+    (version "8.0.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnu/unifont/unifont-8.0.01/unifont-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "176bzc2y3i49xavrmbyyz5lkqp0qq3bkj7rjrl197kib873by82b"))))
+    (build-system gnu-build-system)
+    (outputs '("out" ; TrueType version
+               "pcf" ; PCF (bitmap) version
+               "psf" ; PSF (console) version
+               "bin" ; Utilities to manipulate '.hex' format
+               ))
+    (arguments
+     '(#:parallel-build? #f ; parallel build fails
+       #:tests? #f          ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+                  (lambda _
+                    (setenv "CC" "gcc")))
+         (replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((ttf (string-append (assoc-ref outputs "out")
+                                       "/share/fonts/truetype"))
+                   (pcf (string-append (assoc-ref outputs "pcf")
+                                       "/share/fonts/misc"))
+                   (psf (string-append (assoc-ref outputs "psf")
+                                       "/share/consolefonts"))
+                   (bin (assoc-ref outputs "bin")))
+              (system* "make"
+                       (string-append "PREFIX=" bin)
+                       (string-append "TTFDEST=" ttf)
+                       (string-append "PCFDEST=" pcf)
+                       (string-append "CONSOLEDEST=" psf)
+                       "install")
+              ;; Move Texinfo file to the right place.
+              (mkdir (string-append bin "/share/info"))
+              (rename-file (string-append bin "/share/unifont/unifont.info.gz")
+                           (string-append bin "/share/info/unifont.info.gz"))
+              #t))))))
+    (inputs
+     `(("perl" ,perl))) ; for utilities
+    (synopsis
+     "Large bitmap font covering Unicode's Basic Multilingual Plane")
+    (description
+     "GNU Unifont is a bitmap font covering essentially all of
+Unicode's Basic Multilingual Plane.  The package also includes
+utilities to ease adding new glyphs to the font.")
+    (home-page "http://unifoundry.com/unifont.html")
+    (license license:gpl2+)))
