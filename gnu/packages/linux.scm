@@ -1164,7 +1164,7 @@ devices.  It replaces 'iwconfig', which is deprecated.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://01.org/powertop/sites/default/files/downloads/powertop-"
+             "https://01.org/sites/default/files/downloads/powertop/powertop-"
              version ".tar.gz"))
        (sha256
         (base32
