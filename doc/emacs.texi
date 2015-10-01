@@ -667,6 +667,10 @@ this command---for example, with @kbd{C-M-x} (@pxref{To eval or not to
 eval,,, geiser, Geiser User Manual})
 (@code{guix-devel-build-package-definition}).
 
+@item C-c . l
+Lint (check) a package defined by the current variable definition
+(@pxref{Invoking guix lint}) (@code{guix-devel-lint-package}).
+
 @end table
 
 Unluckily, there is a limitation related to long-running REPL commands.

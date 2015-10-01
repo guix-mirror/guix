@@ -76,11 +76,14 @@ Interactively, use the module defined by the current scheme file."
   "Setup REPL for using `guix-devel-...' commands."
   (guix-devel-use-modules "(guix monad-repl)"
                           "(guix scripts)"
-                          "(guix store)")
-  ;; Without this workaround, the build output disappears.  See
+                          "(guix store)"
+                          "(guix ui)")
+  ;; Without this workaround, the warning/build output disappears.  See
   ;; <https://github.com/jaor/geiser/issues/83> for details.
   (guix-geiser-eval-in-repl-synchronously
-   "(current-build-output-port (current-error-port))"
+   "(begin
+      (guix-warning-port (current-warning-port))
+      (current-build-output-port (current-error-port)))"
    repl 'no-history 'no-display))
 
 (defvar guix-devel-repl-processes nil
@@ -118,6 +121,17 @@ run BODY."
                 "#:use-substitutes?" (guix-guile-boolean
                                       guix-use-substitutes)
                 "#:dry-run?" (guix-guile-boolean guix-dry-run)))))))
+
+(defun guix-devel-lint-package ()
+  "Check the current package.
+See Info node `(guix) Invoking guix lint' for details."
+  (interactive)
+  (guix-devel-with-definition def
+    (guix-devel-use-modules "(guix scripts lint)")
+    (when (or (not guix-operation-confirm)
+              (y-or-n-p (format "Lint '%s' package?" def)))
+      (guix-geiser-eval-in-repl
+       (format "(run-checkers %s)" def)))))
 
 
 ;;; Font-lock
@@ -163,6 +177,7 @@ to find 'modify-phases' keywords."
 (defvar guix-devel-keys-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "b") 'guix-devel-build-package-definition)
+    (define-key map (kbd "l") 'guix-devel-lint-package)
     (define-key map (kbd "k") 'guix-devel-copy-module-as-kill)
     (define-key map (kbd "u") 'guix-devel-use-module)
     map)
