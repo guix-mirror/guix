@@ -1,0 +1,34 @@
+Honor a special 'GUIX_LOCPATH' environment variable.
+
+This is most useful when using Guix on top of another distro, which uses an
+different libc version with incompatible locale data.  In this case, setting
+'GUIX_LOCPATH' rather than 'LOCPATH' allows users to tell Guix's libc where to
+look for its locale data without breaking programs that use the other libc.
+
+See <https://lists.gnu.org/archive/html/guix-devel/2015-09/msg00717.html> for
+some background information.
+
+--- a/locale/newlocale.c
++++ b/locale/newlocale.c
+@@ -103,6 +103,8 @@ __newlocale (int category_mask, const char *locale, __locale_t base)
+   locale_path_len = 0;
+ 
+   locpath_var = getenv ("LOCPATH");
++  if (locpath_var == NULL || locpath_var[0] == '\0')
++    locpath_var = getenv ("GUIX_LOCPATH");
+   if (locpath_var != NULL && locpath_var[0] != '\0')
+     {
+       if (__argz_create_sep (locpath_var, ':',
+diff --git a/locale/setlocale.c b/locale/setlocale.c
+index ead030d..0e66c7b 100644
+--- a/locale/setlocale.c
++++ b/locale/setlocale.c
+@@ -252,6 +252,8 @@ setlocale (int category, const char *locale)
+   locale_path_len = 0;
+ 
+   locpath_var = getenv ("LOCPATH");
++  if (locpath_var == NULL || locpath_var[0] == '\0')
++    locpath_var = getenv ("GUIX_LOCPATH");
+   if (locpath_var != NULL && locpath_var[0] != '\0')
+     {
+       if (__argz_create_sep (locpath_var, ':',
