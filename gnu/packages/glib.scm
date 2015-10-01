@@ -59,39 +59,41 @@
     (name "dbus")
     (version "1.10.0")
     (source (origin
-             (method url-fetch)
-             (uri
-              (string-append "http://dbus.freedesktop.org/releases/dbus/dbus-"
-                             version ".tar.gz"))
-             (sha256
-              (base32
-               "0jwj7wlrhq5y0fwfh8k2d9rgdpfax06lj8698g6iqbwrzd2rgyqx"))
-             (patches (list (search-patch "dbus-localstatedir.patch")))))
+              (method url-fetch)
+              (uri (string-append
+                    "http://dbus.freedesktop.org/releases/dbus/dbus-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0jwj7wlrhq5y0fwfh8k2d9rgdpfax06lj8698g6iqbwrzd2rgyqx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list ;; Install the system bus socket under /var.
-                               "--localstatedir=/var"
+     '(#:configure-flags
+       (list
+        ;; Install the system bus socket under /var.
+        "--localstatedir=/var"
 
-                               ;; Look for configuration file under
-                               ;; /etc/dbus-1.  This is notably required by
-                               ;; 'dbus-daemon-launch-helper', which looks for
-                               ;; the 'system.conf' file in that place,
-                               ;; regardless of what '--config-file' was
-                               ;; passed to 'dbus-daemon' on the command line;
-                               ;; see <https://bugs.freedesktop.org/show_bug.cgi?id=92458>.
-                               "--sysconfdir=/etc"
+        ;; Install the session bus socket under /tmp.
+        "--with-session-socket-dir=/tmp"
 
-                               "--with-session-socket-dir=/tmp")
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; 'dbus-launch' bails out if the 'session.d' directory
-                   ;; below is missing, so create it along with its companion.
-                   (let ((out (assoc-ref outputs "out")))
-                     (mkdir (string-append out "/etc/dbus-1/session.d"))
-                     (mkdir (string-append out "/etc/dbus-1/system.d"))
-                     #t))
-                 %standard-phases)))
+        ;; Use /etc/dbus-1 for system-wide config.
+        ;; Look for configuration file under
+        ;; /etc/dbus-1.  This is notably required by
+        ;; 'dbus-daemon-launch-helper', which looks for
+        ;; the 'system.conf' file in that place,
+        ;; regardless of what '--config-file' was
+        ;; passed to 'dbus-daemon' on the command line;
+        ;; see <https://bugs.freedesktop.org/show_bug.cgi?id=92458>.
+        "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+                  (lambda _
+                    ;; Don't try to create /var and /etc.
+                    (system* "make"
+                             "localstatedir=/tmp/dummy"
+                             "sysconfdir=/tmp/dummy"
+                             "install"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

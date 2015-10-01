@@ -427,7 +427,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \
   gnu/packages/patches/cursynth-wave-rand.patch			\
-  gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/dealii-p4est-interface.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
