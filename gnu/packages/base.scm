@@ -484,6 +484,7 @@ store.")
             (patches (map search-patch
                           '("glibc-ldd-x86_64.patch"
                             "glibc-locale-incompatibility.patch"
+                            "glibc-versioned-locpath.patch"
                             "glibc-o-largefile.patch")))))
    (build-system gnu-build-system)
 
@@ -614,7 +615,9 @@ store.")
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
-    ;; primarily in build environments.
+    ;; primarily in build environments.  Use 'GUIX_LOCPATH' rather than
+    ;; 'LOCPATH' to avoid interference with the host system's libc on foreign
+    ;; distros.
     (list (search-path-specification
            (variable "GUIX_LOCPATH")
            (files '("lib/locale")))))
@@ -657,7 +660,7 @@ the 'share/locale' sub-directory of this package.")
             (alist-delete 'install ,phases)))
          ((#:configure-flags flags)
           `(append ,flags
-                   ;; Use $(libdir)/locale as is the case by default.
+                   ;; Use $(libdir)/locale/X.Y as is the case by default.
                    (list (string-append "libc_cv_localedir="
                                         (assoc-ref %outputs "out")
                                         "/lib/locale/"
