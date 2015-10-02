@@ -469,7 +469,8 @@ supplies a generic doubly-linked list and some string functions.")
                   ".zip"))
             (sha256
              (base32
-              "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))))
+              "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
+            (patches (list (search-patch "freeimage-CVE-2015-0852.patch")))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases (alist-delete
