@@ -132,8 +132,12 @@ This function is used as a MATCHER for `font-lock-keywords'."
   "Skip the next sexp, and return the end point of the current list.
 This function is used as a PRE-MATCH-FORM for `font-lock-keywords'
 to find 'modify-phases' keywords."
-  (ignore-errors (forward-sexp))
-  (save-excursion (up-list) (point)))
+  (let ((in-comment? (nth 4 (syntax-ppss))))
+    ;; If 'modify-phases' is commented, do not try to search for its
+    ;; keywords.
+    (unless in-comment?
+      (ignore-errors (forward-sexp))
+      (save-excursion (up-list) (point)))))
 
 (defvar guix-devel-font-lock-keywords
   `((,(rx (or "#~" "#$" "#$@" "#+" "#+@")) .
