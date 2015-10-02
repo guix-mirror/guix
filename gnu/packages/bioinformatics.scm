@@ -675,6 +675,7 @@ multiple sequence alignments.")
               (uri (string-append
                     "https://github.com/YeoLab/clipper/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1q7jpimsqln7ic44i8v2rx2haj5wvik8hc1s2syd31zcn0xk1iyq"))
