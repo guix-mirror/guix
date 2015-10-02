@@ -24,26 +24,28 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages python))
 
 (define-public lirc
   (package
     (name "lirc")
-    (version "0.9.2a")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lirc/lirc-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "011nwpxm5d12rsapljg3pjf9pgb0j8ngmc3zg69q4kv61hkx2zim"))
+                "19c6ldjsdnk1md66q3nb035ja1xj217k8iabhxpsb8rs10a6kwi6"))
               (patches (list (search-patch "lirc-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt)))
     (inputs
      `(("libx11" ,libx11)
        ("alsa-lib" ,alsa-lib)
