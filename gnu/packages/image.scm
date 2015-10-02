@@ -271,7 +271,8 @@ work.")
          (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
                         version ".tar.gz"))
         (sha256
-         (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))))
+         (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))
+        (patches (list (search-patch "openjpeg-use-after-free-fix.patch")))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -292,7 +293,7 @@ In addition to the basic codec, various other features are under
 development, among them the JP2 and MJ2 (Motion JPEG 2000) file formats,
 an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
-    (home-page "https://code.google.com/p/openjpeg/")
+    (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
 
 (define-public openjpeg-2.0
@@ -306,7 +307,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
         (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
                        version ".tar.gz"))
        (sha256
-        (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))))))
+        (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))
+       (patches (list (search-patch "openjpeg-use-after-free-fix.patch")))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)

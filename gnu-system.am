@@ -571,6 +571,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
   gnu/packages/patches/openexr-missing-samples.patch		\
+  gnu/packages/patches/openjpeg-use-after-free-fix.patch	\
   gnu/packages/patches/openssl-runpath.patch			\
   gnu/packages/patches/openssl-c-rehash.patch			\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
