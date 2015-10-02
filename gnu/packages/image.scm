@@ -459,17 +459,17 @@ supplies a generic doubly-linked list and some string functions.")
 (define-public freeimage
   (package
    (name "freeimage")
-   (version "3.16.0")
+   (version "3.17.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "mirror://sourceforge/freeimage/Source%20Distribution/"
                   version "/FreeImage"
-                  (string-join (string-split version #\.) "")
+                  (string-concatenate (string-split version #\.))
                   ".zip"))
             (sha256
              (base32
-              "0q1gnjnxgphsh4l8i9rfly4bi8xsczsb9ryzbm8hf38lc3fk5bq3"))))
+              "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases (alist-delete
