@@ -4483,3 +4483,44 @@ Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
 identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
+
+(define-public pepr
+  (package
+    (name "pepr")
+    (version "1.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/P"
+                                  "/PePr/PePr-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qxjfdpl1b1y53nccws2d85f6k74zwmx8y8sd9rszcqhfayx6gdx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; python2 only
+       #:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         ;; When setuptools is used a ".egg" archive is generated and
+         ;; installed.  This makes it hard to actually run PePr.  This issue
+         ;; has been reported upstream:
+         ;; https://github.com/shawnzhangyx/PePr/issues/9
+         (add-after 'unpack 'disable-egg-generation
+           (lambda _
+             (substitute* "setup.py"
+               (("from setuptools import setup")
+                "from distutils.core import setup"))
+             #t)))))
+    (propagated-inputs
+     `(("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-pysam" ,python2-pysam)))
+    (home-page "https://code.google.com/p/pepr-chip-seq/")
+    (synopsis "Peak-calling and prioritization pipeline for ChIP-Seq data")
+    (description
+     "PePr is a ChIP-Seq peak calling or differential binding analysis tool
+that is primarily designed for data with biological replicates.  It uses a
+negative binomial distribution to model the read counts among the samples in
+the same group, and look for consistent differences between ChIP and control
+group or two ChIP groups run under different conditions.")
+    (license license:gpl3+)))
