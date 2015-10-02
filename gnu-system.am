@@ -647,6 +647,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-remove-build-date.patch		\
   gnu/packages/patches/util-linux-tests.patch			\
   gnu/packages/patches/upower-builddir.patch			\
+  gnu/packages/patches/valgrind-enable-arm.patch		\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\

@@ -37,7 +37,8 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0hiv871b9bk689mv42mkhp76za78l5773glszfkdbpf1m1qn4fbc"))))
+               "0hiv871b9bk689mv42mkhp76za78l5773glszfkdbpf1m1qn4fbc"))
+             (patches (map search-patch '("valgrind-enable-arm.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
