@@ -63,8 +63,8 @@ in Qt.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://github.com/lxde/" name "/releases/download/"
-                        version "/" name "-" version ".tar.xz"))
+         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+                        name "-" version ".tar.xz"))
        (sha256
         (base32
          "0ljdzqavvy82qwwwnhg2bgbshl2ns0k2lcswxlx1cfc8rcdr9w5l"))
@@ -79,7 +79,7 @@ in Qt.")
     (home-page "http://lxqt.org/")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
-components of the LxQt desktop environment.")
+components of the LXQt desktop environment.")
     (license lgpl2.1+)))
 
 
