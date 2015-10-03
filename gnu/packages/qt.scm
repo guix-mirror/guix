@@ -243,7 +243,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (base32
                "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
              (patches (map search-patch
-                           '("qt4-ldflags.patch" "qt4-tests.patch")))))
+                           '("qt4-ldflags.patch")))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Remove webkit module, which is not built.
+              '(delete-file-recursively "src/3rdparty/webkit"))))
     (inputs `(,@(alist-delete "harfbuzz"
                               (alist-delete "libjpeg" (package-inputs qt)))
               ("libjepg" ,libjpeg-8)
@@ -288,6 +292,9 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-confirm-license"
                       ;; explicitly link with dbus instead of dlopening it
                       "-dbus-linked"
+                      ;; Skip the webkit module; it fails to build on armhf
+                      ;; and, apart from that, may pose security risks.
+                      "-no-webkit"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
