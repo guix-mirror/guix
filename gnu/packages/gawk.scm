@@ -63,7 +63,7 @@
                    ;; A bunch of tests require the availability of a UTF-8
                    ;; locale and otherwise fail.  Since UTF-8 locales are not
                    ;; available during bootstrap, create one here.
-                   (setenv "LOCPATH" (getcwd))
+                   (setenv "GUIX_LOCPATH" (getcwd))
                    (zero? (system* "localedef" "--no-archive"
                                    "--prefix" (getcwd) "-i" "en_US"
                                    "-f" "UTF-8" "./en_US.UTF-8")))
