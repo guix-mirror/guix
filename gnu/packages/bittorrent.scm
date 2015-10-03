@@ -99,26 +99,20 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public libtorrent
   (package
     (name "libtorrent")
-    (version "0.13.4")
+    (version "0.13.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://libtorrent.rakshasa.no/downloads/libtorrent-"
+                    "http://rtorrent.net/downloads/libtorrent-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ma910br5vxrfpm4f4w4942lpmhwvqjnnf9h8vpf52fw35qhjkkh"))))
+                "012s1nwcvz5m5r4d2z9klgy2n34kpgn9kgwgzxm97zgdjs6a0f18"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ;; Add this when you enable tests:
-                     ;; ("cppunit" ,cppunit)
-                     ))
-    (arguments
-     ;; FIXME: enable tests on the next release:
-     ;; https://github.com/rakshasa/libtorrent/issues/59
-     `(#:tests? #f))
+                     ("cppunit" ,cppunit)))
     (synopsis "BitTorrent library of rtorrent")
     (description
      "LibTorrent is a BitTorrent library used by and developed in parallel
