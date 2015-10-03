@@ -251,7 +251,14 @@ used to apply commands with arbitrarily long arguments.")
              (base32
               "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))
             (patches
-             (list (search-patch "coreutils-racy-tail-test.patch")))))
+             (list (origin
+                     (method url-fetch)
+                     (uri "http://git.savannah.gnu.org/cgit/coreutils.git/\
+patch/?id=3ba68f9e64fa2eb8af22d510437a0c6441feb5e0")
+                     (sha256
+                      (base32
+                       "1dnlszhc8lihhg801i9sz896mlrgfsjfcz62636prb27k5hmixqz"))
+                     (file-name "coreutils-tail-inotify-race.patch"))))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
