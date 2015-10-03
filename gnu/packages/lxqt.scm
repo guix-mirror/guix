@@ -133,3 +133,45 @@ components of the LxQt desktop environment.")
 (themes, icons, configuration files etc.) for the LXQt
 desktop environment.")
     (license lgpl2.1+)))
+
+(define-public lxqt-session
+  (package
+    (name "lxqt-session")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+                        name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "01hxand1gqbcaw14lh7z6w5zssgfaffcjncv752c2c7272wzyhy5"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'fix-installation-paths
+           (lambda _
+             ;; The variable LXQT_TRANSLATIONS_DIR is set in
+             ;; liblxqt-0.9.0/share/cmake/lxqt/lxqt-config.cmake
+             ;; to the liblxqt installation directory, followed by
+             ;; "/share/lxqt/translations".
+             ;; We need to have it point to the current installation
+             ;; directory instead.
+             (substitute* '("lxqt-session/CMakeLists.txt"
+                            "lxqt-config-session/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                "${CMAKE_INSTALL_PREFIX}/share/lxqt/translations")))))))
+    (home-page "http://lxqt.org/")
+    (synopsis "Session manager for LXQt")
+    (description "lxqt-session provides the standard session manager
+for the LXQt desktop environment.")
+    (license lgpl2.1+)))
