@@ -689,12 +689,22 @@ the 'share/locale' sub-directory of this package.")
 
                      (mkdir-p localedir)
                      (every (lambda (locale)
-                              (zero? (system* "localedef" "--no-archive"
-                                              "--prefix" localedir "-i" locale
-                                              "-f" "UTF-8"
+                              (define file
+                                ;; Use the "normalized codeset" by
+                                ;; default--e.g., "en_US.utf8".
+                                (string-append localedir "/" locale ".utf8"))
+
+                              (and (zero? (system* "localedef" "--no-archive"
+                                                   "--prefix" localedir
+                                                   "-i" locale
+                                                   "-f" "UTF-8" file))
+                                   (begin
+                                     ;; For backward compatibility with Guix
+                                     ;; <= 0.8.3, add "xx_YY.UTF-8".
+                                     (symlink (string-append locale ".utf8")
                                               (string-append localedir "/"
-                                                             locale
-                                                             ".UTF-8"))))
+                                                             locale ".UTF-8"))
+                                     #t)))
 
                             ;; These are the locales commonly used for
                             ;; tests---e.g., in Guile's i18n tests.
