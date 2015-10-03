@@ -36,8 +36,8 @@
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://github.com/lxde/" name "/releases/download/"
-                        version "/" name "-" version ".tar.xz"))
+         (string-append "http://downloads.lxqt.org/libqtxdg/" version "/"
+                        name "-" version ".tar.xz"))
        (sha256
         (base32
          "1ncqs0lcll5nx69hxfg33m3jfkryjqrjhr2kdci0b8pyaqdv1jc8"))))
