@@ -124,15 +124,15 @@ speed and efficiency.")
 (define-public rtorrent
   (package
     (name "rtorrent")
-    (version "0.9.4")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://libtorrent.rakshasa.no/downloads/rtorrent-"
+                    "http://rtorrent.net/downloads/rtorrent-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "113yrrac75vqi4g8r6bgs0ggjllj9bkg9shv08vqzdhkwqg2q2mw"))))
+                "03jvzw9pi2mhcm913h8qg0qw9gwjqc6lhwynb1yz1y163x7w4s8y"))))
     (build-system gnu-build-system)
     (inputs `(("libtorrent" ,libtorrent)
               ("ncurses" ,ncurses)
