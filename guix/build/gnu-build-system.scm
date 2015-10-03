@@ -99,7 +99,7 @@
   #t)
 
 (define* (install-locale #:key
-                         (locale "en_US.UTF-8")
+                         (locale "en_US.utf8")
                          (locale-category LC_ALL)
                          #:allow-other-keys)
   "Try to install LOCALE; emit a warning if that fails.  The main goal is to

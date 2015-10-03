@@ -478,7 +478,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
             ;; First of all, install a UTF-8 locale so that UTF-8 file names
             ;; are correctly interpreted.  During bootstrap, LOCALES is #f.
             (setenv "LOCPATH" (string-append #+locales "/lib/locale"))
-            (setlocale LC_ALL "en_US.UTF-8"))
+            (setlocale LC_ALL "en_US.utf8"))
 
           (setenv "PATH" (string-append #+xz "/bin" ":"
                                         #+decomp "/bin"))

@@ -3665,7 +3665,7 @@ cluster without needing to write any wrapper code yourself.")
                    (man1 (string-append data "/man/man1"))
                    (info (string-append data "/info"))
                    (examples (string-append doc "/examples")))
-              (setenv "LANG" "en_US.UTF-8")
+              (setenv "LANG" "en_US.utf8")
               (with-directory-excursion "docs"
                 ;; FIXME: html and pdf fail to build
                 ;; (system* "make" "html")

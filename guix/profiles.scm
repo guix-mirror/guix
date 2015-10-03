@@ -576,7 +576,7 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
         (setenv "LOCPATH"
                 (string-append #+glibc-utf8-locales "/lib/locale/"
                                #+(package-version glibc-utf8-locales)))
-        (setlocale LC_ALL "en_US.UTF-8")
+        (setlocale LC_ALL "en_US.utf8")
 
         (match (append-map ca-files '#$(manifest-inputs manifest))
           (()

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,7 @@
 (operating-system
  (host-name "gnu")
  (timezone "Europe/Paris")
- (locale "en_US.UTF-8")
+ (locale "en_US.utf8")
 
  (bootloader (grub-configuration
               (device "/dev/sda")))

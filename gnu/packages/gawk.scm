@@ -66,7 +66,7 @@
                    (setenv "GUIX_LOCPATH" (getcwd))
                    (zero? (system* "localedef" "--no-archive"
                                    "--prefix" (getcwd) "-i" "en_US"
-                                   "-f" "UTF-8" "./en_US.UTF-8")))
+                                   "-f" "UTF-8" "./en_US.utf8")))
                  %standard-phases))))
    (inputs `(("libsigsegv" ,libsigsegv)
 
