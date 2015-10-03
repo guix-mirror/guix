@@ -476,6 +476,7 @@ store.")
             (modules '((guix build utils)))
             (patches (map search-patch
                           '("glibc-ldd-x86_64.patch"
+                            "glibc-locale-incompatibility.patch"
                             "glibc-o-largefile.patch")))))
    (build-system gnu-build-system)
 
