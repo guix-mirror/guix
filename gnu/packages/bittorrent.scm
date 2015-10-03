@@ -124,7 +124,7 @@ DHT, µTP, PEX and Magnet Links.")
      "LibTorrent is a BitTorrent library used by and developed in parallel
 with the BitTorrent client rtorrent.  It is written in C++ with emphasis on
 speed and efficiency.")
-    (home-page "http://libtorrent.rakshasa.no/")
+    (home-page "https://github.com/rakshasa/libtorrent")
     (license l:gpl2+)))
 
 (define-public rtorrent
@@ -153,5 +153,5 @@ speed and efficiency.")
      "rTorrent is a BitTorrent client with an ncurses interface.  It supports
 full encryption, DHT, PEX, and Magnet Links.  It can also be controlled via
 XML-RPC over SCGI.")
-    (home-page "http://libtorrent.rakshasa.no/")
+    (home-page "https://github.com/rakshasa/rtorrent")
     (license l:gpl2+)))
