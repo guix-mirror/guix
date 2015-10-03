@@ -65,13 +65,9 @@ in Qt.")
        (uri
          (string-append "https://github.com/lxde/" name "/releases/download/"
                         version "/" name "-" version ".tar.xz"))
-       (uri
-         (string-append "https://github.com/lxde/" name "/archive/"
-                        version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))
+         "0ljdzqavvy82qwwwnhg2bgbshl2ns0k2lcswxlx1cfc8rcdr9w5l"))
        (patches (map search-patch '("liblxqt-include.patch")))))
     (build-system cmake-build-system)
     (arguments
