@@ -409,18 +409,6 @@ makefiles."
                                        strip-directories)))
                          outputs))))
 
-(define (every* pred lst)
-  "This is like 'every', but process all the elements of LST instead of
-stopping as soon as PRED returns false.  This is useful when PRED has side
-effects, such as displaying warnings or error messages."
-  (let loop ((lst    lst)
-             (result #t))
-    (match lst
-      (()
-       result)
-      ((head . tail)
-       (loop tail (and (pred head) result))))))
-
 (define* (validate-runpath #:key
                            (validate-runpath? #t)
                            (elf-directories '("lib" "lib64" "libexec"
