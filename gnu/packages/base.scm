@@ -620,7 +620,8 @@ store.")
     ;; distros.
     (list (search-path-specification
            (variable "GUIX_LOCPATH")
-           (files '("lib/locale")))))
+           (files (list (string-append "lib/locale/" version)
+                        "lib/locale")))))
 
    (synopsis "The GNU C Library")
    (description
@@ -663,7 +664,8 @@ the 'share/locale' sub-directory of this package.")
                    ;; Use $(libdir)/locale as is the case by default.
                    (list (string-append "libc_cv_localedir="
                                         (assoc-ref %outputs "out")
-                                        "/lib/locale")))))))))
+                                        "/lib/locale/"
+                                        ,(package-version glibc))))))))))
 
 (define-public glibc-utf8-locales
   (package
@@ -672,7 +674,7 @@ the 'share/locale' sub-directory of this package.")
     (source #f)
     (build-system trivial-build-system)
     (arguments
-     '(#:modules ((guix build utils))
+     `(#:modules ((guix build utils))
        #:builder (begin
                    (use-modules (srfi srfi-1)
                                 (guix build utils))
@@ -680,7 +682,8 @@ the 'share/locale' sub-directory of this package.")
                    (let* ((libc      (assoc-ref %build-inputs "glibc"))
                           (gzip      (assoc-ref %build-inputs "gzip"))
                           (out       (assoc-ref %outputs "out"))
-                          (localedir (string-append out "/lib/locale")))
+                          (localedir (string-append out "/lib/locale/"
+                                                    ,version)))
                      ;; 'localedef' needs 'gzip'.
                      (setenv "PATH" (string-append libc "/bin:" gzip "/bin"))
 

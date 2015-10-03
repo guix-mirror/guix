@@ -573,7 +573,9 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
 
         ;; Some file names in the NSS certificates are UTF-8 encoded so
         ;; install a UTF-8 locale.
-        (setenv "LOCPATH" (string-append #+glibc-utf8-locales "/lib/locale"))
+        (setenv "LOCPATH"
+                (string-append #+glibc-utf8-locales "/lib/locale/"
+                               #+(package-version glibc-utf8-locales)))
         (setlocale LC_ALL "en_US.UTF-8")
 
         (match (append-map ca-files '#$(manifest-inputs manifest))
