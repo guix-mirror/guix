@@ -2766,6 +2766,9 @@ vectorization as well as multiple threads to perform accurate alignments at
 high speed.  VSEARCH uses an optimal global aligner (full dynamic programming
 Needleman-Wunsch).")
     (home-page "https://github.com/torognes/vsearch")
+    ;; vsearch uses non-portable SSE intrinsics so building fails on other
+    ;; platforms.
+    (supported-systems '("x86_64-linux"))
     ;; Dual licensed; also includes public domain source.
     (license (list license:gpl3 license:bsd-2))))
 
