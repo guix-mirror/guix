@@ -121,7 +121,10 @@ X11 (yet).")
                 (delete-file-recursively "qtwebengine")
                 ;; Remove one of the two bundled harfbuzz copies in addition
                 ;; to passing "-system-harfbuzz".
-                (delete-file-recursively "qtbase/src/3rdparty/harfbuzz-ng")))))
+                (delete-file-recursively "qtbase/src/3rdparty/harfbuzz-ng")
+                ;; Remove the bundled sqlite copy in addition to
+                ;; passing "-system-sqlite".
+                (delete-file-recursively "qtbase/src/3rdparty/sqlite")))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
