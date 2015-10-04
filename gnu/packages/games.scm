@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1105,3 +1106,41 @@ on the screen and keyboard to display letters.")
     ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
     (license license:gpl3)))
 
+(define-public manaplus
+  (package
+    (name "manaplus")
+    (version "1.5.9.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://repo.manaplus.org/manaplus/download/"
+                    version "/manaplus-" version ".tar.xz"))
+              (sha256
+               (base32
+                "070ms1cv7q88284pqh66lfhacckgv7m9s8z9009k2laypibx7vs6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "CPPFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-union")
+                            "/include/SDL"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glu" ,glu)
+       ("curl" ,curl)
+       ("libxml2" ,libxml2)
+       ("mesa" ,mesa)
+       ("physfs" ,physfs)
+       ("sdl-union" ,(sdl-union))))
+    (home-page "http://manaplus.org")
+    (synopsis "Client for 'The Mana World' and similar games")
+    (description
+     "ManaPlus is a 2D MMORPG client for game servers.  It is the only
+fully supported client for @uref{http://www.themanaworld.org, The mana
+world}, @uref{http://evolonline.org, Evol Online} and
+@uref{http://landoffire.org, Land of fire}.")
+    ;; "src/debug/*" and "src/sdl2gfx/*" are under Zlib.
+    ;; "data/themes/{golden-delicious,jewelry}/*" are under CC-BY-SA.
+    ;; The rest is under GPL2+.
+    (license (list license:gpl2+ license:zlib license:cc-by-sa4.0))))
