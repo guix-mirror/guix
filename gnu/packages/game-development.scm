@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages guile)
@@ -225,3 +227,36 @@ Originally created for use in video game prototypes, it can generate random
 sounds from presets such as \"explosion\" or \"powerup\".")
     (home-page "http://www.drpetter.se/project_sfxr.html")
     (license license:expat)))
+
+(define-public physfs
+  (package
+    (name "physfs")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://icculus.org/physfs/downloads/physfs-"
+                    version ".tar.bz2"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sbbyqzqhyf0g68fcvvv20n3928j0x6ik1njmhn1yigvq2bj11na"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f))                    ; no check target
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "http://icculus.org/physfs")
+    (synopsis "File system abstraction library")
+    (description
+     "PhysicsFS is a library to provide abstract access to various archives.
+It is intended for use in video games.  For security, no file writing done
+through the PhysicsFS API can leave a defined @emph{write directory}.  For
+file reading, a @emph{search path} with archives and directories is defined,
+and it becomes a single, transparent hierarchical file system.  So archive
+files can be accessed in the same way as you access files directly on a disk,
+and it makes it easy to ship a new archive that will override a previous
+archive on a per-file basis.")
+    (license license:zlib)))
