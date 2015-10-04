@@ -950,8 +950,12 @@ variable:
 
 @example
 $ guix package -i glibc-locales
-$ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
+$ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale/2.22
 @end example
+
+The @file{/2.22} sub-directory is if you install locales from
+@code{glibc-locales-2.22}---i.e., locales for libc version 2.22.  Adjust
+in accordance with the libc version being used.
 
 Note that the @code{glibc-locales} package contains data for all the
 locales supported by the GNU@tie{}libc and weighs in at around
