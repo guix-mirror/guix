@@ -110,14 +110,18 @@ X11 (yet).")
                  "1by2l8wxbqwvs7anb5ggmqhn2cfmhyw3a23bp1yyd240rdpa38ky"))
              (modules '((guix build utils)))
              (snippet
-              ;; Remove qtwebengine, which relies on a bundled copy of
-              ;; chromium. Not only does it fail compilation in qt 5.5:
-              ;;    3rdparty/chromium/ui/gfx/codec/jpeg_codec.cc:362:10:
-              ;;    error: cannot convert ‘bool’ to ‘boolean’ in return
-              ;; it might also pose security problems.
-              ;; Alternatively, we could use the "-skip qtwebengine"
-              ;; configuration option.
-              '(delete-file-recursively "qtwebengine"))))
+              '(begin
+                ;; Remove qtwebengine, which relies on a bundled copy of
+                ;; chromium. Not only does it fail compilation in qt 5.5:
+                ;;    3rdparty/chromium/ui/gfx/codec/jpeg_codec.cc:362:10:
+                ;;    error: cannot convert ‘bool’ to ‘boolean’ in return
+                ;; it might also pose security problems.
+                ;; Alternatively, we could use the "-skip qtwebengine"
+                ;; configuration option.
+                (delete-file-recursively "qtwebengine")
+                ;; Remove one of the two bundled harfbuzz copies in addition
+                ;; to passing "-system-harfbuzz".
+                (delete-file-recursively "qtbase/src/3rdparty/harfbuzz-ng")))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -190,7 +194,10 @@ X11 (yet).")
                       "-prefix" out
                       "-opensource"
                       "-confirm-license"
+                      ;; Most "-system-..." are automatic, but some use
+                      ;; the bundled copy by default.
                       "-system-sqlite"
+                      "-system-harfbuzz"
                       ;; explicitly link with openssl instead of dlopening it
                       "-openssl-linked"
                       ;; explicitly link with dbus instead of dlopening it
