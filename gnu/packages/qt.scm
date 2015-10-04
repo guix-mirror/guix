@@ -108,7 +108,16 @@ X11 (yet).")
              (sha256
                (base32
                  "1by2l8wxbqwvs7anb5ggmqhn2cfmhyw3a23bp1yyd240rdpa38ky"))
-             (patches (list (search-patch "qt5-runpath.patch")))))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Remove qtwebengine, which relies on a bundled copy of
+              ;; chromium. Not only does it fail compilation in qt 5.5:
+              ;;    3rdparty/chromium/ui/gfx/codec/jpeg_codec.cc:362:10:
+              ;;    error: cannot convert ‘bool’ to ‘boolean’ in return
+              ;; it might also pose security problems.
+              ;; Alternatively, we could use the "-skip qtwebengine"
+              ;; configuration option.
+              '(delete-file-recursively "qtwebengine"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -158,8 +167,6 @@ X11 (yet).")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("gperf" ,gperf)
-       ;; Ninja is only needed for the disabled qtwebengine
-;;        ("ninja" ,ninja)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
@@ -175,14 +182,6 @@ X11 (yet).")
                 (("/bin/pwd") (which "pwd")))
               (substitute* "qtbase/src/corelib/global/global.pri"
                 (("/bin/ls") (which "ls")))
-              ;; commented out since qtwebengine is not built, but left in
-              ;; for reference
-;;               (substitute* "qtwebengine/src/3rdparty/chromium/build/common.gypi"
-;;                 (("/bin/echo") (which "echo")))
-;;               (substitute* "qtwebengine/src/3rdparty/chromium/third_party/\
-;; WebKit/Source/build/scripts/scripts.gypi"
-;;                 (("/usr/bin/gcc") (which "gcc")))
-;;               (setenv "NINJA_PATH" (which "ninja"))
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
               (zero? (system*
@@ -196,12 +195,6 @@ X11 (yet).")
                       "-openssl-linked"
                       ;; explicitly link with dbus instead of dlopening it
                       "-dbus-linked"
-                      ;; drop chromium module (qtwebengine); it fails
-                      ;; compilation in qt 5.5:
-                      ;; 3rdparty/chromium/ui/gfx/codec/jpeg_codec.cc:362:10:
-                      ;; error: cannot convert ‘bool’ to ‘boolean’ in return
-                      ;; and might pose security problems.
-                      "-skip" "qtwebengine"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
