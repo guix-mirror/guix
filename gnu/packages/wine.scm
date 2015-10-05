@@ -22,8 +22,10 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
@@ -48,14 +50,14 @@
 (define-public wine
   (package
     (name "wine")
-    (version "1.7.40")
+    (version "1.7.52")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wine/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dnasmw1rnlz7wk1bn0x1zmy3r78hgrn9y53z4vm8xjkllwyd0hd"))
+                "0jsm1p7zwhfb5fpp0xd39vnx9m98kqgfng1q9kdj70rm1hmb6wq7"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Make.vars.in"
@@ -69,8 +71,10 @@
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
+       ("cups" ,cups)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("glu" ,glu)
        ("gnutls" ,gnutls)
        ("lcms" ,lcms)
        ("libxml2" ,libxml2)
@@ -93,9 +97,8 @@
        ("libXinerama" ,libxinerama)
        ("libXxf86vm" ,libxxf86vm)
        ("libXcomposite" ,libxcomposite)
-       ("compositeproto" ,compositeproto)
-       ("mesa" ,mesa)
        ("ncurses" ,ncurses)
+       ("openal" ,openal)
        ("unixodbc" ,unixodbc)
        ("zlib" ,zlib)))
     (arguments
