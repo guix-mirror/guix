@@ -933,46 +933,30 @@ daemons on the same machine.
 @node Application Setup
 @section Application Setup
 
-When using Guix on top of GNU/Linux distribution other than GuixSD---a
-so-called @dfn{foreign distro}---a few additional steps are needed to
-get everything in place.  Here are some of them.
+When using Guix on top of GNU/Linux distribution other than GuixSD, a
+few additional steps are needed to get everything in place.  Here are
+some of them.
 
 @subsection Locales
 
 @anchor{locales-and-locpath}
 @cindex locales, when not on GuixSD
 @vindex LOCPATH
-@vindex GUIX_LOCPATH
 Packages installed @i{via} Guix will not use the host system's locale
 data.  Instead, you must first install one of the locale packages
-available with Guix and then define the @code{GUIX_LOCPATH} environment
-variable:
+available with Guix and then define the @code{LOCPATH} environment
+variable (@pxref{Locale Names, @code{LOCPATH},, libc, The GNU C Library
+Reference Manual}):
 
 @example
 $ guix package -i glibc-locales
-$ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale/2.22
+$ export LOCPATH=$HOME/.guix-profile/lib/locale
 @end example
-
-The @file{/2.22} sub-directory is if you install locales from
-@code{glibc-locales-2.22}---i.e., locales for libc version 2.22.  Adjust
-in accordance with the libc version being used.
 
 Note that the @code{glibc-locales} package contains data for all the
 locales supported by the GNU@tie{}libc and weighs in at around
 110@tie{}MiB.  Alternately, the @code{glibc-utf8-locales} is smaller but
 limited to a few UTF-8 locales.
-
-The @code{GUIX_LOCPATH} variable plays the exact same role as
-@code{LOCPATH} (@pxref{Locale Names, @code{LOCPATH},, libc, The GNU C
-Library Reference Manual}).  However, since it is honored only by Guix's
-libc, and not by the libc provided by foreign distros, using
-@code{GUIX_LOCPATH} allows you to make sure the the foreign distro's
-programs will not end up loading incompatible locale data.  This is
-important because the locale data format used by different libc versions
-may be incompatible.
-
-When both @code{GUIX_LOCPATH} and @code{LOCPATH} are defined, the latter
-takes precedence.
 
 @subsection X11 Fonts
 
