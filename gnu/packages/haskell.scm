@@ -234,6 +234,12 @@
                    (string-append ghc-bootstrap-path "/" ,name "-" ,version)
                  (zero? (system* "make" "install"))))
              %standard-phases)))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "GHC_PACKAGE_PATH")
+                                (files (list
+                                        (string-append "lib/ghc-" version)))
+                                (file-pattern ".*\\.conf\\.d$")
+                                (file-type 'directory))))
     (home-page "https://www.haskell.org/ghc")
     (synopsis "The Glasgow Haskell Compiler")
     (description
