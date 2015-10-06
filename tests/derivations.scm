@@ -476,8 +476,7 @@
 (define %coreutils
   (false-if-exception
    (and (network-reachable?)
-        (or (package-derivation %store %bootstrap-coreutils&co)
-            (nixpkgs-derivation "coreutils")))))
+        (package-derivation %store %bootstrap-coreutils&co))))
 
 (test-skip (if %coreutils 0 1))
 
