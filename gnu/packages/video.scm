@@ -51,7 +51,6 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
@@ -823,16 +822,8 @@ YouTube.com and a few more sites.")
                (base32
                 "0kb9znxk6610vi0fjhqxn4z5i98nvxlsz1f8dakj99rg42livdl4"))))
     (build-system gnu-build-system)
-    (arguments 
-      `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'configure 'java-home
-            (lambda* (#:key inputs #:allow-other-keys)
-                     (setenv "JAVA_HOME" (assoc-ref inputs "icedtea7"))
-                     #t)))))
-    (native-inputs `(("ant" ,ant)
-                     ("icedtea7" ,icedtea7 "jdk")
-                     ("pkg-config" ,pkg-config)))
+    (arguments `(#:configure-flags '("--disable-bdjava")))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("doxygen" ,doxygen)
        ("fontconfig" ,fontconfig)
