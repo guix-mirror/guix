@@ -51,6 +51,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
@@ -812,7 +813,7 @@ YouTube.com and a few more sites.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.7.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -820,9 +821,18 @@ YouTube.com and a few more sites.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "13dngs4b4cv29f6b825dq14n77mfhvk1kjb42axpq494pfgyp6zp"))))
+                "0kb9znxk6610vi0fjhqxn4z5i98nvxlsz1f8dakj99rg42livdl4"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments 
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'configure 'java-home
+            (lambda* (#:key inputs #:allow-other-keys)
+                     (setenv "JAVA_HOME" (assoc-ref inputs "icedtea7"))
+                     #t)))))
+    (native-inputs `(("ant" ,ant)
+                     ("icedtea7" ,icedtea7 "jdk")
+                     ("pkg-config" ,pkg-config)))
     (inputs
      `(("doxygen" ,doxygen)
        ("fontconfig" ,fontconfig)
