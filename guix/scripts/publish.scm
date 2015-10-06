@@ -256,6 +256,16 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
                            (response-headers response)
                            eq?)))
 
+(define-syntax-rule (swallow-EPIPE exp ...)
+  "Swallow EPIPE errors raised by EXP..."
+  (catch 'system-error
+    (lambda ()
+      exp ...)
+    (lambda args
+      (if (= EPIPE (system-error-errno args))
+          (values)
+          (apply throw args)))))
+
 (define (http-write server client response body)
   "Write RESPONSE and BODY to CLIENT, possibly in a separate thread to avoid
 blocking."
@@ -274,7 +284,8 @@ blocking."
           ;; way to avoid building the whole nar in memory, which could
           ;; quickly become a real problem.  As a bonus, we even do
           ;; sendfile(2) directly from the store files to the socket.
-          (write-file (utf8->string body) port)
+          (swallow-EPIPE
+           (write-file (utf8->string body) port))
           (close-port port)
           (values)))))
     (_
