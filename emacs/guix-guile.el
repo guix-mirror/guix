@@ -88,6 +88,11 @@ PROC and ARGS should be strings."
            args
            " ")))
 
+(defun guix-guile-prompt? (string)
+  "Return non-nil, if STRING contains a Guile prompt."
+  (or (string-match-p geiser-guile--prompt-regexp string)
+      (string-match-p geiser-guile--debugger-prompt-regexp string)))
+
 (provide 'guix-guile)
 
 ;;; guix-guile.el ends here

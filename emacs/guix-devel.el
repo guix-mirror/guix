@@ -79,7 +79,7 @@ Interactively, use the module defined by the current scheme file."
                           "(guix store)")
   ;; Without this workaround, the build output disappears.  See
   ;; <https://github.com/jaor/geiser/issues/83> for details.
-  (guix-geiser-eval-in-repl
+  (guix-geiser-eval-in-repl-synchronously
    "(current-build-output-port (current-error-port))"
    repl 'no-history 'no-display))
 
