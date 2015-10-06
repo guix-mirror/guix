@@ -134,7 +134,7 @@ removable devices or support for multimedia.")
 (define-public elementary
   (package
     (name "elementary")
-    (version "1.15.1")
+    (version "1.15.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -142,7 +142,7 @@ removable devices or support for multimedia.")
                               "elementary/elementary-" version ".tar.xz"))
               (sha256
                (base32
-                "015b277bvgb4q8cqjl58ir9nqb1d40fpj2jblf4gkxq8a45a88mb"))))
+                "0gqg98bglnl2jggdzxzrh9r7bv32i4sahspms0bihq8b45rk0g2j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
