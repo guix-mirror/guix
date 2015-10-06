@@ -1,0 +1,11 @@
+Skip a test that randomly fails on ARMv7: <http://bugs.gnu.org/21620>.
+
+--- a/tests/mpz/reuse.c
++++ b/tests/mpz/reuse.c
+@@ -213,6 +213,7 @@ main (int argc, char **argv)
+   mpz_t bs;
+   unsigned long bsi, size_range;
+ 
++  exit (77);					  /* skip */
+   tests_start ();
+   TESTS_REPS (reps, argv, argc);

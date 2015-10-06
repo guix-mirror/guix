@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -39,7 +39,9 @@
             (sha256
              (base32
               "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
-            (patches (list (search-patch "gmp-arm-asm-nothumb.patch")))))
+            (patches (map search-patch
+                          '("gmp-arm-asm-nothumb.patch"
+                            "gmp-faulty-test.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
