@@ -385,10 +385,13 @@ for under the directories designated by FILES.  For example:
   (append-map (lambda (input)
                 (append-map (lambda (file)
                               (let ((file (string-append input "/" file)))
-                                ;; XXX: By using 'find-files', we implicitly
-                                ;; assume #:type 'regular.
                                 (if pattern
-                                    (find-files file pattern)
+                                    (find-files file (lambda (file stat)
+                                                       (and stat
+                                                            (eq? type (stat:type stat))
+                                                            ((file-name-predicate pattern) file stat)))
+                                                #:stat stat
+                                                #:directories? #t)
                                     (let ((stat (stat file #f)))
                                       (if (and stat (eq? type (stat:type stat)))
                                           (list file)
