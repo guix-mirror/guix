@@ -1465,3 +1465,34 @@ and trust on your team.")
 features such as filtering and fine grained logging.")
     (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
     (license license:expat)))
+
+(define-public ruby-yard
+  (package
+    (name "ruby-yard")
+    (version "0.8.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yard" version))
+       (sha256
+        (base32
+         "1dj6ibc0qqvmb5a5r5kk0vhr04mnrz9b26gnfrs5p8jgp620i89x"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "specs"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+          ;; $HOME needs to be set to somewhere writeable for tests to run
+          (lambda _ (setenv "HOME" "/tmp") #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec-2)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Documentation generation tool for Ruby")
+    (description
+     "YARD is a documentation generation tool for the Ruby programming
+language.  It enables the user to generate consistent, usable documentation
+that can be exported to a number of formats very easily, and also supports
+extending for custom Ruby constructs such as custom class level definitions.")
+    (home-page "http://yardoc.org")
+    (license license:expat)))
