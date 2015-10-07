@@ -383,6 +383,20 @@ expectations and mocks frameworks.")
     (home-page "http://rspec.info/")
     (license license:expat)))
 
+(define-public ruby-rspec-2
+  (package (inherit ruby-rspec)
+    (version "2.14.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec" version))
+              (sha256
+               (base32
+                "134y4wzk1prninb5a0bhxgm30kqfzl8dg06af4js5ylnhv2wd7sg"))))
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core-2)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks-2)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations-2)))))
+
 ;; Bundler is yet another source of circular dependencies, so we must disable
 ;; its test suite as well.
 (define-public bundler
