@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -257,6 +258,17 @@ an extensible architecture with a swappable backend.")
 groups.")
     (home-page "https://github.com/rspec/rspec-core")
     (license license:expat)))
+
+(define-public ruby-rspec-core-2
+  (package (inherit ruby-rspec-core)
+    (version "2.14.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec-core" version))
+              (sha256
+               (base32
+                "0psjy5kdlz3ph39br0m01w65i1ikagnqlg39f8p65jh5q7dz8hwc"))))
+    (propagated-inputs `())))
 
 (define-public ruby-diff-lcs
   (package
