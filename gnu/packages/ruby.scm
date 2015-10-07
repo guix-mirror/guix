@@ -313,6 +313,18 @@ outcomes of a code example.")
     (home-page "https://github.com/rspec/rspec-expectations")
     (license license:expat)))
 
+(define-public ruby-rspec-expectations-2
+  (package (inherit ruby-rspec-expectations)
+    (version "2.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec-expectations" version))
+              (sha256
+               (base32
+                "1ni8kw8kjv76jvwjzi4jba00k3qzj9f8wd94vm6inz0jz3gwjqf9"))))
+    (propagated-inputs
+     `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
+
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
