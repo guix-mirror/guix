@@ -604,6 +604,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/pyqt-configure.patch			\
+  gnu/packages/patches/python-2.7-search-paths.patch		\
+  gnu/packages/patches/python-3-search-paths.patch		\
   gnu/packages/patches/python-disable-ssl-test.patch		\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\

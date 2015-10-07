@@ -86,7 +86,8 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))))
+        "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))
+      (patches (list (search-patch "python-2.7-search-paths.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -132,43 +133,10 @@
        ;; such file or directory
        #:test-target "test"
        #:configure-flags
-        (let ((bz2 (assoc-ref %build-inputs "bzip2"))
-              (gdbm (assoc-ref %build-inputs "gdbm"))
-              (libffi (assoc-ref %build-inputs "libffi"))
-              (sqlite (assoc-ref %build-inputs "sqlite"))
-              (openssl (assoc-ref %build-inputs "openssl"))
-              (readline (assoc-ref %build-inputs "readline"))
-              (zlib (assoc-ref %build-inputs "zlib"))
-              (tk (assoc-ref %build-inputs "tk"))
-              (tcl (assoc-ref %build-inputs "tcl"))
-              (out (assoc-ref %outputs "out")))
-         (list "--enable-shared"                  ; allow embedding
-               "--with-system-ffi"                ; build ctypes
-
-               ;; configure/setup.py doesn't use pkg-config to find Tcl/Tk.
-               (string-append "--with-tcltk-includes=-I" tk "/include -I"
-                              tcl "/include")
-               (string-append "--with-tcltk-libs=-L" tk "/lib -ltk" ""
-                              ,(version-prefix (package-version tk) 2)
-                              " -L" tcl "/lib -ltcl"
-                              ,(version-prefix (package-version tcl) 2))
-
-               (string-append "CPPFLAGS="
-                "-I" bz2 "/include "
-                "-I" gdbm "/include "
-                "-I" sqlite "/include "
-                "-I" openssl "/include "
-                "-I" readline "/include "
-                "-I" zlib "/include")
-               (string-append "LDFLAGS="
-                "-L" bz2 "/lib "
-                "-L" gdbm "/lib "
-                "-L" libffi "/lib "
-                "-L" sqlite "/lib "
-                "-L" openssl "/lib "
-                "-L" readline "/lib "
-                "-L" zlib "/lib "
-                "-Wl,-rpath=" out "/lib")))
+       (list "--enable-shared"                    ;allow embedding
+             "--with-system-ffi"                  ;build ctypes
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
 
         #:modules ((ice-9 ftw)
                    ,@%gnu-build-system-modules)
@@ -257,9 +225,11 @@ data types.")
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
-              (patches (list (search-patch "python-fix-tests.patch")
-                             ;; XXX Try removing this patch for python > 3.4.3
-                             (search-patch "python-disable-ssl-test.patch")))
+              (patches (map search-patch
+                            '("python-fix-tests.patch"
+                              ;; XXX Try removing this patch for python > 3.4.3
+                              "python-disable-ssl-test.patch"
+                              "python-3-search-paths.patch")))
               (patch-flags '("-p0"))
               (sha256
                (base32
@@ -293,17 +263,9 @@ data types.")
     (arguments
      (substitute-keyword-arguments (package-arguments python)
        ((#:configure-flags _)
-        `(let ((openssl (assoc-ref %build-inputs "openssl"))
-               (zlib    (assoc-ref %build-inputs "zlib"))
-               (out     (assoc-ref %outputs "out")))
-           (list "--enable-shared"
-                 (string-append "CPPFLAGS="
-                                "-I" openssl "/include "
-                                "-I" zlib "/include ")
-                 (string-append "LDFLAGS="
-                                "-L" openssl "/lib "
-                                "-L" zlib "/lib "
-                                "-Wl,-rpath=" out "/lib"))))))
+        `(list "--enable-shared"
+               (string-append "LDFLAGS=-Wl,-rpath="
+                              (assoc-ref %outputs "out") "/lib")))))
 
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
     ;; zlib is required by 'zipimport', used by pip.
