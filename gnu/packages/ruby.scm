@@ -347,6 +347,18 @@ support for stubbing and mocking.")
     (home-page "https://github.com/rspec/rspec-mocks")
     (license license:expat)))
 
+(define-public ruby-rspec-mocks-2
+  (package (inherit ruby-rspec-mocks)
+    (version "2.14.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec-mocks" version))
+              (sha256
+               (base32
+                "1fwsmijd6w6cmqyh4ky2nq89jrpzh56hzmndx9wgkmdgfhfakv30"))))
+    (propagated-inputs
+     `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
+
 (define-public ruby-rspec
   (package
     (name "ruby-rspec")
