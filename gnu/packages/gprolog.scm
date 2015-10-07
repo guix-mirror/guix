@@ -18,10 +18,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gprolog)
+  #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (srfi srfi-1))
 
 (define-public gprolog
   (package
@@ -55,4 +56,6 @@ manner.  It also features an interactive interpreter.")
     (license (list gpl2+ lgpl3+))
 
     ;; See 'configure' for the list of supported architectures.
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
+    (supported-systems (fold delete
+                             %supported-systems
+                             '("armhf-linux" "mips64el-linux")))))
