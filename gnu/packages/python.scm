@@ -260,9 +260,46 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
-(define-public python-wrapper
+;; Minimal variants of Python, mostly used to break the cycle between Tk and
+;; Python (Tk -> libxcb -> Python.)
+
+(define-public python2-minimal
+  (package (inherit python-2)
+    (name "python-minimal")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-2)
+       ((#:configure-flags _)
+        `(list "--enable-shared"
+               (string-append "LDFLAGS=-Wl,-rpath="
+                              (assoc-ref %outputs "out") "/lib")))))
+    (inputs '())))                          ;none of the optional dependencies
+
+(define-public python-minimal
   (package (inherit python)
-    (name "python-wrapper")
+    (name "python-minimal")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python)
+       ((#:configure-flags _)
+        `(let ((openssl (assoc-ref %build-inputs "openssl"))
+               (zlib    (assoc-ref %build-inputs "zlib"))
+               (out     (assoc-ref %outputs "out")))
+           (list "--enable-shared"
+                 (string-append "CPPFLAGS="
+                                "-I" openssl "/include "
+                                "-I" zlib "/include ")
+                 (string-append "LDFLAGS="
+                                "-L" openssl "/lib "
+                                "-L" zlib "/lib "
+                                "-Wl,-rpath=" out "/lib"))))))
+
+    ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
+    ;; zlib is required by 'zipimport', used by pip.
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))))
+
+(define* (wrap-python3 python #:optional (name "python-wrapper"))
+  (package (inherit python)
+    (name name)
     (source #f)
     (build-system trivial-build-system)
     (propagated-inputs `(("python" ,python)))
@@ -286,6 +323,8 @@ data types.")
 that they can be invoked under their usual name---e.g., @command{python}
 instead of @command{python3}.")))
 
+(define-public python-wrapper (wrap-python3 python))
+(define-public python-minimal-wrapper (wrap-python3 python-minimal))
 
 (define-public python-psutil
   (package
