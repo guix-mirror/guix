@@ -65,6 +65,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages tcl)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -138,9 +139,20 @@
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
               (zlib (assoc-ref %build-inputs "zlib"))
+              (tk (assoc-ref %build-inputs "tk"))
+              (tcl (assoc-ref %build-inputs "tcl"))
               (out (assoc-ref %outputs "out")))
          (list "--enable-shared"                  ; allow embedding
                "--with-system-ffi"                ; build ctypes
+
+               ;; configure/setup.py doesn't use pkg-config to find Tcl/Tk.
+               (string-append "--with-tcltk-includes=-I" tk "/include -I"
+                              tcl "/include")
+               (string-append "--with-tcltk-libs=-L" tk "/lib -ltk" ""
+                              ,(version-prefix (package-version tk) 2)
+                              " -L" tcl "/lib -ltcl"
+                              ,(version-prefix (package-version tcl) 2))
+
                (string-append "CPPFLAGS="
                 "-I" bz2 "/include "
                 "-I" gdbm "/include "
@@ -217,7 +229,9 @@
        ("sqlite" ,sqlite)                         ; for sqlite extension
        ("openssl" ,openssl)
        ("readline" ,readline)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("tcl" ,tcl)
+       ("tk" ,tk)))                               ; for tkinter
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (native-search-paths
@@ -225,8 +239,7 @@
             (variable "PYTHONPATH")
             (files '("lib/python2.7/site-packages")))))
     (home-page "http://python.org")
-    (synopsis
-     "High-level, dynamically-typed programming language")
+    (synopsis "High-level, dynamically-typed programming language")
     (description
      "Python is a remarkably powerful dynamic programming language that
 is used in a wide variety of application domains.  Some of its key
