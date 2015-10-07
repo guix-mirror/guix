@@ -280,9 +280,12 @@ data types.")
                              (string-append bin "/" new)))
                   `("python3", "pydoc3", "idle3")
                   `("python",  "pydoc",  "idle"))))))
-    (description (string-append (package-description python)
-     "\n\nThis wrapper package provides symbolic links to the python binaries
-      without version suffix."))))
+    (synopsis "Wrapper for the Python 3 commands")
+    (description
+     "This package provides wrappers for the commands of Python@tie{}3.x such
+that they can be invoked under their usual name---e.g., @command{python}
+instead of @command{python3}.")))
+
 
 (define-public python-psutil
   (package
