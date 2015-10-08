@@ -141,7 +141,9 @@ HTML/CSS applications to full-fledged web browsers.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0r651ar3p0f8zwl7764kyimxk5hy88cwy116pv8cl5l8hbkjkpxg"))))
+                "0r651ar3p0f8zwl7764kyimxk5hy88cwy116pv8cl5l8hbkjkpxg"))
+              (patches
+               (list (search-patch "webkitgtk-2.4-sql-init-string.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

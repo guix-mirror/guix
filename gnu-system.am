@@ -650,6 +650,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/webkitgtk-2.4-sql-init-string.patch	\
   gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-bitrate-none-fix.patch		\
   gnu/packages/patches/wicd-get-selected-profile-fix.patch	\
