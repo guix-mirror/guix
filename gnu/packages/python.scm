@@ -596,12 +596,12 @@ and verifies that it matches the intended target hostname.")
        (base32
         "0q4f9l8grf6pwp64xbv8bmyxx416s7h4522nnxac056ap3savbps"))))
     (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
     (inputs
-     `(("python-cython" ,python-cython)
-       ("python-numpy" ,python-numpy)
-       ("hdf5" ,hdf5)))
+     `(("hdf5" ,hdf5)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-cython" ,python-cython)))
     (arguments `(#:tests? #f)) ; no test target
     (home-page "http://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
@@ -616,11 +616,11 @@ concepts.")
 (define-public python2-h5py
   (let ((h5py (package-with-python2 python-h5py)))
     (package (inherit h5py)
-      (inputs
+      (propagated-inputs
        `(("python2-numpy" ,python2-numpy)
          ,@(alist-delete
             "python-numpy"
-            (package-inputs h5py)))))))
+            (package-propagated-inputs h5py)))))))
 
 (define-public python-lockfile
   (package
