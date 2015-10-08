@@ -156,24 +156,6 @@
                (("/bin/sh") (which "sh")))
              #t))
           (add-before
-           'install 'do-not-record-configure-flags
-           (lambda _
-             ;; Remove configure flags from '_sysconfigdata.py' so we don't
-             ;; end up keeping references to the build tools.
-             (substitute* (find-files "." "sysconfigdata\\.py$")
-               (("'CONFIG_ARGS':.*")
-                "'CONFIG_ARGS': \"\",\n"))
-             #t))
-          (add-after
-           'install 'do-not-record-configure-flags-in-makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Likewise.
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* (find-files out "^Makefile$")
-                 (("^CONFIG_ARGS[[:blank:]]*=.*$")
-                  "CONFIG_ARGS =\n"))
-               #t)))
-          (add-before
            'check 'pre-check
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
