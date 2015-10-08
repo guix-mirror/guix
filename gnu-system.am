@@ -538,9 +538,19 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
+  gnu/packages/patches/libunwind-CVE-2015-3239.patch		\
+  gnu/packages/patches/libwmf-CAN-2004-0941.patch		\
   gnu/packages/patches/libwmf-CVE-2006-3376.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-0455.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-2756.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-3472.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-3473.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-3477.patch		\
   gnu/packages/patches/libwmf-CVE-2009-1364.patch		\
-  gnu/packages/patches/libwmf-CVE-2015-0848+4588+4695+4696.patch \
+  gnu/packages/patches/libwmf-CVE-2009-3546.patch		\
+  gnu/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
+  gnu/packages/patches/libwmf-CVE-2015-4695.patch		\
+  gnu/packages/patches/libwmf-CVE-2015-4696.patch		\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
@@ -644,8 +654,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
   gnu/packages/patches/unzip-CVE-2014-9636.patch		\
   gnu/packages/patches/unzip-allow-greater-hostver-values.patch	\
-  gnu/packages/patches/unzip-increase-size-of-cfactorstr.patch	\
+  gnu/packages/patches/unzip-attribs-overflow.patch		\
+  gnu/packages/patches/unzip-fix-overflows-and-infloop.patch	\
+  gnu/packages/patches/unzip-format-secure.patch		\
   gnu/packages/patches/unzip-initialize-symlink-flag.patch	\
+  gnu/packages/patches/unzip-overflow-long-fsize.patch		\
   gnu/packages/patches/unzip-remove-build-date.patch		\
   gnu/packages/patches/util-linux-tests.patch			\
   gnu/packages/patches/upower-builddir.patch			\
@@ -660,15 +673,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/wicd-template-instantiation.patch	\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
-  gnu/packages/patches/wpa-supplicant-CVE-2015-1863.patch	\
-  gnu/packages/patches/wpa-supplicant-2015-2-fix.patch		\
-  gnu/packages/patches/wpa-supplicant-2015-3-fix.patch		\
-  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt1.patch	\
-  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt2.patch	\
-  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt3.patch	\
-  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt4.patch	\
-  gnu/packages/patches/wpa-supplicant-2015-4-fix-pt5.patch	\
-  gnu/packages/patches/wpa-supplicant-2015-5-fix.patch		\
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-geode-glibc-2.20.patch	\

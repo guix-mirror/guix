@@ -86,9 +86,12 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                                    "unzip-CVE-2014-8141.patch"
                                    "unzip-CVE-2014-9636.patch"
                                    "unzip-allow-greater-hostver-values.patch"
-                                   "unzip-increase-size-of-cfactorstr.patch"
                                    "unzip-initialize-symlink-flag.patch"
-                                   "unzip-remove-build-date.patch")))))
+                                   "unzip-remove-build-date.patch"
+                                   "unzip-attribs-overflow.patch"
+                                   "unzip-fix-overflows-and-infloop.patch"
+                                   "unzip-format-secure.patch"
+                                   "unzip-overflow-long-fsize.patch")))))
     (build-system gnu-build-system)
     ;; no inputs; bzip2 is not supported, since not compiled with BZ_NO_STDIO
     (arguments

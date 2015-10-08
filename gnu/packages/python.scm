@@ -631,13 +631,28 @@ and verifies that it matches the intended target hostname.")
        (base32
         "0q4f9l8grf6pwp64xbv8bmyxx416s7h4522nnxac056ap3savbps"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hdf5-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((prefix (assoc-ref inputs "hdf5")))
+              (substitute* "setup_build.py"
+                (("\\['/opt/local/lib', '/usr/local/lib'\\]")
+                 (string-append "['" prefix "/lib" "']"))
+                (("'/opt/local/include', '/usr/local/include'")
+                 (string-append "'" prefix "/include" "'")))
+              (substitute* "setup_configure.py"
+                (("\\['/usr/local/lib', '/opt/local/lib'\\]")
+                 (string-append "['" prefix "/lib" "']")))
+              #t))))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
     (inputs
-     `(("python-cython" ,python-cython)
-       ("python-numpy" ,python-numpy)
-       ("hdf5" ,hdf5)))
+     `(("hdf5" ,hdf5)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
-    (arguments `(#:tests? #f)) ; no test target
+     `(("python-cython" ,python-cython)))
     (home-page "http://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
@@ -651,11 +666,11 @@ concepts.")
 (define-public python2-h5py
   (let ((h5py (package-with-python2 python-h5py)))
     (package (inherit h5py)
-      (inputs
+      (propagated-inputs
        `(("python2-numpy" ,python2-numpy)
          ,@(alist-delete
             "python-numpy"
-            (package-inputs h5py)))))))
+            (package-propagated-inputs h5py)))))))
 
 (define-public python-lockfile
   (package
@@ -2242,6 +2257,33 @@ written in pure Python.")
 
 (define-public python2-jinja2
   (package-with-python2 python-jinja2))
+
+(define-public python-joblib
+  (package
+    (name "python-joblib")
+    (version "0.9.0b4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/"
+                                  "j/joblib/joblib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1dvw3f8jgj6h0fxkghbgyclvdzc7l0ig7n0vis70awb5kczb9bs3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-nose"       ,python-nose)))
+    (home-page "http://pythonhosted.org/joblib/")
+    (synopsis "Using Python functions as pipeline jobs")
+    (description
+     "Joblib is a set of tools to provide lightweight pipelining in Python.
+In particular, joblib offers: transparent disk-caching of the output values
+and lazy re-evaluation (memoize pattern), easy simple parallel computing
+logging and tracing of the execution.")
+    (license bsd-3)))
+
+(define-public python2-joblib
+  (package-with-python2 python-joblib))
 
 (define-public python-docutils
   (package

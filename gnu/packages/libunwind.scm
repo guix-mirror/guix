@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 
 (define-module (gnu packages libunwind)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses))
@@ -32,7 +34,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "16nhx2pahh9d62mvszc88q226q5lwjankij276fxwrm8wb50zzlx"))))
+               "16nhx2pahh9d62mvszc88q226q5lwjankij276fxwrm8wb50zzlx"))
+             (patches (list (search-patch "libunwind-CVE-2015-3239.patch")))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: As of glibc 2.17, we get 3 out of 34 test failures.

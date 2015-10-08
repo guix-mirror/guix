@@ -208,7 +208,8 @@ Git-friendly development workflow.")
                 "0icdfzhsbgf89925gc8gl3fm8z2xzszzlib0v9dj5wyzkyv3a342"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
-    (native-inputs `(("which" ,which)))
+    (native-inputs `(("ocaml" ,ocaml)
+                     ("which" ,which)))
     (inputs `(("ocaml" ,ocaml)))
     (arguments
      '(#:tests? #f                                ;no documented test target

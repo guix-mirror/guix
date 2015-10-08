@@ -148,9 +148,18 @@ collection of tools for doing simple manipulations of TIFF images.")
         (sha256
          (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))
         (patches
-         (map search-patch '("libwmf-CVE-2006-3376.patch"
+         (map search-patch '("libwmf-CAN-2004-0941.patch"
+                             "libwmf-CVE-2006-3376.patch"
+                             "libwmf-CVE-2007-0455.patch"
+                             "libwmf-CVE-2007-2756.patch"
+                             "libwmf-CVE-2007-3472.patch"
+                             "libwmf-CVE-2007-3473.patch"
+                             "libwmf-CVE-2007-3477.patch"
                              "libwmf-CVE-2009-1364.patch"
-                             "libwmf-CVE-2015-0848+4588+4695+4696.patch")))))
+                             "libwmf-CVE-2009-3546.patch"
+                             "libwmf-CVE-2015-0848+CVE-2015-4588.patch"
+                             "libwmf-CVE-2015-4695.patch"
+                             "libwmf-CVE-2015-4696.patch")))))
 
     (build-system gnu-build-system)
     (inputs
