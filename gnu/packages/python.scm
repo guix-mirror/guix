@@ -596,13 +596,28 @@ and verifies that it matches the intended target hostname.")
        (base32
         "0q4f9l8grf6pwp64xbv8bmyxx416s7h4522nnxac056ap3savbps"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hdf5-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((prefix (assoc-ref inputs "hdf5")))
+              (substitute* "setup_build.py"
+                (("\\['/opt/local/lib', '/usr/local/lib'\\]")
+                 (string-append "['" prefix "/lib" "']"))
+                (("'/opt/local/include', '/usr/local/include'")
+                 (string-append "'" prefix "/include" "'")))
+              (substitute* "setup_configure.py"
+                (("\\['/usr/local/lib', '/opt/local/lib'\\]")
+                 (string-append "['" prefix "/lib" "']")))
+              #t))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
     (inputs
      `(("hdf5" ,hdf5)))
     (native-inputs
      `(("python-cython" ,python-cython)))
-    (arguments `(#:tests? #f)) ; no test target
     (home-page "http://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
