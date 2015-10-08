@@ -44,10 +44,6 @@
   #:export (bytevector->base16-string
             base16-string->bytevector
 
-            %nixpkgs-directory
-            nixpkgs-derivation
-            nixpkgs-derivation*
-
             compile-time-value
             fcntl-flock
             memoize
@@ -313,40 +309,6 @@ a list of command-line arguments passed to the compression program."
         (close-port compressed)
         (unless (every (compose zero? cdr waitpid) pids)
           (error "compressed-output-port failure" pids))))))
-
-
-;;;
-;;; Nixpkgs.
-;;;
-
-(define %nixpkgs-directory
-  (make-parameter
-   ;; Capture the build-time value of $NIXPKGS.
-   (or %nixpkgs
-       (and=> (getenv "NIXPKGS")
-              (lambda (val)
-                ;; Bail out when passed an empty string, otherwise
-                ;; `nix-instantiate' will sit there and attempt to read
-                ;; from its standard input.
-                (if (string=? val "")
-                    #f
-                    val))))))
-
-(define* (nixpkgs-derivation attribute #:optional (system (%current-system)))
-  "Return the derivation path of ATTRIBUTE in Nixpkgs."
-  (let* ((p (open-pipe* OPEN_READ (or (getenv "NIX_INSTANTIATE")
-                                      %nix-instantiate)
-                        "-A" attribute (%nixpkgs-directory)
-                        "--argstr" "system" system))
-         (l (read-line p))
-         (s (close-pipe p)))
-    (and (zero? (status:exit-val s))
-         (not (eof-object? l))
-         l)))
-
-(define-syntax-rule (nixpkgs-derivation* attribute)
-  "Evaluate the given Nixpkgs derivation at compile-time."
-  (compile-time-value (nixpkgs-derivation attribute)))
 
 
 ;;;

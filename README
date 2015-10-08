@@ -59,7 +59,6 @@ To do so:
       guix environment guix
 
   - Re-run the 'configure' script passing it the option
-    '--with-libgcrypt-prefix=$HOME/.guix-profile/', as well as
     '--localstatedir=/somewhere', where '/somewhere' is the 'localstatedir'
     value of the currently installed Guix (failing to do that would lead the
     new Guix to consider the store to be empty!).

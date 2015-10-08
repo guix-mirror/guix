@@ -25,7 +25,9 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
 
 (define-public pwgen
@@ -76,3 +78,29 @@ on an external storage device.  The databases are encrypted using the
 algorithms AES or Twofish.")
     ;; Non functional parts use various licences.
     (license license:gpl3)))
+
+(define-public shroud
+  (package
+    (name "shroud")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://files.dthompson.us/shroud/shroud-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1y43yhgy2zbrk5bqj3qyx9rkcz2bma9sinlrg7dip3jqms9gq4lr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("gnupg" ,gnupg)
+       ("xclip" ,xclip)))
+    (synopsis "GnuPG-based secret manager")
+    (description "Shroud is a simple secret manager with a command line
+interface.  The password database is stored as a Scheme s-expression and
+encrypted with a GnuPG key.  Secrets consist of an arbitrary number of
+key/value pairs, making Shroud suitable for more than just password storage.
+For copying and pasting secrets into web browsers and other graphical
+applications, there is xclip integration." )
+    (home-page "http://dthompson.us/pages/software/shroud.html")
+    (license license:gpl3+)))

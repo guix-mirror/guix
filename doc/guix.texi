@@ -4154,7 +4154,14 @@ The following options are supported:
 
 @item --update
 @itemx -u
-Update distribution source files (package recipes) in place.
+Update distribution source files (package recipes) in place.  This is
+usually run from a checkout of the Guix source tree (@pxref{Running
+Guix Before It Is Installed}):
+
+@example
+$ ./pre-inst-env guix refresh -s non-core
+@end example
+
 @xref{Defining Packages}, for more information on package definitions.
 
 @item --select=[@var{subset}]
@@ -4179,7 +4186,7 @@ In addition, @command{guix refresh} can be passed one or more package
 names, as in this example:
 
 @example
-guix refresh -u emacs idutils gcc-4.8.4
+$ ./pre-inst-env guix refresh -u emacs idutils gcc-4.8.4
 @end example
 
 @noindent

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,3 +154,26 @@ encoding, supporting Unicode version 7.0.")
      "libgtextutils is a text utilities library used by the fastx toolkit from
 the Hannon Lab.")
     (license license:agpl3+)))
+
+(define-public cityhash
+  (let ((commit "8af9b8c")
+        (revision "1"))
+    (package
+      (name "cityhash")
+      (version (string-append "1.1." revision "." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/google/cityhash.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0n6skf5dv8yfl1ckax8dqhvsbslkwc9158zf2ims0xqdvzsahbi6"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/google/cityhash")
+    (synopsis "C++ hash functions for strings")
+    (description
+     "CityHash provides hash functions for strings.  The functions mix the
+input bits thoroughly but are not suitable for cryptography.")
+    (license license:expat))))

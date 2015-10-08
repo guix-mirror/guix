@@ -99,46 +99,40 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public libtorrent
   (package
     (name "libtorrent")
-    (version "0.13.4")
+    (version "0.13.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://libtorrent.rakshasa.no/downloads/libtorrent-"
+                    "http://rtorrent.net/downloads/libtorrent-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ma910br5vxrfpm4f4w4942lpmhwvqjnnf9h8vpf52fw35qhjkkh"))))
+                "012s1nwcvz5m5r4d2z9klgy2n34kpgn9kgwgzxm97zgdjs6a0f18"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ;; Add this when you enable tests:
-                     ;; ("cppunit" ,cppunit)
-                     ))
-    (arguments
-     ;; FIXME: enable tests on the next release:
-     ;; https://github.com/rakshasa/libtorrent/issues/59
-     `(#:tests? #f))
+                     ("cppunit" ,cppunit)))
     (synopsis "BitTorrent library of rtorrent")
     (description
      "LibTorrent is a BitTorrent library used by and developed in parallel
 with the BitTorrent client rtorrent.  It is written in C++ with emphasis on
 speed and efficiency.")
-    (home-page "http://libtorrent.rakshasa.no/")
+    (home-page "https://github.com/rakshasa/libtorrent")
     (license l:gpl2+)))
 
 (define-public rtorrent
   (package
     (name "rtorrent")
-    (version "0.9.4")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://libtorrent.rakshasa.no/downloads/rtorrent-"
+                    "http://rtorrent.net/downloads/rtorrent-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "113yrrac75vqi4g8r6bgs0ggjllj9bkg9shv08vqzdhkwqg2q2mw"))))
+                "03jvzw9pi2mhcm913h8qg0qw9gwjqc6lhwynb1yz1y163x7w4s8y"))))
     (build-system gnu-build-system)
     (inputs `(("libtorrent" ,libtorrent)
               ("ncurses" ,ncurses)
@@ -153,5 +147,5 @@ speed and efficiency.")
      "rTorrent is a BitTorrent client with an ncurses interface.  It supports
 full encryption, DHT, PEX, and Magnet Links.  It can also be controlled via
 XML-RPC over SCGI.")
-    (home-page "http://libtorrent.rakshasa.no/")
+    (home-page "https://github.com/rakshasa/rtorrent")
     (license l:gpl2+)))

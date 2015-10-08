@@ -279,14 +279,14 @@ in future and NTLM based authentication is most likey never be supported.")
 (define-public mosh
   (package
     (name "mosh")
-    (version "1.2.4")
+    (version "1.2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://mosh.mit.edu/mosh-"
+              (uri (string-append "https://mosh.mit.edu/mosh-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0inzfmqrab3n97m7rrmhd4xh3hjz0xva2sfl5m06w11668r0skg7"))))
+                "1qsb0y882yfgwnpy6f98pi5xqm6kykdsrxzvaal37hs7szjhky0s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

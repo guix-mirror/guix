@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,10 +18,12 @@
 
 (define-module (test-snix)
   #:use-module (guix import snix)
-  #:use-module ((guix utils) #:select (%nixpkgs-directory))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
+
+(define %nixpkgs-directory
+  (getenv "NIXPKGS"))
 
 (define factorize-uri
   (@@ (guix import snix) factorize-uri))
@@ -43,14 +45,14 @@
             ("http://example.com/2.8/foo-2.8.tgz" "2.8"
              -> ("http://example.com/" version "/foo-" version ".tgz")))))
 
-(test-skip (if (and (%nixpkgs-directory)
-                    (file-exists? (string-append (%nixpkgs-directory)
+(test-skip (if (and %nixpkgs-directory
+                    (file-exists? (string-append %nixpkgs-directory
                                                  "/default.nix")))
                0
                1))
 
 (test-assert "nixpkgs->guix-package"
-  (match (nixpkgs->guix-package (%nixpkgs-directory) "guile")
+  (match (nixpkgs->guix-package %nixpkgs-directory "guile")
     (('package
        ('name "guile")
        ('version (? string?))

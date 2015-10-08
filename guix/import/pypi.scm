@@ -37,16 +37,6 @@
   #:use-module (gnu packages python)
   #:export (pypi->guix-package))
 
-(define (join lst delimiter)
-  "Return a list that contains the elements of LST, each separated by
-DELIMETER."
-  (match lst
-    (() '())
-    ((elem)
-     (list elem))
-    ((elem . rest)
-     (cons* elem delimiter (join rest delimiter)))))
-
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
 or #f on failure."

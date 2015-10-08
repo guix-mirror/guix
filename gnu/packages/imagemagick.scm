@@ -49,7 +49,8 @@
              (patches (list (search-patch "imagemagick-test-segv.patch")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags '("--with-frozenpaths")
+       #:phases (modify-phases %standard-phases
                   (add-before
                    'build 'pre-build
                    (lambda* (#:key outputs #:allow-other-keys)

@@ -36,8 +36,8 @@
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://github.com/lxde/" name "/releases/download/"
-                        version "/" name "-" version ".tar.xz"))
+         (string-append "http://downloads.lxqt.org/libqtxdg/" version "/"
+                        name "-" version ".tar.xz"))
        (sha256
         (base32
          "1ncqs0lcll5nx69hxfg33m3jfkryjqrjhr2kdci0b8pyaqdv1jc8"))))
@@ -63,15 +63,11 @@ in Qt.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://github.com/lxde/" name "/releases/download/"
-                        version "/" name "-" version ".tar.xz"))
-       (uri
-         (string-append "https://github.com/lxde/" name "/archive/"
-                        version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+                        name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))
+         "0ljdzqavvy82qwwwnhg2bgbshl2ns0k2lcswxlx1cfc8rcdr9w5l"))
        (patches (map search-patch '("liblxqt-include.patch")))))
     (build-system cmake-build-system)
     (arguments
@@ -83,5 +79,99 @@ in Qt.")
     (home-page "http://lxqt.org/")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
-components of the LxQt desktop environment.")
+components of the LXQt desktop environment.")
+    (license lgpl2.1+)))
+
+
+(define-public lxqt-common
+  (package
+    (name "lxqt-common")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+                        name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0kbkwmrdjhfbq60wf2yfbsjmci8xlw13ilxxa7yxq68n1aqjqmvf"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'fix-installation-paths
+           (lambda _
+             ;; The variable LXQT_ETC_XDG_DIR is set in
+             ;; liblxqt-0.9.0/share/cmake/lxqt/lxqt-config.cmake
+             ;; to the Qt5 installation directory, followed by "/etc/xdg".
+             ;; We need to have it point to the current installation
+             ;; directory instead.
+             (substitute* '("config/CMakeLists.txt"
+                            "menu/CMakeLists.txt")
+               (("\\$\\{LXQT_ETC_XDG_DIR\\}")
+                "${CMAKE_INSTALL_PREFIX}/etc/xdg")
+               ;; In the same file, LXQT_SHARE_DIR is set to the installation
+               ;; directory of liblxqt, followed by "/share/lxqt".
+               (("\\$\\{LXQT_SHARE_DIR\\}")
+                "${CMAKE_INSTALL_PREFIX}/share/lxqt"))
+             ;; Replace absolute directories.
+             (substitute* "autostart/CMakeLists.txt"
+               (("/etc/xdg")
+                "${CMAKE_INSTALL_PREFIX}/etc/xdg"))
+             (substitute* "xsession/CMakeLists.txt"
+               (("/usr/share")
+                "${CMAKE_INSTALL_PREFIX}/share")))))))
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)))
+    (home-page "http://lxqt.org/")
+    (synopsis "Common files for LXQt")
+    (description "lxqt-common provides the desktop integration files
+(themes, icons, configuration files etc.) for the LXQt
+desktop environment.")
+    (license lgpl2.1+)))
+
+(define-public lxqt-session
+  (package
+    (name "lxqt-session")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+                        name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "01hxand1gqbcaw14lh7z6w5zssgfaffcjncv752c2c7272wzyhy5"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kwindowsystem" ,kwindowsystem)
+       ("liblxqt" ,liblxqt)
+       ("libqtxdg" ,libqtxdg)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'fix-installation-paths
+           (lambda _
+             ;; The variable LXQT_TRANSLATIONS_DIR is set in
+             ;; liblxqt-0.9.0/share/cmake/lxqt/lxqt-config.cmake
+             ;; to the liblxqt installation directory, followed by
+             ;; "/share/lxqt/translations".
+             ;; We need to have it point to the current installation
+             ;; directory instead.
+             (substitute* '("lxqt-session/CMakeLists.txt"
+                            "lxqt-config-session/CMakeLists.txt")
+               (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                "${CMAKE_INSTALL_PREFIX}/share/lxqt/translations")))))))
+    (home-page "http://lxqt.org/")
+    (synopsis "Session manager for LXQt")
+    (description "lxqt-session provides the standard session manager
+for the LXQt desktop environment.")
     (license lgpl2.1+)))

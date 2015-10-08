@@ -1,0 +1,15 @@
+Accept "arm" instead of "armv7" in configure, see
+   http://valgrind.10908.n7.nabble.com/building-for-arm-td39382.html .
+
+diff -u -r valgrind-3.11.0.orig/configure valgrind-3.11.0/configure
+--- valgrind-3.11.0.orig/configure	2015-10-02 20:37:41.915721386 +0200
++++ valgrind-3.11.0/configure	2015-10-02 20:37:54.886746395 +0200
+@@ -5607,7 +5607,7 @@
+         ARCH_MAX="s390x"
+         ;;
+ 
+-     armv7*)
++     arm*)
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ok (${host_cpu})" >&5
+ $as_echo "ok (${host_cpu})" >&6; }
+ 	ARCH_MAX="arm"

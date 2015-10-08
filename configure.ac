@@ -132,23 +132,21 @@ else
    AC_MSG_RESULT([not found])
 fi
 
+LIBGCRYPT="libgcrypt"
+LIBGCRYPT_LIBDIR="no"
+LIBGCRYPT_PREFIX="no"
+
 AC_ARG_WITH([libgcrypt-prefix],
   [AS_HELP_STRING([--with-libgcrypt-prefix=DIR], [search for GNU libgcrypt in DIR])],
   [case "$withval" in
     yes|no)
-      LIBGCRYPT="libgcrypt"
-      LIBGCRYPT_PREFIX="no"
-      LIBGCRYPT_LIBDIR="no"
       ;;
     *)
       LIBGCRYPT="$withval/lib/libgcrypt"
       LIBGCRYPT_PREFIX="$withval"
       LIBGCRYPT_LIBDIR="$withval/lib"
       ;;
-   esac],
-  [LIBGCRYPT="libgcrypt"
-   LIBGCRYPT_PREFIX="no"
-   LIBGCRYPT_LIBDIR="no"])
+   esac])
 
 AC_ARG_WITH([libgcrypt-libdir],
   [AS_HELP_STRING([--with-libgcrypt-libdir=DIR],
@@ -162,13 +160,18 @@ AC_ARG_WITH([libgcrypt-libdir],
       LIBGCRYPT="$withval/libgcrypt"
       LIBGCRYPT_LIBDIR="$withval"
       ;;
-   esac],
-  [if test "x$LIBGCRYPT" = x; then
-      LIBGCRYPT="libgcrypt"
-   fi
-   if test "x$LIBGCRYPT_LIBDIR" = x; then
-      LIBGCRYPT_LIBDIR="no"
-   fi])
+   esac])
+
+dnl If none of the --with-libgcrypt-* options was used, try to determine the
+dnl absolute file name of libgcrypt.so.
+case "x$LIBGCRYPT_PREFIX$LIBGCRYPT_LIBDIR" in
+  xnono)
+    GUIX_LIBGCRYPT_LIBDIR([LIBGCRYPT_LIBDIR])
+    if test "x$LIBGCRYPT_LIBDIR" != x; then
+      LIBGCRYPT="$LIBGCRYPT_LIBDIR/libgcrypt"
+    fi
+    ;;
+esac
 
 dnl Library name suitable for `dynamic-link'.
 AC_MSG_CHECKING([for libgcrypt shared library name])

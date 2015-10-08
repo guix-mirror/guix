@@ -51,7 +51,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.15.1")
+    (version "1.15.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -59,7 +59,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1n2l2n09lys5dph9lrnsv5z3qbgzp7bi0vidal2fvy18hflbbvsn"))))
+                "1962wqx7gdnpzvnkbighyn4hj5vw8l4c1d7xl5zilqjlyhcqywyx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -134,7 +134,7 @@ removable devices or support for multimedia.")
 (define-public elementary
   (package
     (name "elementary")
-    (version "1.15.1")
+    (version "1.15.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -142,7 +142,7 @@ removable devices or support for multimedia.")
                               "elementary/elementary-" version ".tar.xz"))
               (sha256
                (base32
-                "015b277bvgb4q8cqjl58ir9nqb1d40fpj2jblf4gkxq8a45a88mb"))))
+                "0gqg98bglnl2jggdzxzrh9r7bv32i4sahspms0bihq8b45rk0g2j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -218,7 +218,7 @@ The only supported now is VLC.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -226,7 +226,7 @@ The only supported now is VLC.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "0iwid9cvd96kwl0hjhbby84kkz5sgb4p8454nnkf7wjvdz2f9b96"))))
+                "1kwv9vkhngdm5v38q93xpcykghnyawhjjcb5bgy0p89gpbk7mvpc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -270,14 +270,15 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.19.9")
+    (version "0.19.12")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://download.enlightenment.org/rel/apps/"
                               name "/" name "-" version ".tar.xz"))
               (sha256
-               (base32 "1ajpyw1bfbmxpniw041vbvrs9wqgzyw9kccx72nnfiy2wxspjcr5"))))
+               (base32 
+                 "098bdx9qmv1yqqwfydrzs7fvbnhsf3vaib9pmqsyg4ihgqrkrwjm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

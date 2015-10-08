@@ -451,6 +451,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/flint-ldconfig.patch			\
   gnu/packages/patches/fltk-shared-lib-defines.patch		\
+  gnu/packages/patches/freeimage-CVE-2015-0852.patch		\
   gnu/packages/patches/fuse-CVE-2015-3202.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
@@ -573,6 +574,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
   gnu/packages/patches/openexr-missing-samples.patch		\
+  gnu/packages/patches/openjpeg-CVE-2015-6581.patch		\
+  gnu/packages/patches/openjpeg-use-after-free-fix.patch	\
   gnu/packages/patches/openssl-runpath.patch			\
   gnu/packages/patches/openssl-c-rehash.patch			\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
@@ -612,8 +615,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qemu-CVE-2015-6855.patch			\
   gnu/packages/patches/qt4-ldflags.patch			\
-  gnu/packages/patches/qt4-tests.patch				\
-  gnu/packages/patches/qt5-runpath.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-missing-file.patch		\
@@ -648,11 +649,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-remove-build-date.patch		\
   gnu/packages/patches/util-linux-tests.patch			\
   gnu/packages/patches/upower-builddir.patch			\
-  gnu/packages/patches/valgrind-glibc-2.22.patch		\
-  gnu/packages/patches/valgrind-linux-libre-4.x.patch		\
+  gnu/packages/patches/valgrind-enable-arm.patch		\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/webkitgtk-2.4-sql-init-string.patch	\
   gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-bitrate-none-fix.patch		\
   gnu/packages/patches/wicd-get-selected-profile-fix.patch	\

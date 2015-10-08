@@ -210,7 +210,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.2.1")
+  (let* ((version "4.2.3")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -283,7 +283,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "140cqnk1hyhavfra572wwzwz7pddczc78j8anbxyciw35kh8z2hl"))))
+               "1xpx32k6bzxqg5y8lyaana97jjcli00iyqklh5fdhirfvjb9dimd"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -1159,21 +1159,20 @@ devices.  It replaces 'iwconfig', which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.5")
+    (version "2.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://01.org/powertop/sites/default/files/downloads/powertop-"
+             "https://01.org/sites/default/files/downloads/powertop/powertop-"
              version ".tar.gz"))
        (sha256
         (base32
-         "02rwqbpasdayl201v0549gbp2f82rd0hqiv3i111r7npanjhhb4b"))))
+         "1jkqqr3l1x98m7rgin1dgfzxqwj4vciw9lyyq1kl9bdswa818jwd"))))
     (build-system gnu-build-system)
     (inputs
-     ;; TODO: Add pciutils.
      `(("zlib" ,zlib)
-       ;; ("pciutils" ,pciutils)
+       ("pciutils" ,pciutils)
        ("ncurses" ,ncurses)
        ("libnl" ,libnl)))
     (native-inputs

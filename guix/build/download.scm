@@ -110,6 +110,13 @@ column."
          (padding    (make-string num-spaces #\space)))
     (string-append left padding right)))
 
+(define* (ellipsis #:optional (port (current-output-port)))
+  "Make a rough guess at whether Unicode's HORIZONTAL ELLIPSIS can be written
+in PORT's encoding, and return either that or ASCII dots."
+  (if (equal? (port-encoding port) "UTF-8")
+      "…"
+      "..."))
+
 (define* (store-path-abbreviation store-path #:optional (prefix-length 6))
   "If STORE-PATH is the file name of a store entry, return an abbreviation of
 STORE-PATH for display, showing PREFIX-LENGTH characters of the hash.
@@ -117,7 +124,7 @@ Otherwise return STORE-PATH."
   (if (string-prefix? (%store-directory) store-path)
       (let ((base (basename store-path)))
         (string-append (string-take base prefix-length)
-                       "…"
+                       (ellipsis)
                        (string-drop base 32)))
       store-path))
 

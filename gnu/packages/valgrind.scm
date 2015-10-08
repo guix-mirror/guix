@@ -30,16 +30,15 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.10.1")
+    (version "3.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://valgrind.org/downloads/valgrind-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "15xrzhfnwwn7n1sfbkwvdbvs6zk0zx718n6zd5i1nrnvdp13s9gs"))
-             (patches (map search-patch '("valgrind-glibc-2.22.patch"
-                                          "valgrind-linux-libre-4.x.patch")))))
+               "0hiv871b9bk689mv42mkhp76za78l5773glszfkdbpf1m1qn4fbc"))
+             (patches (map search-patch '("valgrind-enable-arm.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

@@ -671,7 +671,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.9.0")
+    (version "0.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -679,7 +679,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "08nx0g6ji2d90f5w62g327szhkb7id7jzwgf3x069rc5id1x3bx7"))
+                "1njvmqzj8akan5y485gx4blynwiy52adw7zbbnnnvd3dwis725d2"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -777,6 +777,8 @@ projects while introducing many more.")
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
+                                     ;; Limit size to avoid CVE-2015-1258
+                                     "--size-limit=16384x16384"
                                      (string-append "--prefix=" out)))))
                  %standard-phases)
        #:tests? #f)) ; no check target
@@ -791,7 +793,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2015.09.03")
+    (version "2015.09.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/"
@@ -799,7 +801,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wxjbqr07rm26iih12yhv0qwspfrg9safhgnrp8misqjjk4fz86z"))))
+                "0q3s2a91s1lr1db2ngacq0iapyr4jngx1dqp4z5dc6zma0qyx5k3"))))
     (build-system python-build-system)
     (inputs `(("setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
@@ -812,7 +814,7 @@ YouTube.com and a few more sites.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.7.0")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -820,8 +822,9 @@ YouTube.com and a few more sites.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "13dngs4b4cv29f6b825dq14n77mfhvk1kjb42axpq494pfgyp6zp"))))
+                "0kb9znxk6610vi0fjhqxn4z5i98nvxlsz1f8dakj99rg42livdl4"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags '("--disable-bdjava")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("doxygen" ,doxygen)
@@ -921,7 +924,7 @@ encapsulated.")
 (define-public libdvdcss
   (package
     (name "libdvdcss")
-    (version "1.3.0")
+    (version "1.3.99")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -929,7 +932,7 @@ encapsulated.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "158k9zagmbk5bkbz96l6lwhh7xcgfcnzflkr4vblskhcab6llhbw"))))
+                "0pawkfyvn2h3yl6ph5spcvqxb4fr4yi4wfkvw2xqqcqv2ywzmc08"))))
     (build-system gnu-build-system)
     (home-page "http://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")

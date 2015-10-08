@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -323,12 +323,12 @@ attributes, or #f if NAME cannot be found."
      ;; licenses.  These are listed in lib/licenses.nix.
      (match (and=> (find-attribute-by-name "shortName" license)
                    attribute-value)
-       ("AGPL-3.0+"  'agpl3+)
-       ("GPL-2.0+"   'gpl2+)
-       ("GPL-3.0+"   'gpl3+)
-       ("LGPL-2.0+"  'lgpl2.0+)
-       ("LGPL-2.1+"  'lgpl2.1+)
-       ("LGPL-3.0+"  'lgpl3+)
+       ("agpl3Plus"  'agpl3+)
+       ("gpl2Plus"   'gpl2+)
+       ("gpl3Plus"   'gpl3+)
+       ("lgpl2Plus"  'lgpl2.0+)
+       ("lgpl21Plus" 'lgpl2.1+)
+       ("lgpl3Plus"  'lgpl3+)
        ((? string? x) x)
        (_             license)))
     (_           license)))
