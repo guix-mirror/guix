@@ -777,6 +777,8 @@ projects while introducing many more.")
                      (zero? (system* "./configure"
                                      "--enable-shared"
                                      "--as=yasm"
+                                     ;; Limit size to avoid CVE-2015-1258
+                                     "--size-limit=16384x16384"
                                      (string-append "--prefix=" out)))))
                  %standard-phases)
        #:tests? #f)) ; no check target
