@@ -536,9 +536,18 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
+  gnu/packages/patches/libwmf-CAN-2004-0941.patch		\
   gnu/packages/patches/libwmf-CVE-2006-3376.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-0455.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-2756.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-3472.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-3473.patch		\
+  gnu/packages/patches/libwmf-CVE-2007-3477.patch		\
   gnu/packages/patches/libwmf-CVE-2009-1364.patch		\
-  gnu/packages/patches/libwmf-CVE-2015-0848+4588+4695+4696.patch \
+  gnu/packages/patches/libwmf-CVE-2009-3546.patch		\
+  gnu/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
+  gnu/packages/patches/libwmf-CVE-2015-4695.patch		\
+  gnu/packages/patches/libwmf-CVE-2015-4696.patch		\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
