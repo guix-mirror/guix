@@ -51,7 +51,7 @@ if test "x$guix_build_daemon" = "xyes"; then
     no)
       LIBGCRYPT_LIBS="-lgcrypt"
       ;;
-   *)
+    *)
       LIBGCRYPT_LIBS="-L$LIBGCRYPT_LIBDIR -lgcrypt"
       ;;
   esac

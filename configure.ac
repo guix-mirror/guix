@@ -169,6 +169,9 @@ case "x$LIBGCRYPT_PREFIX$LIBGCRYPT_LIBDIR" in
     GUIX_LIBGCRYPT_LIBDIR([LIBGCRYPT_LIBDIR])
     if test "x$LIBGCRYPT_LIBDIR" != x; then
       LIBGCRYPT="$LIBGCRYPT_LIBDIR/libgcrypt"
+    else
+      dnl 'config-daemon.ac' expects "no" in this case.
+      LIBGCRYPT_LIBDIR="no"
     fi
     ;;
 esac

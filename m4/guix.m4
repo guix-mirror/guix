@@ -279,7 +279,7 @@ AC_DEFUN([GUIX_LIBGCRYPT_LIBDIR], [
   AC_CACHE_CHECK([libgcrypt's library directory],
     [guix_cv_libgcrypt_libdir],
     [if test "x$LIBGCRYPT_CONFIG" != "x"; then
-       guix_cv_libgcrypt_libdir=`$LIBGCRYPT_CONFIG --libs | sed -e "s/.*-L\([[^ ]]\+\)[[[:blank:]]]\+-lgcrypt.*/\1/g"`
+       guix_cv_libgcrypt_libdir=`$LIBGCRYPT_CONFIG --libs | grep -e -L | sed -e "s/.*-L\([[^ ]]\+\)[[[:blank:]]]\+-lgcrypt.*/\1/g"`
      else
        guix_cv_libgcrypt_libdir=""
      fi])
