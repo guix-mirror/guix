@@ -31,7 +31,8 @@
   #:export (args-fold*
             parse-command-line
             maybe-build
-            build-package))
+            build-package
+            build-package-source))
 
 ;;; Commentary:
 ;;;
@@ -109,6 +110,23 @@ Show what and how will/would be built."
            #:use-substitutes? use-substitutes?
            (strip-keyword-arguments '(#:dry-run?) build-options))
     (mlet %store-monad ((derivation (package->derivation package)))
+      (mbegin %store-monad
+        (maybe-build (list derivation)
+                     #:use-substitutes? use-substitutes?
+                     #:dry-run? dry-run?)
+        (return (show-derivation-outputs derivation))))))
+
+(define* (build-package-source package
+                               #:key dry-run? (use-substitutes? #t)
+                               #:allow-other-keys
+                               #:rest build-options)
+  "Build PACKAGE source using BUILD-OPTIONS."
+  (mbegin %store-monad
+    (apply set-build-options*
+           #:use-substitutes? use-substitutes?
+           (strip-keyword-arguments '(#:dry-run?) build-options))
+    (mlet %store-monad ((derivation (origin->derivation
+                                     (package-source package))))
       (mbegin %store-monad
         (maybe-build (list derivation)
                      #:use-substitutes? use-substitutes?

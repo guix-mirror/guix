@@ -122,6 +122,21 @@ run BODY."
                                       guix-use-substitutes)
                 "#:dry-run?" (guix-guile-boolean guix-dry-run)))))))
 
+(defun guix-devel-build-package-source ()
+  "Build the source of the current package definition."
+  (interactive)
+  (guix-devel-with-definition def
+    (when (or (not guix-operation-confirm)
+              (guix-operation-prompt
+               (format "Build '%s' package source?" def)))
+      (guix-geiser-eval-in-repl
+       (concat ",run-in-store "
+               (guix-guile-make-call-expression
+                "build-package-source" def
+                "#:use-substitutes?" (guix-guile-boolean
+                                      guix-use-substitutes)
+                "#:dry-run?" (guix-guile-boolean guix-dry-run)))))))
+
 (defun guix-devel-lint-package ()
   "Check the current package.
 See Info node `(guix) Invoking guix lint' for details."
@@ -177,6 +192,7 @@ to find 'modify-phases' keywords."
 (defvar guix-devel-keys-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "b") 'guix-devel-build-package-definition)
+    (define-key map (kbd "s") 'guix-devel-build-package-source)
     (define-key map (kbd "l") 'guix-devel-lint-package)
     (define-key map (kbd "k") 'guix-devel-copy-module-as-kill)
     (define-key map (kbd "u") 'guix-devel-use-module)
