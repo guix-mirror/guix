@@ -36,7 +36,9 @@
   "Apply THUNK, but exit with a status code of 1 if it fails."
   (dynamic-wind
     (const #t)
-    thunk
+    (lambda ()
+      (thunk)
+      (primitive-exit 0))
     (lambda ()
       (primitive-exit 1))))
 

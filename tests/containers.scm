@@ -34,6 +34,10 @@
 
 (test-begin "containers")
 
+(test-assert "call-with-container, exit with 0 when there is no error"
+  (zero?
+   (call-with-container '() (const #t) #:namespaces '(user))))
+
 (test-assert "call-with-container, user namespace"
   (zero?
    (call-with-container '()
