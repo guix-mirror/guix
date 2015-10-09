@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,7 @@
             fold2
             fold-tree
             fold-tree-leaves
+            split
 
             filtered-port
             compressed-port
@@ -683,6 +685,23 @@ are connected to NODE in the tree, or '() or #f if NODE is a leaf node."
        ((or () #f) (proc node result))
        (else result)))
    init children roots))
+
+(define (split lst e)
+  "Return two values, a list containing the elements of the list LST that
+appear before the first occurence of the object E and a list containing the
+elements after E."
+  (define (same? x)
+    (equal? e x))
+
+  (let loop ((rest lst)
+             (acc '()))
+    (match rest
+      (()
+       (values lst '()))
+      (((? same?) . tail)
+       (values (reverse acc) tail))
+      ((head . tail)
+       (loop tail (cons head acc))))))
 
 
 ;;;

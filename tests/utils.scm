@@ -121,6 +121,20 @@
                '(0 1 2 3)))
     list))
 
+(test-equal "split, element is in list"
+  '((foo) (baz))
+  (call-with-values
+      (lambda ()
+        (split '(foo bar baz) 'bar))
+    list))
+
+(test-equal "split, element is not in list"
+  '((foo bar baz) ())
+  (call-with-values
+      (lambda ()
+        (split '(foo bar baz) 'quux))
+    list))
+
 (test-equal "strip-keyword-arguments"
   '(a #:b b #:c c)
   (strip-keyword-arguments '(#:foo #:bar #:baz)
