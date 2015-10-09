@@ -40,7 +40,15 @@ test "`wc -l < "$tmpdir/a"`" = 1
 cmp "$tmpdir/a" "$tmpdir/b"
 
 # Make sure the exit value is preserved.
-if guix environment --ad-hoc guile-bootstrap --pure -E 'guile -c "(exit 42)"'
+if guix environment --ad-hoc guile-bootstrap --pure -- guile -c '(exit 42)'
+then
+    false
+else
+    test $? = 42
+fi
+
+# Same as above, but with deprecated -E flag.
+if guix environment --ad-hoc guile-bootstrap --pure -E "guile -c '(exit 42)'"
 then
     false
 else
@@ -66,7 +74,7 @@ then
     # as returned by '--search-paths'.
     guix environment -e '(@@ (gnu packages commencement) gnu-make-boot0)'	\
 	 --no-substitutes --pure						\
-         --exec='echo $PATH $CPATH $LIBRARY_PATH' > "$tmpdir/b"
+         -- /bin/sh -c 'echo $PATH $CPATH $LIBRARY_PATH' > "$tmpdir/b"
     ( . "$tmpdir/a" ; echo $PATH $CPATH $LIBRARY_PATH ) > "$tmpdir/c"
     cmp "$tmpdir/b" "$tmpdir/c"
 

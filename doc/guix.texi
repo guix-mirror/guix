@@ -4538,11 +4538,12 @@ and Emacs are available:
 guix environment guile emacs
 @end example
 
-Sometimes an interactive shell session is not desired.  The
-@code{--exec} option can be used to specify the command to run instead.
+Sometimes an interactive shell session is not desired.  An arbitrary
+command may be invoked by placing the @code{--} token to separate the
+command from the rest of the arguments:
 
 @example
-guix environment guile --exec=make
+guix environment guile -- make -j4
 @end example
 
 In other situations, it is more convenient to specify the list of
@@ -4551,7 +4552,7 @@ runs @command{python} from an environment containing Python@tie{}2.7 and
 NumPy:
 
 @example
-guix environment --ad-hoc python2-numpy python-2.7 -E python
+guix environment --ad-hoc python2-numpy python-2.7 -- python
 @end example
 
 The available options are summarized below.
@@ -4582,11 +4583,6 @@ As an example, @var{file} might contain a definition like this
 @verbatiminclude environment-gdb.scm
 @end example
 
-
-@item --exec=@var{command}
-@item -E @var{command}
-Execute @var{command} in the new environment.
-
 @item --ad-hoc
 Include all specified packages in the resulting environment, as if an
 @i{ad hoc} package were defined with them as inputs.  This option is
@@ -4596,7 +4592,7 @@ package expression to contain the desired inputs.
 For instance, the command:
 
 @example
-guix environment --ad-hoc guile guile-sdl -E guile
+guix environment --ad-hoc guile guile-sdl -- guile
 @end example
 
 runs @command{guile} in an environment where Guile and Guile-SDL are

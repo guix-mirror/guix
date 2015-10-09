@@ -57,6 +57,9 @@ OUTPUT) tuples."
 (define %precious-variables
   '("HOME" "USER" "LOGNAME" "DISPLAY" "TERM" "TZ" "PAGER"))
 
+(define %default-shell
+  (or (getenv "SHELL") "/bin/sh"))
+
 (define (purify-environment)
   "Unset almost all environment variables.  A small number of variables such
 as 'HOME' and 'USER' are left untouched."
@@ -103,17 +106,15 @@ existing environment variables with additional search paths."
     ,@(package-transitive-propagated-inputs package)))
 
 (define (show-help)
-  (display (_ "Usage: guix environment [OPTION]... PACKAGE...
-Build an environment that includes the dependencies of PACKAGE and execute a
-shell command in that environment.\n"))
+  (display (_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
+Build an environment that includes the dependencies of PACKAGE and execute
+COMMAND or an interactive shell in that environment.\n"))
   (display (_ "
   -e, --expression=EXPR  create environment for the package that EXPR
                          evaluates to"))
   (display (_ "
   -l, --load=FILE        create environment for the package that the code within
                          FILE evaluates to"))
-  (display (_ "
-  -E, --exec=COMMAND     execute COMMAND in new environment"))
   (display (_ "
       --ad-hoc           include all specified packages in the environment instead
                          of only their inputs"))
@@ -135,7 +136,7 @@ shell command in that environment.\n"))
 
 (define %default-options
   ;; Default to opening a new shell.
-  `((exec . ,(or (getenv "SHELL") "/bin/sh"))
+  `((exec . (,%default-shell))
     (system . ,(%current-system))
     (substitutes? . #t)
     (max-silent-time . 3600)
@@ -153,9 +154,9 @@ shell command in that environment.\n"))
          (option '("pure") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'pure #t result)))
-         (option '(#\E "exec") #t #f
+         (option '(#\E "exec") #t #f ; deprecated
                  (lambda (opt name arg result)
-                   (alist-cons 'exec arg result)))
+                   (alist-cons 'exec (list %default-shell "-c" arg) result)))
          (option '("search-paths") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'search-paths #t result)))
@@ -230,14 +231,24 @@ OUTPUT) tuples, using the build options in OPTS."
                (built-derivations derivations)
                (return derivations))))))))
 
-;; Entry point.
-(define (guix-environment . args)
+(define (parse-args args)
+  "Parse the list of command line arguments ARGS."
   (define (handle-argument arg result)
     (alist-cons 'package arg result))
 
+  ;; The '--' token is used to separate the command to run from the rest of
+  ;; the operands.
+  (let-values (((args command) (split args "--")))
+    (let ((opts (parse-command-line args %options (list %default-options)
+                                    #:argument-handler handle-argument)))
+      (if (null? command)
+          opts
+          (alist-cons 'exec command opts)))))
+
+;; Entry point.
+(define (guix-environment . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options (list %default-options)
-                                         #:argument-handler handle-argument))
+    (let* ((opts     (parse-args args))
            (pure?    (assoc-ref opts 'pure))
            (ad-hoc?  (assoc-ref opts 'ad-hoc?))
            (command  (assoc-ref opts 'exec))
@@ -282,4 +293,7 @@ OUTPUT) tuples, using the build options in OPTS."
                      (return #t))
                     (else
                      (create-environment inputs paths pure?)
-                     (return (exit (status:exit-val (system command)))))))))))))
+                     (return
+                      (exit
+                       (status:exit-val
+                        (apply system* command)))))))))))))
