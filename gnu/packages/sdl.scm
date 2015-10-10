@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +43,8 @@
             sdl-image
             sdl-mixer
             sdl-net
-            sdl-ttf))
+            sdl-ttf
+            sdl-union))
 
 (define sdl
   (package
@@ -268,7 +270,10 @@ SDL.")
     (home-page "http://www.libsdl.org/projects/SDL_ttf/")
     (license zlib)))
 
-(define sdl-union
+(define* (sdl-union #:optional (packages (list sdl sdl-gfx sdl-net sdl-ttf
+                                               sdl-image sdl-mixer)))
+  "Return 'sdl-union' package which is a union of PACKAGES.
+If PACKAGES are not specified, all SDL packages are used."
   (package
     (name "sdl-union")
     (version (package-version sdl))
@@ -283,12 +288,10 @@ SDL.")
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
                                    directories))))))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-gfx" ,sdl-gfx)
-              ("sdl-image" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("sdl-ttf" ,sdl-ttf)))
-    (synopsis "Union of all SDL libraries")
+    (inputs (map (lambda (package)
+                   (list (package-name package) package))
+                 packages))
+    (synopsis "Union of SDL libraries")
     (description
      "A union of SDL and its extension libraries.  A union is required because
 sdl-config assumes that all of the headers and libraries are in the same
@@ -316,7 +319,7 @@ directory.")
        ("libjpeg" ,libjpeg)))
     (inputs
      `(("guile" ,guile-2.0)
-       ("sdl-union" ,sdl-union)))
+       ("sdl-union" ,(sdl-union))))
     (arguments
      '(#:configure-flags
        (list (string-append "--with-sdl-prefix="
