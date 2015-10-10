@@ -31,7 +31,8 @@
   #:export (%python-build-system-modules
             package-with-python2
             python-build
-            python-build-system))
+            python-build-system
+            pypi-uri))
 
 ;; Commentary:
 ;;
@@ -39,6 +40,13 @@
 ;; implemented as an extension of 'gnu-build-system'.
 ;;
 ;; Code:
+
+(define (pypi-uri name version)
+  "Return a URI string for the Python package hosted on the Python Package
+Index (PyPI) corresponding to NAME and VERSION."
+  (string-append "https://pypi.python.org/packages/source/"
+                 (string-take name 1) "/" name "/"
+                 name "-" version ".tar.gz"))
 
 (define %python-build-system-modules
   ;; Build-side modules imported by default.
