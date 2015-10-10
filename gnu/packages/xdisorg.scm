@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
@@ -488,6 +490,38 @@ to access all XBindKeys internals, so you can have key combinations, double
 clicks or timed double clicks take actions.  Also all functions that work in
 Guile will work for XBindKeys.")
     (license license:gpl2+)))
+
+(define-public sxhkd
+  (package
+    (name "sxhkd")
+    (version "0.5.5")
+    (source
+     (origin
+       (file-name (string-append name "-" version ".tar.gz"))
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/baskerville/sxhkd/archive/"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "04s3y2bq9502gw72jj3y2zsh96yj3qg2av3zsa8ahd2farvrysg6"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("asciidoc" ,asciidoc)
+       ("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f  ; no check target
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))))
+    (home-page "https://github.com/baskerville/sxhkd")
+    (synopsis "Simple X hotkey daemon")
+    (description "sxhkd is a simple X hotkey daemon with a powerful and
+compact configuration syntax.")
+    (license license:bsd-2)))
 
 (define-public rxvt-unicode
   (package
