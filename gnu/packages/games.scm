@@ -163,17 +163,10 @@ scriptable with Guile.")
                   (guix build utils))
        #:phases (modify-phases %standard-phases
                   (add-after 'set-paths 'set-sdl-paths
-                    (lambda* (#:key inputs outputs (search-paths '())
-                              #:allow-other-keys)
-                      (define input-directories
-                        (match inputs
-                          (((_ . dir) ...)
-                           dir)))
-                      ;; This package does not use pkg-config, so modify CPATH
-                      ;; variable to point to include/SDL for SDL header files.
-                      (set-path-environment-variable "CPATH"
-                                                     '("include/SDL")
-                                                     input-directories)))
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "sdl-union")
+                                             "/include/SDL"))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -192,11 +185,7 @@ scriptable with Guile.")
                   (delete 'configure))
        #:tests? #f)) ;; No check target.
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-gfx" ,sdl-gfx)
-              ("sdl-image" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("sdl-ttf" ,sdl-ttf)))
+    (inputs `(("sdl-union" ,(sdl-union))))
     (home-page "http://code.google.com/p/abbaye-for-linux/")
     (synopsis "GNU/Linux port of the indie game \"l'Abbaye des Morts\"")
     (description "L'Abbaye des Morts is a 2D platform game set in 13th century
