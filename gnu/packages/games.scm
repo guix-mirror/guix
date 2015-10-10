@@ -161,36 +161,35 @@ scriptable with Guile.")
      '(#:modules ((ice-9 match)
                   (guix build gnu-build-system)
                   (guix build utils))
-       #:phases (alist-cons-after
-                 'set-paths 'set-sdl-paths
-                 (lambda* (#:key inputs outputs (search-paths '()) #:allow-other-keys)
-                   (define input-directories
-                     (match inputs
-                       (((_ . dir) ...)
-                        dir)))
-                   ;; This package does not use pkg-config, so modify CPATH
-                   ;; variable to point to include/SDL for SDL header files.
-                   (set-path-environment-variable "CPATH"
-                                                  '("include/SDL")
-                                                  input-directories))
-                 (alist-cons-after
-                  'patch-source-shebangs 'patch-makefile
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Replace /usr with package output directory.
-                    (for-each (lambda (file)
-                                (substitute* file
-                                  (("/usr") (assoc-ref outputs "out"))))
-                              '("makefile" "src/pantallas.c" "src/comun.h")))
-                  (alist-cons-before
-                   'install 'make-install-dirs
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((prefix (assoc-ref outputs "out")))
-                       ;; Create directories that the makefile assumes exist.
-                       (mkdir-p (string-append prefix "/bin"))
-                       (mkdir-p (string-append prefix "/share/applications"))
-                       (mkdir-p (string-append prefix "/share/pixmaps"))))
-                   ;; No configure script.
-                   (alist-delete 'configure %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'set-paths 'set-sdl-paths
+                    (lambda* (#:key inputs outputs (search-paths '())
+                              #:allow-other-keys)
+                      (define input-directories
+                        (match inputs
+                          (((_ . dir) ...)
+                           dir)))
+                      ;; This package does not use pkg-config, so modify CPATH
+                      ;; variable to point to include/SDL for SDL header files.
+                      (set-path-environment-variable "CPATH"
+                                                     '("include/SDL")
+                                                     input-directories)))
+                  (add-after 'patch-source-shebangs 'patch-makefile
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Replace /usr with package output directory.
+                      (for-each (lambda (file)
+                                  (substitute* file
+                                    (("/usr") (assoc-ref outputs "out"))))
+                                '("makefile" "src/pantallas.c" "src/comun.h"))))
+                  (add-before 'install 'make-install-dirs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((prefix (assoc-ref outputs "out")))
+                        ;; Create directories that the makefile assumes exist.
+                        (mkdir-p (string-append prefix "/bin"))
+                        (mkdir-p (string-append prefix "/share/applications"))
+                        (mkdir-p (string-append prefix "/share/pixmaps")))))
+                  ;; No configure script.
+                  (delete 'configure))
        #:tests? #f)) ;; No check target.
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("sdl" ,sdl)
