@@ -4895,6 +4895,20 @@ complexity of Python source code.")
 (define-public python2-mccabe
   (package-with-python2 python-mccabe))
 
+(define-public python-mccabe-0.2.1
+  (package (inherit python-mccabe)
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mccabe" version))
+        (sha256
+          (base32
+            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))))
+
+(define-public python2-mccabe-0.2.1
+  (package-with-python2 python-mccabe-0.2.1))
+
 ;; Flake8 2.4.1 requires an older version of pep8.
 ;; This should be removed ASAP.
 (define-public python-pep8-1.5.7
