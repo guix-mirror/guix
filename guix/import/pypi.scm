@@ -165,7 +165,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
              (version ,version)
              (source (origin
                        (method url-fetch)
-                       (uri (string-append ,@(factorize-uri source-url version)))
+                       (uri (pypi-uri ,name version))
                        (sha256
                         (base32
                          ,(guix-hash-url temp)))))
