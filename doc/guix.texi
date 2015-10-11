@@ -6980,7 +6980,7 @@ build users.
 @node Defining Services
 @subsection Defining Services
 
-The previous sections how the available services and how one can combine
+The previous sections show the available services and how one can combine
 them in an @code{operating-system} declaration.  But how do we define
 them in the first place?  And what is a service anyway?
 
