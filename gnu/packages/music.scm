@@ -206,14 +206,22 @@ you to define complex tempo maps for entire songs or performances.")
                             (assoc-ref %build-inputs "font-tex-gyre")
                             "/share/fonts/opentype/"))
        #:phases
-       (alist-cons-before
-        'configure 'prepare-configuration
-        (lambda _
-          (substitute* "configure"
-            (("SHELL=/bin/sh") "SHELL=sh"))
-          (setenv "out" "")
-          #t)
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'hardcode-path-to-gs
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "scm/backend-library.scm"
+              (("\\(search-executable '\\(\"gs\"\\)\\)")
+               (string-append "\""
+                              (assoc-ref inputs "ghostscript")
+                              "/bin/gs"
+                              "\"" )))
+            #t))
+         (add-before 'configure 'prepare-configuration
+          (lambda _
+            (substitute* "configure"
+              (("SHELL=/bin/sh") "SHELL=sh"))
+            (setenv "out" "")
+            #t)))))
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
