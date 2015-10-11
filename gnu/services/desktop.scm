@@ -424,7 +424,7 @@ site} for more information."
          (shell "/run/current-system/profile/sbin/nologin"))))
 
 (define %polkit-pam-services
-  (list (unix-pam-service "polkit-1")))
+  (list (unix-pam-service "polkitd")))
 
 (define (polkit-dmd-service polkit)
   "Return the <dmd-service> for POLKIT."
