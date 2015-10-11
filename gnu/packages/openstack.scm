@@ -100,6 +100,40 @@ manner.")
 (define-public python2-debtcollector
   (package-with-python2 python-debtcollector))
 
+(define-public python-hacking
+  (package
+    (name "python-hacking")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hacking" version))
+       (sha256
+        (base32
+         "1a310k3dv04jg7zvmk37h2ql7y9kf4hvdxb74bjlwdxgmy6h4wap"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-flake8-2.2.4" ,python-flake8-2.2.4)
+        ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
+        ("python-pbr" ,python-pbr)
+        ("python-pep8-1.5.7" ,python-pep8-1.5.7)
+        ("python-pyflakes-0.8.1" ,python-pyflakes-0.8.1)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ;; Tests
+        ("python-testscenarios" ,python-testscenarios)))
+    (home-page "http://github.com/openstack-dev/hacking")
+    (synopsis "OpenStack hacking guideline enforcement")
+    (description
+      "Python-hacking is a set of flake8 plugins that test and enforce the
+@uref{http://docs.openstack.org/developer/hacking/, OpenStack style
+guidelines}.")
+    (license asl2.0)))
+
+(define-public python2-hacking
+  (package-with-python2 python-hacking))
+
 (define-public python-mox3
   (package
     (name "python-mox3")
