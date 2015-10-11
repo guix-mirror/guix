@@ -151,24 +151,10 @@ is set to @var{value} when the bus daemon launches it."
                                            ('power-off "PowerOff"))
                   "\n")))))
 
-(define %upower-accounts                          ;XXX: useful?
-  (list (user-group (name "upower") (system? #t))
-        (user-account
-         (name "upower")
-         (group "upower")
-         (system? #t)
-         (comment "UPower daemon user")
-         (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
-
 (define %upower-activation
   #~(begin
       (use-modules (guix build utils))
-      (mkdir-p "/var/lib/upower")
-      (let ((user (getpwnam "upower")))
-        (chown "/var/lib/upower"
-               (passwd:uid user) (passwd:gid user)))))
-
+      (mkdir-p "/var/lib/upower")))
 
 (define (upower-dbus-service config)
   (list (wrapped-dbus-service (upower-configuration-upower config)
@@ -199,8 +185,6 @@ is set to @var{value} when the bus daemon launches it."
                                           upower-dbus-service)
                        (service-extension dmd-root-service-type
                                           upower-dmd-service)
-                       (service-extension account-service-type
-                                          (const %upower-accounts))
                        (service-extension activation-service-type
                                           (const %upower-activation))
                        (service-extension udev-service-type
