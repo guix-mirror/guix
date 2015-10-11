@@ -465,6 +465,36 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 (define-public python2-oslo.serialization
   (package-with-python2 python-oslo.serialization))
 
+(define-public python-oslosphinx
+  (package
+    (name "python-oslosphinx")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oslosphinx" version))
+       (sha256
+        (base32
+         "0zcshdc9s1f7hnvg0fm2ps5rak3dpnm8kqg4i21lknhmsvb7p5cb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-requests" ,python-requests)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-docutils" ,python-docutils)
+        ("python-hacking" ,python-hacking)
+        ("python-setuptools" ,python-setuptools)
+        ("python-sphinx" ,python-sphinx)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "OpenStack sphinx extensions and theme")
+    (description
+      "This package provides themes and extensions for Sphinx documentation
+from the OpenStack project.")
+    (license asl2.0)))
+
+(define-public python2-oslosphinx
+  (package-with-python2 python-oslosphinx))
+
 (define-public python-oslotest
   (package
     (name "python-oslotest")
