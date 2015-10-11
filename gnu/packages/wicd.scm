@@ -180,7 +180,8 @@
              ;; allow wicd-gtk to find its icons.
              (let ((hicolor (assoc-ref inputs "hicolor-icon-theme"))
                    (name "/share/icons/hicolor/index.theme"))
-               (install-file (string-append hicolor name) out))
+               (install-file (string-append hicolor name)
+                             (string-append out "/share/icons/hicolor")))
              #t))
          %standard-phases))))
     (synopsis "Network connection manager")
