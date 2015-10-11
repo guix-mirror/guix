@@ -2073,7 +2073,7 @@ with sensible defaults out of the box.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.4.0")
+    (version "2.8.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -2082,7 +2082,7 @@ with sensible defaults out of the box.")
                version ".tar.gz"))
              (sha256
               (base32
-               "0gknlfx1wakrrm1zi8gi03x2lzj4dsns0vjw0nsmgqvkphyf01vh"))))
+               "0yrvj8hfnabrdxds59w6d6887sn5j0jlgpmcq04lk4k0kdc07w5j"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
