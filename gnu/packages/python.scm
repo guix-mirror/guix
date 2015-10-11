@@ -4979,6 +4979,29 @@ complexity of Python source code.")
 (define-public python2-flake8
   (package-with-python2 python-flake8))
 
+;; This will only be needed by the python-hacking package and will not be
+;; necessary once python-hacking > 0.10.2 is released.
+(define-public python-flake8-2.2.4
+  (package (inherit python-flake8)
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ("python-pep8" ,python-pep8-1.5.7)
+        ("python-pyflakes" ,python-pyflakes-0.8.1)
+        ("python-mccabe" ,python-mccabe-0.2.1)
+        ("python-mock" ,python-mock)
+        ("python-nose" ,python-nose)))
+    (version "2.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flake8" version))
+        (sha256
+          (base32
+            "1r9wsry4va45h1rck5hxd3vzsg2q3y6lnl6pym1bxvz8ry19jwx8"))))))
+
+(define-public python2-flake8-2.2.4
+  (package-with-python2 python-flake8-2.2.4))
+
 (define-public python-mistune
   (package
     (name "python-mistune")
