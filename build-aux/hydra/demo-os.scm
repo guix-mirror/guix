@@ -23,7 +23,7 @@
 ;;;
 
 (use-modules (gnu))
-(use-service-modules desktop xorg networking avahi)
+(use-service-modules desktop xorg networking avahi dbus)
 (use-package-modules linux xorg tor avahi)
 
 (operating-system
@@ -71,7 +71,7 @@ You can log in as 'guest' or 'root' with no password.
                                              #:gateway "10.0.2.2")
 
                   (avahi-service)
-                  (dbus-service (list avahi))
+                  (dbus-service)
                   (tor-service)
 
                   %base-services))
