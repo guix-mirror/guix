@@ -413,9 +413,10 @@ John the Ripper).")
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-pycrypto" ,python-pycrypto)))
     (inputs
-     `(("python-ecdsa" ,python-ecdsa)
-       ("python-pycrypto" ,python-pycrypto)))
+     `(("python-ecdsa" ,python-ecdsa)))
     (home-page "http://www.paramiko.org/")
     (synopsis "SSHv2 protocol library")
     (description "Paramiko is a python implementation of the SSHv2 protocol,
