@@ -56,51 +56,62 @@
   (let ((python (resolve-interface '(gnu packages python))))
     (module-ref python 'python-2)))
 
-(define (package-with-explicit-python p python old-prefix new-prefix)
-  "Create a package with the same fields as P, which is assumed to use
-PYTHON-BUILD-SYSTEM, such that it is compiled with PYTHON instead.  The
-inputs are changed recursively accordingly.  If the name of P starts with
-OLD-PREFIX, this is replaced by NEW-PREFIX; otherwise, NEW-PREFIX is
-prepended to the name."
-  (let* ((rewrite-if-package
-          (lambda (content)
-            ;; CONTENT may be a file name, in which case it is returned, or a
-            ;; package, which is rewritten with the new PYTHON and NEW-PREFIX.
-            (if (package? content)
-                (package-with-explicit-python content python
-                                              old-prefix new-prefix)
-                content)))
-         (rewrite
-           (match-lambda
-             ((name content . rest)
-              (append (list name (rewrite-if-package content)) rest)))))
+(define (package-with-explicit-python python old-prefix new-prefix)
+  "Return a procedure of one argument, P.  The procedure creates a package with
+the same fields as P, which is assumed to use PYTHON-BUILD-SYSTEM, such that
+it is compiled with PYTHON instead.  The inputs are changed recursively
+accordingly.  If the name of P starts with OLD-PREFIX, this is replaced by
+NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name."
+  (define transform
+    ;; Memoize the transformations.  Failing to do that, we would build a huge
+    ;; object graph with lots of duplicates, which in turns prevents us from
+    ;; benefiting from memoization in 'package-derivation'.
+    (memoize                                      ;FIXME: use 'eq?'
+     (lambda (p)
+       (let* ((rewrite-if-package
+               (lambda (content)
+                 ;; CONTENT may be a file name, in which case it is returned,
+                 ;; or a package, which is rewritten with the new PYTHON and
+                 ;; NEW-PREFIX.
+                 (if (package? content)
+                     (transform content)
+                     content)))
+              (rewrite
+               (match-lambda
+                 ((name content . rest)
+                  (append (list name (rewrite-if-package content)) rest)))))
 
-    (if (eq? (package-build-system p) python-build-system)
-        (package (inherit p)
-          (name (let ((name (package-name p)))
-                  (string-append new-prefix
-                                 (if (string-prefix? old-prefix name)
-                                     (substring name (string-length old-prefix))
-                                     name))))
-          (arguments
-           (let ((arguments (package-arguments p))
-                 (python    (if (promise? python)
-                                (force python)
-                                python)))
-             (if (member #:python arguments)
-                 (substitute-keyword-arguments arguments ((#:python p) python))
-                 (append arguments `(#:python ,python)))))
-          (inputs (map rewrite (package-inputs p)))
-          (propagated-inputs (map rewrite (package-propagated-inputs p)))
-          (native-inputs (map rewrite (package-native-inputs p))))
-        p)))
+         (if (eq? (package-build-system p) python-build-system)
+             (package
+               (inherit p)
+               (name (let ((name (package-name p)))
+                       (string-append new-prefix
+                                      (if (string-prefix? old-prefix name)
+                                          (substring name
+                                                     (string-length old-prefix))
+                                          name))))
+               (arguments
+                (let ((arguments (package-arguments p))
+                      (python    (if (promise? python)
+                                     (force python)
+                                     python)))
+                  (if (member #:python arguments)
+                      (substitute-keyword-arguments arguments
+                        ((#:python p) python))
+                      (append arguments `(#:python ,python)))))
+               (inputs (map rewrite (package-inputs p)))
+               (propagated-inputs (map rewrite (package-propagated-inputs p)))
+               (native-inputs (map rewrite (package-native-inputs p))))
+             p)))))
+
+  transform)
 
 (define package-with-python2
   ;; Note: delay call to 'default-python2' until after the 'arguments' field
   ;; of packages is accessed to avoid a circular dependency when evaluating
   ;; the top-level of (gnu packages python).
-  (cut package-with-explicit-python <> (delay (default-python2))
-       "python-" "python2-"))
+  (package-with-explicit-python (delay (default-python2))
+                                "python-" "python2-"))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
