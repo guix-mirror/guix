@@ -617,6 +617,9 @@ gapped, local, and paired-end alignment modes.")
         ;; no "configure" script
         (alist-delete 'configure %standard-phases))))
     (inputs `(("zlib" ,zlib)))
+    ;; Non-portable SSE instructions are used so building fails on platforms
+    ;; other than x86_64.
+    (supported-systems '("x86_64-linux"))
     (home-page "http://bio-bwa.sourceforge.net/")
     (synopsis "Burrows-Wheeler sequence aligner")
     (description
