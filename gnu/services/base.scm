@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,6 +101,8 @@
             urandom-seed-service
             rngd-service-type
             rngd-service
+            pam-limits-service-type
+            pam-limits-service
 
             %base-services))
 
@@ -923,6 +926,46 @@ settings.
 @xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
 information on the configuration file syntax."
   (service syslog-service-type config-file))
+
+(define pam-limits-service-type
+  (let ((security-limits
+         ;; Create /etc/security containing the provided "limits.conf" file.
+         (lambda (limits-file)
+           `(("security"
+              ,(computed-file
+                "security"
+                #~(begin
+                    (mkdir #$output)
+                    (stat #$limits-file)
+                    (symlink #$limits-file
+                             (string-append #$output "/limits.conf"))))))))
+        (pam-extension
+         (lambda (pam)
+           (let ((pam-limits (pam-entry
+                              (control "required")
+                              (module "pam_limits.so")
+                              (arguments '("conf=/etc/security/limits.conf")))))
+             (if (member (pam-service-name pam)
+                         '("login" "su" "slim"))
+                 (pam-service
+                  (inherit pam)
+                  (session (cons pam-limits
+                                 (pam-service-session pam))))
+                 pam)))))
+    (service-type
+     (name 'limits)
+     (extensions
+      (list (service-extension etc-service-type security-limits)
+            (service-extension pam-root-service-type
+                               (lambda _ (list pam-extension))))))))
+
+(define* (pam-limits-service #:optional (limits '()))
+  "Return a service that makes selected programs respect the list of
+pam-limits-entry specified in LIMITS via pam_limits.so."
+  (service pam-limits-service-type
+           (plain-file "limits.conf"
+                       (string-join (map pam-limits-entry->string limits)
+                                    "\n"))))
 
 
 ;;;

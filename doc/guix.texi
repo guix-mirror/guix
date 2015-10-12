@@ -17,6 +17,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016 Leo Famulari@*
+Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016 Efraim Flashner
@@ -7569,6 +7570,35 @@ Return a service that runs the @command{rngd} program from @var{rng-tools}
 to add @var{device} to the kernel's entropy pool.  The service will fail if
 @var{device} does not exist.
 @end deffn
+
+@anchor{pam-limits-service}
+@cindex session limits
+@cindex ulimit
+@cindex priority
+@deffn {Scheme Procedure} pam-limits-service [#:limits @var{limits}]
+
+Return a service that installs a configuration file for the
+@uref{http://linux-pam.org/Linux-PAM-html/sag-pam_limits.html,
+@code{pam_limits} module}.  The procedure optionally takes a list of
+@code{pam-limits-entry} values, which can be used to specify
+@code{ulimit} limits and nice priority limits to user sessions.
+
+The following limits definition sets two hard and soft limits for all
+login sessions of users in the @code{realtime} group:
+
+@example
+(pam-limits-service
+ (list
+  (pam-limits-entry "@@realtime" 'both 'rtprio 99)
+  (pam-limits-entry "@@realtime" 'both 'memlock 'unlimited)))
+@end example
+
+The first entry increases the maximum realtime priority for
+non-privileged processes; the second entry lifts any restriction of the
+maximum address space that can be locked in memory.  These settings are
+commonly used for real-time audio systems.
+@end deffn
+
 
 @node Scheduled Job Execution
 @subsubsection Scheduled Job Execution
