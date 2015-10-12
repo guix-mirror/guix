@@ -159,8 +159,8 @@ is implemented.")
         (alist-replace
          'build
          (lambda _
-           (setenv "JAVA_HOME"
-                   (assoc-ref %build-inputs "icedtea6"))
+           (setenv "JAVA_HOME" (string-append (assoc-ref %build-inputs "gcj")
+                                              "/lib/jvm"))
            ;; Disable tests to avoid dependency on hamcrest-core, which needs
            ;; Ant to build.  This is necessary in addition to disabling the
            ;; "check" phase, because the dependency on "test-jar" would always
@@ -174,7 +174,7 @@ is implemented.")
           'configure
           (alist-delete 'install %standard-phases))))))
     (native-inputs
-     `(("icedtea6" ,icedtea6 "jdk")))
+     `(("gcj" ,gcj)))
     (home-page "http://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
