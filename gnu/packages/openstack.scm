@@ -354,6 +354,51 @@ extensions.")
 (define-public python2-stevedore
   (package-with-python2 python-stevedore))
 
+(define-public python-tempest-lib
+  (package
+    (name "python-tempest-lib")
+    (version "0.9.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "tempest-lib" version))
+      (sha256
+       (base32
+        "1s32rpxw86p41ip9nr7zbqxd60mw1cqz2isirby36rh4vl68bfhx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda _
+            (substitute* "tempest_lib/tests/cli/test_execute.py"
+              (("/bin/ls") (which "ls"))))))))
+    (propagated-inputs
+      `(("python-fixtures" ,python-fixtures)
+        ("python-httplib2" ,python-httplib2)
+        ("python-iso8601" ,python-iso8601)
+        ("python-jsonschema" ,python-jsonschema)
+        ("python-oslo.log" ,python-oslo.log)
+        ("python-paramiko" ,python-paramiko)
+        ("python-pbr" ,python-pbr)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-mock" ,python-mock)
+        ("python-os-testr" ,python-os-testr)
+        ("python-oslotest" ,python-oslotest)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "OpenStack functional testing library")
+    (description
+      "Tempest-lib is a functional testing library for OpenStack.  It provides
+common features used in Tempest.")
+    (license asl2.0)))
+
+(define-public python2-tempest-lib
+  (package-with-python2 python-tempest-lib))
+
 ;; Packages from the Oslo library
 (define-public python-oslo.config
   (package
