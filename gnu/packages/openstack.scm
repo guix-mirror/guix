@@ -206,6 +206,40 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python2-mox3
   (package-with-python2 python-mox3))
 
+(define-public python-os-testr
+  (package
+    (name "python-os-testr")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "os-testr" version))
+       (sha256
+        (base32
+         "0474z0mxb7y3vfk4s097wf1mzji5d135vh27cvlh9q17rq3x9r3w"))))
+    (build-system python-build-system)
+    (arguments
+     ;; os-testr uses itself to run the tests. It seems like pbr writes the
+     ;; exectuable in the virtualenv when using tox. Not sure how to do this
+     ;; when building the package. Skip the tests for now.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr)
+       ("python-subunit" ,python-subunit)
+       ("python-testtools" ,python-testtools)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "Testr wrapper to provide functionality for OpenStack projects")
+    (description
+      "Os-testr provides developers with a testr wrapper and an output filter
+  for subunit.")
+    (license asl2.0)))
+
+(define-public python2-os-testr
+  (package-with-python2 python-os-testr))
+
 (define-public python-pbr
   (package
     (name "python-pbr")
