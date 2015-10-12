@@ -332,7 +332,7 @@ printing and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.31.6")
+   (version "2.32.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -340,7 +340,7 @@ printing and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "062x2gqd7p6yxhxlib1ha4l3gk9ihcj080hrwwv9vmlmybb064hi"))))
+              "1g7kjxv67jcdasi14n7jan4icrnnppd1m99wrdmpv32k4m7vfcj4"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")

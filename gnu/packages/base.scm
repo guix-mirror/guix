@@ -251,7 +251,14 @@ used to apply commands with arbitrarily long arguments.")
              (base32
               "0w11jw3fb5sslf0f72kxy7llxgk1ia3a6bcw0c9kmvxrlj355mx2"))
             (patches
-             (list (search-patch "coreutils-racy-tail-test.patch")))))
+             (list (origin
+                     (method url-fetch)
+                     (uri "http://git.savannah.gnu.org/cgit/coreutils.git/\
+patch/?id=3ba68f9e64fa2eb8af22d510437a0c6441feb5e0")
+                     (sha256
+                      (base32
+                       "1dnlszhc8lihhg801i9sz896mlrgfsjfcz62636prb27k5hmixqz"))
+                     (file-name "coreutils-tail-inotify-race.patch"))))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -476,6 +483,8 @@ store.")
             (modules '((guix build utils)))
             (patches (map search-patch
                           '("glibc-ldd-x86_64.patch"
+                            "glibc-locale-incompatibility.patch"
+                            "glibc-versioned-locpath.patch"
                             "glibc-o-largefile.patch")))))
    (build-system gnu-build-system)
 
@@ -509,12 +518,16 @@ store.")
             ;; Set the default locale path.  In practice, $LOCPATH may be
             ;; defined to point whatever locales users want.  However, setuid
             ;; binaries don't honor $LOCPATH, so they'll instead look into
-            ;; $libc_cv_localedir; we choose /run/current-system/locale, with
-            ;; the idea that it is going to be populated by the sysadmin.
+            ;; $libc_cv_localedir; we choose /run/current-system/locale/X.Y,
+            ;; with the idea that it is going to be populated by the sysadmin.
+            ;; The "X.Y" sub-directory is because locale data formats are
+            ;; incompatible across libc versions; see
+            ;; <https://lists.gnu.org/archive/html/guix-devel/2015-08/msg00737.html>.
             ;;
             ;; `--localedir' is not honored, so work around it.
             ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
-            (string-append "libc_cv_localedir=/run/current-system/locale")
+            (string-append "libc_cv_localedir=/run/current-system/locale/"
+                           ,version)
 
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
@@ -602,9 +615,11 @@ store.")
 
    (native-search-paths
     ;; Search path for packages that provide locale data.  This is useful
-    ;; primarily in build environments.
+    ;; primarily in build environments.  Use 'GUIX_LOCPATH' rather than
+    ;; 'LOCPATH' to avoid interference with the host system's libc on foreign
+    ;; distros.
     (list (search-path-specification
-           (variable "LOCPATH")
+           (variable "GUIX_LOCPATH")
            (files '("lib/locale")))))
 
    (synopsis "The GNU C Library")
@@ -645,10 +660,11 @@ the 'share/locale' sub-directory of this package.")
             (alist-delete 'install ,phases)))
          ((#:configure-flags flags)
           `(append ,flags
-                   ;; Use $(libdir)/locale as is the case by default.
+                   ;; Use $(libdir)/locale/X.Y as is the case by default.
                    (list (string-append "libc_cv_localedir="
                                         (assoc-ref %outputs "out")
-                                        "/lib/locale")))))))))
+                                        "/lib/locale/"
+                                        ,(package-version glibc))))))))))
 
 (define-public glibc-utf8-locales
   (package
@@ -657,7 +673,7 @@ the 'share/locale' sub-directory of this package.")
     (source #f)
     (build-system trivial-build-system)
     (arguments
-     '(#:modules ((guix build utils))
+     `(#:modules ((guix build utils))
        #:builder (begin
                    (use-modules (srfi srfi-1)
                                 (guix build utils))
@@ -665,18 +681,29 @@ the 'share/locale' sub-directory of this package.")
                    (let* ((libc      (assoc-ref %build-inputs "glibc"))
                           (gzip      (assoc-ref %build-inputs "gzip"))
                           (out       (assoc-ref %outputs "out"))
-                          (localedir (string-append out "/lib/locale")))
+                          (localedir (string-append out "/lib/locale/"
+                                                    ,version)))
                      ;; 'localedef' needs 'gzip'.
                      (setenv "PATH" (string-append libc "/bin:" gzip "/bin"))
 
                      (mkdir-p localedir)
                      (every (lambda (locale)
-                              (zero? (system* "localedef" "--no-archive"
-                                              "--prefix" localedir "-i" locale
-                                              "-f" "UTF-8"
+                              (define file
+                                ;; Use the "normalized codeset" by
+                                ;; default--e.g., "en_US.utf8".
+                                (string-append localedir "/" locale ".utf8"))
+
+                              (and (zero? (system* "localedef" "--no-archive"
+                                                   "--prefix" localedir
+                                                   "-i" locale
+                                                   "-f" "UTF-8" file))
+                                   (begin
+                                     ;; For backward compatibility with Guix
+                                     ;; <= 0.8.3, add "xx_YY.UTF-8".
+                                     (symlink (string-append locale ".utf8")
                                               (string-append localedir "/"
-                                                             locale
-                                                             ".UTF-8"))))
+                                                             locale ".UTF-8"))
+                                     #t)))
 
                             ;; These are the locales commonly used for
                             ;; tests---e.g., in Guile's i18n tests.

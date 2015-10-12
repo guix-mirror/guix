@@ -45,6 +45,13 @@
     (inputs `(("ncurses" ,ncurses)
               ("xz" ,xz)
               ("perl" ,perl)))
+
+    (native-search-paths
+     ;; This is the variable used by the standalone Info reader.
+     (list (search-path-specification
+            (variable "INFOPATH")
+            (files '("share/info")))))
+
     (home-page "http://www.gnu.org/software/texinfo/")
     (synopsis "The GNU documentation format")
     (description

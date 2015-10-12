@@ -135,7 +135,7 @@ project (but it is usable outside of the Gnome platform).")
     (synopsis "C library for applying XSLT stylesheets to XML documents")
     (inputs `(("libgcrypt" ,libgcrypt)
               ("libxml2" ,libxml2)
-              ("python" ,python-wrapper)
+              ("python" ,python-minimal-wrapper)
               ("zlib" ,zlib)))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project.  It is

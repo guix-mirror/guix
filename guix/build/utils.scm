@@ -59,10 +59,12 @@
             list->search-path-as-string
             which
 
+            every*
             alist-cons-before
             alist-cons-after
             alist-replace
             modify-phases
+
             with-atomic-file-replacement
             substitute
             substitute*
@@ -453,6 +455,18 @@ PROGRAM could not be found."
 ;;; pairs.  The following procedures make it easy to change the list of
 ;;; phases.
 ;;;
+
+(define (every* pred lst)
+  "This is like 'every', but process all the elements of LST instead of
+stopping as soon as PRED returns false.  This is useful when PRED has side
+effects, such as displaying warnings or error messages."
+  (let loop ((lst    lst)
+             (result #t))
+    (match lst
+      (()
+       result)
+      ((head . tail)
+       (loop tail (and (pred head) result))))))
 
 (define* (alist-cons-before reference key value alist
                             #:optional (key=? equal?))

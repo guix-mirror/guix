@@ -171,24 +171,21 @@ following the mouse.")
 (define-public pixman
   (package
     (name "pixman")
-    (version "0.32.6")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "http://cairographics.org/releases/pixman-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-           "0129g4zdrw5hif5783li7rzcr4vpbc2cfia91azxmsk0h0xx3zix"))
-        (patches (list (search-patch "pixman-pointer-arithmetic.patch")))))
+    (version "0.32.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://cairographics.org/releases/pixman-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0pfn0247sjsi95kwjih0wwqpp28wadihqk1bn28x6iqbqhbxwnjp"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libpng" ,libpng)
-        ("zlib" ,zlib)))
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.pixman.org/")
     (synopsis "Low-level pixel manipulation library")
     (description "Pixman is a low-level software library for pixel

@@ -99,7 +99,7 @@
   #t)
 
 (define* (install-locale #:key
-                         (locale "en_US.UTF-8")
+                         (locale "en_US.utf8")
                          (locale-category LC_ALL)
                          #:allow-other-keys)
   "Try to install LOCALE; emit a warning if that fails.  The main goal is to
@@ -408,18 +408,6 @@ makefiles."
                                            (and (directory-exists? sub) sub)))
                                        strip-directories)))
                          outputs))))
-
-(define (every* pred lst)
-  "This is like 'every', but process all the elements of LST instead of
-stopping as soon as PRED returns false.  This is useful when PRED has side
-effects, such as displaying warnings or error messages."
-  (let loop ((lst    lst)
-             (result #t))
-    (match lst
-      (()
-       result)
-      ((head . tail)
-       (loop tail (and (pred head) result))))))
 
 (define* (validate-runpath #:key
                            (validate-runpath? #t)

@@ -419,7 +419,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/clang-libc-search-path.patch		\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
-  gnu/packages/patches/coreutils-racy-tail-test.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
   gnu/packages/patches/crda-optional-gcrypt.patch		\
@@ -473,8 +472,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
+  gnu/packages/patches/glibc-locale-incompatibility.patch	\
   gnu/packages/patches/glibc-o-largefile.patch			\
+  gnu/packages/patches/glibc-versioned-locpath.patch		\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
+  gnu/packages/patches/gmp-faulty-test.patch			\
   gnu/packages/patches/gnucash-price-quotes-perl.patch		\
   gnu/packages/patches/gnutls-doc-fix.patch			\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
@@ -605,7 +607,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/pidgin-add-search-path.patch		\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
-  gnu/packages/patches/pixman-pointer-arithmetic.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
@@ -619,6 +620,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/pyqt-configure.patch			\
+  gnu/packages/patches/python-2.7-search-paths.patch		\
+  gnu/packages/patches/python-3-search-paths.patch		\
   gnu/packages/patches/python-disable-ssl-test.patch		\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\

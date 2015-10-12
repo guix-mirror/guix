@@ -19,6 +19,7 @@
 (define-module (gnu system locale)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (srfi srfi-26)
@@ -57,14 +58,20 @@
                       "-i" #$(locale-definition-source locale)
                       "-f" #$(locale-definition-charset locale)
                       (string-append #$output "/"
+                                     #$(package-version libc) "/"
                                      #$(locale-definition-name locale))))))
 
 (define* (locale-directory locales
                            #:key (libc (canonical-package glibc)))
-  "Return a directory containing all of LOCALES compiled."
+  "Return a directory containing all of LOCALES for LIBC compiled.
+
+Because locale data formats are incompatible when switching from one libc to
+another, locale data is put in a sub-directory named after the 'version' field
+of LIBC."
   (define build
     #~(begin
         (mkdir #$output)
+        (mkdir (string-append #$output "/" #$(package-version libc)))
 
         ;; 'localedef' executes 'gzip' to access compressed locale sources.
         (setenv "PATH" (string-append #$gzip "/bin"))

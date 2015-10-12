@@ -2050,7 +2050,7 @@ legacy X clients.")
             "0bp3f53l9fy5x3mn1rkj1g81aiyzl90wacwvqdgy831aa3kfxb5l"))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("pkg-config" ,pkg-config) ("python" ,python-wrapper)))
+      `(("pkg-config" ,pkg-config) ("python" ,python-minimal-wrapper)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "XML-XCB protocol descriptions")
     (description
@@ -4804,7 +4804,7 @@ protocol.")
         ("libxslt" ,libxslt)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("python" ,python-wrapper)))
+        ("python" ,python-minimal-wrapper)))
     (arguments
      `(#:configure-flags '("--enable-xkb")))
     (home-page "http://www.x.org/wiki/")
@@ -4889,7 +4889,7 @@ over Xlib, including:
         ("xtrans" ,xtrans)
         ("zlib" ,zlib)))
     (native-inputs
-       `(("python" ,python-wrapper)
+       `(("python" ,python-minimal-wrapper)
          ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f

@@ -940,30 +940,52 @@ daemons on the same machine.
 @node Application Setup
 @section Application Setup
 
-When using Guix on top of GNU/Linux distribution other than GuixSD, a
-few additional steps are needed to get everything in place.  Here are
-some of them.
+When using Guix on top of GNU/Linux distribution other than GuixSD---a
+so-called @dfn{foreign distro}---a few additional steps are needed to
+get everything in place.  Here are some of them.
 
 @subsection Locales
 
 @anchor{locales-and-locpath}
 @cindex locales, when not on GuixSD
 @vindex LOCPATH
+@vindex GUIX_LOCPATH
 Packages installed @i{via} Guix will not use the host system's locale
 data.  Instead, you must first install one of the locale packages
-available with Guix and then define the @code{LOCPATH} environment
-variable (@pxref{Locale Names, @code{LOCPATH},, libc, The GNU C Library
-Reference Manual}):
+available with Guix and then define the @code{GUIX_LOCPATH} environment
+variable:
 
 @example
 $ guix package -i glibc-locales
-$ export LOCPATH=$HOME/.guix-profile/lib/locale
+$ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
 @end example
 
 Note that the @code{glibc-locales} package contains data for all the
 locales supported by the GNU@tie{}libc and weighs in at around
 110@tie{}MiB.  Alternately, the @code{glibc-utf8-locales} is smaller but
 limited to a few UTF-8 locales.
+
+The @code{GUIX_LOCPATH} variable plays a role similar to @code{LOCPATH}
+(@pxref{Locale Names, @code{LOCPATH},, libc, The GNU C Library Reference
+Manual}).  There are two important differences though:
+
+@enumerate
+@item
+@code{GUIX_LOCPATH} is honored only by Guix's libc, and not by the libc
+provided by foreign distros.  Thus, using @code{GUIX_LOCPATH} allows you
+to make sure the the foreign distro's programs will not end up loading
+incompatible locale data.
+
+@item
+libc suffixes each entry of @code{GUIX_LOCPATH} with @code{/X.Y}, where
+@code{X.Y} is the libc version---e.g., @code{2.22}.  This means that,
+should your Guix profile contain a mixture of programs linked against
+different libc version, each libc version will only try to load locale
+data in the right format.
+@end enumerate
+
+This is important because the locale data format used by different libc
+versions may be incompatible.
 
 @subsection X11 Fonts
 
@@ -5641,9 +5663,10 @@ list only the locales that are actually used, as in:
 
 @vindex LOCPATH
 The compiled locale definitions are available at
-@file{/run/current-system/locale}, which is the default location where
-the GNU@tie{}libc looks for locale data.  This can be overridden using
-the @code{LOCPATH} environment variable (@pxref{locales-and-locpath,
+@file{/run/current-system/locale/X.Y}, where @code{X.Y} is the libc
+version, which is the default location where the GNU@tie{}libc provided
+by Guix looks for locale data.  This can be overridden using the
+@code{LOCPATH} environment variable (@pxref{locales-and-locpath,
 @code{LOCPATH} and locale packages}).
 
 The @code{locale-definition} form is provided by the @code{(gnu system
