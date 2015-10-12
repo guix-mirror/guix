@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -35,11 +36,14 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
+  #:use-module (srfi srfi-1))
 
 (define-public r
   (package
@@ -933,3 +937,55 @@ times.")
 large data (e.g. 100GB in RAM), fast ordered joins, fast add/modify/delete of
 columns by group, column listing and fast file reading.")
     (license license:gpl2+)))
+
+(define-public python-patsy
+  (package
+    (name "python-patsy")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/"
+                                  "p/patsy/patsy-" version ".zip"))
+              (sha256
+               (base32
+                "1kbs996xc2haxalmhd19rr1wh5fa4gbbxf81czkf5w4kam7h7wz4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v"))))
+         (add-after 'unpack 'prevent-generation-of-egg-archive
+          (lambda _
+            (substitute* "setup.py"
+              (("from setuptools import setup")
+               "from distutils.core import setup"))
+            #t)))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("unzip" ,unzip)))
+    (home-page "https://github.com/pydata/patsy")
+    (synopsis "Describe statistical models and build design matrices")
+    (description
+     "Patsy is a Python package for describing statistical models and for
+building design matrices.")
+    ;; The majority of the code is distributed under BSD-2.  The module
+    ;; patsy.compat contains code derived from the Python standard library,
+    ;; and is covered by the PSFL.
+    (license (list license:bsd-2 license:psfl))))
+
+(define-public python2-patsy
+  (let ((patsy (package-with-python2 python-patsy)))
+    (package (inherit patsy)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs patsy)))
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ,@(alist-delete "python-numpy"
+                         (alist-delete "python-scipy"
+                                       (package-propagated-inputs patsy))))))))
