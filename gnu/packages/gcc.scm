@@ -451,27 +451,27 @@ using compilers other than GCC."
     (sha256 (base32
               "1c3dk4z5yfj6ic2fn3lyxs27n6pmn2wy9k0r1s17lnkf1bzkrciv"))))
 
-(define-public gcj-4.8
-  (package (inherit gcc-4.8)
+(define-public gcj
+  (package (inherit gcc)
     (name "gcj")
     (inputs
      `(("fastjar" ,fastjar)
        ("perl" ,perl)
        ("javac.in" ,javac.in)
-       ("ecj-bootstrap" ,ecj-bootstrap-4.8)
-       ,@(package-inputs gcc-4.8)))
+       ("ecj-bootstrap" ,ecj-bootstrap)
+       ,@(package-inputs gcc)))
     ;; Suppress the separate "lib" output, because otherwise the
     ;; "lib" and "out" outputs would refer to each other, creating
     ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
     (outputs
-     (delete "lib" (package-outputs gcc-4.8)))
+     (delete "lib" (package-outputs gcc)))
     (arguments
      (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
                                                 (guix build utils)
                                                 (ice-9 regex)
                                                 (srfi srfi-1)
                                                 (srfi srfi-26))
-                                               ,@(package-arguments gcc-4.8))
+                                               ,@(package-arguments gcc))
        ((#:configure-flags flags)
         `(let ((ecj (assoc-ref %build-inputs "ecj-bootstrap")))
            `("--enable-java-home"
@@ -532,13 +532,13 @@ using compilers other than GCC."
                                      ".*(c\\+\\+|cpp|g\\+\\+|gcc.*)"))))
               #t))))))))
 
-(define ecj-bootstrap-4.8
+(define ecj-bootstrap
   (origin
     (method url-fetch)
-    (uri "ftp://sourceware.org/pub/java/ecj-4.8.jar")
+    (uri "ftp://sourceware.org/pub/java/ecj-4.9.jar")
     (sha256
      (base32
-      "10fpqfbdzff1zcbxzh66xc8xbij9saykcj4xzm19wk9p3n7i5zcq"))))
+      "1k9lgm3qamf6zy534pa2zwskr8mpiqrngbv1vw9j4y1ghrdyf1lm"))))
 
 (define-public gcc-objc-4.8
   (custom-gcc gcc-4.8 "gcc-objc" '("objc")))

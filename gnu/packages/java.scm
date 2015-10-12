@@ -578,7 +578,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("gtk" ,gtk+-2)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("gcj" ,gcj-4.8)))
+       ("gcj" ,gcj)))
     (home-page "http://icedtea.classpath.org")
     (synopsis "Java development kit")
     (description

@@ -595,7 +595,7 @@ Laurens Hammond and Don Leslie.")
     (inputs
      `(("swt" ,swt)))
     (native-inputs
-     `(("gcj" ,gcj-4.8)
+     `(("gcj" ,gcj)
        ("pkg-config" ,pkg-config)))
     (home-page "http://tuxguitar.com.ar")
     (synopsis "Multitrack tablature editor and player")
