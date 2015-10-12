@@ -460,6 +460,47 @@ in an application or library.")
 (define-public python2-oslo.i18n
   (package-with-python2 python-oslo.i18n))
 
+(define-public python-oslo.log
+  (package
+  (name "python-oslo.log")
+  (version "1.6.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/source/o/oslo.log/oslo.log-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1fhy6yvbd565nv4x4i3ppyrlbmz3yy9d0xsvw5nkqsa7g43nmf8z"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-debtcollector" ,python-debtcollector)
+     ("python-oslo.config" ,python-oslo.config)
+     ("python-oslo.context" ,python-oslo.context)
+     ("python-oslo.i18n" ,python-oslo.i18n)
+     ("python-oslo.utils" ,python-oslo.utils)
+     ("python-oslo.serialization" ,python-oslo.serialization)
+     ("python-six" ,python-six)))
+  (inputs
+    `(("python-babel" ,python-babel)
+      ("python-iso8601" ,python-iso8601)
+      ("python-mock" ,python-mock)
+      ("python-oslotest" ,python-oslotest)
+      ("python-pbr" ,python-pbr)
+      ("python-setuptools" ,python-setuptools)))
+  (home-page "http://launchpad.net/oslo")
+  (synopsis "Python logging library of the Oslo project")
+  (description
+    "The oslo.log (logging) configuration library provides standardized
+configuration for all OpenStack projects.  It also provides custom formatters,
+handlers and support for context specific logging (like resource id’s etc).")
+  (license asl2.0)))
+
+(define-public python2-oslo.log
+  (package-with-python2 python-oslo.log))
+
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
