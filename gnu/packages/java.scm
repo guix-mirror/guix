@@ -276,10 +276,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
         'unpack
         (lambda* (#:key source inputs #:allow-other-keys)
           (and (zero? (system* "tar" "xvf" source))
-               (zero? (system* "tar" "xvjf"
-                               (assoc-ref inputs "ant-bootstrap")))
                (begin
-                 (patch-shebang "apache-ant-1.9.4/bin/ant")
                  (chdir (string-append ,name "-" ,version))
                  (mkdir "openjdk")
                  (with-directory-excursion "openjdk"
@@ -383,7 +380,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((gcjdir  (assoc-ref %build-inputs "gcj"))
                     (gcjlib  (string-append gcjdir "/lib"))
-                    (antpath (string-append (getcwd) "/../apache-ant-1.9.4"))
                     ;; Get target-specific include directory so that
                     ;; libgcj-config.h is found when compiling hotspot.
                     (gcjinclude (let* ((port (open-input-pipe "gcj -print-file-name=include"))
@@ -407,9 +403,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                       "/include"))
                (setenv "ALT_FREETYPE_LIB_PATH"
                        (string-append (assoc-ref %build-inputs "freetype")
-                                      "/lib"))
-               (setenv "PATH" (string-append antpath "/bin:"
-                                             (getenv "PATH")))))
+                                      "/lib"))))
            (alist-cons-before
             'check 'fix-test-framework
             (lambda _
@@ -528,13 +522,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                     (copy-recursively "openjdk.build/j2sdk-image" jdk)))
                 %standard-phases)))))))))))
     (native-inputs
-     `(("ant-bootstrap"
-        ,(origin
-           (method url-fetch)
-           (uri "https://www.apache.org/dist/ant/binaries/apache-ant-1.9.4-bin.tar.bz2")
-           (sha256
-            (base32
-             "1kw801p8h5x4f0g8i5yknppssrj5a3xy1aqrkpfnk22bd1snbh90"))))
+     `(("ant" ,ant)
        ("alsa-lib" ,alsa-lib)
        ("attr" ,attr)
        ("autoconf" ,autoconf)
@@ -738,8 +726,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                     #t))
                  (delete 'patch-patches))))))
       (native-inputs
-       `(("ant" ,ant)
-         ("openjdk-drop"
+       `(("openjdk-drop"
           ,(drop "openjdk"
                  "0gs6vbj5c09516r460r68i7vm652sb25h973kq9hfx749qbs0s01"))
          ("corba-drop"
@@ -761,4 +748,4 @@ build process and its dependencies, whereas Make uses Makefile format.")
           ,(drop "hotspot"
                  "1cv8df2s89mnjzg4rja4i89d4fr8n0c3v5y2cqbww1ma1463n100"))
          ,@(fold alist-delete (package-native-inputs icedtea6)
-                 '("openjdk6-src" "ant-bootstrap")))))))
+                 '("openjdk6-src")))))))
