@@ -6109,7 +6109,10 @@ The @code{(gnu services avahi)} provides the following definition.
           [#:domains-to-browse '()]
 Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
-"zero-configuration" host name lookups (see @uref{http://avahi.org/}).
+"zero-configuration" host name lookups (see @uref{http://avahi.org/}), and
+extends the name service cache daemon (nscd) so that it can resolve
+@code{.local} host names using
+@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.
 
 If @var{host-name} is different from @code{#f}, use that as the host name to
 publish for this machine; otherwise, use the machine's actual host name.
@@ -6587,31 +6590,11 @@ want is to have @code{.local} host lookup working.
 
 Note that, in this case, in addition to setting the
 @code{name-service-switch} of the @code{operating-system} declaration,
-@code{nscd-service} must be told where to find the @code{nss-mdns}
-shared library (@pxref{Base Services, @code{nscd-service}}).  Since the
-@code{nscd} service is part of @var{%base-services}, you may want to
-customize it by adding this snippet in the operating system
-configuration file:
-
-@example
-(use-modules (guix) (gnu))
-
-(define %my-base-services
-  ;; Replace the default nscd service with one that knows
-  ;; about nss-mdns.
-  (map (lambda (service)
-         (if (member 'nscd (service-provision service))
-             (nscd-service (nscd-configuration
-                             (name-services (list nss-mdns))))
-             service))
-       %base-services))
-@end example
-
-@noindent
-@dots{} and then refer to @var{%my-base-services} instead of
-@var{%base-services} in the @code{operating-system} declaration.
-Lastly, this relies on the availability of the Avahi service
-(@pxref{Networking Services, @code{avahi-service}}).
+you also need to use @code{avahi-service} (@pxref{Networking Services,
+@code{avahi-service}}), or @var{%desktop-services}, which includes it
+(@pxref{Desktop Services}).  Doing this makes @code{nss-mdns} accessible
+to the name service cache daemon (@pxref{Base Services,
+@code{nscd-service}}).
 
 For convenience, the following variables provide typical NSS
 configurations.
