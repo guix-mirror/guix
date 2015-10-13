@@ -989,3 +989,67 @@ building design matrices.")
          ,@(alist-delete "python-numpy"
                          (alist-delete "python-scipy"
                                        (package-propagated-inputs patsy))))))))
+
+(define-public python-statsmodels
+  (package
+    (name "python-statsmodels")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/"
+                           "s/statsmodels/statsmodels-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xn67sqr0cc1lmlhzm71352hrb4hw7g318p5ff5q97pc98vl8kmy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; tests must be run after installation
+         (delete 'check)
+         (add-after 'unpack 'set-matplotlib-backend-to-agg
+          (lambda _
+            ;; Set the matplotlib backend to Agg to avoid problems using the
+            ;; GTK backend without a display.
+            (substitute* (find-files "statsmodels/graphics/tests" "\\.py")
+              (("import matplotlib\\.pyplot as plt" line)
+               (string-append "import matplotlib;matplotlib.use('Agg');"
+                              line)))
+            #t))
+         (add-after 'install 'check
+          (lambda _
+            (with-directory-excursion "/tmp"
+              (zero? (system* "nosetests"
+                              "--stop"
+                              "-v" "statsmodels"))))))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-pandas" ,python-pandas)
+       ("python-patsy" ,python-patsy)
+       ("python-matplotlib" ,python-matplotlib)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "http://statsmodels.sourceforge.net/")
+    (synopsis "Statistical modeling and econometrics in Python")
+    (description
+     "Statsmodels is a Python package that provides a complement to scipy for
+statistical computations including descriptive statistics and estimation and
+inference for statistical models.")
+    (license license:bsd-3)))
+
+(define-public python2-statsmodels
+  (let ((stats (package-with-python2 python-statsmodels)))
+    (package (inherit stats)
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ("python2-pandas" ,python2-pandas)
+         ("python2-patsy" ,python2-patsy)
+         ("python2-matplotlib" ,python2-matplotlib)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs stats))))))
