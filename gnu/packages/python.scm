@@ -3261,16 +3261,17 @@ functions.")
         (base32
          "0fsqi05s035d7p6s8h3h2pvk1axias16chy17rw9l1bxvrfhmncf"))))
     (build-system python-build-system)
-    (inputs
+    (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-matplotlib" ,python-matplotlib)
-       ("python-pyparsing" ,python-pyparsing)
-       ("python-nose" ,python-nose)
-       ("python-sphinx" ,python-sphinx)
-       ("lapack" ,lapack)
+       ("python-pyparsing" ,python-pyparsing)))
+    (inputs
+     `(("lapack" ,lapack)
        ("openblas" ,openblas)))
     (native-inputs
-     `(("gfortran" ,gfortran)
+     `(("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)
+       ("gfortran" ,gfortran)
        ("texlive" ,texlive)
        ("perl" ,perl)))
     (outputs '("out" "doc"))
@@ -3339,11 +3340,12 @@ routines such as routines for numerical integration and optimization.")
   (let ((scipy (package-with-python2 python-scipy)))
     (package (inherit scipy)
       ;; Use packages customized for python-2.
-      (inputs `(("python2-matplotlib" ,python2-matplotlib)
-                ("python2-numpy" ,python2-numpy)
-                ,@(alist-delete "python-matplotlib"
-                                (alist-delete "python-numpy"
-                                              (package-inputs scipy))))))))
+      (propagated-inputs
+       `(("python2-matplotlib" ,python2-matplotlib)
+         ("python2-numpy" ,python2-numpy)
+         ,@(alist-delete "python-matplotlib"
+                         (alist-delete "python-numpy"
+                                       (package-propagated-inputs scipy))))))))
 
 (define-public python-sqlalchemy
   (package
