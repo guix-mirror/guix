@@ -228,7 +228,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.8.0-gnu1")
+    (version "38.3.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -237,17 +237,9 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "11wx29mb5pcg4mgk07a6vjwh52ca90k0x4m9wv0v3y5dmp88f01p"))
-      (patches (map search-patch '("icecat-CVE-2015-4473-partial.patch"
-                                   "icecat-CVE-2015-4482.patch"
-                                   "icecat-CVE-2015-4488.patch"
-                                   "icecat-CVE-2015-4489.patch"
-                                   "icecat-CVE-2015-4491.patch"
-                                   "icecat-CVE-2015-4492.patch"
-                                   "icecat-CVE-2015-4495.patch"
-                                   "icecat-enable-acceleration-and-webgl.patch"
-                                   "icecat-freetype-2.6.patch"
-                                   "icecat-libvpx-1.4.patch")))
+        "0vm6f7f1i5vkq2713mgzjdfnm8rpz9l0q8sv4s123vsam0j9gzh8"))
+      (patches (map search-patch '("icecat-avoid-bundled-includes.patch"
+                                   "icecat-freetype-2.6.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -307,6 +299,7 @@ standards.")
        ("libevent" ,libevent)
        ("libxinerama" ,libxinerama)
        ("libxscrnsaver" ,libxscrnsaver)
+       ("libxcomposite" ,libxcomposite)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("libvpx" ,libvpx)
@@ -393,8 +386,22 @@ standards.")
                            ;; "--with-system-jpeg"
                            )
 
+       #:modules ((ice-9 ftw)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after
+          'unpack 'ensure-no-mtimes-pre-1980
+          (lambda _
+            ;; Without this, the 'source/test/addons/packed.xpi' and
+            ;; 'source/test/addons/simple-prefs.xpi' targets fail while trying
+            ;; to create zip archives.
+            (let ((early-1980 315619200)) ; 1980-01-02 UTC
+              (ftw "." (lambda (file stat flag)
+                         (unless (<= early-1980 (stat:mtime stat))
+                           (utime file early-1980 early-1980))
+                         #t))
+              #t)))
          (add-after
           'unpack 'remove-h264parse-from-blacklist
           (lambda _
@@ -402,7 +409,7 @@ standards.")
             ;; was put there to work around a bug in a pre-1.0 version of
             ;; gstreamer.  See:
             ;; https://www.mozilla.org/en-US/security/advisories/mfsa2015-47/
-            (substitute* "content/media/gstreamer/GStreamerFormatHelper.cpp"
+            (substitute* "dom/media/gstreamer/GStreamerFormatHelper.cpp"
               (("^  \"h264parse\",\n") ""))
             #t))
          (add-after
@@ -414,13 +421,12 @@ standards.")
             ;; TODO: It might be preferable to patch in absolute file names in
             ;; calls to dlopen or PR_LoadLibrary, but that didn't seem to
             ;; work.  More investigation is needed.
-            (let ((p (open-file "toolkit/library/libxul.mk" "a")))
-              (display "\nOS_LIBS += -lGL -lgnome-2 -lcanberra -lXss \\
-                                     -lcups -lgssapi_krb5 -lgstreamer-1.0 \\
-                                     -lgstapp-1.0 -lgstvideo-1.0\n"
-                       p)
-              (close-port p)
-              #t)))
+            (substitute* "toolkit/library/moz.build"
+              (("^# This needs to be last")
+               "OS_LIBS += [
+    'GL', 'gnome-2', 'canberra', 'Xss', 'cups', 'gssapi_krb5',
+    'gstreamer-1.0', 'gstapp-1.0', 'gstvideo-1.0' ]\n\n"))
+            #t))
          (replace
           'configure
           ;; configure does not work followed by both "SHELL=..." and

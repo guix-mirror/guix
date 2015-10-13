@@ -500,16 +500,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/hwloc-gather-topology-lstopo.patch	\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
-  gnu/packages/patches/icecat-CVE-2015-4473-partial.patch	\
-  gnu/packages/patches/icecat-CVE-2015-4482.patch		\
-  gnu/packages/patches/icecat-CVE-2015-4488.patch		\
-  gnu/packages/patches/icecat-CVE-2015-4489.patch		\
-  gnu/packages/patches/icecat-CVE-2015-4491.patch		\
-  gnu/packages/patches/icecat-CVE-2015-4492.patch		\
-  gnu/packages/patches/icecat-CVE-2015-4495.patch		\
-  gnu/packages/patches/icecat-enable-acceleration-and-webgl.patch \
+  gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
   gnu/packages/patches/icecat-freetype-2.6.patch		\
-  gnu/packages/patches/icecat-libvpx-1.4.patch			\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
