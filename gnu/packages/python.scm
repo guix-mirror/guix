@@ -3251,7 +3251,7 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "0.15.0")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
@@ -3259,7 +3259,7 @@ functions.")
                            "/scipy-" version ".tar.xz"))
        (sha256
         (base32
-         "0fsqi05s035d7p6s8h3h2pvk1axias16chy17rw9l1bxvrfhmncf"))))
+         "0wa0a4skpda3gx7lb12yn19nhbairlyxrvda2lz2bcawk3x5qzz2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
