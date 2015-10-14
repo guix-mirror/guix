@@ -1144,7 +1144,7 @@ optimisation framework.")
 (define-public ghc-network
   (package
     (name "ghc-network")
-    (version "2.6.0.2")
+    (version "2.6.2.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1155,7 +1155,7 @@ optimisation framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "12b7saam5ga6l4cplgkad49xa4vkynz2ri9jxidx1cxiqjcl0vc4"))))
+         "1yhvpd4wigz165jvyvw9zslx7lgqdj63jh3zv5s74b5ykdfa3zd3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
@@ -1174,7 +1174,7 @@ optimisation framework.")
 (define-public ghc-network-uri
   (package
     (name "ghc-network-uri")
-    (version "2.6.0.1")
+    (version "2.6.0.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1185,7 +1185,7 @@ optimisation framework.")
              ".tar.gz"))
        (sha256
         (base32
-         "09ymamb128jgqghpda4nixncr73all8qc6q53976aricm6a27p37"))))
+         "1pwbqb2rk4rnvllvdch42p5368xcvpkanp7bxckdhxya8zzwvhhg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)
