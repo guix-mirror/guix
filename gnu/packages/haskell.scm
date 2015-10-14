@@ -939,7 +939,7 @@ to cases.")
 (define-public ghc-syb
   (package
     (name "ghc-syb")
-    (version "0.4.4")
+    (version "0.6")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -950,7 +950,7 @@ to cases.")
              ".tar.gz"))
        (sha256
         (base32
-         "11sc9kmfvcn9bfxf227fgmny502z2h9xs3z0m9ak66lk0dw6f406"))))
+         "1p3cnqjm13677r4a966zffzhi9b3a321aln8zs8ckqj0d9z1z3d3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)
@@ -958,13 +958,12 @@ to cases.")
     (home-page
      "http://www.cs.uu.nl/wiki/GenericProgramming/SYB")
     (synopsis "Scrap Your Boilerplate")
-    (description
-     "This package contains the generics system described in the
+    (description "This package contains the generics system described in the
 /Scrap Your Boilerplate/ papers (see
-<http://www.cs.uu.nl/wiki/GenericProgramming/SYB>).
-It defines the 'Data' class of types permitting folding and unfolding
-of constructor applications, instances of this class for primitive
-types, and a variety of traversals.")
+@uref{http://www.cs.uu.nl/wiki/GenericProgramming/SYB, the website}).  It
+defines the 'Data' class of types permitting folding and unfolding of
+constructor applications, instances of this class for primitive types, and a
+variety of traversals.")
     (license bsd-3)))
 
 (define-public ghc-containers
