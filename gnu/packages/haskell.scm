@@ -484,7 +484,7 @@ versions of GHC (i.e., < 6.10).")
 (define-public cabal-install
  (package
   (name "cabal-install")
-   (version "1.18.1.0")
+   (version "1.22.6.0")
    (source
     (origin
      (method url-fetch)
@@ -493,7 +493,7 @@ versions of GHC (i.e., < 6.10).")
             version
             ".tar.gz"))
       (sha256
-       (base32 "1r1shhvnpgxf91rmbv3wa1rkd24plbgr6bpz3aj80ir0z3zbdayn"))))
+       (base32 "1d5h7h2wjwc2s3dvsvzjgmmfrfl2312ym2h6kyjgm9wnaqw9w8wx"))))
    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
    (build-system haskell-build-system)
    (propagated-inputs
