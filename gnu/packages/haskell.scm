@@ -1202,6 +1202,28 @@ optimisation framework.")
 package into this package.")
     (license bsd-3)))
 
+(define-public ghc-ansi-terminal
+  (package
+    (name "ghc-ansi-terminal")
+    (version "0.6.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/ansi-terminal/ansi-terminal-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0hpfw0k025y681m9ml1c712skrb1p4vh7z5x1f0ci9ww7ssjrh2d"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/feuerbach/ansi-terminal")
+    (synopsis "ANSI terminal support for Haskell")
+    (description "This package provides ANSI terminal support for Haskell.  It
+allows cursor movement, screen clearing, color output showing or hiding the
+cursor, and changing the title.")
+    (license bsd-3)))
+
 (define-public ghc-http
   (package
     (name "ghc-http")
