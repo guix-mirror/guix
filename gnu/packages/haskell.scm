@@ -1228,4 +1228,30 @@ lets you set up HTTP connections, transmitting requests and processing the
 responses coming back.")
     (license bsd-3)))
 
+(define-public ghc-async
+  (package
+    (name "ghc-async")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/async/async-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0azx4qk65a9a2gvqsfmz3w89m6shzr2iz0i5lly2zvly4n2d6m6v"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (propagated-inputs
+     `(("ghc-stm" ,ghc-stm)))
+    (home-page "https://github.com/simonmar/async")
+    (synopsis "Library to run IO operations asynchronously")
+    (description "Async provides a library to run IO operations
+asynchronously, and wait for their results. It is a higher-level interface
+over threads in Haskell, in which @code{Async a} is a concurrent thread that
+will eventually deliver a value of type @code{a}.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
