@@ -1375,6 +1375,32 @@ optimized for performance critical use, both in terms of large data quantities
 and high speed.")
     (license bsd-3)))
 
+(define-public ghc-uniplate
+  (package
+    (name "ghc-uniplate")
+    (version "1.6.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/uniplate/uniplate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1dx8f9aw27fz8kw0ad1nm6355w5rdl7bjvb427v2bsgnng30pipw"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "http://community.haskell.org/~ndm/uniplate/")
+    (synopsis "Simple, concise and fast generic operations")
+    (description "Uniplate is a library for writing simple and concise generic
+operations.  Uniplate has similar goals to the original Scrap Your Boilerplate
+work, but is substantially simpler and faster.")
+    (license bsd-3)))
+
 (define-public ghc-base64-bytestring
   (package
     (name "ghc-base64-bytestring")
