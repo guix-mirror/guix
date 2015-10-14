@@ -383,6 +383,36 @@ package.")
 date and time formats.")
     (license bsd-3)))
 
+(define-public ghc-old-time
+  (package
+    (name "ghc-old-time")
+    (version "1.1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/old-time/old-time-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1h9b26s3kfh2k0ih4383w90ibji6n0iwamxp6rfp2lbq1y5ibjqw"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-/bin/sh
+                    (lambda _
+                      (setenv "CONFIG_SHELL" "sh"))))))
+    (propagated-inputs
+     `(("ghc-old-locale" ,ghc-old-locale)))
+    (home-page "http://hackage.haskell.org/package/old-time")
+    (synopsis "Time compatibility library for Haskell")
+    (description "Old-time is a package for backwards compatibility with the
+old @code{time} library.  For new projects, the newer
+@uref{http://hackage.haskell.org/package/time, time library} is recommended.")
+    (license bsd-3)))
+
 (define-public ghc-data-default-instances-old-locale
   (package
     (name "ghc-data-default-instances-old-locale")
