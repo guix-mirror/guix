@@ -916,6 +916,31 @@ the paper \"Splittable Pseudorandom Number Generators Using Cryptographic
 Hashing\" by Claessen, Pałka for details and the rationale of the design.")
     (license bsd-3)))
 
+(define-public ghc-quickcheck-io
+  (package
+    (name "ghc-quickcheck-io")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/quickcheck-io/quickcheck-io-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1kf1kfw9fsmly0rvzvdf6jvdw10qhkmikyj0wcwciw6wad95w9sh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page
+     "https://github.com/hspec/quickcheck-io#readme")
+    (synopsis "Use HUnit assertions as QuickCheck properties")
+    (description "This package provides an orphan instance that allows you to
+use HUnit assertions as QuickCheck properties.")
+    (license expat)))
+
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
