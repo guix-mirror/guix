@@ -207,11 +207,11 @@ object."
 
 (define user-unmount-service-type
   (dmd-service-type
-   'user-unmount
+   'user-file-systems
    (lambda (known-mount-points)
      (dmd-service
       (documentation "Unmount manually-mounted file systems.")
-      (provision '(user-unmount))
+      (provision '(user-file-systems))
       (start #~(const #t))
       (stop #~(lambda args
                 (define (known? mount-point)
@@ -251,9 +251,9 @@ in KNOWN-MOUNT-POINTS when it is stopped."
       (dmd-service
        (documentation "When stopped, terminate all user processes.")
        (provision '(user-processes))
-       (requirement (cons 'root-file-system
-                          (map file-system->dmd-service-name
-                               requirements)))
+       (requirement (cons* 'root-file-system 'user-file-systems
+                           (map file-system->dmd-service-name
+                                requirements)))
        (start #~(const #t))
        (stop #~(lambda _
                  (define (kill-except omit signal)
