@@ -6983,6 +6983,30 @@ KVM kernel module should be loaded, and the @file{/dev/kvm} device node
 must exist and be readable and writable by the user and by the daemon's
 build users.
 
+The @command{guix system} command has even more to offer!  The following
+sub-commands allow you to visualize how your system services relate to
+each other:
+
+@anchor{system-extension-graph}
+@table @code
+
+@item extension-graph
+Emit in Dot/Graphviz format to standard output the @dfn{service
+extension graph} of the operating system defined in @var{file}
+(@pxref{Service Composition}, for more information on service
+extensions.)
+
+The command:
+
+@example
+$ guix system extension-graph @var{file} | dot -Tpdf > services.pdf
+@end example
+
+produces a PDF file showing the extension relations among services.
+
+@end table
+
+
 @node Defining Services
 @subsection Defining Services
 
@@ -7015,6 +7039,7 @@ collects device management rules and makes them available to the eudev
 daemon; the @file{/etc} service populates the system's @file{/etc}
 directory.
 
+@cindex service extensions
 GuixSD services are connected by @dfn{extensions}.  For instance, the
 secure shell service @emph{extends} dmd---GuixSD's initialization system,
 running as PID@tie{}1---by giving it the command lines to start and stop
@@ -7035,6 +7060,9 @@ as arrows, a typical system might provide something like this:
 
 At the bottom, we see the @dfn{boot service}, which produces the boot
 script that is executed at boot time from the initial RAM disk.
+@xref{system-extension-graph, the @command{guix system extension-graph}
+command}, for information on how to generate this representation for a
+particular operating system definition.
 
 @cindex service types
 Technically, developers can define @dfn{service types} to express these

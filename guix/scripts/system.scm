@@ -28,12 +28,14 @@
   #:use-module (guix profiles)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix scripts graph)
   #:use-module (guix build utils)
   #:use-module (gnu build install)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system vm)
   #:use-module (gnu system grub)
+  #:use-module (gnu services)
   #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
@@ -280,6 +282,38 @@ it atomically, and then run OS's activation script."
 
 
 ;;;
+;;; Graph.
+;;;
+
+(define (service-node-label service)
+  "Return a label to represent SERVICE."
+  (let ((type  (service-kind service))
+        (value (service-parameters service)))
+    (string-append (symbol->string (service-type-name type))
+                   (cond ((or (number? value) (symbol? value))
+                          (string-append " " (object->string value)))
+                         ((string? value)
+                          (string-append " " value))
+                         ((file-system? value)
+                          (string-append " " (file-system-mount-point value)))
+                         (else
+                          "")))))
+
+(define (service-node-type services)
+  "Return a node type for SERVICES.  Since <service> instances are not
+self-contained (they express dependencies on service types, not on services),
+we have to create the 'edges' procedure dynamically as a function of the full
+list of services."
+  (node-type
+   (name "service")
+   (description "the DAG of services")
+   (identifier (lift1 object-address %store-monad))
+   (label service-node-label)
+   (edges (lift1 (service-back-edges services) %store-monad))))
+
+
+
+;;;
 ;;; Action.
 ;;;
 
@@ -366,6 +400,16 @@ building anything."
              ;; All we had to do was to build SYS.
              (return (derivation->output-path sys))))))))
 
+(define (export-extension-graph os port)
+  "Export the service extension graph of OS to PORT."
+  (let* ((services (operating-system-services os))
+         (boot     (find (lambda (service)
+                           (eq? (service-kind service) boot-service-type))
+                         services)))
+    (export-graph (list boot) (current-output-port)
+                  #:node-type (service-node-type services)
+                  #:reverse-edges? #t)))
+
 
 ;;;
 ;;; Options.
@@ -388,7 +432,9 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (display (_ "\
    disk-image       build a disk image, suitable for a USB stick\n"))
   (display (_ "\
-   init             initialize a root file system to run GNU.\n"))
+   init             initialize a root file system to run GNU\n"))
+  (display (_ "\
+   extension-graph  emit the service extension graph in Dot format\n"))
 
   (show-build-options-help)
   (display (_ "
@@ -496,16 +542,17 @@ Build the operating system declared in FILE according to ACTION.\n"))
         (alist-cons 'argument arg result)
         (let ((action (string->symbol arg)))
           (case action
-            ((build vm vm-image disk-image reconfigure init)
+            ((build vm vm-image disk-image reconfigure init
+              extension-graph)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
 
   (define (match-pair car)
     ;; Return a procedure that matches a pair with CAR.
     (match-lambda
-     ((head . tail)
-      (and (eq? car head) tail))
-     (_ #f)))
+      ((head . tail)
+       (and (eq? car head) tail))
+      (_ #f)))
 
   (define (option-arguments opts)
     ;; Extract the plain arguments from OPTS.
@@ -561,20 +608,24 @@ Build the operating system declared in FILE according to ACTION.\n"))
       (run-with-store store
         (mbegin %store-monad
           (set-guile-for-build (default-guile))
-          (perform-action action os
-                          #:dry-run? dry?
-                          #:derivations-only? (assoc-ref opts
-                                                         'derivations-only?)
-                          #:use-substitutes? (assoc-ref opts 'substitutes?)
-                          #:image-size (assoc-ref opts 'image-size)
-                          #:full-boot? (assoc-ref opts 'full-boot?)
-                          #:mappings (filter-map (match-lambda
-                                                  (('file-system-mapping . m)
-                                                   m)
-                                                  (_ #f))
-                                                 opts)
-                          #:grub? grub?
-                          #:target target #:device device))
+          (case action
+            ((extension-graph)
+             (export-extension-graph os (current-output-port)))
+            (else
+             (perform-action action os
+                             #:dry-run? dry?
+                             #:derivations-only? (assoc-ref opts
+                                                            'derivations-only?)
+                             #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:image-size (assoc-ref opts 'image-size)
+                             #:full-boot? (assoc-ref opts 'full-boot?)
+                             #:mappings (filter-map (match-lambda
+                                                      (('file-system-mapping . m)
+                                                       m)
+                                                      (_ #f))
+                                                    opts)
+                             #:grub? grub?
+                             #:target target #:device device))))
         #:system system))))
 
 ;;; system.scm ends here
