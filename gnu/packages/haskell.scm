@@ -875,7 +875,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.8")
+    (version "2.8.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -886,7 +886,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
              ".tar.gz"))
        (sha256
         (base32
-         "04xs6mq22bcnkpi616qrbm7jlivh9csnhmvjgp1ifq52an1wr4rx"))))
+         "0fvnfl30fxmj5q920l13641ar896d53z0z6z66m7c1366lvalwvh"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
