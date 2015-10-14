@@ -1375,6 +1375,28 @@ optimized for performance critical use, both in terms of large data quantities
 and high speed.")
     (license bsd-3)))
 
+(define-public ghc-base64-bytestring
+  (package
+    (name "ghc-base64-bytestring")
+    (version "1.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/base64-bytestring/base64-bytestring-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l1v4ddjdsgi9nqzyzcxxj76rwar3lzx8gmwf2r54bqan3san9db"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f))         ; FIXME: testing libraries are missing.
+    (home-page "https://github.com/bos/base64-bytestring")
+    (synopsis "Base64 encoding and decoding for ByteStrings")
+    (description "This library provides fast base64 encoding and decoding for
+Haskell @code{ByteString}s.")
+    (license bsd-3)))
+
 (define-public ghc-annotated-wl-pprint
   (package
     (name "ghc-annotated-wl-pprint")
