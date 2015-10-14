@@ -719,7 +719,7 @@ access to the full zlib feature set.")
 (define-public ghc-text
   (package
     (name "ghc-text")
-    (version "1.2.0.4")
+    (version "1.2.1.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -730,7 +730,7 @@ access to the full zlib feature set.")
              ".tar.gz"))
        (sha256
         (base32
-         "004p1c74crs8wmjafwsmw3mmycspq1j8fpm1lvfpq6acha7bnpc6"))))
+         "0gzqx5cpkdhshbz9xss51mpyq23pnf8dwjz4h3irbv2ryaa4qdlq"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
