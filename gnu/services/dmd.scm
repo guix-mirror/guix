@@ -86,11 +86,11 @@
   ;; <dmd-service> objects.
   (service dmd-root-service-type '()))
 
-(define-syntax-rule (dmd-service-type proc)
+(define-syntax-rule (dmd-service-type service-name proc)
   "Return a <service-type> denoting a simple dmd service--i.e., the type for a
 service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
   (service-type
-   (name 'some-dmd-service)
+   (name service-name)
    (extensions
     (list (service-extension dmd-root-service-type
                              (compose list proc))))))

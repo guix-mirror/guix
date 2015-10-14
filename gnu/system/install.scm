@@ -162,6 +162,7 @@ current store is on a RAM disk."
 
 (define cow-store-service-type
   (dmd-service-type
+   'cow-store
    (lambda _
      (dmd-service
       (requirement '(root-file-system user-processes))
