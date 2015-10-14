@@ -322,10 +322,12 @@ substitutes."
 
 (define* (export-graph sinks port
                        #:key
+                       reverse-edges?
                        (node-type %package-node-type)
                        (backend %graphviz-backend))
   "Write to PORT the representation of the DAG with the given SINKS, using the
-given BACKEND.  Use NODE-TYPE to traverse the DAG."
+given BACKEND.  Use NODE-TYPE to traverse the DAG.  When REVERSE-EDGES? is
+true, draw reverse arrows."
   (match backend
     (($ <graph-backend> emit-prologue emit-epilogue emit-node emit-edge)
      (emit-prologue (node-type-name node-type) port)
@@ -349,7 +351,9 @@ given BACKEND.  Use NODE-TYPE to traverse the DAG."
                                                             dependencies)))
                      (emit-node id (node-label head) port)
                      (for-each (lambda (dependency dependency-id)
-                                 (emit-edge id dependency-id port))
+                                 (if reverse-edges?
+                                     (emit-edge dependency-id id port)
+                                     (emit-edge id dependency-id port)))
                                dependencies ids)
                      (loop (append dependencies tail)
                            (set-insert id visited)))))))))))))
