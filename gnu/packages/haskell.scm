@@ -1389,15 +1389,22 @@ and high speed.")
              ".tar.gz"))
        (sha256
         (base32
-         "0xa3j0gwr6k5vizxybnzk5fgb3pppgspi6mysnp2gwjp2dbrxkzr"))))
+         "0xa3j0gwr6k5vizxybnzk5fgb3pppgspi6mysnp2gwjp2dbrxkzr"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; The Cabal file on Hackage is updated, but the tar.gz does not
+        ;; include it.  See
+        ;; <https://hackage.haskell.org/package/split-0.2.2/revisions/>.
+        '(substitute* "split.cabal"
+           (("base <4.8") "base <4.9")))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "http://hackage.haskell.org/package/split")
-    (synopsis
-     "Combinator library for splitting lists")
-    (description "A collection of various methods for splitting lists into
-parts, akin to the 'split' function found in several mainstream languages.")
+    (synopsis "Combinator library for splitting lists")
+    (description "This package provides a collection of Haskell functions for
+splitting lists into parts, akin to the @code{split} function found in several
+mainstream languages.")
     (license bsd-3)))
 
 (define-public ghc-parsec
