@@ -824,7 +824,7 @@ library, including the ability to split random number generators.")
 (define-public ghc-primitive
   (package
     (name "ghc-primitive")
-    (version "0.5.4.0")
+    (version "0.6.1.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -835,7 +835,7 @@ library, including the ability to split random number generators.")
              ".tar.gz"))
        (sha256
         (base32
-         "05gdgj383xdrdkhxh26imlvs8ji0z28ny38ms9snpvv5i8l2lg10"))))
+         "1j1q7l21rdm8kfs93vibr3xwkkhqis181w2k6klfhx5g5skiywwk"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/haskell/primitive")
