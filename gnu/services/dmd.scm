@@ -98,17 +98,17 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
 (define-record-type* <dmd-service>
   dmd-service make-dmd-service
   dmd-service?
-  (documentation service-documentation            ; string
+  (documentation dmd-service-documentation        ;string
                  (default "[No documentation.]"))
-  (provision     service-provision)               ; list of symbols
-  (requirement   service-requirement              ; list of symbols
+  (provision     dmd-service-provision)           ;list of symbols
+  (requirement   dmd-service-requirement          ;list of symbols
                  (default '()))
-  (respawn?      service-respawn?                 ; Boolean
+  (respawn?      dmd-service-respawn?             ;Boolean
                  (default #t))
-  (start         service-start)                   ; g-expression (procedure)
-  (stop          service-stop                     ; g-expression (procedure)
+  (start         dmd-service-start)               ;g-expression (procedure)
+  (stop          dmd-service-stop                 ;g-expression (procedure)
                  (default #~(const #f)))
-  (auto-start?   service-auto-start?              ; Boolean
+  (auto-start?   dmd-service-auto-start?          ;Boolean
                  (default #t)))
 
 
@@ -127,8 +127,8 @@ failure."
                         (format #f (_ "service '~a' provided more than once")
                                 symbol)))))))
 
-          (for-each assert-unique (service-provision service))
-          (fold set-insert set (service-provision service)))
+          (for-each assert-unique (dmd-service-provision service))
+          (fold set-insert set (dmd-service-provision service)))
         (setq)
         services))
 
@@ -160,12 +160,12 @@ failure."
           (register-services
            #$@(map (lambda (service)
                      #~(make <service>
-                         #:docstring '#$(service-documentation service)
-                         #:provides '#$(service-provision service)
-                         #:requires '#$(service-requirement service)
-                         #:respawn? '#$(service-respawn? service)
-                         #:start #$(service-start service)
-                         #:stop #$(service-stop service)))
+                         #:docstring '#$(dmd-service-documentation service)
+                         #:provides '#$(dmd-service-provision service)
+                         #:requires '#$(dmd-service-requirement service)
+                         #:respawn? '#$(dmd-service-respawn? service)
+                         #:start #$(dmd-service-start service)
+                         #:stop #$(dmd-service-stop service)))
                    services))
 
           ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
@@ -173,8 +173,9 @@ failure."
 
           (format #t "starting services...~%")
           (for-each start
-                    '#$(append-map service-provision
-                                   (filter service-auto-start? services)))))
+                    '#$(append-map dmd-service-provision
+                                   (filter dmd-service-auto-start?
+                                           services)))))
 
     (gexp->file "dmd.conf" config)))
 
