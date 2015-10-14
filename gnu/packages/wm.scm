@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -191,10 +192,19 @@ developers.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hackage.haskell.org/package/xmonad/"
-                                  "xmonad-" version ".tar.gz"))
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pfjssamiwpwjp1qqkm9m9p9s35pv381m0cwg6jxg0ppglibzq1r"))))
+                "1pfjssamiwpwjp1qqkm9m9p9s35pv381m0cwg6jxg0ppglibzq1r"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Here we update the constraints on the utf8-string package in
+               ;; the Cabal file.  We allow a newer version which is compatible
+               ;; with GHC 7.10.2.  The same change is applied on Hackage.  See
+               ;; <https://hackage.haskell.org/package/xmonad-0.11.1/revisions/>.
+               '(substitute* "xmonad.cabal"
+                  (("utf8-string >= 0.3 && < 0.4")
+                   "utf8-string >= 0.3 && < 1.1")))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
