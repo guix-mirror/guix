@@ -440,7 +440,7 @@ old @code{time} library.  For new projects, the newer
 (define-public ghc-dlist
   (package
     (name "ghc-dlist")
-    (version "0.7.1.1")
+    (version "0.7.1.2")
     (source
      (origin
        (method url-fetch)
@@ -449,7 +449,7 @@ old @code{time} library.  For new projects, the newer
              version
              ".tar.gz"))
        (sha256
-        (base32 "1zayvxvkan2s2ixajdr3f5rn1gzhprzv6cww4cbpwjhzw0l7zc08"))))
+        (base32 "10rp96rryij7d8gz5kv8ygc6chm1624ck5mbnqs2a3fkdzqj2b9k"))))
     (arguments `(#:tests? #f))
     (build-system haskell-build-system)
     (home-page "https://github.com/spl/dlist")
