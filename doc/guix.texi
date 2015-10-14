@@ -7004,6 +7004,12 @@ $ guix system extension-graph @var{file} | dot -Tpdf > services.pdf
 
 produces a PDF file showing the extension relations among services.
 
+@anchor{system-dmd-graph}
+@item dmd-graph
+Emit in Dot/Graphviz format to standard output the @dfn{dependency
+graph} of dmd services of the operating system defined in @var{file}.
+@xref{dmd Services}, for more information and for an example graph.
+
 @end table
 
 
@@ -7332,10 +7338,23 @@ setuid-root programs on the system (@pxref{Setuid Programs}).
 The @code{(gnu services dmd)} provides a way to define services managed
 by GNU@tie{}dmd, which is GuixSD initialization system---the first
 process that is started when the system boots, aka. PID@tie{}1
-(@pxref{Introduction,,, dmd, GNU dmd Manual}).  The
-@var{%dmd-root-service} represents PID@tie{}1, of type
-@var{dmd-root-service-type}; it can be extended by passing it lists of
-@code{<dmd-service>} objects.
+(@pxref{Introduction,,, dmd, GNU dmd Manual}).
+
+Services in dmd can depend on each other.  For instance, the SSH daemon
+may need to be started after the syslog daemon has been started, which
+in turn can only happen once all the file systems have been mounted.
+The simple operating system defined earlier (@pxref{Using the
+Configuration System}) results in a service graph like this:
+
+@image{images/dmd-graph,,5in,Typical dmd service graph.}
+
+You can actually generate such a graph for any operating system
+definition using the @command{guix system dmd-graph} command
+(@pxref{system-dmd-graph, @command{guix system dmd-graph}}).
+
+The @var{%dmd-root-service} is a service object representing PID@tie{}1,
+of type @var{dmd-root-service-type}; it can be extended by passing it
+lists of @code{<dmd-service>} objects.
 
 @deftp {Data Type} dmd-service
 The data type representing a service managed by dmd.

@@ -36,6 +36,7 @@
   #:use-module (gnu system vm)
   #:use-module (gnu system grub)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
@@ -282,7 +283,7 @@ it atomically, and then run OS's activation script."
 
 
 ;;;
-;;; Graph.
+;;; Graphs.
 ;;;
 
 (define (service-node-label service)
@@ -311,6 +312,18 @@ list of services."
    (label service-node-label)
    (edges (lift1 (service-back-edges services) %store-monad))))
 
+(define (dmd-service-node-label service)
+  "Return a label for a node representing a <dmd-service>."
+  (string-join (map symbol->string (dmd-service-provision service))))
+
+(define (dmd-service-node-type services)
+  "Return a node type for SERVICES, a list of <dmd-service>."
+  (node-type
+   (name "dmd-service")
+   (description "the dependency graph of dmd services")
+   (identifier (lift1 dmd-service-node-label %store-monad))
+   (label dmd-service-node-label)
+   (edges (lift1 (dmd-service-back-edges services) %store-monad))))
 
 
 ;;;
@@ -410,6 +423,19 @@ building anything."
                   #:node-type (service-node-type services)
                   #:reverse-edges? #t)))
 
+(define (export-dmd-graph os port)
+  "Export the graph of dmd services of OS to PORT."
+  (let* ((services (operating-system-services os))
+         (pid1     (fold-services services
+                                  #:target-type dmd-root-service-type))
+         (dmds     (service-parameters pid1))     ;the list of <dmd-service>
+         (sinks    (filter (lambda (service)
+                             (null? (dmd-service-requirement service)))
+                           dmds)))
+    (export-graph sinks (current-output-port)
+                  #:node-type (dmd-service-node-type dmds)
+                  #:reverse-edges? #t)))
+
 
 ;;;
 ;;; Options.
@@ -435,6 +461,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
    init             initialize a root file system to run GNU\n"))
   (display (_ "\
    extension-graph  emit the service extension graph in Dot format\n"))
+  (display (_ "\
+   dmd-graph        emit the graph of dmd services in Dot format\n"))
 
   (show-build-options-help)
   (display (_ "
@@ -543,7 +571,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
         (let ((action (string->symbol arg)))
           (case action
             ((build vm vm-image disk-image reconfigure init
-              extension-graph)
+              extension-graph dmd-graph)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
 
@@ -611,6 +639,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
           (case action
             ((extension-graph)
              (export-extension-graph os (current-output-port)))
+            ((dmd-graph)
+             (export-dmd-graph os (current-output-port)))
             (else
              (perform-action action os
                              #:dry-run? dry?
