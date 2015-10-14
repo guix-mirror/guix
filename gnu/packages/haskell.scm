@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,7 +74,7 @@
 (define-public ghc
   (package
     (name "ghc")
-    (version "7.8.4")
+    (version "7.10.2")
     (source
      (origin
       (method url-fetch)
@@ -81,7 +82,7 @@
                           version "/" name "-" version "-src.tar.xz"))
       (sha256
        (base32
-        "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3"))))
+        "1x8m4rp2v7ydnrz6z9g8x7z3x3d3pxhv2pixy7i7hkbqbdsp7kal"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (outputs '("out" "doc"))
@@ -98,7 +99,7 @@
                  version "/" name "-" version "-testsuite.tar.xz"))
            (sha256
             (base32
-             "0q95whf87y4mxjzwzy899g7z7l9pazq4si6iciyhxkcdhqq2ycyh"))))))
+             "0qp9da9ar87zbyn6wjgacd2ic1vgzbi3cklxnhsmjqyafv9qaj4b"))))))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2)                ; for tests (fails with python-3)
@@ -203,7 +204,7 @@
                       (string-append ghc-bootstrap-prefix
                                      "/lib/ghc-7.8.4/terminfo-0.4.0.0")))
                 (with-directory-excursion
-                    (string-append ghc-bootstrap-path "/" ,name "-" ,version)
+                    (string-append ghc-bootstrap-path "/ghc-7.8.4")
                   (setenv "CONFIG_SHELL" (which "bash"))
                   (setenv "LD_LIBRARY_PATH" gmp-lib)
                   ;; The binaries have "/lib64/ld-linux-x86-64.so.2" hardcoded.
@@ -231,7 +232,7 @@
              'configure 'install-bin
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (with-directory-excursion
-                   (string-append ghc-bootstrap-path "/" ,name "-" ,version)
+                   (string-append ghc-bootstrap-path "/ghc-7.8.4")
                  (zero? (system* "make" "install"))))
              %standard-phases)))))))
     (home-page "https://www.haskell.org/ghc")
@@ -979,9 +980,8 @@ encourages inductive, recursive definitions of graph algorithms.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://hackage.haskell.org/package/unordered-containers/unordered-containers-"
-             version
-             ".tar.gz"))
+             "http://hackage.haskell.org/package/unordered-containers"
+             "/unordered-containers-" version ".tar.gz"))
        (sha256
         (base32
          "06l1xv7vhpxly75saxdrbc6p2zlgz1az278arfkz4rgawfnphn3f"))))
