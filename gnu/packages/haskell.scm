@@ -1205,7 +1205,7 @@ package into this package.")
 (define-public ghc-http
   (package
     (name "ghc-http")
-    (version "4000.2.19")
+    (version "4000.2.20")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1216,12 +1216,13 @@ package into this package.")
              ".tar.gz"))
        (sha256
         (base32
-         "1yzm8gimh8g0wwbixcbxg60v4l3vgi63w9v55ms0x9qnm6vrgysz"))))
+         "0nyqdxr5ls2dxkf4a1f3x15xzwdm46ppn99nkcbhswlr6s3cq1s4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
     (propagated-inputs
-     `(("ghc-parsec" ,ghc-parsec)
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-parsec" ,ghc-parsec)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-network-uri" ,ghc-network-uri)))
