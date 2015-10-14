@@ -38,12 +38,17 @@
 
             service-type
             service-type?
+            service-type-name
+            service-type-extensions
+            service-type-compose
+            service-type-extend
 
             service
             service?
             service-kind
             service-parameters
 
+            service-back-edges
             fold-services
 
             service-error?

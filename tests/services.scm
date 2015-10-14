@@ -25,6 +25,25 @@
 
 (test-begin "services")
 
+(test-assert "service-back-edges"
+  (let* ((t1 (service-type (name 't1) (extensions '())
+                           (compose +) (extend *)))
+         (t2 (service-type (name 't2)
+                           (extensions
+                            (list (service-extension t1 (const '()))))
+                           (compose +) (extend *)))
+         (t3 (service-type (name 't3)
+                           (extensions
+                            (list (service-extension t2 identity)
+                                  (service-extension t1 list)))))
+         (s1 (service t1 #t))
+         (s2 (service t2 #t))
+         (s3 (service t3 #t))
+         (e  (service-back-edges (list s1 s2 s3))))
+    (and (lset= eq? (e s1) (list s2 s3))
+         (lset= eq? (e s2) (list s3))
+         (null? (e s3)))))
+
 (test-equal "fold-services"
   ;; Make sure 'fold-services' returns the right result.  The numbers come
   ;; from services of type T3; 'xyz 60' comes from the service of type T2,
