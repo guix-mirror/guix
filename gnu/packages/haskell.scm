@@ -1821,6 +1821,35 @@ be used to extend Hspec's functionality.")
 used to test the in-development version of Hspec.")
     (license expat)))
 
+(define-public ghc-vault
+  (package
+    (name "ghc-vault")
+    (version "0.3.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/vault/vault-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0ah6qrg71krc87f4vjy4b4shdd0mgyil8fikb3j6fl4kfwlg67jn"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-hashable" ,ghc-hashable)))
+    (home-page
+     "https://github.com/HeinrichApfelmus/vault")
+    (synopsis "Persistent store for arbitrary values")
+    (description "This package provides vaults for Haskell.  A vault is a
+persistent store for values of arbitrary types.  It's like having first-class
+access to the storage space behind @code{IORefs}.  The data structure is
+analogous to a bank vault, where you can access different bank boxes with
+different keys; hence the name.  Also provided is a @code{locker} type,
+representing a store for a single element.")
+    (license bsd-3)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
