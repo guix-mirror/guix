@@ -749,7 +749,7 @@ in terms of large data quantities and high speed.")
 (define-public ghc-hashable
   (package
     (name "ghc-hashable")
-    (version "1.2.3.2")
+    (version "1.2.3.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -760,7 +760,7 @@ in terms of large data quantities and high speed.")
              ".tar.gz"))
        (sha256
         (base32
-         "0h9295pv2sgbaqlwpwbx2bap6nngm0jcdhkqham1wpjwyxqgqrlc"))))
+         "0kp4aj0x1iicz9qirpqxxqd8x5g1njbapxk1d90n406w3xykz4pw"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
