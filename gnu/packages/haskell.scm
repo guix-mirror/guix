@@ -966,36 +966,6 @@ constructor applications, instances of this class for primitive types, and a
 variety of traversals.")
     (license bsd-3)))
 
-(define-public ghc-containers
-  (package
-    (name "ghc-containers")
-    (version "0.5.6.3")
-    (outputs '("out" "doc"))
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://hackage.haskell.org/package/containers/containers-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1kcd55nl0vzi99i8sr8fmc5j25fv7m0a9hd3nihnq1pd64pfciqn"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
-    (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
-    (home-page "http://hackage.haskell.org/package/containers")
-    (synopsis "Assorted concrete container types")
-    (description
-     "This package contains efficient general-purpose implementations of
-various basic immutable container types.  The declared cost of each operation
-is either worst-case or amortized, but remains valid even if structures are
-shared.")
-    (license bsd-3)))
-
 (define-public ghc-fgl
   (package
     (name "ghc-fgl")
