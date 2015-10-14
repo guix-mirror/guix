@@ -1114,7 +1114,7 @@ is also parametric in the input stream type.")
 (define-public ghc-vector
   (package
     (name "ghc-vector")
-    (version "0.10.12.2")
+    (version "0.11.0.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1125,7 +1125,7 @@ is also parametric in the input stream type.")
              ".tar.gz"))
        (sha256
         (base32
-         "01hc71k1z9m0g0dv4zsvq5d2dvbgyc5p01hryw5c53792yi2fm25"))))
+         "1r1jlksy7b0kb0fy00g64isk6nyd9wzzdq31gx5v1wn38knj0lqa"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
@@ -1133,12 +1133,13 @@ is also parametric in the input stream type.")
     (propagated-inputs
      `(("ghc-primitive" ,ghc-primitive)))
     (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
+     `(#:tests? #f))      ; FIXME: currently missing libraries used for tests.
     (home-page "https://github.com/haskell/vector")
     (synopsis "Efficient Arrays")
-    (description "An efficient implementation of Int-indexed arrays (both
-mutable and immutable), with a powerful loop optimisation framework.")
-  (license bsd-3)))
+    (description "This library provides an efficient implementation of
+Int-indexed arrays (both mutable and immutable), with a powerful loop
+optimisation framework.")
+    (license bsd-3)))
 
 (define-public ghc-network
   (package
