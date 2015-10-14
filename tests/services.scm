@@ -18,6 +18,7 @@
 
 (define-module (test-services)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -103,6 +104,15 @@
                          s))))
       (fold-services (list s) #:target-type t1)
       #f)))
+
+(test-assert "dmd-service-back-edges"
+  (let* ((s1 (dmd-service (provision '(s1)) (start #f)))
+         (s2 (dmd-service (provision '(s2)) (requirement '(s1)) (start #f)))
+         (s3 (dmd-service (provision '(s3)) (requirement '(s1 s2)) (start #f)))
+         (e  (dmd-service-back-edges (list s1 s2 s3))))
+    (and (lset= eq? (e s1) (list s2 s3))
+         (lset= eq? (e s2) (list s3))
+         (null? (e s3)))))
 
 (test-end)
 

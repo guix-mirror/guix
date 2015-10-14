@@ -27,7 +27,9 @@
   #:use-module (gnu services)
   #:use-module (gnu packages admin)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (dmd-root-service-type
@@ -42,7 +44,9 @@
             dmd-service-respawn?
             dmd-service-start
             dmd-service-stop
-            dmd-service-auto-start?))
+            dmd-service-auto-start?
+
+            dmd-service-back-edges))
 
 ;;; Commentary:
 ;;;
@@ -178,5 +182,33 @@ failure."
                                            services)))))
 
     (gexp->file "dmd.conf" config)))
+
+(define (dmd-service-back-edges services)
+  "Return a procedure that, when given a <dmd-service> from SERVICES, returns
+the list of <dmd-service> that depend on it."
+  (define provision->service
+    (let ((services (fold (lambda (service result)
+                            (fold (cut vhash-consq <> service <>)
+                                  result
+                                  (dmd-service-provision service)))
+                          vlist-null
+                          services)))
+      (lambda (name)
+        (match (vhash-assq name services)
+          ((_ . service) service)
+          (#f            #f)))))
+
+  (define edges
+    (fold (lambda (service edges)
+            (fold (lambda (requirement edges)
+                    (vhash-consq (provision->service requirement) service
+                                 edges))
+                  edges
+                  (dmd-service-requirement service)))
+          vlist-null
+          services))
+
+  (lambda (service)
+    (vhash-foldq* cons '() service edges)))
 
 ;;; dmd.scm ends here
