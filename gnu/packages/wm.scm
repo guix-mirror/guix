@@ -243,7 +243,7 @@ tiled on several screens.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.11.3")
+    (version "0.11.4")
     (source
      (origin
        (method url-fetch)
@@ -251,10 +251,11 @@ tiled on several screens.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32
-         "14h9vr33yljymswj50wbimav263y9abdcgi07mvfis0zd08rxqxa"))))
+         "1g5cw9vvnfbiyi599fngk02zlmdhrf82x0bndhypkn6kybab6yd3"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-old-time" ,ghc-old-time)
        ("ghc-random" ,ghc-random)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
