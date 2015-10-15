@@ -36,6 +36,7 @@
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -5666,3 +5667,49 @@ a hash value.")
     (inherit python-tlsh)
     (name "python2-tlsh")
     (inputs `(("python" ,python-2)))))
+
+(define-public python-libarchive-c
+  (package
+    (name "python-libarchive-c")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/l/libarchive-c/libarchive-c-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "089lrz6xyrfnk55v35vis6jyqyyl77w093057djyspnd2744wi2n"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'build 'reference-libarchive
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Retain the absolute file name of libarchive.so.
+                     (let ((libarchive (assoc-ref inputs "libarchive")))
+                       (substitute* "libarchive/ffi.py"
+                         (("find_library\\('archive'\\)")
+                          (string-append "'" libarchive
+                                         "/lib/libarchive.so'"))))
+
+                     ;; Do not make a compressed egg (see
+                     ;; <http://bugs.gnu.org/20765>).
+                     (let ((port (open-file "setup.cfg" "a")))
+                       (display "\n[easy_install]\nzip_ok = 0\n"
+                                port)
+                       (close-port port)
+                       #t))))))
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("libarchive" ,libarchive)))
+    (home-page "https://github.com/Changaco/python-libarchive-c")
+    (synopsis "Python interface to libarchive")
+    (description
+     "This package provides Python bindings to libarchive, a C library to
+access possibly compressed archives in many different formats.  It uses
+Python's @code{ctypes} foreign function interface (FFI).")
+    (license lgpl2.0+)))
+
+(define-public python2-libarchive-c
+  (package-with-python2 python-libarchive-c))
