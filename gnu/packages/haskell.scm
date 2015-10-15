@@ -37,6 +37,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages xorg))
 
 (define ghc-bootstrap-x86_64-7.8.4
@@ -1025,6 +1026,31 @@ exceptions.")
     (synopsis "Generalise the deriving mechanism to arbitrary classes")
     (description "This package provides functionality for generalising the
 deriving mechanism in Haskell to arbitrary classes.")
+    (license bsd-3)))
+
+(define-public ghc-pcre-light
+  (package
+    (name "ghc-pcre-light")
+    (version "0.4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/pcre-light/pcre-light-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l1df2sk5qwf424bvb8mbdkr2xjg43fi92n5r22yd7vm1zz0jqvf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("pcre" ,pcre)))
+    (home-page "https://github.com/Daniel-Diaz/pcre-light")
+    (synopsis "Haskell library for Perl 5 compatible regular expressions")
+    (description "This package provides a small, efficient, and portable regex
+library for Perl 5 compatible regular expressions.  The PCRE library is a set
+of functions that implement regular expression pattern matching using the same
+syntax and semantics as Perl 5.")
     (license bsd-3)))
 
 (define-public ghc-exceptions
