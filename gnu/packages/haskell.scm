@@ -2383,6 +2383,31 @@ or timeout period.  This package provides alternative functions which use the
 unbounded @code{Integer} type.")
     (license bsd-3)))
 
+(define-public ghc-charset
+  (package
+    (name "ghc-charset")
+    (version "0.3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/charset/charset-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1gn0m96qpjww8hpp2g1as5yy0wcwy4iq73h3kz6g0yxxhcl5sh9x"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-semigroups" ,ghc-semigroups)))
+    (inputs
+     `(("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "http://github.com/ekmett/charset")
+    (synopsis "Fast unicode character sets for Haskell")
+    (description "This package provides fast unicode character sets for
+Haskell, based on complemented PATRICIA tries.")
+    (license bsd-3)))
+
 (define-public ghc-bytestring-builder
   (package
     (name "ghc-bytestring-builder")
