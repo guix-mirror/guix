@@ -1928,6 +1928,30 @@ a subset of @code{MonadBase} into which generic control operations such as
 @code{catch} can be lifted from @code{IO} or any other base monad.")
     (license bsd-3)))
 
+(define-public ghc-byteorder
+  (package
+    (name "ghc-byteorder")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/byteorder/byteorder-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "06995paxbxk8lldvarqpb3ygcjbg4v8dk4scib1rjzwlhssvn85x"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://community.haskell.org/~aslatter/code/byteorder")
+    (synopsis
+     "Exposes the native endianness of the system")
+    (description
+     "This package is for working with the native byte-ordering of the
+system.")
+    (license bsd-3)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
