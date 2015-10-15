@@ -1952,6 +1952,31 @@ a subset of @code{MonadBase} into which generic control operations such as
 system.")
     (license bsd-3)))
 
+(define-public ghc-base-compat
+  (package
+    (name "ghc-base-compat")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/base-compat/base-compat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "02m93hzgxg4bcnp7xcc2fdh2hrsc2h6fwl8hix5nx9k864kwf41q"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://hackage.haskell.org/package/base-compat")
+    (synopsis "Haskell compiler compatibility library")
+    (description "This library provides functions available in later versions
+of base to a wider range of compilers, without requiring the use of CPP
+pragmas in your code.")
+    (license bsd-3)))
+
 (define-public ghc-easy-file
   (package
     (name "ghc-easy-file")
