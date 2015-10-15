@@ -1847,4 +1847,29 @@ over threads in Haskell, in which @code{Async a} is a concurrent thread that
 will eventually deliver a value of type @code{a}.")
     (license bsd-3)))
 
+(define-public ghc-fingertree
+  (package
+    (name "ghc-fingertree")
+    (version "0.1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/fingertree/fingertree-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1w6x3kp3by5yjmam6wlrf9vap5l5rrqaip0djbrdp0fpf2imn30n"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (home-page "http://hackage.haskell.org/package/fingertree")
+    (synopsis "Generic finger-tree structure")
+    (description "This library provides finger trees, a general sequence
+representation with arbitrary annotations, for use as a base for
+implementations of various collection types.  It includes examples, as
+described in section 4 of Ralf Hinze and Ross Paterson, \"Finger trees: a
+simple general-purpose data structure\".")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
