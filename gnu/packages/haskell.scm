@@ -1416,6 +1416,30 @@ responses coming back.")
 @uref{https://github.com/sol/hspec-expectations#readme, the README}.")
     (license expat)))
 
+(define-public hspec-discover
+  (package
+    (name "hspec-discover")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hspec-discover/hspec-discover-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0w3awzbljf4hqhxrjrxqa1lfcclg92bhmq641gz2q80vycspapzx"))))
+    (build-system haskell-build-system)
+    (arguments `(#:haddock? #f)) ; Haddock phase fails because there are no
+                                 ; documentation files.
+    (inputs `(("ghc-hspec-meta" ,ghc-hspec-meta)))
+    (home-page "http://hspec.github.io/")
+    (synopsis "Automatically discover and run Hspec tests")
+    (description "hspec-discover is a tool which automatically discovers and
+runs Hspec tests.")
+    (license expat)))
+
 (define-public ghc-hspec-core
   (package
     (name "ghc-hspec-core")
