@@ -244,6 +244,28 @@
 interactive environment for the functional language Haskell.")
     (license bsd-3)))
 
+(define-public ghc-prelude-extras
+  (package
+    (name "ghc-prelude-extras")
+    (version "0.4.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/prelude-extras/prelude-extras-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1q7mj9hysy747vimnlyrwsk1wb2axymxixa76fwcbcnmz3fi4llp"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/ekmett/prelude-extras")
+    (synopsis "Higher order versions of Prelude classes")
+    (description "This library provides higher order versions of
+@code{Prelude} classes to ease programming with polymorphic recursion and
+reduce @code{UndecidableInstances}.")
+    (license bsd-3)))
+
 (define-public ghc-data-default
   (package
     (name "ghc-data-default")
