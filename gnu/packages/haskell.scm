@@ -3971,4 +3971,38 @@ library for the Haskell language.  It defines a common protocol for
 communication between web applications and web servers.")
     (license bsd-3)))
 
+(define-public ghc-wai-logger
+  (package
+    (name "ghc-wai-logger")
+    (version "2.2.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/wai-logger/wai-logger-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s6svvy3ci4j1dj1jaw8hg628miwj8f5gpy9n8d8hpsaxav6nzgk"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Tests cannot find libraries exported
+                               ; by propagated-inputs.
+    (propagated-inputs
+     `(("ghc-auto-update" ,ghc-auto-update)
+       ("ghc-byteorder" ,ghc-byteorder)
+       ("ghc-easy-file" ,ghc-easy-file)
+       ("ghc-unix-time" ,ghc-unix-time)))
+    (inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-fast-logger" ,ghc-fast-logger)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-network" ,ghc-network)
+       ("ghc-wai" ,ghc-wai)))
+    (home-page "http://hackage.haskell.org/package/wai-logger")
+    (synopsis "Logging system for WAI")
+    (description "This package provides the logging system for WAI.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
