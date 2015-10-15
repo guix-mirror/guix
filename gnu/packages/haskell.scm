@@ -450,8 +450,9 @@ old @code{time} library.  For new projects, the newer
              ".tar.gz"))
        (sha256
         (base32 "10rp96rryij7d8gz5kv8ygc6chm1624ck5mbnqs2a3fkdzqj2b9k"))))
-    (arguments `(#:tests? #f))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/spl/dlist")
     (synopsis "Difference lists")
     (description
