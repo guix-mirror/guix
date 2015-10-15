@@ -32,6 +32,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libedit)
@@ -4241,5 +4242,66 @@ communication between web applications and web servers.")
     (description "This library provides basic WAI handlers and middleware
 functionality.")
     (license expat)))
+
+(define-public idris
+  (package
+    (name "idris")
+    (version "0.9.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/idris-"
+                           version "/idris-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10641svdsjlxbxmbvylpia04cz5nn9486lpiay8ibqcrc1792qgc"))
+       (modules '((guix build utils)))
+       (snippet
+        '(substitute* "idris.cabal"
+           ;; Package description file has a too-tight version restriction,
+           ;; rendering it incompatible with GHC 7.10.2.  This is fixed
+           ;; upstream.  See
+           ;; <https://github.com/idris-lang/Idris-dev/issues/2734>.
+           (("vector < 0.11") "vector < 0.12")))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'patch-cc-command
+                              (lambda _
+                                (setenv "CC" "gcc"))))))
+    (inputs
+     `(("gmp" ,gmp)
+       ("ncurses" ,ncurses)
+       ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-cheapskate" ,ghc-cheapskate)
+       ("ghc-fingertree" ,ghc-fingertree)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-parsers" ,ghc-parsers)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-split" ,ghc-split)
+       ("ghc-text" ,ghc-text)
+       ("ghc-trifecta" ,ghc-trifecta)
+       ("ghc-uniplate" ,ghc-uniplate)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-zip-archive" ,ghc-zip-archive)
+       ("ghc-zlib" ,ghc-zlib)))
+    (home-page "http://www.idris-lang.org")
+    (synopsis "General purpose language with full dependent types")
+    (description "Idris is a general purpose language with full dependent
+types.  It is compiled, with eager evaluation.  Dependent types allow types to
+be predicated on values, meaning that some aspects of a program's behaviour
+can be specified precisely in the type.  The language is closely related to
+Epigram and Agda.")
+    (license bsd-3)))
 
 ;;; haskell.scm ends here
