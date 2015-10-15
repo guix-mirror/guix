@@ -1290,6 +1290,35 @@ installed.")
 writing to stdout and other handles.")
     (license bsd-3)))
 
+(define-public ghc-quickcheck-instances
+  (package
+    (name "ghc-quickcheck-instances")
+    (version "0.3.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/"
+             "quickcheck-instances/quickcheck-instances-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "041s6963czs1pz0fc9cx17lgd6p83czqy2nxji7bhxqxwl2j15h2"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-text" ,ghc-text)))
+    (home-page
+     "https://github.com/aslatter/qc-instances")
+    (synopsis "Common quickcheck instances")
+    (description "This package provides QuickCheck instances for types
+provided by the Haskell Platform.")
+    (license bsd-3)))
+
 (define-public ghc-quickcheck-unicode
   (package
     (name "ghc-quickcheck-unicode")
