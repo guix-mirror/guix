@@ -20,7 +20,7 @@
 
 (define-module (gnu packages haskell)
   #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:select (bsd-3 lgpl2.1 expat))
+  #:use-module ((guix licenses) #:select (bsd-3 lgpl2.1 lgpl2.1+ gpl3+ expat))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -412,6 +412,34 @@ string.  The primary aim of this package is teaching and understanding; there
 are no options for manipulating the reflected expressions beyond showing
 them.")
     (license bsd-3)))
+
+(define-public cpphs
+  (package
+    (name "cpphs")
+    (version "1.19.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/" name "/"
+             name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1njpmxgpah5pcqppcl1cxb5xicf6xlqrd162qm12khp9hainlm72"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-polyparse" ,ghc-polyparse)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-old-time" ,ghc-old-time)))
+    (home-page "http://projects.haskell.org/cpphs/")
+    (synopsis "Liberalised re-implementation of cpp, the C pre-processor")
+    (description "Cpphs is a re-implementation of the C pre-processor that is
+both more compatible with Haskell, and itself written in Haskell so that it
+can be distributed with compilers.  This version of the C pre-processor is
+pretty-much feature-complete and compatible with traditional (K&R)
+pre-processors.  Additional features include: a plain-text mode; an option to
+unlit literate code files; and an option to turn off macro-expansion.")
+    (license (list lgpl2.1+ gpl3+))))
 
 (define-public ghc-reflection
   (package
