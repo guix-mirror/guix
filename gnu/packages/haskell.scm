@@ -1175,6 +1175,29 @@ installed.")
 writing to stdout and other handles.")
     (license bsd-3)))
 
+(define-public ghc-quickcheck-unicode
+  (package
+    (name "ghc-quickcheck-unicode")
+    (version "1.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/quickcheck-unicode/quickcheck-unicode-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1a8nl6x7l9b22yx61wm0bh2n1xzb1hd5i5zgg1w4fpaivjnrrhi4"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page
+     "https://github.com/bos/quickcheck-unicode")
+    (synopsis "Generator functions Unicode-related tests")
+    (description "This package provides generator and shrink functions for
+testing Unicode-related software.")
+    (license bsd-3)))
+
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
