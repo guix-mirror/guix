@@ -1162,6 +1162,32 @@ aimed particularly at dealing efficiently with network protocols and
 complicated text/binary file formats.")
     (license bsd-3)))
 
+(define-public ghc-css-text
+  (package
+    (name "ghc-css-text")
+    (version "0.1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/css-text/css-text-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1xi1n2f0g8y43p95lynhcg50wxbq7hqfzbfzm7fy8mn7gvd920nw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://www.yesodweb.com/")
+    (synopsis "CSS parser and renderer")
+    (description "This package provides a CSS parser and renderer for
+Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
