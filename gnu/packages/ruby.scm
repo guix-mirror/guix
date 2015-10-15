@@ -752,6 +752,28 @@ standard output stream.")
     (home-page "https://github.com/geemus/shindo")
     (license license:expat)))
 
+(define-public ruby-rubygems-tasks
+  (package
+    (name "ruby-rubygems-tasks")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rubygems-tasks" version))
+              (sha256
+               (base32
+                "16cp45qlbcglnqdm4f1vj3diywdz4v024saqpgrz6palf0wmgz2j"))))
+    (build-system ruby-build-system)
+    ;; Tests need Internet access.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Rake tasks for managing and releasing Ruby Gems")
+    (description "Rubygems-task provides Rake tasks for managing and releasing
+Ruby Gems.")
+    (home-page "https://github.com/postmodern/rubygems-tasks")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
