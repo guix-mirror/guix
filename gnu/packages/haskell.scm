@@ -1322,6 +1322,35 @@ that you can use them without linking against Cabal or depending on it being
 installed.")
     (license bsd-3)))
 
+(define-public ghc-temporary-rc
+  (package
+    (name "ghc-temporary-rc")
+    (version "1.2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/temporary-rc/temporary-rc-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1nqih0qks439k3pr5kmbbc8rjdw730slrxlflqb27fbxbzb8skqs"))))
+    (build-system haskell-build-system)
+    (propagated-inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (home-page
+     "http://www.github.com/feuerbach/temporary")
+    (synopsis
+     "Portable temporary file and directory support")
+    (description
+     "The functions for creating temporary files and directories in the base
+library are quite limited.  The unixutils package contains some good ones, but
+they aren't portable to Windows.  This library just repackages the Cabal
+implementations of its own temporary file and folder functions so that you can
+use them without linking against Cabal or depending on it being installed.
+This is a better maintained fork of the \"temporary\" package.")
+    (license bsd-3)))
+
 (define-public ghc-silently
   (package
     (name "ghc-silently")
