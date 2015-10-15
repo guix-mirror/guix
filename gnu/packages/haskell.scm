@@ -1394,6 +1394,28 @@ lets you set up HTTP connections, transmitting requests and processing the
 responses coming back.")
     (license bsd-3)))
 
+(define-public ghc-hspec-expectations
+  (package
+    (name "ghc-hspec-expectations")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hspec-expectations/hspec-expectations-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1w56jiqfyl237sr207gh3b0l8sr9layy0mdsgd5wknzb49mif6ip"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/sol/hspec-expectations")
+    (synopsis "Catchy combinators for HUnit")
+    (description "This library provides catchy combinators for HUnit, see
+@uref{https://github.com/sol/hspec-expectations#readme, the README}.")
+    (license expat)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
