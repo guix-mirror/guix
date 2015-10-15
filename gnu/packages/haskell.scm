@@ -2030,6 +2030,31 @@ interoperate with code that uses the new implementation.")
 library for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-blaze-html
+  (package
+    (name "ghc-blaze-html")
+    (version "0.8.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/blaze-html/blaze-html-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1dnw50kh0s405cg9i2y4a8awanhj3bqzk21jwgfza65kcjby7lpq"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (propagated-inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-text" ,ghc-text)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)))
+    (home-page "http://jaspervdj.be/blaze")
+    (synopsis "Fast HTML combinator library")
+    (description "This library provides HTML combinators for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-easy-file
   (package
     (name "ghc-easy-file")
