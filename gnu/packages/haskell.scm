@@ -1378,6 +1378,39 @@ properties for all test cases up to some depth.  The test cases are generated
 automatically by SmallCheck.")
     (license bsd-3)))
 
+(define-public ghc-tasty-ant-xml
+  (package
+    (name "ghc-tasty-ant-xml")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tasty-ant-xml/tasty-ant-xml-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0pgz2lclg2hp72ykljcbxd88pjanfdfk8m5vb2qzcyjr85kwrhxv"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-generic-deriving" ,ghc-generic-deriving)
+       ("ghc-xml" ,ghc-xml)))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)))
+    (home-page
+     "http://github.com/ocharles/tasty-ant-xml")
+    (synopsis
+     "Render tasty output to XML for Jenkins")
+    (description
+     "A tasty ingredient to output test results in XML, using the Ant
+schema.  This XML can be consumed by the Jenkins continuous integration
+framework.")
+    (license bsd-3)))
+
 (define-public ghc-tasty-smallcheck
   (package
     (name "ghc-tasty-smallcheck")
