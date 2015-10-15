@@ -1267,6 +1267,36 @@ similar to @code{binary}, that introduces an @code{isolate} primitive for
 parser isolation, and labeled blocks for better error messages.")
     (license bsd-3)))
 
+(define-public ghc-comonad
+  (package
+    (name "ghc-comonad")
+    (version "4.2.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/comonad/comonad-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0arvbaxgkawzdp38hh53akkahjg2aa3kj2b4ns0ni8a5ylg2cqmp"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-distributive" ,ghc-distributive)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-contravariant" ,ghc-contravariant)))
+    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
+                               ; -package contravariant-1.3.3"
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-contravariant" ,ghc-contravariant)))
+    (home-page "http://github.com/ekmett/comonad/")
+    (synopsis "Comonads for Haskell")
+    (description "This library provides @code{Comonad}s for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
