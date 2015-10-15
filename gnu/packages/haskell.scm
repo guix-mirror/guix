@@ -362,6 +362,27 @@ package.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-old-locale
+  (package
+    (name "ghc-old-locale")
+    (version "1.0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/old-locale/old-locale-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "0l3viphiszvz5wqzg7a45zp40grwlab941q5ay29iyw8p3v8pbyv"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/old-locale")
+    (synopsis "Adapt to locale conventions")
+    (description
+     "This package provides the ability to adapt to locale conventions such as
+date and time formats.")
+    (license bsd-3)))
+
 (define-public ghc-data-default-instances-old-locale
   (package
     (name "ghc-data-default-instances-old-locale")
@@ -377,7 +398,8 @@ package.")
           (base32 "00h81i5phib741yj517p8mbnc48myvfj8axzsw44k34m48lv1lv0"))))
     (build-system haskell-build-system)
     (propagated-inputs
-      `(("ghc-data-default-class" ,ghc-data-default-class)))
+     `(("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-old-locale" ,ghc-old-locale)))
     (home-page
       "http://hackage.haskell.org/package/data-default-instances-old-locale")
     (synopsis "Default instances for types in old-locale")
