@@ -3249,6 +3249,39 @@ f} makes no constraining assumptions beyond those given by @code{f} and the
 definition of @code{Monad}.")
     (license bsd-3)))
 
+(define-public ghc-adjunctions
+  (package
+    (name "ghc-adjunctions")
+    (version "4.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/adjunctions/adjunctions-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "00p030iypjzjib8pxz1x6mxfi59wvyrwjj11zv9bh766dgkdbwjq"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-profunctors" ,ghc-profunctors)))
+    (inputs
+     `(("ghc-comonad" ,ghc-comonad)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-free" ,ghc-free)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-void" ,ghc-void)))
+    (home-page "http://github.com/ekmett/adjunctions/")
+    (synopsis "Adjunctions and representable functors")
+    (description "This library provides adjunctions and representable functors
+for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-fast-logger
   (package
     (name "ghc-fast-logger")
