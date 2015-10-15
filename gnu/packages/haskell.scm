@@ -3152,4 +3152,40 @@ and space efficient.  They are represented using
 notation}.")
     (license bsd-3)))
 
+(define-public ghc-aeson
+  (package
+    (name "ghc-aeson")
+    (version "0.10.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/aeson/aeson-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19kp33rfivr4d3myyr8xn803wd7p8x5nc4wb3qvlgjwgyqjaxvrz"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (propagated-inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-vector" ,ghc-vector)))
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/bos/aeson")
+    (synopsis "Fast JSON parsing and encoding")
+    (description "This package provides a JSON parsing and encoding library
+for Haskell, optimized for ease of use and high performance.  (A note on
+naming: in Greek mythology, Aeson was the father of Jason.)")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
