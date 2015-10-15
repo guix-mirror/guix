@@ -1902,6 +1902,32 @@ representing a store for a single element.")
 manipulating monad transformer stacks.")
     (license bsd-3)))
 
+(define-public ghc-monad-control
+  (package
+    (name "ghc-monad-control")
+    (version "1.0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/monad-control"
+             "/monad-control-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07pn1p4m80wdd7gw62s4yny8rbvm60ka1q8qx5y1plznd8sbg179"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://github.com/basvandijk/monad-control")
+    (synopsis "Monad transformers to lift control operations like exception
+catching")
+    (description "This package defines the type class @code{MonadBaseControl},
+a subset of @code{MonadBase} into which generic control operations such as
+@code{catch} can be lifted from @code{IO} or any other base monad.")
+    (license bsd-3)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
