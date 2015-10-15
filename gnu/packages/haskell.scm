@@ -1219,6 +1219,32 @@ Haskell.")
 modifying, and extracting files from zip archives in Haskell.")
     (license bsd-3)))
 
+(define-public ghc-distributive
+  (package
+    (name "ghc-distributive")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/distributive/distributive-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0s2ln9jv7bh4ri2y31178pvjl8x6nik5d0klx7j2b77yjlsgblc2"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: fails with "cannot satisfy -package
+                               ; tagged-0.8.1".  Suspected Cabal issue.
+    (propagated-inputs
+     `(("ghc-tagged" ,ghc-tagged)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "http://github.com/ekmett/distributive/")
+    (synopsis "Distributive functors for Haskell")
+    (description "This package provides distributive functors for Haskell.
+Dual to @code{Traversable}.")
+    (license bsd-3)))
+
 (define-public ghc-cereal
   (package
     (name "ghc-cereal")
