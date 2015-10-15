@@ -1952,6 +1952,27 @@ a subset of @code{MonadBase} into which generic control operations such as
 system.")
     (license bsd-3)))
 
+(define-public ghc-easy-file
+  (package
+    (name "ghc-easy-file")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/easy-file/easy-file-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0v75081bx4qzlqy29hh639nzlr7dncwza3qxbzm9njc4jarf31pz"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://github.com/kazu-yamamoto/easy-file")
+    (synopsis "File handling library for Haskell")
+    (description "This library provides file handling utilities for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
