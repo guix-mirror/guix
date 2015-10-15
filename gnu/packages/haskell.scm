@@ -2456,6 +2456,33 @@ given term should not exist.")
 in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
     (license bsd-3)))
 
+(define-public ghc-digest
+  (package
+    (name "ghc-digest")
+    (version "0.0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/digest/digest-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "04gy2zp8yzvv7j9bdfvmfzcz3sqyqa6rwslqcn4vyair2vmif5v4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page
+     "http://hackage.haskell.org/package/digest")
+    (synopsis
+     "Various cryptographic hashes for bytestrings")
+    (description
+     "This package provides efficient cryptographic hash implementations for
+strict and lazy bytestrings.  For now, CRC32 and Adler32 are supported; they
+are implemented as FFI bindings to efficient code from zlib.")
+    (license bsd-3)))
+
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
