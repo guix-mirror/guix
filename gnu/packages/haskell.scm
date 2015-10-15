@@ -968,6 +968,38 @@ transformers 0.2 or 0.3 compatibility to run on old versions of the platform,
 but also need those types.")
     (license bsd-3)))
 
+(define-public ghc-unix-time
+  (package
+    (name "ghc-unix-time")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/unix-time/unix-time-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0dyvyxwaffb94bgri1wc4b9wqaasy32pyjn0lww3dqblxv8fn5ax"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:tests? #f ; FIXME: Test fails with "System.Time not found".  This is
+                   ; weird, that should be provided by GHC 7.10.2.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-/bin/sh
+                    (lambda _
+                      (setenv "CONFIG_SHELL" "sh"))))))
+    (propagated-inputs
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-old-locale" ,ghc-old-locale)))
+    (home-page "http://hackage.haskell.org/package/unix-time")
+    (synopsis "Unix time parser/formatter and utilities")
+    (description "This library provides fast parsing and formatting utilities
+for Unix time in Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-iproute
   (package
     (name "ghc-iproute")
