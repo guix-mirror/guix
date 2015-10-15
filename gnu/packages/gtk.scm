@@ -731,14 +731,15 @@ documents.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.11.2")
+    (version "1.12.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://cairographics.org/releases/cairomm-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "138052ybc58q5yl92m2p0br0k0a9g1pi9gfhmn4y220yih4pgxnc"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/cairomm/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1rmgs6zjj2vaxh9hsa0944m23fdn1psycqh7bi984qd8jj1xljm5"))))
     (build-system gnu-build-system)
     (arguments
      ;; The examples lack -lcairo.
