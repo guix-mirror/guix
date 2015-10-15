@@ -72,6 +72,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
@@ -5617,3 +5618,51 @@ Python Package Index (PyPI).")
 
 (define-public python2-pip
   (package-with-python2 python-pip))
+
+(define-public python-tlsh
+  (package
+    (name "python-tlsh")
+    (version "3.4.1")                             ;according to CMakeLists.txt
+    (home-page "https://github.com/trendmicro/tlsh")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    ;; This is a commit right after 3.4.1; see
+                    ;; <https://github.com/trendmicro/tlsh/issues/9>.
+                    (commit "3ae3f1f")))
+              (sha256
+               (base32
+                "12cvnr5ndm5cg6i7lch93id90kgwgrigjgrj8f186nh3h4bf9chj"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:out-of-source? #f
+       #:phases (modify-phases %standard-phases
+                  (replace
+                   'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Build and install the Python bindings.  The underlying
+                     ;; C++ library is apparently not meant to be installed.
+                     (let ((out (assoc-ref outputs "out")))
+                       (with-directory-excursion "py_ext"
+                         (and (system* "python" "setup.py" "build")
+                              (system* "python" "setup.py" "install"
+                                       (string-append "--prefix=" out))))))))))
+    (inputs `(("python" ,python-wrapper)))        ;for the bindings
+    (synopsis "Fuzzy matching library for Python")
+    (description
+     "Trend Micro Locality Sensitive Hash (TLSH) is a fuzzy matching library.
+Given a byte stream with a minimum length of 256 bytes, TLSH generates a hash
+value which can be used for similarity comparisons.  Similar objects have
+similar hash values, which allows for the detection of similar objects by
+comparing their hash values.  The byte stream should have a sufficient amount
+of complexity; for example, a byte stream of identical bytes will not generate
+a hash value.")
+    (license asl2.0)))
+
+(define-public python2-tlsh
+  (package
+    (inherit python-tlsh)
+    (name "python2-tlsh")
+    (inputs `(("python" ,python-2)))))
