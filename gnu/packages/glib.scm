@@ -269,7 +269,7 @@ bindings to call into the C library.")
 (define intltool
   (package
     (name "intltool")
-    (version "0.50.2")
+    (version "0.51.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://launchpad.net/intltool/trunk/"
@@ -277,7 +277,7 @@ bindings to call into the C library.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01j4yd7i84n9nk4ccs6yifg84pp68nr9by57jdbhj7dpdxf5rwk7"))))
+               "1karx4sb7bnm2j67q0q74hspkfn6lqprpy5r99vkn5bb36a4viv7"))))
     (build-system gnu-build-system)
     (inputs
      `(("file" ,file)))
