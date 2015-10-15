@@ -474,6 +474,9 @@ export DBUS_FATAL_WARNINGS=0
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
 
+# Allow GStreamer-based applications to find plugins.
+export GST_PLUGIN_PATH=\"$HOME/.guix-profile/lib/gstreamer-1.0\"
+
 if [ -n \"$BASH_VERSION\" -a -f /etc/bashrc ]
 then
   # Load Bash-specific initialization code.
