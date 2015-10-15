@@ -2174,4 +2174,39 @@ command line options in Haskell.")
 available in later versions of base to a wider (older) range of compilers.")
     (license bsd-3)))
 
+(define-public ghc-doctest
+  (package
+    (name "ghc-doctest")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/doctest/doctest-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jbyhzbi2hfrfg7vbkpj6vriaap8cn99nnmzwcfscwaijz09jyrm"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f))          ; FIXME: missing test framework
+    (propagated-inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-paths" ,ghc-paths)))
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-setenv" ,ghc-setenv)))
+    (home-page
+     "https://github.com/sol/doctest#readme")
+    (synopsis "Test interactive Haskell examples")
+    (description "The doctest program checks examples in source code comments.
+It is modeled after doctest for Python, see
+@uref{http://docs.python.org/library/doctest.html, the Doctest website}.")
+    (license expat)))
+
 ;;; haskell.scm ends here
