@@ -962,6 +962,28 @@ but also need those types.")
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (license bsd-3)))
 
+(define-public ghc-appar
+  (package
+    (name "ghc-appar")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/appar/appar-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "09jb9ij78fdkz2qk66rw99q19qnm504dpv0yq0pjsl6xwjmndsjq"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/appar")
+    (synopsis "Simple applicative parser")
+    (description "This package provides a simple applicative parser in Parsec
+style.")
+    (license bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
