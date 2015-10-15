@@ -1872,4 +1872,27 @@ described in section 4 of Ralf Hinze and Ross Paterson, \"Finger trees: a
 simple general-purpose data structure\".")
     (license bsd-3)))
 
+(define-public ghc-optparse-applicative
+  (package
+    (name "ghc-optparse-applicative")
+    (version "0.11.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/optparse-applicative"
+             "/optparse-applicative-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ni52ii9555jngljvzxn1ngicr6i2w647ww3rzhdrmng04y95iii"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
+    (home-page "https://github.com/pcapriotti/optparse-applicative")
+    (synopsis "Utilities and combinators for parsing command line options")
+    (description "This package provides utilities and combinators for parsing
+command line options in Haskell.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
