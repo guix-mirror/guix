@@ -2863,4 +2863,27 @@ you combine your unit tests, golden tests, QuickCheck/SmallCheck properties,
 and any other types of tests into a single test suite.")
     (license expat)))
 
+(define-public ghc-tasty-hunit
+  (package
+    (name "ghc-tasty-hunit")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tasty-hunit/tasty-hunit-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "08qnxaw34wfnzi9irs1jd4d0zczqm3k5ffkd4zwhkz0dflmgq7mf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tasty" ,ghc-tasty)))
+    (home-page "http://documentup.com/feuerbach/tasty")
+    (synopsis "HUnit support for the Tasty test framework")
+    (description "This package provides HUnit support for the Tasty Haskell
+test framework.")
+    (license expat)))
+
 ;;; haskell.scm ends here
