@@ -2005,6 +2005,31 @@ bridge to the new builder, so that code that uses the old interface can
 interoperate with code that uses the new implementation.")
     (license bsd-3)))
 
+(define-public ghc-blaze-markup
+  (package
+    (name "ghc-blaze-markup")
+    (version "0.7.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/blaze-markup/blaze-markup-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "080vlhd8dwjxrma4bb524lh8gxs5lm3xh122icy6lnnyipla0s9y"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (propagated-inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-text" ,ghc-text)))
+    (home-page "http://jaspervdj.be/blaze")
+    (synopsis "Fast markup combinator library for Haskell")
+    (description "This library provides core modules of a markup combinator
+library for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-easy-file
   (package
     (name "ghc-easy-file")
