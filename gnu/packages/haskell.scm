@@ -1400,6 +1400,35 @@ this package makes them available back to GHC 7.2.")
     (description "This library provides profunctors for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-reducers
+  (package
+    (name "ghc-reducers")
+    (version "3.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/reducers/reducers-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0pkddg0s3cn759miq0nfrq7lnp3imk5sx784ihsilsbjh9kvffz4"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-semigroupoids" ,ghc-semigroupoids)))
+    (inputs
+     `(("ghc-fingertree" ,ghc-fingertree)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "http://github.com/ekmett/reducers/")
+    (synopsis "Semigroups, specialized containers and a general map/reduce framework")
+    (description "This library provides various semigroups, specialized
+containers and a general map/reduce framework for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
