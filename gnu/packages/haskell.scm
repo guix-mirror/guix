@@ -1024,6 +1024,35 @@ package.  This package re-exports the unix package when available.  When it
 isn't available, portable implementations are used.")
     (license bsd-3)))
 
+(define-public ghc-http-types
+  (package
+    (name "ghc-http-types")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/http-types/http-types-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0ny15jgm5skhs2yx6snr13lrnw19hwjgfygrpsmhib8wqa8cz8cc"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Tests cannot find
+                               ; Blaze.Bytestring.Builder, which should be
+                               ; provided by ghc-blaze-builder.
+    (propagated-inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)))
+    (inputs
+     `(("ghc-text" ,ghc-text)))
+    (home-page "https://github.com/aristidb/http-types")
+    (synopsis "Generic HTTP types for Haskell")
+    (description "This package provides generic HTTP types for Haskell (for
+both client and server code).")
+    (license bsd-3)))
+
 (define-public ghc-iproute
   (package
     (name "ghc-iproute")
