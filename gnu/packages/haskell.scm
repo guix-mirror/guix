@@ -984,6 +984,28 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
 style.")
     (license bsd-3)))
 
+(define-public ghc-safe
+  (package
+    (name "ghc-safe")
+    (version "0.3.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/safe/safe-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jdnp5zhvalf1xy8i872n29nljfjz6lnl9ghj80ffisrnnkrwcfh"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/ndmitchell/safe#readme")
+    (synopsis "Library of safe (exception free) functions")
+    (description "This library provides wrappers around @code{Prelude} and
+@code{Data.List} functions, such as @code{head} and @code{!!}, that can throw
+exceptions.")
+    (license bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
