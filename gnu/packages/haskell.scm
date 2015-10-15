@@ -1416,6 +1416,38 @@ responses coming back.")
 @uref{https://github.com/sol/hspec-expectations#readme, the README}.")
     (license expat)))
 
+(define-public ghc-hspec-core
+  (package
+    (name "ghc-hspec-core")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hspec-core/hspec-core-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1wgd55k652jaf81nkvciyqi67ycj7zamr4nd9z1cqf8nr9fc3sa4"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (propagated-inputs
+     `(("ghc-setenv" ,ghc-setenv)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-async" ,ghc-async)
+       ("ghc-quickcheck-io" ,ghc-quickcheck-io)))
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
+       ("ghc-silently" ,ghc-silently)))
+    (home-page "http://hspec.github.io/")
+    (synopsis "Testing framework for Haskell")
+    (description "This library exposes internal types and functions that can
+be used to extend Hspec's functionality.")
+    (license expat)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
