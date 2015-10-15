@@ -249,7 +249,8 @@ to be modified."
 
 (guix-command-define-argument-improver
     guix-command-improve-system-argument
-  '(("vm-image"    :char ?V)
+  '(("disk-image"  :char ?D)
+    ("vm-image"    :char ?V)
     ("--on-error"  :char ?E)
     ("--no-grub"   :char ?g)
     ("--full-boot" :char ?b)))
