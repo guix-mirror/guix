@@ -2479,6 +2479,33 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
     (description "This package provides bifunctors for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-contravariant
+  (package
+    (name "ghc-contravariant")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/contravariant/contravariant-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "184hcmhsznqrkmqlc1kza9pb5p591anva574ry8wrh81vqmhwfb5"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-void" ,ghc-void)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-statevar" ,ghc-statevar)))
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)))
+    (home-page
+     "http://github.com/ekmett/contravariant/")
+    (synopsis "Contravariant functors")
+    (description "Contravariant functors for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
