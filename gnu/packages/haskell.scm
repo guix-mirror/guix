@@ -1448,6 +1448,36 @@ responses coming back.")
 be used to extend Hspec's functionality.")
     (license expat)))
 
+(define-public ghc-hspec-meta
+  (package
+    (name "ghc-hspec-meta")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hspec-meta/hspec-meta-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1fmqmgrzp135cxhmxxbaswkk4bqbpgfml00cmcz0d39n11vzpa5z"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-async" ,ghc-async)
+       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
+       ("ghc-setenv" ,ghc-setenv)
+       ("ghc-random" ,ghc-random)
+       ("ghc-quickcheck-io" ,ghc-quickcheck-io)))
+    (home-page "http://hspec.github.io/")
+    (synopsis "Version of Hspec to test Hspec itself")
+    (description "This library provides a stable version of Hspec which is
+used to test the in-development version of Hspec.")
+    (license expat)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
