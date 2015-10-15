@@ -1000,6 +1000,30 @@ but also need those types.")
 for Unix time in Haskell.")
     (license bsd-3)))
 
+(define-public ghc-unix-compat
+  (package
+    (name "ghc-unix-compat")
+    (version "0.4.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/unix-compat/unix-compat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0jxk7j5pz2kgfpqr4hznndjg31pqj5xg2qfc5308fcn9xyg1myps"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://github.com/jystic/unix-compat")
+    (synopsis "Portable POSIX-compatibility layer")
+    (description
+     "This package provides portable implementations of parts of the unix
+package.  This package re-exports the unix package when available.  When it
+isn't available, portable implementations are used.")
+    (license bsd-3)))
+
 (define-public ghc-iproute
   (package
     (name "ghc-iproute")
