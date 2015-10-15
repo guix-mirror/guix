@@ -1351,6 +1351,30 @@ standard Read class, for better deserialisation of Haskell values from
 Strings.")
     (license lgpl2.1)))
 
+(define-public ghc-extra
+  (package
+    (name "ghc-extra")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/extra/extra-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1h9hxkrqrqscx420yz1lmivbrhi6jc3a5ap61vkxd2mhdgark9hf"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/ndmitchell/extra")
+    (synopsis "Extra Haskell functions")
+    (description "This library provides extra functions for the standard
+Haskell libraries.  Most functions are simple additions, filling out missing
+functionality.  A few functions are available in later versions of GHC, but
+this package makes them available back to GHC 7.2.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
