@@ -938,6 +938,32 @@ transformers 0.2 or 0.3 compatibility to run on old versions of the platform,
 but also need those types.")
     (license bsd-3)))
 
+(define-public ghc-exceptions
+  (package
+    (name "ghc-exceptions")
+    (version "0.8.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/exceptions/exceptions-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1x1bk1jf42k1gigiqqmkkh38z2ffhx8rsqiszdq3f94m2h6kw2h7"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Missing test-framework package.
+    (propagated-inputs
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "http://github.com/ekmett/exceptions/")
+    (synopsis "Extensible optionally-pure exceptions")
+    (description "This library provides extensible optionally-pure exceptions
+for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
