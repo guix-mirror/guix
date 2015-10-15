@@ -20,7 +20,7 @@
 
 (define-module (gnu packages haskell)
   #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:select (bsd-3 lgpl2.1))
+  #:use-module ((guix licenses) #:select (bsd-3 lgpl2.1 expat))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -582,6 +582,27 @@ School of Functional Programming', 1995.  See
 for encoding UTF8 strings to Word8 lists and back, and for reading and writing
 UTF8 without truncation.")
     (license bsd-3)))
+
+(define-public ghc-setenv
+  (package
+    (name "ghc-setenv")
+    (version "0.1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/setenv/setenv-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cnbgrvb9byyahb37zlqrj05rj25v190crgcw8wmlgf0mwwxyn73"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/setenv")
+    (synopsis "Library for setting environment variables")
+    (description "This package provides a Haskell library for setting
+environment variables.")
+    (license expat)))
 
 (define-public ghc-x11
   (package
