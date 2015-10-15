@@ -386,6 +386,33 @@ package.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-simple-reflect
+  (package
+    (name "ghc-simple-reflect")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/simple-reflect/simple-reflect-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1dpcf6w3cf1sfl9bnlsx04x7aghw029glj5d05qzrsnms2rlw8iq"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://twanvl.nl/blog/haskell/simple-reflection-of-expressions")
+    (synopsis
+     "Simple reflection of expressions containing variables")
+    (description
+     "This package allows simple reflection of expressions containing
+variables.  Reflection here means that a Haskell expression is turned into a
+string.  The primary aim of this package is teaching and understanding; there
+are no options for manipulating the reflected expressions beyond showing
+them.")
+    (license bsd-3)))
+
 (define-public ghc-reflection
   (package
     (name "ghc-reflection")
