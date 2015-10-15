@@ -964,6 +964,31 @@ but also need those types.")
 for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-temporary
+  (package
+    (name "ghc-temporary")
+    (version "1.2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/temporary/temporary-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0is67bmsjmbbw6wymhis8wyq9gax3sszm573p5719fx2c9z9r24a"))))
+    (build-system haskell-build-system)
+    (propagated-inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (home-page "http://www.github.com/batterseapower/temporary")
+    (synopsis "Temporary file and directory support")
+    (description "The functions for creating temporary files and directories
+in the Haskelll base library are quite limited.  This library just repackages
+the Cabal implementations of its own temporary file and folder functions so
+that you can use them without linking against Cabal or depending on it being
+installed.")
+    (license bsd-3)))
+
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
