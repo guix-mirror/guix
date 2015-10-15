@@ -2456,6 +2456,35 @@ given term should not exist.")
 in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
     (license bsd-3)))
 
+(define-public ghc-tagsoup
+  (package
+    (name "ghc-tagsoup")
+    (version "0.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tagsoup/tagsoup-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "13b6zy6346r3cxhaivys84fnxarg8wbv7r2znazfjdkqil8n5a1j"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (home-page
+     "http://community.haskell.org/~ndm/tagsoup/")
+    (synopsis
+     "Parsing and extracting information from (possibly malformed) HTML/XML
+documents")
+    (description
+     "TagSoup is a library for parsing HTML/XML.  It supports the HTML 5
+specification, and can be used to parse either well-formed XML, or
+unstructured and malformed HTML from the web.  The library also provides
+useful functions to extract information from an HTML document, making it ideal
+for screen-scraping.")
+    (license bsd-3)))
+
 (define-public ghc-digest
   (package
     (name "ghc-digest")
