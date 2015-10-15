@@ -1006,6 +1006,27 @@ style.")
 exceptions.")
     (license bsd-3)))
 
+(define-public ghc-generic-deriving
+  (package
+    (name "ghc-generic-deriving")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/generic-deriving/generic-deriving-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1kc6lhdanls6kgpk8xv5xi14lz1sngcd8xn930hkf7ilq4kxkcr6"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/generic-deriving")
+    (synopsis "Generalise the deriving mechanism to arbitrary classes")
+    (description "This package provides functionality for generalising the
+deriving mechanism in Haskell to arbitrary classes.")
+    (license bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
