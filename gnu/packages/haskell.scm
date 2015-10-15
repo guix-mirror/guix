@@ -2383,6 +2383,29 @@ or timeout period.  This package provides alternative functions which use the
 unbounded @code{Integer} type.")
     (license bsd-3)))
 
+(define-public ghc-nats
+  (package
+    (name "ghc-nats")
+    (version "1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/nats/nats-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0r6s8l4s0yq3x2crrkv0b8zac13magfasr9v8hnq6rn1icsfhic0"))))
+    (build-system haskell-build-system)
+    (arguments `(#:haddock? #f))
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)))
+    (home-page "https://hackage.haskell.org/package/nats")
+    (synopsis "Natural numbers")
+    (description "This library provides the natural numbers for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
