@@ -3390,6 +3390,57 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
 in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
     (license bsd-3)))
 
+(define-public ghc-lens
+  (package
+    (name "ghc-lens")
+    (version "4.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/lens/lens-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0g4g0xksrb2m8wgsmraaq8qnk1sssb42kr65fc7clgyid6zyfmim"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
+    (propagated-inputs
+     `(("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-free" ,ghc-free)
+       ("ghc-kan-extensions" ,ghc-kan-extensions)
+       ("ghc-parallel" ,ghc-parallel)
+       ("ghc-reflection" ,ghc-reflection)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-vector" ,ghc-vector)))
+    (inputs
+     `(("ghc-comonad" ,ghc-comonad)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-text" ,ghc-text)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-void" ,ghc-void)
+       ("ghc-generic-deriving" ,ghc-generic-deriving)
+       ("ghc-nats" ,ghc-nats)
+       ("ghc-simple-reflect" ,ghc-simple-reflect)
+       ("hlint" ,hlint)))
+    (home-page "http://github.com/ekmett/lens/")
+    (synopsis "Lenses, Folds and Traversals")
+    (description "This library provides @code{Control.Lens}.  The combinators
+in @code{Control.Lens} provide a highly generic toolbox for composing families
+of getters, folds, isomorphisms, traversals, setters and lenses and their
+indexed variants.")
+    (license bsd-3)))
+
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
