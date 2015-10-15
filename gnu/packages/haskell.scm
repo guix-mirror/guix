@@ -2519,6 +2519,34 @@ Int-indexed arrays (both mutable and immutable), with a powerful loop
 optimisation framework.")
     (license bsd-3)))
 
+(define-public ghc-vector-binary-instances
+  (package
+    (name "ghc-vector-binary-instances")
+    (version "0.2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/"
+             "vector-binary-instances/vector-binary-instances-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "028rsf2w193rhs1gic5yvvrwidw9sblczcn10aw64npfc6502l4l"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-cereal" ,ghc-cereal)))
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/bos/vector-binary-instances")
+    (synopsis "Instances of Data.Binary and Data.Serialize for vector")
+    (description "This library provides instances of @code{Binary} for the
+types defined in the @code{vector} package, making it easy to serialize
+vectors to and from disk.  We use the generic interface to vectors, so all
+vector types are supported.  Specific instances are provided for unboxed,
+boxed and storable vectors.")
+    (license bsd-3)))
+
 (define-public ghc-network
   (package
     (name "ghc-network")
