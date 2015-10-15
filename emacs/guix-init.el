@@ -1,4 +1,5 @@
 (require 'guix-autoloads)
+(require 'guix-emacs)
 
 (defcustom guix-package-enable-at-startup t
   "If non-nil, activate Emacs packages installed in a user profile.
@@ -8,8 +9,9 @@ avoid loading autoloads of Emacs packages installed in
   :type 'boolean
   :group 'guix)
 
+(add-to-list 'load-path (guix-emacs-directory))
+
 (when guix-package-enable-at-startup
-  (require 'guix-emacs)
   (guix-emacs-load-autoloads 'all))
 
 (add-hook 'scheme-mode-hook 'guix-devel-activate-mode-maybe)
