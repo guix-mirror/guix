@@ -3212,6 +3212,43 @@ where every element did not have to have an inverse, thus the name
 semigroup.")
     (license bsd-3)))
 
+(define-public ghc-free
+  (package
+    (name "ghc-free")
+    (version "4.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/free/free-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0sr8phvrb4ny8j1wzq55rdn8q4br23q4pw2j276npr844825jr9p"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-prelude-extras" ,ghc-prelude-extras)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-exceptions" ,ghc-exceptions)))
+    (inputs
+     `(("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "http://github.com/ekmett/free/")
+    (synopsis "Unrestricted monads for Haskell")
+    (description "This library provides free monads, which are useful for many
+tree-like structures and domain specific languages.  If @code{f} is a
+@code{Functor} then the free @code{Monad} on @code{f} is the type of trees
+whose nodes are labeled with the constructors of @code{f}.  The word \"free\"
+is used in the sense of \"unrestricted\" rather than \"zero-cost\": @code{Free
+f} makes no constraining assumptions beyond those given by @code{f} and the
+definition of @code{Monad}.")
+    (license bsd-3)))
+
 (define-public ghc-fast-logger
   (package
     (name "ghc-fast-logger")
