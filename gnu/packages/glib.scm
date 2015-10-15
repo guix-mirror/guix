@@ -393,7 +393,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.4.1")
+    (version "2.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -401,7 +401,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1v0rvkzglzmf67y9nkcppwjwi68j1cy5yhldvcq7xrv8594l612l"))))
+               "06xyvxaaxh3nbpjg86gcq5zcc2qnpx354wcfrqlhbndkq5kj2vqq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
