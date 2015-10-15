@@ -3937,4 +3937,38 @@ for Haskell, optimized for ease of use and high performance.  (A note on
 naming: in Greek mythology, Aeson was the father of Jason.)")
     (license bsd-3)))
 
+(define-public ghc-wai
+  (package
+    (name "ghc-wai")
+    (version "3.0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/wai/wai-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1551n0g0n22vml33v0jz5xgjcy6j79algvsdqg11a1z5ljjrjlqf"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-vault" ,ghc-vault)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-network" ,ghc-network)))
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-text" ,ghc-text)
+       ("ghc-http-types" ,ghc-http-types)))
+    (home-page "https://hackage.haskell.org/package/wai")
+    (synopsis "Web application interface for Haskell")
+    (description "This package provides a Web Application Interface (WAI)
+library for the Haskell language.  It defines a common protocol for
+communication between web applications and web servers.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
