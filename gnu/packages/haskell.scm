@@ -554,6 +554,38 @@ unwanted suggestions, and to add your own custom suggestions.")
 code where you can safely allocate resources.")
     (license bsd-3)))
 
+(define-public ghc-xss-sanitize
+  (package
+    (name "ghc-xss-sanitize")
+    (version "0.3.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/xss-sanitize/xss-sanitize-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1j2qrn2dbfx01m7zyk9ilgnp9zjwq9mk62b0rdal4zkg4vh212h0"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-css-text" ,ghc-css-text)
+       ("ghc-network-uri" ,ghc-network-uri)))
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/yesodweb/haskell-xss-sanitize")
+    (synopsis "Sanitize untrusted HTML to prevent XSS attacks")
+    (description "This library provides @code{sanitizeXSS}.  Run untrusted
+HTML through @code{Text.HTML.SanitizeXSS.sanitizeXSS} to prevent XSS
+attacks.")
+    (license bsd-3)))
+
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
