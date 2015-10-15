@@ -2383,6 +2383,28 @@ or timeout period.  This package provides alternative functions which use the
 unbounded @code{Integer} type.")
     (license bsd-3)))
 
+(define-public ghc-bytestring-builder
+  (package
+    (name "ghc-bytestring-builder")
+    (version "0.10.6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/bytestring-builder"
+             "/bytestring-builder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mkg24zl0rapb3gqzkyj5ibp07wx3yzd72hmfczssl0is63rjhww"))))
+    (build-system haskell-build-system)
+    (arguments `(#:haddock? #f)) ; Package contains no documentation.
+    (home-page "http://hackage.haskell.org/package/bytestring-builder")
+    (synopsis "The new bytestring builder, packaged outside of GHC")
+    (description "This package provides the bytestring builder that is
+debuting in bytestring-0.10.4.0, which should be shipping with GHC 7.8.
+Compatibility package for older packages.")
+    (license bsd-3)))
+
 (define-public ghc-nats
   (package
     (name "ghc-nats")
