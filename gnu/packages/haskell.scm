@@ -2406,6 +2406,33 @@ unbounded @code{Integer} type.")
     (description "This library provides the natural numbers for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-void
+  (package
+    (name "ghc-void")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/void/void-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1x15x2axz84ndw2bf60vjqljhrb0w95lddaljsxrl0hcd29zvw69"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-semigroups" ,ghc-semigroups)))
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)))
+    (home-page "http://github.com/ekmett/void")
+    (synopsis
+     "Logically uninhabited data type")
+    (description
+     "A Haskell 98 logically uninhabited data type, used to indicate that a
+given term should not exist.")
+    (license bsd-3)))
+
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
