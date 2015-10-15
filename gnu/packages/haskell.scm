@@ -1351,6 +1351,33 @@ use them without linking against Cabal or depending on it being installed.
 This is a better maintained fork of the \"temporary\" package.")
     (license bsd-3)))
 
+(define-public ghc-smallcheck
+  (package
+    (name "ghc-smallcheck")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/smallcheck/smallcheck-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ygrabxh40bym3grnzqyfqn96lirnxspb8cmwkkr213239y605sd"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-logict" ,ghc-logict)))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)))
+    (home-page
+     "https://github.com/feuerbach/smallcheck")
+    (synopsis "Property-based testing library")
+    (description "SmallCheck is a testing library that allows to verify
+properties for all test cases up to some depth.  The test cases are generated
+automatically by SmallCheck.")
+    (license bsd-3)))
+
 (define-public ghc-silently
   (package
     (name "ghc-silently")
