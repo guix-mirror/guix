@@ -364,6 +364,31 @@ package.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-reflection
+  (package
+    (name "ghc-reflection")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/reflection/reflection-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "10w3m6v3g6am203wbrikdbp57x9vw6b4jsh7bxdzsss4nmpm81zg"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-tagged" ,ghc-tagged)))
+    (home-page "http://github.com/ekmett/reflection")
+    (synopsis "Reify arbitrary terms into types that can be reflected back
+into terms")
+    (description "This package addresses the 'configuration problem' which is
+propogating configurations that are available at run-time, allowing multiple
+configurations to coexist without resorting to mutable global variables or
+@code{System.IO.Unsafe.unsafePerformIO}.")
+    (license bsd-3)))
+
 (define-public ghc-old-locale
   (package
     (name "ghc-old-locale")
