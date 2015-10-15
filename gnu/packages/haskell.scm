@@ -4005,4 +4005,52 @@ communication between web applications and web servers.")
     (description "This package provides the logging system for WAI.")
     (license bsd-3)))
 
+(define-public ghc-wai-extra
+  (package
+    (name "ghc-wai-extra")
+    (version "3.0.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/wai-extra/wai-extra-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1kr2s5qyx1dvnwr372h7pca4sgxjv0pdx96xkgsfi180h3mb0vq8"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-cookie" ,ghc-cookie)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-network" ,ghc-network)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-stringsearch" ,ghc-stringsearch)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-fast-logger" ,ghc-fast-logger)
+       ("ghc-wai-logger" ,ghc-wai-logger)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-word8" ,ghc-word8)
+       ("ghc-iproute" ,ghc-iproute)
+       ("ghc-void" ,ghc-void)))
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-text" ,ghc-text)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-vault" ,ghc-vault)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/yesodweb/wai")
+    (synopsis "Some basic WAI handlers and middleware")
+    (description "This library provides basic WAI handlers and middleware
+functionality.")
+    (license expat)))
+
 ;;; haskell.scm ends here
