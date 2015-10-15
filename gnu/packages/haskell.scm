@@ -1219,6 +1219,28 @@ Haskell.")
 modifying, and extracting files from zip archives in Haskell.")
     (license bsd-3)))
 
+(define-public ghc-cereal
+  (package
+    (name "ghc-cereal")
+    (version "0.4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/cereal/cereal-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15rhfn9hrjm01ksh9xpz9syxsp9vkvpp6b736iqq38wv2wb7416z"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/cereal")
+    (synopsis "Binary serialization library")
+    (description "This package provides a binary serialization library,
+similar to @code{binary}, that introduces an @code{isolate} primitive for
+parser isolation, and labeled blocks for better error messages.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
