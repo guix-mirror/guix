@@ -1297,6 +1297,30 @@ parser isolation, and labeled blocks for better error messages.")
     (description "This library provides @code{Comonad}s for Haskell.")
     (license bsd-3)))
 
+(define-public hscolour
+  (package
+    (name "hscolour")
+    (version "1.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hscolour/hscolour-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1c4i2zpami8g3w9949nm3f92g7xwh5c94vkx658zz7ihrjp7w5lp"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/hscolour")
+    (synopsis "Script to colourise Haskell code")
+    (description "HSColour is a small Haskell script to colourise Haskell
+code.  It currently has six output formats: ANSI terminal codes (optionally
+XTerm-256colour codes), HTML 3.2 with font tags, HTML 4.01 with CSS, HTML 4.01
+with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
+and mIRC chat codes.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
