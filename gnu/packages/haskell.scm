@@ -989,6 +989,30 @@ that you can use them without linking against Cabal or depending on it being
 installed.")
     (license bsd-3)))
 
+(define-public ghc-silently
+  (package
+    (name "ghc-silently")
+    (version "1.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/silently/silently-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0f9qm3f7y0hpxn6mddhhg51mm1r134qkvd2kr8r6192ka1ijbxnf"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ;; circular dependency with nanospec
+    ;; (inputs
+    ;;  `(("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://github.com/hspec/silently")
+    (synopsis "Prevent writing to stdout")
+    (description "This package provides functions to prevent or capture
+writing to stdout and other handles.")
+    (license bsd-3)))
+
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
