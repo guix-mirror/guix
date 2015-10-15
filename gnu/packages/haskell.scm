@@ -916,6 +916,28 @@ the paper \"Splittable Pseudorandom Number Generators Using Cryptographic
 Hashing\" by Claessen, Pałka for details and the rationale of the design.")
     (license bsd-3)))
 
+(define-public ghc-transformers-compat
+  (package
+    (name "ghc-transformers-compat")
+    (version "0.4.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/transformers-compat"
+             "/transformers-compat-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0lmg8ry6bgigb0v2lg0n74lxi8z5m85qq0qi4h1k9llyjb4in8ym"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/ekmett/transformers-compat/")
+    (synopsis "Small compatibility shim between transformers 0.3 and 0.4")
+    (description "This package includes backported versions of types that were
+added to transformers in transformers 0.3 and 0.4 for users who need strict
+transformers 0.2 or 0.3 compatibility to run on old versions of the platform,
+but also need those types.")
+    (license bsd-3)))
+
 (define-public ghc-quickcheck-io
   (package
     (name "ghc-quickcheck-io")
