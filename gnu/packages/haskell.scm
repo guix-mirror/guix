@@ -1134,6 +1134,34 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
 @code{libtre} (fork by Roman Cheplyaka).")
     (license bsd-3)))
 
+(define-public ghc-attoparsec
+  (package
+    (name "ghc-attoparsec")
+    (version "0.13.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/attoparsec/attoparsec-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cprkr7bl4lrr80pz8mryb4rbfwdgpsrl7g0fbcaybhl8p5hm26f"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: ghc-test-framework unavailable
+    (propagated-inputs
+     `(("ghc-scientific" ,ghc-scientific)))
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/bos/attoparsec")
+    (synopsis "Fast combinator parsing for bytestrings and text")
+    (description "This library provides a fast parser combinator library,
+aimed particularly at dealing efficiently with network protocols and
+complicated text/binary file formats.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
