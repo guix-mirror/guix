@@ -3336,6 +3336,37 @@ Compatibility package for older packages.")
 given term should not exist.")
     (license bsd-3)))
 
+(define-public ghc-kan-extensions
+  (package
+    (name "ghc-kan-extensions")
+    (version "4.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/kan-extensions/kan-extensions-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0iywbadpy8s3isfzlx9dlz3apaywhqq4gdbxkwygksq8pzdhwkrk"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-adjunctions" ,ghc-adjunctions)))
+    (inputs
+     `(("ghc-comonad" ,ghc-comonad)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-free" ,ghc-free)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-tagged" ,ghc-tagged)))
+    (home-page "http://github.com/ekmett/kan-extensions/")
+    (synopsis "Kan extensions library")
+    (description "This library provides Kan extensions, Kan lifts, various
+forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
