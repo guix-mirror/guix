@@ -499,15 +499,17 @@ to be modified."
   "List of default 'execute' action arguments.")
 
 (defvar guix-command-additional-execute-arguments
-  `((("build")
-     ,(guix-command-make-argument
-       :name "log" :char ?l :doc "View build log"))
-    (("graph")
-     ,(guix-command-make-argument
-       :name "view" :char ?v :doc "View graph"))
-    (("size")
-     ,(guix-command-make-argument
-       :name "view" :char ?v :doc "View map")))
+  (let ((graph-arg (guix-command-make-argument
+                    :name "view" :char ?v :doc "View graph")))
+    `((("build")
+       ,(guix-command-make-argument
+         :name "log" :char ?l :doc "View build log"))
+      (("graph") ,graph-arg)
+      (("size")
+       ,(guix-command-make-argument
+         :name "view" :char ?v :doc "View map"))
+      (("system" "dmd-graph") ,graph-arg)
+      (("system" "extension-graph") ,graph-arg)))
   "Alist of guix commands and additional 'execute' action arguments.")
 
 (defun guix-command-execute-arguments (commands)
@@ -531,7 +533,11 @@ to be modified."
     (("graph")
      ("view" . guix-run-view-graph))
     (("size")
-     ("view" . guix-run-view-size-map)))
+     ("view" . guix-run-view-size-map))
+    (("system" "dmd-graph")
+     ("view" . guix-run-view-graph))
+    (("system" "extension-graph")
+     ("view" . guix-run-view-graph)))
   "Alist of guix commands and alists of special executers for them.
 See also `guix-command-default-executors'.")
 
