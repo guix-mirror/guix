@@ -1478,6 +1478,48 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 @code{Text.Read}.")
     (license bsd-3)))
 
+(define-public ghc-trifecta
+  (package
+    (name "ghc-trifecta")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/trifecta/trifecta-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0fjhnsbafl3yw34pyhcsvrqy6a2mnhyqys6gna3rrlygs8ck7hpb"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
+                               ; -package ansi-terminal-0.6.2.3"
+    (propagated-inputs
+     `(("ghc-charset" ,ghc-charset)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-reducers" ,ghc-reducers)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (inputs
+     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-fingertree" ,ghc-fingertree)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-parsers" ,ghc-parsers)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (home-page "http://github.com/ekmett/trifecta/")
+    (synopsis "Parser combinator library with convenient diagnostics")
+    (description "Trifecta is a modern parser combinator library for Haskell,
+with slicing and Clang-style colored diagnostics.")
+    (license bsd-3)))
+
 (define-public ghc-attoparsec
   (package
     (name "ghc-attoparsec")
