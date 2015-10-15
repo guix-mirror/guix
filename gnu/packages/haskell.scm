@@ -1394,6 +1394,36 @@ lets you set up HTTP connections, transmitting requests and processing the
 responses coming back.")
     (license bsd-3)))
 
+(define-public ghc-hspec
+  (package
+    (name "ghc-hspec")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/hspec/hspec-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0zqisxznlbszivsgy3irvf566zhcr6ipqqj3x9i7pj5hy913jwqf"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-hspec-core" ,ghc-hspec-core)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-hspec-expectations" ,ghc-hspec-expectations)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)))
+    (inputs
+     `(("ghc-stringbuilder" ,ghc-stringbuilder)
+       ("ghc-hspec-meta" ,ghc-hspec-meta)))
+    (home-page "http://hspec.github.io/")
+    (synopsis "Testing Framework for Haskell")
+    (description "This library provides the Hspec testing framework for
+Haskell, inspired by the Ruby library RSpec.")
+    (license expat)))
+
 (define-public ghc-hspec-expectations
   (package
     (name "ghc-hspec-expectations")
