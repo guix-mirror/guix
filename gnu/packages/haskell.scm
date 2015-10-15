@@ -1977,6 +1977,34 @@ of base to a wider range of compilers, without requiring the use of CPP
 pragmas in your code.")
     (license bsd-3)))
 
+(define-public ghc-blaze-builder
+  (package
+    (name "ghc-blaze-builder")
+    (version "0.4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/blaze-builder/blaze-builder-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1id3w33x9f7q5m3xpggmvzw03bkp94bpfyz81625bldqgf3yqdn1"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f))          ; FIXME: Missing test libraries.
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (home-page "http://github.com/lpsmith/blaze-builder")
+    (synopsis "Efficient buffered output")
+    (description "This library provides an implementation of the older
+@code{blaze-builder} interface in terms of the new builder that shipped with
+@code{bytestring-0.10.4.0}.  This implementation is mostly intended as a
+bridge to the new builder, so that code that uses the old interface can
+interoperate with code that uses the new implementation.")
+    (license bsd-3)))
+
 (define-public ghc-easy-file
   (package
     (name "ghc-easy-file")
